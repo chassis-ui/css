@@ -1,5 +1,5 @@
 ---
-import { getVersionedDocsPath } from '@libs/path'
+import { getChassisDocsPath } from '@libs/path'
 import { getConfig } from '@libs/config'
 import { getData } from '@libs/data'
 import { getSlug } from '@libs/utils'
@@ -68,20 +68,9 @@ import { getSlug } from '@libs/utils'
               <article class="col-small-6 col-medium-3 mb-medium">
                 <a
                   class="d-block link-offset-1"
-                  href={`/docs/${getConfig().docs_version}/examples/${getSlug(example.name)}/`}
+                  href={`/docs/css/examples/${getSlug(example.name)}/`}
                   hreflang={example.name.includes('RTL') ? 'ar' : undefined}
                 >
-                  <img
-                    class="img-thumbnail mb-medium"
-                    srcset={`${getVersionedDocsPath(
-                      `/assets/img/examples/${getSlug(example.name)}.png`
-                    )}, ${getVersionedDocsPath(`/assets/img/examples/${getSlug(example.name)}@2x.png`)} 2x`}
-                    src={getVersionedDocsPath(`/assets/img/examples/${getSlug(example.name)}.png`)}
-                    alt=""
-                    width="480"
-                    height="300"
-                    loading="lazy"
-                  />
                   <h3 class="h5 mb-2xsmall">{example.name}</h3>
                 </a>
                 <p class="fg-subtle">{example.description}</p>

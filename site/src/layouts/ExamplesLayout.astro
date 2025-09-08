@@ -1,9 +1,9 @@
 ---
 import type { HTMLAttributes } from 'astro/types'
-import { getVersionedCxJsProps } from '@libs/chassis'
+import { getChassisJsProps } from '@libs/chassis'
 import { getConfig } from '@libs/config'
 import type { ExampleFrontmatter } from '@libs/examples'
-import { getVersionedDocsPath } from '@libs/path'
+import { getChassisDocsPath } from '@libs/path'
 import Stylesheet from '@components/head/Stylesheet.astro'
 import Favicons from '@components/head/Favicons.astro'
 import ThemeToggler from '@layouts/partials/ThemeToggler.astro'
@@ -30,7 +30,7 @@ const htmlProps: HTMLAttributes<'html'> = direction === 'rtl' ? { lang: 'ar', di
 
     <link rel="canonical" href={canonicalUrl} />
 
-    <script is:inline src={getVersionedDocsPath('assets/js/color-modes.js')}></script>
+    <script is:inline src={getChassisDocsPath('assets/js/color-modes.js')}></script>
 
     <Stylesheet direction={direction} layout="examples" />
     <Favicons />
@@ -132,7 +132,7 @@ const htmlProps: HTMLAttributes<'html'> = direction === 'rtl' ? { lang: 'ar', di
     {
       include_js !== false && (
         <Fragment>
-          <script is:inline {...getVersionedCxJsProps()} />
+          <script is:inline {...getChassisJsProps()} />
           {extra_js?.map((js) => (
             <script
               is:inline

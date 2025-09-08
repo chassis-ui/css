@@ -1,7 +1,7 @@
 ---
 import type { InferGetStaticPropsType } from 'astro'
 import RedirectLayout from '@layouts/RedirectLayout.astro'
-import { getVersionedDocsPath } from '@libs/path'
+import { getChassisDocsPath } from '@libs/path'
 import { trimLeadingAndTrailingSlashes } from '@libs/utils'
 import { replaceConfigInText } from '@libs/remark'
 import { aliasedDocsPages } from '@libs/content'
@@ -62,4 +62,4 @@ type Props = InferGetStaticPropsType<typeof getStaticPaths>
 const { path } = Astro.props
 ---
 
-<RedirectLayout path={getVersionedDocsPath(path)} />
+<RedirectLayout path={getChassisDocsPath(path)} />

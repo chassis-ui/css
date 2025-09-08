@@ -3,7 +3,7 @@ import type { MdxJsxAttribute, MdxJsxExpressionAttribute } from 'mdast-util-mdx-
 import type { Plugin } from 'unified'
 import { visit } from 'unist-util-visit'
 import { getConfig } from './config'
-import { getVersionedDocsPath } from './path'
+import { getChassisDocsPath } from './path'
 
 // [[config:foo]]
 // [[config:foo.bar]]
@@ -110,7 +110,7 @@ function replaceConfigInAttributes(attributes: (MdxJsxAttribute | MdxJsxExpressi
 
 function replaceDocsrefInText(text: string) {
   return text.replace(docsrefRegExp, (_match, path) => {
-    return getVersionedDocsPath(path)
+    return getChassisDocsPath(path)
   })
 }
 

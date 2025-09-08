@@ -4,7 +4,7 @@ import type { CollectionEntry } from 'astro:content'
 import { getConfig } from '@libs/config'
 import type { LayoutOverridesHTMLAttributes } from '@libs/layout'
 import { getSlug, processMarkdownToHtml } from '@libs/utils'
-import { getVersionedDocsPath } from '@libs/path'
+import { getChassisDocsPath } from '@libs/path'
 import Ads from '@components/Ads.astro'
 import BaseLayout from '@layouts/BaseLayout.astro'
 import DocsSidebar from '@components/DocsSidebar.astro'
@@ -116,7 +116,7 @@ if (frontmatter.toc) {
                 <div class="col-medium-6">
                   <a
                     class="d-block text-decoration-none"
-                    href={getVersionedDocsPath(
+                    href={getChassisDocsPath(
                       `${parentDirectory ? parentDirectory + '/' : ''}${getSlug(section.title)}/`
                     )}
                   >

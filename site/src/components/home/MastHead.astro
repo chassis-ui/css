@@ -1,6 +1,6 @@
 ---
 import { getConfig } from '@libs/config'
-import { getVersionedDocsPath } from '@libs/path'
+import { getChassisDocsPath } from '@libs/path'
 import Ads from '@components/Ads.astro'
 import Code from '@components/shortcodes/Code.astro'
 import ResponsiveImage from '@layouts/partials/ResponsiveImage.astro'
@@ -40,7 +40,7 @@ import ResponsiveImage from '@layouts/partials/ResponsiveImage.astro'
           <Code code={`npm i chassis@${getConfig().current_version}`} lang="sh" />
         </div>
         <a
-          href={getVersionedDocsPath('getting-started/introduction')}
+          href={getChassisDocsPath('getting-started/introduction')}
           class="button large cxd-button-large button-cxd-primary d-flex align-items-center justify-content-center fw-semibold"
         >
           <svg class="bi me-xsmall" aria-hidden="true"><use xlink:href="#book-open-solid"></use></svg>
@@ -50,7 +50,7 @@ import ResponsiveImage from '@layouts/partials/ResponsiveImage.astro'
       <p class="fg-subtle mb-0">
         Currently <strong>v{getConfig().current_version}</strong>
         <span class="px-2xsmall">&middot;</span>
-        <a href={getVersionedDocsPath('getting-started/download')} class="link-secondary">Download</a>
+        <a href={getChassisDocsPath('getting-started/download')} class="link-secondary">Download</a>
         <span class="px-2xsmall">&middot;</span>
         <a href="/docs/versions/" class="link-secondary text-nowrap">All releases</a>
       </p>

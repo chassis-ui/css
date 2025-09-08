@@ -1,5 +1,0 @@
-As options can be passed via data attributes or JavaScript, you can append an option name to `data-cx-`, as in `data-cx-animation="{value}"`. Make sure to change the case type of the option name from "_camelCase_" to "_kebab-case_" when passing the options via data attributes. For example, use `data-cx-custom-class="beautifier"` instead of `data-cx-customClass="beautifier"`.
-
-As of Chassis - CSS 5.2.0, all components support an **experimental** reserved data attribute `data-cx-config` that can house simple component configuration as a JSON string. When an element has `data-cx-config='{"delay":0, "title":123}'` and `data-cx-title="456"` attributes, the final `title` value will be `456` and the separate data attributes will override values given on `data-cx-config`. In addition, existing data attributes are able to house JSON values like `data-cx-delay='{"show":0,"hide":150}'`.
-
-The final configuration object is the merged result of `data-cx-config`, `data-cx-`, and `js object` where the latest given key-value overrides the others.

@@ -1,5 +1,5 @@
 ---
-import { getVersionedCxJsProps } from '@libs/chassis'
+import { getChassisJsProps } from '@libs/chassis'
 import type { Layout } from '@libs/layout'
 
 interface Props {
@@ -9,10 +9,9 @@ interface Props {
 const { layout } = Astro.props
 ---
 
-<script is:inline {...getVersionedCxJsProps()}></script>
+<script is:inline {...getChassisJsProps()}></script>
 
 <script src="../assets/application.js"></script>
 <script src="../assets/search.js"></script>
 
 {layout === 'docs' && <script src="../assets/stackblitz.js" />}
-{layout === 'icons' && <script is:inline src="../assets/icon-search.js" />}

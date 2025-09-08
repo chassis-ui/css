@@ -2,7 +2,7 @@
 import type { CollectionEntry } from 'astro:content'
 import { getConfig } from '@libs/config'
 import type { Layout } from '@libs/layout'
-import { getVersionedDocsPath } from '@libs/path'
+import { getChassisDocsPath } from '@libs/path'
 
 interface Props {
   addedIn?: CollectionEntry<'docs'>['data']['added']
@@ -18,8 +18,8 @@ let versionsLink = ''
 
 if (layout === 'docs' && version === getConfig().docs_version) {
   versionsLink = `${slug}/`
-} else if (layout === 'single' && Astro.url.pathname.startsWith(getVersionedDocsPath(''))) {
-  versionsLink = Astro.url.pathname.replace(getVersionedDocsPath(''), '')
+} else if (layout === 'single' && Astro.url.pathname.startsWith(getChassisDocsPath(''))) {
+  versionsLink = Astro.url.pathname.replace(getChassisDocsPath(''), '')
 }
 
 const addedIn51 = addedIn?.version === '5.1'

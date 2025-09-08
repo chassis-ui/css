@@ -2,7 +2,7 @@
 // TODO: This Astro component could be improved to implement the equivalent of Hugo's `imageConfig`
 // and calculate the width and height of the image automatically
 
-import { getVersionedDocsPath } from '@libs/path'
+import { getChassisDocsPath } from '@libs/path'
 
 interface Props {
   imgPath: string
@@ -17,7 +17,7 @@ const { imgPath, alt, classes = '', lazyload = true, width, height } = Astro.pro
 
 const classNames = ['image-fluid', 'mx-auto', classes].filter(Boolean).join(' ')
 
-const basePath = getVersionedDocsPath(imgPath.split('/').slice(0, -1).join('/'))
+const basePath = getChassisDocsPath(imgPath.split('/').slice(0, -1).join('/'))
 const basename = imgPath.split('/').pop()?.split('.')[0] || ''
 const ext = imgPath.includes('.') ? `.${imgPath.split('.').pop()}` : ''
 

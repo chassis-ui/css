@@ -1,6 +1,6 @@
 ---
 import { getConfig } from '@libs/config'
-import { getVersionedDocsPath } from '@libs/path'
+import { getChassisDocsPath } from '@libs/path'
 import type { Layout } from '@libs/layout'
 import Stylesheet from '@components/head/Stylesheet.astro'
 import Favicons from '@components/head/Favicons.astro'
@@ -45,7 +45,7 @@ const pageTitle = isHome
 
 {robots && <meta name="robots" content={robots} />}
 
-<script is:inline src={getVersionedDocsPath('assets/js/color-modes.js')}></script>
+<script is:inline src={'/assets/color-modes.js'}></script>
 
 <Stylesheet direction={direction} layout={layout} />
 <Scss />

@@ -14,9 +14,11 @@ import { configurePrism } from './prism'
 import {
   docsDirectory,
   getDocsFsPath,
+  getChassisAssetsFsPath,
+  getChassisIconsFsPath,
   getDocsPublicFsPath,
   getDocsStaticFsPath,
-  validateVersionedDocsPaths
+  validateChassisDocsPaths
 } from './path'
 
 // A list of directories in `src/components` that contains components that will be auto imported in all pages for
@@ -26,8 +28,8 @@ const autoImportedComponentDirectories = ['shortcodes']
 
 // A list of static file paths that will be aliased to a different path.
 const staticFileAliases = {
-  '/docs/[version]/assets/img/favicons/apple-touch-icon.png': '/apple-touch-icon.png',
-  '/docs/[version]/assets/img/favicons/favicon.ico': '/favicon.ico'
+  '/images/apple-touch-icon.png': '/apple-touch-icon.png',
+  '/images/favicon.png': '/favicon.ico'
 }
 
 // A list of pages that will be excluded from the sitemap.
@@ -83,13 +85,14 @@ export function chassis(): AstroIntegration[] {
         },
         'astro:config:done': () => {
           cleanPublicDirectory()
-          copyChassis()
-          copyIcons()
           copyStatic()
+          copyChassisCSS()
+          copyChassisAssets()
+          copyChassisIcons()
           aliasStatic()
         },
         'astro:build:done': ({ dir }) => {
-          validateVersionedDocsPaths(dir)
+          validateChassisDocsPaths(dir)
         }
       }
     },
@@ -152,19 +155,29 @@ function cleanPublicDirectory() {
 
 // Copy the `dist` folder from the root of the repo containing the latest version of Chassis to make it available from
 // the `/docs/${docs_version}/dist` URL.
-function copyChassis() {
+function copyChassisCSS() {
   const source = path.join(process.cwd(), 'dist')
-  const destination = path.join(getDocsPublicFsPath(), 'docs', getConfig().docs_version, 'dist')
+  const destination = path.join(getDocsPublicFsPath(), 'assets')
 
   fs.mkdirSync(destination, { recursive: true })
   fs.cpSync(source, destination, { recursive: true })
 }
 
+function copyChassisAssets() {
+  const source = getChassisAssetsFsPath()
+  const destination = path.join(getDocsPublicFsPath(), 'assets')
+
+  // fs.mkdirSync(destination, { recursive: true })
+  // copyStaticRecursively(source, destination)
+  fs.mkdirSync(destination, { recursive: true })
+  fs.cpSync(source, destination, { recursive: true })
+}
+
 // Copy the `icons` folder from the chassis-tokens repo to make it available from the `/icons` URL.
-function copyIcons() {
-  const svgs_source = path.join(process.cwd(), 'node_modules/@ozgurgunes/chassis-icons/svgs')
-  const font_source = path.join(process.cwd(), 'node_modules/@ozgurgunes/chassis-icons/font')
-  const destination = path.join(getDocsPublicFsPath(), 'docs', getConfig().docs_version, 'assets', 'icons')
+function copyChassisIcons() {
+  const svgs_source = path.join(getChassisIconsFsPath(), 'svgs')
+  const font_source = path.join(getChassisIconsFsPath(), 'font')
+  const destination = path.join(getDocsPublicFsPath(), 'assets', 'icons')
 
   fs.mkdirSync(destination, { recursive: true })
   fs.cpSync(font_source, destination, { recursive: true })
@@ -176,15 +189,15 @@ function copyIcons() {
 // `config.yml` file.
 function copyStatic() {
   const source = getDocsStaticFsPath()
-  const destination = path.join(getDocsPublicFsPath())
+  const destination = path.join(getDocsPublicFsPath(), 'assets')
 
   copyStaticRecursively(source, destination)
 }
 
 // Alias (copy) some static files to different paths.
 function aliasStatic() {
-  const source = getDocsStaticFsPath()
-  const destination = path.join(getDocsPublicFsPath())
+  const source = getChassisAssetsFsPath()
+  const destination = path.join(getDocsPublicFsPath(), 'assets')
 
   for (const [aliasSource, aliasDestination] of Object.entries(staticFileAliases)) {
     fs.cpSync(path.join(source, aliasSource), path.join(destination, aliasDestination))

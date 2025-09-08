@@ -1,5 +1,5 @@
 ---
-import { getVersionedDocsPath } from '@libs/path'
+import { getChassisDocsPath } from '@libs/path'
 import { getData } from '@libs/data'
 import Code from '@shortcodes/Code.astro'
 
@@ -18,7 +18,7 @@ const plugins = getData('plugins')
       HTML. Need more control? Include individual plugins programmatically.
     </p>
     <p class="d-flex lead fw-normal mb-medium-0">
-      <a href={getVersionedDocsPath('getting-started/javascript')} class="icon-link icon-link-hover fw-semibold">
+      <a href={getChassisDocsPath('getting-started/javascript')} class="icon-link icon-link-hover fw-semibold">
         Learn more about Chassis JavaScript
         <svg class="bi" aria-hidden="true"><use xlink:href="#arrow-right-long-solid"></use></svg>
       </a>
@@ -57,9 +57,9 @@ const plugins = getData('plugins')
         lang="html"
       />
       <p>
-        Learn more about <a href={getVersionedDocsPath('getting-started/javascript/#using-chassis-as-a-module')}
+        Learn more about <a href={getChassisDocsPath('getting-started/javascript/#using-chassis-as-a-module')}
           >our JavaScript as modules</a
-        > and <a href={getVersionedDocsPath('getting-started/javascript/#programmatic-api')}
+        > and <a href={getChassisDocsPath('getting-started/javascript/#programmatic-api')}
           >using the programmatic API</a
         >.
       </p>
@@ -76,7 +76,7 @@ const plugins = getData('plugins')
           plugins.map((plugin) => {
             return (
               <div class="col-small-6 mb-xsmall">
-                <a class="d-block pe-large-4 text-decoration-none lh-small" href={getVersionedDocsPath(plugin.link)}>
+                <a class="d-block pe-large-4 text-decoration-none lh-small" href={getChassisDocsPath(plugin.link)}>
                   <h4 class="mb-0 fs-5 fw-semibold">{plugin.name}</h4>
                   <small class="fg-subtle">{plugin.description}</small>
                 </a>

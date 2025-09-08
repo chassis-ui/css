@@ -6,18 +6,18 @@ import { getConfig } from './config'
 export const docsDirectory = getConfig().docsDir
 
 // A list of all the docs paths that were generated during a build.
-const generatedVersionedDocsPaths: string[] = []
+const generatedChassisDocsPaths: string[] = []
 
-export function getVersionedDocsPath(docsPath: string): string {
+export function getChassisDocsPath(docsPath: string): string {
   const { docs_version } = getConfig()
 
   const sanitizedDocsPath = docsPath.replace(/^\//, '')
 
   if (import.meta.env.PROD) {
-    generatedVersionedDocsPaths.push(sanitizedDocsPath)
+    generatedChassisDocsPaths.push(sanitizedDocsPath)
   }
 
-  return `/docs/${docs_version}/${sanitizedDocsPath}`
+  return `/docs/css/${sanitizedDocsPath}`
 }
 
 // Validate that all the generated versioned docs paths point to an existing page or asset.
@@ -27,12 +27,12 @@ export function getVersionedDocsPath(docsPath: string): string {
 // `astro:build:done` integration hook. Altho as of 03/14/2023, this is not possible due to the route's data only
 // containing informations regarding the last page generated page for dynamic routes.
 // @see https://github.com/withastro/astro/issues/5802
-export function validateVersionedDocsPaths(distUrl: URL) {
+export function validateChassisDocsPaths(distUrl: URL) {
   const { docs_version } = getConfig()
 
-  for (const docsPath of generatedVersionedDocsPaths) {
-    const sanitizedDocsPath = sanitizeVersionedDocsPathForValidation(docsPath)
-    const absoluteDocsPath = path.join(distUrl.pathname, 'docs', docs_version, sanitizedDocsPath)
+  for (const docsPath of generatedChassisDocsPaths) {
+    const sanitizedDocsPath = sanitizeChassisDocsPathForValidation(docsPath)
+    const absoluteDocsPath = path.join(distUrl.pathname, 'docs', 'css', sanitizedDocsPath)
 
     const docsPathExists = fs.existsSync(absoluteDocsPath)
 
@@ -47,8 +47,20 @@ export function getDocsRelativePath(docsPath: string) {
   return path.join(docsDirectory, docsPath)
 }
 
+export function getChassisAssetsFsPath() {
+  return path.join(process.cwd(), 'vendor/assets/dist/web/chassis-docs/')
+}
+
+export function getChassisTokensFsPath() {
+  return path.join(process.cwd(), 'node_modules/@ozgurgunes/chassis-tokens/dist/tokens/web/chassis-docs')
+}
+
+export function getChassisIconsFsPath() {
+  return path.join(process.cwd(), 'node_modules/@ozgurgunes/chassis-icons')
+}
+
 export function getDocsStaticFsPath() {
-  return path.join(getDocsFsPath(), 'static')
+  return path.join(getDocsFsPath(), 'src/assets')
 }
 
 export function getDocsPublicFsPath() {
@@ -59,7 +71,7 @@ export function getDocsFsPath() {
   return path.join(process.cwd(), docsDirectory)
 }
 
-function sanitizeVersionedDocsPathForValidation(docsPath: string) {
+function sanitizeChassisDocsPathForValidation(docsPath: string) {
   // Remove the hash part of the path if any.
   let sanitizedDocsPath = docsPath.split('#')[0]
 

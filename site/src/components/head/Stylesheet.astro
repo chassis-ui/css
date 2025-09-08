@@ -1,6 +1,6 @@
 ---
-import { getVersionedCxCssProps } from '@libs/chassis'
-import { getVersionedDocsPath } from '@libs/path'
+import { getChassisCssProps } from '@libs/chassis'
+import { getChassisDocsPath } from '@libs/path'
 import type { Layout } from '@libs/layout'
 
 interface Props {
@@ -11,5 +11,5 @@ interface Props {
 const { direction } = Astro.props
 ---
 
-<link {...getVersionedCxCssProps(direction)} />
-<link rel="stylesheet" href={getVersionedDocsPath(`assets/icons/chassis-icons.min.css`)} />
+<link {...getChassisCssProps(direction)} />
+<link rel="stylesheet" href={`/assets/icons/chassis-icons.min.css`} />
