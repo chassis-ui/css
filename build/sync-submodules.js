@@ -20,16 +20,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const submodules = [{ name: 'chassis-assets', path: 'vendor/assets' }]
 
 function runCommand(command, cwd = process.cwd(), silent = false) {
-  try {
-    const result = execSync(command, {
-      cwd,
-      encoding: 'utf8',
-      stdio: silent ? 'pipe' : 'inherit'
-    })
-    return result
-  } catch (error) {
-    throw error
-  }
+  const result = execSync(command, {
+    cwd,
+    encoding: 'utf8',
+    stdio: silent ? 'pipe' : 'inherit'
+  })
+  return result
 }
 
 function syncSubmodule(submodule) {
@@ -43,16 +39,10 @@ function syncSubmodule(submodule) {
   }
 
   try {
-    runCommand(
-      `git submodule update --remote --merge ${submodule.path}`,
-      process.cwd(),
-      true
-    )
+    runCommand(`git submodule update --remote --merge ${submodule.path}`, process.cwd(), true)
     console.log(picocolors.green(`   ✅ ${submodule.name} synced successfully`))
   } catch {
-    console.log(
-      picocolors.yellow(`   ⚠️  ${submodule.name} has local changes, keeping current version`)
-    )
+    console.log(picocolors.yellow(`   ⚠️  ${submodule.name} has local changes, keeping current version`))
   }
 }
 
@@ -68,9 +58,7 @@ function main() {
       try {
         runCommand('git submodule update --init --recursive')
       } catch {
-        console.log(
-          picocolors.yellow('⚠️  Some submodules may not be available or have uncommitted changes')
-        )
+        console.log(picocolors.yellow('⚠️  Some submodules may not be available or have uncommitted changes'))
         console.log(picocolors.yellow('Continuing with existing submodules...'))
       }
     }
@@ -85,9 +73,7 @@ function main() {
       const status = execSync('git status --porcelain', { encoding: 'utf8' })
       if (status.trim()) {
         console.log(picocolors.cyan('\n📝 Changes detected in submodules'))
-        console.log(
-          picocolors.gray('   Run `git add . && git commit -m "chore: update submodules"` to commit changes')
-        )
+        console.log(picocolors.gray('   Run `git add . && git commit -m "chore: update submodules"` to commit changes'))
       } else {
         console.log(picocolors.green('\n✅ All submodules are up to date'))
       }
@@ -96,7 +82,6 @@ function main() {
     }
 
     console.log(picocolors.green('🎉 Submodule sync completed!'))
-
   } catch (error) {
     console.error(picocolors.red('❌ Error:'), error.message)
     process.exit(1)
