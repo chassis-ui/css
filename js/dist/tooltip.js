@@ -190,8 +190,6 @@
       if (showEvent.defaultPrevented || !isInTheDom) {
         return;
       }
-
-      // TODO: v6 remove this or make it optional
       this._disposePopper();
       const tip = this._getTipElement();
       this._element.setAttribute('aria-describedby', tip.getAttribute('id'));
@@ -276,13 +274,10 @@
     }
     _createTipElement(content) {
       const tip = this._getTemplateFactory(content).toHtml();
-
-      // TODO: remove this check in v6
       if (!tip) {
         return null;
       }
       tip.classList.remove(CLASS_NAME_FADE, CLASS_NAME_SHOW);
-      // TODO: v6 the following can be achieved with CSS only
       tip.classList.add(`cx-${this.constructor.NAME}-auto`);
       const tipId = index_js.getUID(this.constructor.NAME).toString();
       tip.setAttribute('id', tipId);

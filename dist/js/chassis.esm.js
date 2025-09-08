@@ -372,7 +372,6 @@ function findHandler(events, callable, delegationSelector = null) {
 }
 function normalizeParameters(originalTypeEvent, handler, delegationFunction) {
   const isDelegated = typeof handler === 'string';
-  // TODO: tooltip passes `false` instead of selector, so we need to check
   const callable = isDelegated ? delegationFunction : handler || delegationFunction;
   let typeEvent = getTypeEvent(originalTypeEvent);
   if (!nativeEvents.has(typeEvent)) {
@@ -756,7 +755,6 @@ const SelectorEngine = {
     }
     return [];
   },
-  // TODO: this is now unused; remove later along with prev()
   next(element, selector) {
     let next = element.nextElementSibling;
     while (next) {
@@ -1145,7 +1143,6 @@ const Default$b = {
 };
 const DefaultType$b = {
   interval: '(number|boolean)',
-  // TODO:v6 remove boolean support
   keyboard: 'boolean',
   pause: '(string|boolean)',
   ride: '(boolean|string)',
@@ -1188,7 +1185,6 @@ class Carousel extends BaseComponent {
     this._slide(ORDER_NEXT);
   }
   nextWhenVisible() {
-    // FIXME TODO use `document.visibilityState`
     // Don't call next when the page isn't visible
     // or the carousel or its parent isn't visible
     if (!document.hidden && isVisible(this._element)) {
@@ -1348,7 +1344,6 @@ class Carousel extends BaseComponent {
     }
     if (!activeElement || !nextElement) {
       // Some weirdness is happening, so we bail
-      // TODO: change tests that use empty divs to avoid this check
       return;
     }
     const isCycling = Boolean(this._interval);
@@ -2056,7 +2051,7 @@ class Dropdown extends BaseComponent {
 
     // Disable Popper if we have a static display or Dropdown is in Navbar
     if (this._inNavbar || this._config.display === 'static') {
-      Manipulator.setDataAttribute(this._menu, 'popper', 'static'); // TODO: v6 remove
+      Manipulator.setDataAttribute(this._menu, 'popper', 'static');
       defaultCxPopperConfig.modifiers = [{
         name: 'applyStyles',
         enabled: false
@@ -3498,8 +3493,6 @@ class Tooltip extends BaseComponent {
     if (showEvent.defaultPrevented || !isInTheDom) {
       return;
     }
-
-    // TODO: v6 remove this or make it optional
     this._disposePopper();
     const tip = this._getTipElement();
     this._element.setAttribute('aria-describedby', tip.getAttribute('id'));
@@ -3584,13 +3577,10 @@ class Tooltip extends BaseComponent {
   }
   _createTipElement(content) {
     const tip = this._getTemplateFactory(content).toHtml();
-
-    // TODO: remove this check in v6
     if (!tip) {
       return null;
     }
     tip.classList.remove(CLASS_NAME_FADE$2, CLASS_NAME_SHOW$2);
-    // TODO: v6 the following can be achieved with CSS only
     tip.classList.add(`cx-${this.constructor.NAME}-auto`);
     const tipId = getUID(this.constructor.NAME).toString();
     tip.setAttribute('id', tipId);
@@ -3961,7 +3951,6 @@ const SELECTOR_DROPDOWN = '.dropdown';
 const SELECTOR_DROPDOWN_TOGGLE$1 = '.dropdown-toggle';
 const Default$1 = {
   offset: null,
-  // TODO: v6 @deprecated, keep it for backwards compatibility reasons
   rootMargin: '0px 0px -25%',
   smoothScroll: false,
   target: null,
@@ -3969,7 +3958,6 @@ const Default$1 = {
 };
 const DefaultType$1 = {
   offset: '(number|null)',
-  // TODO v6 @deprecated, keep it for backwards compatibility reasons
   rootMargin: 'string',
   smoothScroll: 'boolean',
   target: 'element',
@@ -4028,10 +4016,7 @@ class ScrollSpy extends BaseComponent {
 
   // Private
   _configAfterMerge(config) {
-    // TODO: on v6 target should be given explicitly & remove the {target: 'ss-target'} case
     config.target = getElement(config.target) || document.body;
-
-    // TODO: v6 Only for backwards compatibility reasons. Use rootMargin only
     config.rootMargin = config.offset ? `${config.offset}px 0px -30%` : config.rootMargin;
     if (typeof config.threshold === 'string') {
       config.threshold = config.threshold.split(',').map(value => Number.parseFloat(value));
@@ -4227,7 +4212,7 @@ const NOT_SELECTOR_DROPDOWN_TOGGLE = `:not(${SELECTOR_DROPDOWN_TOGGLE})`;
 const SELECTOR_TAB_PANEL = '.list-group, .nav, [role="tablist"]';
 const SELECTOR_OUTER = '.nav-item, .list-item';
 const SELECTOR_INNER = `.nav-link${NOT_SELECTOR_DROPDOWN_TOGGLE}, .list-item${NOT_SELECTOR_DROPDOWN_TOGGLE}, [role="tab"]${NOT_SELECTOR_DROPDOWN_TOGGLE}`;
-const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="tab"], [data-cx-toggle="pill"], [data-cx-toggle="list"]'; // TODO: could only be `tab` in v6
+const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="tab"], [data-cx-toggle="pill"], [data-cx-toggle="list"]';
 const SELECTOR_INNER_ELEM = `${SELECTOR_INNER}, ${SELECTOR_DATA_TOGGLE}`;
 const SELECTOR_DATA_TOGGLE_ACTIVE = `.${CLASS_NAME_ACTIVE}[data-cx-toggle="tab"], .${CLASS_NAME_ACTIVE}[data-cx-toggle="pill"], .${CLASS_NAME_ACTIVE}[data-cx-toggle="list"]`;
 
@@ -4241,7 +4226,6 @@ class Tab extends BaseComponent {
     this._parent = this._element.closest(SELECTOR_TAB_PANEL);
     if (!this._parent) {
       return;
-      // TODO: should throw exception in v6
       // throw new TypeError(`${element.outerHTML} has not a valid parent ${SELECTOR_INNER_ELEM}`)
     }
 

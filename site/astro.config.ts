@@ -17,8 +17,9 @@ const site = isDev
 
 // https://astro.build/config
 export default defineConfig({
+  // outDir: '../_site',
   build: {
-    assets: `docs/${getConfig().docs_version}/assets`
+    assets: `assets`
   },
   integrations: [chassis()],
   markdown: {
@@ -27,6 +28,19 @@ export default defineConfig({
   },
   site,
   vite: {
-    plugins: [algoliaPlugin(), stackblitzPlugin()]
+    plugins: [algoliaPlugin(), stackblitzPlugin()],
+    build: {
+      rollupOptions: {
+        output: {
+          // chunkFileNames: 'assets/js/[name].[hash].js',
+          assetFileNames: (assetInfo) => {
+            if (assetInfo.name?.endsWith('.css')) {
+              return 'assets/css-docs/docs.[hash].css'
+            }
+            return 'assets/css-docs/[name].[hash][extname]'
+          }
+        }
+      }
+    }
   }
 })
