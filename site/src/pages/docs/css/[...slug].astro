@@ -1,25 +1,24 @@
 ---
-import type { InferGetStaticPropsType } from 'astro'
 import DocsLayout from '@layouts/DocsLayout.astro'
-import { getConfig } from '@libs/config'
 import { docsPages } from '@libs/content'
 import Code from '@shortcodes/Code.astro'
+import { render } from 'astro:content'
 
 export async function getStaticPaths() {
   return docsPages.map((docsPage) => {
     return {
-      params: { slug: docsPage.slug, version: getConfig().docs_version },
+      params: { slug: docsPage.id },
       props: docsPage
     }
   })
 }
 
-type Props = InferGetStaticPropsType<typeof getStaticPaths>
-
-const { id, data, render } = Astro.props
-const { Content, headings, remarkPluginFrontmatter } = await render()
+const docsPage = Astro.props
+const { id, data } = docsPage
+const frontmatter = data
+const { Content, headings } = await render(docsPage)
 ---
 
-<DocsLayout frontmatter={remarkPluginFrontmatter as typeof data} headings={headings} id={id}>
+<DocsLayout frontmatter={frontmatter} headings={headings} id={id}>
   <Content components={{ pre: Code }} />
 </DocsLayout>

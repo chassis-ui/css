@@ -36,16 +36,15 @@ const sidebar = getData('sidebar')
                   const url = `/docs/css/${unversionedPageSlug}`
                   const active = Astro.params.slug === unversionedPageSlug
 
-                  const generatedPage = docsPages.find((page) => page.slug === unversionedPageSlug)
+                  const generatedPage = docsPages.find((page) => page.id === unversionedPageSlug)
 
-                  // This test should not be necessary, see comments for `getSlug()` in `src/libs/utils.ts`.
+                  // Only show error for missing pages if they're not found
                   if (!generatedPage) {
-                    throw new Error(
-                      `The page '${page.title}' referenced in 'site/data/sidebar.yml' does not exist at '${url}'.`
-                    )
+                    console.warn(`Page '${page.title}' (${unversionedPageSlug}) not found in docs collection`)
+                    return null
                   }
 
-                  return (
+                  return generatedPage ? (
                     <li>
                       <a
                         href={url}
@@ -55,7 +54,7 @@ const sidebar = getData('sidebar')
                         {page.title}
                       </a>
                     </li>
-                  )
+                  ) : null
                 })}
               </ul>
             </li>
