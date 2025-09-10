@@ -86,6 +86,33 @@ Chassis CSS provides purpose-built classes for icon placement within buttons. Bo
   Icon spacing is automatically applied using `:first-child` and `:last-child` pseudo selectors. To ensure proper spacing, wrap the chip text in a `<span>` element.
 </Callout>
 
+### Icon-only buttons
+
+For buttons that consist solely of an icon, Chassis CSS provides built-in support to ensure proper sizing and alignment. Simply include the icon element within the button without any accompanying text.
+
+<Example class="button-examples" code={`<button type="button" class="button default">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+  </button>
+  <button type="button" class="button primary">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+  </button>
+  <button type="button" class="button small default">
+    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+  </button>
+  <button type="button" class="button small primary">
+    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+  </button>
+  <button type="button" class="button large default">
+    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+  </button>
+  <button type="button" class="button default large">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+  </button>
+  <button type="button" class="button large primary">
+    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+  </button>`} />
+
+
 ## Size variants
 
 Chassis provides three predefined size variants through the `.large` and `.small` modifier classes, with the default size applied when no modifier is present.

@@ -63,13 +63,21 @@
     @extend %button-small;
   }
 
-  > .icon:first-child {
+  > .icon {
+    line-height: 0;
+    vertical-align: top;
+  }
+
+  > .icon:first-child:not(:only-child) {
     margin-right: var(--#{$prefix}nudge);
     margin-left: #{calc(-1 * var(--#{$prefix}nudge))};
   }
-  > .icon:last-child {
+  > .icon:last-child:not(:only-child) {
     margin-right: #{calc(-1 * var(--#{$prefix}nudge))};
     margin-left: var(--#{$prefix}nudge);
+  }
+  &:has(.icon:only-child) {
+    --#{$prefix}padding-x: var(--#{$prefix}padding-y);
   }
 
   //
