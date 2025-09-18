@@ -33,7 +33,7 @@ const sidebar = getData('sidebar')
                   const docSlug = getSlug(page.title)
                   const unversionedPageSlug = `${groupSlug}/${docSlug}`
 
-                  const url = `/docs/css/${unversionedPageSlug}`
+                  const url = `/docs/${unversionedPageSlug}`
                   const active = Astro.params.slug === unversionedPageSlug
 
                   const generatedPage = docsPages.find((page) => page.id === unversionedPageSlug)
@@ -67,7 +67,7 @@ const sidebar = getData('sidebar')
               <li class="cxd-links-span-all mt-2xsmall mb-medium mx-large border-top" />
               <li class="cxd-links-span-all">
                 <a
-                  href={`/docs/css/${groupSlug}/`}
+                  href={`/docs/${groupSlug}/`}
                   class:list={['cxd-links-link d-inline-block rounded small', { active }]}
                   aria-current={active ? 'page' : undefined}
                 >

@@ -37,7 +37,6 @@ const configSchema = z.object({
   description: z.string(),
   docs_version: zVersionMajorMinor,
   docsDir: z.string(),
-  docsPath: z.string(),
   download: z.object({
     dist: z.string().url(),
     dist_examples: z.string().url(),

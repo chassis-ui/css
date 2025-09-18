@@ -70,13 +70,20 @@ export const remarkCxDocsref: Plugin<[], Root> = function () {
 
     // https://github.com/syntax-tree/mdast#nodes
     // https://github.com/syntax-tree/mdast-util-mdx-jsx#nodes
-    visit(ast, ['definition', 'link', 'mdxJsxTextElement'], (node) => {
+    visit(ast, ['code', 'definition', 'image', 'inlineCode', 'link', 'mdxJsxFlowElement', 'mdxJsxTextElement', 'text'], (node) => {
       switch (node.type) {
+        case 'code':
+        case 'inlineCode':
+        case 'text': {
+          node.value = replaceDocsrefInText(node.value)
+          break
+        }
         case 'definition':
         case 'link': {
           node.url = replaceDocsrefInText(node.url)
           break
         }
+        case 'mdxJsxFlowElement':
         case 'mdxJsxTextElement': {
           node.attributes = replaceDocsrefInAttributes(node.attributes)
           break
@@ -108,7 +115,7 @@ function replaceConfigInAttributes(attributes: (MdxJsxAttribute | MdxJsxExpressi
   })
 }
 
-function replaceDocsrefInText(text: string) {
+export function replaceDocsrefInText(text: string) {
   return text.replace(docsrefRegExp, (_match, path) => {
     return getChassisDocsPath(path)
   })

@@ -15,6 +15,7 @@ import {
   docsDirectory,
   getDocsFsPath,
   getChassisAssetsFsPath,
+  getChassisCSSFsPath,
   getChassisIconsFsPath,
   getDocsPublicFsPath,
   getDocsStaticFsPath,
@@ -156,7 +157,7 @@ function cleanPublicDirectory() {
 // Copy the `dist` folder from the root of the repo containing the latest version of Chassis to make it available from
 // the `/docs/${docs_version}/dist` URL.
 function copyChassisCSS() {
-  const source = path.join(process.cwd(), 'dist')
+  const source = getChassisCSSFsPath()
   const destination = path.join(getDocsPublicFsPath(), 'assets')
 
   fs.mkdirSync(destination, { recursive: true })
@@ -189,7 +190,7 @@ function copyChassisIcons() {
 // `config.yml` file.
 function copyStatic() {
   const source = getDocsStaticFsPath()
-  const destination = path.join(getDocsPublicFsPath(), 'assets')
+  const destination = path.join(getDocsPublicFsPath())
 
   copyStaticRecursively(source, destination)
 }
@@ -197,7 +198,7 @@ function copyStatic() {
 // Alias (copy) some static files to different paths.
 function aliasStatic() {
   const source = getChassisAssetsFsPath()
-  const destination = path.join(getDocsPublicFsPath(), 'assets')
+  const destination = path.join(getDocsPublicFsPath())
 
   for (const [aliasSource, aliasDestination] of Object.entries(staticFileAliases)) {
     fs.cpSync(path.join(source, aliasSource), path.join(destination, aliasDestination))
