@@ -5,18 +5,28 @@ interface Props {
   /**
    * Set to true if the component's Sass variables are not exposed as CSS variables
    */
-  notExposed?: boolean;
+  notExposed?: boolean
 }
 
-const { notExposed = false } = Astro.props;
+const { notExposed = false } = Astro.props
 ---
 
-{notExposed ? (
-  <p>
-    These Sass variables control the component's appearance and can be modified in the project's variables file before compilation.
-  </p>
-) : (
-  <p>
-    These Sass variables are also exposed as CSS custom properties using the <code>--cx-</code> prefix. A Sass variable <code>$variable-name</code> becomes available as <code>--cx-variable-name</code> in CSS, allowing for styles to be modified dynamically on the page. See the <a href={`/docs/${getConfig().docs_version}/introduction/context-components/#example-2`}>context components</a> page for more details.
-  </p>
-)}
+{
+  notExposed ? (
+    <p>
+      These Sass variables control the component's appearance and can be modified in the project's
+      variables file before compilation.
+    </p>
+  ) : (
+    <p>
+      These Sass variables are also exposed as CSS custom properties using the <code>--cx-</code>{' '}
+      prefix. A Sass variable <code>$variable-name</code> becomes available as{' '}
+      <code>--cx-variable-name</code> in CSS, allowing for styles to be modified dynamically on the
+      page. See the{' '}
+      <a href={`/docs/${getConfig().docs_version}/introduction/context-components/#example-2`}>
+        context components
+      </a>{' '}
+      page for more details.
+    </p>
+  )
+}

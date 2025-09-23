@@ -69,9 +69,11 @@ ${tableCaption}${simplified ? '  ...' : tableContent}${tableFoot}
 ---
 
 <div class="cxd-example">
-    <Fragment set:html={`<table class="${className}"${style ? ` style="${style}"` : ''}${theme ? ` data-cx-theme="${theme}"` : ''}>
+  <Fragment
+    set:html={`<table class="${className}"${style ? ` style="${style}"` : ''}${theme ? ` data-cx-theme="${theme}"` : ''}>
     ${tableCaption + tableContent + tableFoot}
-    </table>`} />
+    </table>`}
+  />
 </div>
 
 <Code code={tableCode} lang="html" />

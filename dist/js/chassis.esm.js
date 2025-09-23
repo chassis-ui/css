@@ -60,7 +60,7 @@ const Data = {
  * --------------------------------------------------------------------------
  */
 
-const MAX_UID = 1000000;
+const MAX_UID = 1_000_000;
 const MILLISECONDS_MULTIPLIER = 1000;
 const TRANSITION_END = 'transitionend';
 
@@ -508,7 +508,7 @@ function hydrateObj(obj, meta = {}) {
   for (const [key, value] of Object.entries(meta)) {
     try {
       obj[key] = value;
-    } catch (_unused) {
+    } catch {
       Object.defineProperty(obj, key, {
         configurable: true,
         get() {
@@ -545,7 +545,7 @@ function normalizeData(value) {
   }
   try {
     return JSON.parse(decodeURIComponent(value));
-  } catch (_unused) {
+  } catch {
     return value;
   }
 }

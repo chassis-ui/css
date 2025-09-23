@@ -42,7 +42,9 @@ function syncSubmodule(submodule) {
     runCommand(`git submodule update --remote --merge ${submodule.path}`, process.cwd(), true)
     console.log(picocolors.green(`   ✅ ${submodule.name} synced successfully`))
   } catch {
-    console.log(picocolors.yellow(`   ⚠️  ${submodule.name} has local changes, keeping current version`))
+    console.log(
+      picocolors.yellow(`   ⚠️  ${submodule.name} has local changes, keeping current version`)
+    )
   }
 }
 
@@ -58,7 +60,9 @@ function main() {
       try {
         runCommand('git submodule update --init --recursive')
       } catch {
-        console.log(picocolors.yellow('⚠️  Some submodules may not be available or have uncommitted changes'))
+        console.log(
+          picocolors.yellow('⚠️  Some submodules may not be available or have uncommitted changes')
+        )
         console.log(picocolors.yellow('Continuing with existing submodules...'))
       }
     }
@@ -73,7 +77,11 @@ function main() {
       const status = execSync('git status --porcelain', { encoding: 'utf8' })
       if (status.trim()) {
         console.log(picocolors.cyan('\n📝 Changes detected in submodules'))
-        console.log(picocolors.gray('   Run `git add . && git commit -m "chore: update submodules"` to commit changes'))
+        console.log(
+          picocolors.gray(
+            '   Run `git add . && git commit -m "chore: update submodules"` to commit changes'
+          )
+        )
       } else {
         console.log(picocolors.green('\n✅ All submodules are up to date'))
       }

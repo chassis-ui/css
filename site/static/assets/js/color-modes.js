@@ -4,11 +4,11 @@
  * Licensed under the Creative Commons Attribution 3.0 Unported License.
  */
 
-(() => {
+;(() => {
   'use strict'
 
   const getStoredTheme = () => localStorage.getItem('theme')
-  const setStoredTheme = theme => localStorage.setItem('theme', theme)
+  const setStoredTheme = (theme) => localStorage.setItem('theme', theme)
 
   const getPreferredTheme = () => {
     const storedTheme = getStoredTheme()
@@ -19,9 +19,12 @@
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   }
 
-  const setTheme = theme => {
+  const setTheme = (theme) => {
     if (theme === 'auto') {
-      document.documentElement.setAttribute('data-cx-theme', (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
+      document.documentElement.setAttribute(
+        'data-cx-theme',
+        window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      )
     } else {
       document.documentElement.setAttribute('data-cx-theme', theme)
     }
@@ -41,7 +44,7 @@
     const buttonToActive = document.querySelector(`[data-cx-theme-value="${theme}"]`)
     const svgOfActiveButton = buttonToActive.querySelector('svg use').getAttribute('href')
 
-    document.querySelectorAll('[data-cx-theme-value]').forEach(element => {
+    document.querySelectorAll('[data-cx-theme-value]').forEach((element) => {
       element.classList.remove('active')
       element.setAttribute('aria-pressed', 'false')
     })
@@ -67,14 +70,13 @@
   window.addEventListener('DOMContentLoaded', () => {
     showActiveTheme(getPreferredTheme())
 
-    document.querySelectorAll('[data-cx-theme-value]')
-      .forEach(toggle => {
-        toggle.addEventListener('click', () => {
-          const theme = toggle.getAttribute('data-cx-theme-value')
-          setStoredTheme(theme)
-          setTheme(theme)
-          showActiveTheme(theme, true)
-        })
+    document.querySelectorAll('[data-cx-theme-value]').forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const theme = toggle.getAttribute('data-cx-theme-value')
+        setStoredTheme(theme)
+        setTheme(theme)
+        showActiveTheme(theme, true)
       })
+    })
   })
 })()

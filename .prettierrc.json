@@ -1,8 +1,30 @@
 {
-  "$schema": "http://json.schemastore.org/prettierrc",
-  "arrowParens": "avoid",
-  "printWidth": 120,
+  "printWidth": 100,
+  "arrowParens": "always",
   "semi": false,
   "singleQuote": true,
-  "trailingComma": "none"
+  "tabWidth": 2,
+  "useTabs": false,
+  "trailingComma": "none",
+  "plugins": ["prettier-plugin-astro"],
+  "overrides": [
+    {
+      "files": ["*.astro"],
+      "options": {
+        "parser": "astro"
+      }
+    },
+    {
+      "files": ["*.scss"],
+      "options": {
+        "singleQuote": false
+      }
+    },
+    {
+      "files": ["*.{md,mdx}"],
+      "options": {
+        "printWidth": 80
+      }
+    }
+  ]
 }

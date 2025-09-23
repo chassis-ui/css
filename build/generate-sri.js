@@ -59,6 +59,11 @@ for (const { file, configPropertyName } of files) {
 
     console.log(`${configPropertyName}: ${integrity}`)
 
-    sh.sed('-i', new RegExp(`^(\\s+${configPropertyName}:\\s+["'])\\S*(["'])`), `$1${integrity}$2`, configFile)
+    sh.sed(
+      '-i',
+      new RegExp(`^(\\s+${configPropertyName}:\\s+["'])\\S*(["'])`),
+      `$1${integrity}$2`,
+      configFile
+    )
   })
 }

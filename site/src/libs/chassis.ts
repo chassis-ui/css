@@ -21,7 +21,8 @@ export function getChassisCssProps(direction: 'rtl' | undefined) {
   }
 
   if (import.meta.env.PROD) {
-    cxCssLinkProps.integrity = direction === 'rtl' ? getConfig().cdn.css_rtl_hash : getConfig().cdn.css_hash
+    cxCssLinkProps.integrity =
+      direction === 'rtl' ? getConfig().cdn.css_rtl_hash : getConfig().cdn.css_hash
   }
 
   return cxCssLinkProps

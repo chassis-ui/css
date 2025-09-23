@@ -43,7 +43,10 @@ const dataDefinitions = {
     .array()
     .transform((val) => {
       // Add a `title` property to each theme color object being the capitalized version of the `name` property.
-      return val.map((contextColor) => ({ ...contextColor, title: capitalizeFirstLetter(contextColor.name) }))
+      return val.map((contextColor) => ({
+        ...contextColor,
+        title: capitalizeFirstLetter(contextColor.name)
+      }))
     }),
   'core-team': z
     .object({
@@ -124,12 +127,14 @@ const dataDefinitions = {
     .array()
 } satisfies Record<string, DataSchema>
 
-let data = new Map<DataType, z.infer<DataSchema>>()
+const data = new Map<DataType, z.infer<DataSchema>>()
 
 // A helper to get data loaded fom a yml file in the `./site/data/` directory. If the data does not match its associated
 // schema from `dataDefinitions`, an error is thrown to indicate that the data file is invalid and some action is
 // required.
-export function getData<TType extends DataType>(type: TType): z.infer<(typeof dataDefinitions)[TType]> {
+export function getData<TType extends DataType>(
+  type: TType
+): z.infer<(typeof dataDefinitions)[TType]> {
   if (data.has(type)) {
     // Returns the data if it has already been loaded.
     return data.get(type)

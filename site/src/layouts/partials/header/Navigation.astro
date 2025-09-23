@@ -16,7 +16,7 @@ interface Props {
 }
 
 const { layout, title } = Astro.props
-const { pathname } = Astro.url;
+const { pathname } = Astro.url
 ---
 
 <header class="navbar navbar-expand-large cxd-navbar sticky-top">
@@ -91,11 +91,21 @@ const { pathname } = Astro.url;
         <hr class="d-large-none text-white-50" />
 
         <ul class="navbar-nav flex-row flex-wrap ms-medium-auto align-items-center">
-          <LinkItem class="nav-link px-0 px-large-2" href={getConfig().github_org} target="_blank" rel="noopener">
+          <LinkItem
+            class="nav-link px-0 px-large-2"
+            href={getConfig().github_org}
+            target="_blank"
+            rel="noopener"
+          >
             <svg class="icon" aria-hidden="true"><use href="#github-brand"></use></svg>
             <small class="d-large-none ms-xsmall">GitHub</small>
           </LinkItem>
-          <LinkItem class="nav-link px-0 px-large-2" href={`https:/x.com/${getConfig().x}`} target="_blank" rel="noopener">
+          <LinkItem
+            class="nav-link px-0 px-large-2"
+            href={`https://x.com/${getConfig().x}`}
+            target="_blank"
+            rel="noopener"
+          >
             <svg class="icon" aria-hidden="true"><use href="#x-twitter-brand"></use></svg>
             <small class="d-large-none ms-xsmall">X</small>
           </LinkItem>

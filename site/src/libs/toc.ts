@@ -34,7 +34,9 @@ function getEntryChildrenAtDepth(entry: TocEntry, depth: number): TocEntry['chil
     return []
   }
 
-  return depth === 1 ? entry.children : getEntryChildrenAtDepth(entry.children[entry.children.length - 1], depth - 1)
+  return depth === 1
+    ? entry.children
+    : getEntryChildrenAtDepth(entry.children[entry.children.length - 1], depth - 1)
 }
 
 export interface TocEntry extends MarkdownHeading {

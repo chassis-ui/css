@@ -110,9 +110,12 @@ function chassis_auto_import() {
   const autoImportedComponentDefinitions: string[] = []
 
   for (const autoImportedComponentDirectory of autoImportedComponentDirectories) {
-    const components = fs.readdirSync(path.join(getDocsFsPath(), 'src/components', autoImportedComponentDirectory), {
-      withFileTypes: true
-    })
+    const components = fs.readdirSync(
+      path.join(getDocsFsPath(), 'src/components', autoImportedComponentDirectory),
+      {
+        withFileTypes: true
+      }
+    )
 
     for (const component of components) {
       if (component.isFile()) {
@@ -143,7 +146,10 @@ export declare global {
 }
 `
 
-  fs.writeFileSync(path.join(getDocsFsPath(), 'src/types/auto-import.d.ts'), autoImportedComponentDefinition)
+  fs.writeFileSync(
+    path.join(getDocsFsPath(), 'src/types/auto-import.d.ts'),
+    autoImportedComponentDefinition
+  )
 
   return autoImport({
     imports: autoImportedComponents
@@ -211,9 +217,14 @@ function copyStaticRecursively(source: string, destination: string) {
 
   for (const entry of entries) {
     if (entry.isFile()) {
-      fs.cpSync(path.join(source, entry.name), replacePathVersionPlaceholder(path.join(destination, entry.name)))
+      fs.cpSync(
+        path.join(source, entry.name),
+        replacePathVersionPlaceholder(path.join(destination, entry.name))
+      )
     } else if (entry.isDirectory()) {
-      fs.mkdirSync(replacePathVersionPlaceholder(path.join(destination, entry.name)), { recursive: true })
+      fs.mkdirSync(replacePathVersionPlaceholder(path.join(destination, entry.name)), {
+        recursive: true
+      })
 
       copyStaticRecursively(path.join(source, entry.name), path.join(destination, entry.name))
     }

@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url'
 import { babel } from '@rollup/plugin-babel'
 import { globby } from 'globby'
 import { rollup } from 'rollup'
-import banner from './banner.mjs'
+import banner from './banner.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -23,8 +23,8 @@ const jsFiles = await globby(`${sourcePath}/**/*.js`)
 const resolvedPlugins = []
 
 // Trims the "js" extension and uppercases => first letter, hyphens, backslashes & slashes
-const filenameToEntity = filename => filename.replace('.js', '')
-  .replace(/(?:^|-|\/|\\)[a-z]/g, str => str.slice(-1).toUpperCase())
+const filenameToEntity = (filename) =>
+  filename.replace('.js', '').replace(/(?:^|-|\/|\\)[a-z]/g, (str) => str.slice(-1).toUpperCase())
 
 for (const file of jsFiles) {
   resolvedPlugins.push({
@@ -36,7 +36,7 @@ for (const file of jsFiles) {
   })
 }
 
-const build = async plugin => {
+const build = async (plugin) => {
   /**
    * @type {import('rollup').GlobalsOption}
    */
@@ -62,7 +62,7 @@ const build = async plugin => {
         return true
       }
 
-      const usedPlugin = resolvedPlugins.find(plugin => {
+      const usedPlugin = resolvedPlugins.find((plugin) => {
         return plugin.src.includes(source.replace(pattern, ''))
       })
 
@@ -90,7 +90,7 @@ const build = async plugin => {
   console.log(`Built ${plugin.className}`)
 }
 
-(async () => {
+;(async () => {
   try {
     const basename = path.basename(__filename)
     const timeLabel = `[${basename}] finished`
@@ -98,7 +98,7 @@ const build = async plugin => {
     console.log('Building individual plugins...')
     console.time(timeLabel)
 
-    await Promise.all(Object.values(resolvedPlugins).map(plugin => build(plugin)))
+    await Promise.all(Object.values(resolvedPlugins).map((plugin) => build(plugin)))
 
     console.timeEnd(timeLabel)
   } catch (error) {

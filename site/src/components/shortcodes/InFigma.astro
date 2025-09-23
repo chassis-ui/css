@@ -4,11 +4,18 @@
  */
 
 interface Props {
-  tooltip?: string,
+  tooltip?: string
   plural?: boolean
 }
 
 const { tooltip, plural } = Astro.props
-const tooltipText = tooltip ?? `This variant${plural ? 's' : ''} exist${plural ? '' : 's'} in the Figma component library with bound design tokens.`
+const tooltipText =
+  tooltip ??
+  `This variant${plural ? 's' : ''} exist${plural ? '' : 's'} in the Figma component library with bound design tokens.`
 ---
-<span class="badge large info smooth mb-medium rounded-medium" data-cx-toggle="tooltip" data-cx-title={tooltipText}>In Figma</span>
+
+<span
+  class="badge large info smooth mb-medium rounded-medium"
+  data-cx-toggle="tooltip"
+  data-cx-title={tooltipText}>In Figma</span
+>

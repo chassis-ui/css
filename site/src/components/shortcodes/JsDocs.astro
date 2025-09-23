@@ -30,7 +30,9 @@ let content: string
 try {
   const fileContent = fs.readFileSync(file, 'utf8')
 
-  const matches = fileContent.match(new RegExp(`\/\/ js-docs-start ${name}\n((?:.|\n)*)\/\/ js-docs-end ${name}`, 'm'))
+  const matches = fileContent.match(
+    new RegExp(`\/\/ js-docs-start ${name}\n((?:.|\n)*)\/\/ js-docs-end ${name}`, 'm')
+  )
 
   if (!matches || !matches[1]) {
     throw new Error(
@@ -42,21 +44,32 @@ try {
 
   // Fix the identation by removing extra spaces at the beginning of each line
   const lines = content.split('\n')
-  const spaceCounts = lines.filter((line) => line.trim().length > 0).map((line) => line.match(/^ */)[0].length)
+  const spaceCounts = lines
+    .filter((line) => line.trim().length > 0)
+    .map((line) => line.match(/^ */)[0].length)
   const minSpaces = spaceCounts.length ? Math.min(...spaceCounts) : 0
   content = lines.map((line) => line.slice(minSpaces)).join('\n')
 } catch (error) {
-  throw new Error(`Failed to find the content to render in the '<JsDocs />' component at '${file}'.`, {
-    cause: error
-  })
+  throw new Error(
+    `Failed to find the content to render in the '<JsDocs />' component at '${file}'.`,
+    {
+      cause: error
+    }
+  )
 }
 ---
 
 <Code containerClass="cxd-example-snippet cxd-code-snippet cxd-file-ref" code={content} lang="js">
-  <div slot="pre" class="d-flex align-items-center highlight-toolbar ps-medium pe-xsmall py-2xsmall border-bottom">
+  <div
+    slot="pre"
+    class="d-flex align-items-center highlight-toolbar ps-medium pe-xsmall py-2xsmall border-bottom"
+  >
     <a
       class="font-monospace link-secondary link-underline-secondary link-underline-opacity-0 link-underline-opacity-100-hover small"
-      href={`${getConfig().repo}/blob/v${getConfig().current_version}/${file}`.replaceAll('\\', '/')}
+      href={`${getConfig().repo}/blob/v${getConfig().current_version}/${file}`.replaceAll(
+        '\\',
+        '/'
+      )}
     >
       {file}
     </a>

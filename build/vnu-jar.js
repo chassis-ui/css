@@ -65,7 +65,7 @@ execFile('java', ['-version'], (error, stdout, stderr) => {
   return spawn('java', args, {
     shell: true,
     stdio: 'inherit'
-  }).on('exit', code => {
+  }).on('exit', (code) => {
     if (code === 0) {
       console.log('HTML validation successful! No errors found.')
     }

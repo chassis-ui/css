@@ -91,6 +91,8 @@ export function sassBreakpointValue(str: string) {
   if (value?.endsWith('px')) {
     return value
   } else {
-    return value ? parseFloat(value) * parseFloat(sassVars('setting')['baseFontSize'] || '16') + 'px' : 'NaN'
+    return value
+      ? parseFloat(value) * parseFloat(sassVars('setting')['baseFontSize'] || '16') + 'px'
+      : 'NaN'
   }
 }

@@ -1,12 +1,14 @@
-'use strict'
+import path from 'node:path'
+import ip from 'ip'
+import { babel } from '@rollup/plugin-babel'
+import istanbul from 'rollup-plugin-istanbul'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import replace from '@rollup/plugin-replace'
+import { browsers } from './browsers.js'
+import { fileURLToPath } from 'node:url'
 
-const path = require('node:path')
-const ip = require('ip')
-const { babel } = require('@rollup/plugin-babel')
-const istanbul = require('rollup-plugin-istanbul')
-const { nodeResolve } = require('@rollup/plugin-node-resolve')
-const replace = require('@rollup/plugin-replace')
-const { browsers } = require('./browsers.js')
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const ENV = process.env
 const BROWSERSTACK = Boolean(ENV.BROWSERSTACK)
@@ -163,7 +165,7 @@ config.frameworks = frameworks
 config.plugins = plugins
 config.reporters = reporters
 
-module.exports = karmaConfig => {
+export default karmaConfig => {
   config.logLevel = karmaConfig.LOG_ERROR
   karmaConfig.set(config)
 }

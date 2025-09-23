@@ -11,7 +11,10 @@ export function getChassisAssetsFsPath() {
 }
 
 export function getChassisTokensFsPath() {
-  return path.join(process.cwd(), 'node_modules/@ozgurgunes/chassis-tokens/dist/tokens/web/chassis-docs')
+  return path.join(
+    process.cwd(),
+    'node_modules/@ozgurgunes/chassis-tokens/dist/tokens/web/chassis-docs'
+  )
 }
 
 export function getChassisCSSFsPath() {

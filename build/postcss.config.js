@@ -4,7 +4,7 @@ const mapConfig = {
   sourcesContent: true
 }
 
-export default context => {
+export default (context) => {
   return {
     map: context.file.dirname.includes('examples') ? false : mapConfig,
     plugins: {

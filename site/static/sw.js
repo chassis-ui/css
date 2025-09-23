@@ -2,14 +2,15 @@
 // IT'S ALL JUST JUNK FOR OUR DOCS!
 // ++++++++++++++++++++++++++++++++++++++++++
 
-(function () {
+;(function () {
   'use strict'
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
       navigator.serviceWorker.getRegistrations().then(function (registrations) {
         for (var registration of registrations) {
-          registration.unregister()
+          registration
+            .unregister()
             .then(function () {
               return self.clients.matchAll()
             })
