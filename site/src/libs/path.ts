@@ -6,15 +6,20 @@ import { fileURLToPath } from 'node:url'
 // The docs directory path relative to the root of the project.
 export const docsDirectory = getConfig().docsDir
 
+export function getDocsFsPath() {
+  return path.join(process.cwd(), docsDirectory)
+}
+
+export function getDocsRelativePath(docsPath: string) {
+  return path.join(docsDirectory, docsPath)
+}
+
 export function getChassisAssetsFsPath() {
   return path.join(process.cwd(), 'vendor/assets/dist/web/chassis-docs')
 }
 
 export function getChassisTokensFsPath() {
-  return path.join(
-    process.cwd(),
-    'node_modules/@ozgurgunes/chassis-tokens/dist/tokens/web/chassis-docs'
-  )
+  return path.join(process.cwd(), 'node_modules/@ozgurgunes/chassis-tokens/dist/web/chassis-docs')
 }
 
 export function getChassisCSSFsPath() {
@@ -23,14 +28,6 @@ export function getChassisCSSFsPath() {
 
 export function getChassisIconsFsPath() {
   return path.join(process.cwd(), 'node_modules/@ozgurgunes/chassis-icons')
-}
-
-export function getDocsRelativePath(docsPath: string) {
-  return path.join(docsDirectory, docsPath)
-}
-
-export function getDocsFsPath() {
-  return path.join(process.cwd(), docsDirectory)
 }
 
 export function getDocsStaticFsPath() {

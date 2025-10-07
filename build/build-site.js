@@ -6,8 +6,12 @@
  * Comprehensive build tool for managing Chassis documentation site.
  * Handles vendor asset synchronization, Astro site building, and deployment validation.
  *
+ * Configuration:
+ *   VENDOR_BRANCH - Branch to use for vendor assets (default: app/docs)
+ *
  * Usage:
  *   node build-site.js [command]
+ *   VENDOR_BRANCH=main node build-site.js vendor
  *
  * Commands:
  *   (none)    Full build process (default)
@@ -38,6 +42,7 @@ class ChassisBuilder {
     this.vendorDir = path.join(rootDir, 'vendor')
     this.siteDir = path.join(rootDir, 'site')
     this.outputDir = path.join(rootDir, '_site')
+    this.vendorBranch = process.env.VENDOR_BRANCH || 'app/docs'
   }
 
   /**
@@ -59,7 +64,7 @@ class ChassisBuilder {
       success: '✅',
       error: '❌',
       warning: '⚠️',
-      build: '🏗️'
+      build: '⚙️'
     }
 
     const colorFn = colors[type] || picocolors.white
@@ -110,6 +115,18 @@ class ChassisBuilder {
         this.log(`Missing directory: ${dir.name}`, 'warning')
       }
     }
+
+    // Check for required tools
+    const requiredTools = ['pnpm', 'git']
+    for (const tool of requiredTools) {
+      try {
+        execSync(`${tool} --version`, { stdio: 'pipe' })
+        this.log(`Found: ${tool}`, 'success')
+      } catch {
+        this.log(`Missing required tool: ${tool}`, 'error')
+        throw new Error(`Required tool '${tool}' not found in PATH`)
+      }
+    }
   }
 
   /**
@@ -140,12 +157,12 @@ class ChassisBuilder {
     this.log('Updating vendor/assets submodule...', 'info')
 
     try {
-      // Initialize and update the vendor/assets submodule on the app/docs branch
+      // Initialize and update the vendor/assets submodule
       this.runCommand('git submodule update --init --remote vendor/assets')
 
-      // Ensure we're on the correct branch (app/docs)
-      this.runCommand('git -C vendor/assets checkout app/docs', '.', true)
-      this.runCommand('git -C vendor/assets pull origin app/docs', '.', true)
+      // Ensure we're on the correct branch
+      this.runCommand(`git -C vendor/assets checkout ${this.vendorBranch}`, '.', true)
+      this.runCommand(`git -C vendor/assets pull origin ${this.vendorBranch}`, '.', true)
 
       // Build the vendor/assets project to generate dist files
       this.log('Building vendor/assets project...', 'info')
@@ -169,15 +186,23 @@ class ChassisBuilder {
       }
 
       this.log('Vendor assets updated and built successfully', 'success')
-    } catch {
-      this.log('Vendor assets update failed, trying sync script...', 'warning')
+    } catch (primaryError) {
+      this.log(`Primary vendor update failed: ${primaryError.message}`, 'warning')
+      this.log('Trying alternative sync script...', 'info')
 
       try {
         this.runCommand('pnpm sync:submodules')
-        this.log('Vendor assets synced via sync script', 'success')
+        this.log('Vendor assets synced and built via alternative method', 'success')
       } catch (syncError) {
-        this.log('Both vendor update and sync failed', 'error')
-        throw syncError
+        this.log(`Alternative sync also failed: ${syncError.message}`, 'error')
+        this.log('Please check:', 'error')
+        this.log('  1. Git submodule configuration', 'error')
+        this.log('  2. Network connectivity', 'error')
+        this.log('  3. Branch availability: ' + this.vendorBranch, 'error')
+        this.log('  4. pnpm installation', 'error')
+        throw new Error(
+          `Vendor assets update failed. Primary: ${primaryError.message}, Alternative: ${syncError.message}`
+        )
       }
     }
   }
@@ -191,20 +216,57 @@ class ChassisBuilder {
     const validationChecks = [
       {
         path: this.outputDir,
-        name: 'Astro build output (_site)'
+        name: 'Astro build output (_site)',
+        required: true,
+        checkContents: true
       },
       {
         path: this.vendorDir,
-        name: 'Vendor submodules'
+        name: 'Vendor submodules',
+        required: true,
+        checkContents: false
       }
     ]
+
+    let allValid = true
 
     for (const check of validationChecks) {
       if (fs.existsSync(check.path)) {
         this.log(`✓ ${check.name}`, 'success')
+
+        // Additional content validation for critical directories
+        if (check.checkContents) {
+          try {
+            const contents = fs.readdirSync(check.path)
+            const hasIndex = contents.includes('index.html')
+            const hasAssets = contents.some(
+              (item) => item.includes('assets') || item.includes('css') || item.includes('js')
+            )
+
+            if (hasIndex && hasAssets) {
+              this.log(`✓ Found index.html and assets`, 'success')
+            } else {
+              this.log(
+                `✕ Missing expected files (index.html: ${hasIndex}, assets: ${hasAssets})`,
+                'warning'
+              )
+              allValid = false
+            }
+          } catch (error) {
+            this.log(`✕ Could not read directory contents: ${error.message}`, 'error')
+            allValid = false
+          }
+        }
       } else {
-        this.log(`✗ ${check.name}`, 'error')
+        this.log(`✕ ${check.name}`, 'error')
+        if (check.required) {
+          allValid = false
+        }
       }
+    }
+
+    if (!allValid) {
+      throw new Error('Build validation failed - missing required files or directories')
     }
   }
 
@@ -232,6 +294,7 @@ class ChassisBuilder {
    * Execute the complete build process
    */
   buildAll() {
+    const startTime = Date.now()
     this.log('Starting complete build process...', 'build')
 
     try {
@@ -240,9 +303,11 @@ class ChassisBuilder {
       this.buildSite()
       this.validateBuild()
 
-      this.log('🎉 Build completed successfully!', 'success')
+      const duration = Date.now() - startTime
+      this.log(`🎉 Build completed successfully in ${duration}ms!`, 'success')
     } catch (error) {
-      this.log(`Build failed: ${error.message}`, 'error')
+      const duration = Date.now() - startTime
+      this.log(`❌ Build failed after ${duration}ms: ${error.message}`, 'error')
       process.exit(1)
     }
   }
@@ -281,18 +346,21 @@ function main() {
       case '--help':
       case '-h': {
         console.log(`
-${picocolors.cyan('Chassis Site Builder')}
+ChassisBuilder - Chassis Site Builder
 
-${picocolors.yellow('Usage:')}
+Usage:
   node build-site.js [command]
 
-${picocolors.yellow('Commands:')}
-  ${picocolors.green('(none)')}    Full build process (default)
-  ${picocolors.green('site')}      Build Astro documentation site only
-  ${picocolors.green('vendor')}    Update and build vendor assets
-  ${picocolors.green('clean')}     Remove build artifacts and node_modules
-  ${picocolors.green('validate')}  Validate build output
-  ${picocolors.green('help')}      Show this help message
+Environment Variables:
+  VENDOR_BRANCH    Branch for vendor assets (default: app/docs)
+
+Commands:
+  (none)    Full build process (default)
+  site      Build Astro documentation site only
+  vendor    Update and build vendor assets
+  clean     Remove build artifacts and node_modules
+  validate  Validate build output
+  help      Show this help message
 `)
         break
       }

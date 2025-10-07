@@ -33,9 +33,14 @@ interface Props {
    * This takes precedence over the `code` prop.
    */
   filePath?: string
+  /**
+   * Defines if the `<Code>` component is nested inside an `<Example>` component or not.
+   * @default false
+   */
+  nestedInExample?: boolean
 }
 
-const { class: className, code, containerClass, fileMatch, filePath, lang } = Astro.props
+const { class: className, code, containerClass, fileMatch, filePath, lang, nestedInExample = false } = Astro.props
 
 let codeToDisplay = filePath
   ? fs.readFileSync(path.join(process.cwd(), filePath), 'utf8')
@@ -47,9 +52,7 @@ if (filePath && fileMatch && codeToDisplay) {
   const match = codeToDisplay.match(new RegExp(fileMatch))
 
   if (!match || !match[0]) {
-    throw new Error(
-      `The file at ${filePath} does not contains a match for the regex '${fileMatch}'.`
-    )
+    throw new Error(`The file at ${filePath} does not contains a match for the regex '${fileMatch}'.`)
   }
 
   codeToDisplay = match[0]
@@ -74,19 +77,12 @@ if (filePath && fileMatch && codeToDisplay) {
   snippetButtonTooltip('.button-edit', buttonEdit)
 
   const clipboard = new ClipboardJS('.button-clipboard', {
-    target: (trigger) => {
-      const snippet = trigger.closest('.cxd-code-snippet')
-      const highlight = snippet ? snippet.querySelector('.highlight') : null
-      // Always return an Element; fallback to the trigger itself if not found
-      return highlight ?? trigger
-    },
+    target: (trigger) => trigger.closest('.cxd-code-snippet')?.querySelector('.highlight')!,
     text: (trigger) => {
-      // Trim text to workaround a Firefox issue where the structure of the DOM (uncontrolled)
-      // is relevant for the copied text.
+      // Trim text to workaround a Firefox issue where the structure of the DOM (uncontrolled) is relevant for the
+      // copied text.
       // https://github.com/zenorocha/clipboard.js/issues/439#issuecomment-312344621
-      const snippet = trigger.closest('.cxd-code-snippet')
-      const highlight = snippet?.querySelector('.highlight')
-      return highlight?.textContent?.trim() ?? ''
+      return trigger.closest('.cxd-code-snippet')?.querySelector('.highlight')!.textContent?.trim()!
     }
   })
 
@@ -114,11 +110,7 @@ if (filePath && fileMatch && codeToDisplay) {
     event.clearSelection()
 
     if (originalXhref) {
-      iconFirstChild?.setAttributeNS(
-        namespace,
-        'href',
-        originalXhref.replace('clipboard-outline', 'check-solid')
-      )
+      iconFirstChild?.setAttributeNS(namespace, 'href', originalXhref.replace('clipboard-outline', 'check-solid'))
     }
 
     setTimeout(() => {
@@ -145,28 +137,30 @@ if (filePath && fileMatch && codeToDisplay) {
   })
 </script>
 
-<div class:list={['cxd-code-snippet', containerClass]}>
+<div class:list={[{ 'cxd-code-snippet': !nestedInExample }, containerClass]}>
   {
-    Astro.slots.has('pre') ? (
-      <slot name="pre" />
-    ) : (
-      <div class="cxd-clipboard">
-        <button type="button" class="button-clipboard">
-          <svg class="icon" role="img" aria-label="Copy">
-            <use xlink:href="#clipboard-outline" />
-          </svg>
-        </button>
-      </div>
-    )
+    nestedInExample
+      ? (<></>)
+      : Astro.slots.has('pre')
+        ? (
+          <slot name="pre" />
+        )
+        : (
+          <div class="cxd-clipboard">
+            <button type="button" class="button-clipboard">
+              <svg class="icon" role="img" aria-label="Copy">
+                <use xlink:href="#clipboard-outline" />
+              </svg>
+            </button>
+          </div>
+        )
   }
   <div class="highlight">
     {
       codeToDisplay && lang ? (
         <Prism code={codeToDisplay} lang={lang} />
       ) : (
-        <pre class={className}>
-          <slot />
-        </pre>
+        /* prettier-ignore */ <pre class={className}><slot /></pre>
       )
     }
   </div>

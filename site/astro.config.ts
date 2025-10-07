@@ -23,11 +23,14 @@ const site = isDev
   ? hasHostFlag
     ? `http://${getLocalIp()}:4321`
     : 'http://localhost:4321'
-  : process.env.DEPLOY_PRIME_URL !== undefined
-    ? // If deploying on Netlify, use the `DEPLOY_PRIME_URL` environment variable.
-      process.env.DEPLOY_PRIME_URL
-    : // Otherwise, use the `baseURL` value defined in the `config.yml` file.
+  : process.env.VERCEL_ENV === 'production'
+    ? // For production, use the baseURL from config (handles custom domains)
       getConfig().baseURL
+    : process.env.VERCEL_URL !== undefined
+      ? // For Vercel previews/deployments, use the VERCEL_URL
+        `https://${process.env.VERCEL_URL}`
+      : // Otherwise, use the baseURL value defined in the config.yml file
+        getConfig().baseURL
 
 // https://astro.build/config
 export default defineConfig({
