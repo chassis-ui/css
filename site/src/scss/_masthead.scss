@@ -11,23 +11,23 @@
 
   h1 {
     --cx-heading-color: var(--cx-fg-color);
-    font-size: 4rem;
+    @include font-size(4rem);
     line-height: 1.25em;
   }
 
   .lead {
-    font-size: 1rem;
-    line-height: 1.5em;
+    @include font-size(1rem);
     font-family: var(--cx-font-family-display);
     font-weight: 400;
+    line-height: 1.5em;
     color: var(--cx-fg-subtle);
   }
 
   .cxd-code-snippet {
     width: 24rem;
     margin: 0;
-    border-color: var(--cx-border-subtle);
     text-align: left;
+    border-color: var(--cx-border-subtle);
     border-width: 1px;
     @include border-radius(.5rem);
   }
@@ -64,7 +64,7 @@
 
   @include media-breakpoint-up(medium) {
     .lead {
-      font-size: 1.5rem;
+      @include font-size(1.5rem);
     }
   }
 }
@@ -77,12 +77,12 @@
   }
 
   .lead {
-    font-size: 1rem;
+    @include font-size(1rem);
   }
 
   @include media-breakpoint-up(medium) {
     .lead {
-      font-size: 1.25rem;
+      @include font-size(1.25rem);
     }
   }
 }

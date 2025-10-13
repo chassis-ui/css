@@ -11,7 +11,7 @@ const configSchema = z.object({
     index_name: z.string()
   }),
   analytics: z.object({
-    fathom_site: z.string()
+    google_id: z.string()
   }),
   anchors: z.object({
     min: z.number(),
@@ -34,7 +34,6 @@ const configSchema = z.object({
     popper_hash: z.string()
   }),
   current_version: zVersionSemver,
-  current_ruby_version: zVersionSemver,
   description: z.string(),
   docs_version: zVersionMajorMinor,
   docsDir: z.string(),
@@ -44,13 +43,8 @@ const configSchema = z.object({
     source: z.string().url()
   }),
   github_org: z.string().url(),
-  icons: z.string().url(),
-  opencollective: z.string().url(),
   repo: z.string().url(),
-  rfs_version: zPrefixedVersionSemver,
   subtitle: z.string(),
-  swag: z.string().url(),
-  themes: z.string().url(),
   title: z.string(),
   toc: z.object({
     min: z.number(),
@@ -71,7 +65,7 @@ export function getConfig(): Config {
 
   try {
     // Load the config from the `config.yml` file.
-    const rawConfig = yaml.load(fs.readFileSync('./config.yml', 'utf8'))
+    const rawConfig = yaml.load(fs.readFileSync('./site/config.yml', 'utf8'))
 
     // Parse the config using the config schema to validate its content and get back a fully typed config object.
     config = configSchema.parse(rawConfig)

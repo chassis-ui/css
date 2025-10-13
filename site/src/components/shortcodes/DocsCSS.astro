@@ -6,18 +6,25 @@ interface Props {
    * Set to true if the component being documented is customized exclusively
    * through Sass variables rather than CSS variables
    */
-  sassOnly?: boolean;
+  sassOnly?: boolean
 }
 
-const { sassOnly = false } = Astro.props;
+const { sassOnly = false } = Astro.props
 ---
 
-{sassOnly ? (
-  <p>
-    This component is customized exclusively through Sass variables during compilation rather than exposed CSS custom properties.
-  </p>
-) : (
-  <p>
-    This component can be customized using CSS variables, allowing for styles to be modified dynamically on the page. These CSS variables are part of Chassis CSS's design token system, giving design teams control over component appearance. See the <a href={`/docs/${getConfig().docs_version}/core-concepts/design-tokens`}>design tokens</a> page for more details.
-  </p>
-)}
+{
+  sassOnly ? (
+    <p>
+      This component is customized exclusively through Sass variables during compilation rather than
+      exposed CSS custom properties.
+    </p>
+  ) : (
+    <p>
+      This component can be customized using CSS variables, allowing for styles to be modified
+      dynamically on the page. These CSS variables are part of Chassis CSS's design token system,
+      giving design teams control over component appearance. See the{' '}
+      <a href={`/docs/${getConfig().docs_version}/core-concepts/design-tokens`}>design tokens</a>{' '}
+      page for more details.
+    </p>
+  )
+}

@@ -1,6 +1,6 @@
 /*!
-  * Chassis event-handler.js v0.1.0 (https://github.com/ozgurgunes/chassis-css/)
-  * Copyright 2025 Ozgur Gunes, Chassis and Bootstrap contributors
+  * Chassis event-handler.js v0.1.0 (https://chassis-ui.com)
+  * Copyright 2025 Ozgur Gunes <o.gunes@gmail.com>
   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/raw/main/LICENSE)
   */
 (function (global, factory) {
@@ -82,7 +82,6 @@
   }
   function normalizeParameters(originalTypeEvent, handler, delegationFunction) {
     const isDelegated = typeof handler === 'string';
-    // TODO: tooltip passes `false` instead of selector, so we need to check
     const callable = isDelegated ? delegationFunction : handler || delegationFunction;
     let typeEvent = getTypeEvent(originalTypeEvent);
     if (!nativeEvents.has(typeEvent)) {
@@ -219,7 +218,7 @@
     for (const [key, value] of Object.entries(meta)) {
       try {
         obj[key] = value;
-      } catch (_unused) {
+      } catch {
         Object.defineProperty(obj, key, {
           configurable: true,
           get() {

@@ -1,6 +1,6 @@
 /*!
-  * Chassis dropdown.js v0.1.0 (https://github.com/ozgurgunes/chassis-css/)
-  * Copyright 2025 Ozgur Gunes, Chassis and Bootstrap contributors
+  * Chassis dropdown.js v0.1.0 (https://chassis-ui.com)
+  * Copyright 2025 Ozgur Gunes <o.gunes@gmail.com>
   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/raw/main/LICENSE)
   */
 (function (global, factory) {
@@ -276,7 +276,7 @@
 
       // Disable Popper if we have a static display or Dropdown is in Navbar
       if (this._inNavbar || this._config.display === 'static') {
-        Manipulator.setDataAttribute(this._menu, 'popper', 'static'); // TODO: v6 remove
+        Manipulator.setDataAttribute(this._menu, 'popper', 'static');
         defaultCxPopperConfig.modifiers = [{
           name: 'applyStyles',
           enabled: false

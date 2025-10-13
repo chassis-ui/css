@@ -37,7 +37,7 @@ import docsearch from '@docsearch/js'
     },
     transformItems(items) {
       return items.map(item => {
-        const liveUrl = 'https://getbootstrap.com/'
+        const liveUrl = 'https://chassis-ui.com/'
 
         item.url = window.location.origin.startsWith(liveUrl) ?
           // On production, return the result as is

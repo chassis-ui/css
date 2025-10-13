@@ -1,6 +1,6 @@
 /*!
-  * Chassis index.js v0.1.0 (https://github.com/ozgurgunes/chassis-css/)
-  * Copyright 2025 Ozgur Gunes, Chassis and Bootstrap contributors
+  * Chassis index.js v0.1.0 (https://chassis-ui.com)
+  * Copyright 2025 Ozgur Gunes <o.gunes@gmail.com>
   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/raw/main/LICENSE)
   */
 (function (global, factory) {
@@ -16,7 +16,7 @@
    * --------------------------------------------------------------------------
    */
 
-  const MAX_UID = 1000000;
+  const MAX_UID = 1_000_000;
   const MILLISECONDS_MULTIPLIER = 1000;
   const TRANSITION_END = 'transitionend';
 

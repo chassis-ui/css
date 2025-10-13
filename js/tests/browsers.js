@@ -1,8 +1,8 @@
-/* eslint-disable camelcase */
+
 
 'use strict'
 
-const browsers = {
+export const browsers = {
   safariMac: {
     base: 'BrowserStack',
     os: 'OS X',
@@ -73,8 +73,4 @@ const browsers = {
     device: 'Google Pixel 2',
     real_mobile: true
   }
-}
-
-module.exports = {
-  browsers
 }

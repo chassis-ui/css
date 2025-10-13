@@ -77,7 +77,7 @@ const Default = {
 }
 
 const DefaultType = {
-  interval: '(number|boolean)', // TODO:v6 remove boolean support
+  interval: '(number|boolean)',
   keyboard: 'boolean',
   pause: '(string|boolean)',
   ride: '(boolean|string)',
@@ -126,7 +126,6 @@ class Carousel extends BaseComponent {
   }
 
   nextWhenVisible() {
-    // FIXME TODO use `document.visibilityState`
     // Don't call next when the page isn't visible
     // or the carousel or its parent isn't visible
     if (!document.hidden && isVisible(this._element)) {
@@ -329,7 +328,6 @@ class Carousel extends BaseComponent {
 
     if (!activeElement || !nextElement) {
       // Some weirdness is happening, so we bail
-      // TODO: change tests that use empty divs to avoid this check
       return
     }
 

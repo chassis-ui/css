@@ -1,6 +1,6 @@
 /*!
-  * Chassis scrollspy.js v0.1.0 (https://github.com/ozgurgunes/chassis-css/)
-  * Copyright 2025 Ozgur Gunes, Chassis and Bootstrap contributors
+  * Chassis scrollspy.js v0.1.0 (https://chassis-ui.com)
+  * Copyright 2025 Ozgur Gunes <o.gunes@gmail.com>
   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/raw/main/LICENSE)
   */
 (function (global, factory) {
@@ -41,7 +41,6 @@
   const SELECTOR_DROPDOWN_TOGGLE = '.dropdown-toggle';
   const Default = {
     offset: null,
-    // TODO: v6 @deprecated, keep it for backwards compatibility reasons
     rootMargin: '0px 0px -25%',
     smoothScroll: false,
     target: null,
@@ -49,7 +48,6 @@
   };
   const DefaultType = {
     offset: '(number|null)',
-    // TODO v6 @deprecated, keep it for backwards compatibility reasons
     rootMargin: 'string',
     smoothScroll: 'boolean',
     target: 'element',
@@ -108,10 +106,7 @@
 
     // Private
     _configAfterMerge(config) {
-      // TODO: on v6 target should be given explicitly & remove the {target: 'ss-target'} case
       config.target = index_js.getElement(config.target) || document.body;
-
-      // TODO: v6 Only for backwards compatibility reasons. Use rootMargin only
       config.rootMargin = config.offset ? `${config.offset}px 0px -30%` : config.rootMargin;
       if (typeof config.threshold === 'string') {
         config.threshold = config.threshold.split(',').map(value => Number.parseFloat(value));

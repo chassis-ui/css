@@ -44,21 +44,32 @@ try {
 
   // Fix the identation by removing extra spaces at the beginning of each line
   const lines = content.split('\n')
-  const spaceCounts = lines.filter((line) => line.trim().length > 0).map((line) => line.match(/^ */)[0].length)
+  const spaceCounts = lines
+    .filter((line) => line.trim().length > 0)
+    .map((line) => line.match(/^ */)[0].length)
   const minSpaces = spaceCounts.length ? Math.min(...spaceCounts) : 0
   content = lines.map((line) => line.slice(minSpaces)).join('\n')
 } catch (error) {
-  throw new Error(`Failed to find the content to render in the '<ScssDocs />' component at '${file}'.`, {
-    cause: error
-  })
+  throw new Error(
+    `Failed to find the content to render in the '<ScssDocs />' component at '${file}'.`,
+    {
+      cause: error
+    }
+  )
 }
 ---
 
 <Code containerClass="cxd-example-snippet cxd-file-ref" code={content} lang="scss">
-  <div slot="pre" class="d-flex align-items-center highlight-toolbar ps-medium pe-xsmall py-2xsmall border-bottom">
+  <div
+    slot="pre"
+    class="d-flex align-items-center highlight-toolbar ps-medium pe-xsmall py-2xsmall border-bottom"
+  >
     <a
       class="font-monospace link-secondary link-underline-secondary link-underline-opacity-0 link-underline-opacity-100-hover small"
-      href={`${getConfig().repo}/blob/v${getConfig().current_version}/${file}`.replaceAll('\\', '/')}
+      href={`${getConfig().repo}/blob/v${getConfig().current_version}/${file}`.replaceAll(
+        '\\',
+        '/'
+      )}
     >
       {file}
     </a>

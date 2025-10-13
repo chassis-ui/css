@@ -1,7 +1,5 @@
-'use strict'
-
-const commonjs = require('@rollup/plugin-commonjs')
-const configRollup = require('./rollup.bundle.js')
+import commonjs from '@rollup/plugin-commonjs'
+import configRollup from './rollup.bundle.js'
 
 const config = {
   ...configRollup,
@@ -14,4 +12,4 @@ const config = {
 
 config.plugins.unshift(commonjs())
 
-module.exports = config
+export default config

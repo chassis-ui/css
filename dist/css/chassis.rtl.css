@@ -4863,7 +4863,7 @@ ol.inline li:not(:last-child) {
 }
 .icon:empty:before {
   display: inline-block;
-  vertical-align: -0.2em;
+  vertical-align: text-top;
   font-family: "chassis-icons" !important;
   font-style: normal;
   font-variant: normal;
@@ -8319,13 +8319,20 @@ textarea.form-input {
     transition: none;
   }
 }
-.button > .icon:first-child {
+.button > .icon {
+  line-height: 0;
+  vertical-align: top;
+}
+.button > .icon:first-child:not(:only-child) {
   margin-left: var(--cx-nudge);
   margin-right: calc(-1 * var(--cx-nudge));
 }
-.button > .icon:last-child {
+.button > .icon:last-child:not(:only-child) {
   margin-left: calc(-1 * var(--cx-nudge));
   margin-right: var(--cx-nudge);
+}
+.button:has(.icon:only-child) {
+  --cx-padding-x: var(--cx-padding-y);
 }
 .button.link {
   --cx-button-font-weight: var(--cx-font-weight-text-normal);
@@ -8750,11 +8757,11 @@ textarea.form-input {
 .dropdown-toggle.button {
   --cx-caret-spacing: var(--cx-nudge);
 }
-.dropdown-toggle:not(.dropdown-toggle-split)::after {
+.dropdown-toggle:not(.dropdown-toggle-split):not(:has(.icon:only-child))::after {
   margin-left: calc(-1 * var(--cx-caret-spacing));
   margin-right: var(--cx-caret-spacing);
 }
-.dropstart > .dropdown-toggle:not(.dropdown-toggle-split)::before {
+.dropstart > .dropdown-toggle:not(.dropdown-toggle-split):not(:has(.icon:only-child))::before {
   margin-left: var(--cx-caret-spacing);
   margin-right: calc(-1 * var(--cx-caret-spacing));
 }

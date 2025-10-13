@@ -15,13 +15,13 @@ function getVersionsSortedDesc<TKey extends string, TVersions extends Record<TKe
 
 <SingleLayout
   title="Versions"
-  description="An appendix of hosted documentation for nearly every release of Chassis, from v1 through v5."
+  description="An appendix of hosted documentation for nearly every release of Bootstrap, from v1 through v5."
 >
   <div class="row">
     {
       getVersionsSortedDesc(getData('docs-versions'), 'group').map((docsVersion) => {
         return (
-          <div class="col-medium-6 col-large-4 col-xlarge mb-large">
+          <div class="col-md-6 col-lg-4 col-xl mb-4">
             <h2>{docsVersion.group}</h2>
             <p>{docsVersion.description}</p>
             <div class="list-group">
@@ -34,13 +34,13 @@ function getVersionsSortedDesc<TKey extends string, TVersions extends Record<TKe
                   return (
                     <a
                       class:list={[
-                        'list-item list-action py-xsmall text-primary',
+                        'list-group-item list-group-item-action py-2 text-primary',
                         isCurrentVersion && 'd-flex justify-content-between align-items-center'
                       ]}
                       href={`${docsVersion.baseurl}/${version}/`}
                     >
                       {version}
-                      {isCurrentVersion && <span class="badge bg-contrast fg-primary">Latest</span>}
+                      {isCurrentVersion && <span class="badge text-bg-primary">Latest</span>}
                     </a>
                   )
                 })}

@@ -15,7 +15,12 @@ const sidebar = getData('sidebar')
 
         if (group.pages) {
           return (
-            <li class:list={['cxd-links-group py-xsmall', groupSlug === Astro.params.slug?.split('/')[0] ? 'active' : undefined]}>
+            <li
+              class:list={[
+                'cxd-links-group py-xsmall',
+                groupSlug === Astro.params.slug?.split('/')[0] ? 'active' : undefined
+              ]}
+            >
               <strong class="cxd-links-heading d-flex w-100 align-items-center fw-semibold">
                 {group.icon && (
                   <svg
@@ -33,19 +38,20 @@ const sidebar = getData('sidebar')
                   const docSlug = getSlug(page.title)
                   const unversionedPageSlug = `${groupSlug}/${docSlug}`
 
-                  const url = `/docs/${getConfig().docs_version}/${unversionedPageSlug}`
+                  const url = `/docs/${unversionedPageSlug}`
                   const active = Astro.params.slug === unversionedPageSlug
 
-                  const generatedPage = docsPages.find((page) => page.slug === unversionedPageSlug)
+                  const generatedPage = docsPages.find((page) => page.id === unversionedPageSlug)
 
-                  // This test should not be necessary, see comments for `getSlug()` in `src/libs/utils.ts`.
+                  // Only show error for missing pages if they're not found
                   if (!generatedPage) {
-                    throw new Error(
-                      `The page '${page.title}' referenced in 'site/data/sidebar.yml' does not exist at '${url}'.`
+                    console.warn(
+                      `Page '${page.title}' (${unversionedPageSlug}) not found in docs collection`
                     )
+                    return null
                   }
 
-                  return (
+                  return generatedPage ? (
                     <li>
                       <a
                         href={url}
@@ -55,7 +61,7 @@ const sidebar = getData('sidebar')
                         {page.title}
                       </a>
                     </li>
-                  )
+                  ) : null
                 })}
               </ul>
             </li>
@@ -68,7 +74,7 @@ const sidebar = getData('sidebar')
               <li class="cxd-links-span-all mt-2xsmall mb-medium mx-large border-top" />
               <li class="cxd-links-span-all">
                 <a
-                  href={`/docs/${getConfig().docs_version}/${groupSlug}/`}
+                  href={`/docs/${groupSlug}/`}
                   class:list={['cxd-links-link d-inline-block rounded small', { active }]}
                   aria-current={active ? 'page' : undefined}
                 >

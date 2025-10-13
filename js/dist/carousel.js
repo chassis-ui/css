@@ -1,6 +1,6 @@
 /*!
-  * Chassis carousel.js v0.1.0 (https://github.com/ozgurgunes/chassis-css/)
-  * Copyright 2025 Ozgur Gunes, Chassis and Bootstrap contributors
+  * Chassis carousel.js v0.1.0 (https://chassis-ui.com)
+  * Copyright 2025 Ozgur Gunes <o.gunes@gmail.com>
   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/raw/main/LICENSE)
   */
 (function (global, factory) {
@@ -69,7 +69,6 @@
   };
   const DefaultType = {
     interval: '(number|boolean)',
-    // TODO:v6 remove boolean support
     keyboard: 'boolean',
     pause: '(string|boolean)',
     ride: '(boolean|string)',
@@ -112,7 +111,6 @@
       this._slide(ORDER_NEXT);
     }
     nextWhenVisible() {
-      // FIXME TODO use `document.visibilityState`
       // Don't call next when the page isn't visible
       // or the carousel or its parent isn't visible
       if (!document.hidden && index_js.isVisible(this._element)) {
@@ -272,7 +270,6 @@
       }
       if (!activeElement || !nextElement) {
         // Some weirdness is happening, so we bail
-        // TODO: change tests that use empty divs to avoid this check
         return;
       }
       const isCycling = Boolean(this._interval);

@@ -22,11 +22,11 @@
     --#{$prefix}caret-spacing: var(--#{$prefix}nudge);
   }
 
-  &:not(.dropdown-toggle-split)::after {
+  &:not(.dropdown-toggle-split):not(:has(.icon:only-child))::after {
     margin-right: #{calc(-1 * var(--#{$prefix}caret-spacing))};
     margin-left: var(--#{$prefix}caret-spacing);
   }
-  .dropstart > &:not(.dropdown-toggle-split)::before {
+  .dropstart > &:not(.dropdown-toggle-split):not(:has(.icon:only-child))::before {
     margin-right: var(--#{$prefix}caret-spacing);
     margin-left: #{calc(-1 * var(--#{$prefix}caret-spacing))};
   }
