@@ -1,7 +1,7 @@
 /*!
-  * Chassis accordion.bak.js v0.1.0 (https://github.com/ozgurgunes/chassis-css/)
+  * Chassis accordion.bak.js v0.1.0 (https://github.com/chassis-ui/css/)
   * Copyright 2025 Ozgur Gunes, Chassis and Bootstrap contributors
-  * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/raw/main/LICENSE)
+  * Licensed under MIT (https://github.com/chassis-ui/main/LICENSE)
   */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :

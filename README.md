@@ -5,8 +5,8 @@
   <p><strong>A powerful tokenized CSS framework bridging Figma designs to seamless code implementation</strong></p>
   <p>
     <a href="https://chassis-ui.org">Documentation</a> ·
-    <a href="https://github.com/ozgurgunes/chassis-css/issues/new?template=bug_report.md">Report Bug</a> ·
-    <a href="https://github.com/ozgurgunes/chassis-css/issues/new?template=feature_request.md">Request Feature</a>
+    <a href="https://github.com/chassis-ui/css/issues/new?template=bug_report.md">Report Bug</a> ·
+    <a href="https://github.com/chassis-ui/es/new?template=feature_request.md">Request Feature</a>
   </p>
   <p>
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
@@ -56,7 +56,7 @@ The Chassis design system consists of several integrated packages:
 Install Chassis CSS and its required dependencies:
 
 ```shell
-npm install @ozgurgunes/chassis-css @chassis/tokens
+npm install @chassis-ui/ssis/tokens
 ```
 
 ### Usage
@@ -65,20 +65,20 @@ Include the compiled CSS in your HTML:
 
 ```html
 <!-- Include Chassis CSS -->
-<link rel="stylesheet" href="node_modules/@ozgurgunes/chassis-css/dist/chassis.min.css">
+<link rel="stylesheet" href="node_modules/@chassis-ui//chassis.min.css">
 
 <!-- Optional JavaScript -->
-<script src="node_modules/@ozgurgunes/chassis-css/dist/chassis.bundle.min.js"></script>
+<script src="node_modules/@chassis-ui//chassis.bundle.min.js"></script>
 ```
 
 ### Using with a bundler
 
 ```js
 // Import Chassis CSS in your JavaScript entry file
-import '@ozgurgunes/chassis-css/dist/chassis.min.css';
+import '@chassis-ui//chassis.min.css';
 
 // Import JS components as needed
-import { Modal, Dropdown, Tooltip } from '@ozgurgunes/chassis-css';
+import { Modal, Dropdown, Tooltip } from '@chassis-ui/
 
 // Initialize components
 document.addEventListener('DOMContentLoaded', () => {
@@ -101,7 +101,7 @@ Chassis tokens flow directly from Figma to your code, creating a seamless design
 ```scss
 // In your custom SCSS file
 @import '@chassis/tokens/dist/tokens/web/my-brand.scss';
-@import '@ozgurgunes/chassis-css/scss/chassis.scss';
+@import '@chassis-ui//chassis.scss';
 
 // Create a custom component using tokens
 .my-custom-element {
@@ -226,7 +226,7 @@ For major changes, please open an issue first to discuss what you would like to 
 Clone the repo with its submodules and install dependencies:
 
 ```shell
-git clone --recurse-submodules git@github.com:ozgurgunes/chassis-css.git
+git clone --recurse-submodules git@github.com:chassis-ui/
 cd chassis-css
 npm install
 ```
@@ -256,7 +256,7 @@ The project uses [stylelint](https://stylelint.io/) for SCSS formatting. If you'
 
 Join our community to get help, share ideas, and contribute:
 
-- [GitHub Discussions](https://github.com/ozgurgunes/chassis-css/discussions)
+- [GitHub Discussions](https://github.com/chassis-ui/ussions)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/chassis-css)
 - [@chassis_ui on Twitter](https://twitter.com/chassis_ui)
 
