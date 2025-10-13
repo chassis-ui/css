@@ -13,7 +13,7 @@ function getBanner(pluginFilename) {
   return `/*!
   * Chassis${pluginFilename ? ` ${pluginFilename}` : ''} v${pkg.version} (${pkg.homepage})
   * Copyright ${year} ${pkg.author}
-  * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/raw/main/LICENSE)
+  * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
   */`
 }
 

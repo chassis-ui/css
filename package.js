@@ -6,7 +6,7 @@ Package.describe({
   name: 'chassisui:chassis-css',
   summary: 'A CSS framework which synchronizes with Figma components by using design tokens.',
   version: '0.1.0',
-  git: 'https://github.com/ozgurgunes/chassis-css.git'
+  git: 'https://github.com/chassis-ui/css.git'
 })
 
 Package.onUse((api) => {
