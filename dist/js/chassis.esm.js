@@ -1,14 +1,14 @@
 /*!
   * Chassis v0.1.0 (https://chassis-ui.com)
   * Copyright 2025 Ozgur Gunes <o.gunes@gmail.com>
-  * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/raw/main/LICENSE)
+  * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
   */
 import * as Popper from '@popperjs/core';
 
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS dom/data.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -56,7 +56,7 @@ const Data = {
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS util/index.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -302,7 +302,7 @@ const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS dom/event-handler.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -523,7 +523,7 @@ function hydrateObj(obj, meta = {}) {
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS dom/manipulator.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -580,7 +580,7 @@ const Manipulator = {
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS util/config.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -633,7 +633,7 @@ class Config {
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS base-component.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -702,7 +702,7 @@ class BaseComponent extends Config {
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS dom/selector-engine.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -789,7 +789,7 @@ const SelectorEngine = {
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS accordion.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -902,7 +902,7 @@ defineJQueryPlugin(Accordion);
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS button.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -966,7 +966,7 @@ defineJQueryPlugin(Button);
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS util/swipe.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -1086,7 +1086,7 @@ class Swipe extends Config {
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS carousel.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -1456,7 +1456,7 @@ defineJQueryPlugin(Carousel);
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS util/component-functions.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -1481,7 +1481,7 @@ const enableDismissTrigger = (component, method = 'hide') => {
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS Chip.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -1572,7 +1572,7 @@ defineJQueryPlugin(Chip);
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS collapse.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -1806,7 +1806,7 @@ defineJQueryPlugin(Collapse);
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS dropdown.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -2171,7 +2171,7 @@ defineJQueryPlugin(Dropdown);
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS util/backdrop.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -2295,7 +2295,7 @@ class Backdrop extends Config {
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS util/focustrap.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -2393,7 +2393,7 @@ class FocusTrap extends Config {
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS util/scrollBar.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -2491,7 +2491,7 @@ class ScrollBarHelper {
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS modal.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -2796,7 +2796,7 @@ defineJQueryPlugin(Modal);
 /**
  * --------------------------------------------------------------------------
  * Chassis notification.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -2871,7 +2871,7 @@ defineJQueryPlugin(Notification);
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS offcanvas.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -3102,7 +3102,7 @@ defineJQueryPlugin(Offcanvas);
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS util/sanitizer.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -3198,7 +3198,7 @@ function sanitizeHtml(unsafeHtml, allowList, sanitizeFunction) {
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS util/template-factory.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -3334,7 +3334,7 @@ class TemplateFactory extends Config {
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS tooltip.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -3841,7 +3841,7 @@ defineJQueryPlugin(Tooltip);
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS popover.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -3922,7 +3922,7 @@ defineJQueryPlugin(Popover);
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS scrollspy.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -4177,7 +4177,7 @@ defineJQueryPlugin(ScrollSpy);
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS tab.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -4446,7 +4446,7 @@ defineJQueryPlugin(Tab);
 /**
  * --------------------------------------------------------------------------
  * Chassis - CSS toast.js
- * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 

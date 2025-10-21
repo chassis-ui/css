@@ -46,7 +46,7 @@ try {
   const lines = content.split('\n')
   const spaceCounts = lines
     .filter((line) => line.trim().length > 0)
-    .map((line) => line.match(/^ */)[0].length)
+    .map((line) => line.match(/^ */)![0].length)
   const minSpaces = spaceCounts.length ? Math.min(...spaceCounts) : 0
   content = lines.map((line) => line.slice(minSpaces)).join('\n')
 } catch (error) {

@@ -51,7 +51,7 @@ export function getChassisDocsPath(docsPath: string): string {
   }
 
   // return `/docs/${docs_version}/${sanitizedDocsPath}`
-  return `/docs/${sanitizedDocsPath}`
+  return `/css/docs/${sanitizedDocsPath}`
 }
 
 // Validate that all the generated versioned docs paths point to an existing page or asset.
@@ -68,7 +68,7 @@ export function validateChassisDocsPaths(distUrl: URL) {
     const sanitizedDocsPath = sanitizeChassisDocsPathForValidation(docsPath)
     const absoluteDocsPath = fileURLToPath(
       // new URL(path.join('./docs', docs_version, sanitizedDocsPath), distUrl)
-      new URL(path.join('./docs', sanitizedDocsPath), distUrl)
+      new URL(path.join('./css/docs', sanitizedDocsPath), distUrl)
     )
 
     const docsPathExists = fs.existsSync(absoluteDocsPath)

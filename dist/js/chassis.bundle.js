@@ -1,7 +1,7 @@
 /*!
   * Chassis v0.1.0 (https://chassis-ui.com)
   * Copyright 2025 Ozgur Gunes <o.gunes@gmail.com>
-  * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/raw/main/LICENSE)
+  * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
   */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -12,7 +12,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS dom/data.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -60,7 +60,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS util/index.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -306,7 +306,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS dom/event-handler.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -527,7 +527,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS dom/manipulator.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -584,7 +584,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS util/config.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -637,7 +637,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS base-component.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -706,7 +706,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS dom/selector-engine.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -793,7 +793,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS accordion.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -906,7 +906,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS button.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -970,7 +970,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS util/swipe.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -1090,7 +1090,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS carousel.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -1460,7 +1460,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS util/component-functions.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -1485,7 +1485,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS Chip.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -1576,7 +1576,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS collapse.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -3647,7 +3647,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS dropdown.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -4012,7 +4012,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS util/backdrop.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -4136,7 +4136,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS util/focustrap.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -4234,7 +4234,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS util/scrollBar.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -4332,7 +4332,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS modal.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -4637,7 +4637,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis notification.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -4712,7 +4712,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS offcanvas.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -4943,7 +4943,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS util/sanitizer.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -5039,7 +5039,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS util/template-factory.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -5175,7 +5175,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS tooltip.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -5682,7 +5682,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS popover.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -5763,7 +5763,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS scrollspy.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -6018,7 +6018,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS tab.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -6287,7 +6287,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS toast.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -6471,7 +6471,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS index.umd.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 

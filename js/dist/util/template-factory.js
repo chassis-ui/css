@@ -1,7 +1,7 @@
 /*!
   * Chassis template-factory.js v0.1.0 (https://chassis-ui.com)
   * Copyright 2025 Ozgur Gunes <o.gunes@gmail.com>
-  * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/raw/main/LICENSE)
+  * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
   */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('../dom/selector-engine.js'), require('./config.js'), require('./sanitizer.js'), require('./index.js')) :
@@ -12,7 +12,7 @@
   /**
    * --------------------------------------------------------------------------
    * Chassis - CSS util/template-factory.js
-   * Licensed under MIT (https://github.com/ozgurgunes/chassis-css/blob/main/LICENSE)
+   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 

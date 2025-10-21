@@ -36,7 +36,6 @@
     "postinstall": "pnpm sync:submodules",
     "start": "pnpm dev",
     "test": "pnpm check:code && pnpm dist && pnpm css:test && pnpm js:test && pnpm site:build && pnpm site:lint",
-
     "css": "pnpm css:compile && pnpm css:prefix && pnpm css:rtl && pnpm css:minify",
     "css:compile": "sass --style expanded --source-map --embed-sources --no-error-css scss/:dist/css/",
     "css:lint": "pnpm css:lint:stylelint & pnpm css:lint:vars & wait",
@@ -48,7 +47,6 @@
     "css:prefix": "postcss --config build/postcss.config.js --replace \"dist/css/*.css\" \"!dist/css/*.rtl*.css\" \"!dist/css/*.min.css\"",
     "css:rtl": "cross-env NODE_ENV=RTL postcss --config build/postcss.config.js --dir \"dist/css\" --ext \".rtl.css\" \"dist/css/*.css\" \"!dist/css/*.min.css\" \"!dist/css/*.rtl.css\"",
     "css:test": "node scss/tests/runner.js",
-
     "js": "pnpm js:compile && pnpm js:minify",
     "js:compile": "pnpm js:compile:bundle & pnpm js:compile:esm & pnpm js:compile:umd & pnpm js:compile:plugins & wait",
     "js:compile:bundle": "rollup --environment BUNDLE:true --config build/rollup.config.js --sourcemap",
@@ -68,23 +66,19 @@
     "js:test:integration:bundle": "rollup --config js/tests/integration/rollup.bundle.js",
     "js:test:integration:modularity": "rollup --config js/tests/integration/rollup.bundle-modularity.js",
     "js:test:karma": "karma start js/tests/karma.conf.js",
-
     "site": "pnpm site:build && pnpm site:lint",
     "site:build": "node build/build-site.js",
     "site:format": "prettier --write --cache site",
     "site:lint": "pnpm site:lint:prettier && pnpm site:lint:vnu",
     "site:lint:prettier": "prettier -c --cache site",
     "site:lint:vnu": "node build/vnu-jar.js",
-
     "astro:build": "astro build --root site",
     "astro:dev": "astro dev --root site --port 4322",
     "astro:preview": "astro preview --root site",
-
     "release": "pnpm dist && pnpm release:sri && pnpm site:build && pnpm release:zip",
     "release:sri": "node build/generate-sri.js",
     "release:version": "node build/change-version.js",
     "release:zip": "cross-env-shell \"rm -rf chassis-$npm_package_version-dist chassis-$npm_package_version-dist.zip && cp -r dist/ chassis-$npm_package_version-dist && zip -qr9 chassis-$npm_package_version-dist.zip chassis-$npm_package_version-dist && rm -rf chassis-$npm_package_version-dist\"",
-
     "watch": "pnpm --parallel \"/^watch:.*/\"",
     "watch-all": "pnpm watch:css:dist & pnpm watch:css:main & pnpm watch:css:site & pnpm watch:css:test & pnpm watch:js:main & pnpm watch:js:site",
     "watch:css:dist": "nodemon --watch dist/css/ --ext css --ignore \"dist/css/*.rtl.*\" --exec \"pnpm css:rtl\"",
@@ -93,13 +87,11 @@
     "watch:css:test": "nodemon --watch scss/ --ext scss,js --exec \"pnpm css:test\"",
     "watch:js:main": "nodemon --watch js/src/ --ext js --exec \"pnpm js:lint && pnpm js:compile\"",
     "watch:js:site": "nodemon --watch site/src/assets/ --ext js --exec \"pnpm js:lint\"",
-
     "check": "pnpm check:bundle & pnpm check:code & pnpm check:lockfile & pnpm check:pnpm & wait",
     "check:bundle": "bundlewatch --config .bundlewatch.config.json",
     "check:code": "pnpm css:lint & pnpm js:lint & pnpm site:lint & wait",
     "check:lockfile": "lockfile-lint --allowed-hosts npm --allowed-schemes https: --empty-hostname false --type npm --path package-lock.json",
     "check:pnpm": "pnpm audit --audit-level moderate",
-
     "sync:submodules": "node build/sync-submodules.js"
   },
   "peerDependencies": {
@@ -111,12 +103,13 @@
     "@astrojs/mdx": "^4.2.6",
     "@astrojs/prism": "^3.2.0",
     "@astrojs/sitemap": "^3.3.1",
+    "@chassis-ui/docs": "link:../chassis-docs/packages/docs",
+    "@chassis-ui/icons": "github:chassis-ui/icons#app/docs",
+    "@chassis-ui/tokens": "github:chassis-ui/tokens#app/docs",
     "@docsearch/css": "^3.9.0",
     "@docsearch/js": "^3.9.0",
     "@eslint/js": "^9.35.0",
     "@eslint/markdown": "^7.2.0",
-    "@chassis-ui/icons": "github:chassis-ui/icons#app/docs",
-    "@chassis-ui/tokens": "github:chassis-ui/tokens#app/docs",
     "@popperjs/core": "^2.11.8",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.3",
@@ -139,6 +132,7 @@
     "cross-env": "^7.0.3",
     "cspell": "^9.2.1",
     "eslint": "^9.35.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^1.3.1",
     "eslint-plugin-html": "^8.1.3",
     "eslint-plugin-import": "^2.32.0",
@@ -222,5 +216,10 @@
       "@popperjs/core": "^2.11.8"
     }
   },
-  "packageManager": "pnpm@10.7.0+sha512.6b865ad4b62a1d9842b61d674a393903b871d9244954f652b8842c2b553c72176b278f64c463e52d40fff8aba385c235c8c9ecf5cc7de4fd78b8bb6d49633ab6"
+  "packageManager": "pnpm@10.7.0+sha512.6b865ad4b62a1d9842b61d674a393903b871d9244954f652b8842c2b553c72176b278f64c463e52d40fff8aba385c235c8c9ecf5cc7de4fd78b8bb6d49633ab6",
+  "pnpm": {
+    "overrides": {
+      "@chassis-ui/docs": "link:../chassis-docs/packages/docs"
+    }
+  }
 }
