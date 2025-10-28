@@ -1,15 +1,63 @@
-// Chassis SCSS entry point
-//
-// It imports settings and core to build the framework.
-
 @import "mixins/banner";
 @include cxBanner(null);
 
-// fusv-disable
-@import "settings";
-// fusv-enable
-
 // scss-docs-start import-stack
 // Configuration
-@import "core";
+@import "settings";
+@import "functions";
+@import "tokens";
+@import "variables";
+@import "maps";
+@import "rfs";
+@import "mixins";
+@import "placeholders";
+@import "utilities";
+
+
+// Layout & components
+@import "root";
+@import "reboot";
+@import "type";
+@import "icon";
+@import "images";
+@import "containers";
+@import "grid";
+@import "context";
+@import "table";
+@import "forms";
+@import "button";
+@import "button-group";
+@import "chip";
+@import "avatar";
+@import "transitions";
+@import "dropdown";
+@import "nav";
+@import "navbar";
+@import "card";
+@import "accordion";
+@import "breadcrumb";
+@import "pagination";
+@import "badge";
+@import "notification";
+@import "progress";
+@import "list";
+@import "close-button";
+@import "toast";
+@import "alert";
+@import "modal";
+@import "tooltip";
+@import "popover";
+@import "carousel";
+@import "spinners";
+@import "offcanvas";
+@import "skeleton";
+
+// Helpers
+@import "helpers";
+
+// Utilities
+@import "utilities-api";
 // scss-docs-end import-stack
+
+// Output all collected RFS rules in a single media query
+@include rfs-collected-rules();

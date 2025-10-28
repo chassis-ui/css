@@ -13,11 +13,7 @@ import {
   // configurePrism,
   rehypeCxTable
 } from '@chassis-ui/docs'
-import {
-  // configurePrism,
-  remarkCxConfig,
-  remarkCxDocsref
-} from './remark'
+import { remarkCxConfig, remarkCxDocsref } from './remark'
 import {
   docsDirectory,
   getDocsFsPath,

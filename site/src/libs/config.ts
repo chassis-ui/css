@@ -40,7 +40,6 @@ const configSchema = z.object({
   docsPath: z.string(),
   download: z.object({
     dist: z.string().url(),
-    dist_examples: z.string().url(),
     source: z.string().url()
   }),
   github_org: z.string().url(),

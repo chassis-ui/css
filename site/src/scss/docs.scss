@@ -1,37 +1,4 @@
-// $prefix: cx- !default;
-
-/*!
- * Chassis - CSS Docs (https://ozgurgunes.github.io/chassis-css//)
- * Copyright 2025 Chassis
- * Licensed under the Creative Commons Attribution 3.0 Unported License.
- * For details, see https://creativecommons.org/licenses/by/3.0/.
- */
-
-// Dev notes
-//
-// Background information on nomenclature and architecture decisions here.
-//
-// - Chassis - CSS functions, variables, and mixins are included for easy reuse.
-//   Doing so gives us access to the same core utilities provided by Chassis - CSS.
-//   For example, consistent media queries through those mixins.
-//
-// - Chassis - CSS's **docs variables** are prefixed with `$cxd-`.
-//   These custom colors avoid collision with the components Chassis - CSS provides.
-//
-// - Classes are prefixed with `.cxd-`.
-//   These classes indicate custom-built or modified components for the design
-//   and layout of the Chassis - CSS docs. They are not included in our builds.
-//
-// Happy Chassis - CSSing!
-
-// Load Chassis - CSS variables and mixins
-//@import "../../../node_modules/chassis-css/scss/functions";
-// fusv-disable
-$enable-grid-classes: false;
-$enable-cssgrid: true;
-//@import "colors";
-// @import "../../../chassis-tokens/dist/tokens/web/chassis_docs_light";
-
+// Chassis CSS variables and mixins
 @import "../../../scss/settings";
 @import "../../../scss/functions";
 @import "../../../scss/tokens";
@@ -41,27 +8,14 @@ $enable-cssgrid: true;
 @import "../../../scss/mixins";
 @import "../../../scss/placeholders";
 @import "../../../scss/grid";
-// fusv-enable
 
+// Shared docs styles
+@import "@chassis-ui/docs/scss/main";
 
-//@import "imports";
-@import "@chassis-ui/docs/scss/colors";
-@import "@chassis-ui/docs/scss/variables";
-
-
-// Load docs components
-//@import "colors";
+// CSS docs styles
 @import "masthead";
 @import "component-examples";
 @import "context-example";
 @import "color-palette";
 @import "colors";
 @import "placeholder";
-
-// stylelint-disable
-// $prefix: cx;
-:export {
-  colorDefaul: $cx-color-base-context-light-default-base-color;
-  colorPrimary: $cx-color-base-context-light-primary-base-color;
-}
-// stylelint-enable
