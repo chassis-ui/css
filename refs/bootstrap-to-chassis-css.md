@@ -14,7 +14,8 @@ When processing Bootstrap code, apply these transformations:
 2. **Colors**: `text-{color}` → `fg-{color}`, `text-muted` → `fg-subtle`
 3. **Typography**: `display-{n}` → `font-display font-{size}xlarge`
 4. **Spacing**: Numeric (`p-1`, `m-3`) → Semantic (`p-xsmall`, `m-medium`)
-5. **Data attributes**: `data-bs-*` → `data-cx-*`
+5. **Breakpoints**: Abbreviated (`sm`, `md`, `lg`, `xl`, `xxl`) → Semantic (`small`, `medium`, `large`, `xlarge`, `2xlarge`)
+6. **Data attributes**: `data-bs-*` → `data-cx-*`
 
 This comprehensive guide provides mappings from Bootstrap classes to their Chassis CSS equivalents.
 
@@ -104,6 +105,15 @@ When encountering Bootstrap code in user requests:
 | `fw-bold` | `font-strong` | Bold weight |
 | `fw-bolder` | `font-mass` | Heaviest weight |
 
+### Responsive Breakpoints
+| Bootstrap | Chassis CSS | Screen Width |
+|-----------|-------------|-------------|
+| `sm` | `small` | ≥576px |
+| `md` | `medium` | ≥768px |
+| `lg` | `large` | ≥992px |
+| `xl` | `xlarge` | ≥1200px |
+| `xxl` | `2xlarge` | ≥1400px |
+
 ## Font Sizes & Typography
 
 ### Bootstrap → Chassis CSS
@@ -118,7 +128,7 @@ When encountering Bootstrap code in user requests:
 
 <!-- Chassis CSS -->
 <div class="font-display font-5xlarge">Display 1</div>
-<div class="font-display font-2xsmall">Display 6</div>
+<div class="font-display font-large">Display 6</div>
 <h1 class="font-h1">Heading 1</h1>
 <p class="font-lead">Lead text</p>
 <small class="fg-subtle">Small muted text</small>
@@ -359,15 +369,34 @@ Chassis CSS uses semantic naming instead of numeric scales:
 ## Layout & Grid
 
 ### Grid System
-The grid system remains largely compatible:
+The grid system remains largely compatible, but breakpoint names use semantic naming:
 
 ```html
-<!-- Both Bootstrap and Chassis CSS -->
+<!-- Bootstrap -->
 <div class="container">
   <div class="row">
     <div class="col-12 col-md-6 col-lg-4">Content</div>
   </div>
 </div>
+
+<!-- Chassis CSS -->
+<div class="container">
+  <div class="row">
+    <div class="col-12 col-medium-6 col-large-4">Content</div>
+  </div>
+</div>
+```
+
+### Responsive Breakpoints
+
+```html
+<!-- Bootstrap -->
+<div class="d-none d-sm-block d-md-flex">
+<div class="col-12 col-md-6 col-lg-4 col-xl-3">
+
+<!-- Chassis CSS -->
+<div class="d-none d-small-block d-medium-flex">
+<div class="col-12 col-medium-6 col-large-4 col-xlarge-3">
 ```
 
 ### Flexbox Utilities
@@ -460,6 +489,27 @@ The grid system remains largely compatible:
 </div>
 ```
 
+### Example 5: Responsive Grid Conversion
+```html
+<!-- INPUT (Bootstrap) -->
+<div class="container">
+  <div class="row">
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">Column 1</div>
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">Column 2</div>
+    <div class="d-none d-md-block col-md-4 col-lg-6">Column 3</div>
+  </div>
+</div>
+
+<!-- OUTPUT (Chassis CSS) -->
+<div class="container">
+  <div class="row">
+    <div class="col-12 col-small-6 col-medium-4 col-large-3">Column 1</div>
+    <div class="col-12 col-small-6 col-medium-4 col-large-3">Column 2</div>
+    <div class="d-none d-medium-block col-medium-4 col-large-6">Column 3</div>
+  </div>
+</div>
+```
+
 ## Complete Migration Example
 
 ### Before (Bootstrap)
@@ -522,12 +572,13 @@ When processing user requests involving CSS frameworks:
    - Classes starting with `btn-`, `text-`, `bg-`, `display-`
    - Numeric spacing patterns (`p-1`, `m-3`, etc.)
    - Component patterns (`card-body`, `alert-primary`)
+   - Abbreviated breakpoints (`col-sm-*`, `d-md-*`, etc.)
 
 2. **Apply Chassis CSS conversion**:
    - Use mapping tables above
    - Preserve HTML structure
    - Convert class names systematically
-   - Maintain responsive breakpoints
+   - Convert responsive breakpoints to semantic names (`sm` → `small`, `md` → `medium`)
 
 3. **Consider context enhancements**:
    - Suggest semantic improvements (`fg-subtle` vs basic colors)
@@ -570,7 +621,9 @@ When processing user requests involving CSS frameworks:
 - [ ] Update JavaScript selectors if using custom code
 
 ### Layout
-- [ ] Grid system requires minimal changes
+- [ ] Convert breakpoint abbreviations to semantic names (`sm` → `small`, `md` → `medium`, etc.)
+- [ ] Update responsive grid classes (`col-md-6` → `col-medium-6`)
+- [ ] Update responsive display utilities (`d-sm-block` → `d-small-block`)
 - [ ] Flexbox utilities remain largely the same
 - [ ] Display utilities are compatible
 
@@ -579,6 +632,7 @@ When processing user requests involving CSS frameworks:
 ### Key Differences to Remember:
 - **Chassis CSS uses space-separated modifiers**: `button primary outline` not `btn btn-primary btn-outline`
 - **Semantic spacing names**: `medium`, `large`, `xlarge` instead of numbers
+- **Semantic breakpoint names**: `small`, `medium`, `large`, `xlarge`, `2xlarge` instead of `sm`, `md`, `lg`, `xl`, `xxl`
 - **Comprehensive color system**: `fg-subtle`, `fg-slight`, `fg-main` for text variations
 - **Context-aware colors**: `primary-fg-subtle`, `secondary-bg-evident` for advanced usage
 - **Display fonts require two classes**: `font-display font-2xlarge` not just `display-4`
