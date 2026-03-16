@@ -172,7 +172,7 @@ class ChassisBuilder {
       this.runCommand('pnpm install', vendorAssetsPath)
 
       // Build the assets
-      this.runCommand('pnpm build', vendorAssetsPath)
+      this.runCommand('pnpm assets:site', vendorAssetsPath)
 
       // Verify the build succeeded
       this.log('Verifying vendor/assets build output...', 'info')
