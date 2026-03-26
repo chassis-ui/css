@@ -3004,8 +3004,9 @@
   --cx-border-radius-xlarge: 0.75rem;
   --cx-border-radius-2xlarge: 1rem;
   --cx-border-radius-3xlarge: 1.25rem;
-  --cx-border-radius-circle: 16rem;
+  --cx-border-radius-circle: 50%;
   --cx-border-radius-round: 16rem;
+  --cx-border-radius-pill: 16rem;
   --cx-opacity-solid: 1;
   --cx-opacity-95: 0.95;
   --cx-opacity-90: 0.9;
@@ -4684,7 +4685,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-display-mass);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: -0.0625;
+  letter-spacing: -0.0625em;
 }
 
 .font-hero {
@@ -4695,7 +4696,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-display-mass);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: -0.0625;
+  letter-spacing: -0.0625em;
 }
 
 .font-heading {
@@ -4706,7 +4707,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-display-strong);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: 0em;
 }
 
 .font-lead {
@@ -4717,7 +4718,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-text-normal);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: 0em;
 }
 
 .font-title-large, .card.large .card-title {
@@ -4728,7 +4729,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-text-strong);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: 0em;
 }
 
 .font-title, .card-title {
@@ -4739,7 +4740,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-text-strong);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: 0em;
 }
 
 .font-title-small, .card.small .card-title {
@@ -4750,7 +4751,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-text-strong);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: 0em;
 }
 
 .font-body-large, .card.large .card-body {
@@ -4761,7 +4762,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-text-normal);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: 0em;
 }
 
 .font-body, .card-body {
@@ -4772,7 +4773,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-text-normal);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: 0em;
 }
 
 .font-body-small, .card.small .card-body {
@@ -4783,7 +4784,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-text-normal);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: 0em;
 }
 
 .font-label-large, .card.large .card-subtitle {
@@ -4794,7 +4795,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-text-strong);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: 0em;
 }
 
 .font-label, .card-subtitle {
@@ -4805,7 +4806,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-text-strong);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: 0em;
 }
 
 .font-label-small, .card.small .card-subtitle {
@@ -4816,7 +4817,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-text-strong);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: 0em;
 }
 
 .blockquote {
@@ -8482,7 +8483,7 @@ textarea.form-input {
   --cx-padding-x: var(--cx-chip-padding-x, 0.75rem);
   --cx-gap: var(--cx-chip-gap, 0.5rem);
   --cx-nudge: var(--cx-chip-nudge, 0.25rem);
-  --cx-border-radius: var(--cx-chip-border-radius, var(--cx-border-radius-circle));
+  --cx-border-radius: var(--cx-chip-border-radius, var(--cx-border-radius-round));
   --cx-close-button-icon: var(--cx-chip-remove-icon, url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentcolor' class='icon-xmark-circle-solid' viewBox='0 0 24 24'><path d='M12 22C8.40625 22 5.125 20.125 3.32812 17C1.53125 13.9141 1.53125 10.125 3.32812 7C5.125 3.91406 8.40625 2 12 2C15.5547 2 18.8359 3.91406 20.6328 7C22.4297 10.125 22.4297 13.9141 20.6328 17C18.8359 20.125 15.5547 22 12 22ZM8.83594 8.83594C8.44531 9.22656 8.44531 9.8125 8.83594 10.1641L10.6719 12L8.83594 13.8359C8.44531 14.2266 8.44531 14.8125 8.83594 15.1641C9.1875 15.5547 9.77344 15.5547 10.125 15.1641L11.9609 13.3281L13.7969 15.1641C14.1875 15.5547 14.7734 15.5547 15.125 15.1641C15.5156 14.8125 15.5156 14.2266 15.125 13.8359L13.2891 12L15.125 10.1641C15.5156 9.8125 15.5156 9.22656 15.125 8.83594C14.7734 8.48438 14.1875 8.48438 13.7969 8.83594L11.9609 10.6719L10.125 8.83594C9.77344 8.48438 9.1875 8.48438 8.83594 8.83594Z'/></svg>"));
   --cx-close-button-fg-color: var(--cx-chip-remove-color, var(--cx-fg-color));
   --cx-close-button-fg-hover: var(--cx-chip-remove-hover, var(--cx-fg-color));
@@ -8524,7 +8525,7 @@ textarea.form-input {
   --cx-padding-x: var(--cx-chip-large-padding-x, 1rem);
   --cx-gap: var(--cx-chip-large-gap, 0.75rem);
   --cx-nudge: var(--cx-chip-large-nudge, 0.25rem);
-  --cx-border-radius: var(--cx-chip-large-border-radius, var(--cx-border-radius-circle));
+  --cx-border-radius: var(--cx-chip-large-border-radius, var(--cx-border-radius-round));
   --cx-icon-size: 1.5rem;
   --cx-avatar-size: 2rem;
   --cx-font-family: var(--cx-button-font-family, var(--cx-font-family-text));
@@ -8538,7 +8539,7 @@ textarea.form-input {
   --cx-padding-x: var(--cx-chip-small-padding-x, 0.625rem);
   --cx-gap: var(--cx-chip-small-gap, 0.5rem);
   --cx-nudge: var(--cx-chip-small-nudge, 0.25rem);
-  --cx-border-radius: var(--cx-chip-small-border-radius, var(--cx-border-radius-circle));
+  --cx-border-radius: var(--cx-chip-small-border-radius, var(--cx-border-radius-round));
   --cx-icon-size: 1rem;
   --cx-avatar-size: 1.25rem;
   --cx-font-family: var(--cx-button-font-family, var(--cx-font-family-text));
@@ -10331,7 +10332,7 @@ textarea.form-input {
   --cx-gap: var(--cx-badge-gap, 0rem);
   --cx-nudge: var(--cx-badge-nudge, 0.25rem);
   --cx-border-width: var(--cx-badge-border-width, var(--cx-border-width-medium));
-  --cx-border-radius: var(--cx-badge-border-radius, var(--cx-border-radius-circle));
+  --cx-border-radius: var(--cx-badge-border-radius, var(--cx-border-radius-round));
   --cx-icon-size: var(--cx-badge-icon-size, 1rem);
   --cx-font-family: var(--cx-badge-font-family, var(--cx-font-family-text));
   --cx-font-size: var(--cx-badge-font-size, var(--cx-font-size-small));
@@ -10361,7 +10362,7 @@ textarea.form-input {
   --cx-font-size: var(--cx-badge-font-size, var(--cx-font-size-medium));
   --cx-font-weight: var(--cx-badge-font-weight, var(--cx-font-weight-strong));
   --cx-line-height: var(--cx-badge-line-height, var(--cx-line-height-medium));
-  --cx-border-radius: var(--cx-border-radius-circle);
+  --cx-border-radius: var(--cx-border-radius-round);
   --cx-icon-size: 1.25rem;
 }
 .badge.small {
@@ -10374,7 +10375,7 @@ textarea.form-input {
   --cx-font-size: var(--cx-badge-font-size, var(--cx-font-size-xsmall));
   --cx-font-weight: var(--cx-badge-font-weight, var(--cx-font-weight-strong));
   --cx-line-height: var(--cx-badge-line-height, var(--cx-line-height-xsmall));
-  --cx-border-radius: var(--cx-border-radius-circle);
+  --cx-border-radius: var(--cx-border-radius-round);
   --cx-icon-size: 0.75rem;
 }
 .badge > .icon:first-child {
@@ -15014,10 +15015,14 @@ textarea.form-input {
 }
 
 .rounded-circle {
-  border-radius: 16rem !important;
+  border-radius: 50% !important;
 }
 
 .rounded-round, .badge.round {
+  border-radius: 16rem !important;
+}
+
+.rounded-pill {
   border-radius: 16rem !important;
 }
 
@@ -15067,11 +15072,16 @@ textarea.form-input {
 }
 
 .rounded-top-circle {
+  border-top-right-radius: 50% !important;
+  border-top-left-radius: 50% !important;
+}
+
+.rounded-top-round {
   border-top-right-radius: 16rem !important;
   border-top-left-radius: 16rem !important;
 }
 
-.rounded-top-round {
+.rounded-top-pill {
   border-top-right-radius: 16rem !important;
   border-top-left-radius: 16rem !important;
 }
@@ -15122,11 +15132,16 @@ textarea.form-input {
 }
 
 .rounded-end-circle {
+  border-top-left-radius: 50% !important;
+  border-bottom-left-radius: 50% !important;
+}
+
+.rounded-end-round {
   border-top-left-radius: 16rem !important;
   border-bottom-left-radius: 16rem !important;
 }
 
-.rounded-end-round {
+.rounded-end-pill {
   border-top-left-radius: 16rem !important;
   border-bottom-left-radius: 16rem !important;
 }
@@ -15177,11 +15192,16 @@ textarea.form-input {
 }
 
 .rounded-bottom-circle {
+  border-bottom-left-radius: 50% !important;
+  border-bottom-right-radius: 50% !important;
+}
+
+.rounded-bottom-round {
   border-bottom-left-radius: 16rem !important;
   border-bottom-right-radius: 16rem !important;
 }
 
-.rounded-bottom-round {
+.rounded-bottom-pill {
   border-bottom-left-radius: 16rem !important;
   border-bottom-right-radius: 16rem !important;
 }
@@ -15232,11 +15252,16 @@ textarea.form-input {
 }
 
 .rounded-start-circle {
+  border-bottom-right-radius: 50% !important;
+  border-top-right-radius: 50% !important;
+}
+
+.rounded-start-round {
   border-bottom-right-radius: 16rem !important;
   border-top-right-radius: 16rem !important;
 }
 
-.rounded-start-round {
+.rounded-start-pill {
   border-bottom-right-radius: 16rem !important;
   border-top-right-radius: 16rem !important;
 }
