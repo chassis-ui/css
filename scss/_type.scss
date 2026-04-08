@@ -51,11 +51,35 @@ ol {
 //
 // Font sizes with line height
 //
-@each $name, $value in $font-sizes {
-  .font-#{$name} {
-    //stylelint-disable-next-line property-disallowed-list
-    font-size: var(--#{$prefix}font-size-#{$name}) if($enable-important-utilities, !important, null);
-    line-height: var(--#{$prefix}line-height-#{$name}) if($enable-important-utilities, !important, null);
+// @each $name, $value in $font-sizes {
+//   .font-#{$name} {
+//     //stylelint-disable-next-line property-disallowed-list
+//     font-size: var(--#{$prefix}font-size-#{$name}) if($enable-important-utilities, !important, null);
+//     line-height: var(--#{$prefix}line-height-#{$name}) if($enable-important-utilities, !important, null);
+//   }
+// }
+
+@if $enable-bts {
+  @each $breakpoint in map-keys($grid-breakpoints) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
+      @each $name, $value in $font-sizes {
+        .font#{$infix}-#{$name} {
+          //stylelint-disable-next-line property-disallowed-list
+          font-size: var(--#{$prefix}font-size-#{$name}) if($enable-important-utilities, !important, null);
+          line-height: var(--#{$prefix}line-height-#{$name}) if($enable-important-utilities, !important, null);
+        }
+      }
+    }
+  }
+} @else {
+  @each $name, $value in $font-sizes {
+    .font-#{$name} {
+      //stylelint-disable-next-line property-disallowed-list
+      font-size: var(--#{$prefix}font-size-#{$name}) if($enable-important-utilities, !important, null);
+      line-height: var(--#{$prefix}line-height-#{$name}) if($enable-important-utilities, !important, null);
+    }
   }
 }
 
