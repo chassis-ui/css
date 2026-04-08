@@ -1,17 +1,17 @@
 # Chassis CSS
 
 <div align="center">
-  <img src="https://via.placeholder.com/200x100?text=Chassis+CSS" alt="Chassis CSS Logo" width="200" height="100">
+  <h1>Chassis CSS</h1>
   <p><strong>A powerful tokenized CSS framework bridging Figma designs to seamless code implementation</strong></p>
   <p>
-    <a href="https://chassis-ui.org">Documentation</a> ·
+    <a href="https://chassis-ui.com">Documentation</a> ·
     <a href="https://github.com/chassis-ui/css/issues/new?template=bug_report.md">Report Bug</a> ·
-    <a href="https://github.com/chassis-ui/es/new?template=feature_request.md">Request Feature</a>
+    <a href="https://github.com/chassis-ui/css/issues/new?template=feature_request.md">Request Feature</a>
   </p>
   <p>
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
     <img src="https://img.shields.io/badge/status-Active-green.svg" alt="Status">
-    <img src="https://img.shields.io/badge/version-0.1.0-blue.svg" alt="Version">
+    <img src="https://img.shields.io/badge/version-0.1.1-blue.svg" alt="Version">
   </p>
 </div>
 
@@ -21,15 +21,11 @@ Chassis is an open-source end-to-end design system that bridges the gap between 
 
 Starting with inspiration from Bootstrap but evolving into something entirely new, Chassis focuses on creating a system where design decisions can be made directly in Figma and automatically reflected in code across multiple platforms, products, and brands.
 
-<p align="center">
-  <img src="https://via.placeholder.com/800x400?text=Chassis+Ecosystem+Diagram" alt="Chassis Ecosystem" width="800">
-</p>
-
 ### Core Features
 
-- **Design Token System**: Chassis creates a single source of truth through design tokens that define every aspect of your UI, from colors and typography to spacing and component styles. These tokens can be edited in Figma and automatically transformed for multiple platforms.
+- **Design Token System**: Chassis creates a single source of truth through design tokens that define every aspect of your UI, from colors and typography to spacing and component styles.
 
-- **Revolutionary Color System**: Beyond simple palettes, Chassis introduces a philosophical approach to colors with context-based semantics. Every color has meaning and purpose in the UI, with carefully designed contextual palettes that maintain accessibility and visual hierarchy.
+- **Advanced Color System**: Beyond simple palettes, Chassis introduces context-based semantics. Every color has meaning and purpose in the UI, with carefully designed contextual palettes that maintain accessibility and visual hierarchy.
 
 - **Context Classes**: A unique implementation that uses CSS variable re-declaration to create context-aware components. This system allows elements to completely change their color palette while maintaining semantic meaning and reducing CSS file size.
 
@@ -53,10 +49,10 @@ The Chassis design system consists of several integrated packages:
 
 ### Installation
 
-Install Chassis CSS and its required dependencies:
+Install Chassis CSS via npm:
 
 ```shell
-npm install @chassis-ui/ssis/tokens
+npm install @chassis-ui/css
 ```
 
 ### Usage
@@ -65,20 +61,20 @@ Include the compiled CSS in your HTML:
 
 ```html
 <!-- Include Chassis CSS -->
-<link rel="stylesheet" href="node_modules/@chassis-ui//chassis.min.css">
+<link rel="stylesheet" href="node_modules/@chassis-ui/css/dist/css/chassis.min.css">
 
 <!-- Optional JavaScript -->
-<script src="node_modules/@chassis-ui//chassis.bundle.min.js"></script>
+<script src="node_modules/@chassis-ui/css/dist/js/chassis.bundle.min.js"></script>
 ```
 
 ### Using with a bundler
 
 ```js
 // Import Chassis CSS in your JavaScript entry file
-import '@chassis-ui//chassis.min.css';
+import '@chassis-ui/css/dist/css/chassis.min.css';
 
 // Import JS components as needed
-import { Modal, Dropdown, Tooltip } from '@chassis-ui/
+import { Modal, Dropdown, Tooltip } from '@chassis-ui/css';
 
 // Initialize components
 document.addEventListener('DOMContentLoaded', () => {
@@ -100,8 +96,8 @@ Chassis tokens flow directly from Figma to your code, creating a seamless design
 
 ```scss
 // In your custom SCSS file
-@import '@chassis/tokens/dist/tokens/web/my-brand.scss';
-@import '@chassis-ui//chassis.scss';
+@import '@chassis-ui/tokens/dist/web/my-app/my-brand.scss';
+@import '@chassis-ui/css/scss/chassis.scss';
 
 // Create a custom component using tokens
 .my-custom-element {
@@ -170,12 +166,12 @@ One of Chassis's most powerful features is the context class system that allows 
 
 ## Documentation
 
-Visit [chassis-ui.org](https://chassis-ui.org) for comprehensive documentation including:
+Visit [chassis-ui.com](https://chassis-ui.com) for comprehensive documentation including:
 
-- [Getting Started Guide](https://chassis-ui.org/docs/getting-started/)
-- [Core Concepts](https://chassis-ui.org/docs/core-concepts/)
-- [Component Library](https://chassis-ui.org/docs/components/)
-- [Color System](https://chassis-ui.org/docs/core-concepts/color-system/)
+- [Getting Started Guide](https://chassis-ui.com/getting-started/)
+- [Core Concepts](https://chassis-ui.com/docsref/)
+- [Component Library](https://chassis-ui.com/components/)
+- [Design Tokens](https://chassis-ui.com/docsref/)
 
 ## Browser Support
 
@@ -191,9 +187,9 @@ Chassis CSS supports all major modern browsers:
 
 IE 11 and older versions are not supported.
 
-## Philosophy: The Color System
+## Philosophy: Color System
 
-Chassis introduces a revolutionary approach to UI colors that goes beyond traditional color systems. It's built on a deep philosophical understanding of how color creates meaning in interfaces:
+Chassis introduces an advanced approach to UI colors that goes beyond traditional color systems. It's built on a deep understanding of how color creates meaning in interfaces:
 
 - **Base Colors**: Seven foundational colors derived from brand identity, each with a complete palette of tints and shades that serve as the building blocks for the entire system.
 
@@ -223,25 +219,25 @@ For major changes, please open an issue first to discuss what you would like to 
 
 ## Development
 
-Clone the repo with its submodules and install dependencies:
+Clone the repo and install dependencies:
 
 ```shell
-git clone --recurse-submodules git@github.com:chassis-ui/
-cd chassis-css
-npm install
+git clone https://github.com/chassis-ui/css.git
+cd css
+pnpm install
 ```
 
 The documentation is built with [Astro](https://astro.build/) and can be run locally:
 
 ```shell
 # Run the documentation site with live reloading
-npm run start
+pnpm astro:dev
 
 # Build the CSS and JavaScript
-npm run build
+pnpm build
 
 # Run tests
-npm run test
+pnpm test
 ```
 
 The project uses [stylelint](https://stylelint.io/) for SCSS formatting. If you're using VS Code, install the [vscode-stylelint](https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint) extension with these settings:
@@ -256,9 +252,9 @@ The project uses [stylelint](https://stylelint.io/) for SCSS formatting. If you'
 
 Join our community to get help, share ideas, and contribute:
 
-- [GitHub Discussions](https://github.com/chassis-ui/ussions)
+- [GitHub Discussions](https://github.com/chassis-ui/css/discussions)
+- [GitHub Issues](https://github.com/chassis-ui/css/issues)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/chassis-css)
-- [@chassis_ui on Twitter](https://twitter.com/chassis_ui)
 
 ## License
 

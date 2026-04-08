@@ -1,5 +1,5 @@
 /*!
-  * Chassis manipulator.js v0.1.0 (https://chassis-ui.com)
+  * Chassis manipulator.js v0.1.1 (https://chassis-ui.com)
   * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
   * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
   */

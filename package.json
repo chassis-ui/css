@@ -1,7 +1,7 @@
 {
   "name": "@chassis-ui/css",
   "description": "A CSS framework which synchronizes with Figma components by using design tokens.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "config": {
     "version_short": "0.1"
@@ -76,7 +76,6 @@
     "astro:preview": "astro preview --root site",
     "release": "pnpm dist && pnpm release:sri && pnpm site:build && pnpm release:zip",
     "release:sri": "node build/generate-sri.js",
-    "release:version": "node build/change-version.js",
     "release:zip": "cross-env-shell \"rm -rf chassis-$npm_package_version-dist chassis-$npm_package_version-dist.zip && cp -r dist/ chassis-$npm_package_version-dist && zip -qr9 chassis-$npm_package_version-dist.zip chassis-$npm_package_version-dist && rm -rf chassis-$npm_package_version-dist\"",
     "watch": "pnpm --parallel \"/^watch:.*/\"",
     "watch-all": "pnpm watch:css:dist & pnpm watch:css:main & pnpm watch:css:site & pnpm watch:css:test & pnpm watch:js:main & pnpm watch:js:site",
@@ -91,6 +90,7 @@
     "check:code": "pnpm css:lint & pnpm js:lint & pnpm site:lint & wait",
     "check:lockfile": "lockfile-lint --allowed-hosts npm --allowed-schemes https: --empty-hostname false --type npm --path package-lock.json",
     "check:pnpm": "pnpm audit --audit-level moderate",
+    "change-version": "node build/change-version.js",
     "sync-submodules": "node build/sync-submodules.js"
   },
   "peerDependencies": {
