@@ -76,6 +76,15 @@ Use `.icon-*` size classes to adjust icon size
 <span class="icon icon-3xlarge icon-info-circle-solid"></span>
 <span class="icon icon-4xlarge icon-info-circle-solid"></span>`} />
 
+### Responsive Utilities
+
+Chassis - CSS provides responsive icon size utilities that adapt to different breakpoints. Enable this feature through the `$enable-responsive-utilities` variable, allowing you to control icon sizes across device sizes for optimal visual consistency.
+
+These utilities follow a mobile-first approach, allowing you to stack classes for progressive scaling. Classes use the format `icon-{size}` for the base size (applying from `xsmall` and up) and `icon-{breakpoint}-{size}` for breakpoint-specific sizes (`small`, `medium`, `large`, `xlarge`, and `2xlarge`). Each breakpoint class overrides the previous icon size at that breakpoint and larger viewports.
+
+<Example code={`<svg class="icon icon-small icon-medium-large icon-xlarge-4xlarge"><use xlink:href="#info-circle-solid" /></svg>
+<span class="icon icon-small icon-medium-large icon-xlarge-4xlarge icon-info-circle-solid"></span>`} />
+
 ## With Text
 
 Same icon & text sizes align properly.

@@ -100,11 +100,11 @@ The following classes can be used to adjust font sizes:
 
 For responsive font sizes, refer to the [Responsive Font Sizes](#responsive-font-sizes) section, which explains how text scales dynamically based on the viewport size.
 
-### Breakpoint Type Scale
+### Responsive Utilities
 
-Chassis - CSS introduces Breakpoint Type Scale utilities that generate responsive font sizes based on defined breakpoints. Enable this feature through the `$enable-bts` variable in your customization options. This allows for granular control over typography across different device sizes, ensuring optimal readability and design consistency.
+Chassis - CSS provides responsive font size utilities that adapt to different breakpoints. Enable this feature through the `$enable-responsive-utilities` variable, allowing you to control typography across device sizes for optimal readability and design consistency.
 
-The Breakpoint Type Scale follows a mobile-first approach, allowing you to stack responsive font size classes. Classes are named using the format `font-{size}` for the base size (applies to all viewports from `xsmall` and up) and `font-{breakpoint}-{size}` for breakpoint-specific sizes (`small`, `medium`, `large`, `xlarge`, and `2xlarge`). Each breakpoint class overrides the previous font size at that breakpoint and larger viewports.
+These utilities follow a mobile-first approach, allowing you to stack classes for progressive scaling. Classes use the format `font-{size}` for the base size (applying from `xsmall` and up) and `font-{breakpoint}-{size}` for breakpoint-specific sizes (`small`, `medium`, `large`, `xlarge`, and `2xlarge`). Each breakpoint class overrides the previous font size at that breakpoint and larger viewports.
 
 <Example code={`<p class="font-small font-medium-large font-large-2xlarge font-xlarge-4xlarge">
   Progressively larger text

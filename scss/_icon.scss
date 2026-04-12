@@ -75,13 +75,34 @@ $utilities: () !default;
         class: icon-opacity,
         values: $icon-opacities
       ),
-      "icon-size": (
-        css-var: true,
-        css-variable-name: icon-size,
-        class: null,
-        values: map-loop(map-rename-keys($icon-sizes, "icon-", "start"), varify, "$key")
-      ),
+      // "icon-size": (
+      //   css-var: true,
+      //   css-variable-name: icon-size,
+      //   class: null,
+      //   values: map-loop(map-rename-keys($icon-sizes, "icon-", "start"), varify, "$key")
+      // ),
       // scss-docs-end utils-icons
     )
   );
 }
+
+@if $enable-responsive-utilities {
+  @each $breakpoint in map-keys($grid-breakpoints) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
+      @each $name, $value in $icon-sizes {
+        .icon#{$infix}-#{$name} {
+          --#{$prefix}icon-size: var(--#{$prefix}icon-#{$name});
+        }
+      }
+    }
+  }
+} @else {
+  @each $name, $value in $icon-sizes {
+    .icon-#{$name} {
+      --#{$prefix}icon-size: var(--#{$prefix}icon-#{$name});
+    }
+  }
+}
+
