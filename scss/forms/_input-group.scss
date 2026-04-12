@@ -80,7 +80,8 @@
   white-space: nowrap;
   background-image: var(--#{$prefix}input-addon-bg-image);
 
-  @extend %component, %box-padding, %form-colors;
+  @extend %component, %form-colors;
+  @include exclude-strokes(form-control);
 
   &:has(+ .form-floating),
   .form-floating ~ & {

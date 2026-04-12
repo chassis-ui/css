@@ -62,23 +62,13 @@
 }
 // scss-docs-end colors-placeholder-selector
 
-// scss-docs-start box-padding-placeholder-selector
-// Box model padding with border compensation.
+// scss-docs-start exclude-strokes-placeholder-note
+// Note: The exclude-strokes mixin requires a component name parameter,
+// so it cannot be used directly in a placeholder. Components should call
+// the mixin directly: @include exclude-strokes(component-name);
 //
-// Sets box-sizing and applies padding that subtracts border width,
-// ensuring the overall element dimensions match design specifications.
-// This approach provides consistent visual padding regardless of
-// border width changes.
-//
-// The box-padding mixin handles the calculation:
-// actual padding = specified padding - border width
-//
-// Use this placeholder when you need precise control over
-// interior spacing that compensates for border thickness.
-%box-padding {
-  @include box-padding();
-}
-// scss-docs-end box-padding-placeholder-selector
+// For components not using stroke exclusion, use @include padding() instead.
+// scss-docs-end exclude-strokes-placeholder-note
 
 // scss-docs-start border-placeholder-selector
 // Border styling for components.

@@ -41,7 +41,7 @@
 
 .nav-link {
   // scss-docs-start nav-link-css-vars
-  // Define padding variables needed by .nav-tabs for the box-padding mixin (which subtracts border width from padding)
+  // Define padding variables needed by .nav-tabs for the exclude-strokes mixin (which subtracts border width from padding)
   --#{$prefix}padding-y: var(--#{$prefix}link-padding-y);
   --#{$prefix}padding-x: var(--#{$prefix}link-padding-x);
   // Define foreground color needed for dropdown caret and text color
@@ -50,7 +50,7 @@
 
   display: block;
   // align-items: center;
-  @include padding();
+  @include exclude-strokes(nav-link);
   @include font(link);
   color: var(--#{$prefix}fg-color);
   text-decoration: if($link-decoration == none, null, none);
@@ -101,7 +101,7 @@
   border-bottom: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
 
   .nav-link {
-    @include box-padding();
+    @include exclude-strokes(nav-link);
     margin-bottom: #{calc(-1 * var(--#{$prefix}border-width))};
     border: var(--#{$prefix}border-width) solid transparent;
     @include border-top-radius(var(--#{$prefix}border-radius));

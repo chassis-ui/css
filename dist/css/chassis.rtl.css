@@ -1144,10 +1144,6 @@
   border: var(--cx-border-width, 0) var(--cx-border-style, solid) var(--cx-border-color, transparent);
 }
 
-.badge, .input-addon {
-  padding: calc(var(--cx-padding-y) - var(--cx-border-width)) calc(var(--cx-padding-x) - var(--cx-border-width));
-}
-
 .chip, .button {
   --cx-fg-color: var(--cx-button-idle-fg-color, var(--cx-fg-idle));
   --cx-bg-color: var(--cx-button-idle-bg-color, var(--cx-bg-idle));
@@ -4847,7 +4843,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-text-mass);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: -0.0625em;
+  letter-spacing: -0.0313em;
 }
 
 .font-hero {
@@ -4858,7 +4854,7 @@ ol.inline li:not(:last-child) {
   font-weight: var(--cx-font-weight-text-mass);
   text-decoration: none;
   text-transform: none;
-  letter-spacing: -0.0625em;
+  letter-spacing: 0em;
 }
 
 .font-heading {
@@ -8413,6 +8409,7 @@ textarea.form-input {
   text-align: center;
   white-space: nowrap;
   background-image: var(--cx-input-addon-bg-image);
+  padding: calc(var(--cx-padding-y) - var(--cx-border-width)) calc(var(--cx-padding-x) - var(--cx-border-width));
 }
 .input-addon:has(+ .form-floating), .form-floating ~ .input-addon {
   border-bottom-left-radius: 0;
@@ -9415,7 +9412,7 @@ textarea.form-input {
   --cx-padding-x: var(--cx-link-padding-x);
   --cx-fg-color: var(--cx-link-main-color);
   display: block;
-  padding: var(--cx-padding-y) var(--cx-padding-x);
+  padding: calc(var(--cx-padding-y) - var(--cx-border-width)) calc(var(--cx-padding-x) - var(--cx-border-width));
   font: var(--cx-link-font-weight) var(--cx-link-font-size)/var(--cx-link-line-height) var(--cx-link-font-family);
   color: var(--cx-fg-color);
   text-decoration: none;
@@ -10666,6 +10663,7 @@ textarea.form-input {
   gap: var(--cx-nudge);
   align-items: center;
   justify-content: center;
+  padding: calc(var(--cx-padding-y) - var(--cx-border-width)) calc(var(--cx-padding-x) - var(--cx-border-width));
   text-decoration: none;
   text-wrap: nowrap;
   vertical-align: middle;

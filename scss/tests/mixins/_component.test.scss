@@ -1,0 +1,183 @@
+// Import necessary files for the tests
+@import "../../settings";
+@import "../../functions";
+@import "../../tokens";
+@import "../../variables";
+@import "../../maps";
+@import "../../mixins";
+
+// stylelint-disable property-disallowed-list
+
+@include describe("exclude-strokes mixin") {
+  @include it("applies border subtraction when setting is true") {
+    // Test with $enable-exclude-strokes: true
+    $enable-exclude-strokes: true !global;
+
+    @include assert() {
+      @include output() {
+        .test-exclude-strokes-true {
+          @include exclude-strokes(button);
+        }
+      }
+      @include expect() {
+        .test-exclude-strokes-true {
+          padding: calc(var(--cx-padding-y) - var(--cx-border-width)) calc(var(--cx-padding-x) - var(--cx-border-width));
+        }
+      }
+    }
+  }
+
+  @include it("applies regular padding when setting is false") {
+    // Test with $enable-exclude-strokes: false
+    $enable-exclude-strokes: false !global;
+
+    @include assert() {
+      @include output() {
+        .test-exclude-strokes-false {
+          @include exclude-strokes(button);
+        }
+      }
+      @include expect() {
+        .test-exclude-strokes-false {
+          padding: var(--cx-padding-y) var(--cx-padding-x);
+        }
+      }
+    }
+  }
+
+  @include it("applies border subtraction for components in list") {
+    // Test with $enable-exclude-strokes as list containing the component
+    $enable-exclude-strokes: button, badge, form-control !global;
+
+    @include assert() {
+      @include output() {
+        .test-exclude-strokes-list-included {
+          @include exclude-strokes(button);
+        }
+      }
+      @include expect() {
+        .test-exclude-strokes-list-included {
+          padding: calc(var(--cx-padding-y) - var(--cx-border-width)) calc(var(--cx-padding-x) - var(--cx-border-width));
+        }
+      }
+    }
+  }
+
+  @include it("applies regular padding for components not in list") {
+    // Test with $enable-exclude-strokes as list not containing the component
+    $enable-exclude-strokes: button, badge !global;
+
+    @include assert() {
+      @include output() {
+        .test-exclude-strokes-list-excluded {
+          @include exclude-strokes(chip);
+        }
+      }
+      @include expect() {
+        .test-exclude-strokes-list-excluded {
+          padding: var(--cx-padding-y) var(--cx-padding-x);
+        }
+      }
+    }
+  }
+}
+
+@include describe("padding mixin") {
+  @include it("applies standard padding without component namespace") {
+    @include assert() {
+      @include output() {
+        .test-padding-no-namespace {
+          @include padding();
+        }
+      }
+      @include expect() {
+        .test-padding-no-namespace {
+          padding: var(--cx-padding-y) var(--cx-padding-x);
+        }
+      }
+    }
+  }
+
+  @include it("applies component-namespaced padding") {
+    @include assert() {
+      @include output() {
+        .test-padding-with-namespace {
+          @include padding(button);
+        }
+      }
+      @include expect() {
+        .test-padding-with-namespace {
+          padding: var(--cx-button-padding-y) var(--cx-button-padding-x);
+        }
+      }
+    }
+  }
+}
+
+@include describe("colors mixin") {
+  @include it("applies standard color properties without component namespace") {
+    @include assert() {
+      @include output() {
+        .test-colors-no-namespace {
+          @include colors();
+        }
+      }
+      @include expect() {
+        .test-colors-no-namespace {
+          color: var(--cx-fg-color);
+          background-color: var(--cx-bg-color);
+          border-color: var(--cx-border-color);
+        }
+      }
+    }
+  }
+
+  @include it("applies component-namespaced color properties") {
+    @include assert() {
+      @include output() {
+        .test-colors-with-namespace {
+          @include colors(button);
+        }
+      }
+      @include expect() {
+        .test-colors-with-namespace {
+          color: var(--cx-button-fg-color);
+          background-color: var(--cx-button-bg-color);
+          border-color: var(--cx-button-border-color);
+        }
+      }
+    }
+  }
+}
+
+@include describe("border mixin") {
+  @include it("applies border with fallback values without namespace") {
+    @include assert() {
+      @include output() {
+        .test-border-no-namespace {
+          @include border();
+        }
+      }
+      @include expect() {
+        .test-border-no-namespace {
+          border: var(--cx-border-width, 0) var(--cx-border-style, solid) var(--cx-border-color, transparent);
+        }
+      }
+    }
+  }
+
+  @include it("applies component-namespaced border") {
+    @include assert() {
+      @include output() {
+        .test-border-with-namespace {
+          @include border(button);
+        }
+      }
+      @include expect() {
+        .test-border-with-namespace {
+          border: var(--cx-button-border-width, 0) var(--cx-button-border-style, solid) var(--cx-button-border-color, transparent);
+        }
+      }
+    }
+  }
+}

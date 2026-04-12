@@ -35,29 +35,33 @@
 }
 // scss-docs-end padding-mixin
 
-// scss-docs-start box-padding-mixin
-// Applies adjusted padding that accounts for border width.
+// scss-docs-start exclude-strokes-mixin
+// Applies padding with optional border width exclusion for specific components.
 //
-// @param {string} $comp - Optional component namespace for CSS variables.
-//                         When provided, variables will be prefixed with "$comp-".
-// @param {number} $modifier - Optional multiplier for border width adjustment.
-//                            When provided, border width will be multiplied by this value.
+// @param {string} $comp - Component name to check against $enable-exclude-strokes setting.
 //
-// Subtracts border width from padding to achieve the exact visual padding
-// specified in design tools, maintaining the same apparent padding regardless
-// of border width. This ensures the content box precisely matches design specs.
-@mixin box-padding($comp: null, $modifier: null) {
-  @if $enable-padding-box {
-    $border-width: var(--#{$prefix}#{if($comp, "#{$comp}-", "")}border-width);
-    $border-modifier: #{if($modifier, "#{$border-width} * #{$modifier}", #{$border-width})};
-    $padding-y: #{calc(var(--#{$prefix}#{if($comp, "#{$comp}-", "")}padding-y) - #{$border-modifier})};
-    $padding-x: #{calc(var(--#{$prefix}#{if($comp, "#{$comp}-", "")}padding-x) - #{$border-modifier})};
+// The $enable-exclude-strokes setting can be:
+// - true: Always apply calculation (subtract border from padding) for all components
+// - false: Never apply calculation, always use regular padding
+// - list: Only apply calculation if component is in the list
+//
+// When calculation is applied, subtracts border width from padding to achieve
+// the exact visual padding specified in design tools. This ensures the content box
+// precisely matches design specs regardless of border width.
+//
+// Uses generic padding and border-width variables (--#{$prefix}padding-x/y, --#{$prefix}border-width)
+// that components define within their own scope.
+@mixin exclude-strokes($comp) {
+  @if $enable-exclude-strokes == true or index($enable-exclude-strokes, $comp) {
+    $border-width: var(--#{$prefix}border-width);
+    $padding-y: #{calc(var(--#{$prefix}padding-y) - #{$border-width})};
+    $padding-x: #{calc(var(--#{$prefix}padding-x) - #{$border-width})};
     padding: $padding-y $padding-x;
   } @else {
-    @include padding($comp);
+    padding: var(--#{$prefix}padding-y) var(--#{$prefix}padding-x);
   }
 }
-// scss-docs-end box-padding-mixin
+// scss-docs-end exclude-strokes-mixin
 
 // scss-docs-start border-mixin
 // Applies consistent border styling using CSS custom properties.

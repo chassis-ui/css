@@ -55,8 +55,8 @@
   background-color: var(--#{$prefix}bg-color);
   border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
 
-  // We apply a special padding-box to make all heights equal, since the border is on the bottom only unless it is :first-child
-  @if $enable-padding-box {
+  // We apply a special exclude-strokes mixin to make all heights equal, since the border is on the bottom only unless it is :first-child
+  @if $enable-exclude-strokes == true or index($enable-exclude-strokes, list) {
     $border-width: var(--#{$prefix}border-width);
     $padding-modifier: #{calc(var(--#{$prefix}border-width) * var(--#{$prefix}padding-factor, 1))};
     $padding-y: #{calc(var(--#{$prefix}padding-y) - #{$padding-modifier})};

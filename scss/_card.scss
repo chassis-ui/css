@@ -8,9 +8,9 @@
 //
 
 // Internal mixin for card elements padding that accounts for border width
-// scss-docs-start _card-padding-box
-@mixin _card-padding-box($comp: null, $padding-factor: 1) {
-  @if $enable-padding-box {
+// scss-docs-start _card-exclude-strokes
+@mixin _card-exclude-strokes($comp: null, $padding-factor: 1) {
+  @if $enable-exclude-strokes == true or index($enable-exclude-strokes, card) {
     $border-width: var(--#{$prefix}border-width);
     $padding-modifier: #{calc(var(--#{$prefix}border-width) * $padding-factor)};
     $padding-y: #{calc(var(--#{$prefix}#{if($comp, "#{$comp}-", "")}padding-y) - #{$padding-modifier})};
@@ -20,7 +20,7 @@
     @include padding($comp);
   }
 }
-// scss-docs-end _card-padding-box
+// scss-docs-end _card-exclude-strokes
 
 .card {
   // scss-docs-start card-css-vars
@@ -131,7 +131,7 @@
   // Enable `flex-grow: 1` for decks and groups so that card blocks take up
   // as much space as possible, ensuring footers are aligned to the bottom.
   flex: 1 1 auto;
-  @include _card-padding-box();
+  @include _card-exclude-strokes();
 
   &:has(.card-image:only-child):not(.row > [class*="col-"]) {
     flex-grow: 0;
@@ -221,7 +221,7 @@
 .card-header {
   // padding: var(--#{$prefix}header-padding-y) var(--#{$prefix}header-padding-x);
   //padding: #{calc(var(--#{$prefix}header-padding-y) - var(--#{$prefix}border-width))} #{calc(var(--#{$prefix}header-padding-x) - var(--#{$prefix}border-width))};
-  @include _card-padding-box(header, .5);
+  @include _card-exclude-strokes(header, .5);
 
   margin-bottom: 0; // Removes the default margin-bottom of <hN>
   color: var(--#{$prefix}header-fg-color);
@@ -236,7 +236,7 @@
 .card-footer {
   // padding: var(--#{$prefix}header-padding-y) var(--#{$prefix}header-padding-x);
   // padding: #{calc(var(--#{$prefix}header-padding-y) - var(--#{$prefix}border-width))} #{calc(var(--#{$prefix}header-padding-x) - var(--#{$prefix}border-width))};
-  @include _card-padding-box(footer, .5);
+  @include _card-exclude-strokes(footer, .5);
   color: var(--#{$prefix}header-fg-color);
   background-color: var(--#{$prefix}header-bg-color);
   border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);

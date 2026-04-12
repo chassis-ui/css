@@ -16,7 +16,7 @@
 // The implementation follows a variable-first approach for maximum theming flexibility.
 
 .badge {
-  @extend %context, %solid-context, %component, %box-padding;
+  @extend %context, %solid-context, %component;
   // scss-docs-start badge-css-vars
   --#{$prefix}size: var(--#{$prefix}badge-size, #{$badge-medium-size});
   --#{$prefix}padding-y: var(--#{$prefix}badge-padding-y, #{$badge-medium-padding-y});
@@ -33,6 +33,7 @@
   gap: var(--#{$prefix}nudge);
   align-items: center;
   justify-content: center;
+  @include exclude-strokes(badge);
   text-decoration: none;
   text-wrap: nowrap;
   vertical-align: middle;
