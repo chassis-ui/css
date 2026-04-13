@@ -40,7 +40,15 @@ interface Props {
   nestedInExample?: boolean
 }
 
-const { class: className, code, containerClass, fileMatch, filePath, lang, nestedInExample = false } = Astro.props
+const {
+  class: className,
+  code,
+  containerClass,
+  fileMatch,
+  filePath,
+  lang,
+  nestedInExample
+} = Astro.props
 
 let codeToDisplay = filePath
   ? fs.readFileSync(path.join(process.cwd(), filePath), 'utf8')
@@ -52,7 +60,9 @@ if (filePath && fileMatch && codeToDisplay) {
   const match = codeToDisplay.match(new RegExp(fileMatch))
 
   if (!match || !match[0]) {
-    throw new Error(`The file at ${filePath} does not contains a match for the regex '${fileMatch}'.`)
+    throw new Error(
+      `The file at ${filePath} does not contains a match for the regex '${fileMatch}'.`
+    )
   }
 
   codeToDisplay = match[0]
@@ -77,12 +87,17 @@ if (filePath && fileMatch && codeToDisplay) {
   snippetButtonTooltip('.button-edit', buttonEdit)
 
   const clipboard = new ClipboardJS('.button-clipboard', {
-    target: (trigger) => trigger.closest('.cxd-code-snippet')?.querySelector('.highlight')!,
+    target: (trigger) => {
+      const snippet = trigger.closest('.cxd-code-snippet')
+      const highlight = snippet ? snippet.querySelector('.highlight') : null
+      return highlight ?? trigger
+    },
     text: (trigger) => {
       // Trim text to workaround a Firefox issue where the structure of the DOM (uncontrolled) is relevant for the
       // copied text.
       // https://github.com/zenorocha/clipboard.js/issues/439#issuecomment-312344621
-      return trigger.closest('.cxd-code-snippet')?.querySelector('.highlight')!.textContent?.trim()!
+      const highlight = trigger.closest('.cxd-code-snippet')?.querySelector('.highlight')
+      return highlight?.textContent?.trim() ?? ''
     }
   })
 
@@ -110,7 +125,11 @@ if (filePath && fileMatch && codeToDisplay) {
     event.clearSelection()
 
     if (originalXhref) {
-      iconFirstChild?.setAttributeNS(namespace, 'href', originalXhref.replace('clipboard-outline', 'check-solid'))
+      iconFirstChild?.setAttributeNS(
+        namespace,
+        'href',
+        originalXhref.replace('clipboard-outline', 'check-solid')
+      )
     }
 
     setTimeout(() => {
@@ -139,21 +158,17 @@ if (filePath && fileMatch && codeToDisplay) {
 
 <div class:list={[{ 'cxd-code-snippet': !nestedInExample }, containerClass]}>
   {
-    nestedInExample
-      ? (<></>)
-      : Astro.slots.has('pre')
-        ? (
-          <slot name="pre" />
-        )
-        : (
-          <div class="cxd-clipboard">
-            <button type="button" class="button-clipboard">
-              <svg class="icon" role="img" aria-label="Copy">
-                <use xlink:href="#clipboard-outline" />
-              </svg>
-            </button>
-          </div>
-        )
+    nestedInExample ? null : Astro.slots.has('pre') ? (
+      <slot name="pre" />
+    ) : (
+      <div class="cxd-clipboard">
+        <button type="button" class="button-clipboard">
+          <svg class="icon" role="img" aria-label="Copy">
+            <use xlink:href="#clipboard-outline" />
+          </svg>
+        </button>
+      </div>
+    )
   }
   <div class="highlight">
     {
