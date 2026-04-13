@@ -1,27 +1,29 @@
 ---
 import BaseLayout from '@chassis-ui/docs/layouts/BaseLayout.astro'
-import SectionHero from '@components/SectionHero.astro'
-import SectionTeams from '@components/SectionTeams.astro'
-import SectionRoles from '@components/SectionRoles.astro'
-import SectionFeatures from '@components/SectionFeatures.astro'
-import SectionHow from '@components/SectionHow.astro'
-import SectionTech from '@components/SectionTech.astro'
-import SectionDocs from '@components/SectionDocs.astro'
+import HeroSection from '@components/homepage/HeroSection.astro'
+import IntroSection from '@components/homepage/IntroSection.astro'
+import FeaturesSection from '@components/homepage/FeaturesSection.astro'
+import HowSection from '@components/homepage/HowSection.astro'
+import TechSection from '@components/homepage/TechSection.astro'
+import DocsSection from '@components/homepage/DocsSection.astro'
+import HomeIcons from '/static/icons/cx-sprite.svg?raw'
 ---
 
 <BaseLayout title="Chassis CSS - Enterprise CSS Framework">
   <!-- Hero Section -->
-  <SectionHero />
+  <HeroSection />
+  <hr class="hr container" />
   <!-- Value Proposition -->
-  <SectionTeams />
-  <!-- Audience-Specific Benefits -->
-  <SectionRoles />
+  <IntroSection />
   <!-- Key Features -->
-  <SectionFeatures />
+  <FeaturesSection />
   <!-- How It Works -->
-  <SectionHow />
+  <HowSection />
   <!-- Technical Stack -->
-  <SectionTech />
+  <TechSection />
   <!-- Documentation Section -->
-  <SectionDocs />
+  <DocsSection />
+  <div class="d-none">
+    <Fragment set:html={HomeIcons} />
+  </div>
 </BaseLayout>
