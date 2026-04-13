@@ -11,7 +11,7 @@
   <p>
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
     <img src="https://img.shields.io/badge/status-Active-green.svg" alt="Status">
-    <img src="https://img.shields.io/badge/version-0.1.1-blue.svg" alt="Version">
+    <img src="https://img.shields.io/badge/version-0.1.2-blue.svg" alt="Version">
   </p>
 </div>
 
