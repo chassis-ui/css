@@ -1,21 +1,11 @@
 # Chassis CSS
 
-<div align="center">
-  <h1>Chassis CSS</h1>
-  <p><strong>A powerful tokenized CSS framework bridging Figma designs to seamless code implementation</strong></p>
-  <p>
-    <a href="https://chassis-ui.com">Documentation</a> ·
-    <a href="https://github.com/chassis-ui/css/issues/new?template=bug_report.md">Report Bug</a> ·
-    <a href="https://github.com/chassis-ui/css/issues/new?template=feature_request.md">Request Feature</a>
-  </p>
-  <p>
-    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
-    <img src="https://img.shields.io/badge/status-Active-green.svg" alt="Status">
-    <img src="https://img.shields.io/badge/version-0.1.2-blue.svg" alt="Version">
-  </p>
-</div>
+> A tokenized CSS framework bridging Figma designs to seamless code implementation.
 
-## What is Chassis?
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-blue.svg)](https://github.com/chassis-ui/css)
+
+## Overview
 
 Chassis is an open-source end-to-end design system that bridges the gap between design and development, creating a seamless workflow from Figma to production code. It represents a new generation of design systems built on design tokens, solving the common disconnect between designers' intentions and developers' implementations.
 
@@ -35,15 +25,18 @@ Starting with inspiration from Bootstrap but evolving into something entirely ne
 
 ## Chassis Ecosystem
 
-The Chassis design system consists of several integrated packages:
+This project is part of the Chassis Design System's multi-repository architecture:
 
-- **Chassis CSS** (this repository): The CSS framework that implements the Chassis design language and component system. It consumes tokens and provides both utility classes and component styles.
+| Project | Description |
+|---------|-------------|
+| [chassis-website](https://github.com/chassis-ui/website) | Main website and shared documentation package |
+| **chassis-css** | **CSS framework and component library (this repository)** |
+| [chassis-tokens](https://github.com/chassis-ui/tokens) | Design token generation and management |
+| [chassis-icons](https://github.com/chassis-ui/icons) | Icon library and build toolkit |
+| [chassis-assets](https://github.com/chassis-ui/assets) | Multi-platform asset management |
+| [chassis-figma](https://github.com/chassis-ui/figma) | Figma component documentation |
 
-- **Chassis Tokens**: The foundation of the system that defines all design variables. It manages token transformation from Figma to various platforms and provides the token API for developers.
-
-- **Chassis Figma Library**: Component libraries and design kits for Figma that enable designers to create interfaces using the same tokens that will be used in code, ensuring perfect fidelity.
-
-- **Chassis Icons**: An extensive icon system available as SVG sprites and icon fonts, fully integrated with the token system for consistent styling.
+All documentation sites share the `@chassis-ui/docs` package for consistent layouts, components, and styling.
 
 ## Getting Started
 
@@ -207,13 +200,13 @@ Chassis CSS started as an evolution of Bootstrap, building upon its grid system 
 
 ## Contributing
 
-We welcome contributions! Chassis is in its early stages and community involvement is essential to its growth:
-
 1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add some amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Make your changes
+4. Test the build: `pnpm build && pnpm test`
+5. Commit your changes: `git commit -m "feat: add my feature"`
+6. Push to the branch: `git push origin feature/my-feature`
+7. Open a Pull Request
 
 For major changes, please open an issue first to discuss what you would like to change.
 
@@ -231,7 +224,7 @@ The documentation is built with [Astro](https://astro.build/) and can be run loc
 
 ```shell
 # Run the documentation site with live reloading
-pnpm astro:dev
+pnpm dev
 
 # Build the CSS and JavaScript
 pnpm build
@@ -248,26 +241,6 @@ The project uses [stylelint](https://stylelint.io/) for SCSS formatting. If you'
 }
 ```
 
-## Community
-
-Join our community to get help, share ideas, and contribute:
-
-- [GitHub Discussions](https://github.com/chassis-ui/css/discussions)
-- [GitHub Issues](https://github.com/chassis-ui/css/issues)
-- [Stack Overflow](https://stackoverflow.com/questions/tagged/chassis-css)
-
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
-
-## Roadmap
-
-- [ ] Release of stable v1.0
-- [ ] Additional framework integrations (React, Angular, etc.)
-- [ ] Theme editor and token customization UI
-- [ ] Dark mode optimization improvements
-- [ ] Performance enhancements for large-scale applications
-
----
-
-<p align="center">Made with ❤️ by the Chassis Team</p>
+MIT License — see [LICENSE](LICENSE) file for details.
