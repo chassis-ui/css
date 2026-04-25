@@ -23,7 +23,6 @@
 import { execSync } from 'node:child_process'
 import path from 'node:path'
 import fs from 'node:fs'
-import { fileURLToPath } from 'node:url'
 import picocolors from 'picocolors'
 
 /**
@@ -57,6 +56,7 @@ class SubmoduleSync {
       {
         name: 'chassis-assets',
         path: 'vendor/assets',
+        lfs: true,
         expectedBranch: this.submoduleBranch,
         buildCommands: ['pnpm install --ignore-workspace', 'pnpm assets:site'],
         buildOutputPath: 'dist/web/chassis-docs'
@@ -108,7 +108,6 @@ class SubmoduleSync {
   needsInit(submodule) {
     const submodulePath = path.join(this.rootDir, submodule.path)
 
-    // Check if the submodule directory exists and has content (a .git file/dir)
     if (!fs.existsSync(submodulePath) || !fs.existsSync(path.join(submodulePath, '.git'))) {
       return true
     }
@@ -123,6 +122,11 @@ class SubmoduleSync {
   initSubmodule(submodule) {
     this.log(`Initializing ${submodule.name}...`, 'info')
     this.runCommand(`git submodule update --init --remote ${submodule.path}`, this.rootDir, true)
+    const submodulePath = path.join(this.rootDir, submodule.path)
+    if (submodule.lfs) {
+      this.runCommand('git lfs install', submodulePath, true)
+      this.runCommand('git lfs pull', submodulePath, true)
+    }
   }
 
   /**
@@ -166,9 +170,22 @@ class SubmoduleSync {
         }
 
         this.runCommand(`git pull origin ${submodule.expectedBranch}`, submodulePath, true)
+        if (submodule.lfs) {
+          this.runCommand('git lfs install', submodulePath, true)
+          this.runCommand('git lfs pull', submodulePath, true)
+        }
+      } else {
+        this.runCommand(
+          `git submodule update --remote --merge ${submodule.path}`,
+          this.rootDir,
+          true
+        )
       }
 
       this.log(`${submodule.name} synced successfully`, 'success')
+
+      // Build the submodule if build commands are defined
+      this.buildSubmodule(submodule)
     } catch (error) {
       if (
         error.message.includes('conflict') ||
@@ -182,9 +199,6 @@ class SubmoduleSync {
         throw error
       }
     }
-
-    // Build the submodule if build commands are defined
-    this.buildSubmodule(submodule)
   }
 
   /**
@@ -201,7 +215,13 @@ class SubmoduleSync {
     this.log(`Building ${submodule.name}...`, 'build')
 
     for (const command of submodule.buildCommands) {
-      this.runCommand(command, submodulePath, false)
+      try {
+        this.runCommand(command, submodulePath, false)
+      } catch (buildError) {
+        this.log(`Build command failed: ${command}`, 'error')
+        this.log(`Error: ${buildError.message}`, 'error')
+        throw buildError
+      }
     }
 
     // Verify build output if specified
@@ -225,7 +245,6 @@ class SubmoduleSync {
 
   /**
    * Check for submodule changes and provide commit guidance
-   * Lines prefixed with '+' indicate the submodule commit has changed
    */
   checkSubmoduleChanges() {
     try {
@@ -305,9 +324,6 @@ Commands:
   }
 }
 
-// Execute main function if this file is run directly
-if (fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
-  main()
-}
+main()
 
 export default SubmoduleSync
