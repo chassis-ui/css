@@ -1,0 +1,37 @@
+---
+title: Line Heights
+description: Don't stuck in to `1.5em` line heights for headings. Chassis - CSS provides individual line heights for every font size classes.
+toc: true
+---
+
+Of course we believe 150% line height is ideal for readability but for which size and distance? On screen design, larger fonts need slightly lesser line height than their descendants for both readability and feelings.
+
+Also design side may be problematic with percentage based line heights. Layers not align properly or separator lines get lost in sub-pixel etc.
+
+<Callout>
+**Heads up!** Chassis - CSS design system lets designer pick separate line-height for every font size and push them directly to code by design tokens.
+</Callout>
+
+<div class="cxd-example">
+<div>
+<p class="h2">This is a long heading text with a specific line-height value coming from design tokens.</p>
+<p>The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
+</div>
+</div>
+<div class="cxd-example">
+<div>
+<p class="h2" style="line-height: 1.5em">This is a long heading text with a standard 1.5em line-height of most design systems.</p>
+<p>The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
+</div>
+</div>
+
+It is still possible to adjust line-height with `lh-*` utility.
+
+<Example code={`<p class="lh-1">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
+<p class="lh-small">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
+<p class="lh-base">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
+<p class="lh-large">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>`} />
+
+## Typography
+
+Check our [typography]([[docsref:/content/typography]]) Documentation and examples for Chassis - CSS typography, including global settings, headings, body text, lists, and more.

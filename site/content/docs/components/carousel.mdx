@@ -1,0 +1,372 @@
+---
+title: Carousel
+description: Create fluid, touch-enabled content sliders with Chassis CSS's carousel component, featuring smooth transitions and comprehensive accessibility support.
+toc: true
+---
+
+## Introduction
+
+Carousels in Chassis CSS deliver smooth, touch-enabled content sliders designed for modern web experiences. Built with CSS 3D transforms and intelligent JavaScript controls, carousels seamlessly integrate with your design system while maintaining optimal performance and accessibility standards.
+
+Chassis CSS carousels operate on a performance-first architecture, using explicit JavaScript initialization to prevent unnecessary overhead while ensuring optimal loading performance. The positioning system leverages CSS 3D transforms to deliver hardware-accelerated transitions with smooth visual effects across all supported browsers.
+
+Touch support is built into the core experience, providing native swipe gestures alongside keyboard navigation and traditional mouse controls. The autoplay system intelligently manages pause and resume behavior based on user interaction and page visibility, while comprehensive ARIA support ensures compatibility with screen readers and assistive technologies.
+
+Chassis CSS carousels use explicit initialization to prevent performance overhead on unused components. Initialize carousels using the [constructor method](#api-methods) before user interaction. Carousels with `data-cx-ride="carousel"` initialize automatically on page load, so avoid duplicate initialization when using this attribute.
+
+Note that nested carousels are not supported—consider accessibility implications and provide alternative navigation methods for complex content.
+
+<Callout name="info-prefersreducedmotion" />
+
+## Examples
+
+Explore practical carousel implementations showcasing Chassis CSS's flexible architecture and comprehensive feature set. These examples demonstrate real-world usage patterns from basic content sliders to advanced interactive experiences.
+
+### Basic structure
+
+This foundational example demonstrates the essential carousel structure with navigation controls. Chassis CSS recommends semantic `<button>` elements for optimal accessibility, though `<a>` elements with `role="button"` are supported for specific design requirements.
+
+<Example code={`<div id="carouselExample" class="carousel slide">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#555" background="#777" text="First slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#444" background="#666" text="Second slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#333" background="#555" text="Third slide" />
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-cx-target="#carouselExample" data-cx-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-cx-target="#carouselExample" data-cx-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>`} />
+
+### Navigation indicators
+
+Enhance user experience with direct slide navigation through indicator controls. Indicators provide immediate access to specific slides and visual feedback about current position within the content sequence.
+
+<Example code={`<div id="carouselExampleIndicators" class="carousel slide">
+    <div class="carousel-indicators">
+      <button type="button" data-cx-target="#carouselExampleIndicators" data-cx-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+      <button type="button" data-cx-target="#carouselExampleIndicators" data-cx-slide-to="1" aria-label="Slide 2"></button>
+      <button type="button" data-cx-target="#carouselExampleIndicators" data-cx-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#555" background="#777" text="First slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#444" background="#666" text="Second slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#333" background="#555" text="Third slide" />
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-cx-target="#carouselExampleIndicators" data-cx-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-cx-target="#carouselExampleIndicators" data-cx-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>`} />
+
+### Content captions
+
+Add contextual information to slides with the `.carousel-caption` element. Chassis CSS captions integrate seamlessly with the utility system for responsive behavior. Use [display utilities]([[docsref:/utilities/display]]) to control caption visibility across viewport sizes—this example uses `.d-none` for mobile and `.d-medium-block` for larger screens.
+
+<Example code={`<div id="carouselExampleCaptions" class="carousel slide">
+    <div class="carousel-indicators">
+      <button type="button" data-cx-target="#carouselExampleCaptions" data-cx-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+      <button type="button" data-cx-target="#carouselExampleCaptions" data-cx-slide-to="1" aria-label="Slide 2"></button>
+      <button type="button" data-cx-target="#carouselExampleCaptions" data-cx-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#555" background="#777" text="First slide" />
+        <div class="carousel-caption d-none d-medium-block">
+          <h5>First slide label</h5>
+          <p>Some representative placeholder content for the first slide.</p>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#444" background="#666" text="Second slide" />
+        <div class="carousel-caption d-none d-medium-block">
+          <h5>Second slide label</h5>
+          <p>Some representative placeholder content for the second slide.</p>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#333" background="#555" text="Third slide" />
+        <div class="carousel-caption d-none d-medium-block">
+          <h5>Third slide label</h5>
+          <p>Some representative placeholder content for the third slide.</p>
+        </div>
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-cx-target="#carouselExampleCaptions" data-cx-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-cx-target="#carouselExampleCaptions" data-cx-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>`} />
+
+### Fade transitions
+
+Transform slide behavior with elegant fade transitions using `.carousel-fade`. This alternative animation style works particularly well with text-heavy content or when seeking subtle visual transitions. For optimal crossfading with certain content types, consider adding `.bg-main` or custom backgrounds to `.carousel-item` elements.
+
+<Example code={`<div id="carouselExampleFade" class="carousel slide carousel-fade">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#555" background="#777" text="First slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#444" background="#666" text="Second slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#333" background="#555" text="Third slide" />
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-cx-target="#carouselExampleFade" data-cx-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-cx-target="#carouselExampleFade" data-cx-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>`} />
+
+## Autoplay behavior
+
+Chassis CSS carousels support intelligent autoplay functionality with comprehensive user interaction controls. Set the `ride` option to `carousel` for immediate autoplay on page load. The system automatically pauses on mouse hover and respects the [Page Visibility API](https://www.w3.org/TR/page-visibility/) to stop cycling when pages aren't visible.
+
+<Callout>
+Chassis CSS recommends providing explicit pause/stop controls for autoplaying carousels to ensure compliance with [WCAG 2.2 Success Criterion 2.2.2 Pause, Stop, Hide](https://www.w3.org/TR/WCAG/#pause-stop-hide) and improve user experience for all users.
+</Callout>
+
+<Example code={`<div id="carouselExampleAutoplaying" class="carousel slide" data-cx-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#555" background="#777" text="First slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#444" background="#666" text="Second slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#333" background="#555" text="Third slide" />
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-cx-target="#carouselExampleAutoplaying" data-cx-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-cx-target="#carouselExampleAutoplaying" data-cx-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>`} />
+
+Setting `ride` to `true` (rather than `carousel`) enables user-triggered autoplay—the carousel begins cycling only after the first user interaction, providing a balance between automation and user control.
+
+<Example code={`<div id="carouselExampleRide" class="carousel slide" data-cx-ride="true">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#555" background="#777" text="First slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#444" background="#666" text="Second slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#333" background="#555" text="Third slide" />
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-cx-target="#carouselExampleRide" data-cx-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-cx-target="#carouselExampleRide" data-cx-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>`} />
+
+### Timing control
+
+Fine-tune autoplay timing with `data-cx-interval` attributes on individual `.carousel-item` elements. This feature enables dynamic pacing—for example, allowing more time for text-heavy slides while maintaining quicker transitions for simple images.
+
+<Example code={`<div id="carouselExampleInterval" class="carousel slide" data-cx-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active" data-cx-interval="10000">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#555" background="#777" text="First slide" />
+      </div>
+      <div class="carousel-item" data-cx-interval="2000">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#444" background="#666" text="Second slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#333" background="#555" text="Third slide" />
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-cx-target="#carouselExampleInterval" data-cx-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-cx-target="#carouselExampleInterval" data-cx-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>`} />
+
+### Minimal implementation
+
+Create distraction-free content displays with slides-only carousels. This pattern works particularly well for hero sections, testimonials, or background imagery where controls might interfere with the design aesthetic. Remember to include `.d-block` and `.w-100` classes for optimal image presentation.
+
+<Example code={`<div id="carouselExampleSlidesOnly" class="carousel slide" data-cx-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#555" background="#777" text="First slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#444" background="#666" text="Second slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#333" background="#555" text="Third slide" />
+      </div>
+    </div>
+  </div>`} />
+
+## Touch interaction control
+
+Chassis CSS carousels include native touch/swipe support for mobile and tablet experiences. When touch interactions conflict with your interface design or content requirements, disable swiping by setting the `touch` option to `false` while maintaining traditional control functionality.
+
+<Example code={`<div id="carouselExampleControlsNoTouching" class="carousel slide" data-cx-touch="false">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#555" background="#777" text="First slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#444" background="#666" text="Second slide" />
+      </div>
+      <div class="carousel-item">
+        <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="#333" background="#555" text="Third slide" />
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-cx-target="#carouselExampleControlsNoTouching" data-cx-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-cx-target="#carouselExampleControlsNoTouching" data-cx-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>`} />
+
+## CSS
+
+<DocsCSS sassOnly={true} />
+
+### Sass variables
+
+<DocsSASSVars notExposed={true} />
+
+<ScssDocs name="carousel-variables" file="scss/_variables.scss" />
+
+## JavaScript API
+
+Control carousel behavior programmatically with Chassis CSS's comprehensive JavaScript interface, featuring smooth transitions, autoplay management, and accessibility controls.
+
+### Data attributes
+
+Configure carousel behavior declaratively through data attributes for simple implementation without JavaScript initialization.
+
+Use `data-cx-slide` with `prev` or `next` keywords for relative navigation, or `data-cx-slide-to` with numeric values for direct slide access (zero-indexed, like arrays).
+
+### Initialization
+
+Initialize carousels programmatically for advanced control and configuration:
+
+```js
+const carousel = new chassis.Carousel('#myCarousel')
+```
+
+### Options
+
+<JsDataAttributes />
+
+<CxTable>
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `interval` | number | `5000` | Autoplay timing in milliseconds between slide transitions. |
+| `keyboard` | boolean | `true` | Enable keyboard navigation (arrow keys) for carousel control. |
+| `pause` | string, boolean | `"hover"` | Pause behavior: `"hover"` pauses on mouse interaction, `false` disables pausing. Touch devices pause on `touchend` for two intervals after user interaction. |
+| `ride` | string, boolean | `false` | Autoplay mode: `true` starts after first interaction, `"carousel"` starts immediately on load. |
+| `touch` | boolean | `true` | Enable touch/swipe gestures for slide navigation on mobile devices. |
+| `wrap` | boolean | `true` | Continuous cycling (`true`) or hard stops at first/last slides (`false`). |
+</CxTable>
+
+### Methods
+
+<Callout name="danger-async-methods" type="danger" />
+
+Create carousel instances with comprehensive configuration options. For example, to initialize an autoplay carousel with custom timing and disabled touch support:
+
+```js
+const myCarouselElement = document.querySelector('#myCarousel')
+
+const carousel = new chassis.Carousel(myCarouselElement, {
+  interval: 2000,
+  touch: false
+})
+```
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `cycle` | Initiates automatic cycling through carousel items from left to right. |
+| `dispose` | Completely destroys the carousel instance and removes all stored DOM data. |
+| `getInstance` | Static method returning the carousel instance associated with a DOM element: `chassis.Carousel.getInstance(element)`. |
+| `getOrCreateInstance` | Static method that returns existing carousel instance or creates new one if uninitialized: `chassis.Carousel.getOrCreateInstance(element)`. |
+| `next` | Advances to next slide. **Returns immediately before transition completes** (before `slid.cx.carousel` event). |
+| `nextWhenVisible` | Smart next navigation that respects page/element visibility. **Returns before target slide is shown**. |
+| `pause` | Halts automatic cycling while preserving current state. |
+| `prev` | Moves to previous slide. **Returns immediately before transition completes** (before `slid.cx.carousel` event). |
+| `to` | Direct navigation to specific slide by index (zero-based). **Returns before target slide is shown**. |
+</CxTable>
+
+### Events
+
+Chassis CSS carousels provide comprehensive event hooks for application integration and analytics.
+
+- `direction`: Transition direction (`"left"` or `"right"`)
+- `relatedTarget`: DOM element becoming the active slide
+- `from`: Current slide index
+- `to`: Target slide index
+
+All events fire at the carousel element (`<div class="carousel">`) and include detailed transition information:
+
+<CxTable>
+| Event type | Description |
+| --- | --- |
+| `slid.cx.carousel` | Fired when slide transition animation completes. |
+| `slide.cx.carousel` | Fired immediately when slide transition begins. |
+</CxTable>
+
+```js
+const myCarousel = document.getElementById('myCarousel')
+
+myCarousel.addEventListener('slide.cx.carousel', event => {
+  // Access event properties for analytics or custom logic
+  console.log(`Sliding from ${event.from} to ${event.to}`)
+})
+```

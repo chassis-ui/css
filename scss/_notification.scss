@@ -1,0 +1,57 @@
+.notification {
+
+  @extend %context, %component;
+  // scss-docs-start notification-css-vars
+  --#{$prefix}bg-color: var(--#{$prefix}notification-bg-color, #{$notification-bg-color});
+  --#{$prefix}padding-y: var(--#{$prefix}notification-padding-y, #{$notification-padding-y});
+  --#{$prefix}padding-x: var(--#{$prefix}notification-padding-x, #{$notification-padding-x});
+  --#{$prefix}gap: var(--#{$prefix}notification-gap, #{$notification-gap});
+  --#{$prefix}border-width: var(--#{$prefix}notification-border-width, #{$notification-border-width});
+  --#{$prefix}border-radius: var(--#{$prefix}notification-border-radius, #{$notification-border-radius});
+  @include map-font($notification-message-font, notification);
+  @include map-font($notification-title-font, notification, title);
+  // scss-docs-end notification-css-vars
+
+  position: relative;
+  gap: var(--#{$prefix}gap);
+  margin-bottom: var(--#{$prefix}notification-margin-b, #{$notification-margin-b});
+  @include exclude-strokes(notification);
+
+  &.solid {
+    @extend %solid-context;
+  }
+
+  .close-button {
+    position: absolute;
+    top: $notification-padding-y;
+    right: #{calc($notification-padding-x * .5)};
+  }
+
+  @include last-mb-0();
+
+  a {
+    font-weight: var(--#{$prefix}font-weight-strong);
+  }
+
+  &:has(.close-button) {
+    padding-right: #{calc($notification-padding-x + $close-button-medium-size + $notification-gap)};
+  }
+
+  &:has(.notification-icon) {
+    display: flex;
+    align-items: center;
+  }
+
+}
+
+.notification-title {
+  margin-bottom: var(--#{$prefix}notification-title-margin-b, #{$notification-title-margin-b});
+  @include font(title);
+}
+
+.notification-icon {
+  --#{$prefix}icon-color: var(--#{$prefix}notification-icon-color, #{$notification-icon-color});
+  --#{$prefix}icon-size: var(--#{$prefix}notification-icon-size, #{$notification-icon-size});
+  // top: var(--#{$prefix}padding-y);
+  align-self: flex-start;
+}

@@ -1,0 +1,91 @@
+//
+// Progress Component
+//
+// This file implements progress indicators with animation support and stacking capabilities.
+// It handles both determinate and indeterminate progress states with customizable styling.
+//
+// Implementation Features:
+// - CSS animations for showing active progress with striped patterns
+// - Flexbox-based layout for precise sizing and alignment
+// - Feature flag control for animation through $enable-transitions
+// - Stacked progress bar support with multiple indicators in a single container
+// - Accessible label implementation with screenreader support
+// - Contextual color support through modifier classes
+// - Size customization through CSS custom properties
+//
+// The implementation prioritizes performance with conditional animation loading
+// and optimized rendering through appropriate CSS properties.
+//
+
+// Disable animation if transitions are disabled
+
+// scss-docs-start progress-keyframes
+@if $enable-transitions {
+  @keyframes progress-bar-stripes {
+    0% { background-position-x: $progress-height; }
+  }
+}
+// scss-docs-end progress-keyframes
+
+.progress,
+.progress-stacked {
+  // scss-docs-start progress-css-vars
+  --#{$prefix}height: var(--#{$prefix}progress-height, #{$progress-height});
+  @include rfs($progress-font-size, --#{$prefix}font-size);
+  @include rfs($progress-line-height, --#{$prefix}line-height);
+  --#{$prefix}bg-color: var(--#{$prefix}progress-bg-color, #{$progress-bg-color});
+  --#{$prefix}border-radius: var(--#{$prefix}progress-border-radius, #{$progress-border-radius});
+  --#{$prefix}box-shadow: var(--#{$prefix}progress-box-shadow, #{$progress-box-shadow});
+  --#{$prefix}bar-fg-color: var(--#{$prefix}progress-bar-fg-color, #{$progress-bar-fg-color});
+  --#{$prefix}bar-bg-color: var(--#{$prefix}progress-bar-bg-color, #{$progress-bar-bg-color});
+  --#{$prefix}bar-transition: var(--#{$prefix}progress-bar-transition, #{$progress-bar-transition});
+  --#{$prefix}bar-animation-timing: var(--#{$prefix}progress-bar-animation-timing, #{$progress-bar-animation-timing});
+  // scss-docs-end progress-css-vars
+
+  display: flex;
+  height: var(--#{$prefix}height);
+  overflow: hidden; // force rounded corners by cropping it
+  @include font-size(var(--#{$prefix}font-size));
+  @include line-height(var(--#{$prefix}line-height));
+  background-color: var(--#{$prefix}bg-color);
+  @include border-radius(var(--#{$prefix}border-radius));
+  @include box-shadow(var(--#{$prefix}box-shadow));
+}
+
+.progress-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--#{$prefix}bar-fg-color);
+  text-align: center;
+  white-space: nowrap;
+  background-color: var(--#{$prefix}bar-bg-color);
+  @include transition(var(--#{$prefix}bar-transition));
+
+  &.striped {
+    @include gradient-striped();
+    background-size: var(--#{$prefix}height) var(--#{$prefix}height);
+  }
+
+  @if $enable-transitions {
+    &.animated {
+      animation: var(--#{$prefix}bar-animation-timing) progress-bar-stripes;
+
+      @if $enable-reduced-motion {
+        @media (prefers-reduced-motion: reduce) {
+          animation: none;
+        }
+      }
+    }
+  }
+}
+
+
+.progress-stacked > .progress {
+  overflow: visible;
+}
+
+.progress-stacked > .progress > .progress-bar {
+  width: 100%;
+}

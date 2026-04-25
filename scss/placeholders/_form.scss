@@ -1,0 +1,273 @@
+//
+// Form Placeholders
+//
+// This file contains SCSS placeholders (%) that define the core styling for form elements.
+// These placeholders are used throughout the framework to provide consistent form styling
+// and to enable theming capabilities.
+//
+// The file implements a CSS variable-based approach for form styling, making it easy to:
+// - Apply consistent styling across all form elements
+// - Handle different form states (idle, focus, disabled, validation states)
+// - Provide size variants (small, medium, large)
+//
+// Placeholders also promote DRY (Don't Repeat Yourself) principles by allowing multiple
+// selectors to share the same rules without duplicating CSS in the compiled output.
+//
+// Usage:
+//
+// ```scss
+// .custom-input {
+//   @extend %form-input;
+// }
+// ```
+
+//
+// Form Color Variables
+//
+// Defines the CSS variables used for form styling.
+// These variables control the appearance of form elements in different states.
+//
+// State management is broken down into:
+// - idle: normal state when not interacted with
+// - focus: when the element has focus
+// - disabled: when the element is disabled
+// - error: validation state for invalid inputs
+// - success: validation state for valid inputs
+//
+// Each state has consistent properties for:
+// - bg-regular: Background color of the standard inputs
+// - fg-active: Text color for active content (input text)
+// - fg-inactive: Text color for inactive content (placeholders)
+// - border-color: Border color of the input
+// - assist-color: Color for assistant text (help text, errors)
+// - bg-floating: Background color used for floating labels
+//
+%form-colors {
+  // scss-docs-start form-color-variables
+  // Idle state variables
+  // Form inputs in their default state
+  --#{$prefix}form-idle-bg-regular: #{$form-idle-bg-regular};
+  --#{$prefix}form-idle-fg-active: #{$form-idle-fg-active};
+  --#{$prefix}form-idle-fg-inactive: #{$form-idle-fg-inactive};
+  --#{$prefix}form-idle-border-color: #{$form-idle-border-color};
+  --#{$prefix}form-idle-help-color: #{$form-idle-help-color};
+  --#{$prefix}form-idle-bg-floating: #{$form-idle-bg-floating};
+
+  // Focus state variables
+  // Applied when the input receives focus
+  --#{$prefix}form-focus-bg-regular: #{$form-focus-bg-regular};
+  --#{$prefix}form-focus-fg-active: #{$form-focus-fg-active};
+  --#{$prefix}form-focus-fg-inactive: #{$form-focus-fg-inactive};
+  --#{$prefix}form-focus-border-color: #{$form-focus-border-color};
+  --#{$prefix}form-focus-help-color: #{$form-focus-help-color};
+  --#{$prefix}form-focus-bg-floating: #{$form-focus-bg-floating};
+
+  // Disabled state variables
+  // Applied when the input is disabled
+  --#{$prefix}form-disabled-bg-regular: #{$form-disabled-bg-regular};
+  --#{$prefix}form-disabled-fg-active: #{$form-disabled-fg-active};
+  --#{$prefix}form-disabled-fg-inactive: #{$form-disabled-fg-inactive};
+  --#{$prefix}form-disabled-border-color: #{$form-disabled-border-color};
+  --#{$prefix}form-disabled-help-color: #{$form-disabled-help-color};
+  --#{$prefix}form-disabled-bg-floating: #{$form-disabled-bg-floating};
+
+  // Error validation state variables
+  // Applied for invalid input validation
+  --#{$prefix}form-invalid-bg-regular: #{$form-invalid-bg-regular};
+  --#{$prefix}form-invalid-fg-active: #{$form-invalid-fg-active};
+  --#{$prefix}form-invalid-fg-inactive: #{$form-invalid-fg-inactive};
+  --#{$prefix}form-invalid-border-color: #{$form-invalid-border-color};
+  --#{$prefix}form-invalid-help-color: #{$form-invalid-help-color};
+  --#{$prefix}form-invalid-bg-floating: #{$form-invalid-bg-floating};
+
+  // Success validation state variables
+  // Applied for valid input validation
+  --#{$prefix}form-valid-bg-regular: #{$form-valid-bg-regular};
+  --#{$prefix}form-valid-fg-active: #{$form-valid-fg-active};
+  --#{$prefix}form-valid-fg-inactive: #{$form-valid-fg-inactive};
+  --#{$prefix}form-valid-border-color: #{$form-valid-border-color};
+  --#{$prefix}form-valid-help-color: #{$form-valid-help-color};
+  --#{$prefix}form-valid-bg-floating: #{$form-valid-bg-floating};
+
+  // Special input component styling
+  // File input button styling
+  --#{$prefix}file-button-fg-color: #{$form-file-button-fg-color};
+  --#{$prefix}file-button-bg-image: #{$form-file-button-bg-image};
+  --#{$prefix}file-button-bg-color: #{$form-file-button-bg-color};
+  --#{$prefix}file-button-bg-hover: #{$form-file-button-bg-hover};
+
+  // Input addon styling (for input groups)
+  --#{$prefix}input-addon-fg-color: #{$form-input-addon-fg-color};
+  --#{$prefix}input-addon-bg-image: #{$form-input-addon-bg-image};
+  --#{$prefix}input-addon-bg-color: #{$form-input-addon-bg-color};
+  --#{$prefix}input-addon-border-color: #{$form-input-addon-border-color};
+
+  // Range input styling
+  --#{$prefix}form-range-track-color: #{$form-range-track-color};
+  --#{$prefix}form-range-thumb-color: #{$form-range-thumb-color};
+  --#{$prefix}form-range-thumb-disabled: #{$form-range-thumb-disabled};
+  --#{$prefix}form-range-thumb-active: #{$form-range-thumb-active};
+
+  // Default box shadow that changes based on validation states
+  --#{$prefix}form-focus-box-shadow: #{$form-input-focus-box-shadow};
+  // scss-docs-end form-color-variables
+}
+
+//
+// Form Size Variants
+//
+// These placeholders define size variants for form elements.
+// Each variant sets font size, line height, padding, border radius,
+// and other size-related properties.
+//
+// Using placeholders for size variants allows components to share
+// common sizing properties without code duplication, supporting
+// a more maintainable and consistent design system.
+//
+// Three size variants are provided:
+// - %form-size-medium: Default size for form elements
+// - %form-size-small: Smaller, more compact size
+// - %form-size-large: Larger, more prominent size
+//
+// Usage example:
+// ```scss
+// .custom-field {
+//   @extend %form-input;
+//   @extend %form-size-small; // Apply small size variant
+// }
+// ```
+//
+// These can also be applied with modifier classes:
+// ```html
+// <input class="form-input small">
+// <input class="form-input large">
+// ```
+//
+
+
+// Medium size variant - used as the default size
+// Sets standard padding, font size, and spacing
+%form-size-medium {
+  // scss-docs-start form-input-variables
+  @include map-font($form-medium-text-font, input);
+  --#{$prefix}padding-x: var(--#{$prefix}input-padding-x, #{$form-medium-padding-x});
+  --#{$prefix}padding-y: var(--#{$prefix}input-padding-y, #{$form-medium-padding-y});
+  --#{$prefix}gap: var(--#{$prefix}input-gap, #{$form-medium-gap});
+  --#{$prefix}min-height: var(--#{$prefix}input-min-height, #{$form-input-min-height});
+  --#{$prefix}border-width: var(--#{$prefix}input-border-width, #{$form-regular-border-width});
+  --#{$prefix}border-radius: var(--#{$prefix}input-border-radius, #{$form-medium-border-radius});
+  --#{$prefix}caret-size: var(--#{$prefix}input-caret-size, #{$form-medium-caret-size});
+  --#{$prefix}icon-size: var(--#{$prefix}input-icon-size, #{$form-medium-icon-size});
+  // scss-docs-end form-input-variables
+}
+
+// Small size variant - for compact UIs and dense layouts
+// Reduces all spacing and size properties for a more compact appearance
+%form-size-small {
+  @include map-font-size($form-small-text-font, null, input);
+  @include map-line-height($form-small-text-font, null, input);
+  --#{$prefix}input-padding-x: #{$form-small-padding-x};
+  --#{$prefix}input-padding-y: #{$form-small-padding-y};
+  --#{$prefix}input-gap: #{$form-small-gap};
+  --#{$prefix}input-border-radius: #{$form-small-border-radius};
+  --#{$prefix}input-caret-size: #{$form-small-caret-size};
+  --#{$prefix}input-icon-size: #{$form-large-icon-size};
+}
+
+// Large size variant - for prominent form controls
+// Increases spacing and font size for greater visibility
+%form-size-large {
+  @include map-font-size($form-large-text-font, null, input);
+  @include map-line-height($form-large-text-font, null, input);
+  --#{$prefix}input-padding-x: #{$form-large-padding-x};
+  --#{$prefix}input-padding-y: #{$form-large-padding-y};
+  --#{$prefix}input-gap: #{$form-large-gap};
+  --#{$prefix}input-border-radius: #{$form-large-border-radius};
+  --#{$prefix}input-caret-size: #{$form-large-caret-size};
+  --#{$prefix}input-icon-size: #{$form-small-icon-size};
+}
+
+//
+// Base Form Input Placeholder
+//
+// This is the main placeholder for form input styling. It provides all the
+// core styles needed for form controls and handles state management.
+//
+// The placeholder pattern allows multiple selectors to share the same rules without
+// duplicating CSS in the compiled output, promoting efficient, DRY code organization.
+//
+// Features:
+// - Applies base component styles through %component
+// - Sets color scheme with %form-colors
+// - Sets default size with %form-size-medium
+// - Handles focus, disabled, and other states
+// - Provides size variant support through .small and .large modifiers
+//
+// Usage example:
+// ```scss
+// .form-input {
+//   @extend %form-input;
+// }
+// ```
+//
+%form-input {
+  // Extend `%component` to assign the default component properties
+  @extend %component, %form-colors, %form-size-medium;
+  --#{$prefix}fg-color: var(--#{$prefix}input-fg-color, var(--#{$prefix}form-idle-fg-active));
+  --#{$prefix}bg-color: var(--#{$prefix}input-bg-color, var(--#{$prefix}form-idle-bg-regular));
+  --#{$prefix}border-color: var(--#{$prefix}input-border-color, var(--#{$prefix}form-idle-border-color));
+  // --#{$prefix}box-shadow: var(--#{$prefix}input-box-shadow, #{$form-input-box-shadow});
+
+  display: block;
+  width: 100%;
+  min-height: var(--#{$prefix}min-height);
+  @include exclude-strokes(form-control);
+  appearance: none; // Fix appearance for date inputs in Safari
+  background-clip: padding-box;
+
+  @include box-shadow($form-input-box-shadow);
+  @include transition($form-input-transition);
+
+  // Size variants applied through class modifiers
+  &.small {
+    @extend %form-size-small;
+  }
+
+  &.large {
+    @extend %form-size-large;
+  }
+
+  // Focus state styling
+  // Changes colors and adds focus indication
+  &:focus {
+    --#{$prefix}fg-color: var(--#{$prefix}form-focus-fg-active);
+    --#{$prefix}bg-color: var(--#{$prefix}form-focus-bg-regular);
+    --#{$prefix}border-color: var(--#{$prefix}form-focus-border-color);
+    --#{$prefix}box-shadow: var(--#{$prefix}form-focus-box-shadow);
+    outline: 0;
+    @if $enable-component-shadows {
+      @include box-shadow($form-input-box-shadow, var(--#{$prefix}box-shadow));
+    } @else {
+      // Avoid using mixin so we can pass custom focus shadow properly
+      box-shadow: var(--#{$prefix}box-shadow);
+    }
+  }
+
+  // Disabled state styling
+  // Changes colors and maintains readability
+  //
+  // Note: HTML5 says that controls under a fieldset > legend:first-child won't be
+  // disabled if the fieldset is disabled. Due to implementation difficulty, we
+  // don't honor that edge case; we style them as disabled anyway.
+  &:disabled {
+    --#{$prefix}fg-color: var(--#{$prefix}form-disabled-fg-active);
+    --#{$prefix}bg-color: var(--#{$prefix}form-disabled-bg-regular);
+    --#{$prefix}border-color: var(--#{$prefix}form-disabled-border-color);
+    // iOS fix for unreadable disabled content; see https://github.com/twbs/bootstrap/issues/11655.
+    // color: var(--#{$prefix}form-disabled-fg-active);
+    opacity: 1;
+    &::placeholder {
+      color: var(--#{$prefix}form-disabled-fg-inactive);
+    }
+  }
+}

@@ -1,0 +1,119 @@
+// Base class
+.tooltip {
+  // scss-docs-start tooltip-css-vars
+  --#{$prefix}zindex: var(--#{$prefix}tooltip-zindex, #{$zindex-tooltip});
+  --#{$prefix}max-width: var(--#{$prefix}tooltip-max-width, #{$tooltip-max-width});
+  --#{$prefix}padding-x: var(--#{$prefix}tooltip-padding-x, #{$tooltip-padding-x});
+  --#{$prefix}padding-y: var(--#{$prefix}tooltip-padding-y, #{$tooltip-padding-y});
+  --#{$prefix}margin: var(--#{$prefix}tooltip-margin, #{$tooltip-margin});
+  @include map-font($tooltip-font, tooltip);
+  --#{$prefix}fg-color: var(--#{$prefix}tooltip-fg-color, #{$tooltip-fg-color});
+  --#{$prefix}bg-color: var(--#{$prefix}tooltip-bg-color, #{$tooltip-bg-color});
+  --#{$prefix}border-radius: var(--#{$prefix}tooltip-border-radius, #{$tooltip-border-radius});
+  --#{$prefix}opacity: var(--#{$prefix}tooltip-opacity, #{$tooltip-opacity});
+  --#{$prefix}arrow-width: var(--#{$prefix}tooltip-arrow-width, #{$tooltip-arrow-width});
+  --#{$prefix}arrow-height: var(--#{$prefix}tooltip-arrow-height, #{$tooltip-arrow-height});
+  // scss-docs-end tooltip-css-vars
+
+  z-index: var(--#{$prefix}zindex);
+  display: block;
+  margin: var(--#{$prefix}margin);
+  @include deprecate("`$tooltip-margin`", "v5", "v5.x", true);
+  // Our parent element can be arbitrary since tooltips are by default inserted as a sibling of their target element.
+  // So reset our font and text properties to avoid inheriting weird values.
+  @include reset-text();
+  @include font();
+  // Allow breaking very long words so they don't overflow the tooltip's bounds
+  word-wrap: break-word;
+  opacity: 0;
+
+  &.show { opacity: var(--#{$prefix}opacity); }
+
+  .tooltip-arrow {
+    display: block;
+    width: var(--#{$prefix}arrow-width);
+    height: var(--#{$prefix}arrow-height);
+
+    &::before {
+      position: absolute;
+      content: "";
+      border-color: transparent;
+      border-style: solid;
+    }
+  }
+}
+
+.cx-tooltip-top .tooltip-arrow {
+  bottom: calc(-1 * var(--#{$prefix}arrow-height)); // stylelint-disable-line function-disallowed-list
+
+  &::before {
+    top: -1 * $utility-pixel-1;
+    border-width: var(--#{$prefix}arrow-height) calc(var(--#{$prefix}arrow-width) * .5) 0; // stylelint-disable-line function-disallowed-list
+    border-top-color: var(--#{$prefix}bg-color);
+  }
+}
+
+/* rtl:begin:ignore */
+.cx-tooltip-end .tooltip-arrow {
+  left: calc(-1 * var(--#{$prefix}arrow-height)); // stylelint-disable-line function-disallowed-list
+  width: var(--#{$prefix}arrow-height);
+  height: var(--#{$prefix}arrow-width);
+
+  &::before {
+    right: -1 * $utility-pixel-1;
+    border-width: calc(var(--#{$prefix}arrow-width) * .5) var(--#{$prefix}arrow-height) calc(var(--#{$prefix}arrow-width) * .5) 0; // stylelint-disable-line function-disallowed-list
+    border-right-color: var(--#{$prefix}bg-color);
+  }
+}
+
+/* rtl:end:ignore */
+
+.cx-tooltip-bottom .tooltip-arrow {
+  top: calc(-1 * var(--#{$prefix}arrow-height)); // stylelint-disable-line function-disallowed-list
+
+  &::before {
+    bottom: -1 * $utility-pixel-1;
+    border-width: 0 calc(var(--#{$prefix}arrow-width) * .5) var(--#{$prefix}arrow-height); // stylelint-disable-line function-disallowed-list
+    border-bottom-color: var(--#{$prefix}bg-color);
+  }
+}
+
+/* rtl:begin:ignore */
+.cx-tooltip-start .tooltip-arrow {
+  right: calc(-1 * var(--#{$prefix}arrow-height)); // stylelint-disable-line function-disallowed-list
+  width: var(--#{$prefix}arrow-height);
+  height: var(--#{$prefix}arrow-width);
+
+  &::before {
+    left: -1 * $utility-pixel-1;
+    border-width: calc(var(--#{$prefix}arrow-width) * .5) 0 calc(var(--#{$prefix}arrow-width) * .5) var(--#{$prefix}arrow-height); // stylelint-disable-line function-disallowed-list
+    border-left-color: var(--#{$prefix}bg-color);
+  }
+}
+
+/* rtl:end:ignore */
+
+.cx-tooltip-auto {
+  &[data-popper-placement^="top"] {
+    @extend .cx-tooltip-top;
+  }
+  &[data-popper-placement^="right"] {
+    @extend .cx-tooltip-end;
+  }
+  &[data-popper-placement^="bottom"] {
+    @extend .cx-tooltip-bottom;
+  }
+  &[data-popper-placement^="left"] {
+    @extend .cx-tooltip-start;
+  }
+}
+
+// Wrapper for the tooltip content
+.tooltip-inner {
+  max-width: var(--#{$prefix}max-width);
+  padding: var(--#{$prefix}padding-y) var(--#{$prefix}padding-x);
+  color: var(--#{$prefix}fg-color);
+  text-align: center;
+  background-color: var(--#{$prefix}bg-color);
+  @include border-radius(var(--#{$prefix}border-radius));
+}

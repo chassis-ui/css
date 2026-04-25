@@ -1,0 +1,89 @@
+//
+// Component Mixins
+//
+// A collection of utility mixins for consistent component styling across Chassis CSS.
+// These mixins help maintain consistent theming, spacing, and borders by using CSS
+// custom properties with optional component namespacing.
+//
+
+// scss-docs-start colors-mixin
+// Applies standard color properties using CSS custom properties.
+//
+// @param {string} $comp - Optional component namespace for CSS variables.
+//                         When provided, variables will be prefixed with "$comp-".
+//
+// Uses CSS variables for text color, background color, and border color,
+// enabling consistent theming across light and dark modes.
+@mixin colors($comp: null) {
+  color: var(--#{$prefix}#{if($comp, "#{$comp}-", "")}fg-color);
+  background-color: var(--#{$prefix}#{if($comp, "#{$comp}-", "")}bg-color);
+  border-color: var(--#{$prefix}#{if($comp, "#{$comp}-", "")}border-color);
+  // fill: var(--#{$prefix}#{if($comp, "#{$comp}-", "")}icon-color);
+}
+// scss-docs-end colors-mixin
+
+// scss-docs-start padding-mixin
+// Applies standard padding using CSS custom properties.
+//
+// @param {string} $comp - Optional component namespace for CSS variables.
+//                         When provided, variables will be prefixed with "$comp-".
+//
+// Applies vertical (padding-y) and horizontal (padding-x) padding values
+// defined in CSS custom properties.
+@mixin padding($comp: null) {
+  padding: var(--#{$prefix}#{if($comp, "#{$comp}-", "")}padding-y) var(--#{$prefix}#{if($comp, "#{$comp}-", "")}padding-x);
+}
+// scss-docs-end padding-mixin
+
+// scss-docs-start exclude-strokes-mixin
+// Applies padding with optional border width exclusion for specific components.
+//
+// @param {string} $comp - Component name to check against $enable-exclude-strokes setting.
+//
+// The $enable-exclude-strokes setting can be:
+// - true: Always apply calculation (subtract border from padding) for all components
+// - false: Never apply calculation, always use regular padding
+// - list: Only apply calculation if component is in the list
+//
+// When calculation is applied, subtracts border width from padding to achieve
+// the exact visual padding specified in design tools. This ensures the content box
+// precisely matches design specs regardless of border width.
+//
+// Uses generic padding and border-width variables (--#{$prefix}padding-x/y, --#{$prefix}border-width)
+// that components define within their own scope.
+@mixin exclude-strokes($comp) {
+  @if $enable-exclude-strokes == true or index($enable-exclude-strokes, $comp) {
+    $border-width: var(--#{$prefix}border-width);
+    $padding-y: #{calc(var(--#{$prefix}padding-y) - #{$border-width})};
+    $padding-x: #{calc(var(--#{$prefix}padding-x) - #{$border-width})};
+    padding: $padding-y $padding-x;
+  } @else {
+    padding: var(--#{$prefix}padding-y) var(--#{$prefix}padding-x);
+  }
+}
+// scss-docs-end exclude-strokes-mixin
+
+// scss-docs-start border-mixin
+// Applies consistent border styling using CSS custom properties.
+//
+// @param {string} $comp - Optional component namespace for CSS variables.
+//                         When provided, variables will be prefixed with "$comp-".
+//
+// Creates a border with width, style, and color from CSS variables.
+// Provides fallback values (0, solid, transparent) if the variables aren't defined.
+// This ensures elements maintain appropriate box model even without defined borders.
+@mixin border($comp: null) {
+  border: var(--#{$prefix}#{if($comp, "#{$comp}-", "")}border-width, 0) var(--#{$prefix}#{if($comp, "#{$comp}-", "")}border-style, solid) var(--#{$prefix}#{if($comp, "#{$comp}-", "")}border-color, transparent);
+}
+// scss-docs-end border-mixin
+
+// scss-docs-start last-mb-0-mixin
+// Removes bottom margin from the last paragraph element.
+//
+// Extends the .last-mb-0 utility class, which sets margin-bottom: 0
+// specifically on the last paragraph (p) child of the parent element.
+@mixin last-mb-0 {
+  @extend .last-mb-0;
+}
+// scss-docs-end last-mb-0-mixin
+

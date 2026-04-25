@@ -1,0 +1,29 @@
+---
+import { getConfig } from '@libs/config'
+
+interface Props {
+  /**
+   * Set to false if the component does not use cascading variable approach
+   */
+  cascading?: boolean
+}
+
+const { cascading = true } = Astro.props
+---
+
+<p>
+  These CSS variables control the component's appearance and can be modified dynamically on the
+  page.
+  {
+    cascading && (
+      <>
+        Components use{' '}
+        <a href="https://www.w3.org/TR/css-variables-1/#example-c3e4e8d9">cascading variables</a>,
+        allowing seamless variations in size, color, and style without redundant style declarations
+        through component inheritance and the{' '}
+        <a href={`/docs/${getConfig().docs_version}/core-concepts/context-class`}>context class</a>{' '}
+        system.
+      </>
+    )
+  }
+</p>

@@ -1,0 +1,72 @@
+---
+title: Contrast
+description: Set color or background to contrast color or an accessible color by using SaSS function.
+toc: true
+---
+
+import { getData } from '@libs/data'
+
+## Contrast Colors
+
+Use `.fg-*` and `.bg-*` classes in combination with `.fg-contrast` and `.bg-contrast` classes to set opposite property to contrast color defined by design tokens.
+
+### Contrast Text
+
+Use `fg-contrast` with `bg-*` classes.
+
+<Example code={[...getData('context-colors').map((color) => `<p class="bg-${color.name} fg-contrast p-xsmall">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} background with contrast color text.</p>`)]} />
+
+<Callout name="warning-color-assistive-technologies" />
+
+### Contrast Background
+
+Use `bg-contrast` with `fg-*` classes.
+
+<Example code={[...getData('context-colors').map((color) => `<p class="fg-${color.name} bg-contrast p-xsmall">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} text with contrast color background.</p>`)]} />
+
+## Accessible Colors
+
+With `.fg-a11y` and `.bg-a11y` classes to automatically determine the accessible `fg-color` or `bg-color` for particular context color using Bootstrap's Sass `color-contrast()` function.
+
+<Callout type="warning">
+**Heads up!** There's currently no support for a CSS-native `color-contrast` function, so we use Bootstrap's via Sass. This means that customizing context colors via CSS variables may cause color contrast issues with these utilities.
+</Callout>
+
+### Accessible Text
+
+Use `fg-a11y` to set accessible `fg-color` for `bg-*` background colors.
+
+<Example code={[...getData('context-colors').map((color) => `<p class="bg-${color.name} fg-a11y p-xsmall">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} background with accessible color text.</p>`)]} />
+
+### Accessible Background
+
+Use `bg-a11y` to set accessible `bg-color` for `fg-*` colors.
+
+<Example code={[...getData('context-colors').map((color) => `<p class="fg-${color.name} bg-a11y p-xsmall">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} text with accessible color background.</p>`)]} />
+
+## With components
+
+Use them in place of combined `.text-*` and `.bg-*` classes, like on [badges]([[docsref:/components/badge#background-colors]]):
+
+<Example code={`<span class="badge primary">Primary</span>
+<span class="badge fg-contrast bg-primary">Primary</span>
+<span class="badge fg-a11y bg-primary">Primary</span>
+<span class="badge secondary">Info</span>
+<span class="badge fg-contrast bg-secondary">Info</span>
+<span class="badge fg-a11y bg-secondary">Info</span>`} />
+
+Or on [cards]([[docsref:/components/card#background-and-color]]):
+
+<Example code={`<div class="card fg-a11y bg-primary mb-medium" style="max-width: 18rem;">
+  <div class="card-header">Header</div>
+  <div class="card-content">
+    <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div>
+<div class="card fg-a11y bg-info" style="max-width: 18rem;">
+  <div class="card-header">Header</div>
+  <div class="card-content">
+    <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div>
+`} />

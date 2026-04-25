@@ -1,0 +1,142 @@
+---
+title: Options
+description: Customize Chassis CSS with built-in variables to easily toggle global CSS preferences for controlling style, behavior, and optimizing your build.
+toc: true
+---
+
+## Overview
+
+Chassis CSS provides a comprehensive set of configuration options through `$enable-*` Sass variables, allowing you to toggle features based on your project's specific needs. These options give you precise control over:
+
+- **Bundle Size**: Disable features you don't need to reduce CSS file size
+- **Performance**: Optimize rendering by removing expensive visual effects
+- **Accessibility**: Maintain important accessibility features while customizing appearance
+- **Visual Style**: Fine-tune the appearance to match your design system
+
+### How to Customize Settings
+
+To override Chassis CSS's default settings:
+
+1. Create your own Sass file that modifies the variables you want to change
+2. Import this file **before** Chassis CSS's main Sass file
+3. Recompile your CSS with `npm run build`
+
+```scss
+// Your custom.scss file
+$enable-dark-mode: false;      // Disable dark mode support
+$enable-cssgrid: true;         // Keep CSS Grid system
+$enable-component-shadows: true; // Maintain shadow effects
+$enable-validation-icons: false; // Remove form validation icons
+
+// Then import Chassis CSS
+@import "chassis-css/scss/chassis";
+```
+
+All configuration options are defined in Chassis CSS's `scss/_settings.scss` file and use Sass's `!default` flag, meaning your custom values will always take precedence.
+
+## Configuration Options
+
+All configuration options are organized in a single alphabetical list for easier reference.
+
+<CxTable class="table table-options">
+| Variable                          | Values                             | Description                                                                            |
+| --------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------------- |
+| `$enable-accordion-contexts`      | `true` (default) or `false`        | Enables contextual styling for accordion components (primary, secondary, etc.) to match your design system colors. |
+| `$enable-accordion-sizes`         | `true` (default) or `false`        | Generates size variations for accordions (sm, md, lg), allowing for different visual weights in layouts. |
+| `$enable-button-pointers`         | `true` (default) or `false`        | Sets `cursor: pointer` on non-disabled buttons, providing visual feedback that elements are interactive. |
+| `$enable-caret`                   | `true` (default) or `false`        | Shows a directional indicator (caret) on `.dropdown-toggle` elements, improving affordance for interactive dropdown elements. |
+| `$enable-component-gradients`     | `true` or `false` (default)        | Applies subtle gradient backgrounds to various components via `background-image`. Disable for a flatter visual style or to reduce CSS size. |
+| `$enable-component-shadows`       | `true` or `false` (default)        | Enables decorative `box-shadow` styles on various components for depth. Does not affect focus state shadows used for accessibility. |
+| `$enable-container-classes`       | `true` (default) or `false`        | Generates CSS classes for layout containers (`.container`, `.container-fluid`, etc.). Disable to reduce CSS size if you're using custom containers. |
+| `$enable-cssgrid`                 | `true` (default) or `false`        | Enables the modern CSS Grid system with classes like `.grid` and `.g-col-medium-1`. Provides two-dimensional layout capabilities. |
+| `$enable-dark-mode`               | `true` (default) or `false`        | Implements [dark mode support]([[docsref:/customize/color-modes#dark-mode]]) throughout the framework, with automatic detection and toggle capability. |
+| `$enable-deprecation-messages`    | `true` (default) or `false`        | Shows console warnings when using deprecated features scheduled for removal in future versions. Disable in production for cleaner console output. |
+| `$enable-elevation-shadows`       | `true` (default) or `false`        | Generates elevation-specific shadow utilities that create consistent layering effects based on design tokens. |
+| `$enable-exclude-strokes`         | `true` (default), `false`, or list | Controls border width exclusion from padding for components. `true` applies to all components, `false` never applies, or provide a list like `button, badge, form-control, notification` for specific components. |
+| `$enable-grid-classes`            | `true` (default) or `false`        | Generates classes for the flexbox-based grid system (`.row`, `.col-medium-1`, etc.). Consider disabling if you only use CSS Grid. |
+| `$enable-important-utilities`     | `true` (default) or `false`        | Adds `!important` to utility classes to ensure they override component styles. Disable only if you have a carefully controlled CSS specificity strategy. |
+| `$enable-negative-margins`        | `true` (default) or `false`        | Generates [negative margin utilities]([[docsref:/utilities/spacing#negative-margin]]) like `.ms-n1`, `.mt-n2`. Useful for precise layout adjustments. |
+| `$enable-reduced-motion`          | `true` (default) or `false`        | Respects the [`prefers-reduced-motion` media query]([[docsref:/getting-started/accessibility#reduced-motion]]), reducing or eliminating animations for users who prefer minimal motion. Critical for vestibular disorders. |
+| `$enable-responsive-utilities`    | `true` (default) or `false`        | Enables [Breakpoint Type Scale]([[docsref:/content/typography#breakpoint-type-scale]]) utility classes for responsive typography based on breakpoints. |
+| `$enable-rfs`                     | `true` (default) or `false`        | Enables [Responsive Font Size]([[docsref:/getting-started/rfs]]) for automatic font size scaling based on viewport. Provides better typography across device sizes. |
+| `$enable-rounded-borders`         | `true` (default) or `false`        | Applies `border-radius` styles to various components. Disabling will override all border-radius values, including those specified by design tokens. |
+| `$enable-smooth-scroll`           | `true` (default) or `false`        | Enables `scroll-behavior: smooth` for smoother page navigation, while respecting reduced motion preferences. |
+| `$enable-table-active-border`     | `true` (default) or `false`        | Adds a prominent colored border indicator to active table rows or cells, matching the visual treatment in your design system. Improves focus indication. |
+| `$enable-table-border-radius`     | `true` (default) or `false`        | Applies consistent border-radius values to tables from design tokens, creating visually cohesive rounded corners that match other components. |
+| `$enable-table-font-tokens`       | `true` (default) or `false`        | Uses typography values from design tokens for table headers and cells, ensuring consistent text styling that adapts with your design system. |
+| `$enable-transitions`             | `true` (default) or `false`        | Enables smooth transition animations on interactive elements. Disable for instant state changes or to reduce CSS size. |
+| `$enable-validation-icons`        | `true` (default) or `false`        | Adds feedback icons within form elements for validation states (success, error), enhancing visual feedback for users. |
+| `$enable-visited-links`           | `true` (default) or `false`        | Applies distinct styling to visited links (`a:visited`), improving navigation by providing visual feedback about previously accessed content. |
+</CxTable>
+
+## Color Mode Type
+
+In addition to the `$enable-*` variables above, the `$color-mode-type` variable controls how dark mode is implemented in your project:
+
+- **`data`** (default): Uses a data attribute (`data-cx-theme="dark"`) to control theme switching, allowing user preference toggles and manual control.
+- **`media-query`**: Relies solely on the `prefers-color-scheme` media query, automatically respecting the user's operating system settings.
+
+Choose `data` when you want to provide a theme toggle in your UI, or `media-query` when you want to exclusively follow the system preference.
+
+## Default Configuration
+
+Below is the default configuration from `_settings.scss`. These settings are optimized for most projects, but you can override any of them based on your needs:
+
+```scss
+$color-mode-type:               data !default; // `data` or `media-query`
+
+$enable-accordion-sizes:        true !default;
+$enable-accordion-contexts:     true !default;
+$enable-button-pointers:        true !default;
+$enable-caret:                  true !default;
+$enable-component-gradients:    true !default;
+$enable-component-shadows:      true !default;
+$enable-container-classes:      true !default;
+$enable-cssgrid:                true !default;
+$enable-dark-mode:              true !default;
+$enable-deprecation-messages:   true !default;
+$enable-elevation-shadows:      true !default;
+$enable-exclude-strokes:        true !default;
+$enable-grid-classes:           true !default;
+$enable-important-utilities:    true !default;
+$enable-negative-margins:       true !default;
+$enable-reduced-motion:         true !default;
+$enable-rfs:                    false !default;
+$enable-rounded-borders:        true !default;
+$enable-smooth-scroll:          true !default;
+$enable-table-active-border:    true !default;
+$enable-table-border-radius:    true !default;
+$enable-table-font-tokens:      true !default;
+$enable-transitions:            true !default;
+$enable-validation-icons:       true !default;
+$enable-visited-links:          true !default;
+```
+
+## Performance Considerations
+
+Strategic configuration can significantly improve both CSS bundle size and runtime performance:
+
+### Reducing Bundle Size
+
+For smaller CSS files, consider disabling:
+
+- **Layout Systems**: Use only one grid system by setting either `$enable-cssgrid: false` or `$enable-grid-classes: false`
+- **Visual Enhancements**: Disable `$enable-component-gradients` and `$enable-component-shadows` for a more minimal style
+- **Form Features**: Turn off `$enable-validation-icons` if you implement custom validation UI
+- **Transitions**: Set `$enable-transitions: false` for a more minimal build
+
+### Improving Runtime Performance
+
+For better rendering performance, especially on lower-powered devices:
+
+- **Reduce Animations**: Set `$enable-transitions: false` to eliminate transition animations
+- **Simplify Rendering**: Disable `$enable-component-shadows` and `$enable-component-gradients` to reduce GPU/CPU load
+- **Optimize Typography**: Consider `$enable-rfs: false` if you don't need responsive font scaling
+
+### Production Optimizations
+
+When deploying to production:
+
+- Set `$enable-deprecation-messages: false` to keep the console clean
+- Consider `$enable-smooth-scroll: false` if you implement custom scroll behaviors
+- Audit your usage of dark mode with `$enable-dark-mode` - disable if unused

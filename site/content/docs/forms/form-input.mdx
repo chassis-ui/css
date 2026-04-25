@@ -1,0 +1,195 @@
+---
+title: Form Inputs
+description: Style text inputs and textareas with Chassis CSS's custom appearance, responsive sizing, and accessibility features.
+toc: true
+---
+
+## Overview
+
+Chassis CSS form inputs feature a clean, modern design with consistent states, sizing options, and accessibility enhancements. Inputs adapt to color modes using CSS variables for seamless theming.
+
+<Example code={`<div class="mb-medium">
+    <label for="exampleFormControlInput1" class="form-label">Email address</label>
+    <input type="email" class="form-input" id="exampleFormControlInput1" placeholder="name@example.com">
+  </div>
+  <div class="mb-medium">
+    <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
+    <textarea class="form-input" id="exampleFormControlTextarea1" rows="3"></textarea>
+  </div>`} />
+
+## Sizing
+
+Modify input sizes with the `.small` and `.large` modifier classes to maintain consistent component dimensions throughout your interface.
+
+<Example code={`<input class="form-input large" type="text" placeholder=".large" aria-label="Large form input example">
+<input class="form-input" type="text" placeholder="Default input" aria-label="Default form input example">
+<input class="form-input small" type="text" placeholder=".small" aria-label="Small form input example">`} />
+
+## Form help
+
+The `.form-help` class provides additional guidance text for form inputs. Use it to display validation messages, requirements, or other helpful information.
+
+<Callout type="warning">
+Always connect form help text to its related input using the `aria-describedby` attribute to ensure screen readers announce the guidance when users interact with the input.
+</Callout>
+
+### Block form help
+
+Add contextual help text below inputs using a block element with the `.form-help` class. The class automatically adds appropriate spacing for visual hierarchy.
+
+<Example code={`<label for="inputPassword5" class="form-label">Password</label>
+  <input type="password" id="inputPassword5" class="form-input" aria-describedby="passwordHelpBlock">
+  <div id="passwordHelpBlock" class="form-help">
+    Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
+  </div>`} />
+
+### Inline form help
+
+For more compact layouts, use inline form help by applying the `.form-help` class to any inline element such as `<span>` or `<small>`.
+
+<Example code={`<div class="row g-medium align-items-center">
+    <div class="col-auto">
+      <label for="inputPassword6" class="col-form-label">Password</label>
+    </div>
+    <div class="col-auto">
+      <input type="password" id="inputPassword6" class="form-input" aria-describedby="passwordHelpInline">
+    </div>
+    <div class="col-auto">
+      <span id="passwordHelpInline" class="form-help">
+        Must be 8-20 characters long.
+      </span>
+    </div>
+  </div>`} />
+
+## Input states
+
+Chassis CSS provides consistent styling for various input states to communicate status and interactivity to users.
+
+### Disabled inputs
+
+Apply the HTML `disabled` attribute to inputs to indicate they're not interactive. Disabled inputs receive:
+- Muted appearance with lighter colors
+- Removal of pointer events
+- Prevention of focus and keyboard interaction
+
+<Example code={`<input class="form-input" type="text" placeholder="Disabled input" aria-label="Disabled input example" disabled>
+<input class="form-input" type="text" value="Disabled readonly input" aria-label="Disabled input example" disabled readonly>`} />
+
+### Readonly inputs
+
+Use the `readonly` attribute to prevent users from changing an input's value while keeping it selectable. Unlike disabled inputs, readonly inputs remain focusable for easier form navigation.
+
+<Example code={`<input class="form-input" type="text" value="Readonly input here..." aria-label="readonly input example" readonly>`} />
+
+### Plaintext inputs
+
+For displaying non-editable data within form layouts, use the combination of `readonly` and the `.plaintext` class. This removes form field styling while preserving proper spacing within your form layout.
+
+<Example code={`<div class="mb-medium row">
+    <label for="staticEmail" class="col-small-2 col-form-label">Email</label>
+    <div class="col-small-10">
+      <input type="text" readonly class="form-input plaintext" id="staticEmail" value="email@example.com">
+    </div>
+  </div>
+  <div class="mb-medium row">
+    <label for="inputPassword" class="col-small-2 col-form-label">Password</label>
+    <div class="col-small-10">
+      <input type="password" class="form-input" id="inputPassword">
+    </div>
+  </div>`} />
+
+<Example code={`<form class="row g-3">
+    <div class="col-auto">
+      <label for="staticEmail2" class="visually-hidden">Email</label>
+      <input type="text" readonly class="form-input plaintext" id="staticEmail2" value="email@example.com">
+    </div>
+    <div class="col-auto">
+      <label for="inputPassword2" class="visually-hidden">Password</label>
+      <input type="password" class="form-input" id="inputPassword2" placeholder="Password">
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="button primary mb-medium">Confirm identity</button>
+    </div>
+  </form>`} />
+
+## File input
+
+Chassis CSS enhances HTML file inputs with consistent styling while maintaining browser-specific file selection functionality. Apply the `.form-input` class to `<input type="file">` elements for standardized appearance.
+
+<Example code={`<div class="mb-medium">
+    <label for="formFile" class="form-label">Default file input example</label>
+    <input class="form-input" type="file" id="formFile">
+  </div>
+  <div class="mb-medium">
+    <label for="formFileMultiple" class="form-label">Multiple files input example</label>
+    <input class="form-input" type="file" id="formFileMultiple" multiple>
+  </div>
+  <div class="mb-medium">
+    <label for="formFileDisabled" class="form-label">Disabled file input example</label>
+    <input class="form-input" type="file" id="formFileDisabled" disabled>
+  </div>
+  <div class="mb-medium">
+    <label for="formFileSm" class="form-label">Small file input example</label>
+    <input class="form-input small" id="formFileSm" type="file">
+  </div>
+  <div>
+    <label for="formFileLg" class="form-label">Large file input example</label>
+    <input class="form-input large" id="formFileLg" type="file">
+  </div>`} />
+
+## Color input
+
+Chassis CSS provides enhanced styling for color inputs. Use `type="color"` with the `.color-input` modifier class to create a consistent color picker that integrates with your form layout.
+
+<Example code={`<label for="exampleColorInput" class="form-label">Color picker</label>
+<input type="color" class="form-input color-input" id="exampleColorInput" value="#563d7c" title="Choose your color">`} />
+
+## Datalists
+
+Enhance text inputs with autocompletion suggestions using the HTML5 `<datalist>` element. This provides a hybrid between free text entry and select dropdowns, giving users flexible input options.
+
+<Example code={`<label for="exampleDataList" class="form-label">Datalist example</label>
+  <input class="form-input" list="datalistOptions" id="exampleDataList" placeholder="Type to search...">
+  <datalist id="datalistOptions">
+    <option value="San Francisco">
+    <option value="New York">
+    <option value="Seattle">
+    <option value="Los Angeles">
+    <option value="Chicago">
+  </datalist>`} />
+
+## CSS
+
+Chassis CSS uses a powerful combination of Sass and CSS variables to create a flexible form system that adapts to themes and design requirements.
+
+<DocsCSS />
+
+### Custom properties
+
+<DocsCSSVars />
+
+<ScssDocs name="form-input-variables" file="scss/placeholders/_form.scss" />
+
+Check the [overview]([[docsref:forms/overview#custom-properties]]) page to see the CSS variables shared by all form elements.
+
+### Sass variables
+
+<DocsSASSVars notExposed={true} />
+
+<hr />
+
+These variables control common properties for all form inputs:
+
+<ScssDocs name="form-input-variables" file="scss/_variables.scss" />
+
+These variables define the appearance of form labels:
+
+<ScssDocs name="form-label-variables" file="scss/_variables.scss" />
+
+These variables customize the appearance of file inputs:
+
+<ScssDocs name="form-file-variables" file="scss/_variables.scss" />
+
+### Design tokens
+
+Check the [overview]([[docsref:forms/overview#design-tokens]]) page to see the design tokens shared by all form elements.

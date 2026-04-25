@@ -1,0 +1,89 @@
+//
+// Component Placeholders
+//
+// A collection of SCSS placeholder selectors (%placeholders) that encapsulate common
+// styling patterns for components throughout Chassis CSS. These placeholders promote
+// code reuse and maintainability by centralizing styling logic and reducing repetition.
+//
+// Each placeholder uses mixins from ../mixins/_component.scss to apply consistent
+// styling based on CSS custom properties, supporting Chassis CSS's theming system.
+// Using @extend with these placeholders ensures consistent styling while reducing
+// compiled CSS size compared to repeating the same mixin calls across multiple selectors.
+//
+
+// scss-docs-start component-placeholder-selector
+// Comprehensive base styling for components.
+//
+// Applies a complete set of foundational styles that most components need:
+// - Typography via font mixin
+// - Color scheme via colors mixin (text, background, border colors)
+// - Border radius for consistent corner styling
+// - Border properties with appropriate fallbacks
+//
+// Use this placeholder when creating new components that need the full
+// set of Chassis styling fundamentals.
+%component {
+  @include font();
+  @include colors();
+  @include border-radius();
+  @include border();
+}
+// scss-docs-end component-placeholder-selector
+
+// scss-docs-start typography-placeholder-selector
+// Typography styling for components.
+//
+// Applies font properties using CSS custom properties to maintain consistent
+// typography across components. This includes font-family, font-size,
+// font-weight, and line-height from the configured theme variables.
+//
+// Use this placeholder when you only need typography styling without
+// other component styles like colors or borders.
+%typography {
+  @include font();
+}
+// scss-docs-end typography-placeholder-selector
+
+// scss-docs-start colors-placeholder-selector
+// Color scheme styling for components.
+//
+// Applies the three fundamental color properties for components:
+// - color (text color)
+// - background-color
+// - border-color
+//
+// All values are applied via CSS custom properties, enabling seamless
+// theme switching and component-specific color variations.
+//
+// Use this placeholder when you need color-related styling
+// without typography or border styling.
+%colors {
+  @include colors();
+}
+// scss-docs-end colors-placeholder-selector
+
+// scss-docs-start exclude-strokes-placeholder-note
+// Note: The exclude-strokes mixin requires a component name parameter,
+// so it cannot be used directly in a placeholder. Components should call
+// the mixin directly: @include exclude-strokes(component-name);
+//
+// For components not using stroke exclusion, use @include padding() instead.
+// scss-docs-end exclude-strokes-placeholder-note
+
+// scss-docs-start border-placeholder-selector
+// Border styling for components.
+//
+// Applies consistent border styling using the border mixin, which sets:
+// - border-width (with 0 fallback)
+// - border-style (with solid fallback)
+// - border-color (with transparent fallback)
+//
+// All values are applied via CSS custom properties, enabling theme-aware
+// borders that adapt to different color modes and component states.
+//
+// Use this placeholder when you need only border styling without
+// colors or other component styles.
+%border {
+  @include border();
+}
+// scss-docs-end border-placeholder-selector

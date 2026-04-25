@@ -1,0 +1,377 @@
+---
+title: Buttons
+description: Explore Chassis CSS's button components — precision-crafted controls that seamlessly bridge your Figma designs and code implementation through design tokens.
+toc: true
+---
+
+import { getData } from '@libs/data'
+
+## Introduction
+
+Buttons in Chassis CSS are designed to provide consistent interactive controls across your interface while maintaining pixel-perfect fidelity with your Figma designs. Unlike other frameworks that provide generic button styles, Chassis buttons are built on design tokens that synchronize directly with your Figma components, ensuring design-to-development coherence.
+
+## Foundation class
+
+Chassis CSS provides a foundational `.button` class that establishes the core interactive behavior, layout parameters, and typographic treatment for all button variants. This class serves as the structural backbone upon which all button variants are built.
+
+<Example class="button-examples" code={`<button type="button" class="button">Foundation class</button>
+<button type="button" class="button default">Default Button</button>
+<button type="button" class="button primary">Primary Button</button>
+<button type="button" class="button link">Link</button>`} />
+
+The `.button` foundation class is designed to be extended with contextual classes that define purpose-specific styling, or to serve as a starting point for your own custom button implementations.
+
+<Callout type="info">
+  <strong>Accessibility:</strong> The foundational `.button` class already includes built-in focus styles that ensure proper keyboard navigation and accessibility compliance.
+</Callout>
+
+## Button variants
+
+Chassis CSS provides a range of purpose-driven button variants, each mapped to a specific design token context. These variants ensure consistent semantics across your interface.
+
+<Example class="button-examples" code={[...getData('context-colors').map((contextColor) => `<button type="button" class="button ${contextColor.name}">${contextColor.title}</button>`)]} />
+
+<Callout name="warning-color-assistive-technologies" />
+
+### Outline variants
+
+For interfaces requiring more subtle interaction elements, the `.outline` modifier transforms any button into a borderline-focused variant with a transparent background while retaining its semantic color context.
+
+<Example class="button-examples" code={[...getData('context-colors').map((contextColor) => `<button type="button" class="button ${contextColor.name} outline">${contextColor.title}</button>`)]} />
+
+<Callout>
+  Some button variants use lighter foreground colors and are optimized for dark backgrounds to ensure proper contrast ratios.
+</Callout>
+
+### Smooth variants
+
+The `.smooth` modifier applies a subdued background to buttons, creating a softer presence in the interface while maintaining their contextual meaning.
+
+<Example class="button-examples" code={[...getData('context-colors').map((contextColor) => `<button type="button" class="button ${contextColor.name} smooth">${contextColor.title}</button>`)]} />
+
+## Element compatibility
+
+While the `.button` classes are optimized for the semantic `<button>` element, they work equally well with alternative elements:
+
+<Example class="button-examples" code={`<button class="button primary" type="submit">Button</button>
+<input class="button primary" type="button" value="Input">
+<input class="button primary" type="submit" value="Submit">
+<input class="button primary" type="reset" value="Reset">
+<a class="button primary" href="" role="button">Link</a>`} />
+
+When using button classes on `<a>` elements for in-page functionality rather than navigation, include `role="button"` to ensure proper semantic meaning for assistive technologies.
+
+## Icon integration
+
+Chassis CSS provides purpose-built classes for icon placement within buttons. Both SVG icons and icon fonts can be used within buttons.
+
+<Example class="button-examples" code={`<button type="button" class="button default">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Default</span>
+  </button>
+  <button type="button" class="button primary">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Primary</span>
+  </button>
+  <button type="button" class="button default">
+    <span>Default</span>
+    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+  </button>
+  <button type="button" class="button primary">
+    <span>Primary</span>
+    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+  </button>`} />
+
+<Callout type="warning">
+  Icon spacing is automatically applied using `:first-child` and `:last-child` pseudo selectors. To ensure proper spacing, wrap the chip text in a `<span>` element.
+</Callout>
+
+### Icon-only buttons
+
+For buttons that consist solely of an icon, Chassis CSS provides built-in support to ensure proper sizing and alignment. Simply include the icon element within the button without any accompanying text.
+
+<Example class="button-examples" code={`<button type="button" class="button default">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+  </button>
+  <button type="button" class="button primary">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+  </button>
+  <button type="button" class="button small default">
+    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+  </button>
+  <button type="button" class="button small primary">
+    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+  </button>
+  <button type="button" class="button large default">
+    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+  </button>
+  <button type="button" class="button default large">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+  </button>
+  <button type="button" class="button large primary">
+    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+  </button>`} />
+
+
+## Size variants
+
+Chassis provides three predefined size variants through the `.large` and `.small` modifier classes, with the default size applied when no modifier is present.
+
+<Example class="button-examples" code={`<button type="button" class="button default large">
+    Default
+  </button>
+  <button type="button" class="button default large">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Default</span>
+  </button>
+  <button type="button" class="button primary large">
+    Primary
+  </button>
+  <button type="button" class="button primary large">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Primary</span>
+  </button>`} />
+
+<Example class="button-examples" code={`<button type="button" class="button default small">
+    Default
+  </button>
+  <button type="button" class="button default small">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Default</span>
+  </button>
+  <button type="button" class="button primary small">
+    Primary
+  </button>
+  <button type="button" class="button primary small">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Primary</span>
+  </button>`} />
+
+### Custom sizing
+
+Beyond the predefined sizes, Chassis's token-based architecture enables precise sizing control through CSS variables:
+
+<Example class="button-examples" code={`<button type="button" class="button primary"
+    style="--cx-button-padding-y: .75rem; --cx-button-padding-x: 1.5rem; --cx-button-font-size: .75rem;">
+    Custom-sized button
+  </button>`} />
+
+## Disabled state
+
+Chassis CSS handles button disabling in a semantically appropriate way. For native button elements, use the `disabled` attribute:
+
+<Example class="button-examples" code={`<button type="button" class="button default" disabled>
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Default Button</span>
+  </button>
+  <button type="button" class="button default outline" disabled>
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Default button</span>
+  </button>
+  <button type="button" class="button default smooth" disabled>
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Default button</span>
+  </button>
+  <button type="button" class="button primary" disabled>
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Primary Button</span>
+  </button>
+  <button type="button" class="button primary outline" disabled>
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Primary Button</span>
+  </button>
+  <button type="button" class="button primary smooth" disabled>
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Primary Button</span>
+  </button>`} />
+
+For link-based buttons using the `<a>` element, Chassis provides a different approach:
+
+<Example class="button-examples" code={`<a class="button default disabled" role="button" aria-disabled="true">Default Link</a>
+<a class="button primary disabled" role="button" aria-disabled="true">Primary Link</a>
+<a class="button secondary disabled" role="button" aria-disabled="true">Secondary Link</a>`} />
+
+### Disabled links
+
+When implementing disabled link buttons, follow these guidelines:
+
+1. Add the `.disabled` class to apply the visual disabled state
+2. Include `aria-disabled="true"` to communicate the disabled state to assistive technologies
+3. Omit the `href` attribute when possible to prevent navigation
+
+For cases where the `href` must be retained:
+
+<Example class="button-examples" code={`<a href="#" class="button default disabled" tabindex="-1" role="button" aria-disabled="true">Default Link</a>
+<a href="#" class="button primary disabled" tabindex="-1" role="button" aria-disabled="true">Primary Link</a>
+<a href="#" class="button secondary disabled" tabindex="-1" role="button" aria-disabled="true">Secondary Link</a>`} />
+
+In these instances, the `.disabled` class applies `pointer-events: none` which disables mouse interaction in modern browsers. However, since keyboard navigation remains possible, add `tabindex="-1"` to prevent keyboard focus and implement JavaScript to fully disable the functionality.
+
+## Layout patterns
+
+Chassis CSS leverages its utility system for flexible button layouts rather than providing specific button-container classes. This approach provides greater control over spacing, alignment, and responsive behavior.
+
+### Full-width buttons
+
+Create responsive stacks of full-width buttons using Chassis's grid utilities:
+
+<Example class="button-examples" code={`<div class="d-grid gap-xsmall">
+    <button class="button default" type="button">Default</button>
+    <button class="button primary" type="button">Primary</button>
+  </div>`} />
+
+### Responsive buttons
+
+Transform button layouts at different breakpoints using Chassis's responsive utilities:
+
+<Example class="button-examples" code={`<div class="d-grid gap-xsmall d-medium-block">
+    <button class="button default" type="button">Default</button>
+    <button class="button primary" type="button">Primary</button>
+  </div>`} />
+
+### Width control
+
+Apply grid column utilities to control button width precisely:
+
+<Example class="button-examples" code={`<div class="d-grid gap-xsmall col-6 mx-auto">
+    <button class="button default" type="button">Default</button>
+    <button class="button primary" type="button">Primary</button>
+  </div>`} />
+
+### Alignment control
+
+Use flex utilities to control button alignment within groups:
+
+<Example class="button-examples" code={`<div class="d-grid gap-xsmall d-medium-flex justify-content-medium-end">
+    <button class="button default" type="button">Default</button>
+    <button class="button primary" type="button">Primary</button>
+  </div>`} />
+
+## Text handling
+
+By default, button text will wrap to accommodate its container. To prevent text wrapping, add the `.text-nowrap` utility class. For global control in your Sass build, configure the `$button-white-space: nowrap` variable.
+
+<Example class="button-examples" code={`<div style="max-width: 200px;">
+    <p><button type="button" class="button primary">Button with a longer text that will wrap</button></p>
+    <p><button type="button" class="button primary text-nowrap">While no-wrap text will extend beyond boundaries</button><p>
+  </div>`} />
+
+## Toggle functionality
+
+Chassis includes a toggle button plugin for implementing stateful buttons. These differ from checkbox toggles in how they're communicated to assistive technologies (announced as "button"/"button pressed" rather than "checked"/"not checked").
+
+### Toggle states
+
+Add `data-cx-toggle="button"` to enable toggle functionality. For pre-toggled buttons, add both the `.active` class and `aria-pressed="true"` attribute:
+
+<Example class="button-examples" code={`<p class="d-inline-flex gap-xsmall">
+    <button type="button" class="button default" data-cx-toggle="button" aria-pressed="false">Toggle button</button>
+    <button type="button" class="button default active" data-cx-toggle="button" aria-pressed="true">Active toggle</button>
+    <button type="button" class="button default" disabled data-cx-toggle="button" aria-pressed="false">Disabled toggle</button>
+    <button type="button" class="button default active" disabled data-cx-toggle="button" aria-pressed="true">Disabled active</button>
+  </p>
+  <p class="d-inline-flex gap-xsmall">
+    <button type="button" class="button primary" data-cx-toggle="button" aria-pressed="false">Toggle button</button>
+    <button type="button" class="button primary active" data-cx-toggle="button" aria-pressed="true">Active toggle</button>
+    <button type="button" class="button primary" disabled data-cx-toggle="button" aria-pressed="false">Disabled toggle</button>
+    <button type="button" class="button primary active" disabled data-cx-toggle="button" aria-pressed="true">Disabled active</button>
+  </p>`} />
+
+Toggle functionality is also available for link buttons:
+
+<Example class="button-examples" code={`<p class="d-inline-flex gap-xsmall">
+    <a href="#" class="button default" role="button" data-cx-toggle="button" aria-pressed="false">Toggle link</a>
+    <a href="#" class="button default active" role="button" data-cx-toggle="button" aria-pressed="true">Active toggle</a>
+    <a href="#" class="button default disabled" aria-disabled="true" role="button" data-cx-toggle="button" aria-pressed="false">Disabled toggle</a>
+    <a href="#" class="button default active disabled" aria-disabled="true" role="button" data-cx-toggle="button" aria-pressed="true">Disabled active</a>
+  </p>
+  <p class="d-inline-flex gap-xsmall">
+    <a href="#" class="button primary" role="button" data-cx-toggle="button" aria-pressed="false">Toggle link</a>
+    <a href="#" class="button primary active" role="button" data-cx-toggle="button" aria-pressed="true">Active toggle</a>
+    <a href="#" class="button primary disabled" aria-disabled="true" role="button" data-cx-toggle="button" aria-pressed="false">Disabled toggle</a>
+    <a href="#" class="button primary active disabled" aria-disabled="true" role="button" data-cx-toggle="button" aria-pressed="true">Disabled active</a>
+  </p>`} />
+
+## JavaScript API
+
+The Button component provides a JavaScript API for programmatic control:
+
+```js
+const cxButton = new chassis.Button('#myButton')
+```
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `dispose` | Cleans up a button instance and removes associated DOM data |
+| `getInstance` | Static method that retrieves the button instance associated with a DOM element: `chassis.Button.getInstance(element)` |
+| `getOrCreateInstance` | Static method that returns an existing button instance or creates one if none exists: `chassis.Button.getOrCreateInstance(element)` |
+| `toggle` | Toggles the button's active state |
+</CxTable>
+
+Example of toggling all buttons programmatically:
+
+```js
+document.querySelectorAll('.button').forEach(buttonElement => {
+  const button = chassis.Button.getOrCreateInstance(buttonElement)
+  button.toggle()
+})
+```
+
+## CSS
+
+<DocsCSS />
+
+### Custom properties
+
+<DocsCSSVars />
+<hr />
+Common variables:
+<ScssDocs name="button-css-vars" file="scss/_button.scss" />
+Sizing:
+<ScssDocs name="button-medium-css-vars" file="scss/placeholders/_button.scss" />
+Idle (default) state:
+<ScssDocs name="button-idle-css-vars" file="scss/placeholders/_button.scss" />
+Hover state:
+<ScssDocs name="button-hover-css-vars" file="scss/placeholders/_button.scss" />
+Press (active) state:
+<ScssDocs name="button-press-css-vars" file="scss/placeholders/_button.scss" />
+Focus state:
+<ScssDocs name="button-disabled-css-vars" file="scss/placeholders/_button.scss" />
+
+### Sass variables
+
+<DocsSASSVars notExposed={true} />
+
+<ScssDocs name="button-variables" file="scss/_variables.scss" />
+
+### Sass mixins
+
+Chassis CSS automatically applies these specialized mixins to each semantic context color to generate the complete suite of button variants while maintaining design token consistency:
+
+<hr />
+
+Solid button mixin:
+
+<ScssDocs name="solid-button-mixin" file="scss/mixins/_button.scss" />
+
+Outline button mixin;
+
+<ScssDocs name="outline-button-mixin" file="scss/mixins/_button.scss" />
+
+Smooth button mixin:
+
+<ScssDocs name="smooth-button-mixin" file="scss/mixins/_button.scss" />
+
+### Sass maps
+
+Color map that drives the generation of all button variants through button mixins.
+
+<ScssDocs name="button-colors-map" file="scss/maps/_buttons.scss" />
+
+### Design tokens
+
+<DocsDesignTokens />
+
+<ScssDocs name="button-tokens" file="scss/tokens/_buttons.scss" />
+<ScssDocs name="button-color-tokens" file="scss/tokens/_buttons.scss" />

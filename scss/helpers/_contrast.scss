@@ -1,0 +1,38 @@
+// All-caps `RGBA()` function used because of this Sass bug: https://github.com/sass/node-sass/issues/2251
+@each $color, $value in $context-colors {
+  // $color: #{str-replace($color, "-base-color")};
+  .bg-#{$color}.fg-contrast {
+    color: #{RGBA(var(--#{$prefix}#{$color}-contrast-rgb), var(--#{$prefix}fg-opacity, 1))} if($enable-important-utilities, !important, null);
+    background-color: #{RGBA(var(--#{$prefix}#{$color}-rgb), var(--#{$prefix}bg-opacity, 1))} if($enable-important-utilities, !important, null);
+  }
+  .fg-#{$color}.bg-contrast {
+    color: #{RGBA(var(--#{$prefix}#{$color}-rgb), var(--#{$prefix}fg-opacity, 1))} if($enable-important-utilities, !important, null);
+    background-color: #{RGBA(var(--#{$prefix}#{$color}-contrast-rgb), var(--#{$prefix}bg-opacity, 1))} if($enable-important-utilities, !important, null);
+  }
+}
+
+@each $color, $value in $context-colors {
+  // $color: #{str-replace($color, "-base-color")};
+  .bg-#{$color}.fg-a11y {
+    color: #{color-contrast($value)} if($enable-important-utilities, !important, null);
+    background-color: #{RGBA(var(--#{$prefix}#{$color}-rgb), var(--#{$prefix}bg-opacity, 1))} if($enable-important-utilities, !important, null);
+  }
+  .fg-#{$color}.bg-a11y {
+    color: #{RGBA(var(--#{$prefix}#{$color}-rgb), var(--#{$prefix}bg-opacity, 1))} if($enable-important-utilities, !important, null);
+    background-color: #{color-contrast($value)} if($enable-important-utilities, !important, null);
+  }
+}
+
+@include color-mode(dark) {
+  @each $color, $value in $context-colors-dark {
+    // $color: #{str-replace($color, "-base-color")};
+    .bg-#{$color}.fg-a11y {
+      color: #{color-contrast($value)} if($enable-important-utilities, !important, null);
+      background-color: #{RGBA(var(--#{$prefix}#{$color}-rgb), var(--#{$prefix}bg-opacity, 1))} if($enable-important-utilities, !important, null);
+    }
+    .fg-#{$color}.bg-a11y {
+      color: #{RGBA(var(--#{$prefix}#{$color}-rgb), var(--#{$prefix}bg-opacity, 1))} if($enable-important-utilities, !important, null);
+      background-color: #{color-contrast($value)} if($enable-important-utilities, !important, null);
+    }
+  }
+}

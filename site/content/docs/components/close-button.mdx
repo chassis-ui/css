@@ -1,0 +1,89 @@
+---
+title: Close button
+description: An accessible, customizable button component that provides a consistent way to dismiss or close interactive elements.
+toc: true
+---
+
+## Introduction
+
+The close button component provides a consistent, accessible way to dismiss or close interactive elements such as modals, notifications, and alerts. Designed to be immediately recognizable, the close button maintains a consistent appearance across your interface while supporting various sizes and contextual styling.
+
+## Basic usage
+
+Add the `.close-button` class to any `<button>` element to create a close button with the default X icon.
+
+<Example code={`<button type="button" class="close-button" aria-label="Close"></button>`} />
+
+<Callout type="warning">
+  Always include an <code>aria-label</code> attribute for screen readers, as the X icon is visually meaningful but not accessible without a text label.
+</Callout>
+
+## Custom icon
+
+By default, the close button displays the X icon automatically through CSS. You can override this by including your own SVG icon:
+
+<Example code={`<button type="button" class="close-button" aria-label="Close">
+    <svg class="icon"><use xlink:href="#xmark-large-solid"/></svg>
+  </button>`} />
+
+To customize the default icon globally, modify the `$close-button-icon` Sass variable in your theme.
+
+## Sizes
+
+Apply `.small` or `.large` classes to adjust close buttons to match component sizes. Use the <code>--cx-close-button-size</code> CSS variable to set custom dimensions when the predefined sizes don't meet your needs.
+
+<Example class="d-flex align-items-center" code={`<button type="button" class="close-button small" aria-label="Close"></button>
+<button type="button" class="close-button" aria-label="Close"></button>
+<button type="button" class="close-button large" aria-label="Close"></button>
+<span class="vr mx-medium"></span>
+<button type="button" class="close-button" style="--cx-close-button-size: 2rem;" aria-label="Close"></button>`} />
+
+## Disabled state
+
+Add the `disabled` attribute to visually indicate that the close action is unavailable. Disabled close buttons have reduced opacity and cannot be interacted with.
+
+<Example code={`<button type="button" class="close-button" disabled aria-label="Close"></button>`} />
+
+The disabled state applies `pointer-events: none` and `user-select: none` to prevent hover and active states from triggering.
+
+## Contextual colors
+
+Close buttons automatically adapt to their parent's context color, ensuring proper contrast in different color schemes.
+
+<Example code={`<div class="context secondary">
+    <button type="button" class="close-button" aria-label="Close"></button>
+    <button type="button" class="close-button" disabled aria-label="Close"></button>
+  </div>`} />
+
+You can override colors using the component's CSS variables:
+- `--cx-close-button-color`: Sets the normal state color
+- `--cx-close-button-hover-color`: Sets the hover state color
+
+## Positioning
+
+When integrated into components like modals or notifications, close buttons are typically positioned automatically. For custom layouts, use position utilities to place the close button:
+
+<Example code={`<div class="notification success">
+    <button type="button" class="close-button" data-cx-dismiss="notification" aria-label="Close"></button>
+    <p class="message">This is a notification!</p>
+  </div>
+  <div class="context success border rounded px-medium py-small position-relative">
+    <button type="button" class="close-button position-absolute end-0 me-xsmall" data-cx-dismiss="context" aria-label="Close"></button>
+    This is a contextual div.
+  </div>`} />
+
+## CSS
+
+<DocsCSS />
+
+### Custom properties
+
+<DocsCSSVars />
+
+<ScssDocs name="close-button-css-vars" file="scss/_close-button.scss" />
+
+### Sass variables
+
+<DocsSASSVars notExposed={true} />
+
+<ScssDocs name="close-button-variables" file="scss/_variables.scss" />

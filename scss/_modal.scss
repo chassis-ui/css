@@ -1,0 +1,326 @@
+//
+// Modal Component
+//
+// Flexible dialog overlay system for displaying content that requires user attention.
+// Includes support for different sizes, positions, and animations while maintaining
+// accessibility and consistent styling across screen sizes.
+//
+// Key classes:
+// .modal             - Container that manages the overlay and scrolling behavior
+// .modal-container   - Positioning shell for the modal window with size management
+// .modal-window      - Content container with visual styling (borders, background, shadow)
+// .modal-header      - Header section containing title and close button
+// .modal-content     - Main content area with flexible layout
+// .modal-footer      - Action area typically containing buttons
+//
+
+.modal-window {
+  // scss-docs-start modal-window-css-vars
+  // Modal window variables
+  // Color scheme variables
+  --#{$prefix}fg-color: var(--#{$prefix}modal-fg-color, #{$modal-window-fg-color});
+  --#{$prefix}bg-color: var(--#{$prefix}modal-bg-color, #{$modal-window-bg-color});
+  --#{$prefix}border-color: var(--#{$prefix}modal-border-color, #{$modal-window-border-color});
+  // Border and shape properties
+  --#{$prefix}border-width: var(--#{$prefix}modal-border-width, #{$modal-window-border-width});
+  --#{$prefix}border-radius: var(--#{$prefix}modal-border-radius, #{$modal-window-border-radius});
+  --#{$prefix}inner-border-radius: var(--#{$prefix}modal-inner-border-radius, #{$modal-window-inner-border-radius});
+  // Header section variables
+  --#{$prefix}header-padding-y: var(--#{$prefix}modal-header-padding-y, #{$modal-header-padding-y});
+  --#{$prefix}header-padding-x: var(--#{$prefix}modal-header-padding-x, #{$modal-header-padding-x});
+  --#{$prefix}header-fg-color: var(--#{$prefix}modal-header-fg-color, #{$modal-header-fg-color});
+  --#{$prefix}header-bg-color: var(--#{$prefix}modal-header-bg-color, #{$modal-header-bg-color});
+  --#{$prefix}header-border-color: var(--#{$prefix}modal-header-border-color, #{$modal-header-border-color});
+  --#{$prefix}header-border-width: var(--#{$prefix}modal-header-border-width, #{$modal-header-border-width});
+  // Typography settings for modal title
+  @include map-font($modal-title-font, modal-title, title);
+  // Footer section variables
+  --#{$prefix}footer-padding-y: var(--#{$prefix}modal-footer-padding-y, #{$modal-footer-padding-y});
+  --#{$prefix}footer-padding-x: var(--#{$prefix}modal-footer-padding-x, #{$modal-footer-padding-x});
+  --#{$prefix}footer-gap: var(--#{$prefix}modal-footer-gap, #{$modal-footer-gap});
+  --#{$prefix}footer-fg-color: var(--#{$prefix}modal-footer-fg-color, #{$modal-footer-fg-color});
+  --#{$prefix}footer-bg-color: var(--#{$prefix}modal-footer-bg-color, #{$modal-footer-bg-color});
+  --#{$prefix}footer-border-color: var(--#{$prefix}modal-footer-border-color, #{$modal-footer-border-color});
+  --#{$prefix}footer-border-width: var(--#{$prefix}modal-footer-border-width, #{$modal-footer-border-width});
+  // Shadow variables
+  --#{$prefix}box-shadow: var(--#{$prefix}modal-box-shadow, #{$modal-window-shadow-xsmall});
+  // scss-docs-end modal-window-css-vars
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%; // Ensure `.modal-window` extends the full width of the parent `.modal-dialog`
+  // counteract the pointer-events: none; in the .modal-dialog
+  color: var(--#{$prefix}fg-color);
+  pointer-events: auto;
+  background-color: var(--#{$prefix}bg-color);
+  background-clip: padding-box;
+  border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
+  @include border-radius(var(--#{$prefix}border-radius));
+  // Remove focus outline from opened modal
+  outline: 0;
+  box-shadow: var(--#{$prefix}box-shadow);
+
+  // Close button positioning
+  // Positions the close button in the top-right corner of the modal
+  .close-button {
+    --#{$prefix}size: var(--#{$prefix}icon-large);
+    position: absolute;
+    top: $modal-header-padding-x * .75;
+    right: $modal-header-padding-x * .5;
+  }
+
+}
+
+// Modal header section
+// Contains the modal title and optional close button
+.modal-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  padding: var(--#{$prefix}header-padding-y) var(--#{$prefix}header-padding-x);
+  color: #{$modal-header-fg-color};
+  background-color: #{$modal-header-bg-color};
+  border-bottom: var(--#{$prefix}header-border-width) solid var(--#{$prefix}header-border-color);
+  @include border-top-radius(var(--#{$prefix}inner-border-radius));
+}
+
+// Modal title element
+// Main heading that describes the modal's purpose
+.modal-title {
+  margin-bottom: 0;
+  @include font(title);
+}
+
+
+.modal-content {
+  position: relative;
+  // Enable `flex-grow: 1` so that the body take up as much space as possible
+  // when there should be a fixed height on `.modal-dialog`.
+  flex: 1 1 auto;
+  padding: var(--#{$prefix}padding);
+}
+
+// Footer (for actions)
+// Container for modal action buttons with consistent spacing and alignment
+.modal-footer {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: var(--#{$prefix}footer-gap);
+  align-items: center; // vertically center
+  justify-content: flex-end; // Right align buttons with flex property because text-align doesn't work on flex items
+  padding: var(--#{$prefix}footer-padding-y) var(--#{$prefix}footer-padding-x);
+  background-color: var(--#{$prefix}footer-bg);
+  border-top: var(--#{$prefix}footer-border-width) solid var(--#{$prefix}footer-border-color);
+  @include border-bottom-radius(var(--#{$prefix}inner-border-radius));
+}
+
+
+// Container that the modal scrolls within
+// Main overlay element that covers the entire viewport
+.modal {
+  // scss-docs-start modal-css-vars
+  --#{$prefix}zindex: #{$zindex-modal};
+  --#{$prefix}width: #{$modal-medium};
+  --#{$prefix}padding: #{$modal-inner-padding};
+  --#{$prefix}margin: #{$modal-container-margin};
+  // scss-docs-end modal-css-vars
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--#{$prefix}zindex);
+  display: none;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  // Prevent Chrome on Windows from adding a focus outline. For details, see
+  // https://github.com/chassis-ui/css/pull/10951.
+  outline: 0;
+  // We deliberately don't use `-webkit-overflow-scrolling: touch;` due to a
+  // gnarly iOS Safari bug: https://bugs.webkit.org/show_bug.cgi?id=158342
+  // See also https://github.com/chassis-ui/es/17695
+
+  // Stacked modal handling
+  // Applies a dimming effect to modals when another modal appears on top
+  &:has(+ .modal.show) > .modal-container .modal-window::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    @include border-radius(var(--#{$prefix}inner-border-radius));
+    content: "";
+    background-color: var(--#{$prefix}dim-main);
+    opacity: 1;
+    transition: opacity .3s; //stylelint-disable-line
+  }
+
+}
+
+// Shell div to position the modal with bottom padding
+// Provides positioning, sizing, and animation container for the modal window
+.modal-container {
+  position: relative;
+  width: auto;
+  margin: var(--#{$prefix}margin);
+  // allow clicks to pass through for custom click handling to close modal
+  pointer-events: none;
+
+  // Animation handling for fade effect
+  // Creates smooth entrance animation sliding from above
+  .modal.fade & {
+    transform: $modal-fade-transform;
+    @include transition($modal-transition);
+  }
+  // Final position after entrance animation completes
+  .modal.show & {
+    transform: $modal-show-transform;
+  }
+
+  // Static modal handling
+  // Visual feedback when user tries to dismiss a static backdrop modal
+  .modal.modal-static & {
+    transform: $modal-scale-transform;
+  }
+
+  // Scrollable modal variation
+  // Allows for tall content that exceeds viewport height while maintaining fixed header/footer
+  &.scrollable {
+    height: #{calc(100% - var(--#{$prefix}margin) * 2)};
+
+    .modal-window {
+      max-height: 100%;
+      overflow: hidden;
+      .modal-content {
+        overflow-y: auto;
+      }
+    }
+
+  }
+
+  // Lightbox modal variation
+  // Designed for displaying images and media in a full-viewport overlay
+  // Centers content and simplifies the modal appearance for media viewing
+  &.lightbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    max-width: none;
+    height: 100%;
+    margin: 0;
+
+
+    // Enables interaction with the figure (image container) and close button
+    figure,
+    .close-button {
+      pointer-events: all;
+    }
+
+  }
+
+  // Centered modal variation
+  // Vertically centers the modal in the viewport
+  // Useful for important messages or confirmations requiring immediate attention
+  &.centered {
+    display: flex;
+    align-items: center;
+    min-height: #{calc(100% - var(--#{$prefix}margin) * 2)};
+  }
+
+  // Fullscreen modal variations
+  // Generates responsive fullscreen modals that adapt to different screen sizes
+  // Creates variants that become fullscreen at different breakpoints (e.g., fullscreen-md-down)
+  // scss-docs-start modal-fullscreen-loop
+  @each $breakpoint in map-keys($grid-breakpoints) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+    $postfix: if($infix != "", $infix + "-down", "");
+
+    @include media-breakpoint-down($breakpoint) {
+      &.fullscreen#{$postfix} {
+        width: 100vw;
+        max-width: none;
+        height: 100%;
+        margin: 0;
+
+        .modal-window {
+          height: 100%;
+          border: 0;
+          @include border-radius(0);
+        }
+
+        .modal-header,
+        .modal-footer {
+          @include border-radius(0);
+        }
+
+        .modal-content {
+          overflow-y: auto;
+        }
+      }
+    }
+  }
+  // scss-docs-end modal-fullscreen-loop
+}
+
+// Modal backdrop
+// Semi-transparent overlay that dims the background content when a modal is open
+// Also serves as a click target for dismissing the modal
+.modal-backdrop {
+  // scss-docs-start modal-backdrop-css-vars
+  --#{$prefix}backdrop-zindex: #{$zindex-modal-backdrop};
+  --#{$prefix}backdrop-color: #{$modal-backdrop-color};
+  --#{$prefix}backdrop-opacity: #{$modal-backdrop-opacity};
+  // scss-docs-end modal-backdrop-css-vars
+
+  // Uses a shared mixin for creating full-viewport overlay with defined properties
+  @include overlay-backdrop(var(--#{$prefix}backdrop-zindex), var(--#{$prefix}backdrop-color), var(--#{$prefix}backdrop-opacity));
+}
+
+
+// Responsive modal scaling
+// Adjusts modal dimensions, spacing, and styling based on screen size
+// For smaller screens, modals take up more screen space
+// For larger screens, modals have more precise sizing and better shadow effects
+
+// Scale up the modal on small screens and above
+@include media-breakpoint-up(small) {
+  .modal {
+    --#{$prefix}margin: #{$modal-container-margin-y-small-up};
+    --#{$prefix}box-shadow: #{$modal-window-shadow-small-up};
+  }
+
+  // Automatically set modal's width for larger viewports
+  // Changes from full-width to constrained width with auto margins
+  .modal-container {
+    max-width: var(--#{$prefix}width);
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  // Small modal size variant
+  .modal-small {
+    --#{$prefix}width: #{$modal-small};
+  }
+}
+
+// Further size adjustments for large screens and above
+@include media-breakpoint-up(large) {
+  // Large and extra-large modal variants
+  .modal-large,
+  .modal-xlarge {
+    --#{$prefix}width: #{$modal-large};
+  }
+}
+
+// Final size adjustments for extra-large screens
+@include media-breakpoint-up(xlarge) {
+  // Extra-large modal variant gets its full size
+  .modal-xlarge {
+    --#{$prefix}width: #{$modal-xlarge};
+  }
+}

@@ -1,0 +1,115 @@
+@import "clearfix";
+@import "contrast";
+@import "links";
+@import "focus-ring";
+@import "context";
+@import "icon-link";
+@import "ratio";
+@import "position";
+@import "shadow";
+@import "stacks";
+@import "visually-hidden";
+@import "text-truncation";
+@import "vr";
+
+.last-mb-0 > p:last-child {
+  margin-bottom: 0;
+}
+
+.last-mb-reset > p:last-child {
+  margin-bottom: revert !important; // stylelint-disable-line declaration-no-important
+}
+
+// .form-floating {
+//
+//   border-bottom-width: $form-floating-border-width;
+//
+//   > label {
+//     color: var(--#{$prefix}fg-subtle);
+//   }
+//
+// }
+
+// @each $name, $value in $context-fg-colors {
+//   .#{$name} {
+//     --#{$prefix}fg-color: var(--#{$prefix}#{$name}, $value);
+//     color: var(--#{$prefix}#{$name}, $value) if($enable-important-utilities, !important, null);
+//   }
+// }
+
+// @each $name, $value in $context-bg-colors {
+//   .#{$name} {
+//     background-color: var(--#{$prefix}#{$name}) if($enable-important-utilities, !important, null);
+//   }
+// }
+
+// @each $name, $value in $context-border-colors {
+//   .#{$name} {
+//     --#{$prefix}border-color: var(--#{$prefix}#{$name});
+//     border-color: var(--#{$prefix}border-color) if($enable-important-utilities, !important, null);
+//     //border-color: var(--#{$prefix}#{$name}) if($enable-important-utilities, !important, null);
+//   }
+// }
+
+@each $name, $value in map-merge($context-dim-colors, $body-dim-colors) {
+  .#{$name} {
+    background-color: var(--#{$prefix}#{$name});
+  }
+}
+
+@each $name, $value in $context-link-colors {
+  .#{$name} {
+    color: var(--#{$prefix}#{$name}, $value);
+  }
+}
+
+// @each $size, $value in $border-radiuses {
+//   .rounded-#{$size} {
+//     // stylelint-disable-next-line property-disallowed-list
+//     border-radius: var(--#{$prefix}border-radius-#{$size});
+//   }
+// }
+
+// @each $size, $value in $border-widths {
+//   .border-#{$size} {
+//     border-width: var(--#{$prefix}border-width-#{$size});
+//   }
+// }
+
+// .fg-main {
+//   color: var(--cx-fg-main);
+// }
+// .fg-subtle {
+//   color: var(--cx-fg-subtle);
+// }
+
+// .fg-slight {}
+// .contrast-color {}
+// .fg-highlight {}
+// .bg-main {}
+// .bg-even {}
+// .bg-evident {}
+// .base-color {}
+// .bg-highlight {}
+// .border-subtle {}
+// .icon-subtle {}
+// .border-main {}
+// .icon-main {}
+// .cue-main {}
+// .link-main {}
+// .link-disabled {}
+// .link-visited {}
+// .link-hover {}
+// .link-active {}
+// .dim-slight {}
+// .dim-main {}
+// .dim-subtle {}
+// .transparent-color {}
+// .fg-idle {}
+// .fg-disabled {}
+// .fg-hover {}
+// .fg-press {}
+// .bg-idle {}
+// .bg-disabled {}
+// .bg-hover {}
+// .bg-press {}

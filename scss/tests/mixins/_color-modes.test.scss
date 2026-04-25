@@ -1,0 +1,68 @@
+@import "../../settings";
+@import "../../vendor";
+@import "../../functions";
+@import "../../tokens";
+@import "../../variables";
+@import "../../maps";
+@import "../../mixins";
+
+
+@include describe("global $color-mode-type: data") {
+  @include it("generates data attribute selectors for dark mode") {
+    @include assert() {
+      @include output() {
+        @include color-mode(dark) {
+          .element {
+            color: var(--cx-primary-fg-main);
+            background-color: var(--cx-primary-bg-even);
+          }
+        }
+        // @include color-mode(dark, true) {
+        //   --custom-color: #{mix($primary, $secondary, 50%)};
+        // }
+      }
+      @include expect() {
+        [data-cx-theme="dark"] .element {
+          color: var(--cx-primary-fg-main);
+          background-color: var(--cx-primary-bg-even);
+        }
+        // [data-cx-theme=dark] {
+        //   --custom-color: #802e0a;
+        // }
+      }
+    }
+  }
+}
+
+@include describe("global $color-mode-type: media-query") {
+  @include it("generates media queries for dark mode") {
+    $color-mode-type: media-query !global;
+    @include assert() {
+      @include output() {
+        @include color-mode(dark) {
+          .element {
+            color: var(--cx-primary-fg-main);
+            background-color: var(--cx-primary-bg-even);
+          }
+        }
+        // @include color-mode(dark, true) {
+        //   --custom-color: #{mix($primary, $secondary, 50%)};
+        // }
+      }
+      @include expect() {
+        @media (prefers-color-scheme: dark) {
+          .element {
+            color: var(--cx-primary-fg-main);
+            background-color: var(--cx-primary-bg-even);
+          }
+        }
+        // @media (prefers-color-scheme: dark) {
+        //   :root {
+        //     --custom-color: #802e0a;
+        //   }
+        // }
+      }
+    }
+    $color-mode-type: data !global;
+  }
+}

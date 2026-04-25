@@ -1,0 +1,223 @@
+---
+title: Forms
+description: Create accessible, responsive forms with Chassis CSS's comprehensive suite of form components, styling options, and validation features.
+toc: true
+aliases: "[[docsref:/forms]]"
+sections:
+  - title: Form input
+    description: Standardized text input fields with consistent styling across states and variants.
+  - title: Select
+    description: Custom-styled dropdown menus with enhanced accessibility and user experience.
+  - title: Checks & radios
+    description: Visually appealing checkbox and radio controls with consistent behavior.
+  - title: Range
+    description: Customizable slider inputs for intuitive selection from numeric ranges.
+  - title: Input group
+    description: Unified input controls combined with buttons, text and other elements.
+  - title: Floating labels
+    description: Space-saving inputs with smoothly animated label positioning effects.
+  - title: Layout
+    description: Flexible form organization patterns adaptable to various screen sizes.
+  - title: Validation
+    description: Clear visual feedback mechanisms for form validation and error states.
+---
+
+## Overview
+
+Chassis CSS provides a complete form styling system built on modern CSS practices. The framework enhances the base [form styles in the Reboot module]([[docsref:/content/reboot#forms]]) with specialized classes for consistent rendering across browsers and devices.
+
+Form components utilize CSS variables for theming, making them highly customizable while maintaining visual consistency. This approach allows easy adaptation to different design systems and color schemes.
+
+Always use appropriate HTML5 `type` attributes on input elements (e.g., `email`, `number`, `tel`) to leverage built-in browser validation and specialized input controls for better user experience.
+
+Here's a basic example demonstrating Chassis CSS form elements:
+
+<Example code={`<form>
+    <div class="mb-medium">
+      <label for="exampleInputEmail1" class="form-label">Email address</label>
+      <input type="email" class="form-input" id="exampleInputEmail1" aria-describedby="emailHelp">
+      <div id="emailHelp" class="form-help">We'll never share your email with anyone else.</div>
+    </div>
+    <div class="mb-medium">
+      <label for="exampleInputPassword1" class="form-label">Password</label>
+      <input type="password" class="form-input" id="exampleInputPassword1">
+    </div>
+    <div class="mb-medium form-check">
+      <input type="checkbox" class="check-input" id="exampleCheck1">
+      <label class="check-label" for="exampleCheck1">Check me out</label>
+    </div>
+    <button type="submit" class="button primary">Submit</button>
+  </form>`} />
+
+## Disabled forms
+
+Apply the `disabled` boolean attribute to an input element to prevent user interactions and provide visual feedback by changing its appearance.
+
+```html
+<input class="form-input" id="disabledInput" type="text" placeholder="Disabled input here..." disabled>
+```
+
+To disable multiple form controls at once, add the `disabled` attribute to a parent `<fieldset>` element. All native form elements (`<input>`, `<select>`, and `<button>`) within a disabled fieldset will be programmatically disabled and visually styled accordingly.
+
+For custom interactive elements like `<a class="button">` within a disabled fieldset, Chassis CSS applies `pointer-events: none` to prevent mouse interactions. However, for complete accessibility, you should manually add `tabindex="-1"` to prevent keyboard focus and `aria-disabled="disabled"` to communicate the disabled state to assistive technologies.
+
+<Example code={`<form>
+    <fieldset disabled>
+      <legend>Disabled fieldset example</legend>
+      <div class="mb-medium">
+        <label for="disabledTextInput" class="form-label">Disabled input</label>
+        <input type="text" id="disabledTextInput" class="form-input" placeholder="Disabled input">
+      </div>
+      <div class="mb-medium">
+        <label for="disabledSelect" class="form-label">Disabled select menu</label>
+        <select id="disabledSelect" class="form-select">
+          <option>Disabled select</option>
+        </select>
+      </div>
+      <div class="mb-medium">
+        <div class="form-check">
+          <input class="check-input" type="checkbox" id="disabledFieldsetCheck">
+          <label class="check-label" for="disabledFieldsetCheck">
+            Can't check this
+          </label>
+        </div>
+      </div>
+      <button type="submit" class="button primary">Submit</button>
+    </fieldset>
+  </form>`} />
+
+## Dark mode
+
+Chassis CSS forms automatically adapt to dark mode environments using CSS variables that respond to theme context. When the `data-cx-theme="dark"` attribute is applied to a container or directly to form elements, the styling smoothly transitions to a dark-optimized palette that maintains accessibility and visual hierarchy.
+
+### Inheritance and override
+
+Form elements inherit their theme from parent elements but can be individually themed by applying the `data-cx-theme` attribute directly to specific inputs:
+
+- Apply `data-cx-theme="dark"` to a container for all child form controls to adopt dark mode
+- Apply `data-cx-theme="light"` to specific inputs within a dark container to create visual emphasis
+
+The example below demonstrates applying contrasting themes with individual controls and containers:
+
+<Example code={`<div class="row gap-xlarge">
+    <form class="col context p-medium" data-cx-theme="light">
+      <div class="mb-medium">
+        <label for="exampleInputEmailDark" class="form-label">Email address</label>
+        <input type="email" class="form-input" id="exampleInputEmailDark" aria-describedby="emailHelp" data-cx-theme="dark">
+      </div>
+      <div class="mb-medium">
+        <label for="exampleInputPasswordDark" class="form-label">Password</label>
+        <input type="password" class="form-input" id="exampleInputPasswordDark" data-cx-theme="dark">
+      </div>
+      <div class="mb-medium form-check">
+        <input type="checkbox" class="check-input" id="exampleCheckDark" data-cx-theme="dark">
+        <label class="check-label" for="exampleCheckDark">Check me out</label>
+      </div>
+      <button type="submit" class="button primary">Submit</button>
+    </form>
+
+    <form class="col context p-medium" data-cx-theme="dark">
+      <div class="mb-medium">
+        <label for="exampleInputEmailLight" class="form-label">Email address</label>
+        <input type="email" class="form-input" id="exampleInputEmailLight" aria-describedby="emailHelp" data-cx-theme="light">
+      </div>
+      <div class="mb-medium">
+        <label for="exampleInputPasswordLight" class="form-label">Password</label>
+        <input type="password" class="form-input" id="exampleInputPasswordLight" data-cx-theme="light">
+      </div>
+      <div class="mb-medium form-check">
+        <input type="checkbox" class="check-input" id="exampleCheckLight" data-cx-theme="light">
+        <label class="check-label" for="exampleCheckLight">Check me out</label>
+      </div>
+      <button type="submit" class="button primary">Submit</button>
+    </form>
+  </div>`} />
+
+<Callout type="info" title="Performance tip">
+  For best performance, apply theme attributes to container elements rather than individual form controls whenever possible. This reduces DOM complexity and improves rendering efficiency.
+</Callout>
+
+## Accessibility
+
+Creating accessible forms is essential for users of assistive technologies. Chassis CSS form components are designed with accessibility in mind, but proper implementation requires attention to the following principles:
+
+### Accessible naming techniques
+
+Every form control must have an accessible name that clearly communicates its purpose to assistive technology users. Without proper naming, users of screen readers and other assistive devices cannot understand what information is being requested.
+
+**Use explicit labels**
+
+- Connect inputs with labels using the `for` attribute that matches the input's `id`
+- Place checkboxes and radios inside label elements for automatic association
+
+**When visible labels aren't possible:**
+
+- Visually hidden labels using the `.visually-hidden` utility class
+- Reference existing content with `aria-labelledby`
+- Add descriptive `title` attributes (not recommended as primary method)
+- Use `aria-label` for concise, explicit naming
+
+Never rely solely on `placeholder` attributes for accessible naming, as placeholders:
+
+- Disappear when the field contains content
+- Often have low color contrast
+- Cannot be accessed by all assistive technologies consistently
+
+### State communication
+
+Form controls should communicate their states (required, invalid, disabled) both visually and programmatically:
+
+- Use the `required` attribute for mandatory fields
+- Implement `aria-invalid="true"` for validation errors
+- Ensure error messages are associated with their fields using `aria-describedby`
+
+For detailed implementation guidance, refer to the accessibility section in each form component's documentation.
+
+## CSS
+
+Chassis CSS forms use a comprehensive system of CSS variables to enable consistent styling and easy theming. The framework applies a state-based approach where form elements adapt their appearance based on:
+
+- Idle state (default appearance)
+- Focus state (when interacted with)
+- Disabled state (when not available)
+- Validation states (valid, invalid)
+
+These states are implemented through CSS custom properties (variables) with predictable naming patterns:
+
+```css
+/* Example of state-based CSS variables */
+--cx-idle-bg-regular: #fff;       /* Standard input background in idle state */
+--cx-idle-bg-floating: #eee;      /* Floating label input background in idle state */
+--cx-disabled-fg-active: #999;    /* Text color in disabled state */
+--cx-disabled-fg-inactive: #ccc;  /* Placeholder color in disabled state */
+--cx-focus-border-color: #00f;    /* Border color in focus state */
+--cx-invalid-help-color: #f00;  /* Text & icon color for validation feedbacks */
+```
+
+### Custom properties
+
+These CSS variables are part of Chassis CSS's design token system, giving design teams control over component appearance. See the [design tokens]([[docsref:"core-concepts/design-tokens]]) page for more details.
+
+<ScssDocs name="form-color-variables" file="scss/placeholders/_form.scss" />
+
+### Design Tokens
+
+<DocsDesignTokens />
+
+<hr />
+
+Typography tokens define consistent font properties across all form elements:
+
+<ScssDocs name="form-font-tokens" file="scss/tokens/_forms.scss" />
+
+Spacing tokens ensure consistent dimensions and proportions across form controls:
+
+<ScssDocs name="form-spacing-tokens" file="scss/tokens/_forms.scss" />
+
+Border tokens provide visual definition and interactive state indicators for form controls:
+
+<ScssDocs name="form-border-tokens" file="scss/tokens/_forms.scss" />
+
+Color tokens establish visual hierarchy and communicate state changes in form elements:
+
+<ScssDocs name="form-color-tokens" file="scss/tokens/_forms.scss" />

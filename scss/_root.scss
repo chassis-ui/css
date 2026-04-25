@@ -1,0 +1,182 @@
+:root,
+[data-cx-theme="light"] {
+
+  // Generate color variables
+  @each $name, $value in $context-colors {
+    --#{$prefix}#{$name}: #{$value};
+    --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+  }
+  @each $name, $value in $contrast-colors {
+    --#{$prefix}#{$name}: #{$value};
+    --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+  }
+  @each $name, $value in $base-palette {
+    --#{$prefix}#{$name}: #{$value};
+    --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+  }
+  @each $name, $value in $context-palette {
+    --#{$prefix}#{$name}: #{$value};
+    @if not str-index($name, "subtle") and not str-index($name, "slight") {
+      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+    }
+    // --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+  }
+
+  // Generate font variables
+  @each $name, $value in $font-families {
+    --#{$prefix}font-family-#{$name}: #{$value};
+  }
+  @each $name, $value in $font-sizes {
+    --#{$prefix}font-size-#{$name}: #{$value};
+  }
+  @each $name, $value in $font-weights {
+    --#{$prefix}font-weight-#{$name}: #{$value};
+  }
+  @each $name, $value in $line-heights {
+    --#{$prefix}line-height-#{$name}: #{$value};
+  }
+  @each $name, $value in $typography {
+    @include rfs($value, --#{$prefix}#{$name});
+    // --#{$prefix}#{$name}: #{$value};
+  }
+  // Generate spacers variables
+  @each $name, $value in $spacers {
+    --#{$prefix}space-#{$name}: #{$value};
+  }
+  // Generate icon-sizes variables
+  @each $name, $value in $icon-sizes {
+    --#{$prefix}icon-#{$name}: #{$value};
+  }
+  // Generate border-width variables
+  @each $name, $value in $border-widths {
+    --#{$prefix}border-width-#{$name}: #{$value};
+  }
+  // Generate border-radius variables
+  @each $name, $value in $border-radiuses {
+    --#{$prefix}border-radius-#{$name}: #{$value};
+  }
+  // Generate opacity variables
+  @each $name, $value in map-merge($opacities, $context-opacities) {
+    --#{$prefix}opacity-#{$name}: #{$value};
+  }
+
+  // Root and body
+  // scss-docs-start root-body-variables
+  @if $font-size-root != null {
+    --#{$prefix}root-font-size: #{$font-size-root};
+
+    @if $font-size-root-large != $font-size-root {
+      @include media-breakpoint-up(large) {
+        --#{$prefix}root-font-size-large: #{$font-size-root-large};
+      }
+    }
+
+    @if $font-size-root-small != $font-size-root {
+      @include media-breakpoint-down(small) {
+        --#{$prefix}root-font-size-small: #{$font-size-root-small};
+      }
+    }
+  }
+
+  --#{$prefix}font-family: #{inspect($font-family-base)};
+  @include rfs($font-size-base, --#{$prefix}font-size);
+  --#{$prefix}font-weight: #{$font-weight-base};
+  --#{$prefix}line-height: #{$line-height-base};
+  @if $text-align != null {
+    --#{$prefix}text-align: #{$text-align};
+  }
+  --#{$prefix}separator-size: #{$separator-size};
+  --#{$prefix}indicator-size: #{$indicator-size};
+  // scss-docs-start root-body-colors
+  // Generate opacity variables
+  @each $name, $value in $body-colors {
+    --#{$prefix}#{$name}: #{$value};
+  }
+  // @include context($body-context);
+  @include body-colors();
+  // scss-docs-end root-body-colors
+
+  --#{$prefix}code-color: #{$code-color};
+  --#{$prefix}mark-fg-color: #{$mark-fg-color};
+  --#{$prefix}mark-bg-color: #{$mark-bg-color};
+  // scss-docs-end root-body-variables
+
+  --#{$prefix}icon-size: #{$icon-size};
+  //--#{$prefix}border-width: var(--#{$prefix}border-width-medium);
+
+  --#{$prefix}link-decoration: #{$link-decoration};
+  @if $link-hover-decoration != null {
+    --#{$prefix}link-hover-decoration: #{$link-hover-decoration};
+  }
+  // scss-docs-end root-body-variables
+
+  // // scss-docs-start root-border-var
+  --#{$prefix}border-width: #{$border-width};
+  --#{$prefix}border-style: #{$border-style};
+  --#{$prefix}border-color: #{$border-color};
+  --#{$prefix}border-radius: #{$border-radius};
+  // // scss-docs-end root-border-var
+
+  //--#{$prefix}box-shadow: #{$box-shadow};
+  --#{$prefix}box-shadow-small: #{$box-shadow-small};
+  --#{$prefix}box-shadow-medium: #{$box-shadow-medium};
+  --#{$prefix}box-shadow-large: #{$box-shadow-large};
+  --#{$prefix}box-shadow-inset: #{$box-shadow-inset};
+
+  // Focus styles
+  // scss-docs-start root-focus-variables
+  --#{$prefix}focus-ring-width: #{$focus-ring-width};
+  --#{$prefix}focus-ring-opacity: #{$focus-ring-opacity};
+  --#{$prefix}focus-ring-color: #{$focus-ring-color};
+  // scss-docs-end root-focus-variables
+
+  --#{$prefix}bg-gradient: #{$bg-gradient};
+
+  // Root and body
+  @if $font-size-root != null {
+    --#{$prefix}root-font-size: #{$font-size-root};
+  }
+  @if $text-align != null {
+    --#{$prefix}text-align: #{$text-aligm};
+  }
+
+  --#{$prefix}heading-color: var(--#{$prefix}fg-main);
+
+}
+
+@if $enable-dark-mode {
+  @include color-mode(dark, true) {
+    color-scheme: dark;
+
+    // scss-docs-start root-dark-mode-vars
+    @each $name, $value in $context-colors-dark {
+      --#{$prefix}#{$name}: #{$value};
+      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+    }
+    @each $name, $value in $contrast-colors-dark {
+      --#{$prefix}#{$name}: #{$value};
+      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+    }
+    @each $name, $value in $context-palette-dark {
+      --#{$prefix}#{$name}: #{$value};
+      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+    }
+    @each $name, $value in $body-colors-dark {
+      --#{$prefix}#{$name}: #{$value};
+      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+    }
+
+    @include body-colors();
+    // scss-docs-end root-dark-mode-vars
+
+    // --#{$prefix}code-color: #{$code-color-dark};
+    // --#{$prefix}highlight-color: #{$mark-color-dark};
+    // --#{$prefix}highlight-bg: #{$mark-bg-dark};
+
+    // --#{$prefix}form-valid-color: #{$form-valid-color-dark};
+    // --#{$prefix}form-valid-border-color: #{$form-valid-border-color-dark};
+    // --#{$prefix}form-invalid-color: #{$form-invalid-color-dark};
+    // --#{$prefix}form-invalid-border-color: #{$form-invalid-border-color-dark};
+
+  }
+}

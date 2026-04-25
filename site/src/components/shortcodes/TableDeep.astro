@@ -1,0 +1,125 @@
+---
+import Code from '@shortcodes/Code.astro'
+
+interface Props {
+  /**
+   * Any class(es) to be added to the `<table>` element (both in the example and code snippet).
+   */
+  class?: string
+  style?: string
+  headClass?: string
+  headStyle?: string
+  bodyClass?: string
+  bodyStyle?: string
+  headRowClass?: string
+  active?: string
+  foot?: boolean
+  footClass?: string
+  example?: boolean
+  showMarkup?: boolean
+}
+
+const {
+  class: className,
+  style,
+  headClass,
+  headStyle,
+  bodyClass,
+  bodyStyle,
+  headRowClass,
+  active,
+  foot,
+  footClass,
+  example = true,
+  showMarkup = true
+} = Astro.props
+
+const tableFoot = foot
+  ? `
+  <tfoot${footClass ? ` class="${footClass}"` : ''}>
+    <tr>
+      <td>Footer 1</td>
+      <td>Footer 2</td>
+      <td>Footer 3</td>
+      <td>Footer 4</td>
+    </tr>
+  </tfoot>`
+  : ''
+
+const headCode = headRowClass
+  ? `<tr class="${headRowClass}">
+      ...
+    </tr>`
+  : '...'
+const bodyCode = active
+  ? `<tr class="active">
+      ...
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td class="active">Thornton</td>
+      <td>@fat</td>
+    </tr>
+    <tr>
+      ...
+    </tr>`
+  : '...'
+const footCode = foot
+  ? `
+  <tfoot${footClass ? ` class="${footClass}"` : ''}>
+    ...
+  </tfoot>`
+  : ''
+const tableCode = `<table${className ? ` class="${className}"` : ''}${style ? ` style="${style}"` : ''}>
+  <thead${headClass ? ` class="${headClass}"` : ''}${headStyle ? ` style="${headStyle}"` : ''}>
+    ${headCode}
+  </thead>
+  <tbody${bodyClass ? ` class="${bodyClass}"` : ''}${bodyStyle ? ` style="${bodyStyle}"` : ''}>
+    ${bodyCode}
+  </tbody>${footCode}
+</table>`
+---
+
+<Fragment set:html={example == true ? '<div class="cxd-example">' : ''} />
+<Fragment
+  set:html={`<table${className ? ` class="${className}"` : ''}${style ? ` style="${style}"` : ''}>
+  <thead${headClass ? ` class="${headClass}"` : ''}${headStyle ? ` style="${headStyle}"` : ''}>
+    <tr${headRowClass ? ` class="${headRowClass}"` : ''}>
+      <th scope="col">#</th>
+      <th scope="col">First</th>
+      <th scope="col">Last</th>
+      <th scope="col">Handle</th>
+    </tr>
+  </thead>
+  <tbody${bodyClass ? ` class="${bodyClass}"` : ''}${bodyStyle ? ` style="${bodyStyle}"` : ''}>
+    <tr${active ? ` class="active"` : ''}>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td${active ? ` class="active"` : ''}>Thornton</td>
+      <td>@fat</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>John</td>
+      <td>Doe</td>
+      <td>@social</td>
+    </tr>
+  </tbody>${tableFoot}
+</table>`}
+/>
+<Fragment set:html={example == true ? '</div>' : ''} />
+
+{
+  () => {
+    if (example == true && showMarkup == true) {
+      return <Code code={tableCode} lang="html" />
+    }
+  }
+}

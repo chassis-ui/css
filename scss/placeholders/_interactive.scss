@@ -1,0 +1,30 @@
+// scss-docs-start interactive-placeholder-selector
+%interactive {
+
+  width: 100%; // For `<button>`s (anchors become 100% by default though)
+  text-align: inherit; // For `<button>`s (anchors inherit)
+
+  &:hover,
+  &:focus {
+    --#{$prefix}bg-color: var(--#{$prefix}bg-even);
+    z-index: 1; // Place hover/focus items above their siblings for proper border styling
+    color: var(--#{$prefix}fg-color);
+    text-decoration: none;
+  }
+
+  &:active {
+    --#{$prefix}bg-color: var(--#{$prefix}bg-evident);
+  }
+
+  &:disabled,
+  &.disabled {
+    --#{$prefix}fg-color: var(--#{$prefix}fg-slight);
+    pointer-events: none;
+  }
+
+  &:visited {
+    color: var(--#{$prefix}fg-color);
+  }
+
+}
+// scss-docs-end interactive-placeholder-selector

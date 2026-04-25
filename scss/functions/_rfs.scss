@@ -1,0 +1,107 @@
+@use "sass:math";
+@use "sass:meta";
+// Responsive Font Scaling
+//
+// This function dynamically calculates a scaling multiplier based on input value.
+// The multiplier decreases smoothly as the input value increases.
+// Reference points:
+// - 24px → 0.925 multiplier
+// - 96px → 0.725 multiplier
+//
+// Values between or beyond these points are calculated using linear interpolation,
+// ensuring every input size gets its own unique, proportional multiplier.
+
+@function responsive-scale(
+  $value,
+  $min-size: 24px,
+  $max-size: 96px,
+  $min-multiplier: .9,
+  $max-multiplier: .7,
+  $base-size: 16px,
+) {
+  // Early return if the value is not px or rem
+  $unit: "";
+  @if meta.type-of($value) == "number" {
+    @if not math.is-unitless($value) {
+      $unit: unit($value);
+      // If not px or rem, return the value as is
+      @if $unit != "px" and $unit != "rem" {
+        @return $value;
+      }
+    }
+  } @else {
+    // Non-number values returned as is
+    @return $value;
+  }
+
+  // Store the original unit for later use
+  $original-unit: $unit;
+  $base-size-value: math.div($base-size, 1px);
+
+  // Normalize all values to px for comparison
+  $value-px: $value;
+  $min-size-px: $min-size;
+  $max-size-px: $max-size;
+
+  // Convert rem values to px using the base-size
+  @if $original-unit == "rem" {
+    $value-px: $value * $base-size;
+  }
+
+  @if not math.is-unitless($min-size) and unit($min-size) == "rem" {
+    $min-size-px: $min-size * $base-size;
+  }
+
+  @if not math.is-unitless($max-size) and unit($max-size) == "rem" {
+    $max-size-px: $max-size * $base-size;
+  }
+
+  // Strip units for calculations after normalization
+  $value-number: math.div($value-px, ($value-px * 0 + 1));
+  $min-size-number: math.div($min-size-px, ($min-size-px * 0 + 1));
+  $max-size-number: math.div($max-size-px, ($max-size-px * 0 + 1));
+
+  // Early return if the value is smaller than min-size
+  @if $value-number <= $min-size-number {
+    @return $value;
+  }
+
+  // Calculate the multiplier using linear interpolation
+  $multiplier: $min-multiplier;
+
+  @if $value-number >= $max-size-number {
+    // For values larger than or equal to max-size, use the max-multiplier
+    $multiplier: $max-multiplier;
+  } @else {
+    // Linear interpolation for values between min and max
+    $percentage: math.div($value-number - $min-size-number, $max-size-number - $min-size-number);
+    $multiplier: $min-multiplier - ($percentage * ($min-multiplier - $max-multiplier));
+  }
+
+  // Apply the multiplier
+  $scaled-value: $value-number * $multiplier;
+
+  // Return the value with its original unit
+  @if $original-unit != "" {
+    // Convert the px value back to the original unit if needed
+    @if $original-unit == "rem" {
+      $scaled-value: math.div($scaled-value, $base-size-value);
+      // Round to 4 decimal places for rem units
+      $scaled-value: math.div(math.floor($scaled-value * 1000), 1000);
+    } @else {
+      // Round to 2 decimal places for other units (like px)
+      $scaled-value: math.div(math.floor($scaled-value * 100), 100);
+    }
+
+    @return $scaled-value + unquote($original-unit);
+  } @else {
+    // Round to 2 decimal places
+    $scaled-value: math.div(math.floor($scaled-value * 100), 100);
+    @return $scaled-value;
+  }
+}
+
+// Shorthand function name for convenience
+@function rscale($value) {
+  @return responsive-scale($value);
+}

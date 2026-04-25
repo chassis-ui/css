@@ -1,0 +1,107 @@
+//
+// String utility functions for Chassis CSS
+//
+// This file contains functions for string manipulation and conversion
+// including string replacement and string-to-number conversion.
+//
+// Some functions are adapted from Bootstrap and other open source projects.
+// Special thanks to the Bootstrap Authors.
+//
+
+/// Replace `$search` with `$replace` in `$string`
+/// Used on our SVG icon backgrounds and for processing variable names and values.
+///
+/// @author Kitty Giraudel
+/// @param {String} $string - Initial string
+/// @param {String} $search - Substring to replace
+/// @param {String} $replace ('') - New value
+/// @return {String} - Updated string
+@function str-replace($string, $search, $replace: "") {
+  $index: str-index($string, $search);
+
+  @if $index {
+    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+  }
+
+  @return $string;
+}
+
+/// Convert a string representation of a number to an actual number
+/// Handles integers, decimal numbers (with or without leading zeros), and negative numbers.
+/// Used primarily for parsing CSS variable values and alpha values from strings.
+///
+/// @param {String|Number} $string - String to convert (or number to return as-is)
+/// @return {Number} - Converted number value, or false if invalid input
+/// @example
+///   str-to-number(5)         => 5 (returns number as-is)
+///   str-to-number("25")      => 25
+///   str-to-number("0.65")    => 0.65
+///   str-to-number(".5")      => 0.5
+///   str-to-number("-10.2")   => -10.2
+///   str-to-number("-.125")   => -0.125
+///   str-to-number("invalid") => false (with warning)
+@function str-to-number($string) {
+  // If it's already a number, return it directly
+  @if type-of($string) == "number" {
+    @return $string;
+  }
+
+  // List of valid digit characters and their numeric values
+  $digits: "0" "1" "2" "3" "4" "5" "6" "7" "8" "9";
+  $numbers: 0 1 2 3 4 5 6 7 8 9;
+
+  $result: 0;
+  $decimal: 0; // Track decimal place (0 = no decimal yet)
+  $negative: false;
+  $has-digits: false;
+
+  // Process each character in the string
+  @for $i from 1 through str-length($string) {
+    $char: str-slice($string, $i, $i);
+
+    // Handle negative sign at the beginning
+    @if $char == "-" and $i == 1 {
+      $negative: true;
+    }
+    // Handle decimal point
+    @else if $char == "." {
+      // Only process first decimal point
+      @if $decimal == 0 {
+        $decimal: 1;
+      } @else {
+        @warn "Invalid number format: multiple decimal points in '#{$string}'";
+        @return false;
+      }
+    }
+    // Handle digits
+    @else {
+      $digit-index: index($digits, $char);
+
+      @if $digit-index {
+        $digit-value: nth($numbers, $digit-index);
+        $has-digits: true;
+
+        // Before decimal point
+        @if $decimal == 0 {
+          $result: $result * 10 + $digit-value;
+        } @else {
+          // After decimal point
+          $decimal: $decimal * 10;
+          $result: $result + divide($digit-value, $decimal);
+        }
+      } @else {
+        @warn "Invalid character in number: '#{$char}' in '#{$string}'";
+        @return false;
+      }
+    }
+  }
+
+  // Ensure we have at least one digit
+  @if not $has-digits {
+    @warn "No digits found in '#{$string}'";
+    @return false;
+  }
+
+  // Apply negative sign if needed
+  @return if($negative, -$result, $result);
+}

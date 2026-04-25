@@ -1,0 +1,41 @@
+.breadcrumb {
+
+  @extend %component;
+  // scss-docs-start breadcrumb-css-vars
+  --#{$prefix}padding-y: var(--#{$prefix}breadcrumb-padding-y, #{$breadcrumb-padding-y});
+  --#{$prefix}padding-x: var(--#{$prefix}breadcrumb-padding-x, #{$breadcrumb-padding-x});
+  --#{$prefix}margin-bottom: var(--#{$prefix}breadcrumb-margin-bottom, #{$breadcrumb-margin-bottom});
+  @include map-font($breadcrumb-font, breadcrumb);
+  --#{$prefix}fg-color: var(--#{$prefix}breadcrumb-fg-color, #{$breadcrumb-fg-color});
+  --#{$prefix}bg-color: var(--#{$prefix}breadcrumb-bg-color, #{$breadcrumb-bg-color});
+  --#{$prefix}border-width: var(--#{$prefix}breadcrumb-border-width, #{$breadcrumb-border-width});
+  --#{$prefix}border-color: var(--#{$prefix}breadcrumb-border-color, #{$breadcrumb-border-color});
+  --#{$prefix}border-radius: var(--#{$prefix}breadcrumb-border-radius, #{$breadcrumb-border-radius});
+  --#{$prefix}item-padding-x: var(--#{$prefix}breadcrumb-item-padding-x, #{$breadcrumb-item-padding-x});
+  --#{$prefix}divider-color: var(--#{$prefix}breadcrumb-divider-color, #{$breadcrumb-divider-color});
+  // scss-docs-end breadcrumb-css-vars
+
+  display: flex;
+  flex-wrap: wrap;
+  @include exclude-strokes(breadcrumb);
+  margin-bottom: var(--#{$prefix}margin-bottom);
+  list-style: none;
+}
+
+.breadcrumb-page {
+  // The separator between breadcrumbs (by default, a forward-slash: "/")
+  + .breadcrumb-page {
+    padding-left: var(--#{$prefix}item-padding-x);
+
+    &::before {
+      float: left; // Suppress inline spacings and underlining of the separator
+      padding-right: var(--#{$prefix}item-padding-x);
+      color: var(--#{$prefix}divider-color);
+      content: var(--#{$prefix}breadcrumb-divider, escape-svg($breadcrumb-divider)) #{"/* rtl:"} var(--#{$prefix}breadcrumb-divider, escape-svg($breadcrumb-divider-flipped)) #{"*/"};
+    }
+  }
+
+  &.active {
+    color: var(--#{$prefix}fg-color);
+  }
+}

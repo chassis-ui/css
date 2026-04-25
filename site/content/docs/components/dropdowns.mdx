@@ -1,0 +1,965 @@
+---
+title: Dropdowns
+description: Create context-rich, accessible overlays for links, forms, and custom content with Chassis's token-driven dropdown system.
+toc: true
+---
+
+## Introduction
+
+Chassis dropdowns provide contextual overlay menus that enhance your interface's navigation and action systems. Built with a design token foundation and powered by a dedicated JavaScript plugin, our dropdowns deliver consistent interaction patterns while prioritizing accessibility and flexibility.
+
+Unlike hover-based menus that can cause usability issues on mobile devices, Chassis dropdowns respond to deliberate click events, ensuring reliable behavior across all devices and respecting user intent. This approach maintains compatibility with touch interfaces and aligns with modern web accessibility practices.
+
+For intelligent positioning and viewport awareness, Chassis leverages [Popper.js](https://popper.js.org/docs/v2/). You can include either [popper.min.js]([[config:cdn.popper]]) before Chassis's JavaScript, or use the bundled `chassis.bundle.min.js` which includes Popper. For performance optimization, navbar dropdowns use static positioning rather than Popper.
+
+## Accessibility considerations
+
+Chassis approaches dropdown accessibility with careful consideration of diverse interface needs. While the [WAI-ARIA standard](https://www.w3.org/TR/wai-aria/) defines specific menu behaviors with `role="menu"`, we've intentionally designed our dropdowns to accommodate more versatile content—including search fields, forms, and rich content beyond simple menu items.
+
+By default, Chassis doesn't automatically apply menu-specific ARIA roles or attributes. This preserves your freedom to implement the most appropriate semantics for your specific use case. However, we do provide built-in keyboard navigation essentials, including arrow key support for navigating menu items and <kbd>Esc</kbd> key functionality to close the menu.
+
+When building application command menus, consider adding ARIA roles manually. For content-rich dropdowns, you may need different semantic structures depending on your content type.
+
+## Basic implementation
+
+A dropdown requires a container with relative positioning (like `.dropdown`), a trigger element with `data-cx-toggle="dropdown"`, and menu content. For optimal accessibility, use a `<button>` as your trigger element.
+
+### Standard dropdown
+
+Create a basic dropdown using a `<button>` with the `.dropdown-toggle` class:
+
+<Example code={`<div class="dropdown">
+    <button class="button primary dropdown-toggle" type="button" data-cx-toggle="dropdown" aria-expanded="false">
+      Dropdown menu
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Primary action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>`} />
+
+While buttons are the recommended triggers for dropdowns, link elements (`<a>`) can be used when necessary. When using links as triggers, add `role="button"` to communicate the interactive nature to assistive technologies:
+
+<Example code={`<div class="dropdown">
+    <a class="button primary dropdown-toggle" href="#" role="button" data-cx-toggle="dropdown" aria-expanded="false">
+      Dropdown link
+    </a>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Primary action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>`} />
+
+### Split button
+
+For interfaces that need a primary action with related secondary options, Chassis provides split button dropdowns. These combine a primary action button with a separate dropdown toggle, giving users quick access to both the main function and related alternatives.
+
+Use a `.button-group` and add a second button with the `.dropdown-toggle-split` modifier, which creates an optimized hit area for the dropdown toggle:
+
+<Example showMarkup={false} code={`<div class="button-group dropdown">
+    <button type="button" class="button primary">Primary action</button>
+    <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+      <span class="visually-hidden">Show options</span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+      <li><hr class="dropdown-separator"></li>
+      <li><a class="dropdown-item" href="#">Separated action</a></li>
+    </ul>
+  </div>`} />
+
+```html
+<div class="button-group dropdown">
+  <button type="button" class="button primary">Primary action</button>
+  <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+    <span class="visually-hidden">Show options</span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="#">Action</a></li>
+    <!-- Additional items -->
+  </ul>
+</div>
+```
+
+The `.dropdown-toggle-split` class applies proportional padding to the caret area and centers it for optimal touch targets.
+
+
+## Color variants
+
+Chassis dropdowns integrate seamlessly with all button context color variants, inheriting your design tokens to maintain visual consistency across your interface:
+
+<Example class="button-examples" showMarkup={false} code={`<div class="dropdown">
+    <button type="button" class="button default dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">Default</button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+      <li><hr class="dropdown-separator"></li>
+      <li><a class="dropdown-item" href="#">Separated action</a></li>
+    </ul>
+  </div>
+
+  <div class="dropdown">
+    <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">Primary</button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+      <li><hr class="dropdown-separator"></li>
+      <li><a class="dropdown-item" href="#">Separated action</a></li>
+    </ul>
+  </div>
+
+  <div class="dropdown">
+    <button type="button" class="button secondary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">Secondary</button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+      <li><hr class="dropdown-separator"></li>
+      <li><a class="dropdown-item" href="#">Separated action</a></li>
+    </ul>
+  </div>
+
+  <div class="dropdown">
+    <button type="button" class="button success dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">Success</button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+      <li><hr class="dropdown-separator"></li>
+      <li><a class="dropdown-item" href="#">Separated action</a></li>
+    </ul>
+  </div>`} />
+
+```html
+<div class="dropdown">
+  <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+    Primary
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="#">Action</a></li>
+    <li><a class="dropdown-item" href="#">Another action</a></li>
+    <li><a class="dropdown-item" href="#">Something else</a></li>
+    <li><hr class="dropdown-separator"></li>
+    <li><a class="dropdown-item" href="#">Separated action</a></li>
+  </ul>
+</div>
+```
+
+## Size variants
+
+To maintain consistent component sizing throughout your interface, Chassis dropdowns support all button size variants. Use `.large` or `.small` modifiers to scale your dropdowns appropriately. Size modifiers work with both standard and split button dropdowns.
+
+<Example class="button-examples" showMarkup={false} code={`<div class="dropdown">
+    <button class="button primary large dropdown-toggle" type="button" data-cx-toggle="dropdown" aria-expanded="false">
+      Large dropdown
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>
+
+  <div class="button-group dropdown">
+    <button type="button" class="button primary large">Large split button</button>
+    <button type="button" class="button primary large dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+      <span class="visually-hidden">Show options</span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>`} />
+
+```html
+<div class="dropdown">
+  <button class="button primary large dropdown-toggle" type="button" data-cx-toggle="dropdown" aria-expanded="false">
+    Large dropdown
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+</div>
+
+<div class="button-group dropdown">
+  <button type="button" class="button primary large">Large split button</button>
+  <button type="button" class="button primary large dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+    <span class="visually-hidden">Show options</span>
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+</div>
+```
+
+<Example class="button-examples" showMarkup={false} code={`<div class="dropdown">
+    <button class="button primary small dropdown-toggle" type="button" data-cx-toggle="dropdown" aria-expanded="false">
+      Small dropdown
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>
+
+  <div class="button-group dropdown">
+    <button type="button" class="button primary small">Small split button</button>
+    <button type="button" class="button primary small dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+      <span class="visually-hidden">Show options</span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>`} />
+
+```html
+<div class="dropdown">
+    <button class="button primary small dropdown-toggle" type="button" data-cx-toggle="dropdown" aria-expanded="false">
+      Small dropdown
+    </button>
+    <ul class="dropdown-menu">
+      ...
+    </ul>
+  </div>
+
+  <div class="button-group dropdown">
+    <button type="button" class="button primary small">Small split button</button>
+    <button type="button" class="button primary small dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+      <span class="visually-hidden">Show options</span>
+    </button>
+    <ul class="dropdown-menu">
+      ...
+    </ul>
+  </div>
+```
+
+## Directional variants
+
+Chassis offers multiple directional variants to control how and where menus appear relative to their triggers. These options help accommodate various layouts and space constraints, and automatically adapt in RTL (right-to-left) interfaces.
+
+<Callout>
+Direction classes automatically adapt to your document's text direction. For example, `.dropstart` menus will appear on the right side in RTL layouts, maintaining the intended spatial relationship regardless of language direction.
+</Callout>
+
+### Dropup
+
+Use the `.dropup` class to display dropdown menus above the trigger element rather than below it. This is useful when there's limited space below the trigger or when working with elements near the bottom of the viewport.
+
+<Example class="button-examples" showMarkup={false} code={`<div class="dropup">
+    <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+      Dropup
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>
+
+  <div class="button-group dropup">
+    <button type="button" class="button primary">Dropup split</button>
+    <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+      <span class="visually-hidden">Toggle Dropup</span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>`} />
+
+```html
+<div class="dropup">
+  <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+    Dropup
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+</div>
+
+<div class="button-group dropup">
+  <button type="button" class="button primary">Dropup split</button>
+  <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+    <span class="visually-hidden">Toggle Dropup</span>
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+</div>
+```
+
+### Dropend
+
+Use the `.dropend` class to display dropdown menus to the right of the trigger element. This is particularly useful in horizontal navigation patterns or when space is limited vertically.
+
+<Example class="button-examples" showMarkup={false} code={`<div class="dropend">
+    <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+      Dropend
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>
+
+  <div class="button-group dropend">
+    <button type="button" class="button primary">Dropend split</button>
+    <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+      <span class="visually-hidden">Toggle Dropend</span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>`} />
+
+```html
+<div class="dropend">
+  <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+    Dropend
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+</div>
+
+<div class="button-group dropend">
+  <button type="button" class="button primary">Dropend split</button>
+  <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+    <span class="visually-hidden">Toggle Dropend</span>
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+</div>
+```
+
+### Dropstart
+
+Use the `.dropstart` class to display dropdown menus to the left of the trigger element. This is useful for right-aligned navigation elements or when space to the right is limited.
+
+<Example class="button-examples" showMarkup={false} code={`<div class="dropstart">
+    <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+      Dropstart
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>
+
+  <div class="button-group dropstart">
+    <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+      <span class="visually-hidden">Toggle Dropstart</span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+    <button type="button" class="button primary">Dropstart split</button>
+  </div>`} />
+
+```html
+<div class="dropstart">
+  <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+    Dropstart
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+</div>
+
+<div class="button-group dropstart">
+  <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+    <span class="visually-hidden">Toggle Dropstart</span>
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+  <button type="button" class="button primary">Dropstart split</button>
+</div>
+```
+
+## Centered variant
+
+For centered presentation of dropdown menus, use the `.dropdown-center` or `.dropup-center` classes. These variants ensure the menu is horizontally centered relative to the trigger element.
+
+<Example class="button-examples" showMarkup={false} code={`<div class="dropdown dropdown-center">
+    <button class="button primary dropdown-toggle" type="button" data-cx-toggle="dropdown" aria-expanded="false">
+      Dropdown centered
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>
+
+  <div class="button-group dropdown dropdown-center">
+    <button type="button" class="button primary">Dropdown centered split</button>
+    <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+      <span class="visually-hidden">Toggle Dropdown</span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>`} />
+
+```html
+<div class="dropdown dropdown-center">
+  <button class="button primary dropdown-toggle" type="button" data-cx-toggle="dropdown" aria-expanded="false">
+    Centered dropdown
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+</div>
+
+<div class="button-group dropdown dropdown-center">
+  <button type="button" class="button primary">Centered split</button>
+  <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+    <span class="visually-hidden">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+</div>
+```
+
+For menus that need to appear above the trigger while also being horizontally centered, use both the `.dropup` and `.dropup-center` classes together:
+
+<Example class="button-examples" showMarkup={false} code={`<div class="dropup dropup-center">
+    <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+      Dropup centered
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>
+
+  <div class="button-group dropup dropup-center">
+    <button type="button" class="button primary">Dropup centered split</button>
+    <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+      <span class="visually-hidden">Toggle Dropup Center</span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>`} />
+
+```html
+<div class="dropup dropup-center">
+  <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+    Dropup centered
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+</div>
+
+<div class="button-group dropup dropup-center">
+  <button type="button" class="button primary">Dropup center split</button>
+  <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+    <span class="visually-hidden">Toggle Dropup Center</span>
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+</div>
+```
+
+## Menu content
+
+Chassis dropdowns support a variety of content types and styling options to adapt to your specific interface requirements.
+
+### Menu elements
+
+Dropdown menus can contain various interactive elements, including both links (`<a>`) and buttons (`<button>`), depending on your navigation or action requirements:
+
+<Example code={`<div class="dropdown">
+    <button class="button primary dropdown-toggle" type="button" data-cx-toggle="dropdown" aria-expanded="false">
+      Interactive items
+    </button>
+    <ul class="dropdown-menu">
+      <li><button class="dropdown-item">Action</button></li>
+      <li><button class="dropdown-item">Another action</button></li>
+      <li><button class="dropdown-item">Something else</button></li>
+    </ul>
+  </div>`} />
+
+Use `.active` to indicate the current item, and `.disabled` to visually indicate and functionally disable items that aren't currently available.
+
+### Content structure
+
+For non-interactive content or to create structured dropdown layouts, Chassis provides several utilities:
+
+<Example code={`<ul class="dropdown-menu">
+    <li><h6 class="dropdown-header">Menu heading</h6></li>
+    <li><a class="dropdown-item" href="#">Action</a></li>
+    <li><a class="dropdown-item active" href="#" aria-current="true">Active action</a></li>
+    <li><a class="dropdown-item" href="#">Another action</a></li>
+    <li><hr class="dropdown-separator"></li>
+    <li><a class="dropdown-item disabled" href="#" aria-disabled="true">Disabled action</a></li>
+  </ul>`} />
+
+- `.dropdown-header` creates section headings within the menu
+- `.dropdown-separator` adds visual separation between groups of items
+- `.dropdown-item-text` adds text that matches the styling of items but isn't interactive
+
+### Rich content
+
+Dropdowns can contain sophisticated content beyond simple links, including paragraphs, forms, and complex layouts:
+
+<Example code={`<div class="dropdown">
+    <button class="button primary dropdown-toggle" type="button" data-cx-toggle="dropdown" aria-expanded="false" data-cx-auto-close="outside">
+      Form dropdown
+    </button>
+    <form class="dropdown-menu p-large" style="width: 300px;">
+      <div class="mb-medium">
+        <label for="emailField" class="form-label">Email address</label>
+        <input type="email" class="form-input" id="emailField" placeholder="name@example.com">
+      </div>
+      <div class="mb-medium">
+        <label for="passwordField" class="form-label">Password</label>
+        <input type="password" class="form-input" id="passwordField">
+      </div>
+      <div class="mb-medium">
+        <div class="form-check">
+          <input type="checkbox" class="check-input" id="rememberCheck">
+          <label class="check-label" for="rememberCheck">Remember me</label>
+        </div>
+      </div>
+      <button type="submit" class="button primary">Sign in</button>
+    </form>
+  </div>`} />
+
+For complex content like forms, set `data-cx-auto-close="outside"` to prevent the dropdown from closing when users interact with form fields.
+
+## Menu alignment
+
+Chassis provides several ways to control how dropdown menus are positioned and aligned to fit your layout needs.
+
+### Basic alignment
+
+By default, dropdown menus align with the left edge of their parent container. Add `.dropdown-menu-end` to align with the right edge instead:
+
+<Example class="button-examples" showMarkup={false} code={`<div class="dropdown">
+    <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+      Right-aligned menu
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>
+
+  <div class="button-group dropdown">
+    <button type="button" class="button primary">Right-aligned split</button>
+    <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+      <span class="visually-hidden">Toggle Dropdown</span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>`} />
+
+```html
+<div class="dropdown">
+    <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+      Right-aligned menu
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      ...
+    </ul>
+  </div>
+
+  <div class="button-group dropdown">
+    <button type="button" class="button primary">Right-aligned split</button>
+    <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false">
+      <span class="visually-hidden">Toggle Dropdown</span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      ...
+    </ul>
+  </div>
+```
+
+### Responsive alignment
+
+For responsive menu alignment, Chassis provides breakpoint-specific classes to adjust dropdown position at different screen sizes. These classes follow the pattern `.dropdown-menu-{breakpoint}-{position}`, allowing you to create adaptive dropdown layouts.
+
+First, add `data-cx-display="static"` to the trigger element to disable Popper's dynamic positioning (required for responsive positioning). Then apply a responsive alignment class to the menu:
+
+<Example showMarkup={false} code={`<div class="dropdown">
+    <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" data-cx-display="static" aria-expanded="false">
+      Left on small screens, right on medium+
+    </button>
+    <ul class="dropdown-menu dropdown-menu-medium-end">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>`} />
+
+```html
+<div class="dropdown">
+    <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" data-cx-display="static" aria-expanded="false">
+      Left on small screens, right on medium+
+    </button>
+    <ul class="dropdown-menu dropdown-menu-medium-end">
+      ...
+    </ul>
+  </div>
+```
+
+Available responsive alignment classes:
+
+- **Breakpoints:** `xsmall`, `small`, `medium`, `large`, `xlarge`, `2xlarge`
+- **Positions:** `start` (left), `end` (right)
+
+For example:
+- `.dropdown-menu-small-end` - Left-aligned by default, right-aligned from small screens up
+- `.dropdown-menu-medium-start` - Right-aligned by default (using `.dropdown-menu-end`), left-aligned from medium screens up
+- `.dropdown-menu-large-end` - Left-aligned by default, right-aligned from large screens up
+
+### Offset and reference
+
+Fine-tune menu positioning with the `data-cx-offset` and `data-cx-reference` attributes for precise control:
+
+<Example class="button-examples" showMarkup={false} code={`<div class="d-flex">
+    <div class="dropdown me-xsmall">
+      <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false" data-cx-offset="10,20">
+        With offset
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#">Action</a></li>
+        <li><a class="dropdown-item" href="#">Another action</a></li>
+        <li><a class="dropdown-item" href="#">Something else</a></li>
+      </ul>
+    </div>
+
+    <div class="button-group dropdown">
+      <button type="button" class="button primary">Parent reference</button>
+      <button type="button" class="button primary dropdown-toggle dropdown-toggle-split" data-cx-toggle="dropdown" aria-expanded="false" data-cx-reference="parent">
+        <span class="visually-hidden">Toggle</span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#">Action</a></li>
+        <li><a class="dropdown-item" href="#">Another action</a></li>
+        <li><a class="dropdown-item" href="#">Something else</a></li>
+      </ul>
+    </div>
+  </div>`} />
+
+```html
+<div class="d-flex">
+    <div class="dropdown me-xsmall">
+      <button type="button" class="button primary dropdown-toggle"
+        data-cx-toggle="dropdown" data-cx-offset="10,20" aria-expanded="false">
+        With offset
+      </button>
+      <ul class="dropdown-menu">
+        ...
+      </ul>
+    </div>
+
+    <div class="button-group dropdown">
+      <button type="button" class="button primary">Parent reference</button>
+      <button type="button" class="button primary dropdown-toggle dropdown-toggle-split"
+        data-cx-toggle="dropdown" data-cx-reference="parent" aria-expanded="false">
+        <span class="visually-hidden">Toggle</span>
+      </button>
+      <ul class="dropdown-menu">
+        ...
+      </ul>
+    </div>
+  </div>
+```
+
+The `data-cx-offset` attribute accepts values in the format `"x,y"` where `x` is the horizontal offset in pixels and `y` is the vertical offset in pixels. The `data-cx-reference` attribute determines which element is used as the positioning reference, with options like `"toggle"` (default) or `"parent"`.
+
+## Auto close behavior
+
+By default, Chassis dropdown menus close automatically when you interact with them—whether you click inside the menu or anywhere outside. For advanced control, use the `data-cx-auto-close` attribute to customize this behavior based on your specific interaction requirements:
+
+<Example class="button-examples" code={`<div class="dropdown">
+    <button class="button primary dropdown-toggle" type="button" data-cx-toggle="dropdown" data-cx-auto-close="true" aria-expanded="false">
+      Default (closes on any click)
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>
+
+  <div class="dropdown">
+    <button class="button primary dropdown-toggle" type="button" data-cx-toggle="dropdown" data-cx-auto-close="inside" aria-expanded="false">
+      Close on menu clicks only
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>
+
+  <div class="dropdown">
+    <button class="button primary dropdown-toggle" type="button" data-cx-toggle="dropdown" data-cx-auto-close="outside" aria-expanded="false">
+      Close on outside clicks only
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>
+
+  <div class="dropdown">
+    <button class="button primary dropdown-toggle" type="button" data-cx-toggle="dropdown" data-cx-auto-close="false" aria-expanded="false">
+      Manual close only
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#">Action</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else</a></li>
+    </ul>
+  </div>`} />
+
+Available options provide granular control over closing behavior:
+- `true` (default): Close on any click inside or outside the menu
+- `false`: Don't close automatically; require manual closing through JavaScript
+- `"inside"`: Close only when clicking inside the menu
+- `"outside"`: Close only when clicking outside the menu
+
+## Navbar dropdowns
+
+Chassis provides specialized integration for dropdowns within navigation bars. Unlike standard dropdowns, navbar dropdowns use static positioning (rather than Popper.js) for improved performance in complex navigation structures.
+
+<Example code={`<nav class="navbar navbar-expand-medium bg-evident">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarExample" aria-controls="navbarExample" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarExample">
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-cx-toggle="dropdown" aria-expanded="false">
+              Dropdown
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><hr class="dropdown-separator"></li>
+              <li><a class="dropdown-item" href="#">Something else</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>`} />
+
+### Implementation notes
+
+- Navbar dropdowns use the `.nav-item.dropdown` class combination for the container
+- The trigger is a `.nav-link.dropdown-toggle` instead of a button, and should include `role="button"`
+- Nested structure uses the same `.dropdown-menu` and `.dropdown-item` classes as standard dropdowns
+- Positioning is handled statically rather than using Popper.js for better performance in navigation structures
+
+## CSS
+
+<DocsCSS />
+
+### Custom properties
+
+Chassis dropdowns use CSS variables for easy theming and customization:
+
+<DocsCSSVars />
+
+<Callout>
+Some dropdown properties, like `--cx-dropdown-item-border-radius`, are defined at the item level rather than on the container, allowing finer control of styling. Key dropdown CSS variables include:
+
+- `--cx-dropdown-min-width` - Controls the minimum width of dropdown menus
+- `--cx-dropdown-padding-x` - Horizontal padding inside dropdown menus
+- `--cx-dropdown-padding-y` - Vertical padding inside dropdown menus
+- `--cx-dropdown-border-radius` - Controls the border radius of the dropdown container
+- `--cx-dropdown-item-border-radius` - Controls the border radius of individual dropdown items
+- `--cx-dropdown-item-padding-x` - Horizontal padding for dropdown items
+- `--cx-dropdown-item-padding-y` - Vertical padding for dropdown items
+</Callout>
+
+### Sass variables
+
+<DocsSASSVars />
+
+<ScssDocs name="dropdown-variables" file="scss/_variables.scss" />
+
+### Sass mixins
+
+Chassis provides an icon-based caret system defined by component design tokens and implemented via the `caret-icon` mixin:
+
+<ScssDocs name="caret-mixin" file="scss/mixins/_caret.scss" />
+
+## JavaScript
+
+Chassis dropdowns can be controlled via data attributes or JavaScript. The `data-cx-toggle="dropdown"` attribute provides the simplest way to initialize a dropdown.
+
+<Callout>
+To ensure reliable behavior on touch devices, particularly iOS, Chassis implements specialized event handling that addresses platform-specific delegation issues.
+</Callout>
+
+### Data attribute
+
+Initialize dropdowns with data attributes for the most straightforward implementation:
+
+```html
+<div class="dropdown">
+  <button type="button" data-cx-toggle="dropdown" aria-expanded="false">
+    Dropdown trigger
+  </button>
+  <ul class="dropdown-menu">
+    <!-- Menu items -->
+  </ul>
+</div>
+```
+
+### Initialization
+
+<Callout type="warning">
+Even when using JavaScript initialization, always include `data-cx-toggle="dropdown"` on trigger elements for proper event handling.
+</Callout>
+
+```js
+const dropdownElements = document.querySelectorAll('.dropdown-toggle')
+const dropdowns = [...dropdownElements].map(el => new chassis.Dropdown(el))
+```
+
+### Configuration options
+
+<JsDataAttributes />
+
+<CxTable>
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `autoClose` | boolean, string | `true` | Controls automatic closing behavior: `true` (any click), `"inside"` (menu clicks), `"outside"` (external clicks), or `false` (manual only). |
+| `boundary` | string, element | `'clippingParents'` | Sets the overflow boundary constraint for Popper positioning. |
+| `display` | string | `'dynamic'` | Use `'dynamic'` for Popper positioning or `'static'` to disable repositioning. |
+| `offset` | array, string, function | `[0, 2]` | Controls menu positioning offset from the trigger. |
+| `popperConfig` | null, object, function | `null` | Override default Popper.js configuration. |
+| `reference` | string, element, object | `'toggle'` | Specify the reference element for positioning. |
+</CxTable>
+
+#### Popper configuration
+
+Chassis uses [Popper.js](https://popper.js.org/) for dropdown positioning. You can customize the Popper behavior with the `popperConfig` option:
+
+```js
+const dropdown = new chassis.Dropdown(element, {
+  popperConfig(defaultConfig) {
+    // Modify or extend the default config
+    return {
+      ...defaultConfig,
+      // Custom options
+      placement: 'right-start',
+      modifiers: [
+        ...defaultConfig.modifiers,
+        {
+          name: 'offset',
+          options: {
+            offset: [10, 10],
+          },
+        }
+      ]
+    }
+  }
+})
+```
+
+### Methods
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `dispose` | Removes dropdown functionality and cleans up data. |
+| `getInstance` | Retrieves the dropdown instance for an element. |
+| `getOrCreateInstance` | Gets an existing instance or creates a new one if needed. |
+| `hide` | Programmatically hides the dropdown menu. |
+| `show` | Programmatically shows the dropdown menu. |
+| `toggle` | Toggles the dropdown menu's visibility. |
+| `update` | Updates the dropdown's position. |
+</CxTable>
+
+Example usage:
+```js
+// Toggle all dropdowns on a page
+document.querySelectorAll('.dropdown-toggle').forEach(el => {
+  const dropdown = chassis.Dropdown.getOrCreateInstance(el)
+  dropdown.toggle()
+})
+```
+
+### Events
+
+Chassis dropdowns emit events that you can listen for to trigger custom behaviors:
+
+<CxTable>
+| Event | Description |
+| --- | --- |
+| `hide.cx.dropdown` | Fires when the dropdown begins to hide. |
+| `hidden.cx.dropdown` | Fires when the dropdown is fully hidden. |
+| `show.cx.dropdown` | Fires when the dropdown begins to show. |
+| `shown.cx.dropdown` | Fires when the dropdown is fully shown. |
+</CxTable>
+
+Example of listening for dropdown events:
+
+```js
+const dropdownElement = document.getElementById('myDropdown')
+
+// Do something when dropdown starts to show
+dropdownElement.addEventListener('show.cx.dropdown', event => {
+  // event.target is the dropdown element
+  console.log('Dropdown is showing')
+})
+
+// Perform actions after dropdown is fully shown
+dropdownElement.addEventListener('shown.cx.dropdown', event => {
+  // You could focus on the first item or initialize components inside the dropdown
+  const firstInput = event.target.querySelector('input')
+  if (firstInput) firstInput.focus()
+})
+
+// Prevent dropdown from hiding in certain conditions
+dropdownElement.addEventListener('hide.cx.dropdown', event => {
+  // To prevent the dropdown from hiding, call preventDefault()
+  if (!formIsValid()) {
+    event.preventDefault()
+    showValidationError()
+  }
+})
+```

@@ -1,0 +1,303 @@
+---
+title: Chips
+description: Interactive, compact components for tags, filters and selections with support for avatars, icons, and removal actions.
+toc: true
+---
+
+import { getData } from '@libs/data'
+
+## Introduction
+
+Chips are compact, interactive components that represent discrete information, such as filters, tags, or selections. Chassis CSS implements chips with a consistent design system that aligns with your Figma tokens, ensuring visual coherence across your interface while maintaining interactive functionality.
+
+## Foundation class
+
+The `.chip` class establishes the foundational structure, typography, and interactive states for all chip variants. It provides consistent padding, border-radius, and focus handling while supporting multiple contextual variants.
+
+<Example class="button-examples" code={`<span class="chip">Foundation class</span>
+<span class="chip default">Default chip</span>
+<span class="chip primary">Primary chip</span>`} />
+
+The `.chip` foundation class can be extended with contextual classes or serve as a base for custom styling through your design token system.
+
+### Element compatibility
+
+While chips are typically rendered as `<span>` elements, the `.chip` class works seamlessly with various HTML elements to support different interaction patterns:
+
+<Callout type="info">
+  <strong>Accessibility:</strong> When using chips as interactive elements with `<a>` tags for in-page functionality, add `role="button"` to ensure proper semantics for assistive technologies.
+</Callout>
+
+<Example class="button-examples" code={`<span class="chip primary">Span</span>
+<div class="chip primary">Div</div>
+<button class="chip primary" type="button">Button</button>
+<a class="chip primary" href="#" role="button">Link</a>`} />
+
+## Color variants
+
+Chassis CSS provides a range of semantically meaningful color variants for chips through its contextual color system. Each variant communicates a distinct purpose while maintaining design consistency.
+
+<Example class="button-examples" code={getData('context-colors').map((contextColor) => `<span class="chip ${contextColor.name}">${contextColor.title}</span>`)} />
+
+<Callout name="warning-color-assistive-technologies" />
+
+### Outline style
+
+For interfaces requiring more subtle or secondary chip patterns, the `.outline` modifier creates a transparent background with a colored border while preserving the semantic color context.
+
+<Example class="button-examples" code={getData('context-colors').map((contextColor) => `<span class="chip ${contextColor.name} outline">${contextColor.title}</span>`)} />
+
+<Callout>
+  Some chip variants use lighter foreground colors optimized for dark backgrounds to maintain proper contrast ratios.
+</Callout>
+
+### Smooth style
+
+The `.smooth` modifier applies a subdued background to chips, creating a softer visual presence while maintaining the contextual color relationship. This style is ideal for less prominent tags or filters.
+
+<Example class="button-examples" code={getData('context-colors').map((contextColor) => `<span class="chip ${contextColor.name} smooth">${contextColor.title}</span>`)} />
+
+## Icon integration
+
+Enhance chips with icons to provide additional visual meaning or action affordances. Both SVG icons and icon fonts can be used within chips.
+
+<Example class="button-examples" code={`<span class="chip default">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Default</span>
+  </span>
+  <span class="chip primary">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Primary</span>
+  </span>
+  <span class="chip default">
+    <span>Default</span>
+    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+  </span>
+  <span class="chip primary">
+    <span>Primary</span>
+    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+  </span>`} />
+
+<Callout type="warning">
+  Icon spacing is automatically applied using `:first-child` and `:last-child` pseudo selectors. To ensure proper spacing, wrap the chip text in a `<span>` element.
+</Callout>
+
+## Dismissible chips
+
+Add a removal action to chips with the `.close-button` component, which automatically adapts to the chip's context color. The removal button is positioned consistently and includes proper accessibility attributes for screen reader users.
+
+<Example class="button-examples" code={`<span class="chip default">
+    Default
+    <button type="button" class="close-button" data-cx-dismiss="chip" aria-label="Remove"></button>
+  </span>
+  <span class="chip primary">
+    Primary
+    <button type="button" class="close-button" data-cx-dismiss="chip" aria-label="Remove"></button>
+  </span>
+`} />
+
+## Size variants
+
+Chassis provides three size variants for chips: default (medium), large, and small. Use the `.large` or `.small` modifier classes to adjust chip dimensions based on context and available space.
+
+<Example class="button-examples" code={`<span class="chip default">
+    Medium
+  </span>
+  <span class="chip default">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Medium</span>
+  </span>
+  <span class="chip default large">
+    Large
+  </span>
+  <span class="chip default large">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Large</span>
+  </span>
+  <span class="chip default small">
+    Small
+  </span>
+  <span class="chip default small">
+    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <span>Small</span>
+  </span>`} />
+
+## Avatar integration
+
+Enhance chips with user avatars by incorporating the `.avatar` component. The avatar automatically adapts to the chip size and maintains proper spacing with text content. Both image and text-based avatars are supported.
+
+<Example class="button-examples" code={`<span class="chip default">
+    <span class="avatar">
+      <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+    </span>
+    Medium
+    <button type="button" class="close-button" aria-label="Remove"></button>
+  </span>
+  <span class="chip large default">
+    <span class="avatar">
+      <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+    </span>
+    Large
+    <button type="button" class="close-button" aria-label="Remove"></button>
+  </span>
+  <span class="chip small default">
+    <span class="avatar">
+      <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+    </span>
+    Small
+    <button type="button" class="close-button" aria-label="Remove"></button>
+  </span>`} />
+
+## Disabled chips
+
+Make chips appear inactive by adding the `disabled` attribute to `<button>` elements or the `.disabled` class to other elements. Disabled chips have `pointer-events: none` applied, preventing hover and active states from triggering.
+
+<Example class="button-examples" code={`<span class="chip default disabled">
+    <span class="avatar">
+      <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+    </span>
+    Medium
+    <button type="button" class="close-button" aria-label="Remove"></button>
+  </span>
+  <span class="chip large default disabled">
+    <span class="avatar">
+      <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+    </span>
+    Large
+    <button type="button" class="close-button" aria-label="Remove"></button>
+  </span>
+  <span class="chip small default disabled">
+    <span class="avatar">
+      <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+    </span>
+    Small
+    <button type="button" class="close-button" aria-label="Remove"></button>
+  </span>`} />
+
+## Toggle functionality
+
+Chips support toggle functionality similar to buttons, enabling them to function as selection controls. Add the `data-cx-toggle="chip"` attribute to enable automatic state management. For pre-toggled chips, include both the `.active` class and `aria-pressed="true"` attribute to ensure proper visual styling and accessibility states.
+
+<Example class="button-examples" code={`<!-- Buttons -->
+  <p class="d-inline-flex gap-xsmall">
+    <button type="button" class="chip default" data-cx-toggle="chip" aria-pressed="false">Toggle button</button>
+    <button type="button" class="chip default active" data-cx-toggle="chip" aria-pressed="true">Active toggle</button>
+    <button type="button" class="chip default" disabled data-cx-toggle="chip" aria-pressed="false">Disabled toggle</button>
+    <button type="button" class="chip default active" disabled data-cx-toggle="chip" aria-pressed="true">Disabled active</button>
+  </p>
+  <!-- Links -->
+  <p class="d-inline-flex gap-xsmall">
+    <a href="#" class="chip primary" role="button" data-cx-toggle="chip" aria-pressed="false">Toggle link</a>
+    <a href="#" class="chip primary active" role="button" data-cx-toggle="chip" aria-pressed="true">Active toggle</a>
+    <a href="#" class="chip primary disabled" aria-disabled="true" role="button" data-cx-toggle="chip" aria-pressed="false">Disabled toggle</a>
+    <a href="#" class="chip primary active disabled" aria-disabled="true" role="button" data-cx-toggle="chip" aria-pressed="true">Disabled active</a>
+  </p>`} />
+
+## CSS
+
+<DocsCSS />
+
+### Custom properties
+
+<DocsCSSVars />
+
+<ScssDocs name="chip-css-vars" file="scss/_chip.scss" />
+
+<Callout type="info">
+  Chip variants leverage the same mixins and color map system as buttons. See [buttons]([[docsref:components/buttons#sass-mixins]]) documentation for the underlying mixins and maps.
+</Callout>
+
+### Design tokens
+
+<DocsDesignTokens />
+
+<ScssDocs name="chip-tokens" file="scss/tokens/_chips.scss" />
+
+## JavaScript API
+
+Chips have toggling and dismissal features, providing functionality for both selection and removal. The chip component's JavaScript API offers programmatic control over these behaviors.
+
+### Initialization
+
+Initialize elements as chips:
+
+```js
+const chipList = document.querySelectorAll('.chip')
+const chips = [...chipList].map(element => new chassis.Chip(element))
+```
+
+<Callout>
+For basic toggle or dismissal functionality, explicit initialization is not required when using data attributes. The plugin will automatically initialize when using `data-cx-toggle="chip"` or when a child element has `data-cx-dismiss="chip"`.
+</Callout>
+
+### Toggle functionality
+
+Toggle behavior is automatically enabled on chips with the `data-cx-toggle="chip"` attribute:
+
+```js
+// Example of programmatically toggling a chip
+const chip = chassis.Chip.getOrCreateInstance('#myToggleChip')
+chip.toggle()
+```
+
+### Dismissal triggers
+
+<JsDismiss name="chip" />
+
+### Methods
+
+The chip plugin provides methods for both toggle and dismissal functionality:
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `toggle` | Toggles the chip's active state (for selectable chips) |
+| `close` | Removes the chip from the DOM (for dismissible chips) |
+| `dispose` | Destroys a chip instance and removes associated DOM data |
+| `getInstance` | Static method that retrieves the chip instance associated with a DOM element: `chassis.Chip.getInstance(element)` |
+| `getOrCreateInstance` | Static method that returns an existing chip instance or creates one if none exists: `chassis.Chip.getOrCreateInstance(element)` |
+</CxTable>
+
+Example of batch operations on chips:
+
+```js
+// Toggle all selected chips in a group
+document.querySelectorAll('.chip.selected').forEach(chipElement => {
+  const chip = chassis.Chip.getOrCreateInstance(chipElement)
+  chip.toggle()
+})
+
+// Remove all chips with a specific tag
+document.querySelectorAll('.chip[data-tag="outdated"]').forEach(chipElement => {
+  const chip = chassis.Chip.getOrCreateInstance(chipElement)
+  chip.close()
+})
+```
+
+### Events
+
+The chip plugin exposes events for both toggle and dismissal states:
+
+<CxTable>
+| Event | Description |
+| --- | --- |
+| `toggle.cx.chip` | Fires when the chip's toggle state changes |
+| `close.cx.chip` | Fires immediately when the `close` instance method is called |
+| `closed.cx.chip` | Fired when the chip has been removed and CSS transitions have completed |
+</CxTable>
+
+```js
+const myChip = document.getElementById('myChip')
+
+// Handle toggle events
+myChip.addEventListener('toggle.cx.chip', event => {
+  const isActive = event.target.classList.contains('active')
+  console.log(`Chip toggled to ${isActive ? 'active' : 'inactive'} state`)
+})
+
+// Handle dismissal events
+myChip.addEventListener('closed.cx.chip', event => {
+  // Focus an appropriate element after chip is removed
+  document.getElementById('chipContainer').focus()
+})
+```

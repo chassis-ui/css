@@ -1,0 +1,54 @@
+//
+// Form Select
+//
+// A themeable, accessible custom styling for select form elements.
+// Provides consistent appearance across browsers while maintaining accessibility.
+//
+// Extends the %form-input placeholder to share common styling with other form inputs
+// while adding select-specific features like dropdown indicators (carets).
+//
+
+.form-select {
+  // Uses %form-input placeholder to share common form styles with .form-input,
+  // avoiding duplicate property assignments across different form elements
+  // and ensuring consistent appearance between different input types.
+  @extend %form-input;
+
+  // Define the dropdown indicator (caret) using SVG with theme-aware coloring.
+  @include form-select-caret("idle");
+
+  // Adjust padding to accommodate the caret and potential validation icons.
+  padding-right: #{calc(var(--#{$prefix}padding-x) * 2 + var(--#{$prefix}caret-size))};
+  background-image: var(--#{$prefix}caret-icon), var(--#{$prefix}feedback-icon, none);
+  background-repeat: no-repeat;
+  background-position: $form-select-caret-position;
+  background-size: var(--#{$prefix}caret-size);
+
+  // Disabled state styling - changes caret color to indicate disabled status.
+  &[disabled],
+  &:disabled {
+    @include form-select-caret("disabled");
+  }
+
+  // Remove caret for multi-select or size-specific selects
+  // since these don't use the standard dropdown UI.
+  &[multiple],
+  &[size]:not([size="1"]) {
+    padding-right: var(--#{$prefix}padding-x);
+    background-image: none;
+  }
+
+  // Firefox-specific fix to prevent focus ring from appearing inside the select
+  // Uses text-shadow to maintain text color visibility while making the text itself transparent.
+  &:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 var(--#{$prefix}fg-color);
+  }
+
+  // Dark mode styling
+  @if $enable-dark-mode {
+    @include form-select-dark();
+  }
+
+}
+

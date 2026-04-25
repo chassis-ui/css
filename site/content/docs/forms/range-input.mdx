@@ -1,0 +1,94 @@
+---
+title: Range Inputs
+description: Create consistent, accessible slider controls with Chassis CSS's range inputs that work across all modern browsers.
+toc: true
+---
+
+## Overview
+
+Range inputs provide an intuitive slider interface for selecting numeric values from a specified range. Chassis CSS enhances native `<input type="range">` controls with the `.form-range` class, providing consistent styling and behavior across all modern browsers.
+
+<Example code={`<label for="rangeExample" class="form-label">Basic range slider</label>
+<input type="range" class="form-range" id="rangeExample">`} />
+
+The styling includes:
+- A visually consistent track across all browsers
+- Responsive thumb control that indicates the current value
+- Proper focus states for keyboard navigation
+- Support for Chassis CSS's theming system
+
+### Disabled state
+
+Range inputs can be disabled with the `disabled` attribute. This applies a visually muted appearance, removes interactive behaviors, and prevents focus.
+
+<Example code={`<label for="disabledRange" class="form-label">Disabled range slider</label>
+<input type="range" class="form-range" id="disabledRange" disabled>`} />
+
+## Range configuration
+
+Customize range input behavior with attributes that control the slider's value boundaries and incrementation.
+
+### Min and max values
+
+Range inputs default to a scale of 0 to 100. Use the `min` and `max` attributes to create custom ranges that better fit your application's needs.
+
+<Example code={`<label for="customRange" class="form-label">Custom range (0-5)</label>
+<input type="range" class="form-range" min="0" max="5" id="customRange">`} />
+
+### Step increments
+
+By default, range inputs snap to integer values. For finer control, specify a decimal `step` value to define the increment between values.
+
+<Example code={`<label for="preciseRange" class="form-label">Range with 0.5 step increments</label>
+<input type="range" class="form-range" min="0" max="5" step="0.5" id="preciseRange">`} />
+
+## Contextual usage
+
+Integrate range inputs into practical UI patterns to enhance user experience and provide clear visual feedback.
+
+### With value display
+
+For enhanced usability, consider pairing range inputs with value displays that update dynamically. This helps users understand the exact value they're selecting.
+
+<Example code={`<div class="mb-medium">
+  <label for="rangeWithOutput" class="form-label">Temperature (°C)</label>
+  <div class="d-flex align-items-center gap-medium">
+    <input type="range" class="form-range" min="15" max="30" value="22" id="rangeWithOutput"
+      oninput="rangeOutput.value = rangeWithOutput.value">
+    <output for="rangeWithOutput" id="rangeOutput" class="ms-small w-25">22</output>
+  </div>
+</div>`} />
+
+### Form layouts
+
+Range inputs integrate seamlessly with Chassis CSS's form layouts and components. They can be used alongside other input types and properly align with form groups.
+
+<Example code={`<div class="row g-medium">
+  <div class="col-medium-6">
+    <label for="volumeRange" class="form-label">Volume</label>
+    <input type="range" class="form-range" min="0" max="100" value="75" id="volumeRange">
+  </div>
+  <div class="col-medium-6">
+    <label for="brightnessRange" class="form-label">Brightness</label>
+    <input type="range" class="form-range" min="0" max="100" value="50" id="brightnessRange">
+  </div>
+</div>`} />
+
+## Accessibility considerations
+
+When using range inputs, follow these best practices to ensure accessibility:
+
+- Always include a descriptive `<label>` that explains the purpose of the control
+- Consider adding `aria-valuemin`, `aria-valuemax`, and `aria-valuenow` attributes for enhanced screen reader support
+- Use the `form-help` class to provide additional context or instructions below the range input
+- Test keyboard navigation to ensure users can adjust values with arrow keys
+
+## CSS
+
+<DocsCSS sassOnly={true} />
+
+### Sass variables
+
+<DocsSASSVars notExposed={true} />
+
+<ScssDocs name="form-range-variables" file="scss/_variables.scss" />

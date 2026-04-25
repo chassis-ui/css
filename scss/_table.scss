@@ -1,0 +1,258 @@
+//
+// Table Component
+//
+// This file implements tabular data styling with a comprehensive set of customization options.
+// It provides an opt-in approach where the base class doesn't affect native tables unless applied.
+//
+// Implementation Features:
+// - CSS custom properties for complete theming control of all table elements
+// - Configurable typography token support for header and data cells
+// - Complex selector patterns to prevent style leakage to nested tables
+// - Border radius application with conditional feature flags
+// - Specialized row and column stripe patterns with flexible ordering
+// - Contextual hover and active states with visual indicators
+// - Responsive behavior through breakpoint-specific container classes
+//
+// The implementation aims to balance flexibility with performance through
+// judicious use of selectors and custom properties.
+//
+
+.table {
+  // scss-docs-start table-variables
+  --#{$prefix}fg-color: var(--#{$prefix}table-td-fg-color, #{$table-td-fg-color});
+  --#{$prefix}bg-color: var(--#{$prefix}table-td-bg-color, #{$table-td-bg-color});
+  --#{$prefix}th-fg-color: var(--#{$prefix}table-th-fg-color, #{$table-th-fg-color});
+  --#{$prefix}th-bg-color: var(--#{$prefix}table-th-bg-color, #{$table-th-bg-color});
+  --#{$prefix}striped-fg-color: var(--#{$prefix}table-striped-fg-color, #{$table-striped-fg-color});
+  --#{$prefix}striped-bg-color: var(--#{$prefix}table-striped-bg-color, #{$table-striped-bg-color});
+  --#{$prefix}hover-fg-color: var(--#{$prefix}table-hover-fg-color, #{$table-hover-fg-color});
+  --#{$prefix}hover-bg-color: var(--#{$prefix}table-hover-bg-color, #{$table-hover-bg-color});
+  --#{$prefix}active-fg-color: var(--#{$prefix}table-active-fg-color, #{$table-active-fg-color});
+  --#{$prefix}active-bg-color: var(--#{$prefix}table-active-bg-color, #{$table-active-bg-color});
+  --#{$prefix}border-color: var(--#{$prefix}table-border-color, #{$table-border-color});
+  --#{$prefix}cue-color: var(--#{$prefix}table-cue-color, #{$table-cue-color});
+
+  --#{$prefix}cell-padding-y: var(--#{$prefix}table-cell-padding-y, #{$table-cell-padding-y});
+  --#{$prefix}cell-padding-x: var(--#{$prefix}table-cell-padding-x, #{$table-cell-padding-x});
+
+  @if $enable-table-font-tokens {
+    @include map-font($table-td-font, table, td); // e.g. --#{$prefix}td-[property-name]: var(--#{$prefix}table-td-[propery-name], [value]);
+    @include map-font($table-th-font, table, th); // e.g. --#{$prefix}th-[property-name]: var(--#{$prefix}table-th-[propery-name], [value]);
+  }
+  @if $enable-table-border-radius {
+    --#{$prefix}border-radius: var(--#{$prefix}table-border-radius, #{$table-border-radius});
+    @include border-radius(var(--#{$prefix}border-radius));
+  }
+  // scss-docs-end table-variables
+
+  width: 100%;
+  margin-bottom: $spacer;
+  vertical-align: var(--#{$prefix}table-cell-verticle-align, $table-cell-vertical-align);
+  border-color: var(--#{$prefix}border-color);
+
+  &.context {
+    --#{$prefix}table-td-fg-color: #{$table-td-fg-context};
+    --#{$prefix}table-td-bg-color: #{$table-td-bg-context};
+    --#{$prefix}table-th-fg-color: #{$table-th-fg-context};
+    --#{$prefix}table-th-bg-color: #{$table-th-bg-context};
+    --#{$prefix}table-striped-fg-color: #{$table-striped-fg-context};
+    --#{$prefix}table-striped-bg-color: #{$table-striped-bg-context};
+    --#{$prefix}table-hover-fg-color: #{$table-hover-fg-context};
+    --#{$prefix}table-hover-bg-color: #{$table-hover-bg-context};
+    --#{$prefix}table-active-fg-color: #{$table-active-fg-context};
+    --#{$prefix}table-active-bg-color: #{$table-active-bg-context};
+    --#{$prefix}table-border-color: #{$table-border-context};
+    --#{$prefix}table-cue-color: #{$table-cue-context};
+    --#{$prefix}border-color: #{$table-border-context};
+  }
+
+  // Target th & td
+  // We need the child combinator to prevent styles leaking to nested tables which doesn't have a `.table` class.
+  // We use the universal selectors here to simplify the selector (else we would need 6 different selectors).
+  // Another advantage is that this generates less code and makes the selector less specific making it easier to override.
+  > :not(caption) > * {
+    // stylelint-disable-next-line selector-max-universal
+    > * {
+      padding: var(--#{$prefix}cell-padding-y) var(--#{$prefix}cell-padding-x);
+      color: var(--#{$prefix}fg-color);
+      background-color: var(--#{$prefix}bg-color);
+      // border-color: var(--#{$prefix}border-color);
+      border-bottom-width: var(--#{$prefix}border-width);
+      box-shadow: inset 0 0 0 (10 * $utility-pixel-999) var(--#{$prefix}bg-color);
+    }
+    @if $enable-table-font-tokens {
+      > td {
+        @include font(td);
+      }
+
+      > th {
+        @include font(th);
+      }
+    }
+  }
+  > :not(caption):has(+ .table-divider) > :last-child {
+    border-bottom: 0;
+  }
+
+  @if $enable-table-border-radius {
+    // stylelint-disable
+    > :not(caption):first-child > * {
+      > *:first-child {
+        @include border-top-start-radius(var(--#{$prefix}border-radius));
+      }
+      > *:last-child {
+        @include border-top-end-radius(var(--#{$prefix}border-radius));
+      }
+    }
+    > :not(caption):last-child > *:last-child {
+      > *:first-child {
+        @include border-bottom-start-radius(var(--#{$prefix}border-radius));
+      }
+      > *:last-child {
+        @include border-bottom-end-radius(var(--#{$prefix}border-radius));
+      }
+    }
+    // stylelint-enable
+  }
+
+  .text-center > * {
+    justify-self: center;
+  }
+
+  > tbody {
+    vertical-align: inherit;
+  }
+
+  > thead {
+    --#{$prefix}fg-color: var(--#{$prefix}th-fg-color);
+    --#{$prefix}bg-color: var(--#{$prefix}th-bg-color);
+    vertical-align: middle;
+    // stylelint-disable-next-line selector-no-qualifying-type
+    &.context {
+      --#{$prefix}fg-color: var(--#{$prefix}fg-main);
+      --#{$prefix}bg-color: var(--#{$prefix}bg-main);
+    }
+  }
+
+  // Border versions
+  //
+  // Add or remove borders all around the table and between all the columns.
+  //
+  // When borders are added on all sides of the cells, the corners can render odd when
+  // these borders do not have the same color or if they are semi-transparent.
+  // Therefore we add top and border bottoms to the `tr`s and left and right borders
+  // to the `td`s or `th`s
+
+  &.bordered {
+    border-style: solid;
+    border-width: $table-border-width 0 0 $table-border-width;
+    > :not(caption) > * {
+      border-width: 0 $table-border-width $table-border-width 0;
+
+      // stylelint-disable-next-line selector-max-universal
+      > * {
+        border-width: 0 $table-border-width $table-border-width 0;
+      }
+    }
+  }
+
+  &.borderless {
+    // stylelint-disable-next-line selector-max-universal
+    > :not(caption) > * > *:not(input) {
+      border-bottom-width: 0;
+    }
+
+    > :not(:first-child) {
+      border-top-width: 0;
+    }
+  }
+
+  // Zebra-striping
+  //
+  // Default zebra-stripe styles (alternating gray and transparent backgrounds)
+
+  // For rows
+  &.striped {
+    > tbody > tr:nth-of-type(#{$table-striped-order}) > * {
+      --#{$prefix}fg-color: var(--#{$prefix}striped-fg-color);
+      --#{$prefix}bg-color: var(--#{$prefix}striped-bg-color);
+    }
+  }
+
+  // For columns
+  &.striped-columns {
+    > tbody > tr > :nth-child(#{$table-striped-columns-order}) {
+      --#{$prefix}fg-color: var(--#{$prefix}striped-fg-color);
+      --#{$prefix}bg-color: var(--#{$prefix}striped-bg-color);
+    }
+  }
+
+  // Hover effect
+  //
+  // Placed here since it has to come after the potential zebra striping
+
+  &.hoverable {
+    > tbody > tr:not(.active):hover > *:not(.active) {
+      --#{$prefix}fg-color: var(--#{$prefix}hover-fg-color);
+      --#{$prefix}bg-color: var(--#{$prefix}hover-bg-color);
+    }
+  }
+
+  // Active table
+  //
+  // The `.table-active` class can be added to highlight rows or cells
+
+  .active,
+  > tbody > tr:nth-of-type(#{$table-striped-order}).active > *,
+  > tbody > tr:nth-of-type(#{$table-striped-order}) > *.active {
+    --#{$prefix}fg-color: var(--#{$prefix}active-fg-color);
+    --#{$prefix}bg-color: var(--#{$prefix}active-bg-color);
+
+    // &:first-child::before {
+    //   position: absolute;
+    //   // bottom: 0;
+    //   width: 4px;
+    //   height: 100%;
+    //   content: " ";
+    //   background-color: var(--#{$prefix}primary);
+    // }
+  }
+
+  @if $enable-table-active-border {
+    // stylelint-disable-next-line selector-no-qualifying-type
+    > tbody > tr.active > *:first-child,
+    > tbody > tr > *.active {
+      padding-left: #{calc($table-cell-padding-x - $table-active-indicator-size)};
+      border-left: $table-active-indicator-size solid var(--#{$prefix}cue-color);
+    }
+  }
+
+}
+
+.table-divider > tr:first-child > * {
+  border-top: calc(#{$table-border-width} * 2) solid var(--#{$prefix}divider-color, $table-divider-color); // stylelint-disable-line function-disallowed-list
+}
+
+//
+// Change placement of captions with a class
+//
+
+.caption-top {
+  caption-side: top;
+}
+
+// Table variants
+//
+// Table variants set the table cell backgrounds, border colors
+// and the colors of the striped, hovered & active tables
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+  @include media-breakpoint-down($breakpoint) {
+    .table-responsive#{$infix} {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+}

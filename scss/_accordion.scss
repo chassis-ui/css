@@ -1,0 +1,274 @@
+//
+// Accordion Component
+//
+// Collapsible content areas using native <details> and <summary> elements for
+// accessibility. Includes support for different sizes, contextual variants,
+// and customizable indicators with smooth transitions.
+//
+
+.accordion {
+  // scss-docs-start accordion-css-vars
+  // Typography variables - Control text appearance for accordion headers and content
+  @include map-font($accordion-title-font, accordion, title);
+  @include map-font($accordion-body-font, accordion, body);
+  // Colors - Define the visual treatment for all accordion states
+  --#{$prefix}item-fg-color: var(--#{$prefix}accordion-item-fg-color, #{$accordion-item-fg-color});
+  --#{$prefix}item-bg-color: var(--#{$prefix}accordion-item-bg-color, #{$accordion-item-bg-color});
+  --#{$prefix}title-fg-color: var(--#{$prefix}accordion-title-fg-color, #{$accordion-title-fg-color});
+  --#{$prefix}title-bg-color: var(--#{$prefix}accordion-title-bg-color, #{$accordion-title-bg-color});
+  --#{$prefix}title-fg-active: var(--#{$prefix}accordion-title-fg-active, #{$accordion-title-fg-active});
+  --#{$prefix}title-bg-active: var(--#{$prefix}accordion-title-bg-active, #{$accordion-title-bg-active});
+  --#{$prefix}indicator-idle-color: var(--#{$prefix}accordion-indicator-idle-color, #{$accordion-indicator-idle-color});
+  --#{$prefix}indicator-active-color: var(--#{$prefix}accordion-indicator-active-color, #{$accordion-indicator-active-color});
+  --#{$prefix}border-color: var(--#{$prefix}accordion-border-color, #{$accordion-border-color});
+  // Spacing - Control padding and margins for consistent layout
+  --#{$prefix}title-gap: var(--#{$prefix}accordion-gap, #{$accordion-gap});
+  --#{$prefix}title-padding-y: var(--#{$prefix}accordion-title-padding-y, #{$accordion-title-padding-y});
+  --#{$prefix}title-padding-x: var(--#{$prefix}accordion-title-padding-x, #{$accordion-title-padding-x});
+  --#{$prefix}body-padding-t: var(--#{$prefix}accordion-body-padding-t, #{$accordion-body-padding-t});
+  --#{$prefix}body-padding-b: var(--#{$prefix}accordion-body-padding-b, #{$accordion-body-padding-b});
+  --#{$prefix}body-padding-s: var(--#{$prefix}accordion-body-padding-s, #{$accordion-body-padding-s});
+  --#{$prefix}body-padding-e: var(--#{$prefix}accordion-body-padding-e, #{$accordion-body-padding-e});
+  // Utilities - Control appearance details and interactive behavior
+  --#{$prefix}indicator-icon: var(--#{$prefix}accordion-indicator-icon, #{escape-svg($accordion-indicator-icon)});
+  --#{$prefix}indicator-size: var(--#{$prefix}accordion-indicator-size, #{$accordion-indicator-size});
+  --#{$prefix}border-width: var(--#{$prefix}accordion-border-width, #{$accordion-border-width});
+  --#{$prefix}border-radius: var(--#{$prefix}accordion-border-radius, #{$accordion-border-radius});
+  --#{$prefix}inner-border-radius: var(--#{$prefix}accordion-inner-border-radius, #{$accordion-inner-border-radius});
+  --#{$prefix}title-focus-box-shadow: var(--#{$prefix}accordion-title-focus-box-shadow, #{$accordion-title-focus-box-shadow});
+  --#{$prefix}transition: var(--#{$prefix}accordion-transition, #{$accordion-transition});
+  --#{$prefix}title-transition: var(--#{$prefix}accordion-title-transition, #{$accordion-title-transition});
+  --#{$prefix}indicator-transform: var(--#{$prefix}accordion-indicator-transform, #{$accordion-indicator-transform});
+  --#{$prefix}indicator-transition: var(--#{$prefix}accordion-indicator-transition, #{$accordion-indicator-transition});
+  // scss-docs-end accordion-css-vars
+
+  border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
+  @include border-radius(var(--#{$prefix}border-radius));
+
+  // Size variations
+  // Optional feature controlled by $enable-accordion-sizes
+  // Provides different visual weights (.small, .large) for different contexts
+  @if $enable-accordion-sizes {
+    &.large {
+      --#{$prefix}accordion-title-font-size: #{map-get($accordion-large-title-font, font-size)};
+      --#{$prefix}accordion-title-line-height: #{map-get($accordion-large-title-font, line-height)};
+      --#{$prefix}accordion-body-font-size: #{map-get($accordion-large-body-font, font-size)};
+      --#{$prefix}accordion-body-line-height: #{map-get($accordion-large-body-font, line-height)};
+      --#{$prefix}accordion-title-gap: #{$accordion-large-gap};
+      --#{$prefix}accordion-title-padding-y: #{$accordion-large-title-padding-y};
+      --#{$prefix}accordion-title-padding-x: #{$accordion-large-title-padding-x};
+      --#{$prefix}accordion-body-padding-t: #{$accordion-large-body-padding-t};
+      --#{$prefix}accordion-body-padding-b: #{$accordion-large-body-padding-b};
+      --#{$prefix}accordion-body-padding-s: #{$accordion-large-body-padding-s};
+      --#{$prefix}accordion-body-padding-e: #{$accordion-large-body-padding-e};
+      --#{$prefix}accordion-indicator-size: #{$accordion-large-indicator-size};
+    }
+    &.small {
+      --#{$prefix}accordion-title-font-size: #{map-get($accordion-small-title-font, font-size)};
+      --#{$prefix}accordion-title-line-height: #{map-get($accordion-small-title-font, line-height)};
+      --#{$prefix}accordion-body-font-size: #{map-get($accordion-small-body-font, font-size)};
+      --#{$prefix}accordion-body-line-height: #{map-get($accordion-small-body-font, line-height)};
+      --#{$prefix}accordion-title-gap: #{$accordion-small-gap};
+      --#{$prefix}accordion-title-padding-y: #{$accordion-small-title-padding-y};
+      --#{$prefix}accordion-title-padding-x: #{$accordion-small-title-padding-x};
+      --#{$prefix}accordion-body-padding-t: #{$accordion-small-body-padding-t};
+      --#{$prefix}accordion-body-padding-b: #{$accordion-small-body-padding-b};
+      --#{$prefix}accordion-body-padding-s: #{$accordion-small-body-padding-s};
+      --#{$prefix}accordion-body-padding-e: #{$accordion-small-body-padding-e};
+      --#{$prefix}accordion-indicator-size: #{$accordion-small-indicator-size};
+    }
+  }
+
+  // Contextual color variants
+  // Optional feature controlled by $enable-accordion-contexts
+  // Applies different color treatments for different semantic meanings
+  // (e.g., primary, secondary, success, warning, danger)
+  @if $enable-accordion-contexts {
+    &.context {
+      --#{$prefix}accordion-item-fg-color: #{$accordion-item-fg-color-context};
+      --#{$prefix}accordion-item-bg-color: #{$accordion-item-bg-color-context};
+      --#{$prefix}accordion-title-fg-color: #{$accordion-title-fg-color-context};
+      --#{$prefix}accordion-title-bg-color: #{$accordion-title-bg-color-context};
+      --#{$prefix}accordion-title-fg-active: #{$accordion-title-fg-active-context};
+      --#{$prefix}accordion-title-bg-active: #{$accordion-title-bg-active-context};
+      --#{$prefix}accordion-indicator-idle-color: #{$accordion-indicator-idle-context};
+      --#{$prefix}accordion-indicator-active-color: #{$accordion-indicator-active-context};
+      --#{$prefix}accordion-border-color: #{$accordion-border-color-context};
+    }
+  }
+
+  // Accordion detail elements
+  // Each accordion item is implemented using the <details> element for native
+  // accessibility and toggle behavior without requiring JavaScript.
+  > details {
+
+    color: var(--#{$prefix}item-fg-color);
+    background-color: var(--#{$prefix}item-bg-color);
+    border-color: var(--#{$prefix}item-border-color);
+
+    &:first-of-type,
+    &:first-of-type > summary {
+      @include border-top-radius(var(--#{$prefix}inner-border-radius));
+
+    }
+
+    &:not(:last-of-type) {
+      border-bottom: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
+    }
+
+    // Only set a border-radius on the last item if the accordion is collapsed
+    &:last-of-type,
+    &:last-of-type:not([open]) > summary {
+      @include border-bottom-radius(var(--#{$prefix}inner-border-radius));
+
+    }
+
+    > summary {
+      position: relative;
+      display: flex;
+      align-items: top;
+      width: 100%;
+      padding: var(--#{$prefix}title-padding-y) var(--#{$prefix}title-padding-x);
+      text-align: left; // Reset button style
+      background-color: var(--#{$prefix}title-bg-color);
+      border: 0;
+      @include border-radius(0);
+      overflow-anchor: none;
+
+      // Apply typography and color to the summary and title elements
+      &,
+      > .accordion-title {
+        flex-grow: 1;
+        margin-bottom: 0;
+        @include font(title);
+        color: var(--#{$prefix}title-fg-color);
+      }
+
+      // Create the accordion indicator/caret icon with mask image
+      // This allows for color changes and rotation animations
+      &::before {
+        flex-shrink: 0;
+        width: var(--#{$prefix}indicator-size);
+        height: var(--#{$prefix}indicator-size);
+        margin-top: #{calc((var(--#{$prefix}title-line-height) - var(--#{$prefix}indicator-size)) / 2)};
+        margin-right: var(--#{$prefix}title-gap);
+        content: "";
+        background-color: var(--#{$prefix}indicator-idle-color);
+        mask-image: var(--#{$prefix}indicator-icon);
+        mask-repeat: no-repeat;
+        mask-position: center;
+        mask-size: var(--#{$prefix}indicator-size);
+      }
+
+      &:hover {
+        z-index: 2;
+      }
+
+      // Accessible focus styles
+      // Applied when summary is navigated to with keyboard
+      &:focus-visible {
+        z-index: 3;
+        outline: 0;
+        box-shadow: var(--#{$prefix}title-focus-box-shadow);
+      }
+
+      // Hide default triangle marker in WebKit browsers
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+    }
+
+    // Style the accordion content area
+    > .accordion-body {
+      padding: var(--#{$prefix}body-padding-t) var(--#{$prefix}body-padding-e) var(--#{$prefix}body-padding-b) var(--#{$prefix}body-padding-s);
+      @include font(body);
+      @include last-mb-0();
+    }
+
+  }
+
+  // Active/open state styling
+  // Applied when the details element has the [open] attribute
+  > [open] summary {
+    background-color: var(--#{$prefix}title-bg-active);
+    &,
+    > .accordion-title {
+      color: var(--#{$prefix}title-fg-active);
+    }
+
+    // Transform the indicator (typically rotation) when open
+    &::before {
+      background-color: var(--#{$prefix}indicator-active-color);
+      mask-image: var(--#{$prefix}indicator-icon);
+      transform: var(--#{$prefix}indicator-transform);
+    }
+  }
+
+  // Transition animations
+  // Only applied when .no-transition class is NOT present
+  // Provides smooth animation for opening/closing and style changes
+  &:not(.no-transition) > details {
+    @include transition(var(--#{$prefix}transition));
+    > summary {
+      @include transition(var(--#{$prefix}title-transition));
+      &::before {
+        @include transition(var(--#{$prefix}indicator-transition));
+      }
+    }
+  }
+
+  // Flush accordion variant
+  //
+  // Removes borders and border-radius for a cleaner, edge-to-edge appearance
+  // Useful for embedding accordions within other containers or cards
+  &.flush {
+    border: 0;
+    @include border-radius(0);
+    > details {
+      border-right: 0;
+      border-left: 0;
+      @include border-radius(0);
+
+      &:first-child { border-top: 0; }
+      &:last-child { border-bottom: 0; }
+
+      > summary {
+        padding-right: 0;
+        padding-left: 0;
+      }
+
+      // Adjust padding to align content with headers
+      > .accordion-body {
+        padding-right: 0;
+        padding-left: #{calc(var(--#{$prefix}body-padding-s) - var(--#{$prefix}title-padding-x))};
+      }
+    }
+  }
+
+  // Indicator position modifier
+  //
+  // Moves the indicator/caret to the end (right side) of the header
+  // Useful for RTL layouts or when emphasizing the header text
+  &.indicator-end {
+    > details {
+      > summary {
+        flex-direction: row-reverse;
+
+        &::before {
+          margin-right: 0;
+          margin-left: var(--#{$prefix}title-gap);
+        }
+      }
+      > .accordion-body {
+        padding-right: var(--#{$prefix}title-padding-x);
+        padding-left: var(--#{$prefix}title-padding-x);
+      }
+    }
+    // Adjust padding for flush variant with end indicator
+    &.flush > details > .accordion-body {
+      padding-right: 0;
+      padding-left: 0;
+    }
+  }
+}

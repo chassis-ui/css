@@ -1,0 +1,112 @@
+//
+// Rotating border
+//
+
+.spinner-grow,
+.spinner-border {
+  --#{$prefix}color: var(--#{$prefix}spinner-color, #{$spinner-color});
+  --#{$prefix}size: var(--#{$prefix}spinner-size, #{$spinner-size});
+  --#{$prefix}animation-speed: var(--#{$prefix}spinner-animation-speed, #{$spinner-animation-speed});
+  display: inline-block;
+  width: var(--#{$prefix}size);
+  height: var(--#{$prefix}size);
+  vertical-align: var(--#{$prefix}spinner-vertical-align, #{$spinner-vertical-align});
+  border-radius: var(--#{$prefix}spinner-border-radius, 50%); // stylelint-disable-line
+  animation: var(--#{$prefix}animation-speed) linear infinite var(--#{$prefix}animation-name);
+
+  .button > & {
+    --#{$prefix}spinner-size: var(--#{$prefix}icon-size);
+    --#{$prefix}spinner-color: var(--#{$prefix}icon-color);
+  }
+}
+
+.spinner {
+  @extend .#{$default-spinner};
+}
+
+.spinner-adaptive {
+  --#{$prefix}size: 1em;
+}
+
+
+.spinner-border {
+  --#{$prefix}animation-name: spinner-border;
+  border-color: var(--#{$prefix}color);
+  border-style: solid;
+  border-width: var(--#{$prefix}spinner-border-width, #{$spinner-border-width});
+  border-right-color: transparent;
+}
+
+.spinner-grow {
+  --#{$prefix}animation-name: spinner-grow;
+  background-color: var(--#{$prefix}color);
+  opacity: 0;
+}
+
+
+//
+// Spinner keyframes
+//
+
+// scss-docs-start spinner-border-keyframes
+@keyframes spinner-border {
+  to { transform: rotate(360deg) #{"/* rtl:ignore */"}; }
+}
+// scss-docs-end spinner-border-keyframes
+
+// scss-docs-start spinner-grow-keyframes
+@keyframes spinner-grow {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: none;
+  }
+}
+// scss-docs-end spinner-grow-keyframes
+
+@if $enable-reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    .spinner-border,
+    .spinner-grow {
+      --#{$prefix}animation-speed: #{$spinner-animation-speed * 2};
+    }
+  }
+}
+
+//
+// Spinner utilities
+//
+
+$utilities: () !default;
+@if $utilities {
+  $utilities: map-merge(
+    $utilities,
+    (
+      // scss-docs-start utils-spinners
+      "spinner-color": (
+        css-var: true,
+        css-variable-name: spinner-color,
+        class: spinner,
+        values: map-merge(
+          map-loop(map-loop($context-colors, to-rgb, "$value"), rgba-css-var, #{"$key"}, #{"spinner"}),
+          ( "transparent": transparent )
+        )
+      ),
+      "spinner-opacity": (
+        css-var: true,
+        css-variable-name: spinner-opacity,
+        class: spinner-opacity,
+        values: $spinner-opacities
+      ),
+      "spinner-size": (
+        css-var: true,
+        css-variable-name: spinner-size,
+        class: null,
+        values: map-rename-keys($spinner-sizes, "spinner-", "start")
+      ),
+      // scss-docs-end utils-spinners
+    )
+  );
+}

@@ -1,0 +1,577 @@
+---
+title: Tables
+description: Flexible table styles with opt-in classes for responsive, accessible, and customizable data presentation in Chassis CSS.
+toc: true
+---
+
+import { getData } from '@libs/data'
+
+## Overview
+
+Tables in Chassis CSS use an opt-in approach with the `.table` base class. This design choice respects the widespread use of native `<table>` elements in third-party plugins like calendars and datepickers. Add the base class to any `<table>`, then enhance with modifiers for borders, striping, hover states, and context variations. Table styles aren't inherited by nested tables, allowing for independent styling within complex layouts.
+
+<Table class="table" simplified={false} />
+
+## Accented tables
+
+Enhance your tables with visual accents to improve readability and create visual hierarchy. These options help users scan and interpret tabular data more effectively.
+
+### Striped rows
+
+Add `.striped` to create alternating background colors for rows within the `<tbody>`, making it easier to scan across wide tables.
+
+<Table class="table striped" />
+
+### Striped columns
+
+Use `.striped-columns` to apply zebra-striping to columns instead of rows, which can be useful for data-dense tables where vertical scanning is important.
+
+<Table class="table striped-columns" />
+
+## Hoverable rows
+
+Add `.hoverable` to enable a hover state on table rows within a `<tbody>`.
+
+<Table class="table hoverable striped" />
+
+## Active tables
+
+Highlight a table row or cell by adding a `.active` class.
+
+<TableDeep class="table hoverable striped" active />
+
+## Table borders
+
+Control the visual boundaries of your tables using border modifiers. These classes help define table structure and separate content areas to improve readability and organization.
+
+### Bordered tables
+
+Add `.bordered` to apply distinct borders to the entire table, including cell boundaries, creating clear visual separation between data points.
+
+<Table class="table bordered" />
+
+[Border color utilities]([[docsref:/utilities/borders#border-color]]) can be added to change colors:
+
+<Table class="table bordered border-primary" />
+
+### Borderless tables
+
+Apply `.borderless` to remove all borders from your table for a cleaner, more minimalist appearance.
+
+<Table class="table borderless" />
+
+### Border Radius
+
+Customize the corners of bordered tables using CSS variables to override the default border-radius design tokens.
+
+<Table class="table bordered" style="--cx-border-radius: 0" />
+
+Or use it in a wrapper with table scoping.
+
+<div class="cxd-example">
+  <div style="--cx-table-border-radius: 1rem">
+    <TableDeep code="false" class="table bordered" />
+  </div>
+</div>
+
+```html
+<div style="--cx-table-border-radius: 1rem">
+  <table class="table bordered">
+    ...
+  </table>
+</div>
+```
+
+<Callout type="warning">
+ Border radius overriding needs `$enable-table-border-radius` to be set to `true` in `_settings.scss`.
+</Callout>
+
+## Context Variants
+
+<CSSOnly />
+
+Use `.context` with a color name (like `.primary`) to apply a specific color scheme to your table. You can further customize the appearance using style modifiers like `.solid` or `.smooth`.
+
+### Context Colors
+
+Add `.context` followed by a color name (e.g., `.context.primary`, `.context.success`) to apply that color scheme to tables, rows, or individual cells.
+
+<Example showMarkup={false} code={`<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Class</th>
+        <th scope="col">Heading</th>
+        <th scope="col">Heading</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">Base</th>
+        <td>Cell</td>
+        <td>Cell</td>
+      </tr>
+      ${getData('context-colors').map((contextColor) => {
+        return (`
+          <tr class="context ${contextColor.name}">
+            <th scope="row">${contextColor.title}</th>
+            <td>Cell</td>
+            <td>Cell</td>
+          </tr>
+        `)
+      }).join('')}
+    </tbody>
+  </table>`} />
+
+<Code code={[
+  `<!-- On tables -->`,
+  ...getData('context-colors').map((contextColor) => `<table class="table context ${contextColor.name}">...</table>`),
+  `
+  <!-- On heads -->
+  <thead class="context primary">
+    ...
+  </thead>`,
+  `
+  <!-- On bodies -->
+  <tbody class="context primary">
+    ...
+  </tbody>`,
+  `
+  <!-- On rows -->
+  <tr class="context primary">
+    ...
+  </tr>`,
+  `
+  <!-- On cells (\`td\` or \`th\`) -->
+  <td class="context primary">
+    ...
+  </td>`
+]} lang="html" />
+
+<Callout name="warning-color-assistive-technologies" />
+
+<TableDeep showMarkup={false} class="table striped hoverable context primary" active />
+
+<Code lang="html" code={`<table class="table striped hoverable context primary">
+  ...
+  </table>`} />
+
+### Context styles
+
+Add `.solid` or `.smooth` alongside `.context` and a color to modify how the context color appears. The `.solid` style creates a more prominent color effect, while `.smooth` provides a softer appearance.
+
+<Table class="table context primary solid" />
+
+<Table class="table context primary smooth" />
+
+## Color Modes
+
+Apply different color themes to tables using the `data-cx-theme` attribute. This allows you to maintain visual consistency with dark or light themed interfaces regardless of the global theme setting.
+
+Add `data-cx-theme="light"` or `data-cx-theme="dark"` to any table element:
+
+<Table class="table" theme="dark" />
+
+Context variants work seamlessly with explicit theme settings:
+
+<Table class="table context primary" theme="dark" />
+
+## Table Sizing
+
+Customize table dimensions and text sizes using CSS variables to override design tokens, giving you fine-grained control over your table's appearance.
+
+### Basic sizing
+
+Adjust cell padding and font sizes directly on the table:
+
+<Table class="table" style="--cx-td-font-size: 1rem; --cx-cell-padding-y: 1rem" />
+
+### Targeted elements
+
+Target specific table components by setting styles for `<thead>` & `<tbody>` elements or use a wrapper with scoping:
+
+<div class="cxd-example">
+  <div style="--cx-table-cell-padding-y: 1rem; --cx-table-th-font-size: 1rem;">
+    <TableDeep example="false" class="table" headStyle="--cx-cell-padding-y: .25rem" bodyStyle="--cx-td-font-size: 1rem" />
+  </div>
+</div>
+
+```html
+<div style="--cx-table-cell-padding-y: 1rem; --cx-table-th-font-size: 1rem;">
+  <table class="table">
+    <thead style="--cx-cell-padding-y: .25rem">
+      ...
+    </thead>
+    <tbody style="--cx-td-font-size: 1rem">
+      ...
+    </tbody>
+  </table>
+</div>
+```
+
+## Nesting
+
+Border styles and context variants are not inherited by nested tables.
+
+<div class="cxd-example">
+<table class="table striped bordered">
+  <thead>
+    <tr>
+      <th class="w-25" scope="col">Column 1</th>
+      <th scope="col">Column 2</th>
+      <th scope="col">Column 3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">First</th>
+      <td>Second</td>
+      <td>Third</td>
+    </tr>
+    <tr>
+      <td colspan="3" class="p-medium">
+      <TableDeep class="table mb-0" example={false} />
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">First</th>
+      <td>Second</td>
+      <td>Third</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+```html
+<table class="table striped bordered">
+  ...
+  <tr>
+    <td colspan="3" class="p-medium">
+      <table class="table mb-0">
+        ...
+      </table>
+    </td>
+  </tr>
+  ...
+</table>
+```
+
+### Inherit context
+
+Apply the `context` class without a variant to enable the nested table to inherit the parent table's context.
+
+<div class="cxd-example">
+<table class="table striped bordered context primary">
+  <thead>
+    <tr>
+      <th class="w-25" scope="col">Column 1</th>
+      <th scope="col">Column 2</th>
+      <th scope="col">Column 3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">First</th>
+      <td>Second</td>
+      <td>Third</td>
+    </tr>
+    <tr>
+      <td colspan="3" class="p-medium">
+      <TableDeep class="table context mb-0" example={false} />
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">First</th>
+      <td>Second</td>
+      <td>Third</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+```html
+<table class="table striped bordered context primary">
+  ...
+  <tr>
+    <td colspan="3" class="p-medium">
+      <table class="table context mb-0">
+        ...
+      </table>
+    </td>
+  </tr>
+  ...
+</table>
+```
+
+## Anatomy
+
+Customize the structural elements of tables to create effective hierarchies and improve both visual presentation and accessibility.
+
+### Table head
+
+Add emphasis and visual hierarchy using custom styling for the `<thead>` element. Apply context classes to `<thead>` or utility classes to `<tr>` elements for custom appearances.
+
+<TableDeep class="table" headClass="context alternate" />
+
+<TableDeep class="table" headRowClass="bg-main fg-primary" />
+
+### Table foot
+
+Include a `<tfoot>` element to display summary information, totals, or notes at the bottom of the table. Apply context classes to `<tfoot>` or utility classes to `<tr>` elements for custom appearances.
+
+<TableDeep class="table" foot footClass="context neutral" />
+
+### Captions
+
+Improve accessibility and provide context by including a `<caption>` that briefly describes the table's content and purpose. Screen readers announce captions first, helping users decide if they want to explore the table.
+
+<Table class="table" caption="List of users" />
+
+You can also position the caption at the top of the table with `.caption-top` for greater visibility.
+
+<Table class="table caption-top" caption="List of users" />
+
+## Group dividers
+
+Create visual separation between table sections with enhanced borders using the `.table-divider` class.
+
+<TableDeep class="table" bodyClass="table-divider" foot={true} footClass="table-divider" />
+
+<TableDeep class="table context primary" bodyClass="table-divider" foot={true} footClass="table-divider" />
+
+## Vertical alignment
+
+Control the vertical positioning of content within table cells to handle varying content lengths and improve visual harmony. By default, `<thead>` cells align content to the bottom, while `<tbody>` cells inherit alignment from the table (defaulting to top alignment).
+
+Use the [vertical align]([[docsref:/utilities/vertical-align]]) utility classes (`.align-top`, `.align-middle`, or `.align-bottom`) on tables, rows, or individual cells to customize alignment:
+
+<div class="cxd-example">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th scope="col" class="w-25">Column 1</th>
+          <th scope="col">Column 2</th>
+          <th scope="col">Column 3</th>
+          <th scope="col">Column 4</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>This cell inherits <code>vertical-align: middle;</code> from the table</td>
+          <td>This cell inherits <code>vertical-align: middle;</code> from the table</td>
+          <td>This cell inherits <code>vertical-align: middle;</code> from the table</td>
+          <td>This here is some long text, intended to take up quite a bit of vertical space, to demonstrate how the vertical alignment works in the preceding cells.</td>
+        </tr>
+        <tr class="align-bottom">
+          <td>This cell inherits <code>vertical-align: bottom;</code> from the table row</td>
+          <td>This cell inherits <code>vertical-align: bottom;</code> from the table row</td>
+          <td>This cell inherits <code>vertical-align: bottom;</code> from the table row</td>
+          <td>This here is some long text, intended to take up quite a bit of vertical space, to demonstrate how the vertical alignment works in the preceding cells.</td>
+        </tr>
+        <tr>
+          <td>This cell inherits <code>vertical-align: middle;</code> from the table</td>
+          <td class="align-top">This cell aligned to the top.</td>
+          <td class="align-bottom">This cell is aligned to the bottom.</td>
+          <td>This here is some long text, intended to take up quite a bit of vertical space, to demonstrate how the vertical alignment works in the preceding cells.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+```html
+<div class="table-responsive">
+  <table class="table align-middle">
+    <thead>
+      <tr>
+        ...
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        ...
+      </tr>
+      <tr class="align-bottom">
+        ...
+      </tr>
+      <tr>
+        <td>...</td>
+        <td class="align-top">This cell is aligned to the top.</td>
+        <td class="align-bottom">This cell is aligned to the bottom.</td>
+        <td>...</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+```
+
+## Responsive tables
+
+Responsive tables allow tables to be scrolled horizontally with ease. Make any table responsive across all viewports by wrapping a `.table` with `.table-responsive`. Or, pick a maximum breakpoint with which to have a responsive table up to by using `.table-responsive{-small|-medium|-large|-xlarge|-2xlarge}`.
+
+<Callout type="warning">
+##### Vertical clipping/truncation
+
+Responsive tables make use of `overflow-y: hidden`, which clips off any content that goes beyond the bottom or top edges of the table. In particular, this can clip off dropdown menus and other third-party widgets.
+</Callout>
+
+### Always responsive
+
+Across every breakpoint, use `.table-responsive` for horizontally scrolling tables.
+
+<div class="cxd-example">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Heading</th>
+          <th scope="col">Heading</th>
+          <th scope="col">Heading</th>
+          <th scope="col">Heading</th>
+          <th scope="col">Heading</th>
+          <th scope="col">Heading</th>
+          <th scope="col">Heading</th>
+          <th scope="col">Heading</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+        </tr>
+        <tr>
+          <th scope="row">2</th>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+        </tr>
+        <tr>
+          <th scope="row">3</th>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+          <td>Cell</td>
+        </tr>
+      </tbody>
+    </table>
+</div>
+</div>
+
+```html
+<div class="table-responsive">
+  <table class="table">
+    ...
+  </table>
+</div>
+```
+
+### Breakpoint specific
+
+Use `.table-responsive{-small|-medium|-large|-xlarge|-2xlarge}` as needed to create responsive tables up to a particular breakpoint. From that breakpoint and up, the table will behave normally and not scroll horizontally.
+
+**These tables may appear broken until their responsive styles apply at specific viewport widths.**
+
+{getData('breakpoints').map((breakpoint) => {
+  return (
+    <div class="cxd-example">
+      <div class={`table-responsive${breakpoint.abbr}`}>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Heading</th>
+              <th scope="col">Heading</th>
+              <th scope="col">Heading</th>
+              <th scope="col">Heading</th>
+              <th scope="col">Heading</th>
+              <th scope="col">Heading</th>
+              <th scope="col">Heading</th>
+              <th scope="col">Heading</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">1</th>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+            </tr>
+            <tr>
+              <th scope="row">2</th>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+            </tr>
+            <tr>
+              <th scope="row">3</th>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+              <td>Cell</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+})}
+
+<Code code={getData('breakpoints').map((breakpoint) => `<div class="table-responsive${breakpoint.abbr}">
+    <table class="table">
+      ...
+    </table>
+</div>
+`)} lang="html" />
+
+## CSS
+
+<DocsCSS />
+
+### Custom properties
+
+<DocsCSSVars />
+
+<ScssDocs name="table-variables" file="scss/_table.scss" />
+
+### Sass variables
+
+<DocsSASSVars />
+
+<ScssDocs name="table-variables" file="scss/_variables.scss" />
+
+### Design tokens
+
+<DocsDesignTokens />
+
+<ScssDocs name="table-tokens" file="scss/tokens/_table.scss" />

@@ -1,0 +1,23 @@
+---
+title: Team
+description: An overview of the founding team and core contributors to Chassis.
+---
+
+import { getData } from '@libs/data'
+
+Chassis - CSS is maintained by the founding team and a small group of invaluable core contributors, with the massive support and involvement of our community.
+
+<div class="list-group mb-medium">
+  {getData('core-team').map((member) => {
+    return (
+      <a class="list-item list-action d-flex align-items-center" href={`https://github.com/${member.user}`}>
+        <img src={`https://github.com/${member.user}.png`} alt={`@${member.user}`} width="32" height="32" class="rounded me-xsmall" loading="lazy"/>
+        <span>
+          <strong>{member.name}</strong> @{member.user}
+        </span>
+      </a>
+    )
+  })}
+</div>
+
+Get involved with Chassis - CSS development by [opening an issue]([[config:repo]]/issues/new/choose) or submitting a pull request. Read our [contributing guidelines]([[config:repo]]/blob/v[[config:current_version]]/.github/CONTRIBUTING.md) for information on how we develop.

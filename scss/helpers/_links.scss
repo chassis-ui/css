@@ -1,0 +1,104 @@
+// All-caps `RGBA()` function used because of this Sass bug: https://github.com/sass/node-sass/issues/2251
+@each $color, $value in $context-colors {
+  .link-#{$color} {
+    @extend %link-color;
+    --#{$prefix}link-main-color-rgb: var(--#{$prefix}#{$color}-link-main-rgb);
+
+    &:hover,
+    &:focus {
+      --#{$prefix}link-main-color-rgb: var(--#{$prefix}#{$color}-link-hover-rgb);
+    }
+
+    &:active {
+      --#{$prefix}link-main-color-rgb: var(--#{$prefix}#{$color}-link-active-rgb);
+    }
+
+    @if ($enable-visited-links) {
+      &:visited {
+        --#{$prefix}link-main-color-rgb: var(--#{$prefix}#{$color}-link-visited-rgb);
+      }
+    }
+
+  }
+}
+
+// @each $color, $value in $context-colors {
+//   .link-#{$color} {
+//     color: var(--#{$prefix}#{$color}-link-main) if($enable-important-utilities, !important, null);
+//     text-decoration-color: RGBA(var(--#{$prefix}#{$color}-link-main-rgb), var(--#{$prefix}underline-opacity, 1)) if($enable-important-utilities, !important, null);
+//
+//     &:hover,
+//     &:focus {
+//       color: var(--#{$prefix}#{$color}-link-hover) if($enable-important-utilities, !important, null);
+//       text-decoration-color: RGBA(var(--#{$prefix}#{$color}-link-hover-rgb), var(--#{$prefix}underline-opacity, 1)) if($enable-important-utilities, !important, null);
+//     }
+//
+//     &:active {
+//       color: var(--#{$prefix}danger-link-active) if($enable-important-utilities, !important, null);
+//       text-decoration-color: RGBA(var(--#{$prefix}#{$color}-link-active-rgb), var(--#{$prefix}underline-opacity, 1)) if($enable-important-utilities, !important, null);
+//     }
+//
+//     @if ($enable-visited-links) {
+//       &:visited {
+//         color: var(--#{$prefix}#{$color}-link-visited) if($enable-important-utilities, !important, null);
+//         text-decoration-color: RGBA(var(--#{$prefix}#{$color}-link-visited-rgb), var(--#{$prefix}underline-opacity, 1)) if($enable-important-utilities, !important, null);
+//       }
+//     }
+//
+//   }
+// }
+
+// One-off special link helper as a bridge until v6
+.link-body {
+  @extend %link-color;
+  --#{$prefix}link-main-color-rgb: var(--#{$prefix}fg-main-rgb);
+
+  &:hover,
+  &:focus {
+    --#{$prefix}link-main-color-rgb: var(--#{$prefix}fg-main-rgb);
+  }
+
+  &:active {
+    --#{$prefix}link-main-color-rgb: var(--#{$prefix}link-main-rgb);
+  }
+
+}
+
+.stretched-link {
+  &::#{$stretched-link-pseudo-element} {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: $stretched-link-z-index;
+    content: "";
+  }
+}
+
+
+.link-icon {
+  display: inline-flex;
+  gap: $icon-link-gap;
+  align-items: center;
+  text-decoration-color: rgba(var(--#{$prefix}link-main-color-rgb), var(--#{$prefix}link-opacity, .5));
+  text-underline-offset: $icon-text-underline-offset;
+  backface-visibility: hidden;
+
+  > .icon {
+    flex-shrink: 0;
+    width: $icon-link-icon-size;
+    height: $icon-link-icon-size;
+    fill: currentcolor;
+    @include transition($icon-link-icon-transition);
+  }
+}
+
+.link-icon-hover {
+  &:hover,
+  &:focus-visible {
+    > .icon {
+      transform: var(--#{$prefix}icon-link-transform, $icon-link-icon-transform);
+    }
+  }
+}

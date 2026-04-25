@@ -1,0 +1,153 @@
+@import "../../settings";
+@import "../../vendor";
+@import "../../functions";
+@import "../../tokens";
+@import "../../variables";
+@import "../../maps";
+
+// Test setup - create test colors
+$test-color-primary: #0d6efd;
+$test-color-secondary: #6c757d;
+$test-color-transparent: rgba(0, 0, 0, 0);
+
+// Create a custom map of test colors for our tests
+$test-map: (
+  "test-primary": $test-color-primary,
+  "test-secondary": $test-color-secondary,
+  "test-transparent": $test-color-transparent
+);
+
+// Use #000 instead of named color "black"
+$test-dark-primary: mix(#000, $test-color-primary, 10%);
+$test-dark-secondary: mix(#000, $test-color-secondary, 10%);
+
+$test-map-dark: (
+  "test-primary": $test-dark-primary,
+  "test-secondary": $test-dark-secondary
+);
+
+@include describe("get-sass-color function") {
+  // Setup: add our test colors to the context palette for testing
+  $context-palette: map-merge($context-palette, $test-map) !global;
+  $context-palette-dark: map-merge($context-palette-dark, $test-map-dark) !global;
+
+  @include it("returns a direct color without modification") {
+    @include assert() {
+      @include output() {
+        $result: get-sass-color(#f00);
+        color: $result;
+      }
+      @include expect() {
+        color: #f00;
+      }
+    }
+  }
+
+  @include it("extracts a color from a CSS variable") {
+    @include assert() {
+      @include output() {
+        $result: get-sass-color(var(--#{$prefix}test-primary));
+        color: $result;
+      }
+      @include expect() {
+        color: $test-color-primary;
+      }
+    }
+  }
+
+  @include it("extracts a color from a direct color name") {
+    @include assert() {
+      @include output() {
+        $result: get-sass-color("test-primary");
+        color: $result;
+      }
+      @include expect() {
+        color: $test-color-primary;
+      }
+    }
+  }
+
+  @include it("extracts a color from the dark palette") {
+    @include assert() {
+      @include output() {
+        $result: get-sass-color("test-primary", true);
+        color: $result;
+      }
+      @include expect() {
+        color: $test-dark-primary;
+      }
+    }
+  }
+
+  // We test clean-alpha-value in detail in a separate test block below
+}
+
+@include describe("clean-alpha-value function") {
+  // Tests for clean-alpha-value function, which processes alpha values
+  // for use in colors
+
+  @include it("handles standard notation (0.5)") {
+    @include assert-equal(.5, clean-alpha-value("0.5"));
+  }
+
+  @include it("handles dot notation (.65)") {
+    @include assert-equal(.65, clean-alpha-value(".65"));
+  }
+
+  @include it("handles 0 value") {
+    @include assert-equal(0, clean-alpha-value("0"));
+  }
+
+  @include it("handles 1 value") {
+    @include assert-equal(1, clean-alpha-value("1"));
+  }
+
+  @include it("handles whitespace and commas") {
+    @include assert-equal(.75, clean-alpha-value(" , .75"));
+  }
+
+  @include it("defaults to 1 for empty strings") {
+    @include assert-equal(1, clean-alpha-value(""));
+  }
+
+  @include it("handles arbitrary decimal values") {
+    @include assert-equal(.42, clean-alpha-value(".42"));
+  }
+}
+
+@include describe("number function") {
+  // Tests for str-to-number() function which converts string representations
+  // of numbers to Sass number type
+
+  @include it("returns a number directly") {
+    @include assert-equal(5, str-to-number(5));
+  }
+
+  @include it("converts integer strings") {
+    @include assert-equal(25, str-to-number("25"));
+  }
+
+  @include it("converts decimal strings with leading digit") {
+    @include assert-equal(.65, str-to-number("0.65"));
+  }
+
+  @include it("converts decimal strings without leading digit") {
+    @include assert-equal(.5, str-to-number(".5"));
+  }
+
+  @include it("converts negative integers") {
+    @include assert-equal(-10, str-to-number("-10"));
+  }
+
+  @include it("converts negative decimals") {
+    @include assert-equal(-10.2, str-to-number("-10.2"));
+  }
+
+  @include it("converts negative decimals without leading digit") {
+    @include assert-equal(-.125, str-to-number("-.125"));
+  }
+
+  @include it("handles multi-digit decimals") {
+    @include assert-equal(123.456, str-to-number("123.456"));
+  }
+}

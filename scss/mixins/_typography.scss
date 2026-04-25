@@ -1,0 +1,178 @@
+//
+// Typography Mixins
+//
+// A collection of mixins for consistent typography handling across Chassis CSS components.
+// These mixins provide a systematic approach to:
+// - Extract typography values from font maps
+// - Create CSS custom properties for typography values
+// - Apply typography styles consistently
+// - Support component-specific variable scoping
+// - Enable both shorthand and expanded font property usage
+//
+// The system uses a combination of Sass maps and CSS custom properties to provide
+// flexibility in defining typography while maintaining design consistency and enabling
+// runtime theme customization.
+//
+
+// stylelint-disable property-disallowed-list
+
+// scss-docs-start map-font-family-mixin
+// Get font-family from a font-map for a component.
+// This mixin retrieves the "font-family" value from the provided font map
+// and assigns it to a CSS variable or directly as a property.
+//
+// @param $font-map {Map} - The font map containing typography properties.
+// @param $component {String|Null} - Optional component name for scoping variables.
+// @param $element {String|Null} - Optional child element name for scoping variables.
+// @param $prop {Boolean} - Whether to use a CSS property instead of a variable.
+// @return e.g. --#{$prefix}element-font-family: var(--#{$prefix}component-element-font-family, $value);
+@mixin map-font-family($font-map, $component: null, $element: null, $prop: false) {
+  $val: map-get($font-map, "font-family");
+  $comp: if($component, "#{$component}-", "");
+  $elem: if($element, "#{$element}-", "");
+  $css-var: if($prop, "", "--#{$prefix}");
+  $elem-var: if($element and not $prop, "#{$element}-", "");
+  $value: if($component, var(--#{$prefix}#{$comp}#{$elem}font-family, #{$val}), $val);
+  #{$css-var}#{$elem-var}font-family: $value;
+}
+// scss-docs-end map-font-family-mixin
+
+// scss-docs-start map-font-size-mixin
+// Get font-size from a font-map for a component.
+// This mixin retrieves the "font-size" value from the provided font map
+// and assigns it to a CSS variable or directly as a property.
+//
+// @param $font-map {Map} - The font map containing typography properties.
+// @param $component {String|Null} - Optional component name for scoping variables.
+// @param $element {String|Null} - Optional child element name for scoping variables.
+// @param $prop {Boolean} - Whether to use a CSS property instead of a variable.
+// @return e.g. --#{$prefix}element-font-size: var(--#{$prefix}component-element-font-size, $value);
+@mixin map-font-size($font-map, $component: null, $element: null, $prop: false) {
+  $val: map-get($font-map, "font-size");
+  $comp: if($component, "#{$component}-", "");
+  $elem: if($element, "#{$element}-", "");
+  $css-var: if($prop, "", "--#{$prefix}");
+  $elem-var: if($element and not $prop, "#{$element}-", "");
+  $var: if($component, "--#{$prefix}#{$comp}#{$elem}font-size", null);
+  @include rfs($val, #{$css-var}#{$elem-var}font-size, $var);
+}
+// scss-docs-end map-font-size-mixin
+
+// scss-docs-start map-font-weight-mixin
+// Get font-weight from a font-map for a component.
+// This mixin retrieves the "font-weight" value from the provided font map
+// and assigns it to a CSS variable or directly as a property.
+//
+// @param $font-map {Map} - The font map containing typography properties.
+// @param $component {String|Null} - Optional component name for scoping variables.
+// @param $element {String|Null} - Optional child element name for scoping variables.
+// @param $prop {Boolean} - Whether to use a CSS property instead of a variable.
+// @return e.g. --#{$prefix}element-font-weight: var(--#{$prefix}component-element-font-weight, $value);
+@mixin map-font-weight($font-map, $component: null, $element: null, $prop: false) {
+  $val: map-get($font-map, "font-weight");
+  $comp: if($component, "#{$component}-", "");
+  $elem: if($element, "#{$element}-", "");
+  $css-var: if($prop, "", "--#{$prefix}");
+  $elem-var: if($element and not $prop, "#{$element}-", "");
+  $value: if($component, var(--#{$prefix}#{$comp}#{$elem}font-weight, #{$val}), $val);
+  #{$css-var}#{$elem-var}font-weight: $value;
+}
+// scss-docs-end map-font-weight-mixin
+
+// scss-docs-start map-line-height-mixin
+// Get line-height from a font-map for a component.
+// This mixin retrieves the "line-height" value from the provided font map
+// and assigns it to a CSS variable or directly as a property.
+//
+// @param $font-map {Map} - The font map containing typography properties.
+// @param $component {String|Null} - Optional component name for scoping variables.
+// @param $element {String|Null} - Optional child element name for scoping variables.
+// @param $prop {Boolean} - Whether to use a CSS property instead of a variable.
+// @return e.g. --#{$prefix}element-line-height: var(--#{$prefix}component-element-line-height, $value);
+@mixin map-line-height($font-map, $component: null, $element: null, $prop: false) {
+  $val: map-get($font-map, "line-height");
+  $comp: if($component, "#{$component}-", "");
+  $elem: if($element, "#{$element}-", "");
+  $css-var: if($prop, "", "--#{$prefix}");
+  $elem-var: if($element and not $prop, "#{$element}-", "");
+  $var: if($component, --#{$prefix}#{$comp}#{$elem}line-height, null);
+  @include rfs($val, #{$css-var}#{$elem-var}line-height, $var);
+}
+// scss-docs-end map-line-height-mixin
+
+// scss-docs-start font-map-mixin
+// Get font-set from a font-map for a component.
+// This mixin retrieves all typography-related properties (font-family, font-size,
+// font-weight, and line-height) from the provided font map and assigns them to
+// CSS variables or directly as properties.
+//
+// @param $font-map {Map} - The font map containing typography properties.
+// @param $component {String|Null} - Optional component name for scoping variables.
+// @param $element {String|Null} - Optional child element name for scoping variables.
+// @param $prop {Boolean} - Whether to use a CSS property instead of a variable.
+// @return e.g.
+// --#{$prefix}element-font-family: var(--#{$prefix}component-element-font-family, $font-family-value);
+// --#{$prefix}element-font-size: var(--#{$prefix}component-element-font-size, $font-size-value);
+// --#{$prefix}element-font-weight: var(--#{$prefix}component-element-font-weight, $font-weight-value);
+// --#{$prefix}element-line-height: var(--#{$prefix}component-element-line-height, $line-height-value);
+@mixin map-font($font-map, $component: null, $element: null, $prop: false) {
+  @include map-font-family($font-map, $component, $element, $prop);
+  @include map-font-size($font-map, $component, $element, $prop);
+  @include map-font-weight($font-map, $component, $element, $prop);
+  @include map-line-height($font-map, $component, $element, $prop);
+}
+// scss-docs-end font-map-mixin
+
+// scss-docs-start typography-mixin
+// Assign typography properties regarding to CSS variables.
+// This mixin assigns typography properties (font-family, font-size, font-weight,
+// and line-height) using CSS variables. It supports both shorthand and expanded formats.
+//
+// @param $component {String|Null} - Optional component name for scoping variables.
+// @param $short {Boolean} - Whether to use shorthand font property or expanded properties.
+@mixin font($component: null, $short: true, $map: null) {
+  $font-family: var(--#{$prefix}#{if($component, "#{$component}-", "")}font-family);
+  $font-size: var(--#{$prefix}#{if($component, "#{$component}-", "")}font-size);
+  $font-weight: var(--#{$prefix}#{if($component, "#{$component}-", "")}font-weight);
+  $line-height: var(--#{$prefix}#{if($component, "#{$component}-", "")}line-height);
+
+  @if $short {
+    font: $font-weight $font-size / $line-height $font-family;
+  } @else {
+    font-family: $font-family;
+    font-size: $font-size; // stylelint-disable-line
+    font-weight: $font-weight;
+    line-height: $line-height;
+  }
+}
+// scss-docs-end typography-mixin
+
+// scss-docs-start font-size-mixin
+// Assigns font-size property by given $value or component variable.
+// This mixin sets the font-size property using a provided value or a CSS variable
+// associated with a specific component.
+//
+// @param $value {String|Null} - The font-size value to apply. Defaults to the component variable.
+// @param $component {String|Null} - Optional component name for scoping variables.
+@mixin font-size($value: null, $component: null) {
+  @if not $value {
+    $value: var(--#{$prefix}#{if($component, "#{$component}-", "")}font-size);
+  }
+  @include rfs($value, font-size);
+}
+// scss-docs-end font-size-mixin
+
+// scss-docs-start line-height-mixin
+// Assigns line-height property by given $value or component variable.
+// This mixin sets the line-height property using a provided value or a CSS variable
+// associated with a specific component.
+//
+// @param $value {String|Null} - The line-height value to apply. Defaults to the component variable.
+// @param $component {String|Null} - Optional component name for scoping variables.
+@mixin line-height($value: null, $component: null) {
+  @if not $value {
+    $value: var(--#{$prefix}#{if($component, "#{$component}-", "")}line-height);
+  }
+  @include rfs($value, line-height);
+}
+// scss-docs-end line-height-mixin

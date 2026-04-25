@@ -1,0 +1,60 @@
+---
+title: Visibility
+description: Control the visibility of elements, without modifying their display, with visibility utilities.
+toc: true
+---
+
+## How it works
+
+Set the `visibility` of elements with our visibility utilities. These utility classes do not modify the `display` value at all and do not affect layout – `.invisible` elements still take up space in the page.
+
+<Callout type="warning">
+Elements with the `.invisible` class will be hidden *both* visually and for assistive technology/screen reader users.
+</Callout>
+
+Apply `.visible` or `.invisible` as needed.
+
+```html
+<div class="visible">...</div>
+<div class="invisible">...</div>
+```
+
+```scss
+// Class
+.visible {
+  visibility: visible !important;
+}
+.invisible {
+  visibility: hidden !important;
+}
+```
+
+## Visually hidden
+
+Visually hide an element while still allowing it to be exposed to assistive technologies (such as screen readers) with `.visually-hidden`. Use `.visually-hidden-focusable` to visually hide an element by default, but to display it when it’s focused (e.g. by a keyboard-only user). `.visually-hidden-focusable` can also be applied to a container–thanks to `:focus-within`, the container will be displayed when any child element of the container receives focus.
+
+<Example code={`<h2 class="visually-hidden">Title for screen readers</h2>
+  <a class="visually-hidden-focusable" href="#content">Skip to main content</a>
+  <div class="visually-hidden-focusable">A container with a <a href="#">focusable element</a>.</div>`} />
+
+Both `visually-hidden` and `visually-hidden-focusable` can also be used as mixins.
+
+```scss
+// Usage as a mixin
+
+.visually-hidden-title {
+  @include visually-hidden;
+}
+
+.skip-navigation {
+  @include visually-hidden-focusable;
+}
+```
+
+## CSS
+
+### Sass utilities API
+
+Visibility utilities are declared in our utilities API in `scss/utilities/_index.scss`. [Learn how to use the utilities API.]([[docsref:/utilities/api#using-the-api]])
+
+<ScssDocs name="utils-visibility" file="scss/utilities/_index.scss" />

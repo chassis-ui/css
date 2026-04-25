@@ -1,0 +1,172 @@
+// Utilities
+$utilities: () !default;
+@import "positioning";
+@import "border";
+@import "sizing";
+@import "flex";
+@import "margin";
+@import "padding";
+@import "text";
+// stylelint-disable-next-line scss/dollar-variable-default
+$utilities: map-merge(
+  $utilities,
+  (
+    // scss-docs-start utils-fg-color
+    "fg-color": (
+      css-var: true,
+      css-variable-name: fg-color,
+      class: fg,
+      values: map-merge-multiple(
+        map-loop(map-loop($context-colors, to-rgb, "$value"), rgba-css-var, #{"$key"}, #{"fg"}),
+        map-loop(map-loop($contrast-colors, to-rgb, "$value"), rgba-css-var, #{"$key"}, #{"fg"}),
+        ( "reset": inherit )
+      )
+    ),
+    "fg-opacity": (
+      css-var: true,
+      css-variable-name: fg-opacity,
+      class: fg-opacity,
+      values: $fg-opacities
+    ),
+    // scss-docs-end utils-fg-color
+    // scss-docs-start utils-bg-color
+    "bg-color": (
+      css-var: true,
+      css-variable-name: bg-color,
+      class: bg,
+      values: map-merge(
+        map-loop(map-loop($context-colors, to-rgb, "$value"), rgba-css-var, #{"$key"}, #{"bg"}),
+        ( "transparent": transparent )
+      )
+    ),
+    "bg-opacity": (
+      css-var: true,
+      css-variable-name: bg-opacity,
+      class: bg-opacity,
+      values: $bg-opacities
+    ),
+    // scss-docs-end utils-bg-color
+    // scss-docs-start utils-indicators
+    "indicator-opacity": (
+      css-var: true,
+      css-variable-name: indicator-opacity,
+      class: indicator-opacity,
+      values: $indicator-opacities
+    ),
+    // scss-docs-end utils-indicators
+    // scss-docs-start utils-links
+    "link-opacity": (
+      css-var: true,
+      css-variable-name: link-opacity,
+      class: link-opacity,
+      state: hover,
+      values: $link-opacities
+    ),
+    "underline-offset": (
+      property: text-underline-offset,
+      class: underline-offset,
+      values: (
+        0: 0,
+        1: .125em,
+        2: .25em,
+        3: .375em,
+      )
+    ),
+    "link-underline": (
+      property: text-decoration-color,
+      class: link-underline,
+      values: map-merge(
+        map-loop($context-colors, rgba-css-var, "$key", "underline"),
+        (
+          null: rgba(var(--#{$prefix}link-main-color-rgb), var(--#{$prefix}underline-opacity, 1)),
+        )
+      )
+    ),
+    "underline-opacity": (
+      css-var: true,
+      css-variable-name: underline-opacity,
+      class: underline-opacity,
+      state: hover,
+      values: $underline-opacities
+    ),
+    // scss-docs-end utils-links
+    "gradient": (
+      property: background-image,
+      class: bg,
+      values: (gradient: var(--#{$prefix}bg-gradient))
+    ),
+    // scss-docs-start utils-shadow
+    "base-shadow": (
+      property: box-shadow,
+      class: shadow,
+      values: $base-shadows
+    ),
+    // scss-docs-end utils-shadow
+    // scss-docs-start utils-focus-ring
+    "focus-ring": (
+      css-var: true,
+      css-variable-name: focus-ring-color,
+      class: focus-ring,
+      values: map-loop($context-colors-rgb, rgba-css-var, "$key", "focus-ring")
+    ),
+    // scss-docs-end utils-focus-ring
+    // scss-docs-start utils-interaction
+    "user-select": (
+      property: user-select,
+      values: all auto none
+    ),
+    "pointer-events": (
+      property: pointer-events,
+      class: pointer-event,
+      values: none auto,
+    ),
+    // scss-docs-end utils-interaction
+    // scss-docs-start utils-visibility
+    "visibility": (
+      property: visibility,
+      class: null,
+      values: (
+        visible: visible,
+        invisible: hidden,
+      )
+    ),
+    // scss-docs-end utils-visibility
+    // scss-docs-start utils-zindex
+    "z-index": (
+      property: z-index,
+      class: z,
+      values: $zindex-levels,
+    ),
+    // scss-docs-end utils-zindex
+    // scss-docs-start utils-opacity
+    "opacity": (
+      property: opacity,
+      class: opacity,
+      values: $opacities
+    )
+    // scss-docs-end utils-opacity
+  )
+);
+
+@if $enable-elevation-shadows {
+  $utilities: map-merge(
+    $utilities,
+    (
+      // scss-docs-start utils-elevation-shadow
+      "elevation-shadow": (
+        property: box-shadow,
+        class: shadow,
+        state: hover,
+        values: map-loop($default-shadows, make-color-shadow, "$value")
+      ),
+      "shadow-color": (
+        css-var: true,
+        css-variable-name: shadow-color,
+        class: shadow,
+        state: hover,
+        values: map-loop($context-colors, make-shadow-color, "$key")
+      )
+      // scss-docs-end utils-elevation-shadow
+    )
+  );
+}

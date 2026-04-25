@@ -1,0 +1,74 @@
+// Transparent background and border properties included for button version.
+// iOS requires the button element instead of an anchor tag.
+// If you want the anchor version, it requires `href="#"`.
+// See https://developer.mozilla.org/en-US/docs/Web/Events/click#Safari_Mobile
+
+
+.close-button {
+  // scss-docs-start close-button-css-vars
+  --#{$prefix}size: var(--#{$prefix}close-button-size, #{$close-button-medium-size});
+  --#{$prefix}icon: var(--#{$prefix}close-button-icon, #{$close-button-icon});
+  --#{$prefix}icon-color: var(--#{$prefix}close-button-fg-color, #{$close-button-fg-color});
+  --#{$prefix}bg-color: var(--#{$prefix}close-button-bg-color, #{$close-button-bg-color});
+  --#{$prefix}idle-opacity: var(--#{$prefix}close-button-idle-opacity, #{$close-button-idle-opacity});
+  --#{$prefix}hover-opacity: var(--#{$prefix}close-button-hover-opacity, #{$close-button-hover-opacity});
+  --#{$prefix}focus-shadow: var(--#{$prefix}close-button-focus-shadow, #{$close-button-focus-shadow});
+  --#{$prefix}focus-opacity: var(--#{$prefix}close-button-focus-opacity, #{$close-button-focus-opacity});
+  // scss-docs-end close-button-css-vars
+
+  width: var(--#{$prefix}size);
+  height: var(--#{$prefix}size);
+  padding: $close-button-padding-y $close-button-padding-x;
+  background-color: var(--#{$prefix}bg-color);
+  border: 0;
+  @include border-radius();
+  opacity: var(--#{$prefix}idle-opacity);
+
+  > svg {
+    width: var(--#{$prefix}size);
+    height: var(--#{$prefix}size);
+  }
+
+  &:empty::before {
+    position: absolute;
+    width: var(--#{$prefix}size);
+    height: var(--#{$prefix}size);
+    margin-top: #{calc(var(--#{$prefix}size) / -2)};
+    margin-left: #{calc(var(--#{$prefix}size) / -2)};
+    content: " ";
+    background-color: var(--#{$prefix}icon-color);
+    mask-image: var(--#{$prefix}icon);
+    mask-position: center;
+    mask-size: #{calc(var(--#{$prefix}size) * 1.1875)} #{calc(var(--#{$prefix}size) * 1.1875)};
+  }
+
+  // Override <a>'s hover style
+  &:hover {
+    --#{$prefix}icon-color: var(--#{$prefix}close-button-fg-hover, #{$close-button-fg-hover});
+    --#{$prefix}bg-color: var(--#{$prefix}close-button-bg-hover, #{$close-button-bg-hover});
+    text-decoration: none;
+    opacity: var(--#{$prefix}hover-opacity);
+  }
+
+  &:focus {
+    outline: 0;
+    box-shadow: var(--#{$prefix}focus-shadow);
+    opacity: var(--#{$prefix}focus-opacity);
+  }
+
+  &:disabled,
+  &.disabled {
+    pointer-events: none;
+    user-select: none;
+    opacity: $close-button-disabled-opacity;
+  }
+
+  &.large {
+    --#{$prefix}close-button-size: #{$close-button-large-size};
+  }
+
+  &.small {
+    --#{$prefix}close-button-size: #{$close-button-small-size};
+  }
+
+}

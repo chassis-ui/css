@@ -1,0 +1,98 @@
+---
+title: Design Tokens
+description: Learn about the token system used for Chassis - CSS products, providing headless Figma prototypes and ability to push design decisions directly from Figma to code.
+toc: true
+---
+
+<Callout>
+**Heads up!** This copy is a work in progress.
+</Callout>
+
+## Tokens Studio
+
+We use [Tokens Studio](https://tokens.studio) Figma Plugin to manage our design tokens and synchronize with Figma. Bu using plugins theming features, we're creating 4 variable collections and their modes in our main library.
+
+- **Brand**
+  Modes contain brand colors and typography.
+- **Theme**
+  Classic light / dark modes and high-contrast / low-saturation variants.
+- **System**
+  Platform specific metrics and component properties including font, color, spacing, borders etc.
+- **App**
+  Application specific metrics and component properties including font, color, spacing, borders etc.
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Collection</th>
+      <th scope="col">Mode 1</th>
+      <th scope="col">Mode 2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">Brand</th>
+      <td>chassis</td>
+      <td>test</td>
+    </tr>
+    <tr>
+      <th scope="row">Theme</th>
+      <td>light</td>
+      <td>dark</td>
+    </tr>
+    <tr>
+      <th scope="row">App</th>
+      <td>docs</td>
+      <td>test</td>
+    </tr>
+  </tbody>
+</table>
+
+## Style Dictionary
+
+We made custom [Style Dictionary](https://amzn.github.io/style-dictionary) tools for our tokens which are also migrating references as platform variables during token transformation.
+
+Keeping design tokens and asset sources together allows running a style dictionary command builds and distributes all needs in appropriate format for each platform.
+
+Token repository structure excluding package and build files.
+
+```text
+chassis-tokens/
+├── assets/
+│   └── default/
+│   │   └── [app]/
+│   │   |   └── fonts/
+│   │   |   └── icons/
+│   │   |   └── images/
+│   └── [brand]/
+│       └── [app]/
+│           └── ...
+├── build/
+│   └── ... (build scripts & templates)
+├── dist/
+│   └── assets/
+│   |   └── [platform]/
+│   |       └── [brand]-[app]/
+│   └── icons/
+│   |   └── svgs/
+│   |   └── ... (css & font files)
+│   └── tokens/
+│   |   └── [platform]/
+│   |       └── [brand]-[app]/
+├── icons/
+│   └── package/
+│   |   └── ... (generated css & font files)
+│   └── svgs/
+│       └── ... (source svg files to generate icons)
+└── tokens/
+    └── $metadata.json
+    └── $themes.json
+    └── base/
+    │   └── ... (default token files)
+    └── [brand]/
+        └── ... (brand specific token files)
+```
+
+## Tokens
+
+Check out [**Tokens**](/tokens) page to see all design tokens and their values.

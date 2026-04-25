@@ -1,0 +1,132 @@
+//
+// Math utility functions for Chassis CSS
+//
+// This file contains utility functions for mathematical operations
+// including addition, subtraction, and other calculations needed
+// throughout the framework.
+//
+// Math utility functions are adapted from Bootstrap.
+// Special thanks to the Bootstrap Authors.
+//
+
+/// Add two values safely with support for CSS calc()
+/// Adds numeric values directly when possible or generates calc() expressions
+/// when working with incomparable units. Handles null values gracefully.
+///
+/// @param {Number|String} $value1 - First value to add
+/// @param {Number|String} $value2 - Second value to add
+/// @param {Boolean} $return-calc - Whether to return calc() function or a simple concatenation
+/// @return {Number|String} - Sum as a number or calc() expression
+/// @example
+///   add(1rem, 2px) => calc(1rem + 2px)
+///   add(1rem, 2rem) => 3rem
+///   add(1rem, null) => 1rem
+@function add($value1, $value2, $return-calc: true) {
+  @if $value1 == null {
+    @return $value2;
+  }
+
+  @if $value2 == null {
+    @return $value1;
+  }
+
+  @if type-of($value1) == number and type-of($value2) == number and comparable($value1, $value2) {
+    @return $value1 + $value2;
+  }
+
+  @return if($return-calc == true, calc(#{$value1} + #{$value2}), $value1 + unquote(" + ") + $value2);
+}
+
+/// Subtract two values safely with support for CSS calc()
+/// Subtracts one value from another, handling incomparable units through calc() expressions.
+/// Handles null values gracefully and provides special handling for non-numeric values.
+///
+/// @param {Number|String} $value1 - Value to subtract from
+/// @param {Number|String} $value2 - Value to subtract
+/// @param {Boolean} $return-calc - Whether to return calc() function or a simple concatenation
+/// @return {Number|String} - Difference as a number or calc() expression
+/// @example
+///   subtract(10rem, 2rem) => 8rem
+///   subtract(10rem, 2px) => calc(10rem - 2px)
+///   subtract(10px, null) => 10px
+///   subtract(null, 10px) => -10px
+@function subtract($value1, $value2, $return-calc: true) {
+  @if $value1 == null and $value2 == null {
+    @return null;
+  }
+
+  @if $value1 == null {
+    @return -$value2;
+  }
+
+  @if $value2 == null {
+    @return $value1;
+  }
+
+  @if type-of($value1) == number and type-of($value2) == number and comparable($value1, $value2) {
+    @return $value1 - $value2;
+  }
+
+  @if type-of($value2) != number {
+    $value2: unquote("(") + $value2 + unquote(")");
+  }
+
+  @return if($return-calc == true, calc(#{$value1} - #{$value2}), $value1 + unquote(" - ") + $value2);
+}
+
+/// Perform division with arbitrary precision
+/// Divides two numbers with specified decimal precision, particularly useful
+/// for maintaining proper units and handling division when the native Sass
+/// division is insufficient. Implements a custom long division algorithm.
+///
+/// @param {Number} $dividend - Number to be divided (numerator)
+/// @param {Number} $divisor - Number to divide by (denominator)
+/// @param {Number} $precision - Maximum number of decimal places (default: 10)
+/// @return {Number} - Quotient with appropriate unit preservation
+/// @throws {Error} - If attempting to divide by zero
+/// @example
+///   divide(10rem, 2) => 5rem
+///   divide(100px, 3) => 33.333333333px (with specified precision)
+///   divide(1, 4) => 0.25
+@function divide($dividend, $divisor, $precision: 10) {
+  $sign: if($dividend > 0 and $divisor > 0 or $dividend < 0 and $divisor < 0, 1, -1);
+  $dividend: abs($dividend);
+  $divisor: abs($divisor);
+  @if $dividend == 0 {
+    @return 0;
+  }
+  @if $divisor == 0 {
+    @error "Cannot divide by 0";
+  }
+  $remainder: $dividend;
+  $result: 0;
+  $factor: 10;
+  @while ($remainder > 0 and $precision >= 0) {
+    $quotient: 0;
+    @while ($remainder >= $divisor) {
+      $remainder: $remainder - $divisor;
+      $quotient: $quotient + 1;
+    }
+    $result: $result * 10 + $quotient;
+    $factor: $factor * .1;
+    $remainder: $remainder * 10;
+    $precision: $precision - 1;
+    @if ($precision < 0 and $remainder >= $divisor * 5) {
+      $result: $result + 1;
+    }
+  }
+  $result: $result * $factor * $sign;
+  $dividend-unit: unit($dividend);
+  $divisor-unit: unit($divisor);
+  $unit-map: (
+    "px": 1px,
+    "rem": 1rem,
+    "em": 1em,
+    "%": 1%
+  );
+  @if ($dividend-unit != $divisor-unit and map-has-key($unit-map, $dividend-unit)) {
+    $result: $result * map-get($unit-map, $dividend-unit);
+  }
+  @return $result;
+}
+

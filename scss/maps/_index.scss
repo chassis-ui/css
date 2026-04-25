@@ -1,0 +1,86 @@
+@import "colors";
+@import "colors-dark";
+@import "opacities";
+@import "fonts";
+@import "shadows";
+@import "buttons";
+
+// scss-docs-start spacing-map
+$spacers: (
+  zero:           $space-zero,
+  4xsmall:        $space-4xsmall,
+  3xsmall:        $space-3xsmall,
+  2xsmall:        $space-2xsmall,
+  xsmall:         $space-xsmall,
+  small:          $space-small,
+  medium:         $space-medium,
+  large:          $space-large,
+  xlarge:         $space-xlarge,
+  2xlarge:        $space-2xlarge,
+  3xlarge:        $space-3xlarge,
+  4xlarge:        $space-4xlarge,
+  5xlarge:        $space-5xlarge,
+  6xlarge:        $space-6xlarge,
+  // Chassis Spacers
+  // TODO: Should be removed later
+  0:              0,
+  1:              $spacer * .25,
+  2:              $spacer * .5,
+  3:              $spacer,
+  4:              $spacer * 1.5,
+  5:              $spacer * 3,
+) !default;
+// scss-docs-end spacing-map
+
+$context-colors-rgb: map-loop($context-colors, to-rgb, "$value") !default;
+$negative-spacers: if($enable-negative-margins, map-negativify($spacers), null) !default;
+$gutters: $spacers !default;
+
+// scss-docs-start border-widths-map
+$border-widths: (
+  zero:          $border-width-zero,
+  small:         $border-width-small,
+  medium:        $border-width-medium,
+  large:         $border-width-large,
+  xlarge:        $border-width-xlarge,
+  2xlarge:       $border-width-2xlarge,
+) !default;
+// scss-docs-end border-widths-map
+
+// scss-docs-start border-radiuses-map
+$border-radiuses: (
+  zero:               $border-radius-zero,
+  xsmall:             $border-radius-xsmall,
+  small:              $border-radius-small,
+  medium:             $border-radius-medium,
+  large:              $border-radius-large,
+  xlarge:             $border-radius-xlarge,
+  2xlarge:            $border-radius-2xlarge,
+  3xlarge:            $border-radius-3xlarge,
+  circle:             50%,
+  round:              $border-radius-round,
+  pill:               $border-radius-round,
+) !default;
+// scss-docs-end border-radiuses-map
+
+// scss-docs-start icon-sizes-map
+$icon-sizes: (
+  "4xlarge":          $icon-4xlarge,
+  "3xlarge":          $icon-3xlarge,
+  "2xlarge":          $icon-2xlarge,
+  "xlarge":           $icon-xlarge,
+  "large":            $icon-large,
+  "medium":           $icon-medium,
+  "small":            $icon-small,
+  "xsmall":           $icon-xsmall,
+  "2xsmall":          $icon-2xsmall,
+  "3xsmall":          $icon-3xsmall,
+) !default;
+// scss-docs-end icon-sizes-map
+
+// scss-docs-start spinner-sizes-map
+$spinner-sizes:       $icon-sizes !default;
+// scss-docs-end spinner-sizes-map
+// scss-docs-start spinner-opacities-map
+$spinner-opacities:   $icon-opacities !default;
+// scss-docs-end spinner-opacities-map

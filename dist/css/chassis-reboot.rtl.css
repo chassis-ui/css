@@ -1,0 +1,2599 @@
+/*!
+ * Chassis - CSS - Utilities v0.1.2 (https://ozgurgunes.github.io/chassis-css/)
+ * Copyright 2025 Ozgur Gunes
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
+ */
+:root,
+[data-cx-theme=light] {
+  --cx-default: #000000;
+  --cx-default-rgb: 0, 0, 0;
+  --cx-alternate: #ffffff;
+  --cx-alternate-rgb: 255, 255, 255;
+  --cx-primary: #00A4CC;
+  --cx-primary-rgb: 0, 164, 204;
+  --cx-secondary: #F55200;
+  --cx-secondary-rgb: 245, 82, 0;
+  --cx-neutral: #6F8085;
+  --cx-neutral-rgb: 111, 128, 133;
+  --cx-warning: #F5A300;
+  --cx-warning-rgb: 245, 163, 0;
+  --cx-success: #10C263;
+  --cx-success-rgb: 16, 194, 99;
+  --cx-danger: #F52314;
+  --cx-danger-rgb: 245, 35, 20;
+  --cx-info: #1414F5;
+  --cx-info-rgb: 20, 20, 245;
+  --cx-black: #000;
+  --cx-black-rgb: 0, 0, 0;
+  --cx-white: #fff;
+  --cx-white-rgb: 255, 255, 255;
+  --cx-default-contrast: #ffffff;
+  --cx-default-contrast-rgb: 255, 255, 255;
+  --cx-alternate-contrast: #000000;
+  --cx-alternate-contrast-rgb: 0, 0, 0;
+  --cx-primary-contrast: #ffffff;
+  --cx-primary-contrast-rgb: 255, 255, 255;
+  --cx-secondary-contrast: #ffffff;
+  --cx-secondary-contrast-rgb: 255, 255, 255;
+  --cx-neutral-contrast: #ffffff;
+  --cx-neutral-contrast-rgb: 255, 255, 255;
+  --cx-warning-contrast: #000000;
+  --cx-warning-contrast-rgb: 0, 0, 0;
+  --cx-success-contrast: #ffffff;
+  --cx-success-contrast-rgb: 255, 255, 255;
+  --cx-danger-contrast: #ffffff;
+  --cx-danger-contrast-rgb: 255, 255, 255;
+  --cx-info-contrast: #ffffff;
+  --cx-info-contrast-rgb: 255, 255, 255;
+  --cx-black-contrast: #ffffff;
+  --cx-black-contrast-rgb: 255, 255, 255;
+  --cx-white-contrast: #000000;
+  --cx-white-contrast-rgb: 0, 0, 0;
+  --cx-primary-05: #edf9fb;
+  --cx-primary-05-rgb: 237, 249, 251;
+  --cx-primary-10: #d9f1f7;
+  --cx-primary-10-rgb: 217, 241, 247;
+  --cx-primary-20: #b3e4f0;
+  --cx-primary-20-rgb: 179, 228, 240;
+  --cx-primary-30: #80d2e6;
+  --cx-primary-30-rgb: 128, 210, 230;
+  --cx-primary-40: #40bbd9;
+  --cx-primary-40-rgb: 64, 187, 217;
+  --cx-primary-50: #00A4CC;
+  --cx-primary-50-rgb: 0, 164, 204;
+  --cx-primary-60: #00738f;
+  --cx-primary-60-rgb: 0, 115, 143;
+  --cx-primary-70: #005266;
+  --cx-primary-70-rgb: 0, 82, 102;
+  --cx-primary-80: #003947;
+  --cx-primary-80-rgb: 0, 57, 71;
+  --cx-primary-90: #002933;
+  --cx-primary-90-rgb: 0, 41, 51;
+  --cx-primary-95: #00191f;
+  --cx-primary-95-rgb: 0, 25, 31;
+  --cx-secondary-05: #fef3ed;
+  --cx-secondary-05-rgb: 254, 243, 237;
+  --cx-secondary-10: #fee5d9;
+  --cx-secondary-10-rgb: 254, 229, 217;
+  --cx-secondary-20: #fccbb3;
+  --cx-secondary-20-rgb: 252, 203, 179;
+  --cx-secondary-30: #faa980;
+  --cx-secondary-30-rgb: 250, 169, 128;
+  --cx-secondary-40: #f87d40;
+  --cx-secondary-40-rgb: 248, 125, 64;
+  --cx-secondary-50: #F55200;
+  --cx-secondary-50-rgb: 245, 82, 0;
+  --cx-secondary-60: #ac3900;
+  --cx-secondary-60-rgb: 172, 57, 0;
+  --cx-secondary-70: #7b2900;
+  --cx-secondary-70-rgb: 123, 41, 0;
+  --cx-secondary-80: #561d00;
+  --cx-secondary-80-rgb: 86, 29, 0;
+  --cx-secondary-90: #3d1400;
+  --cx-secondary-90-rgb: 61, 20, 0;
+  --cx-secondary-95: #250c00;
+  --cx-secondary-95-rgb: 37, 12, 0;
+  --cx-neutral-05: #f5f6f6;
+  --cx-neutral-05-rgb: 245, 246, 246;
+  --cx-neutral-10: #e9eced;
+  --cx-neutral-10-rgb: 233, 236, 237;
+  --cx-neutral-20: #d4d9da;
+  --cx-neutral-20-rgb: 212, 217, 218;
+  --cx-neutral-30: #b7c0c2;
+  --cx-neutral-30-rgb: 183, 192, 194;
+  --cx-neutral-40: #93a0a4;
+  --cx-neutral-40-rgb: 147, 160, 164;
+  --cx-neutral-50: #6F8085;
+  --cx-neutral-50-rgb: 111, 128, 133;
+  --cx-neutral-60: #4e5a5d;
+  --cx-neutral-60-rgb: 78, 90, 93;
+  --cx-neutral-70: #384043;
+  --cx-neutral-70-rgb: 56, 64, 67;
+  --cx-neutral-80: #272d2f;
+  --cx-neutral-80-rgb: 39, 45, 47;
+  --cx-neutral-90: #1c2021;
+  --cx-neutral-90-rgb: 28, 32, 33;
+  --cx-neutral-95: #111314;
+  --cx-neutral-95-rgb: 17, 19, 20;
+  --cx-danger-05: #fef0ef;
+  --cx-danger-05-rgb: 254, 240, 239;
+  --cx-danger-10: #fededc;
+  --cx-danger-10-rgb: 254, 222, 220;
+  --cx-danger-20: #fcbdb9;
+  --cx-danger-20-rgb: 252, 189, 185;
+  --cx-danger-30: #fa918a;
+  --cx-danger-30-rgb: 250, 145, 138;
+  --cx-danger-40: #f85a4f;
+  --cx-danger-40-rgb: 248, 90, 79;
+  --cx-danger-50: #F52314;
+  --cx-danger-50-rgb: 245, 35, 20;
+  --cx-danger-60: #ac190e;
+  --cx-danger-60-rgb: 172, 25, 14;
+  --cx-danger-70: #7b120a;
+  --cx-danger-70-rgb: 123, 18, 10;
+  --cx-danger-80: #560c07;
+  --cx-danger-80-rgb: 86, 12, 7;
+  --cx-danger-90: #3d0905;
+  --cx-danger-90-rgb: 61, 9, 5;
+  --cx-danger-95: #250503;
+  --cx-danger-95-rgb: 37, 5, 3;
+  --cx-success-05: #eefbf4;
+  --cx-success-05-rgb: 238, 251, 244;
+  --cx-success-10: #dbf6e8;
+  --cx-success-10-rgb: 219, 246, 232;
+  --cx-success-20: #b7edd0;
+  --cx-success-20-rgb: 183, 237, 208;
+  --cx-success-30: #88e1b1;
+  --cx-success-30-rgb: 136, 225, 177;
+  --cx-success-40: #4cd18a;
+  --cx-success-40-rgb: 76, 209, 138;
+  --cx-success-50: #10C263;
+  --cx-success-50-rgb: 16, 194, 99;
+  --cx-success-60: #0b8845;
+  --cx-success-60-rgb: 11, 136, 69;
+  --cx-success-70: #086132;
+  --cx-success-70-rgb: 8, 97, 50;
+  --cx-success-80: #064423;
+  --cx-success-80-rgb: 6, 68, 35;
+  --cx-success-90: #043119;
+  --cx-success-90-rgb: 4, 49, 25;
+  --cx-success-95: #021d0f;
+  --cx-success-95-rgb: 2, 29, 15;
+  --cx-warning-05: #fef9ed;
+  --cx-warning-05-rgb: 254, 249, 237;
+  --cx-warning-10: #fef1d9;
+  --cx-warning-10-rgb: 254, 241, 217;
+  --cx-warning-20: #fce3b3;
+  --cx-warning-20-rgb: 252, 227, 179;
+  --cx-warning-30: #fad180;
+  --cx-warning-30-rgb: 250, 209, 128;
+  --cx-warning-40: #f8ba40;
+  --cx-warning-40-rgb: 248, 186, 64;
+  --cx-warning-50: #F5A300;
+  --cx-warning-50-rgb: 245, 163, 0;
+  --cx-warning-60: #ac7200;
+  --cx-warning-60-rgb: 172, 114, 0;
+  --cx-warning-70: #7b5200;
+  --cx-warning-70-rgb: 123, 82, 0;
+  --cx-warning-80: #563900;
+  --cx-warning-80-rgb: 86, 57, 0;
+  --cx-warning-90: #3d2900;
+  --cx-warning-90-rgb: 61, 41, 0;
+  --cx-warning-95: #251800;
+  --cx-warning-95-rgb: 37, 24, 0;
+  --cx-info-05: #efeffe;
+  --cx-info-05-rgb: 239, 239, 254;
+  --cx-info-10: #dcdcfe;
+  --cx-info-10-rgb: 220, 220, 254;
+  --cx-info-20: #b9b9fc;
+  --cx-info-20-rgb: 185, 185, 252;
+  --cx-info-30: #8a8afa;
+  --cx-info-30-rgb: 138, 138, 250;
+  --cx-info-40: #4f4ff8;
+  --cx-info-40-rgb: 79, 79, 248;
+  --cx-info-50: #1414F5;
+  --cx-info-50-rgb: 20, 20, 245;
+  --cx-info-60: #0e0eac;
+  --cx-info-60-rgb: 14, 14, 172;
+  --cx-info-70: #0a0a7b;
+  --cx-info-70-rgb: 10, 10, 123;
+  --cx-info-80: #070756;
+  --cx-info-80-rgb: 7, 7, 86;
+  --cx-info-90: #05053d;
+  --cx-info-90-rgb: 5, 5, 61;
+  --cx-info-95: #030325;
+  --cx-info-95-rgb: 3, 3, 37;
+  --cx-default-base-color: #000000;
+  --cx-default-base-color-rgb: 0, 0, 0;
+  --cx-alternate-base-color: #ffffff;
+  --cx-alternate-base-color-rgb: 255, 255, 255;
+  --cx-primary-base-color: #00A4CC;
+  --cx-primary-base-color-rgb: 0, 164, 204;
+  --cx-secondary-base-color: #F55200;
+  --cx-secondary-base-color-rgb: 245, 82, 0;
+  --cx-neutral-base-color: #6F8085;
+  --cx-neutral-base-color-rgb: 111, 128, 133;
+  --cx-danger-base-color: #F52314;
+  --cx-danger-base-color-rgb: 245, 35, 20;
+  --cx-success-base-color: #10C263;
+  --cx-success-base-color-rgb: 16, 194, 99;
+  --cx-warning-base-color: #F5A300;
+  --cx-warning-base-color-rgb: 245, 163, 0;
+  --cx-info-base-color: #1414F5;
+  --cx-info-base-color-rgb: 20, 20, 245;
+  --cx-black-base-color: #000000;
+  --cx-black-base-color-rgb: 0, 0, 0;
+  --cx-white-base-color: #ffffff;
+  --cx-white-base-color-rgb: 255, 255, 255;
+  --cx-default-contrast-color: #ffffff;
+  --cx-default-contrast-color-rgb: 255, 255, 255;
+  --cx-alternate-contrast-color: #000000;
+  --cx-alternate-contrast-color-rgb: 0, 0, 0;
+  --cx-primary-contrast-color: #ffffff;
+  --cx-primary-contrast-color-rgb: 255, 255, 255;
+  --cx-secondary-contrast-color: #ffffff;
+  --cx-secondary-contrast-color-rgb: 255, 255, 255;
+  --cx-neutral-contrast-color: #ffffff;
+  --cx-neutral-contrast-color-rgb: 255, 255, 255;
+  --cx-danger-contrast-color: #ffffff;
+  --cx-danger-contrast-color-rgb: 255, 255, 255;
+  --cx-success-contrast-color: #ffffff;
+  --cx-success-contrast-color-rgb: 255, 255, 255;
+  --cx-warning-contrast-color: #000000;
+  --cx-warning-contrast-color-rgb: 0, 0, 0;
+  --cx-info-contrast-color: #ffffff;
+  --cx-info-contrast-color-rgb: 255, 255, 255;
+  --cx-black-contrast-color: #ffffff;
+  --cx-black-contrast-color-rgb: 255, 255, 255;
+  --cx-white-contrast-color: #000000;
+  --cx-white-contrast-color-rgb: 0, 0, 0;
+  --cx-default-transparent-color: rgba(0, 0, 0, 0);
+  --cx-default-transparent-color-rgb: 0, 0, 0;
+  --cx-alternate-transparent-color: rgba(255, 255, 255, 0);
+  --cx-alternate-transparent-color-rgb: 255, 255, 255;
+  --cx-primary-transparent-color: rgba(0, 164, 204, 0);
+  --cx-primary-transparent-color-rgb: 0, 164, 204;
+  --cx-secondary-transparent-color: rgba(245, 82, 0, 0);
+  --cx-secondary-transparent-color-rgb: 245, 82, 0;
+  --cx-neutral-transparent-color: rgba(111, 128, 133, 0);
+  --cx-neutral-transparent-color-rgb: 111, 128, 133;
+  --cx-danger-transparent-color: rgba(245, 35, 20, 0);
+  --cx-danger-transparent-color-rgb: 245, 35, 20;
+  --cx-success-transparent-color: rgba(16, 194, 99, 0);
+  --cx-success-transparent-color-rgb: 16, 194, 99;
+  --cx-warning-transparent-color: rgba(245, 163, 0, 0);
+  --cx-warning-transparent-color-rgb: 245, 163, 0;
+  --cx-info-transparent-color: rgba(20, 20, 245, 0);
+  --cx-info-transparent-color-rgb: 20, 20, 245;
+  --cx-black-transparent-color: rgba(0, 0, 0, 0);
+  --cx-black-transparent-color-rgb: 0, 0, 0;
+  --cx-white-transparent-color: rgba(255, 255, 255, 0);
+  --cx-white-transparent-color-rgb: 255, 255, 255;
+  --cx-default-fg-main: #1c2021;
+  --cx-default-fg-main-rgb: 28, 32, 33;
+  --cx-alternate-fg-main: #e9eced;
+  --cx-alternate-fg-main-rgb: 233, 236, 237;
+  --cx-primary-fg-main: #00738f;
+  --cx-primary-fg-main-rgb: 0, 115, 143;
+  --cx-secondary-fg-main: #ac3900;
+  --cx-secondary-fg-main-rgb: 172, 57, 0;
+  --cx-neutral-fg-main: #4e5a5d;
+  --cx-neutral-fg-main-rgb: 78, 90, 93;
+  --cx-danger-fg-main: #ac190e;
+  --cx-danger-fg-main-rgb: 172, 25, 14;
+  --cx-success-fg-main: #0b8845;
+  --cx-success-fg-main-rgb: 11, 136, 69;
+  --cx-warning-fg-main: #ac7200;
+  --cx-warning-fg-main-rgb: 172, 114, 0;
+  --cx-info-fg-main: #0e0eac;
+  --cx-info-fg-main-rgb: 14, 14, 172;
+  --cx-black-fg-main: #000000;
+  --cx-black-fg-main-rgb: 0, 0, 0;
+  --cx-white-fg-main: #ffffff;
+  --cx-white-fg-main-rgb: 255, 255, 255;
+  --cx-default-fg-subtle: rgba(28, 32, 33, 0.5);
+  --cx-alternate-fg-subtle: rgba(233, 236, 237, 0.5);
+  --cx-primary-fg-subtle: rgba(0, 115, 143, 0.5);
+  --cx-secondary-fg-subtle: rgba(172, 57, 0, 0.5);
+  --cx-neutral-fg-subtle: rgba(78, 90, 93, 0.5);
+  --cx-danger-fg-subtle: rgba(172, 25, 14, 0.5);
+  --cx-success-fg-subtle: rgba(11, 136, 69, 0.5);
+  --cx-warning-fg-subtle: rgba(172, 114, 0, 0.5);
+  --cx-info-fg-subtle: rgba(14, 14, 172, 0.5);
+  --cx-black-fg-subtle: rgba(0, 0, 0, 0.5);
+  --cx-white-fg-subtle: rgba(255, 255, 255, 0.5);
+  --cx-default-fg-slight: rgba(28, 32, 33, 0.25);
+  --cx-alternate-fg-slight: rgba(233, 236, 237, 0.25);
+  --cx-primary-fg-slight: rgba(0, 115, 143, 0.25);
+  --cx-secondary-fg-slight: rgba(172, 57, 0, 0.25);
+  --cx-neutral-fg-slight: rgba(78, 90, 93, 0.25);
+  --cx-danger-fg-slight: rgba(172, 25, 14, 0.25);
+  --cx-success-fg-slight: rgba(11, 136, 69, 0.25);
+  --cx-warning-fg-slight: rgba(172, 114, 0, 0.25);
+  --cx-info-fg-slight: rgba(14, 14, 172, 0.25);
+  --cx-black-fg-slight: rgba(0, 0, 0, 0.3);
+  --cx-white-fg-slight: rgba(255, 255, 255, 0.3);
+  --cx-default-fg-inverse: #e9eced;
+  --cx-default-fg-inverse-rgb: 233, 236, 237;
+  --cx-alternate-fg-inverse: #1c2021;
+  --cx-alternate-fg-inverse-rgb: 28, 32, 33;
+  --cx-primary-fg-inverse: #d9f1f7;
+  --cx-primary-fg-inverse-rgb: 217, 241, 247;
+  --cx-secondary-fg-inverse: #fee5d9;
+  --cx-secondary-fg-inverse-rgb: 254, 229, 217;
+  --cx-neutral-fg-inverse: #e9eced;
+  --cx-neutral-fg-inverse-rgb: 233, 236, 237;
+  --cx-danger-fg-inverse: #fededc;
+  --cx-danger-fg-inverse-rgb: 254, 222, 220;
+  --cx-success-fg-inverse: #dbf6e8;
+  --cx-success-fg-inverse-rgb: 219, 246, 232;
+  --cx-warning-fg-inverse: #fef1d9;
+  --cx-warning-fg-inverse-rgb: 254, 241, 217;
+  --cx-info-fg-inverse: #dcdcfe;
+  --cx-info-fg-inverse-rgb: 220, 220, 254;
+  --cx-black-fg-inverse: #ffffff;
+  --cx-black-fg-inverse-rgb: 255, 255, 255;
+  --cx-white-fg-inverse: #000000;
+  --cx-white-fg-inverse-rgb: 0, 0, 0;
+  --cx-default-fg-solid: #000000;
+  --cx-default-fg-solid-rgb: 0, 0, 0;
+  --cx-alternate-fg-solid: #ffffff;
+  --cx-alternate-fg-solid-rgb: 255, 255, 255;
+  --cx-primary-fg-solid: #ffffff;
+  --cx-primary-fg-solid-rgb: 255, 255, 255;
+  --cx-secondary-fg-solid: #ffffff;
+  --cx-secondary-fg-solid-rgb: 255, 255, 255;
+  --cx-neutral-fg-solid: #ffffff;
+  --cx-neutral-fg-solid-rgb: 255, 255, 255;
+  --cx-danger-fg-solid: #ffffff;
+  --cx-danger-fg-solid-rgb: 255, 255, 255;
+  --cx-success-fg-solid: #ffffff;
+  --cx-success-fg-solid-rgb: 255, 255, 255;
+  --cx-warning-fg-solid: #000000;
+  --cx-warning-fg-solid-rgb: 0, 0, 0;
+  --cx-info-fg-solid: #ffffff;
+  --cx-info-fg-solid-rgb: 255, 255, 255;
+  --cx-black-fg-solid: #ffffff;
+  --cx-black-fg-solid-rgb: 255, 255, 255;
+  --cx-white-fg-solid: #000000;
+  --cx-white-fg-solid-rgb: 0, 0, 0;
+  --cx-default-fg-highlight: #00738f;
+  --cx-default-fg-highlight-rgb: 0, 115, 143;
+  --cx-alternate-fg-highlight: #b3e4f0;
+  --cx-alternate-fg-highlight-rgb: 179, 228, 240;
+  --cx-primary-fg-highlight: #00738f;
+  --cx-primary-fg-highlight-rgb: 0, 115, 143;
+  --cx-secondary-fg-highlight: #ac3900;
+  --cx-secondary-fg-highlight-rgb: 172, 57, 0;
+  --cx-neutral-fg-highlight: #4e5a5d;
+  --cx-neutral-fg-highlight-rgb: 78, 90, 93;
+  --cx-danger-fg-highlight: #ac190e;
+  --cx-danger-fg-highlight-rgb: 172, 25, 14;
+  --cx-success-fg-highlight: #0b8845;
+  --cx-success-fg-highlight-rgb: 11, 136, 69;
+  --cx-warning-fg-highlight: #ac7200;
+  --cx-warning-fg-highlight-rgb: 172, 114, 0;
+  --cx-info-fg-highlight: #0e0eac;
+  --cx-info-fg-highlight-rgb: 14, 14, 172;
+  --cx-black-fg-highlight: #000000;
+  --cx-black-fg-highlight-rgb: 0, 0, 0;
+  --cx-white-fg-highlight: #ffffff;
+  --cx-white-fg-highlight-rgb: 255, 255, 255;
+  --cx-default-fg-idle: #1c2021;
+  --cx-default-fg-idle-rgb: 28, 32, 33;
+  --cx-alternate-fg-idle: #e9eced;
+  --cx-alternate-fg-idle-rgb: 233, 236, 237;
+  --cx-primary-fg-idle: #ffffff;
+  --cx-primary-fg-idle-rgb: 255, 255, 255;
+  --cx-secondary-fg-idle: #ffffff;
+  --cx-secondary-fg-idle-rgb: 255, 255, 255;
+  --cx-neutral-fg-idle: #ffffff;
+  --cx-neutral-fg-idle-rgb: 255, 255, 255;
+  --cx-danger-fg-idle: #ffffff;
+  --cx-danger-fg-idle-rgb: 255, 255, 255;
+  --cx-success-fg-idle: #ffffff;
+  --cx-success-fg-idle-rgb: 255, 255, 255;
+  --cx-warning-fg-idle: #000000;
+  --cx-warning-fg-idle-rgb: 0, 0, 0;
+  --cx-info-fg-idle: #ffffff;
+  --cx-info-fg-idle-rgb: 255, 255, 255;
+  --cx-black-fg-idle: #ffffff;
+  --cx-black-fg-idle-rgb: 255, 255, 255;
+  --cx-white-fg-idle: #000000;
+  --cx-white-fg-idle-rgb: 0, 0, 0;
+  --cx-default-fg-disabled: rgba(28, 32, 33, 0.25);
+  --cx-default-fg-disabled-rgb: 28, 32, 33;
+  --cx-alternate-fg-disabled: rgba(233, 236, 237, 0.25);
+  --cx-alternate-fg-disabled-rgb: 233, 236, 237;
+  --cx-primary-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-primary-fg-disabled-rgb: 255, 255, 255;
+  --cx-secondary-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-secondary-fg-disabled-rgb: 255, 255, 255;
+  --cx-neutral-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-neutral-fg-disabled-rgb: 255, 255, 255;
+  --cx-danger-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-danger-fg-disabled-rgb: 255, 255, 255;
+  --cx-success-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-success-fg-disabled-rgb: 255, 255, 255;
+  --cx-warning-fg-disabled: rgba(0, 0, 0, 0.25);
+  --cx-warning-fg-disabled-rgb: 0, 0, 0;
+  --cx-info-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-info-fg-disabled-rgb: 255, 255, 255;
+  --cx-black-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-black-fg-disabled-rgb: 255, 255, 255;
+  --cx-white-fg-disabled: rgba(0, 0, 0, 0.25);
+  --cx-white-fg-disabled-rgb: 0, 0, 0;
+  --cx-default-fg-hover: rgba(28, 32, 33, 0.9);
+  --cx-default-fg-hover-rgb: 28, 32, 33;
+  --cx-alternate-fg-hover: rgba(233, 236, 237, 0.9);
+  --cx-alternate-fg-hover-rgb: 233, 236, 237;
+  --cx-primary-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-primary-fg-hover-rgb: 255, 255, 255;
+  --cx-secondary-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-secondary-fg-hover-rgb: 255, 255, 255;
+  --cx-neutral-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-neutral-fg-hover-rgb: 255, 255, 255;
+  --cx-danger-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-danger-fg-hover-rgb: 255, 255, 255;
+  --cx-success-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-success-fg-hover-rgb: 255, 255, 255;
+  --cx-warning-fg-hover: rgba(0, 0, 0, 0.9);
+  --cx-warning-fg-hover-rgb: 0, 0, 0;
+  --cx-info-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-info-fg-hover-rgb: 255, 255, 255;
+  --cx-black-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-black-fg-hover-rgb: 255, 255, 255;
+  --cx-white-fg-hover: rgba(0, 0, 0, 0.9);
+  --cx-white-fg-hover-rgb: 0, 0, 0;
+  --cx-default-fg-press: rgba(28, 32, 33, 0.9);
+  --cx-default-fg-press-rgb: 28, 32, 33;
+  --cx-alternate-fg-press: rgba(233, 236, 237, 0.9);
+  --cx-alternate-fg-press-rgb: 233, 236, 237;
+  --cx-primary-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-primary-fg-press-rgb: 255, 255, 255;
+  --cx-secondary-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-secondary-fg-press-rgb: 255, 255, 255;
+  --cx-neutral-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-neutral-fg-press-rgb: 255, 255, 255;
+  --cx-danger-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-danger-fg-press-rgb: 255, 255, 255;
+  --cx-success-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-success-fg-press-rgb: 255, 255, 255;
+  --cx-warning-fg-press: rgba(0, 0, 0, 0.9);
+  --cx-warning-fg-press-rgb: 0, 0, 0;
+  --cx-info-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-info-fg-press-rgb: 255, 255, 255;
+  --cx-black-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-black-fg-press-rgb: 255, 255, 255;
+  --cx-white-fg-press: rgba(0, 0, 0, 0.9);
+  --cx-white-fg-press-rgb: 0, 0, 0;
+  --cx-default-bg-main: #ffffff;
+  --cx-default-bg-main-rgb: 255, 255, 255;
+  --cx-alternate-bg-main: #272d2f;
+  --cx-alternate-bg-main-rgb: 39, 45, 47;
+  --cx-primary-bg-main: #edf9fb;
+  --cx-primary-bg-main-rgb: 237, 249, 251;
+  --cx-secondary-bg-main: #fef3ed;
+  --cx-secondary-bg-main-rgb: 254, 243, 237;
+  --cx-neutral-bg-main: #f5f6f6;
+  --cx-neutral-bg-main-rgb: 245, 246, 246;
+  --cx-danger-bg-main: #fef0ef;
+  --cx-danger-bg-main-rgb: 254, 240, 239;
+  --cx-success-bg-main: #eefbf4;
+  --cx-success-bg-main-rgb: 238, 251, 244;
+  --cx-warning-bg-main: #fef9ed;
+  --cx-warning-bg-main-rgb: 254, 249, 237;
+  --cx-info-bg-main: #efeffe;
+  --cx-info-bg-main-rgb: 239, 239, 254;
+  --cx-black-bg-main: rgba(0, 0, 0, 0.05);
+  --cx-black-bg-main-rgb: 0, 0, 0;
+  --cx-white-bg-main: rgba(255, 255, 255, 0.05);
+  --cx-white-bg-main-rgb: 255, 255, 255;
+  --cx-default-bg-even: #f5f6f6;
+  --cx-default-bg-even-rgb: 245, 246, 246;
+  --cx-alternate-bg-even: #1c2021;
+  --cx-alternate-bg-even-rgb: 28, 32, 33;
+  --cx-primary-bg-even: #d9f1f7;
+  --cx-primary-bg-even-rgb: 217, 241, 247;
+  --cx-secondary-bg-even: #fee5d9;
+  --cx-secondary-bg-even-rgb: 254, 229, 217;
+  --cx-neutral-bg-even: #e9eced;
+  --cx-neutral-bg-even-rgb: 233, 236, 237;
+  --cx-danger-bg-even: #fededc;
+  --cx-danger-bg-even-rgb: 254, 222, 220;
+  --cx-success-bg-even: #dbf6e8;
+  --cx-success-bg-even-rgb: 219, 246, 232;
+  --cx-warning-bg-even: #fef1d9;
+  --cx-warning-bg-even-rgb: 254, 241, 217;
+  --cx-info-bg-even: #dcdcfe;
+  --cx-info-bg-even-rgb: 220, 220, 254;
+  --cx-black-bg-even: rgba(0, 0, 0, 0.1);
+  --cx-black-bg-even-rgb: 0, 0, 0;
+  --cx-white-bg-even: rgba(255, 255, 255, 0.1);
+  --cx-white-bg-even-rgb: 255, 255, 255;
+  --cx-default-bg-evident: #e9eced;
+  --cx-default-bg-evident-rgb: 233, 236, 237;
+  --cx-alternate-bg-evident: #111314;
+  --cx-alternate-bg-evident-rgb: 17, 19, 20;
+  --cx-primary-bg-evident: #b3e4f0;
+  --cx-primary-bg-evident-rgb: 179, 228, 240;
+  --cx-secondary-bg-evident: #fccbb3;
+  --cx-secondary-bg-evident-rgb: 252, 203, 179;
+  --cx-neutral-bg-evident: #d4d9da;
+  --cx-neutral-bg-evident-rgb: 212, 217, 218;
+  --cx-danger-bg-evident: #fcbdb9;
+  --cx-danger-bg-evident-rgb: 252, 189, 185;
+  --cx-success-bg-evident: #b7edd0;
+  --cx-success-bg-evident-rgb: 183, 237, 208;
+  --cx-warning-bg-evident: #fce3b3;
+  --cx-warning-bg-evident-rgb: 252, 227, 179;
+  --cx-info-bg-evident: #b9b9fc;
+  --cx-info-bg-evident-rgb: 185, 185, 252;
+  --cx-black-bg-evident: rgba(0, 0, 0, 0.2);
+  --cx-black-bg-evident-rgb: 0, 0, 0;
+  --cx-white-bg-evident: rgba(255, 255, 255, 0.2);
+  --cx-white-bg-evident-rgb: 255, 255, 255;
+  --cx-default-bg-inverse: #1c2021;
+  --cx-default-bg-inverse-rgb: 28, 32, 33;
+  --cx-alternate-bg-inverse: #e9eced;
+  --cx-alternate-bg-inverse-rgb: 233, 236, 237;
+  --cx-primary-bg-inverse: #002933;
+  --cx-primary-bg-inverse-rgb: 0, 41, 51;
+  --cx-secondary-bg-inverse: #3d1400;
+  --cx-secondary-bg-inverse-rgb: 61, 20, 0;
+  --cx-neutral-bg-inverse: #1c2021;
+  --cx-neutral-bg-inverse-rgb: 28, 32, 33;
+  --cx-danger-bg-inverse: #3d0905;
+  --cx-danger-bg-inverse-rgb: 61, 9, 5;
+  --cx-success-bg-inverse: #043119;
+  --cx-success-bg-inverse-rgb: 4, 49, 25;
+  --cx-warning-bg-inverse: #3d2900;
+  --cx-warning-bg-inverse-rgb: 61, 41, 0;
+  --cx-info-bg-inverse: #05053d;
+  --cx-info-bg-inverse-rgb: 5, 5, 61;
+  --cx-black-bg-inverse: rgba(0, 0, 0, 0.9);
+  --cx-black-bg-inverse-rgb: 0, 0, 0;
+  --cx-white-bg-inverse: rgba(255, 255, 255, 0.95);
+  --cx-white-bg-inverse-rgb: 255, 255, 255;
+  --cx-default-bg-solid: #e9eced;
+  --cx-default-bg-solid-rgb: 233, 236, 237;
+  --cx-alternate-bg-solid: #111314;
+  --cx-alternate-bg-solid-rgb: 17, 19, 20;
+  --cx-primary-bg-solid: #00A4CC;
+  --cx-primary-bg-solid-rgb: 0, 164, 204;
+  --cx-secondary-bg-solid: #F55200;
+  --cx-secondary-bg-solid-rgb: 245, 82, 0;
+  --cx-neutral-bg-solid: #6F8085;
+  --cx-neutral-bg-solid-rgb: 111, 128, 133;
+  --cx-danger-bg-solid: #F52314;
+  --cx-danger-bg-solid-rgb: 245, 35, 20;
+  --cx-success-bg-solid: #10C263;
+  --cx-success-bg-solid-rgb: 16, 194, 99;
+  --cx-warning-bg-solid: #F5A300;
+  --cx-warning-bg-solid-rgb: 245, 163, 0;
+  --cx-info-bg-solid: #1414F5;
+  --cx-info-bg-solid-rgb: 20, 20, 245;
+  --cx-black-bg-solid: #000000;
+  --cx-black-bg-solid-rgb: 0, 0, 0;
+  --cx-white-bg-solid: #ffffff;
+  --cx-white-bg-solid-rgb: 255, 255, 255;
+  --cx-default-bg-highlight: #d9f1f7;
+  --cx-default-bg-highlight-rgb: 217, 241, 247;
+  --cx-alternate-bg-highlight: #003947;
+  --cx-alternate-bg-highlight-rgb: 0, 57, 71;
+  --cx-primary-bg-highlight: #80d2e6;
+  --cx-primary-bg-highlight-rgb: 128, 210, 230;
+  --cx-secondary-bg-highlight: #faa980;
+  --cx-secondary-bg-highlight-rgb: 250, 169, 128;
+  --cx-neutral-bg-highlight: #b7c0c2;
+  --cx-neutral-bg-highlight-rgb: 183, 192, 194;
+  --cx-danger-bg-highlight: #fa918a;
+  --cx-danger-bg-highlight-rgb: 250, 145, 138;
+  --cx-success-bg-highlight: #88e1b1;
+  --cx-success-bg-highlight-rgb: 136, 225, 177;
+  --cx-warning-bg-highlight: #fad180;
+  --cx-warning-bg-highlight-rgb: 250, 209, 128;
+  --cx-info-bg-highlight: #8a8afa;
+  --cx-info-bg-highlight-rgb: 138, 138, 250;
+  --cx-black-bg-highlight: rgba(0, 0, 0, 0.2);
+  --cx-black-bg-highlight-rgb: 0, 0, 0;
+  --cx-white-bg-highlight: rgba(255, 255, 255, 0.2);
+  --cx-white-bg-highlight-rgb: 255, 255, 255;
+  --cx-default-bg-idle: #ffffff;
+  --cx-default-bg-idle-rgb: 255, 255, 255;
+  --cx-alternate-bg-idle: #272d2f;
+  --cx-alternate-bg-idle-rgb: 39, 45, 47;
+  --cx-primary-bg-idle: #00A4CC;
+  --cx-primary-bg-idle-rgb: 0, 164, 204;
+  --cx-secondary-bg-idle: #F55200;
+  --cx-secondary-bg-idle-rgb: 245, 82, 0;
+  --cx-neutral-bg-idle: #6F8085;
+  --cx-neutral-bg-idle-rgb: 111, 128, 133;
+  --cx-danger-bg-idle: #F52314;
+  --cx-danger-bg-idle-rgb: 245, 35, 20;
+  --cx-success-bg-idle: #10C263;
+  --cx-success-bg-idle-rgb: 16, 194, 99;
+  --cx-warning-bg-idle: #F5A300;
+  --cx-warning-bg-idle-rgb: 245, 163, 0;
+  --cx-info-bg-idle: #1414F5;
+  --cx-info-bg-idle-rgb: 20, 20, 245;
+  --cx-black-bg-idle: #000000;
+  --cx-black-bg-idle-rgb: 0, 0, 0;
+  --cx-white-bg-idle: #ffffff;
+  --cx-white-bg-idle-rgb: 255, 255, 255;
+  --cx-default-bg-disabled: #d4d9da;
+  --cx-default-bg-disabled-rgb: 212, 217, 218;
+  --cx-alternate-bg-disabled: #272d2f;
+  --cx-alternate-bg-disabled-rgb: 39, 45, 47;
+  --cx-primary-bg-disabled: #b3e4f0;
+  --cx-primary-bg-disabled-rgb: 179, 228, 240;
+  --cx-secondary-bg-disabled: #fccbb3;
+  --cx-secondary-bg-disabled-rgb: 252, 203, 179;
+  --cx-neutral-bg-disabled: #d4d9da;
+  --cx-neutral-bg-disabled-rgb: 212, 217, 218;
+  --cx-danger-bg-disabled: #fcbdb9;
+  --cx-danger-bg-disabled-rgb: 252, 189, 185;
+  --cx-success-bg-disabled: #b7edd0;
+  --cx-success-bg-disabled-rgb: 183, 237, 208;
+  --cx-warning-bg-disabled: #fce3b3;
+  --cx-warning-bg-disabled-rgb: 252, 227, 179;
+  --cx-info-bg-disabled: #b9b9fc;
+  --cx-info-bg-disabled-rgb: 185, 185, 252;
+  --cx-black-bg-disabled: rgba(0, 0, 0, 0.2);
+  --cx-black-bg-disabled-rgb: 0, 0, 0;
+  --cx-white-bg-disabled: rgba(255, 255, 255, 0.2);
+  --cx-white-bg-disabled-rgb: 255, 255, 255;
+  --cx-default-bg-hover: #f5f6f6;
+  --cx-default-bg-hover-rgb: 245, 246, 246;
+  --cx-alternate-bg-hover: #1c2021;
+  --cx-alternate-bg-hover-rgb: 28, 32, 33;
+  --cx-primary-bg-hover: #40bbd9;
+  --cx-primary-bg-hover-rgb: 64, 187, 217;
+  --cx-secondary-bg-hover: #f87d40;
+  --cx-secondary-bg-hover-rgb: 248, 125, 64;
+  --cx-neutral-bg-hover: #93a0a4;
+  --cx-neutral-bg-hover-rgb: 147, 160, 164;
+  --cx-danger-bg-hover: #f85a4f;
+  --cx-danger-bg-hover-rgb: 248, 90, 79;
+  --cx-success-bg-hover: #4cd18a;
+  --cx-success-bg-hover-rgb: 76, 209, 138;
+  --cx-warning-bg-hover: #f8ba40;
+  --cx-warning-bg-hover-rgb: 248, 186, 64;
+  --cx-info-bg-hover: #4f4ff8;
+  --cx-info-bg-hover-rgb: 79, 79, 248;
+  --cx-black-bg-hover: rgba(0, 0, 0, 0.9);
+  --cx-black-bg-hover-rgb: 0, 0, 0;
+  --cx-white-bg-hover: rgba(255, 255, 255, 0.9);
+  --cx-white-bg-hover-rgb: 255, 255, 255;
+  --cx-default-bg-press: #e9eced;
+  --cx-default-bg-press-rgb: 233, 236, 237;
+  --cx-alternate-bg-press: #111314;
+  --cx-alternate-bg-press-rgb: 17, 19, 20;
+  --cx-primary-bg-press: #00738f;
+  --cx-primary-bg-press-rgb: 0, 115, 143;
+  --cx-secondary-bg-press: #ac3900;
+  --cx-secondary-bg-press-rgb: 172, 57, 0;
+  --cx-neutral-bg-press: #4e5a5d;
+  --cx-neutral-bg-press-rgb: 78, 90, 93;
+  --cx-danger-bg-press: #ac190e;
+  --cx-danger-bg-press-rgb: 172, 25, 14;
+  --cx-success-bg-press: #0b8845;
+  --cx-success-bg-press-rgb: 11, 136, 69;
+  --cx-warning-bg-press: #ac7200;
+  --cx-warning-bg-press-rgb: 172, 114, 0;
+  --cx-info-bg-press: #0e0eac;
+  --cx-info-bg-press-rgb: 14, 14, 172;
+  --cx-black-bg-press: rgba(0, 0, 0, 0.95);
+  --cx-black-bg-press-rgb: 0, 0, 0;
+  --cx-white-bg-press: rgba(255, 255, 255, 0.95);
+  --cx-white-bg-press-rgb: 255, 255, 255;
+  --cx-default-border-main: #93a0a4;
+  --cx-default-border-main-rgb: 147, 160, 164;
+  --cx-alternate-border-main: #4e5a5d;
+  --cx-alternate-border-main-rgb: 78, 90, 93;
+  --cx-primary-border-main: #40bbd9;
+  --cx-primary-border-main-rgb: 64, 187, 217;
+  --cx-secondary-border-main: #f87d40;
+  --cx-secondary-border-main-rgb: 248, 125, 64;
+  --cx-neutral-border-main: #93a0a4;
+  --cx-neutral-border-main-rgb: 147, 160, 164;
+  --cx-danger-border-main: #f85a4f;
+  --cx-danger-border-main-rgb: 248, 90, 79;
+  --cx-success-border-main: #4cd18a;
+  --cx-success-border-main-rgb: 76, 209, 138;
+  --cx-warning-border-main: #f8ba40;
+  --cx-warning-border-main-rgb: 248, 186, 64;
+  --cx-info-border-main: #4f4ff8;
+  --cx-info-border-main-rgb: 79, 79, 248;
+  --cx-black-border-main: rgba(0, 0, 0, 0.3);
+  --cx-black-border-main-rgb: 0, 0, 0;
+  --cx-white-border-main: rgba(255, 255, 255, 0.3);
+  --cx-white-border-main-rgb: 255, 255, 255;
+  --cx-default-border-subtle: rgba(28, 32, 33, 0.15);
+  --cx-alternate-border-subtle: rgba(233, 236, 237, 0.15);
+  --cx-primary-border-subtle: rgba(0, 115, 143, 0.15);
+  --cx-secondary-border-subtle: rgba(172, 57, 0, 0.15);
+  --cx-neutral-border-subtle: rgba(78, 90, 93, 0.15);
+  --cx-danger-border-subtle: rgba(172, 25, 14, 0.15);
+  --cx-success-border-subtle: rgba(11, 136, 69, 0.15);
+  --cx-warning-border-subtle: rgba(172, 114, 0, 0.15);
+  --cx-info-border-subtle: rgba(14, 14, 172, 0.15);
+  --cx-black-border-subtle: rgba(0, 0, 0, 0.15);
+  --cx-white-border-subtle: rgba(255, 255, 255, 0.15);
+  --cx-default-icon-main: #00A4CC;
+  --cx-default-icon-main-rgb: 0, 164, 204;
+  --cx-alternate-icon-main: #00A4CC;
+  --cx-alternate-icon-main-rgb: 0, 164, 204;
+  --cx-primary-icon-main: #00A4CC;
+  --cx-primary-icon-main-rgb: 0, 164, 204;
+  --cx-secondary-icon-main: #F55200;
+  --cx-secondary-icon-main-rgb: 245, 82, 0;
+  --cx-neutral-icon-main: #6F8085;
+  --cx-neutral-icon-main-rgb: 111, 128, 133;
+  --cx-danger-icon-main: #F52314;
+  --cx-danger-icon-main-rgb: 245, 35, 20;
+  --cx-success-icon-main: #10C263;
+  --cx-success-icon-main-rgb: 16, 194, 99;
+  --cx-warning-icon-main: #F5A300;
+  --cx-warning-icon-main-rgb: 245, 163, 0;
+  --cx-info-icon-main: #1414F5;
+  --cx-info-icon-main-rgb: 20, 20, 245;
+  --cx-black-icon-main: #000000;
+  --cx-black-icon-main-rgb: 0, 0, 0;
+  --cx-white-icon-main: #ffffff;
+  --cx-white-icon-main-rgb: 255, 255, 255;
+  --cx-default-icon-subtle: rgba(28, 32, 33, 0.4);
+  --cx-alternate-icon-subtle: rgba(233, 236, 237, 0.4);
+  --cx-primary-icon-subtle: rgba(0, 115, 143, 0.4);
+  --cx-secondary-icon-subtle: rgba(172, 57, 0, 0.4);
+  --cx-neutral-icon-subtle: rgba(78, 90, 93, 0.4);
+  --cx-danger-icon-subtle: rgba(172, 25, 14, 0.4);
+  --cx-success-icon-subtle: rgba(11, 136, 69, 0.4);
+  --cx-warning-icon-subtle: rgba(172, 114, 0, 0.4);
+  --cx-info-icon-subtle: rgba(14, 14, 172, 0.4);
+  --cx-black-icon-subtle: rgba(0, 0, 0, 0.4);
+  --cx-white-icon-subtle: rgba(255, 255, 255, 0.4);
+  --cx-default-icon-slight: rgba(0, 164, 204, 0.2);
+  --cx-alternate-icon-slight: rgba(0, 164, 204, 0.2);
+  --cx-primary-icon-slight: rgba(0, 164, 204, 0.2);
+  --cx-secondary-icon-slight: rgba(245, 82, 0, 0.2);
+  --cx-neutral-icon-slight: rgba(111, 128, 133, 0.2);
+  --cx-danger-icon-slight: rgba(245, 35, 20, 0.2);
+  --cx-success-icon-slight: rgba(16, 194, 99, 0.2);
+  --cx-warning-icon-slight: rgba(245, 163, 0, 0.2);
+  --cx-info-icon-slight: rgba(20, 20, 245, 0.2);
+  --cx-black-icon-slight: rgba(0, 0, 0, 0.2);
+  --cx-white-icon-slight: rgba(255, 255, 255, 0.2);
+  --cx-default-cue-main: #00A4CC;
+  --cx-default-cue-main-rgb: 0, 164, 204;
+  --cx-alternate-cue-main: #00A4CC;
+  --cx-alternate-cue-main-rgb: 0, 164, 204;
+  --cx-primary-cue-main: #00A4CC;
+  --cx-primary-cue-main-rgb: 0, 164, 204;
+  --cx-secondary-cue-main: #F55200;
+  --cx-secondary-cue-main-rgb: 245, 82, 0;
+  --cx-neutral-cue-main: #6F8085;
+  --cx-neutral-cue-main-rgb: 111, 128, 133;
+  --cx-danger-cue-main: #F52314;
+  --cx-danger-cue-main-rgb: 245, 35, 20;
+  --cx-success-cue-main: #10C263;
+  --cx-success-cue-main-rgb: 16, 194, 99;
+  --cx-warning-cue-main: #F5A300;
+  --cx-warning-cue-main-rgb: 245, 163, 0;
+  --cx-info-cue-main: #1414F5;
+  --cx-info-cue-main-rgb: 20, 20, 245;
+  --cx-black-cue-main: #000000;
+  --cx-black-cue-main-rgb: 0, 0, 0;
+  --cx-white-cue-main: #ffffff;
+  --cx-white-cue-main-rgb: 255, 255, 255;
+  --cx-default-cue-slight: rgba(0, 164, 204, 0.2);
+  --cx-alternate-cue-slight: rgba(0, 164, 204, 0.2);
+  --cx-primary-cue-slight: rgba(0, 164, 204, 0.2);
+  --cx-secondary-cue-slight: rgba(245, 82, 0, 0.2);
+  --cx-neutral-cue-slight: rgba(111, 128, 133, 0.2);
+  --cx-danger-cue-slight: rgba(245, 35, 20, 0.2);
+  --cx-success-cue-slight: rgba(16, 194, 99, 0.2);
+  --cx-warning-cue-slight: rgba(245, 163, 0, 0.2);
+  --cx-info-cue-slight: rgba(20, 20, 245, 0.2);
+  --cx-black-cue-slight: rgba(0, 0, 0, 0.2);
+  --cx-white-cue-slight: rgba(255, 255, 255, 0.2);
+  --cx-default-dim-slight: rgba(0, 0, 0, 0.05);
+  --cx-alternate-dim-slight: rgba(255, 255, 255, 0.05);
+  --cx-primary-dim-slight: rgba(0, 164, 204, 0.1);
+  --cx-secondary-dim-slight: rgba(245, 82, 0, 0.1);
+  --cx-neutral-dim-slight: rgba(111, 128, 133, 0.1);
+  --cx-danger-dim-slight: rgba(245, 35, 20, 0.1);
+  --cx-success-dim-slight: rgba(16, 194, 99, 0.1);
+  --cx-warning-dim-slight: rgba(245, 163, 0, 0.1);
+  --cx-info-dim-slight: rgba(20, 20, 245, 0.1);
+  --cx-black-dim-slight: rgba(0, 0, 0, 0.1);
+  --cx-white-dim-slight: rgba(255, 255, 255, 0.1);
+  --cx-default-dim-main: rgba(0, 0, 0, 0.7);
+  --cx-default-dim-main-rgb: 0, 0, 0;
+  --cx-alternate-dim-main: rgba(255, 255, 255, 0.7);
+  --cx-alternate-dim-main-rgb: 255, 255, 255;
+  --cx-primary-dim-main: rgba(0, 164, 204, 0.7);
+  --cx-primary-dim-main-rgb: 0, 164, 204;
+  --cx-secondary-dim-main: rgba(245, 82, 0, 0.7);
+  --cx-secondary-dim-main-rgb: 245, 82, 0;
+  --cx-neutral-dim-main: rgba(111, 128, 133, 0.7);
+  --cx-neutral-dim-main-rgb: 111, 128, 133;
+  --cx-danger-dim-main: rgba(245, 35, 20, 0.7);
+  --cx-danger-dim-main-rgb: 245, 35, 20;
+  --cx-success-dim-main: rgba(16, 194, 99, 0.7);
+  --cx-success-dim-main-rgb: 16, 194, 99;
+  --cx-warning-dim-main: rgba(245, 163, 0, 0.7);
+  --cx-warning-dim-main-rgb: 245, 163, 0;
+  --cx-info-dim-main: rgba(20, 20, 245, 0.7);
+  --cx-info-dim-main-rgb: 20, 20, 245;
+  --cx-black-dim-main: rgba(0, 0, 0, 0.7);
+  --cx-black-dim-main-rgb: 0, 0, 0;
+  --cx-white-dim-main: rgba(255, 255, 255, 0.7);
+  --cx-white-dim-main-rgb: 255, 255, 255;
+  --cx-default-dim-subtle: rgba(0, 0, 0, 0.3);
+  --cx-alternate-dim-subtle: rgba(255, 255, 255, 0.3);
+  --cx-primary-dim-subtle: rgba(0, 164, 204, 0.3);
+  --cx-secondary-dim-subtle: rgba(245, 82, 0, 0.3);
+  --cx-neutral-dim-subtle: rgba(111, 128, 133, 0.3);
+  --cx-danger-dim-subtle: rgba(245, 35, 20, 0.3);
+  --cx-success-dim-subtle: rgba(16, 194, 99, 0.3);
+  --cx-warning-dim-subtle: rgba(245, 163, 0, 0.3);
+  --cx-info-dim-subtle: rgba(20, 20, 245, 0.3);
+  --cx-black-dim-subtle: rgba(0, 0, 0, 0.3);
+  --cx-white-dim-subtle: rgba(255, 255, 255, 0.3);
+  --cx-default-link-main: #00A4CC;
+  --cx-default-link-main-rgb: 0, 164, 204;
+  --cx-alternate-link-main: #00A4CC;
+  --cx-alternate-link-main-rgb: 0, 164, 204;
+  --cx-primary-link-main: #00A4CC;
+  --cx-primary-link-main-rgb: 0, 164, 204;
+  --cx-secondary-link-main: #F55200;
+  --cx-secondary-link-main-rgb: 245, 82, 0;
+  --cx-neutral-link-main: #6F8085;
+  --cx-neutral-link-main-rgb: 111, 128, 133;
+  --cx-danger-link-main: #F52314;
+  --cx-danger-link-main-rgb: 245, 35, 20;
+  --cx-success-link-main: #10C263;
+  --cx-success-link-main-rgb: 16, 194, 99;
+  --cx-warning-link-main: #F5A300;
+  --cx-warning-link-main-rgb: 245, 163, 0;
+  --cx-info-link-main: #1414F5;
+  --cx-info-link-main-rgb: 20, 20, 245;
+  --cx-black-link-main: #000000;
+  --cx-black-link-main-rgb: 0, 0, 0;
+  --cx-white-link-main: #ffffff;
+  --cx-white-link-main-rgb: 255, 255, 255;
+  --cx-default-link-hover: #40bbd9;
+  --cx-default-link-hover-rgb: 64, 187, 217;
+  --cx-alternate-link-hover: #40bbd9;
+  --cx-alternate-link-hover-rgb: 64, 187, 217;
+  --cx-primary-link-hover: #40bbd9;
+  --cx-primary-link-hover-rgb: 64, 187, 217;
+  --cx-secondary-link-hover: #f87d40;
+  --cx-secondary-link-hover-rgb: 248, 125, 64;
+  --cx-neutral-link-hover: #93a0a4;
+  --cx-neutral-link-hover-rgb: 147, 160, 164;
+  --cx-danger-link-hover: #f85a4f;
+  --cx-danger-link-hover-rgb: 248, 90, 79;
+  --cx-success-link-hover: #4cd18a;
+  --cx-success-link-hover-rgb: 76, 209, 138;
+  --cx-warning-link-hover: #f8ba40;
+  --cx-warning-link-hover-rgb: 248, 186, 64;
+  --cx-info-link-hover: #4f4ff8;
+  --cx-info-link-hover-rgb: 79, 79, 248;
+  --cx-black-link-hover: rgba(0, 0, 0, 0.9);
+  --cx-black-link-hover-rgb: 0, 0, 0;
+  --cx-white-link-hover: rgba(255, 255, 255, 0.9);
+  --cx-white-link-hover-rgb: 255, 255, 255;
+  --cx-default-link-active: #F52314;
+  --cx-default-link-active-rgb: 245, 35, 20;
+  --cx-alternate-link-active: #F52314;
+  --cx-alternate-link-active-rgb: 245, 35, 20;
+  --cx-primary-link-active: #00A4CC;
+  --cx-primary-link-active-rgb: 0, 164, 204;
+  --cx-secondary-link-active: #F55200;
+  --cx-secondary-link-active-rgb: 245, 82, 0;
+  --cx-neutral-link-active: #6F8085;
+  --cx-neutral-link-active-rgb: 111, 128, 133;
+  --cx-danger-link-active: #F52314;
+  --cx-danger-link-active-rgb: 245, 35, 20;
+  --cx-success-link-active: #10C263;
+  --cx-success-link-active-rgb: 16, 194, 99;
+  --cx-warning-link-active: #F5A300;
+  --cx-warning-link-active-rgb: 245, 163, 0;
+  --cx-info-link-active: #1414F5;
+  --cx-info-link-active-rgb: 20, 20, 245;
+  --cx-black-link-active: #F52314;
+  --cx-black-link-active-rgb: 245, 35, 20;
+  --cx-white-link-active: #F52314;
+  --cx-white-link-active-rgb: 245, 35, 20;
+  --cx-default-link-visited: #00738f;
+  --cx-default-link-visited-rgb: 0, 115, 143;
+  --cx-alternate-link-visited: #00738f;
+  --cx-alternate-link-visited-rgb: 0, 115, 143;
+  --cx-primary-link-visited: #00738f;
+  --cx-primary-link-visited-rgb: 0, 115, 143;
+  --cx-secondary-link-visited: #ac3900;
+  --cx-secondary-link-visited-rgb: 172, 57, 0;
+  --cx-neutral-link-visited: #4e5a5d;
+  --cx-neutral-link-visited-rgb: 78, 90, 93;
+  --cx-danger-link-visited: #ac190e;
+  --cx-danger-link-visited-rgb: 172, 25, 14;
+  --cx-success-link-visited: #0b8845;
+  --cx-success-link-visited-rgb: 11, 136, 69;
+  --cx-warning-link-visited: #ac7200;
+  --cx-warning-link-visited-rgb: 172, 114, 0;
+  --cx-info-link-visited: #0e0eac;
+  --cx-info-link-visited-rgb: 14, 14, 172;
+  --cx-black-link-visited: rgba(0, 0, 0, 0.6);
+  --cx-black-link-visited-rgb: 0, 0, 0;
+  --cx-white-link-visited: rgba(255, 255, 255, 0.6);
+  --cx-white-link-visited-rgb: 255, 255, 255;
+  --cx-font-family-text: Inter, system-ui, -apple-system, Helvetica, Arial, sans-serif;
+  --cx-font-family-display: Archivo Narrow, Georgia, Times New Roman, Times, serif;
+  --cx-font-family-code: Fira Code, Menlo, Monaco, Consolas, Courier New, monospace;
+  --cx-font-family-html: Inter, system-ui, -apple-system, Helvetica, Arial, sans-serif;
+  --cx-font-family-icon: Chassis-Icons;
+  --cx-font-size-5xlarge: var(--cx-font-size-text-5xlarge);
+  --cx-font-size-4xlarge: var(--cx-font-size-text-4xlarge);
+  --cx-font-size-3xlarge: var(--cx-font-size-text-3xlarge);
+  --cx-font-size-2xlarge: var(--cx-font-size-text-2xlarge);
+  --cx-font-size-xlarge: var(--cx-font-size-text-xlarge);
+  --cx-font-size-large: var(--cx-font-size-text-large);
+  --cx-font-size-medium: var(--cx-font-size-text-medium);
+  --cx-font-size-small: var(--cx-font-size-text-small);
+  --cx-font-size-xsmall: var(--cx-font-size-text-xsmall);
+  --cx-font-size-2xsmall: var(--cx-font-size-text-2xsmall);
+  --cx-font-weight-normal: var(--cx-font-weight-text-normal);
+  --cx-font-weight-strong: var(--cx-font-weight-text-strong);
+  --cx-font-weight-mass: var(--cx-font-weight-text-mass);
+  --cx-font-weight-elegant: var(--cx-font-weight-text-elegant);
+  --cx-line-height-5xlarge: var(--cx-line-height-text-5xlarge);
+  --cx-line-height-4xlarge: var(--cx-line-height-text-4xlarge);
+  --cx-line-height-3xlarge: var(--cx-line-height-text-3xlarge);
+  --cx-line-height-2xlarge: var(--cx-line-height-text-2xlarge);
+  --cx-line-height-xlarge: var(--cx-line-height-text-xlarge);
+  --cx-line-height-large: var(--cx-line-height-text-large);
+  --cx-line-height-medium: var(--cx-line-height-text-medium);
+  --cx-line-height-small: var(--cx-line-height-text-small);
+  --cx-line-height-xsmall: var(--cx-line-height-text-xsmall);
+  --cx-line-height-2xsmall: var(--cx-line-height-text-2xsmall);
+  --cx-font-size-text-5xlarge: calc(1.4rem + 1.8vw);
+  --cx-font-size-text-4xlarge: calc(1.3625rem + 1.35vw);
+  --cx-font-size-text-3xlarge: calc(1.325rem + 0.9vw);
+  --cx-font-size-text-2xlarge: calc(1.2875rem + 0.45vw);
+  --cx-font-size-text-xlarge: calc(1.2625rem + 0.15vw);
+  --cx-font-size-text-large: 1.1875rem;
+  --cx-font-size-text-medium: 1rem;
+  --cx-font-size-text-small: 0.875rem;
+  --cx-font-size-text-xsmall: 0.75rem;
+  --cx-font-size-text-2xsmall: 0.625rem;
+  --cx-font-weight-text-normal: 400;
+  --cx-font-weight-text-strong: 600;
+  --cx-font-weight-text-mass: 700;
+  --cx-font-weight-text-elegant: 300;
+  --cx-line-height-text-5xlarge: 1.273em;
+  --cx-line-height-text-4xlarge: 1.263em;
+  --cx-line-height-text-3xlarge: 1.25em;
+  --cx-line-height-text-2xlarge: 1.385em;
+  --cx-line-height-text-xlarge: 1.455em;
+  --cx-line-height-text-large: 1.474em;
+  --cx-line-height-text-medium: 1.5em;
+  --cx-line-height-text-small: 1.429em;
+  --cx-line-height-text-xsmall: 1.5em;
+  --cx-line-height-text-2xsmall: 1.4em;
+  --cx-font-size-display-5xlarge: calc(1.4rem + 1.8vw);
+  --cx-font-size-display-4xlarge: calc(1.3625rem + 1.35vw);
+  --cx-font-size-display-3xlarge: calc(1.325rem + 0.9vw);
+  --cx-font-size-display-2xlarge: calc(1.2875rem + 0.45vw);
+  --cx-font-size-display-xlarge: calc(1.2625rem + 0.15vw);
+  --cx-font-size-display-large: 1.1875rem;
+  --cx-font-size-display-medium: 1rem;
+  --cx-font-size-display-small: 0.875rem;
+  --cx-font-size-display-xsmall: 0.75rem;
+  --cx-font-size-display-2xsmall: 0.625rem;
+  --cx-font-weight-display-normal: 500;
+  --cx-font-weight-display-strong: 600;
+  --cx-font-weight-display-mass: 700;
+  --cx-font-weight-display-elegant: 400;
+  --cx-line-height-display-5xlarge: 1.273em;
+  --cx-line-height-display-4xlarge: 1.263em;
+  --cx-line-height-display-3xlarge: 1.25em;
+  --cx-line-height-display-2xlarge: 1.385em;
+  --cx-line-height-display-xlarge: 1.455em;
+  --cx-line-height-display-large: 1.474em;
+  --cx-line-height-display-medium: 1.5em;
+  --cx-line-height-display-small: 1.429em;
+  --cx-line-height-display-xsmall: 1.5em;
+  --cx-line-height-display-2xsmall: 1.4em;
+  --cx-font-size-html-body: 1rem;
+  --cx-font-size-html-h1: calc(1.3625rem + 1.35vw);
+  --cx-font-size-html-h2: calc(1.325rem + 0.9vw);
+  --cx-font-size-html-h3: calc(1.2875rem + 0.45vw);
+  --cx-font-size-html-h4: calc(1.2625rem + 0.15vw);
+  --cx-font-size-html-h5: 1.1875rem;
+  --cx-font-size-html-h6: 1rem;
+  --cx-font-size-html-paragraph: 1rem;
+  --cx-font-size-html-blockquote: 1rem;
+  --cx-font-size-html-cite: 0.875rem;
+  --cx-font-size-html-code: 1rem;
+  --cx-font-size-html-list: 1rem;
+  --cx-font-weight-html-body: 400;
+  --cx-font-weight-html-heading: 700;
+  --cx-font-weight-html-paragraph: 400;
+  --cx-font-weight-html-blockquote: 300;
+  --cx-font-weight-html-cite: 600;
+  --cx-font-weight-html-list: 400;
+  --cx-font-weight-html-code: 400;
+  --cx-line-height-html-body: 1.5em;
+  --cx-line-height-html-h1: 1.211em;
+  --cx-line-height-html-h2: 1.25em;
+  --cx-line-height-html-h3: 1.231em;
+  --cx-line-height-html-h4: 1.273em;
+  --cx-line-height-html-h5: 1.263em;
+  --cx-line-height-html-h6: 1.25em;
+  --cx-line-height-html-paragraph: 1.5em;
+  --cx-line-height-html-blockquote: 1.5em;
+  --cx-line-height-html-cite: 1.429em;
+  --cx-line-height-html-list: 1.5em;
+  --cx-line-height-html-code: 1.5em;
+  --cx-font-size-code-large: 1.1875rem;
+  --cx-font-size-code-medium: 1rem;
+  --cx-font-size-code-small: 0.875rem;
+  --cx-font-weight-code-normal: 400;
+  --cx-font-weight-code-strong: 700;
+  --cx-line-height-code-large: 1.474em;
+  --cx-line-height-code-medium: 1.5em;
+  --cx-line-height-code-small: 1.429em;
+  --cx-space-zero: 0rem;
+  --cx-space-4xsmall: 0.0625rem;
+  --cx-space-3xsmall: 0.125rem;
+  --cx-space-2xsmall: 0.25rem;
+  --cx-space-xsmall: 0.5rem;
+  --cx-space-small: 0.75rem;
+  --cx-space-medium: 1rem;
+  --cx-space-large: 1.25rem;
+  --cx-space-xlarge: 1.5rem;
+  --cx-space-2xlarge: 1.75rem;
+  --cx-space-3xlarge: 2rem;
+  --cx-space-4xlarge: 2.25rem;
+  --cx-space-5xlarge: 2.5rem;
+  --cx-space-6xlarge: 3rem;
+  --cx-space-0: 0;
+  --cx-space-1: 0.25rem;
+  --cx-space-2: 0.5rem;
+  --cx-space-3: 1rem;
+  --cx-space-4: 1.5rem;
+  --cx-space-5: 3rem;
+  --cx-icon-4xlarge: 3rem;
+  --cx-icon-3xlarge: 2.5rem;
+  --cx-icon-2xlarge: 2.25rem;
+  --cx-icon-xlarge: 2rem;
+  --cx-icon-large: 1.75rem;
+  --cx-icon-medium: 1.5rem;
+  --cx-icon-small: 1.25rem;
+  --cx-icon-xsmall: 1rem;
+  --cx-icon-2xsmall: 0.75rem;
+  --cx-icon-3xsmall: 0.5rem;
+  --cx-border-width-zero: 0rem;
+  --cx-border-width-small: 0.0313rem;
+  --cx-border-width-medium: 0.0625rem;
+  --cx-border-width-large: 0.0938rem;
+  --cx-border-width-xlarge: 0.125rem;
+  --cx-border-width-2xlarge: 0.25rem;
+  --cx-border-radius-zero: 0rem;
+  --cx-border-radius-xsmall: 0.125rem;
+  --cx-border-radius-small: 0.25rem;
+  --cx-border-radius-medium: 0.375rem;
+  --cx-border-radius-large: 0.625rem;
+  --cx-border-radius-xlarge: 0.75rem;
+  --cx-border-radius-2xlarge: 1rem;
+  --cx-border-radius-3xlarge: 1.25rem;
+  --cx-border-radius-circle: 50%;
+  --cx-border-radius-round: 16rem;
+  --cx-border-radius-pill: 16rem;
+  --cx-opacity-solid: 1;
+  --cx-opacity-95: 0.95;
+  --cx-opacity-90: 0.9;
+  --cx-opacity-80: 0.8;
+  --cx-opacity-70: 0.7;
+  --cx-opacity-60: 0.6;
+  --cx-opacity-50: 0.5;
+  --cx-opacity-40: 0.4;
+  --cx-opacity-30: 0.3;
+  --cx-opacity-20: 0.2;
+  --cx-opacity-10: 0.1;
+  --cx-opacity-05: 0.05;
+  --cx-opacity-zero: 0;
+  --cx-opacity-fg-subtle: 0.5;
+  --cx-opacity-fg-slight: 0.25;
+  --cx-opacity-border-main: 0.4;
+  --cx-opacity-border-subtle: 0.15;
+  --cx-opacity-icon-subtle: 0.4;
+  --cx-opacity-icon-slight: 0.2;
+  --cx-opacity-dim-main: 0.7;
+  --cx-opacity-dim-subtle: 0.3;
+  --cx-opacity-dim-slight: 0.05;
+  --cx-opacity-transparent-color: 0;
+  --cx-font-family: var(--cx-font-family-text);
+  --cx-font-size: var(--cx-font-size-medium);
+  --cx-font-weight: var(--cx-font-weight-normal);
+  --cx-line-height: var(--cx-line-height-medium);
+  --cx-separator-size: 0.0625rem;
+  --cx-indicator-size: 0.25rem;
+  --cx-base-color: var(--cx-default-base-color);
+  --cx-contrast-color: var(--cx-default-contrast-color);
+  --cx-transparent-color: var(--cx-default-transparent-color);
+  --cx-fg-main: var(--cx-default-fg-main);
+  --cx-fg-subtle: var(--cx-default-fg-subtle);
+  --cx-fg-slight: var(--cx-default-fg-slight);
+  --cx-fg-inverse: var(--cx-default-fg-inverse);
+  --cx-fg-solid: var(--cx-default-fg-solid);
+  --cx-fg-highlight: var(--cx-default-fg-highlight);
+  --cx-fg-idle: var(--cx-default-fg-idle);
+  --cx-fg-disabled: var(--cx-default-fg-disabled);
+  --cx-fg-hover: var(--cx-default-fg-hover);
+  --cx-fg-press: var(--cx-default-fg-press);
+  --cx-bg-main: var(--cx-default-bg-main);
+  --cx-bg-even: var(--cx-default-bg-even);
+  --cx-bg-evident: var(--cx-default-bg-evident);
+  --cx-bg-inverse: var(--cx-default-bg-inverse);
+  --cx-bg-solid: var(--cx-default-bg-solid);
+  --cx-bg-highlight: var(--cx-default-bg-highlight);
+  --cx-bg-idle: var(--cx-default-bg-idle);
+  --cx-bg-disabled: var(--cx-default-bg-disabled);
+  --cx-bg-hover: var(--cx-default-bg-hover);
+  --cx-bg-press: var(--cx-default-bg-press);
+  --cx-border-main: var(--cx-default-border-main);
+  --cx-border-subtle: var(--cx-default-border-subtle);
+  --cx-icon-main: var(--cx-default-icon-main);
+  --cx-icon-subtle: var(--cx-default-icon-subtle);
+  --cx-icon-slight: var(--cx-default-icon-slight);
+  --cx-cue-main: var(--cx-default-cue-main);
+  --cx-cue-slight: var(--cx-default-cue-slight);
+  --cx-dim-main: var(--cx-default-dim-main);
+  --cx-dim-subtle: var(--cx-default-dim-subtle);
+  --cx-dim-slight: var(--cx-default-dim-slight);
+  --cx-link-main: var(--cx-default-link-main);
+  --cx-link-hover: var(--cx-default-link-hover);
+  --cx-link-active: var(--cx-default-link-active);
+  --cx-link-visited: var(--cx-default-link-visited);
+  --cx-base-color-rgb: var(--cx-default-base-color-rgb);
+  --cx-contrast-color-rgb: var(--cx-default-contrast-color-rgb);
+  --cx-transparent-color-rgb: var(--cx-default-transparent-color-rgb);
+  --cx-fg-main-rgb: var(--cx-default-fg-main-rgb);
+  --cx-fg-subtle-rgb: var(--cx-default-fg-subtle-rgb);
+  --cx-fg-slight-rgb: var(--cx-default-fg-slight-rgb);
+  --cx-fg-inverse-rgb: var(--cx-default-fg-inverse-rgb);
+  --cx-fg-solid-rgb: var(--cx-default-fg-solid-rgb);
+  --cx-fg-highlight-rgb: var(--cx-default-fg-highlight-rgb);
+  --cx-bg-main-rgb: var(--cx-default-bg-main-rgb);
+  --cx-bg-even-rgb: var(--cx-default-bg-even-rgb);
+  --cx-bg-evident-rgb: var(--cx-default-bg-evident-rgb);
+  --cx-bg-inverse-rgb: var(--cx-default-bg-inverse-rgb);
+  --cx-bg-solid-rgb: var(--cx-default-bg-solid-rgb);
+  --cx-bg-highlight-rgb: var(--cx-default-bg-highlight-rgb);
+  --cx-border-main-rgb: var(--cx-default-border-main-rgb);
+  --cx-border-subtle-rgb: var(--cx-default-border-subtle-rgb);
+  --cx-icon-main-rgb: var(--cx-default-icon-main-rgb);
+  --cx-icon-subtle-rgb: var(--cx-default-icon-subtle-rgb);
+  --cx-icon-slight-rgb: var(--cx-default-icon-slight-rgb);
+  --cx-cue-main-rgb: var(--cx-default-cue-main-rgb);
+  --cx-cue-slight-rgb: var(--cx-default-cue-slight-rgb);
+  --cx-dim-main-rgb: var(--cx-default-dim-main-rgb);
+  --cx-dim-subtle-rgb: var(--cx-default-dim-subtle-rgb);
+  --cx-dim-slight-rgb: var(--cx-default-dim-slight-rgb);
+  --cx-link-main-rgb: var(--cx-default-link-main-rgb);
+  --cx-link-hover-rgb: var(--cx-default-link-hover-rgb);
+  --cx-link-active-rgb: var(--cx-default-link-active-rgb);
+  --cx-link-visited-rgb: var(--cx-default-link-visited-rgb);
+  --cx-fg-idle-rgb: var(--cx-default-fg-idle-rgb);
+  --cx-fg-hover-rgb: var(--cx-default-fg-hover-rgb);
+  --cx-fg-press-rgb: var(--cx-default-fg-press-rgb);
+  --cx-fg-disabled-rgb: var(--cx-default-fg-disabled-rgb);
+  --cx-bg-idle-rgb: var(--cx-default-bg-idle-rgb);
+  --cx-bg-hover-rgb: var(--cx-default-bg-hover-rgb);
+  --cx-bg-press-rgb: var(--cx-default-bg-press-rgb);
+  --cx-bg-disabled-rgb: var(--cx-default-bg-disabled-rgb);
+  --cx-fg-color: var(--cx-context-fg-main, var(--cx-fg-main));
+  --cx-bg-color: var(--cx-context-bg-main, var(--cx-bg-main));
+  --cx-border-color: var(--cx-context-border-subtle, var(--cx-border-subtle));
+  --cx-separator-color: var(--cx-context-border-subtle, var(--cx-border-subtle));
+  --cx-icon-color: var(--cx-context-icon-main, var(--cx-icon-main));
+  --cx-bullet-color: var(--cx-context-icon-subtle, var(--cx-icon-subtle));
+  --cx-cue-color: var(--cx-context-cue-main, var(--cx-cue-main));
+  --cx-fg-color-rgb: var(--cx-context-fg-main-rgb, var(--cx-fg-main-rgb));
+  --cx-bg-color-rgb: var(--cx-context-bg-main-rgb, var(--cx-bg-main-rgb));
+  --cx-border-color-rgb: var(--cx-context-border-main-rgb, var(--cx-border-main-rgb));
+  --cx-separator-color-rgb: var(--cx-context-border-subtle-rgb, var(--cx-border-subtle-rgb));
+  --cx-icon-color-rgb: var(--cx-context-icon-main-rgb, var(--cx-icon-main-rgb));
+  --cx-bullet-color-rgb: var(--cx-context-icon-subtle-rgb, var(--cx-icon-subtle-rgb));
+  --cx-cue-color-rgb: var(--cx-context-cue-main-rgb, var(--cx-cue-main-rgb));
+  --cx-link-main-color-rgb: var(--cx-context-link-main-rgb, var(--cx-link-main-rgb));
+  --cx-link-hover-color-rgb: var(--cx-context-link-hover-rgb, var(--cx-link-hover-rgb));
+  --cx-link-active-color-rgb: var(--cx-context-link-active-rgb, var(--cx-link-active-rgb));
+  --cx-link-visited-color-rgb: var(--cx-context-link-visited-rgb, var(--cx-link-visited-rgb));
+  --cx-code-color: #f39;
+  --cx-mark-fg-color: var(--cx-default-fg-highlight);
+  --cx-mark-bg-color: var(--cx-default-bg-highlight);
+  --cx-icon-size: 1.5rem;
+  --cx-link-decoration: underline;
+  --cx-border-width: 0.0625rem;
+  --cx-border-style: solid;
+  --cx-border-color: #93a0a4;
+  --cx-border-radius: 0.375rem;
+  --cx-box-shadow-small: 0rem 0.0625rem 0.25rem -0.0625rem rgba(0, 0, 0, 0.1), 0rem 0.0313rem 0.125rem -0.0313rem rgba(0, 0, 0, 0.1);
+  --cx-box-shadow-medium: 0rem 0.25rem 1rem -0.25rem rgba(0, 0, 0, 0.1), 0rem 0.125rem 0.5rem -0.125rem rgba(0, 0, 0, 0.1);
+  --cx-box-shadow-large: 0rem 0.5rem 2rem -0.5rem rgba(0, 0, 0, 0.1), 0rem 0.25rem 1rem -0.25rem rgba(0, 0, 0, 0.1);
+  --cx-box-shadow-inset: inset 0 0.125rem 0.25rem rgba(0, 0, 0, 0.125);
+  --cx-focus-ring-width: 0.25rem;
+  --cx-focus-ring-opacity: 0.25;
+  --cx-focus-ring-color: rgba(var(--cx-default-cue-main-rgb), 0.25);
+  --cx-bg-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+  --cx-heading-color: var(--cx-fg-main);
+}
+
+[data-cx-theme=dark] {
+  color-scheme: dark;
+  --cx-default: #ffffff;
+  --cx-default-rgb: 255, 255, 255;
+  --cx-alternate: #ffffff;
+  --cx-alternate-rgb: 255, 255, 255;
+  --cx-primary: #00A4CC;
+  --cx-primary-rgb: 0, 164, 204;
+  --cx-secondary: #F55200;
+  --cx-secondary-rgb: 245, 82, 0;
+  --cx-neutral: #6F8085;
+  --cx-neutral-rgb: 111, 128, 133;
+  --cx-warning: #F5A300;
+  --cx-warning-rgb: 245, 163, 0;
+  --cx-success: #10C263;
+  --cx-success-rgb: 16, 194, 99;
+  --cx-danger: #F52314;
+  --cx-danger-rgb: 245, 35, 20;
+  --cx-info: #1414F5;
+  --cx-info-rgb: 20, 20, 245;
+  --cx-black: #000000;
+  --cx-black-rgb: 0, 0, 0;
+  --cx-white: #ffffff;
+  --cx-white-rgb: 255, 255, 255;
+  --cx-default-contrast: #000000;
+  --cx-default-contrast-rgb: 0, 0, 0;
+  --cx-alternate-contrast: #000000;
+  --cx-alternate-contrast-rgb: 0, 0, 0;
+  --cx-primary-contrast: #ffffff;
+  --cx-primary-contrast-rgb: 255, 255, 255;
+  --cx-secondary-contrast: #ffffff;
+  --cx-secondary-contrast-rgb: 255, 255, 255;
+  --cx-neutral-contrast: #ffffff;
+  --cx-neutral-contrast-rgb: 255, 255, 255;
+  --cx-warning-contrast: #000000;
+  --cx-warning-contrast-rgb: 0, 0, 0;
+  --cx-success-contrast: #ffffff;
+  --cx-success-contrast-rgb: 255, 255, 255;
+  --cx-danger-contrast: #ffffff;
+  --cx-danger-contrast-rgb: 255, 255, 255;
+  --cx-info-contrast: #ffffff;
+  --cx-info-contrast-rgb: 255, 255, 255;
+  --cx-black-contrast: #ffffff;
+  --cx-black-contrast-rgb: 255, 255, 255;
+  --cx-white-contrast: #000000;
+  --cx-white-contrast-rgb: 0, 0, 0;
+  --cx-default-base-color: #ffffff;
+  --cx-default-base-color-rgb: 255, 255, 255;
+  --cx-alternate-base-color: #ffffff;
+  --cx-alternate-base-color-rgb: 255, 255, 255;
+  --cx-primary-base-color: #00A4CC;
+  --cx-primary-base-color-rgb: 0, 164, 204;
+  --cx-secondary-base-color: #F55200;
+  --cx-secondary-base-color-rgb: 245, 82, 0;
+  --cx-neutral-base-color: #6F8085;
+  --cx-neutral-base-color-rgb: 111, 128, 133;
+  --cx-danger-base-color: #F52314;
+  --cx-danger-base-color-rgb: 245, 35, 20;
+  --cx-success-base-color: #10C263;
+  --cx-success-base-color-rgb: 16, 194, 99;
+  --cx-warning-base-color: #F5A300;
+  --cx-warning-base-color-rgb: 245, 163, 0;
+  --cx-info-base-color: #1414F5;
+  --cx-info-base-color-rgb: 20, 20, 245;
+  --cx-black-base-color: #000000;
+  --cx-black-base-color-rgb: 0, 0, 0;
+  --cx-white-base-color: #ffffff;
+  --cx-white-base-color-rgb: 255, 255, 255;
+  --cx-default-contrast-color: #000000;
+  --cx-default-contrast-color-rgb: 0, 0, 0;
+  --cx-alternate-contrast-color: #000000;
+  --cx-alternate-contrast-color-rgb: 0, 0, 0;
+  --cx-primary-contrast-color: #ffffff;
+  --cx-primary-contrast-color-rgb: 255, 255, 255;
+  --cx-secondary-contrast-color: #ffffff;
+  --cx-secondary-contrast-color-rgb: 255, 255, 255;
+  --cx-neutral-contrast-color: #ffffff;
+  --cx-neutral-contrast-color-rgb: 255, 255, 255;
+  --cx-danger-contrast-color: #ffffff;
+  --cx-danger-contrast-color-rgb: 255, 255, 255;
+  --cx-success-contrast-color: #ffffff;
+  --cx-success-contrast-color-rgb: 255, 255, 255;
+  --cx-warning-contrast-color: #000000;
+  --cx-warning-contrast-color-rgb: 0, 0, 0;
+  --cx-info-contrast-color: #ffffff;
+  --cx-info-contrast-color-rgb: 255, 255, 255;
+  --cx-black-contrast-color: #ffffff;
+  --cx-black-contrast-color-rgb: 255, 255, 255;
+  --cx-white-contrast-color: #000000;
+  --cx-white-contrast-color-rgb: 0, 0, 0;
+  --cx-default-transparent-color: rgba(0, 0, 0, 0);
+  --cx-default-transparent-color-rgb: 0, 0, 0;
+  --cx-alternate-transparent-color: rgba(0, 0, 0, 0);
+  --cx-alternate-transparent-color-rgb: 0, 0, 0;
+  --cx-primary-transparent-color: rgba(0, 164, 204, 0);
+  --cx-primary-transparent-color-rgb: 0, 164, 204;
+  --cx-secondary-transparent-color: rgba(245, 82, 0, 0);
+  --cx-secondary-transparent-color-rgb: 245, 82, 0;
+  --cx-neutral-transparent-color: rgba(111, 128, 133, 0);
+  --cx-neutral-transparent-color-rgb: 111, 128, 133;
+  --cx-danger-transparent-color: rgba(245, 35, 20, 0);
+  --cx-danger-transparent-color-rgb: 245, 35, 20;
+  --cx-success-transparent-color: rgba(16, 194, 99, 0);
+  --cx-success-transparent-color-rgb: 16, 194, 99;
+  --cx-warning-transparent-color: rgba(245, 163, 0, 0);
+  --cx-warning-transparent-color-rgb: 245, 163, 0;
+  --cx-info-transparent-color: rgba(20, 20, 245, 0);
+  --cx-info-transparent-color-rgb: 20, 20, 245;
+  --cx-black-transparent-color: rgba(0, 0, 0, 0);
+  --cx-black-transparent-color-rgb: 0, 0, 0;
+  --cx-white-transparent-color: rgba(255, 255, 255, 0);
+  --cx-white-transparent-color-rgb: 255, 255, 255;
+  --cx-default-fg-main: #e9eced;
+  --cx-default-fg-main-rgb: 233, 236, 237;
+  --cx-alternate-fg-main: #ffffff;
+  --cx-alternate-fg-main-rgb: 255, 255, 255;
+  --cx-primary-fg-main: #40bbd9;
+  --cx-primary-fg-main-rgb: 64, 187, 217;
+  --cx-secondary-fg-main: #f87d40;
+  --cx-secondary-fg-main-rgb: 248, 125, 64;
+  --cx-neutral-fg-main: #93a0a4;
+  --cx-neutral-fg-main-rgb: 147, 160, 164;
+  --cx-danger-fg-main: #f85a4f;
+  --cx-danger-fg-main-rgb: 248, 90, 79;
+  --cx-success-fg-main: #4cd18a;
+  --cx-success-fg-main-rgb: 76, 209, 138;
+  --cx-warning-fg-main: #f8ba40;
+  --cx-warning-fg-main-rgb: 248, 186, 64;
+  --cx-info-fg-main: #4f4ff8;
+  --cx-info-fg-main-rgb: 79, 79, 248;
+  --cx-black-fg-main: #000000;
+  --cx-black-fg-main-rgb: 0, 0, 0;
+  --cx-white-fg-main: #ffffff;
+  --cx-white-fg-main-rgb: 255, 255, 255;
+  --cx-default-fg-subtle: rgba(233, 236, 237, 0.5);
+  --cx-default-fg-subtle-rgb: 233, 236, 237;
+  --cx-alternate-fg-subtle: rgba(255, 255, 255, 0.5);
+  --cx-alternate-fg-subtle-rgb: 255, 255, 255;
+  --cx-primary-fg-subtle: rgba(64, 187, 217, 0.5);
+  --cx-primary-fg-subtle-rgb: 64, 187, 217;
+  --cx-secondary-fg-subtle: rgba(248, 125, 64, 0.5);
+  --cx-secondary-fg-subtle-rgb: 248, 125, 64;
+  --cx-neutral-fg-subtle: rgba(147, 160, 164, 0.5);
+  --cx-neutral-fg-subtle-rgb: 147, 160, 164;
+  --cx-danger-fg-subtle: rgba(248, 90, 79, 0.5);
+  --cx-danger-fg-subtle-rgb: 248, 90, 79;
+  --cx-success-fg-subtle: rgba(76, 209, 138, 0.5);
+  --cx-success-fg-subtle-rgb: 76, 209, 138;
+  --cx-warning-fg-subtle: rgba(248, 186, 64, 0.5);
+  --cx-warning-fg-subtle-rgb: 248, 186, 64;
+  --cx-info-fg-subtle: rgba(79, 79, 248, 0.5);
+  --cx-info-fg-subtle-rgb: 79, 79, 248;
+  --cx-black-fg-subtle: rgba(0, 0, 0, 0.5);
+  --cx-black-fg-subtle-rgb: 0, 0, 0;
+  --cx-white-fg-subtle: rgba(255, 255, 255, 0.5);
+  --cx-white-fg-subtle-rgb: 255, 255, 255;
+  --cx-default-fg-slight: rgba(233, 236, 237, 0.25);
+  --cx-default-fg-slight-rgb: 233, 236, 237;
+  --cx-alternate-fg-slight: rgba(255, 255, 255, 0.25);
+  --cx-alternate-fg-slight-rgb: 255, 255, 255;
+  --cx-primary-fg-slight: rgba(64, 187, 217, 0.25);
+  --cx-primary-fg-slight-rgb: 64, 187, 217;
+  --cx-secondary-fg-slight: rgba(248, 125, 64, 0.25);
+  --cx-secondary-fg-slight-rgb: 248, 125, 64;
+  --cx-neutral-fg-slight: rgba(147, 160, 164, 0.25);
+  --cx-neutral-fg-slight-rgb: 147, 160, 164;
+  --cx-danger-fg-slight: rgba(248, 90, 79, 0.25);
+  --cx-danger-fg-slight-rgb: 248, 90, 79;
+  --cx-success-fg-slight: rgba(76, 209, 138, 0.25);
+  --cx-success-fg-slight-rgb: 76, 209, 138;
+  --cx-warning-fg-slight: rgba(248, 186, 64, 0.25);
+  --cx-warning-fg-slight-rgb: 248, 186, 64;
+  --cx-info-fg-slight: rgba(79, 79, 248, 0.25);
+  --cx-info-fg-slight-rgb: 79, 79, 248;
+  --cx-black-fg-slight: rgba(0, 0, 0, 0.3);
+  --cx-black-fg-slight-rgb: 0, 0, 0;
+  --cx-white-fg-slight: rgba(255, 255, 255, 0.3);
+  --cx-white-fg-slight-rgb: 255, 255, 255;
+  --cx-default-fg-inverse: #1c2021;
+  --cx-default-fg-inverse-rgb: 28, 32, 33;
+  --cx-alternate-fg-inverse: #000000;
+  --cx-alternate-fg-inverse-rgb: 0, 0, 0;
+  --cx-primary-fg-inverse: #002933;
+  --cx-primary-fg-inverse-rgb: 0, 41, 51;
+  --cx-secondary-fg-inverse: #3d1400;
+  --cx-secondary-fg-inverse-rgb: 61, 20, 0;
+  --cx-neutral-fg-inverse: #1c2021;
+  --cx-neutral-fg-inverse-rgb: 28, 32, 33;
+  --cx-danger-fg-inverse: #3d0905;
+  --cx-danger-fg-inverse-rgb: 61, 9, 5;
+  --cx-success-fg-inverse: #043119;
+  --cx-success-fg-inverse-rgb: 4, 49, 25;
+  --cx-warning-fg-inverse: #3d2900;
+  --cx-warning-fg-inverse-rgb: 61, 41, 0;
+  --cx-info-fg-inverse: #05053d;
+  --cx-info-fg-inverse-rgb: 5, 5, 61;
+  --cx-black-fg-inverse: #ffffff;
+  --cx-black-fg-inverse-rgb: 255, 255, 255;
+  --cx-white-fg-inverse: #000000;
+  --cx-white-fg-inverse-rgb: 0, 0, 0;
+  --cx-default-fg-solid: #ffffff;
+  --cx-default-fg-solid-rgb: 255, 255, 255;
+  --cx-alternate-fg-solid: #ffffff;
+  --cx-alternate-fg-solid-rgb: 255, 255, 255;
+  --cx-primary-fg-solid: #ffffff;
+  --cx-primary-fg-solid-rgb: 255, 255, 255;
+  --cx-secondary-fg-solid: #ffffff;
+  --cx-secondary-fg-solid-rgb: 255, 255, 255;
+  --cx-neutral-fg-solid: #ffffff;
+  --cx-neutral-fg-solid-rgb: 255, 255, 255;
+  --cx-danger-fg-solid: #ffffff;
+  --cx-danger-fg-solid-rgb: 255, 255, 255;
+  --cx-success-fg-solid: #ffffff;
+  --cx-success-fg-solid-rgb: 255, 255, 255;
+  --cx-warning-fg-solid: #000000;
+  --cx-warning-fg-solid-rgb: 0, 0, 0;
+  --cx-info-fg-solid: #ffffff;
+  --cx-info-fg-solid-rgb: 255, 255, 255;
+  --cx-black-fg-solid: #ffffff;
+  --cx-black-fg-solid-rgb: 255, 255, 255;
+  --cx-white-fg-solid: #000000;
+  --cx-white-fg-solid-rgb: 0, 0, 0;
+  --cx-default-fg-highlight: #80d2e6;
+  --cx-default-fg-highlight-rgb: 128, 210, 230;
+  --cx-alternate-fg-highlight: #80d2e6;
+  --cx-alternate-fg-highlight-rgb: 128, 210, 230;
+  --cx-primary-fg-highlight: #80d2e6;
+  --cx-primary-fg-highlight-rgb: 128, 210, 230;
+  --cx-secondary-fg-highlight: #faa980;
+  --cx-secondary-fg-highlight-rgb: 250, 169, 128;
+  --cx-neutral-fg-highlight: #b7c0c2;
+  --cx-neutral-fg-highlight-rgb: 183, 192, 194;
+  --cx-danger-fg-highlight: #fa918a;
+  --cx-danger-fg-highlight-rgb: 250, 145, 138;
+  --cx-success-fg-highlight: #88e1b1;
+  --cx-success-fg-highlight-rgb: 136, 225, 177;
+  --cx-warning-fg-highlight: #fad180;
+  --cx-warning-fg-highlight-rgb: 250, 209, 128;
+  --cx-info-fg-highlight: #8a8afa;
+  --cx-info-fg-highlight-rgb: 138, 138, 250;
+  --cx-black-fg-highlight: #000000;
+  --cx-black-fg-highlight-rgb: 0, 0, 0;
+  --cx-white-fg-highlight: #ffffff;
+  --cx-white-fg-highlight-rgb: 255, 255, 255;
+  --cx-default-bg-main: #111314;
+  --cx-default-bg-main-rgb: 17, 19, 20;
+  --cx-alternate-bg-main: #000000;
+  --cx-alternate-bg-main-rgb: 0, 0, 0;
+  --cx-primary-bg-main: #00191f;
+  --cx-primary-bg-main-rgb: 0, 25, 31;
+  --cx-secondary-bg-main: #250c00;
+  --cx-secondary-bg-main-rgb: 37, 12, 0;
+  --cx-neutral-bg-main: #111314;
+  --cx-neutral-bg-main-rgb: 17, 19, 20;
+  --cx-danger-bg-main: #250503;
+  --cx-danger-bg-main-rgb: 37, 5, 3;
+  --cx-success-bg-main: #021d0f;
+  --cx-success-bg-main-rgb: 2, 29, 15;
+  --cx-warning-bg-main: #251800;
+  --cx-warning-bg-main-rgb: 37, 24, 0;
+  --cx-info-bg-main: #030325;
+  --cx-info-bg-main-rgb: 3, 3, 37;
+  --cx-black-bg-main: rgba(0, 0, 0, 0.1);
+  --cx-black-bg-main-rgb: 0, 0, 0;
+  --cx-white-bg-main: rgba(255, 255, 255, 0.1);
+  --cx-white-bg-main-rgb: 255, 255, 255;
+  --cx-default-bg-even: #1c2021;
+  --cx-default-bg-even-rgb: 28, 32, 33;
+  --cx-alternate-bg-even: #111314;
+  --cx-alternate-bg-even-rgb: 17, 19, 20;
+  --cx-primary-bg-even: #002933;
+  --cx-primary-bg-even-rgb: 0, 41, 51;
+  --cx-secondary-bg-even: #3d1400;
+  --cx-secondary-bg-even-rgb: 61, 20, 0;
+  --cx-neutral-bg-even: #1c2021;
+  --cx-neutral-bg-even-rgb: 28, 32, 33;
+  --cx-danger-bg-even: #3d0905;
+  --cx-danger-bg-even-rgb: 61, 9, 5;
+  --cx-success-bg-even: #043119;
+  --cx-success-bg-even-rgb: 4, 49, 25;
+  --cx-warning-bg-even: #3d2900;
+  --cx-warning-bg-even-rgb: 61, 41, 0;
+  --cx-info-bg-even: #05053d;
+  --cx-info-bg-even-rgb: 5, 5, 61;
+  --cx-black-bg-even: rgba(0, 0, 0, 0.2);
+  --cx-black-bg-even-rgb: 0, 0, 0;
+  --cx-white-bg-even: rgba(255, 255, 255, 0.2);
+  --cx-white-bg-even-rgb: 255, 255, 255;
+  --cx-default-bg-evident: #272d2f;
+  --cx-default-bg-evident-rgb: 39, 45, 47;
+  --cx-alternate-bg-evident: #1c2021;
+  --cx-alternate-bg-evident-rgb: 28, 32, 33;
+  --cx-primary-bg-evident: #003947;
+  --cx-primary-bg-evident-rgb: 0, 57, 71;
+  --cx-secondary-bg-evident: #561d00;
+  --cx-secondary-bg-evident-rgb: 86, 29, 0;
+  --cx-neutral-bg-evident: #272d2f;
+  --cx-neutral-bg-evident-rgb: 39, 45, 47;
+  --cx-danger-bg-evident: #560c07;
+  --cx-danger-bg-evident-rgb: 86, 12, 7;
+  --cx-success-bg-evident: #064423;
+  --cx-success-bg-evident-rgb: 6, 68, 35;
+  --cx-warning-bg-evident: #563900;
+  --cx-warning-bg-evident-rgb: 86, 57, 0;
+  --cx-info-bg-evident: #070756;
+  --cx-info-bg-evident-rgb: 7, 7, 86;
+  --cx-black-bg-evident: rgba(0, 0, 0, 0.3);
+  --cx-black-bg-evident-rgb: 0, 0, 0;
+  --cx-white-bg-evident: rgba(255, 255, 255, 0.3);
+  --cx-white-bg-evident-rgb: 255, 255, 255;
+  --cx-default-bg-inverse: #e9eced;
+  --cx-default-bg-inverse-rgb: 233, 236, 237;
+  --cx-alternate-bg-inverse: #ffffff;
+  --cx-alternate-bg-inverse-rgb: 255, 255, 255;
+  --cx-primary-bg-inverse: #d9f1f7;
+  --cx-primary-bg-inverse-rgb: 217, 241, 247;
+  --cx-secondary-bg-inverse: #fee5d9;
+  --cx-secondary-bg-inverse-rgb: 254, 229, 217;
+  --cx-neutral-bg-inverse: #e9eced;
+  --cx-neutral-bg-inverse-rgb: 233, 236, 237;
+  --cx-danger-bg-inverse: #fededc;
+  --cx-danger-bg-inverse-rgb: 254, 222, 220;
+  --cx-success-bg-inverse: #dbf6e8;
+  --cx-success-bg-inverse-rgb: 219, 246, 232;
+  --cx-warning-bg-inverse: #fef1d9;
+  --cx-warning-bg-inverse-rgb: 254, 241, 217;
+  --cx-info-bg-inverse: #dcdcfe;
+  --cx-info-bg-inverse-rgb: 220, 220, 254;
+  --cx-black-bg-inverse: rgba(0, 0, 0, 0.9);
+  --cx-black-bg-inverse-rgb: 0, 0, 0;
+  --cx-white-bg-inverse: rgba(255, 255, 255, 0.95);
+  --cx-white-bg-inverse-rgb: 255, 255, 255;
+  --cx-default-bg-solid: #272d2f;
+  --cx-default-bg-solid-rgb: 39, 45, 47;
+  --cx-alternate-bg-solid: #000000;
+  --cx-alternate-bg-solid-rgb: 0, 0, 0;
+  --cx-primary-bg-solid: #00A4CC;
+  --cx-primary-bg-solid-rgb: 0, 164, 204;
+  --cx-secondary-bg-solid: #F55200;
+  --cx-secondary-bg-solid-rgb: 245, 82, 0;
+  --cx-neutral-bg-solid: #6F8085;
+  --cx-neutral-bg-solid-rgb: 111, 128, 133;
+  --cx-danger-bg-solid: #F52314;
+  --cx-danger-bg-solid-rgb: 245, 35, 20;
+  --cx-success-bg-solid: #10C263;
+  --cx-success-bg-solid-rgb: 16, 194, 99;
+  --cx-warning-bg-solid: #F5A300;
+  --cx-warning-bg-solid-rgb: 245, 163, 0;
+  --cx-info-bg-solid: #1414F5;
+  --cx-info-bg-solid-rgb: 20, 20, 245;
+  --cx-black-bg-solid: #000000;
+  --cx-black-bg-solid-rgb: 0, 0, 0;
+  --cx-white-bg-solid: #ffffff;
+  --cx-white-bg-solid-rgb: 255, 255, 255;
+  --cx-default-bg-highlight: #003947;
+  --cx-default-bg-highlight-rgb: 0, 57, 71;
+  --cx-alternate-bg-highlight: #005266;
+  --cx-alternate-bg-highlight-rgb: 0, 82, 102;
+  --cx-primary-bg-highlight: #005266;
+  --cx-primary-bg-highlight-rgb: 0, 82, 102;
+  --cx-secondary-bg-highlight: #7b2900;
+  --cx-secondary-bg-highlight-rgb: 123, 41, 0;
+  --cx-neutral-bg-highlight: #384043;
+  --cx-neutral-bg-highlight-rgb: 56, 64, 67;
+  --cx-danger-bg-highlight: #7b120a;
+  --cx-danger-bg-highlight-rgb: 123, 18, 10;
+  --cx-success-bg-highlight: #086132;
+  --cx-success-bg-highlight-rgb: 8, 97, 50;
+  --cx-warning-bg-highlight: #7b5200;
+  --cx-warning-bg-highlight-rgb: 123, 82, 0;
+  --cx-info-bg-highlight: #0a0a7b;
+  --cx-info-bg-highlight-rgb: 10, 10, 123;
+  --cx-black-bg-highlight: rgba(0, 0, 0, 0.2);
+  --cx-black-bg-highlight-rgb: 0, 0, 0;
+  --cx-white-bg-highlight: rgba(255, 255, 255, 0.2);
+  --cx-white-bg-highlight-rgb: 255, 255, 255;
+  --cx-default-border-main: #4e5a5d;
+  --cx-default-border-main-rgb: 78, 90, 93;
+  --cx-alternate-border-main: #4e5a5d;
+  --cx-alternate-border-main-rgb: 78, 90, 93;
+  --cx-primary-border-main: #00738f;
+  --cx-primary-border-main-rgb: 0, 115, 143;
+  --cx-secondary-border-main: #ac3900;
+  --cx-secondary-border-main-rgb: 172, 57, 0;
+  --cx-neutral-border-main: #4e5a5d;
+  --cx-neutral-border-main-rgb: 78, 90, 93;
+  --cx-danger-border-main: #ac190e;
+  --cx-danger-border-main-rgb: 172, 25, 14;
+  --cx-success-border-main: #0b8845;
+  --cx-success-border-main-rgb: 11, 136, 69;
+  --cx-warning-border-main: #ac7200;
+  --cx-warning-border-main-rgb: 172, 114, 0;
+  --cx-info-border-main: #0e0eac;
+  --cx-info-border-main-rgb: 14, 14, 172;
+  --cx-black-border-main: rgba(0, 0, 0, 0.3);
+  --cx-black-border-main-rgb: 0, 0, 0;
+  --cx-white-border-main: rgba(255, 255, 255, 0.3);
+  --cx-white-border-main-rgb: 255, 255, 255;
+  --cx-default-border-subtle: rgba(233, 236, 237, 0.15);
+  --cx-default-border-subtle-rgb: 233, 236, 237;
+  --cx-alternate-border-subtle: rgba(255, 255, 255, 0.15);
+  --cx-alternate-border-subtle-rgb: 255, 255, 255;
+  --cx-primary-border-subtle: rgba(64, 187, 217, 0.15);
+  --cx-primary-border-subtle-rgb: 64, 187, 217;
+  --cx-secondary-border-subtle: rgba(248, 125, 64, 0.15);
+  --cx-secondary-border-subtle-rgb: 248, 125, 64;
+  --cx-neutral-border-subtle: rgba(147, 160, 164, 0.15);
+  --cx-neutral-border-subtle-rgb: 147, 160, 164;
+  --cx-danger-border-subtle: rgba(248, 90, 79, 0.15);
+  --cx-danger-border-subtle-rgb: 248, 90, 79;
+  --cx-success-border-subtle: rgba(76, 209, 138, 0.15);
+  --cx-success-border-subtle-rgb: 76, 209, 138;
+  --cx-warning-border-subtle: rgba(248, 186, 64, 0.15);
+  --cx-warning-border-subtle-rgb: 248, 186, 64;
+  --cx-info-border-subtle: rgba(79, 79, 248, 0.15);
+  --cx-info-border-subtle-rgb: 79, 79, 248;
+  --cx-black-border-subtle: rgba(0, 0, 0, 0.15);
+  --cx-black-border-subtle-rgb: 0, 0, 0;
+  --cx-white-border-subtle: rgba(255, 255, 255, 0.15);
+  --cx-white-border-subtle-rgb: 255, 255, 255;
+  --cx-default-icon-main: #00A4CC;
+  --cx-default-icon-main-rgb: 0, 164, 204;
+  --cx-alternate-icon-main: #00A4CC;
+  --cx-alternate-icon-main-rgb: 0, 164, 204;
+  --cx-primary-icon-main: #00A4CC;
+  --cx-primary-icon-main-rgb: 0, 164, 204;
+  --cx-secondary-icon-main: #F55200;
+  --cx-secondary-icon-main-rgb: 245, 82, 0;
+  --cx-neutral-icon-main: #6F8085;
+  --cx-neutral-icon-main-rgb: 111, 128, 133;
+  --cx-danger-icon-main: #F52314;
+  --cx-danger-icon-main-rgb: 245, 35, 20;
+  --cx-success-icon-main: #10C263;
+  --cx-success-icon-main-rgb: 16, 194, 99;
+  --cx-warning-icon-main: #F5A300;
+  --cx-warning-icon-main-rgb: 245, 163, 0;
+  --cx-info-icon-main: #1414F5;
+  --cx-info-icon-main-rgb: 20, 20, 245;
+  --cx-black-icon-main: #000000;
+  --cx-black-icon-main-rgb: 0, 0, 0;
+  --cx-white-icon-main: #ffffff;
+  --cx-white-icon-main-rgb: 255, 255, 255;
+  --cx-default-icon-subtle: rgba(233, 236, 237, 0.4);
+  --cx-default-icon-subtle-rgb: 233, 236, 237;
+  --cx-alternate-icon-subtle: rgba(255, 255, 255, 0.4);
+  --cx-alternate-icon-subtle-rgb: 255, 255, 255;
+  --cx-primary-icon-subtle: rgba(64, 187, 217, 0.4);
+  --cx-primary-icon-subtle-rgb: 64, 187, 217;
+  --cx-secondary-icon-subtle: rgba(248, 125, 64, 0.4);
+  --cx-secondary-icon-subtle-rgb: 248, 125, 64;
+  --cx-neutral-icon-subtle: rgba(147, 160, 164, 0.4);
+  --cx-neutral-icon-subtle-rgb: 147, 160, 164;
+  --cx-danger-icon-subtle: rgba(248, 90, 79, 0.4);
+  --cx-danger-icon-subtle-rgb: 248, 90, 79;
+  --cx-success-icon-subtle: rgba(76, 209, 138, 0.4);
+  --cx-success-icon-subtle-rgb: 76, 209, 138;
+  --cx-warning-icon-subtle: rgba(248, 186, 64, 0.4);
+  --cx-warning-icon-subtle-rgb: 248, 186, 64;
+  --cx-info-icon-subtle: rgba(79, 79, 248, 0.4);
+  --cx-info-icon-subtle-rgb: 79, 79, 248;
+  --cx-black-icon-subtle: rgba(0, 0, 0, 0.4);
+  --cx-black-icon-subtle-rgb: 0, 0, 0;
+  --cx-white-icon-subtle: rgba(255, 255, 255, 0.4);
+  --cx-white-icon-subtle-rgb: 255, 255, 255;
+  --cx-default-icon-slight: rgba(0, 164, 204, 0.2);
+  --cx-default-icon-slight-rgb: 0, 164, 204;
+  --cx-alternate-icon-slight: rgba(0, 164, 204, 0.2);
+  --cx-alternate-icon-slight-rgb: 0, 164, 204;
+  --cx-primary-icon-slight: rgba(0, 164, 204, 0.2);
+  --cx-primary-icon-slight-rgb: 0, 164, 204;
+  --cx-secondary-icon-slight: rgba(245, 82, 0, 0.2);
+  --cx-secondary-icon-slight-rgb: 245, 82, 0;
+  --cx-neutral-icon-slight: rgba(111, 128, 133, 0.2);
+  --cx-neutral-icon-slight-rgb: 111, 128, 133;
+  --cx-danger-icon-slight: rgba(245, 35, 20, 0.2);
+  --cx-danger-icon-slight-rgb: 245, 35, 20;
+  --cx-success-icon-slight: rgba(16, 194, 99, 0.2);
+  --cx-success-icon-slight-rgb: 16, 194, 99;
+  --cx-warning-icon-slight: rgba(245, 163, 0, 0.2);
+  --cx-warning-icon-slight-rgb: 245, 163, 0;
+  --cx-info-icon-slight: rgba(20, 20, 245, 0.2);
+  --cx-info-icon-slight-rgb: 20, 20, 245;
+  --cx-black-icon-slight: rgba(0, 0, 0, 0.2);
+  --cx-black-icon-slight-rgb: 0, 0, 0;
+  --cx-white-icon-slight: rgba(255, 255, 255, 0.2);
+  --cx-white-icon-slight-rgb: 255, 255, 255;
+  --cx-default-cue-main: #00A4CC;
+  --cx-default-cue-main-rgb: 0, 164, 204;
+  --cx-alternate-cue-main: #00A4CC;
+  --cx-alternate-cue-main-rgb: 0, 164, 204;
+  --cx-primary-cue-main: #00A4CC;
+  --cx-primary-cue-main-rgb: 0, 164, 204;
+  --cx-secondary-cue-main: #F55200;
+  --cx-secondary-cue-main-rgb: 245, 82, 0;
+  --cx-neutral-cue-main: #6F8085;
+  --cx-neutral-cue-main-rgb: 111, 128, 133;
+  --cx-danger-cue-main: #F52314;
+  --cx-danger-cue-main-rgb: 245, 35, 20;
+  --cx-success-cue-main: #10C263;
+  --cx-success-cue-main-rgb: 16, 194, 99;
+  --cx-warning-cue-main: #F5A300;
+  --cx-warning-cue-main-rgb: 245, 163, 0;
+  --cx-info-cue-main: #1414F5;
+  --cx-info-cue-main-rgb: 20, 20, 245;
+  --cx-black-cue-main: #000000;
+  --cx-black-cue-main-rgb: 0, 0, 0;
+  --cx-white-cue-main: #ffffff;
+  --cx-white-cue-main-rgb: 255, 255, 255;
+  --cx-default-cue-slight: rgba(0, 164, 204, 0.2);
+  --cx-default-cue-slight-rgb: 0, 164, 204;
+  --cx-alternate-cue-slight: rgba(0, 164, 204, 0.2);
+  --cx-alternate-cue-slight-rgb: 0, 164, 204;
+  --cx-primary-cue-slight: rgba(0, 164, 204, 0.2);
+  --cx-primary-cue-slight-rgb: 0, 164, 204;
+  --cx-secondary-cue-slight: rgba(245, 82, 0, 0.2);
+  --cx-secondary-cue-slight-rgb: 245, 82, 0;
+  --cx-neutral-cue-slight: rgba(111, 128, 133, 0.2);
+  --cx-neutral-cue-slight-rgb: 111, 128, 133;
+  --cx-danger-cue-slight: rgba(245, 35, 20, 0.2);
+  --cx-danger-cue-slight-rgb: 245, 35, 20;
+  --cx-success-cue-slight: rgba(16, 194, 99, 0.2);
+  --cx-success-cue-slight-rgb: 16, 194, 99;
+  --cx-warning-cue-slight: rgba(245, 163, 0, 0.2);
+  --cx-warning-cue-slight-rgb: 245, 163, 0;
+  --cx-info-cue-slight: rgba(20, 20, 245, 0.2);
+  --cx-info-cue-slight-rgb: 20, 20, 245;
+  --cx-black-cue-slight: rgba(0, 0, 0, 0.2);
+  --cx-black-cue-slight-rgb: 0, 0, 0;
+  --cx-white-cue-slight: rgba(255, 255, 255, 0.2);
+  --cx-white-cue-slight-rgb: 255, 255, 255;
+  --cx-default-link-main: #40bbd9;
+  --cx-default-link-main-rgb: 64, 187, 217;
+  --cx-alternate-link-main: #40bbd9;
+  --cx-alternate-link-main-rgb: 64, 187, 217;
+  --cx-primary-link-main: #40bbd9;
+  --cx-primary-link-main-rgb: 64, 187, 217;
+  --cx-secondary-link-main: #f87d40;
+  --cx-secondary-link-main-rgb: 248, 125, 64;
+  --cx-neutral-link-main: #93a0a4;
+  --cx-neutral-link-main-rgb: 147, 160, 164;
+  --cx-danger-link-main: #f85a4f;
+  --cx-danger-link-main-rgb: 248, 90, 79;
+  --cx-success-link-main: #4cd18a;
+  --cx-success-link-main-rgb: 76, 209, 138;
+  --cx-warning-link-main: #f8ba40;
+  --cx-warning-link-main-rgb: 248, 186, 64;
+  --cx-info-link-main: #4f4ff8;
+  --cx-info-link-main-rgb: 79, 79, 248;
+  --cx-black-link-main: #000000;
+  --cx-black-link-main-rgb: 0, 0, 0;
+  --cx-white-link-main: #ffffff;
+  --cx-white-link-main-rgb: 255, 255, 255;
+  --cx-default-link-visited: #80d2e6;
+  --cx-default-link-visited-rgb: 128, 210, 230;
+  --cx-alternate-link-visited: #80d2e6;
+  --cx-alternate-link-visited-rgb: 128, 210, 230;
+  --cx-primary-link-visited: #80d2e6;
+  --cx-primary-link-visited-rgb: 128, 210, 230;
+  --cx-secondary-link-visited: #faa980;
+  --cx-secondary-link-visited-rgb: 250, 169, 128;
+  --cx-neutral-link-visited: #b7c0c2;
+  --cx-neutral-link-visited-rgb: 183, 192, 194;
+  --cx-danger-link-visited: #fa918a;
+  --cx-danger-link-visited-rgb: 250, 145, 138;
+  --cx-success-link-visited: #88e1b1;
+  --cx-success-link-visited-rgb: 136, 225, 177;
+  --cx-warning-link-visited: #fad180;
+  --cx-warning-link-visited-rgb: 250, 209, 128;
+  --cx-info-link-visited: #8a8afa;
+  --cx-info-link-visited-rgb: 138, 138, 250;
+  --cx-black-link-visited: rgba(0, 0, 0, 0.6);
+  --cx-black-link-visited-rgb: 0, 0, 0;
+  --cx-white-link-visited: rgba(255, 255, 255, 0.6);
+  --cx-white-link-visited-rgb: 255, 255, 255;
+  --cx-default-link-hover: #80d2e6;
+  --cx-default-link-hover-rgb: 128, 210, 230;
+  --cx-alternate-link-hover: #80d2e6;
+  --cx-alternate-link-hover-rgb: 128, 210, 230;
+  --cx-primary-link-hover: #80d2e6;
+  --cx-primary-link-hover-rgb: 128, 210, 230;
+  --cx-secondary-link-hover: #faa980;
+  --cx-secondary-link-hover-rgb: 250, 169, 128;
+  --cx-neutral-link-hover: #b7c0c2;
+  --cx-neutral-link-hover-rgb: 183, 192, 194;
+  --cx-danger-link-hover: #fa918a;
+  --cx-danger-link-hover-rgb: 250, 145, 138;
+  --cx-success-link-hover: #88e1b1;
+  --cx-success-link-hover-rgb: 136, 225, 177;
+  --cx-warning-link-hover: #fad180;
+  --cx-warning-link-hover-rgb: 250, 209, 128;
+  --cx-info-link-hover: #8a8afa;
+  --cx-info-link-hover-rgb: 138, 138, 250;
+  --cx-black-link-hover: rgba(0, 0, 0, 0.9);
+  --cx-black-link-hover-rgb: 0, 0, 0;
+  --cx-white-link-hover: rgba(255, 255, 255, 0.9);
+  --cx-white-link-hover-rgb: 255, 255, 255;
+  --cx-default-link-active: #f85a4f;
+  --cx-default-link-active-rgb: 248, 90, 79;
+  --cx-alternate-link-active: #f85a4f;
+  --cx-alternate-link-active-rgb: 248, 90, 79;
+  --cx-primary-link-active: #40bbd9;
+  --cx-primary-link-active-rgb: 64, 187, 217;
+  --cx-secondary-link-active: #f87d40;
+  --cx-secondary-link-active-rgb: 248, 125, 64;
+  --cx-neutral-link-active: #93a0a4;
+  --cx-neutral-link-active-rgb: 147, 160, 164;
+  --cx-danger-link-active: #f85a4f;
+  --cx-danger-link-active-rgb: 248, 90, 79;
+  --cx-success-link-active: #4cd18a;
+  --cx-success-link-active-rgb: 76, 209, 138;
+  --cx-warning-link-active: #f8ba40;
+  --cx-warning-link-active-rgb: 248, 186, 64;
+  --cx-info-link-active: #4f4ff8;
+  --cx-info-link-active-rgb: 79, 79, 248;
+  --cx-black-link-active: #F52314;
+  --cx-black-link-active-rgb: 245, 35, 20;
+  --cx-white-link-active: #F52314;
+  --cx-white-link-active-rgb: 245, 35, 20;
+  --cx-default-dim-slight: rgba(255, 255, 255, 0.05);
+  --cx-default-dim-slight-rgb: 255, 255, 255;
+  --cx-alternate-dim-slight: rgba(0, 0, 0, 0.05);
+  --cx-alternate-dim-slight-rgb: 0, 0, 0;
+  --cx-primary-dim-slight: rgba(0, 164, 204, 0.1);
+  --cx-primary-dim-slight-rgb: 0, 164, 204;
+  --cx-secondary-dim-slight: rgba(245, 82, 0, 0.1);
+  --cx-secondary-dim-slight-rgb: 245, 82, 0;
+  --cx-neutral-dim-slight: rgba(111, 128, 133, 0.1);
+  --cx-neutral-dim-slight-rgb: 111, 128, 133;
+  --cx-danger-dim-slight: rgba(245, 35, 20, 0.1);
+  --cx-danger-dim-slight-rgb: 245, 35, 20;
+  --cx-success-dim-slight: rgba(16, 194, 99, 0.1);
+  --cx-success-dim-slight-rgb: 16, 194, 99;
+  --cx-warning-dim-slight: rgba(245, 163, 0, 0.1);
+  --cx-warning-dim-slight-rgb: 245, 163, 0;
+  --cx-info-dim-slight: rgba(20, 20, 245, 0.1);
+  --cx-info-dim-slight-rgb: 20, 20, 245;
+  --cx-black-dim-slight: rgba(0, 0, 0, 0.1);
+  --cx-black-dim-slight-rgb: 0, 0, 0;
+  --cx-white-dim-slight: rgba(255, 255, 255, 0.1);
+  --cx-white-dim-slight-rgb: 255, 255, 255;
+  --cx-default-dim-main: rgba(255, 255, 255, 0.7);
+  --cx-default-dim-main-rgb: 255, 255, 255;
+  --cx-alternate-dim-main: rgba(0, 0, 0, 0.7);
+  --cx-alternate-dim-main-rgb: 0, 0, 0;
+  --cx-primary-dim-main: rgba(0, 164, 204, 0.7);
+  --cx-primary-dim-main-rgb: 0, 164, 204;
+  --cx-secondary-dim-main: rgba(245, 82, 0, 0.7);
+  --cx-secondary-dim-main-rgb: 245, 82, 0;
+  --cx-neutral-dim-main: rgba(111, 128, 133, 0.7);
+  --cx-neutral-dim-main-rgb: 111, 128, 133;
+  --cx-danger-dim-main: rgba(245, 35, 20, 0.7);
+  --cx-danger-dim-main-rgb: 245, 35, 20;
+  --cx-success-dim-main: rgba(16, 194, 99, 0.7);
+  --cx-success-dim-main-rgb: 16, 194, 99;
+  --cx-warning-dim-main: rgba(245, 163, 0, 0.7);
+  --cx-warning-dim-main-rgb: 245, 163, 0;
+  --cx-info-dim-main: rgba(20, 20, 245, 0.7);
+  --cx-info-dim-main-rgb: 20, 20, 245;
+  --cx-black-dim-main: rgba(0, 0, 0, 0.7);
+  --cx-black-dim-main-rgb: 0, 0, 0;
+  --cx-white-dim-main: rgba(255, 255, 255, 0.7);
+  --cx-white-dim-main-rgb: 255, 255, 255;
+  --cx-default-dim-subtle: rgba(255, 255, 255, 0.3);
+  --cx-default-dim-subtle-rgb: 255, 255, 255;
+  --cx-alternate-dim-subtle: rgba(0, 0, 0, 0.3);
+  --cx-alternate-dim-subtle-rgb: 0, 0, 0;
+  --cx-primary-dim-subtle: rgba(0, 164, 204, 0.3);
+  --cx-primary-dim-subtle-rgb: 0, 164, 204;
+  --cx-secondary-dim-subtle: rgba(245, 82, 0, 0.3);
+  --cx-secondary-dim-subtle-rgb: 245, 82, 0;
+  --cx-neutral-dim-subtle: rgba(111, 128, 133, 0.3);
+  --cx-neutral-dim-subtle-rgb: 111, 128, 133;
+  --cx-danger-dim-subtle: rgba(245, 35, 20, 0.3);
+  --cx-danger-dim-subtle-rgb: 245, 35, 20;
+  --cx-success-dim-subtle: rgba(16, 194, 99, 0.3);
+  --cx-success-dim-subtle-rgb: 16, 194, 99;
+  --cx-warning-dim-subtle: rgba(245, 163, 0, 0.3);
+  --cx-warning-dim-subtle-rgb: 245, 163, 0;
+  --cx-info-dim-subtle: rgba(20, 20, 245, 0.3);
+  --cx-info-dim-subtle-rgb: 20, 20, 245;
+  --cx-black-dim-subtle: rgba(0, 0, 0, 0.3);
+  --cx-black-dim-subtle-rgb: 0, 0, 0;
+  --cx-white-dim-subtle: rgba(255, 255, 255, 0.3);
+  --cx-white-dim-subtle-rgb: 255, 255, 255;
+  --cx-default-fg-idle: #e9eced;
+  --cx-default-fg-idle-rgb: 233, 236, 237;
+  --cx-alternate-fg-idle: #ffffff;
+  --cx-alternate-fg-idle-rgb: 255, 255, 255;
+  --cx-primary-fg-idle: #ffffff;
+  --cx-primary-fg-idle-rgb: 255, 255, 255;
+  --cx-secondary-fg-idle: #ffffff;
+  --cx-secondary-fg-idle-rgb: 255, 255, 255;
+  --cx-neutral-fg-idle: #ffffff;
+  --cx-neutral-fg-idle-rgb: 255, 255, 255;
+  --cx-danger-fg-idle: #ffffff;
+  --cx-danger-fg-idle-rgb: 255, 255, 255;
+  --cx-success-fg-idle: #ffffff;
+  --cx-success-fg-idle-rgb: 255, 255, 255;
+  --cx-warning-fg-idle: #000000;
+  --cx-warning-fg-idle-rgb: 0, 0, 0;
+  --cx-info-fg-idle: #ffffff;
+  --cx-info-fg-idle-rgb: 255, 255, 255;
+  --cx-black-fg-idle: #ffffff;
+  --cx-black-fg-idle-rgb: 255, 255, 255;
+  --cx-white-fg-idle: #000000;
+  --cx-white-fg-idle-rgb: 0, 0, 0;
+  --cx-default-fg-disabled: rgba(233, 236, 237, 0.25);
+  --cx-default-fg-disabled-rgb: 233, 236, 237;
+  --cx-alternate-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-alternate-fg-disabled-rgb: 255, 255, 255;
+  --cx-primary-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-primary-fg-disabled-rgb: 255, 255, 255;
+  --cx-secondary-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-secondary-fg-disabled-rgb: 255, 255, 255;
+  --cx-neutral-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-neutral-fg-disabled-rgb: 255, 255, 255;
+  --cx-danger-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-danger-fg-disabled-rgb: 255, 255, 255;
+  --cx-success-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-success-fg-disabled-rgb: 255, 255, 255;
+  --cx-warning-fg-disabled: rgba(0, 0, 0, 0.25);
+  --cx-warning-fg-disabled-rgb: 0, 0, 0;
+  --cx-info-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-info-fg-disabled-rgb: 255, 255, 255;
+  --cx-black-fg-disabled: rgba(255, 255, 255, 0.25);
+  --cx-black-fg-disabled-rgb: 255, 255, 255;
+  --cx-white-fg-disabled: rgba(0, 0, 0, 0.25);
+  --cx-white-fg-disabled-rgb: 0, 0, 0;
+  --cx-default-fg-hover: rgba(233, 236, 237, 0.9);
+  --cx-default-fg-hover-rgb: 233, 236, 237;
+  --cx-alternate-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-alternate-fg-hover-rgb: 255, 255, 255;
+  --cx-primary-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-primary-fg-hover-rgb: 255, 255, 255;
+  --cx-secondary-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-secondary-fg-hover-rgb: 255, 255, 255;
+  --cx-neutral-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-neutral-fg-hover-rgb: 255, 255, 255;
+  --cx-danger-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-danger-fg-hover-rgb: 255, 255, 255;
+  --cx-success-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-success-fg-hover-rgb: 255, 255, 255;
+  --cx-warning-fg-hover: rgba(0, 0, 0, 0.9);
+  --cx-warning-fg-hover-rgb: 0, 0, 0;
+  --cx-info-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-info-fg-hover-rgb: 255, 255, 255;
+  --cx-black-fg-hover: rgba(255, 255, 255, 0.9);
+  --cx-black-fg-hover-rgb: 255, 255, 255;
+  --cx-white-fg-hover: rgba(0, 0, 0, 0.9);
+  --cx-white-fg-hover-rgb: 0, 0, 0;
+  --cx-default-fg-press: rgba(233, 236, 237, 0.9);
+  --cx-default-fg-press-rgb: 233, 236, 237;
+  --cx-alternate-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-alternate-fg-press-rgb: 255, 255, 255;
+  --cx-primary-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-primary-fg-press-rgb: 255, 255, 255;
+  --cx-secondary-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-secondary-fg-press-rgb: 255, 255, 255;
+  --cx-neutral-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-neutral-fg-press-rgb: 255, 255, 255;
+  --cx-danger-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-danger-fg-press-rgb: 255, 255, 255;
+  --cx-success-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-success-fg-press-rgb: 255, 255, 255;
+  --cx-warning-fg-press: rgba(0, 0, 0, 0.9);
+  --cx-warning-fg-press-rgb: 0, 0, 0;
+  --cx-info-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-info-fg-press-rgb: 255, 255, 255;
+  --cx-black-fg-press: rgba(255, 255, 255, 0.9);
+  --cx-black-fg-press-rgb: 255, 255, 255;
+  --cx-white-fg-press: rgba(0, 0, 0, 0.9);
+  --cx-white-fg-press-rgb: 0, 0, 0;
+  --cx-default-bg-idle: #111314;
+  --cx-default-bg-idle-rgb: 17, 19, 20;
+  --cx-alternate-bg-idle: #000000;
+  --cx-alternate-bg-idle-rgb: 0, 0, 0;
+  --cx-primary-bg-idle: #00A4CC;
+  --cx-primary-bg-idle-rgb: 0, 164, 204;
+  --cx-secondary-bg-idle: #F55200;
+  --cx-secondary-bg-idle-rgb: 245, 82, 0;
+  --cx-neutral-bg-idle: #6F8085;
+  --cx-neutral-bg-idle-rgb: 111, 128, 133;
+  --cx-danger-bg-idle: #F52314;
+  --cx-danger-bg-idle-rgb: 245, 35, 20;
+  --cx-success-bg-idle: #10C263;
+  --cx-success-bg-idle-rgb: 16, 194, 99;
+  --cx-warning-bg-idle: #F5A300;
+  --cx-warning-bg-idle-rgb: 245, 163, 0;
+  --cx-info-bg-idle: #1414F5;
+  --cx-info-bg-idle-rgb: 20, 20, 245;
+  --cx-black-bg-idle: #000000;
+  --cx-black-bg-idle-rgb: 0, 0, 0;
+  --cx-white-bg-idle: #ffffff;
+  --cx-white-bg-idle-rgb: 255, 255, 255;
+  --cx-default-bg-disabled: #272d2f;
+  --cx-default-bg-disabled-rgb: 39, 45, 47;
+  --cx-alternate-bg-disabled: #272d2f;
+  --cx-alternate-bg-disabled-rgb: 39, 45, 47;
+  --cx-primary-bg-disabled: #003947;
+  --cx-primary-bg-disabled-rgb: 0, 57, 71;
+  --cx-secondary-bg-disabled: #561d00;
+  --cx-secondary-bg-disabled-rgb: 86, 29, 0;
+  --cx-neutral-bg-disabled: #272d2f;
+  --cx-neutral-bg-disabled-rgb: 39, 45, 47;
+  --cx-danger-bg-disabled: #560c07;
+  --cx-danger-bg-disabled-rgb: 86, 12, 7;
+  --cx-success-bg-disabled: #064423;
+  --cx-success-bg-disabled-rgb: 6, 68, 35;
+  --cx-warning-bg-disabled: #563900;
+  --cx-warning-bg-disabled-rgb: 86, 57, 0;
+  --cx-info-bg-disabled: #070756;
+  --cx-info-bg-disabled-rgb: 7, 7, 86;
+  --cx-black-bg-disabled: rgba(0, 0, 0, 0.2);
+  --cx-black-bg-disabled-rgb: 0, 0, 0;
+  --cx-white-bg-disabled: rgba(255, 255, 255, 0.2);
+  --cx-white-bg-disabled-rgb: 255, 255, 255;
+  --cx-default-bg-hover: #1c2021;
+  --cx-default-bg-hover-rgb: 28, 32, 33;
+  --cx-alternate-bg-hover: #111314;
+  --cx-alternate-bg-hover-rgb: 17, 19, 20;
+  --cx-primary-bg-hover: #40bbd9;
+  --cx-primary-bg-hover-rgb: 64, 187, 217;
+  --cx-secondary-bg-hover: #f87d40;
+  --cx-secondary-bg-hover-rgb: 248, 125, 64;
+  --cx-neutral-bg-hover: #93a0a4;
+  --cx-neutral-bg-hover-rgb: 147, 160, 164;
+  --cx-danger-bg-hover: #f85a4f;
+  --cx-danger-bg-hover-rgb: 248, 90, 79;
+  --cx-success-bg-hover: #4cd18a;
+  --cx-success-bg-hover-rgb: 76, 209, 138;
+  --cx-warning-bg-hover: #f8ba40;
+  --cx-warning-bg-hover-rgb: 248, 186, 64;
+  --cx-info-bg-hover: #4f4ff8;
+  --cx-info-bg-hover-rgb: 79, 79, 248;
+  --cx-black-bg-hover: rgba(0, 0, 0, 0.9);
+  --cx-black-bg-hover-rgb: 0, 0, 0;
+  --cx-white-bg-hover: rgba(255, 255, 255, 0.9);
+  --cx-white-bg-hover-rgb: 255, 255, 255;
+  --cx-default-bg-press: #272d2f;
+  --cx-default-bg-press-rgb: 39, 45, 47;
+  --cx-alternate-bg-press: #1c2021;
+  --cx-alternate-bg-press-rgb: 28, 32, 33;
+  --cx-primary-bg-press: #00738f;
+  --cx-primary-bg-press-rgb: 0, 115, 143;
+  --cx-secondary-bg-press: #ac3900;
+  --cx-secondary-bg-press-rgb: 172, 57, 0;
+  --cx-neutral-bg-press: #4e5a5d;
+  --cx-neutral-bg-press-rgb: 78, 90, 93;
+  --cx-danger-bg-press: #ac190e;
+  --cx-danger-bg-press-rgb: 172, 25, 14;
+  --cx-success-bg-press: #0b8845;
+  --cx-success-bg-press-rgb: 11, 136, 69;
+  --cx-warning-bg-press: #ac7200;
+  --cx-warning-bg-press-rgb: 172, 114, 0;
+  --cx-info-bg-press: #0e0eac;
+  --cx-info-bg-press-rgb: 14, 14, 172;
+  --cx-black-bg-press: rgba(0, 0, 0, 0.95);
+  --cx-black-bg-press-rgb: 0, 0, 0;
+  --cx-white-bg-press: rgba(255, 255, 255, 0.95);
+  --cx-white-bg-press-rgb: 255, 255, 255;
+  --cx-base-color: #ffffff;
+  --cx-base-color-rgb: 255, 255, 255;
+  --cx-contrast-color: #000000;
+  --cx-contrast-color-rgb: 0, 0, 0;
+  --cx-transparent-color: rgba(0, 0, 0, 0);
+  --cx-transparent-color-rgb: 0, 0, 0;
+  --cx-fg-main: #e9eced;
+  --cx-fg-main-rgb: 233, 236, 237;
+  --cx-fg-subtle: rgba(233, 236, 237, 0.5);
+  --cx-fg-subtle-rgb: 233, 236, 237;
+  --cx-fg-slight: rgba(233, 236, 237, 0.25);
+  --cx-fg-slight-rgb: 233, 236, 237;
+  --cx-fg-inverse: #1c2021;
+  --cx-fg-inverse-rgb: 28, 32, 33;
+  --cx-fg-solid: #ffffff;
+  --cx-fg-solid-rgb: 255, 255, 255;
+  --cx-fg-highlight: #80d2e6;
+  --cx-fg-highlight-rgb: 128, 210, 230;
+  --cx-bg-main: #111314;
+  --cx-bg-main-rgb: 17, 19, 20;
+  --cx-bg-even: #1c2021;
+  --cx-bg-even-rgb: 28, 32, 33;
+  --cx-bg-evident: #272d2f;
+  --cx-bg-evident-rgb: 39, 45, 47;
+  --cx-bg-inverse: #e9eced;
+  --cx-bg-inverse-rgb: 233, 236, 237;
+  --cx-bg-solid: #272d2f;
+  --cx-bg-solid-rgb: 39, 45, 47;
+  --cx-bg-highlight: #003947;
+  --cx-bg-highlight-rgb: 0, 57, 71;
+  --cx-border-main: #4e5a5d;
+  --cx-border-main-rgb: 78, 90, 93;
+  --cx-border-subtle: rgba(233, 236, 237, 0.15);
+  --cx-border-subtle-rgb: 233, 236, 237;
+  --cx-icon-main: #00A4CC;
+  --cx-icon-main-rgb: 0, 164, 204;
+  --cx-icon-subtle: rgba(233, 236, 237, 0.4);
+  --cx-icon-subtle-rgb: 233, 236, 237;
+  --cx-icon-slight: rgba(0, 164, 204, 0.2);
+  --cx-icon-slight-rgb: 0, 164, 204;
+  --cx-cue-main: #00A4CC;
+  --cx-cue-main-rgb: 0, 164, 204;
+  --cx-cue-slight: rgba(0, 164, 204, 0.2);
+  --cx-cue-slight-rgb: 0, 164, 204;
+  --cx-link-main: #40bbd9;
+  --cx-link-main-rgb: 64, 187, 217;
+  --cx-link-hover: #80d2e6;
+  --cx-link-hover-rgb: 128, 210, 230;
+  --cx-link-active: #f85a4f;
+  --cx-link-active-rgb: 248, 90, 79;
+  --cx-link-visited: #80d2e6;
+  --cx-link-visited-rgb: 128, 210, 230;
+  --cx-dim-main: rgba(255, 255, 255, 0.7);
+  --cx-dim-main-rgb: 255, 255, 255;
+  --cx-dim-subtle: rgba(255, 255, 255, 0.3);
+  --cx-dim-subtle-rgb: 255, 255, 255;
+  --cx-dim-slight: rgba(255, 255, 255, 0.05);
+  --cx-dim-slight-rgb: 255, 255, 255;
+  --cx-fg-idle: #e9eced;
+  --cx-fg-idle-rgb: 233, 236, 237;
+  --cx-fg-disabled: rgba(233, 236, 237, 0.25);
+  --cx-fg-disabled-rgb: 233, 236, 237;
+  --cx-fg-hover: rgba(233, 236, 237, 0.9);
+  --cx-fg-hover-rgb: 233, 236, 237;
+  --cx-fg-press: rgba(233, 236, 237, 0.9);
+  --cx-fg-press-rgb: 233, 236, 237;
+  --cx-bg-idle: #111314;
+  --cx-bg-idle-rgb: 17, 19, 20;
+  --cx-bg-disabled: #272d2f;
+  --cx-bg-disabled-rgb: 39, 45, 47;
+  --cx-bg-hover: #1c2021;
+  --cx-bg-hover-rgb: 28, 32, 33;
+  --cx-bg-press: #272d2f;
+  --cx-bg-press-rgb: 39, 45, 47;
+  --cx-fg-color: var(--cx-context-fg-main, var(--cx-fg-main));
+  --cx-bg-color: var(--cx-context-bg-main, var(--cx-bg-main));
+  --cx-border-color: var(--cx-context-border-subtle, var(--cx-border-subtle));
+  --cx-separator-color: var(--cx-context-border-subtle, var(--cx-border-subtle));
+  --cx-icon-color: var(--cx-context-icon-main, var(--cx-icon-main));
+  --cx-bullet-color: var(--cx-context-icon-subtle, var(--cx-icon-subtle));
+  --cx-cue-color: var(--cx-context-cue-main, var(--cx-cue-main));
+  --cx-fg-color-rgb: var(--cx-context-fg-main-rgb, var(--cx-fg-main-rgb));
+  --cx-bg-color-rgb: var(--cx-context-bg-main-rgb, var(--cx-bg-main-rgb));
+  --cx-border-color-rgb: var(--cx-context-border-main-rgb, var(--cx-border-main-rgb));
+  --cx-separator-color-rgb: var(--cx-context-border-subtle-rgb, var(--cx-border-subtle-rgb));
+  --cx-icon-color-rgb: var(--cx-context-icon-main-rgb, var(--cx-icon-main-rgb));
+  --cx-bullet-color-rgb: var(--cx-context-icon-subtle-rgb, var(--cx-icon-subtle-rgb));
+  --cx-cue-color-rgb: var(--cx-context-cue-main-rgb, var(--cx-cue-main-rgb));
+  --cx-link-main-color-rgb: var(--cx-context-link-main-rgb, var(--cx-link-main-rgb));
+  --cx-link-hover-color-rgb: var(--cx-context-link-hover-rgb, var(--cx-link-hover-rgb));
+  --cx-link-active-color-rgb: var(--cx-context-link-active-rgb, var(--cx-link-active-rgb));
+  --cx-link-visited-color-rgb: var(--cx-context-link-visited-rgb, var(--cx-link-visited-rgb));
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  font: var(--cx-font-weight) var(--cx-font-size)/var(--cx-line-height) var(--cx-font-family);
+  color: var(--cx-fg-color);
+  background-color: var(--cx-bg-color);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+hr {
+  margin: var(--cx-space-medium) 0;
+  color: var(--cx-border-subtle);
+  border: 0;
+  border-top: var(--cx-border-width-medium) solid var(--cx-border-subtle);
+  opacity: var(--cx-opacity-solid);
+}
+
+h6,
+.h6, h5,
+.h5, h4,
+.h4, h3,
+.h3, h2,
+.h2, h1,
+.h1 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-family: var(--cx-heading-font-family, var(--cx-font-family-html));
+  font-weight: var(--cx-heading-font-weight, var(--cx-font-weight-html-heading));
+}
+
+h1,
+.h1 {
+  font-size: var(--cx-h1-font-size, var(--cx-font-size-html-h1));
+  line-height: var(--cx-h1-line-height, var(--cx-line-height-html-h1));
+}
+
+h2,
+.h2 {
+  font-size: var(--cx-h2-font-size, var(--cx-font-size-html-h2));
+  line-height: var(--cx-h2-line-height, var(--cx-line-height-html-h2));
+}
+
+h3,
+.h3 {
+  font-size: var(--cx-h3-font-size, var(--cx-font-size-html-h3));
+  line-height: var(--cx-h3-line-height, var(--cx-line-height-html-h3));
+}
+
+h4,
+.h4 {
+  font-size: var(--cx-h4-font-size, var(--cx-font-size-html-h4));
+  line-height: var(--cx-h4-line-height, var(--cx-line-height-html-h4));
+}
+
+h5,
+.h5 {
+  font-size: var(--cx-h5-font-size, var(--cx-font-size-html-h5));
+  line-height: var(--cx-h5-line-height, var(--cx-line-height-html-h5));
+}
+
+h6,
+.h6 {
+  font-size: var(--cx-h6-font-size, var(--cx-font-size-html-h6));
+  line-height: var(--cx-h6-line-height, var(--cx-line-height-html-h6));
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+abbr[title] {
+  -webkit-text-decoration: underline dotted;
+  text-decoration: underline dotted;
+  cursor: help;
+  -webkit-text-decoration-skip-ink: none;
+  text-decoration-skip-ink: none;
+}
+
+address {
+  margin-bottom: 1rem;
+  font-style: normal;
+  line-height: inherit;
+}
+
+ol,
+ul {
+  padding-right: 2rem;
+}
+
+ol,
+ul,
+dl {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+ol ol,
+ul ul,
+ol ul,
+ul ol {
+  margin-bottom: 0;
+}
+
+dt {
+  font-weight: 700;
+}
+
+dd {
+  margin-bottom: 0.5rem;
+  margin-right: 0;
+}
+
+blockquote {
+  margin: 0 0 1rem;
+}
+
+b,
+strong {
+  font-weight: var(--cx-bold-font-weight, 700) !important;
+}
+
+small {
+  font-size: var(--cx-small-font-size, 0.875em);
+  line-height: var(--cx-small-line-height, 1.25em);
+}
+
+mark {
+  padding: 0.125em;
+  margin: -0.125em;
+  color: var(--cx-default-fg-highlight);
+  background-color: var(--cx-default-bg-highlight);
+}
+
+sub,
+sup {
+  position: relative;
+  font-size: 0.75em;
+  line-height: var(--cx-line-height);
+  line-height: 0;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+a {
+  color: var(--cx-link-main-color, rgba(var(--cx-link-main-color-rgb), var(--cx-link-opacity, 1)));
+  text-decoration: underline;
+}
+a:hover {
+  color: var(--cx-link-hover-color, rgba(var(--cx-link-hover-color-rgb), var(--cx-link-opacity, 1)));
+}
+a:active {
+  color: var(--cx-link-active-color, rgba(var(--cx-link-active-color-rgb), var(--cx-link-opacity, 1)));
+}
+
+a:not([href]):not([class]), a:not([href]):not([class]):hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+pre,
+code,
+kbd,
+samp {
+  font-family: var(--cx-code-font-family, Fira Code, Menlo, Monaco, Consolas, "Courier New", monospace);
+  font-size: var(--cx-code-font-size, inherit);
+  line-height: var(--cx-code-line-height, inherit);
+}
+
+pre {
+  display: block;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  overflow: auto;
+  color: var(--cx-pre-fg-color, );
+}
+pre code {
+  color: inherit;
+  word-break: normal;
+}
+
+code {
+  color: var(--cx-code-color, #f39);
+  word-wrap: break-word;
+}
+a > code {
+  color: inherit;
+}
+
+kbd {
+  padding: 0.1875rem 0.375rem;
+  font-size: inherit;
+  line-height: inherit;
+  color: var(--cx-bg-color);
+  background-color: var(--cx-fg-color);
+  border-radius: 0.25rem;
+}
+kbd kbd {
+  padding: 0;
+  font-size: 1em;
+  line-height: var(--cx-line-height);
+}
+
+figure {
+  margin: 0 0 1rem;
+}
+
+img,
+svg {
+  vertical-align: middle;
+}
+
+table {
+  caption-side: bottom;
+  border-spacing: 0;
+}
+
+caption {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  color: var(--cx-fg-subtle);
+  text-align: right;
+}
+
+th {
+  font-weight: 700;
+  text-align: inherit;
+  text-align: -webkit-match-parent;
+}
+
+thead,
+tbody,
+tfoot,
+tr,
+td,
+th {
+  border-color: inherit;
+  border-style: solid;
+  border-width: 0;
+}
+
+label {
+  display: inline-block;
+}
+
+button {
+  border-radius: 0;
+}
+
+button:focus:not(:focus-visible) {
+  outline: 0;
+}
+
+input,
+button,
+select,
+optgroup,
+textarea {
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  line-height: inherit;
+}
+
+button,
+select {
+  text-transform: none;
+}
+
+[role=button] {
+  cursor: pointer;
+}
+
+select {
+  word-wrap: normal;
+}
+select:disabled {
+  opacity: 1;
+}
+
+[list]:not([type=date]):not([type=datetime-local]):not([type=month]):not([type=week]):not([type=time])::-webkit-calendar-picker-indicator {
+  display: none !important;
+}
+
+button,
+[type=button],
+[type=reset],
+[type=submit] {
+  -webkit-appearance: button;
+}
+button:not(:disabled),
+[type=button]:not(:disabled),
+[type=reset]:not(:disabled),
+[type=submit]:not(:disabled) {
+  cursor: pointer;
+}
+
+::-moz-focus-inner {
+  padding: 0;
+  border-style: none;
+}
+
+textarea {
+  resize: vertical;
+}
+
+fieldset {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+legend {
+  float: right;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 0.5rem;
+  line-height: inherit;
+  font-size: calc(1.275rem + 0.3vw);
+  line-height: 1.5em;
+}
+legend + * {
+  clear: right;
+}
+
+::-webkit-datetime-edit-fields-wrapper,
+::-webkit-datetime-edit-text,
+::-webkit-datetime-edit-minute,
+::-webkit-datetime-edit-hour-field,
+::-webkit-datetime-edit-day-field,
+::-webkit-datetime-edit-month-field,
+::-webkit-datetime-edit-year-field {
+  padding: 0;
+}
+
+::-webkit-inner-spin-button {
+  height: auto;
+}
+
+[type=search] {
+  -webkit-appearance: textfield;
+  outline-offset: -0.125rem;
+}
+
+[type="tel"],
+[type="url"],
+[type="email"],
+[type="number"] {
+  direction: ltr;
+}
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+::-webkit-file-upload-button {
+  font: inherit;
+  -webkit-appearance: button;
+}
+
+::file-selector-button {
+  font: inherit;
+  -webkit-appearance: button;
+}
+
+output {
+  display: inline-block;
+}
+
+iframe {
+  border: 0;
+}
+
+summary {
+  display: list-item;
+  cursor: pointer;
+}
+
+progress {
+  vertical-align: baseline;
+}
+
+[hidden] {
+  display: none !important;
+}
+/*# sourceMappingURL=chassis-reboot.rtl.css.map */

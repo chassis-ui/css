@@ -1,0 +1,167 @@
+// Make the div behave like a button
+.button-group,
+.button-group-vertical {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle; // match .button alignment given font-size hack above
+
+  > .button {
+    position: relative;
+    box-sizing: border-box;
+    flex: 1 1 auto;
+  }
+
+  // Bring the hover, focused, and "active" buttons to the front to overlay
+  // the borders properly
+  > .button-check:checked + .button,
+  > .button-check:focus + .button,
+  > .button:hover,
+  > .button:focus,
+  > .button:active,
+  > .button.active {
+    z-index: 1;
+  }
+}
+
+// Optional: Group multiple button groups together for a toolbar
+.button-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+
+  .input-group {
+    width: auto;
+  }
+}
+
+.button-group {
+  @include border-radius($button-medium-border-radius);
+
+  // Prevent double borders when buttons are next to each other
+  > :not(.button-check:first-child) + .button,
+  > .button-group:not(:first-child) {
+    margin-left: calc(var(--#{$prefix}border-width) * -1); // stylelint-disable-line function-disallowed-list
+  }
+
+  // Reset rounded corners
+  > .button:not(:last-child):not(.dropdown-toggle),
+  > .button.dropdown-toggle-split:first-child,
+  > .button-group:not(:last-child) > .button {
+    @include border-end-radius(0);
+  }
+
+  // The left radius should be 0 if the button is:
+  // - the "third or more" child
+  // - the second child and the previous element isn't `.button-check` (making it the first child visually)
+  // - part of a button-group which isn't the first child
+  > .button:nth-child(n + 3),
+  > :not(.button-check) + .button,
+  > .button-group:not(:first-child) > .button {
+    @include border-start-radius(0);
+  }
+
+  // Add separators
+  // - Using `.fg-disabled` to match buttons `fg-color`.
+  // - Add borders to `.button`, not to nested `.button-group` or `button-check`.
+  // - Don't change anything for ourline buttons.
+  > .button:not(:first-child):not(input + .button):not(.outline),
+  > .button-group > .button:not(.outline) {
+    border-left: var(--#{$prefix}border-width) solid var(--#{$prefix}fg-disabled);
+  }
+
+  // Sizing
+  //
+  // Remix the default button sizing classes into new ones for easier manipulation.
+
+  &.small > .button { @extend %button-small; }
+  &.large > .button { @extend %button-large; }
+
+}
+
+//
+// Split button dropdowns
+//
+
+.dropdown-toggle-split {
+  padding-right: #{calc($button-medium-padding-x * .75)};
+  padding-left: #{calc($button-medium-padding-x * .75)};
+
+  &::after,
+  .dropup &::after,
+  .dropend &::after {
+    margin-left: 0;
+  }
+
+  .dropstart &::before {
+    margin-right: 0;
+  }
+}
+
+.button.small + .dropdown-toggle-split {
+  padding-right: #{calc($button-small-padding-x * .75)};
+  padding-left: #{calc($button-small-padding-x * .75)};
+}
+
+.button.large + .dropdown-toggle-split {
+  padding-right: #{calc($button-large-padding-x * .75)};
+  padding-left: #{calc($button-large-padding-x * .75)};
+}
+
+
+// The clickable button for toggling the menu
+// Set the same inset shadow as the :active state
+.button-group.show .dropdown-toggle {
+  @include box-shadow($button-press-box-shadow);
+
+  // Show no shadow for `.button-link` since it has no other button styles.
+  &.button-link {
+    @include box-shadow(none);
+  }
+}
+
+
+//
+// Vertical button groups
+//
+
+.button-group-vertical {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+
+  > .button,
+  > .button-group {
+    width: 100%;
+  }
+
+  > .button:not(:first-child),
+  > .button-group:not(:first-child) {
+    margin-top: calc(#{$button-border-width} * -1); // stylelint-disable-line function-disallowed-list
+  }
+
+  // Reset rounded corners
+  > .button:not(:last-child):not(.dropdown-toggle),
+  > .button-group:not(:last-child) > .button {
+    @include border-bottom-radius(0);
+  }
+
+  // The top radius should be 0 if the button is:
+  // - the "third or more" child
+  // - the second child and the previous element isn't `.button-check` (making it the first child visually)
+  // - part of a button-group which isn't the first child
+  > .button:nth-child(n + 3),
+  > :not(.button-check) + .button,
+  > .button-group:not(:first-child) > .button {
+    @include border-top-radius(0);
+  }
+
+  // Add separators
+  // - Using `.fg-disabled` to match buttons `fg-color`.
+  // - Add borders to `.button`, not to nested `.button-group` or `button-check`.
+  // - Don't change anything for ourline buttons.
+  > .button:not(:first-child):not(input + .button):not(.outline),
+  > .button-group > .button:not(.outline) {
+    border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}fg-disabled);
+  }
+
+}

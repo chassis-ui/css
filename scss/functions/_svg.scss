@@ -1,0 +1,79 @@
+//
+// SVG utility functions for Chassis CSS
+//
+// This file contains functions for SVG processing and manipulation,
+// including URL encoding, icon generation, and color adjustment.
+//
+// SVG encoding approach inspired by Bootstrap.
+// Special thanks to the Bootstrap Authors and Twitter, Inc.
+//
+
+/// Encode SVG data for use in CSS background images
+/// Escapes special characters in SVG markup to make it safe for use in CSS.
+/// This ensures proper rendering of SVG content when used as background images.
+///
+/// @param {String} $string - SVG string to encode, must be a data URI
+/// @return {String} - Properly escaped SVG string
+/// @see https://codepen.io/kevinweber/pen/dXWoRw - Original approach
+/// @example
+///   escape-svg($svg-data-uri) => escaped SVG ready for use in CSS properties
+@function escape-svg($string) {
+  @if str-index($string, "data:image/svg+xml") {
+    @each $char, $encoded in $escaped-characters {
+      // Do not escape the url brackets
+      @if str-index($string, "url(") == 1 {
+        $string: url("#{str-replace(str-slice($string, 6, -3), $char, $encoded)}");
+      } @else {
+        $string: str-replace($string, $char, $encoded);
+      }
+    }
+  }
+
+  @return $string;
+}
+
+// scss-docs-start icon-functions
+/// Convert SVG content or reference into a usable CSS URL
+/// Processes SVG input for use in CSS properties like background-image.
+/// Handles both direct SVG markup and reference strings.
+///
+/// @param {String} $icon - SVG content or reference ID
+/// @return {String} - URL-formatted SVG for use in CSS
+/// @example
+///   svg-icon("<svg>...</svg>") => url("data:image/svg+xml,<svg>...</svg>")
+///   svg-icon("arrow-right") => url("path/to/arrow-right.svg")
+@function svg-icon($icon) {
+  @if str-index($icon, "<svg") {
+    @return url("data:image/svg+xml,#{$icon}");
+  }
+  @return url("#{$icon-url-prefix}#{$icon}#{$icon-url-suffix}");
+}
+// scss-docs-end icon-functions
+
+/// Replace color values in SVG markup
+/// Processes SVG content by replacing 'currentcolor' references with a specific color.
+/// Handles multiple color input formats including direct colors, color variables, and names.
+///
+/// @param {String} $svg - SVG content with 'currentcolor' values to replace
+/// @param {Color|String} $color - Color to replace 'currentcolor' with (can be direct color, CSS variable, or color name)
+/// @param {Boolean} $dark - Whether to use dark mode color palette for named colors (default: false)
+/// @return {String} - Processed SVG with colors replaced and properly escaped
+/// @example
+///   svg-color($svg, #ff0000) => SVG with red replacing currentcolor
+///   svg-color($svg, "primary") => SVG with primary theme color
+///   svg-color($svg, var(--cx-accent)) => SVG with accent color variable
+@function svg-color($svg, $color, $dark: false) {
+  // Set a default for $c
+  $c: $color;
+
+  // Color type-specific processing
+  @if type-of($color) == "color" {
+    // Use as-is, already set
+  } @else if type-of($color) == "string" and str-index($color, "var(--#{$prefix}") {
+    $c: get-sass-color($color, $dark);
+  }
+  // Process the SVG
+  $new-svg: escape-svg(str-replace($svg, "currentcolor", $c));
+  @return $new-svg;
+}
+

@@ -1,0 +1,50 @@
+// scss-docs-start color-mode-mixin
+@mixin color-mode($mode: light, $root: false) {
+  @if $color-mode-type == "media-query" {
+    @if $root == true {
+      @media (prefers-color-scheme: $mode) {
+        :root {
+          @content;
+        }
+      }
+    } @else {
+      @media (prefers-color-scheme: $mode) {
+        @content;
+      }
+    }
+  } @else {
+    [data-cx-theme="#{$mode}"] {
+      @content;
+    }
+  }
+}
+// scss-docs-end color-mode-mixin
+
+// scss-docs-start color-mode-mixin
+@mixin component-color-mode($mode: default, $root: false) {
+  @if $color-mode-type == "media-query" {
+    @if $root == true {
+      @media (prefers-color-scheme: $mode) {
+        :root {
+          @content;
+        }
+      }
+    } @else {
+      @media (prefers-color-scheme: $mode) {
+        @content;
+      }
+    }
+  } @else {
+    @if $root == true {
+      :root,
+      [data-cx-color="#{$mode}"] {
+        @content;
+      }
+    } @else {
+      [data-cx-color="#{$mode}"] {
+        @content;
+      }
+    }
+  }
+}
+// scss-docs-end color-mode-mixin

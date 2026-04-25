@@ -1,0 +1,238 @@
+---
+title: Floating Labels
+description: Create elegant, space-efficient form controls with animated floating labels that enhance usability and maintain visual hierarchy.
+toc: true
+---
+
+## Overview
+
+Floating labels in Chassis CSS provide an intuitive way to improve form usability while preserving space. As users interact with the form, labels smoothly transition from placeholder positions to floating above the input, keeping context visible at all times.
+
+<Callout type="info" title="Implementation details">
+  Chassis CSS implements floating labels using pure CSS, leveraging the `:placeholder-shown` pseudo-element and sibling selectors for smooth animations without JavaScript dependencies.
+</Callout>
+
+## Basic usage
+
+To implement floating labels, wrap a `<label>` and form control (with `.form-input` class) inside a `.form-floating` container. The structure requires:
+
+1. The form control **must come before** the label in the markup
+2. Each input **requires a placeholder** attribute
+3. Each label **must be properly associated** with its form control using the `for` attribute
+
+### Example
+
+<Example code={`<div class="form-floating mb-medium">
+    <input type="email" class="form-input" id="floatingInput" placeholder="name@example.com">
+    <label for="floatingInput">Email address</label>
+  </div>
+  <div class="form-floating">
+    <input type="password" class="form-input" id="floatingPassword" placeholder="Password">
+    <label for="floatingPassword">Password</label>
+  </div>`} />
+
+### Pre-filled values
+
+When there's a `value` already defined, `<label>`s will automatically adjust to their floated position.
+
+<Example code={`<div class="form-floating">
+    <input type="email" class="form-input" id="floatingInputValue" placeholder="name@example.com" value="test@example.com">
+    <label for="floatingInputValue">Input with value</label>
+  </div>`} />
+
+### Form validation
+
+Form validation styles work seamlessly with floating labels.
+
+<Example code={`<div class="form-floating">
+    <input type="email" class="form-input is-invalid" id="floatingInputInvalid" placeholder="name@example.com" value="test@example.com">
+    <label for="floatingInputInvalid">Invalid input</label>
+  </div>`} />
+
+## Textarea
+
+By default, `<textarea>` elements with `.form-input` will be the same height as `<input>`s.
+
+<Example code={`<div class="form-floating">
+    <textarea class="form-input" placeholder="Share your thoughts here" id="floatingTextarea"></textarea>
+    <label for="floatingTextarea">Comments</label>
+  </div>`} />
+
+<Callout type="info" title="Custom heights">
+  To set a custom height on your `<textarea>`, do not use the `rows` attribute. Instead, set an explicit `height` using inline style or custom CSS.
+</Callout>
+
+<Example code={`<div class="form-floating">
+    <textarea class="form-input" placeholder="Share your thoughts here" id="floatingTextarea2" style="height: 100px"></textarea>
+    <label for="floatingTextarea2">Comments</label>
+  </div>`} />
+
+## Select
+
+Floating labels also work with `.form-select` elements. Unlike inputs, select menus will always show the `<label>` in its floated state.
+
+<Example code={`<div class="form-floating">
+    <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
+      <option selected>Choose an option</option>
+      <option value="1">Option One</option>
+      <option value="2">Option Two</option>
+      <option value="3">Option Three</option>
+    </select>
+    <label for="floatingSelect">Preferences</label>
+  </div>`} />
+
+<Callout type="warning" title="Limitations">
+  Select elements with `size` and `multiple` attributes are not supported with floating labels.
+</Callout>
+
+## Disabled inputs
+
+Add the `disabled` boolean attribute to inputs, textareas, or selects to apply the disabled state styling—grayed out appearance, no pointer events, and focus prevention.
+
+<Example code={`<div class="form-floating mb-medium">
+    <input type="email" class="form-input" id="floatingInputDisabled" placeholder="name@example.com" disabled>
+    <label for="floatingInputDisabled">Email address</label>
+  </div>
+  <div class="form-floating mb-medium">
+    <textarea class="form-input" placeholder="Share your thoughts here" id="floatingTextareaDisabled" disabled></textarea>
+    <label for="floatingTextareaDisabled">Comments</label>
+  </div>
+  <div class="form-floating mb-medium">
+    <textarea class="form-input" placeholder="Share your thoughts here" id="floatingTextarea2Disabled" style="height: 100px" disabled>This textarea is disabled with existing content</textarea>
+    <label for="floatingTextarea2Disabled">Comments</label>
+  </div>
+  <div class="form-floating">
+    <select class="form-select" id="floatingSelectDisabled" aria-label="Floating label disabled select example" disabled>
+      <option selected>Choose an option</option>
+      <option value="1">Option One</option>
+      <option value="2">Option Two</option>
+      <option value="3">Option Three</option>
+    </select>
+    <label for="floatingSelectDisabled">Preferences</label>
+  </div>`} />
+
+## Readonly plaintext inputs
+
+Use the `.form-input-plaintext` class with floating labels to toggle between editable inputs and plaintext values without affecting your layout.
+
+<Example code={`<div class="form-floating mb-medium">
+    <input type="email" readonly class="form-input plaintext" id="floatingEmptyPlaintextInput" placeholder="name@example.com">
+    <label for="floatingEmptyPlaintextInput">Empty input</label>
+  </div>
+  <div class="form-floating mb-medium">
+    <input type="email" readonly class="form-input plaintext" id="floatingPlaintextInput" placeholder="name@example.com" value="user@chassis.css">
+    <label for="floatingPlaintextInput">Input with value</label>
+  </div>`} />
+
+## File inputs
+
+File inputs can also be used with floating labels, though the visual appearance is different from other input types due to the browser's implementation of file inputs.
+
+<Callout type="info" title="Browser differences">
+  File inputs with floating labels may appear differently across browsers. For more consistent styling, consider custom file input implementations.
+</Callout>
+
+<Example code={`<div class="form-floating">
+    <input type="file" class="form-input" id="floatingFileInput" placeholder="Select a file">
+    <label for="floatingFileInput">Upload document</label>
+  </div>`} />
+
+## Input groups
+
+Floating labels work with input groups for more complex form layouts.
+
+<Example code={`<div class="input-group mb-medium">
+    <span class="input-addon">@</span>
+    <div class="form-floating">
+      <input type="text" class="form-input" id="floatingInputGroup1" placeholder="Username">
+      <label for="floatingInputGroup1">Username</label>
+    </div>
+  </div>`} />
+
+<Callout type="info" title="Form feedback placement">
+  Always place form helps and form feedbacks outside of the `.input-group` container to ensure proper styling and positioning.
+</Callout>
+
+<Example code={`<div>
+    <div class="input-group">
+      <span class="input-addon">@</span>
+      <div class="form-floating">
+        <input type="text" class="form-input is-invalid" id="floatingInputGroup2" placeholder="Username" required>
+        <label for="floatingInputGroup2">Username</label>
+      </div>
+    </div>
+    <div class="invalid-feedback">
+      Please choose a username.
+    </div>
+  </div>`} />
+
+## Icon integration
+
+Enhance your form inputs with icons using the `.icon-addon` class in combination with `.input-addon` class for proper positioning.
+
+<Example code={`<div class="input-group mb-medium">
+    <span class="input-addon icon-addon"><svg class="icon"><use xlink:href="#lock-solid"></use></svg></span>
+    <div class="form-floating">
+      <input type="password" class="form-input" id="floatingInputGroup3" placeholder="Password">
+      <label for="floatingInputGroup3">Password</label>
+    </div>
+    <button type="button" class="input-addon icon-addon" aria-label="Show password">
+      <svg class="icon"><use xlink:href="#eye-solid"></use></svg>
+    </button>
+  </div>`} />
+
+## Grid layout
+
+When working with responsive designs, combine floating labels with Chassis CSS's grid system by placing `.form-floating` containers within column classes:
+
+<Example code={`<div class="row g-medium">
+    <div class="col-medium">
+      <div class="form-floating">
+        <input type="email" class="form-input" id="floatingInputGrid" placeholder="name@example.com" value="user@chassis.css">
+        <label for="floatingInputGrid">Email address</label>
+      </div>
+    </div>
+    <div class="col-medium">
+      <div class="form-floating">
+        <select class="form-select" id="floatingSelectGrid">
+          <option selected>Choose an option</option>
+          <option value="1">Option One</option>
+          <option value="2">Option Two</option>
+          <option value="3">Option Three</option>
+        </select>
+        <label for="floatingSelectGrid">Preferences</label>
+      </div>
+    </div>
+  </div>`} />
+
+<Callout type="info" title="Responsive forms">
+  For optimal mobile experiences, consider using stacked layouts (full-width columns) on smaller screens and side-by-side layouts on larger screens using Chassis CSS's responsive column classes.
+</Callout>
+
+## CSS
+
+Chassis CSS uses a powerful combination of Sass and CSS variables to create a flexible form system that adapts to themes and design requirements.
+
+<DocsCSS />
+
+### Custom properties
+
+<DocsCSSVars />
+
+<ScssDocs name="form-input-variables" file="scss/placeholders/_form.scss" />
+
+Check the [overview]([[docsref:forms/overview#custom-properties]]) page to see the CSS variables shared by all form elements.
+
+### Sass variables
+
+<DocsSASSVars notExposed={true} />
+
+<hr />
+
+The following variables specifically affect the appearance of floating label forms:
+
+<ScssDocs name="form-floating-variables" file="scss/_variables.scss" />
+
+### Design tokens
+
+Check the [overview]([[docsref:forms/overview#design-tokens]]) page to see the design tokens shared by all form elements.

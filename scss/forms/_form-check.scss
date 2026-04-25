@@ -1,0 +1,369 @@
+//
+// Form Check Components
+//
+// This file contains styling for form check components including checkboxes, radio buttons,
+// switches, and button checks. It supports different sizes, states (checked, disabled)
+// with dark mode support.
+//
+
+//
+// Check/radio
+//
+// Standard styling for checkbox and radio input groups with labels.
+// Supports small, medium, and large sizing, as well as reverse layout.
+//
+
+.form-check {
+  @extend %form-colors;
+
+  --#{$prefix}input-width: #{$form-check-medium-size};
+  --#{$prefix}input-height: #{$form-check-medium-size};
+  --#{$prefix}gap: #{$form-medium-gap};
+  @include map-font-size($form-medium-text-font, form-check);
+  @include map-line-height($form-medium-text-font, form-check);
+
+  min-height: $form-check-min-height;
+  padding-left: #{calc(var(--#{$prefix}gap) + var(--#{$prefix}input-width))};
+  margin: $form-check-margin-y 0;
+
+  @include font-size();
+  @include line-height();
+
+  &.small {
+    --#{$prefix}input-width: #{$form-check-small-size};
+    --#{$prefix}input-height: #{$form-check-small-size};
+    --#{$prefix}gap: #{$form-small-gap};
+    @include map-font-size($form-small-text-font, form-check);
+    @include map-line-height($form-small-text-font, form-check);
+  }
+
+  &.large {
+    --#{$prefix}input-width: #{$form-check-large-size};
+    --#{$prefix}input-height: #{$form-check-large-size};
+    --#{$prefix}gap: #{$form-large-gap};
+    @include map-font-size($form-large-text-font, form-check);
+    @include map-line-height($form-large-text-font, form-check);
+  }
+
+  .check-input {
+    float: left;
+    margin-left: #{calc((var(--#{$prefix}gap) + var(--#{$prefix}input-width)) * -1)};
+  }
+
+  &.reverse {
+    padding-right: #{calc(var(--#{$prefix}gap) + var(--#{$prefix}input-width))};
+    padding-left: 0;
+    text-align: right;
+
+    .check-input {
+      float: right;
+      margin-right: #{calc((var(--#{$prefix}gap) + var(--#{$prefix}input-width)) * -1)};
+      margin-left: 0;
+    }
+  }
+
+}
+
+//
+// Option Input Styling
+//
+// Core styling for checkbox and radio inputs with support for:
+// - Various states (idle, focus, checked, disabled)
+// - Indeterminate state for checkboxes
+// - Customizable icons for different states
+// - Accessibility features including high contrast support
+//
+
+.check-input {
+  @extend %form-colors;
+  $default-disabled-check-icon: svg-color($form-check-checkbox-icon, $form-disabled-fg-inactive);
+  $default-disabled-radio-icon: svg-color($form-check-radio-icon, $form-disabled-fg-inactive);
+  $default-disabled-indeterminate-icon: svg-color($form-check-indeterminate-icon, $form-disabled-fg-inactive);
+  $primary-idle-check-icon: svg-color($form-check-checkbox-icon, $form-check-checked-fg-color);
+  $primary-idle-radio-icon: svg-color($form-check-radio-icon, $form-check-checked-fg-color);
+  $primary-idle-indeterminate-icon: svg-color($form-check-indeterminate-icon, $form-check-checked-fg-color);
+
+  // --#{$prefix}fg-color: var(--#{$prefix}input-fg-color, var(--#{$prefix}form-idle-fg-active));
+  --#{$prefix}bg-color: var(--#{$prefix}input-bg-color, var(--#{$prefix}form-idle-bg-regular));
+  --#{$prefix}border-color: var(--#{$prefix}input-border-color, var(--#{$prefix}form-idle-border-color));
+  --#{$prefix}width: var(--#{$prefix}check-input-width, #{$form-check-medium-size});
+  --#{$prefix}height: var(--#{$prefix}check-input-height, #{$form-check-medium-size});
+  --#{$prefix}margin-t: var(--#{$prefix}check-input-margin-t, #{calc((var(--#{$prefix}line-height) - var(--#{$prefix}height)) * .5)});
+
+  flex-shrink: 0;
+  width: var(--#{$prefix}width);
+  height: var(--#{$prefix}height);
+  margin-top: var(--#{$prefix}margin-t);
+  vertical-align: top;
+  appearance: none;
+  background-color: var(--#{$prefix}bg-color);
+  // background-image: var(--#{$prefix}icon);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  border: $form-check-border-width solid var(--#{$prefix}border-color);
+  print-color-adjust: exact; // Keep themed appearance for print
+  @include box-shadow($form-input-box-shadow);
+  @include transition($form-check-transition);
+
+  @if $enable-component-gradients {
+    background-image: var(--#{$prefix}icon), var(--#{$prefix}bg-gradient);
+  } @else {
+    background-image: var(--#{$prefix}icon);
+  }
+
+
+  &[type="checkbox"] {
+    @include border-radius($form-check-checkbox-border-radius);
+  }
+
+  &[type="radio"] {
+    // stylelint-disable-next-line property-disallowed-list
+    border-radius: $form-check-radio-border-radius;
+  }
+
+  // &:active {
+  //   filter: $check-input-active-filter;
+  // }
+
+  &:focus {
+    --#{$prefix}border-color: var(--#{$prefix}form-focus-border-color);
+    --#{$prefix}box-shadow: var(--#{$prefix}form-focus-box-shadow);
+
+    outline: 0;
+    @if $enable-component-shadows {
+      @include box-shadow($form-input-box-shadow, var(--#{$prefix}box-shadow));
+    } @else {
+      // Avoid using mixin so we can pass custom focus shadow properly
+      box-shadow: var(--#{$prefix}box-shadow);
+    }
+  }
+
+  &:checked {
+    --#{$prefix}bg-color: var(--#{$prefix}input-checked-bg-color, #{$form-check-checked-bg-color});
+    --#{$prefix}border-color: var(--#{$prefix}input-checked-border-color, #{$form-check-checked-border-color});
+
+    &[type="checkbox"] {
+      --#{$prefix}icon: #{$primary-idle-check-icon};
+    }
+
+    &[type="radio"] {
+      --#{$prefix}icon: #{$primary-idle-radio-icon};
+    }
+  }
+
+  &[type="checkbox"]:indeterminate {
+    --#{$prefix}bg-color: var(--#{$prefix}input-checked-bg-color, #{$form-check-checked-bg-color});
+    --#{$prefix}border-color: var(--#{$prefix}input-checked-bg-color, #{$form-check-checked-bg-color});
+    --#{$prefix}icon: #{$primary-idle-indeterminate-icon};
+  }
+
+  // Use disabled attribute in addition of :disabled pseudo-class
+  &[disabled],
+  &:disabled {
+    --#{$prefix}bg-color: var(--#{$prefix}form-disabled-bg-color, #{$form-disabled-bg-regular});
+    --#{$prefix}border-color: var(--#{$prefix}form-disabled-border-color, #{$form-disabled-border-color});
+    pointer-events: none;
+    filter: none;
+    // opacity: $form-check-disabled-opacity;
+    ~ .check-label,
+    .check-label:has(&) {
+      // --#{$prefix}fg-color: var(--#{$prefix}form-disabled-fg-color, #{$form-disabled-fg-active});
+      cursor: default;
+      opacity: $form-check-label-disabled-opacity;
+    }
+
+    &[type="checkbox"]:checked {
+      --#{$prefix}icon: #{$default-disabled-check-icon};
+    }
+
+    &[type="radio"]:checked {
+      --#{$prefix}icon: #{$default-disabled-radio-icon};
+    }
+
+    &[type="checkbox"]:indeterminate {
+      --#{$prefix}bg-color: var(--#{$prefix}form-disabled-bg-color, #{$form-disabled-bg-regular});
+      --#{$prefix}border-color: var(--#{$prefix}form-disabled-border-color, #{$form-disabled-border-color});
+      --#{$prefix}icon: #{$default-disabled-indeterminate-icon};
+    }
+
+  }
+}
+
+.check-input.small,
+.form-check.small .check-input  {
+  --#{$prefix}width: #{$form-check-small-size};
+  --#{$prefix}height: #{$form-check-small-size};
+}
+
+.check-input.large,
+.form-check.large .check-input  {
+  --#{$prefix}width: #{$form-check-large-size};
+  --#{$prefix}height: #{$form-check-large-size};
+}
+
+
+.check-label {
+  @extend %form-colors;
+  color: var(--#{$prefix}fg-color, $form-check-label-color);
+  cursor: $form-check-label-cursor;
+}
+
+//
+// Switch Component
+//
+// Toggle switch styling that transforms checkboxes into switches.
+// Features customizable icons, transitions, and states (idle, focus, checked, disabled).
+// Supports both left-to-right and right-to-left (reverse) layouts.
+//
+
+.form-switch {
+  $form-switch-idle-icon:         svg-color($form-switch-icon, $form-switch-idle-color) !default;
+  $form-switch-disabled-icon:     svg-color($form-switch-icon, $form-switch-disabled-color) !default;
+  $form-switch-focus-icon:        svg-color($form-switch-icon, $form-switch-focus-color) !default;
+  $form-switch-checked-icon:      svg-color($form-switch-icon, $form-switch-checked-color) !default;
+
+  --#{$prefix}form-switch-icon: #{$form-switch-idle-icon};
+  --#{$prefix}input-width: #{$form-switch-width};
+
+  .check-input {
+    width: $form-switch-width;
+    @if $enable-component-gradients {
+      background-image: var(--#{$prefix}form-switch-icon), var(--#{$prefix}bg-gradient);
+    } @else {
+      background-image: var(--#{$prefix}form-switch-icon);
+    }
+    background-position: left center;
+    @include border-radius($form-switch-border-radius, 0);
+    @include transition($form-switch-transition);
+
+    &:focus {
+      --#{$prefix}form-switch-icon: #{$form-switch-focus-icon};
+    }
+
+    &:checked {
+      --#{$prefix}form-switch-icon: #{$form-switch-checked-icon};
+      background-position: $form-switch-checked-icon-position;
+    }
+
+    &:disabled {
+      --#{$prefix}form-switch-icon: #{$form-switch-disabled-icon};
+    }
+  }
+}
+
+//
+// Utility Classes
+//
+
+// Inline form check - displays check groups horizontally instead of stacked
+.check-inline {
+  display: inline-block;
+  margin-right: $form-check-inline-margin-end;
+}
+
+// Button option - hidden input that can be used with button components
+// Used for creating button-based option groups where clicking buttons changes the selection
+.button-check {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none;
+
+  &[disabled],
+  &:disabled {
+    + .button {
+      pointer-events: none;
+      filter: none;
+      opacity: $form-check-button-disabled-opacity;
+    }
+  }
+}
+
+//
+// Dark Mode Mixins
+//
+// These mixins provide dark mode styling for form check components.
+// They are used within the color-mode mixin to apply appropriate styling
+// based on the color mode type (media-query or class-based).
+//
+
+// Mixin for applying dark mode styling to form switches
+// Updates icon colors for idle, focus, checked, and disabled states
+@mixin switch-dark() {
+  $form-switch-idle-icon:       svg-color($form-switch-icon, $form-switch-idle-color, true) !default;
+  $form-switch-disabled-icon:   svg-color($form-switch-icon, $form-switch-disabled-color, true) !default;
+  $form-switch-focus-icon:      svg-color($form-switch-icon, $form-switch-focus-color, true) !default;
+  $form-switch-checked-icon:    svg-color($form-switch-icon, $form-switch-checked-color, true) !default;
+
+  --#{$prefix}form-switch-icon: #{$form-switch-idle-icon};
+
+  &:focus {
+    --#{$prefix}form-switch-icon: #{$form-switch-focus-icon};
+  }
+
+  &:checked {
+    --#{$prefix}form-switch-icon: #{$form-switch-checked-icon};
+  }
+
+  &:disabled {
+    --#{$prefix}form-switch-icon: #{$form-switch-disabled-icon};
+  }
+}
+
+// Mixin for applying dark mode styling to checkboxes and radio inputs
+// Updates icon colors for checked, disabled, and indeterminate states
+@mixin check-input-dark() {
+  // Generate dark mode versions of the SVG icons
+  $default-disabled-check-icon: svg-color($form-check-checkbox-icon, $form-disabled-fg-inactive, true);
+  $default-disabled-radio-icon: svg-color($form-check-radio-icon, $form-disabled-fg-inactive, true);
+  $default-disabled-indeterminate-icon: svg-color($form-check-indeterminate-icon, $form-disabled-fg-inactive, true);
+
+  // Apply dark mode icons to disabled states
+  &[disabled],
+  &:disabled {
+    &[type="checkbox"]:checked {
+      --#{$prefix}icon: #{$default-disabled-check-icon};
+    }
+
+    &[type="radio"]:checked {
+      --#{$prefix}icon: #{$default-disabled-radio-icon};
+    }
+
+    &[type="checkbox"]:indeterminate {
+      --#{$prefix}icon: #{$default-disabled-indeterminate-icon};
+    }
+  }
+
+}
+
+//
+// Dark Mode Implementation
+//
+// Applies dark mode styling based on the configured color mode type
+// (either media-query based or class-based).
+//
+@if $enable-dark-mode {
+  @include color-mode(dark) {
+    @if $color-mode-type == "media-query" {
+      // Apply dark mode styling with media query approach
+      .check-input {
+        @include check-input-dark();
+      }
+      .form-switch .check-input {
+        @include switch-dark();
+      }
+    } @else {
+      // Apply dark mode styling with class-based approach
+      // Using explicit selectors to avoid conflicts with light theme overrides
+      .check-input:not(.check-input[data-cx-theme="light"], [data-cx-theme="dark"] [data-cx-theme="light"] .check-input),
+      &.check-input {
+        @include check-input-dark();
+      }
+
+      .form-switch:not(.form-switch[data-cx-theme="light"], [data-cx-theme="dark"] [data-cx-theme="light"] .form-switch) .check-input,
+      &.form-switch .check-input {
+        @include switch-dark();
+      }
+    }
+  }
+}

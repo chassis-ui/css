@@ -1,0 +1,146 @@
+---
+title: Text
+description: Comprehensive documentation and examples for common text utilities to control alignment, wrapping, weight, and more.
+toc: true
+---
+
+## Text Alignment
+
+Easily realign text within components using text alignment classes. These classes allow you to control the alignment of text for different viewport sizes. For start, end, and center alignment, responsive classes are available that use the same viewport width breakpoints as the grid system.
+
+<Example code={`<p class="text-start">Start aligned text on all viewport sizes.</p>
+<p class="text-center">Center aligned text on all viewport sizes.</p>
+<p class="text-end">End aligned text on all viewport sizes.</p>
+
+<p class="text-small-end">End aligned text on viewports sized "<b>small</b>" or wider.</p>
+<p class="text-medium-end">End aligned text on viewports sized "<b>medium</b>" or wider.</p>
+<p class="text-large-end">End aligned text on viewports sized "<b>large</b>" or wider.</p>
+<p class="text-xlarge-end">End aligned text on viewports sized "<b>xlarge</b>" or wider.</p>
+<p class="text-2xlarge-end">End aligned text on viewports sized "<b>2xlarge</b>" or wider.</p>`} />
+
+<Callout>
+Note: We do not provide utility classes for justified text. While justified text might look more visually appealing, it can result in uneven word spacing, making it harder to read.
+</Callout>
+
+## Text Wrapping & Overflow
+
+Wrap text within a container using the `.text-wrap` class. This ensures that text will break into multiple lines if it exceeds the container's width.
+
+<Example code={`<div class="badge primary text-wrap" style="width: 6rem;">
+    This text should wrap.
+  </div>`} />
+
+Prevent text from wrapping by applying the `.text-nowrap` class. This is useful when you want text to remain on a single line, even if it overflows the container.
+
+<Example code={`<div class="text-nowrap bg-evident border" style="width: 8rem;">
+    This text should overflow the parent.
+  </div>`} />
+
+## Word Break
+
+Prevent long strings of text from breaking your layout by using the `.text-break` class. This class applies `word-wrap: break-word` and `word-break: break-word` to ensure long words or strings break appropriately. We use `word-wrap` for broader browser support and include the deprecated `word-break: break-word` to avoid issues with flex containers.
+
+<Example code={`<p class="text-break">mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm</p>`} />
+
+<Callout type="warning">
+Note that [Breaking words isn’t possible in Arabic](https://rtlstyling.com/posts/rtl-styling#3.-line-break), the most widely used RTL language. As a result, `.text-break` is removed from our RTL-compiled CSS.
+</Callout>
+
+## Text Transform
+
+Transform text within components using text capitalization classes: `text-lowercase`, `text-uppercase`, or `text-capitalize`.
+
+<Example code={`<p class="text-lowercase">Lowercased Text</p>
+<p class="text-uppercase">uppercased text</p>
+<p class="text-capitalize">capitalized text</p>
+<p class="text-uppercase" lang="tr">istanbul</p>
+<p class="text-lowercase" lang="tr">İSTANBUL</p>
+<p class="text-capitalize" lang="tr">istanbul</p>`} />
+
+Note that `.text-capitalize` only changes the first letter of each word, leaving the case of other letters unaffected. Unfortunately, `.text-capitalize` does not work for locales, even when the HTML `lang` attribute is specified.
+
+## Font Size
+
+Quickly adjust the size of text using `.text-large` and `.text-small` classes. These classes allow you to scale text up or down for better emphasis or readability.
+
+<Example code={`<h6>Easily make text <span class="text-large">larger</span> or <span class="text-small">smaller</span> to suit your design needs.</h6>
+<p>Easily make text <span class="text-large">larger</span> or <span class="text-small">smaller</span> to suit your design needs.</p>`} />
+
+## Font Weight & Style
+
+Beside token definitions, you can use standard font weights and styles by `.text-*` utilities.
+
+<Example code={`<p class="text-bold">Bold text.</p>
+<p class="text-bolder">Bolder weight text (relative to the parent element).</p>
+<p class="text-semibold">Semibold weight text.</p>
+<p class="text-medium">Medium weight text.</p>
+<p class="text-regular">Normal weight text.</p>
+<p class="text-light">Light weight text.</p>
+<p class="text-lighter">Lighter weight text (relative to the parent element).</p>
+<p class="text-italic">Italic text.</p>
+<p class="text-normal">Text with normal font style</p>`} />
+
+## Line height
+
+Adjust the line height text using `.text-lh-*` utility classes.
+
+<Example code={`<p class="text-lh-1">This is a long paragraph written to show how the line-height of an element is affected by our utilities. Classes are applied to the element itself or sometimes the parent element. These classes can be customized as needed with our utility API.</p>
+<p class="text-lh-small">This is a long paragraph written to show how the line-height of an element is affected by our utilities. Classes are applied to the element itself or sometimes the parent element. These classes can be customized as needed with our utility API.</p>
+<p class="text-lh-medium">This is a long paragraph written to show how the line-height of an element is affected by our utilities. Classes are applied to the element itself or sometimes the parent element. These classes can be customized as needed with our utility API.</p>
+<p class="text-lh-large">This is a long paragraph written to show how the line-height of an element is affected by our utilities. Classes are applied to the element itself or sometimes the parent element. These classes can be customized as needed with our utility API.</p>`} />
+
+## Monospace
+
+Apply the monospace font stack to text using the `.text-monospace` utility class.
+
+<Example code={`<p class="text-monospace">This is in monospace</p>`} />
+
+## Text Decoration
+
+Use `.text-decoration-*` classes to easily apply or remove text decorations.
+
+<Example code={`<p class="text-decoration-underline">This text has a line underneath it.</p>
+<p class="text-decoration-line-through">This text has a line going through it.</p>
+<a href="#" class="text-decoration-none">This link has its text decoration removed</a>`} />
+
+## Text Truncation
+
+For longer content, add a `.text-truncate` class to truncate the text with an ellipsis. **Requires `display: inline-block` or `display: block`.**
+
+<Example code={`<!-- Block level -->
+  <div class="row">
+    <div class="col-2 text-truncate">
+      This text is quite long, and will be truncated once displayed.
+    </div>
+  </div>
+
+  <!-- Inline level -->
+  <span class="d-inline-block text-truncate" style="max-width: 150px;">
+    This text is quite long, and will be truncated once displayed.
+  </span>`} />
+
+## CSS
+
+<DocsCSS />
+
+### Sass variables
+
+Base font related Sass variables, keeping token references as CSS variables.
+
+<ScssDocs name="font-variables" file="scss/_variables.scss" />
+
+### Sass maps
+
+Most `font` utilities are generated from this maps, in combination utilities API.
+
+<ScssDocs name="font-families-map" file="scss/maps/_fonts.scss" />
+<ScssDocs name="font-sizes-map" file="scss/maps/_fonts.scss" />
+<ScssDocs name="font-weights-map" file="scss/maps/_fonts.scss" />
+<ScssDocs name="line-heights-map" file="scss/maps/_fonts.scss" />
+
+
+### Sass utilities API
+
+Font and text utilities are declared in our utilities API in `scss/utilities/_text.scss`. [Learn how to use the utilities API.]([[docsref:/utilities/api#using-the-api]])
+
+<ScssDocs name="utils-text" file="scss/utilities/_text.scss" />

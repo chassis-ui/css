@@ -1,0 +1,64 @@
+// scss-docs-start solid-button-mixin
+@mixin solid-button($color) {
+  // Idle
+  --#{$prefix}fg-idle: var(--#{$prefix}button-#{$color}-fg-idle, #{map-get($button-colors, #{#{$color}-fg-idle})});
+  --#{$prefix}bg-idle: var(--#{$prefix}button-#{$color}-bg-idle, #{map-get($button-colors, #{#{$color}-bg-idle})});
+  --#{$prefix}border-idle: var(--#{$prefix}button-#{$color}-border-idle, #{map-get($button-colors, #{#{$color}-border-idle})});
+  // Hover
+  --#{$prefix}fg-hover: var(--#{$prefix}button-#{$color}-fg-hover, #{map-get($button-colors, #{#{$color}-fg-hover})});
+  --#{$prefix}bg-hover: var(--#{$prefix}button-#{$color}-bg-hover, #{map-get($button-colors, #{#{$color}-bg-hover})});
+  --#{$prefix}border-hover: var(--#{$prefix}button-#{$color}-border-hover, #{map-get($button-colors, #{#{$color}-border-hover})});
+  // Press
+  --#{$prefix}fg-press: var(--#{$prefix}button-#{$color}-fg-press, #{map-get($button-colors, #{#{$color}-fg-press})});
+  --#{$prefix}bg-press: var(--#{$prefix}button-#{$color}-bg-press, #{map-get($button-colors, #{#{$color}-bg-press})});
+  --#{$prefix}border-press: var(--#{$prefix}button-#{$color}-border-press, #{map-get($button-colors, #{#{$color}-border-press})});
+  // Disabled
+  --#{$prefix}fg-disabled: var(--#{$prefix}button-#{$color}-fg-disabled, #{map-get($button-colors, #{#{$color}-fg-disabled})});
+  --#{$prefix}bg-disabled: var(--#{$prefix}button-#{$color}-bg-disabled, #{map-get($button-colors, #{#{$color}-bg-disabled})});
+  --#{$prefix}border-disabled: var(--#{$prefix}button-#{$color}-border-disabled, #{map-get($button-colors, #{#{$color}-border-disabled})});
+}
+// scss-docs-end solid-button-mixin
+
+// scss-docs-start outline-button-mixin
+@mixin outline-button($color) {
+  // Idle
+  --#{$prefix}fg-idle: var(--#{$prefix}button-outline-#{$color}-fg-idle, var(--#{$prefix}#{$color}-base-color));
+  --#{$prefix}bg-idle: var(--#{$prefix}button-outline-#{$color}-bg-idle, transparent);
+  --#{$prefix}border-idle: var(--#{$prefix}button-outline-#{$color}-border-idle, var(--#{$prefix}#{$color}-base-color));
+  // Hover
+  --#{$prefix}fg-hover: var(--#{$prefix}button-outline-#{$color}-fg-hover, var(--#{$prefix}#{$color}-contrast-color));
+  --#{$prefix}bg-hover: var(--#{$prefix}button-outline-#{$color}-bg-hover, var(--#{$prefix}#{$color}-base-color));
+  --#{$prefix}border-hover: var(--#{$prefix}button-outline-#{$color}-border-hover, transparent);
+  // Press
+  --#{$prefix}fg-press: var(--#{$prefix}button-outline-#{$color}-fg-press, #{map-get($button-colors, #{#{$color}-fg-press})});
+  --#{$prefix}bg-press: var(--#{$prefix}button-outline-#{$color}-bg-press, #{map-get($button-colors, #{#{$color}-bg-press})});
+  --#{$prefix}border-press: var(--#{$prefix}button-outline-#{$color}-border-press, transparent);
+  // Disabled
+  --#{$prefix}fg-disabled: var(--#{$prefix}button-outline-#{$color}-bg-disabled, #{map-get($button-colors, #{#{$color}-bg-disabled})});
+  --#{$prefix}bg-disabled: var(--#{$prefix}button-outline-#{$color}-bg-disabled, transparent);
+  --#{$prefix}border-disabled: var(--#{$prefix}button-outline-#{$color}-bg-disabled, #{map-get($button-colors, #{#{$color}-bg-disabled})});
+  // Custom border width
+  --#{$prefix}border-width: var(--#{$prefix}border-width-large);
+}
+// scss-docs-end outline-button-mixin
+
+// scss-docs-start smooth-button-mixin
+@mixin smooth-button($color) {
+  // Idle
+  --#{$prefix}fg-idle: var(--#{$prefix}button-subtle-#{$color}-fg-idle, var(--#{#{$prefix}#{$color}-fg-main}));
+  --#{$prefix}bg-idle: var(--#{$prefix}button-subtle-#{$color}-bg-idle, var(--#{#{$prefix}#{$color}-bg-even}));
+  --#{$prefix}border-idle: var(--#{$prefix}button-subtle-#{$color}-border-idle, transparent);
+  // Hover
+  --#{$prefix}fg-hover: var(--#{$prefix}button-subtle-#{$color}-fg-hover, var(--#{#{$prefix}#{$color}-fg-main}));
+  --#{$prefix}bg-hover: var(--#{$prefix}button-subtle-#{$color}-bg-hover, var(--#{#{$prefix}#{$color}-bg-main}));
+  --#{$prefix}border-hover: var(--#{$prefix}button-subtle-#{$color}-border-hover, transparent);
+  // Press
+  --#{$prefix}fg-press: var(--#{$prefix}button-subtle-#{$color}-fg-press, var(--#{#{$prefix}#{$color}-fg-main}));
+  --#{$prefix}bg-press: var(--#{$prefix}button-subtle-#{$color}-bg-press, var(--#{#{$prefix}#{$color}-bg-evident}));
+  --#{$prefix}border-press: var(--#{$prefix}button-subtle-#{$color}-border-press, transparent);
+  // Disabled
+  --#{$prefix}fg-disabled: var(--#{$prefix}button-subtle-#{$color}-fg-disabled, var(--#{#{$prefix}#{$color}-fg-slight}));
+  --#{$prefix}bg-disabled: var(--#{$prefix}button-subtle-#{$color}-bg-disabled, var(--#{#{$prefix}#{$color}-bg-main}));
+  --#{$prefix}border-disabled: var(--#{$prefix}button-subtle-#{$color}-border-disabled, transparent);
+}
+// scss-docs-end smooth-button-mixin

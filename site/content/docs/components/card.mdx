@@ -1,0 +1,703 @@
+---
+title: Cards
+description: Flexible content containers with support for headers, footers, and various content types with consistent spacing and visual styling.
+toc: true
+---
+
+import { getData } from '@libs/data'
+
+## Overview
+
+Cards are versatile content containers that help organize and present information in a clean, structured format. Chassis cards support various content types, contextual styling options, and layout patterns to meet diverse interface needs. They provide consistent spacing and visual hierarchy through customizable headers, footers, and content areas.
+
+## Basic example
+
+Cards in Chassis are minimal yet powerful, providing a foundation for various content display needs. Built with flexbox, they integrate seamlessly with other Chassis components and utility classes.
+
+Here's a basic card example demonstrating the core structure with mixed content. By default, cards expand to fill their container's width, but can be easily sized using sizing utilities or custom CSS.
+
+<Example code={`<div class="card" style="width: 18rem;">
+    <Placeholder width="100%" height="180" class="card-image-top" text="Image cap" />
+    <div class="card-content">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      <a href="#" class="button primary">Go somewhere</a>
+    </div>
+  </div>`} />
+
+## Content structure
+
+Chassis cards support a variety of content types and structures. Each element has a specific role in creating well-organized, visually consistent information displays.
+
+### Content area
+
+The `.card-content` element is the primary building block of a card, providing properly padded space for your content.
+
+<Example code={`<div class="card" style="width: 18rem;">
+    <div class="card-content">
+      This is some text within a card body.
+    </div>
+  </div>`} />
+
+### Titles, text, and links
+
+Create proper text hierarchy using these card text classes:
+
+- `.card-title` - For primary headings within cards
+- `.card-subtitle` - For secondary text or descriptions
+- `.card-body` - For main content and descriptive text
+- `.card-link` - For action links with appropriate spacing
+
+When these elements are placed within a `.card-content` container, they automatically receive proper spacing and alignment.
+
+<Example code={`<div class="row">
+    <div class="col-medium-6 mb-medium mb-small-0">
+      <div class="card">
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <h6 class="card-subtitle">Card subtitle</h6>
+          <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" class="card-link">Card link</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-medium-6">
+      <div class="card">
+        <div class="card-content">
+          <p class="card-subtitle">Card subtitle</p>
+          <h5 class="card-title">Card title</h5>
+          <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" class="card-link">Card link</a>
+          <a href="#" class="card-link">Another link</a>
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+### Header and footer
+
+Add optional headers and footers to enhance card organization.
+
+<Example code={`<div class="row">
+    <div class="col-medium-6 mb-medium mb-small-0">
+      <div class="card">
+        <div class="card-header">
+          Featured
+        </div>
+        <div class="card-content">
+          <h5 class="card-title">Special title treatment</h5>
+          <p class="card-body">With supporting text below as a natural lead-in to additional content.</p>
+          <a href="#" class="button primary">Go somewhere</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-medium-6">
+      <div class="card">
+        <div class="card-content">
+          <h5 class="card-title">Special title treatment</h5>
+          <p class="card-body">With supporting text below as a natural lead-in to additional content.</p>
+          <a href="#" class="button primary">Go somewhere</a>
+        </div>
+        <div class="card-footer">
+          Don't miss this.
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+<Example code={`<div class="card text-center">
+    <div class="card-header">
+      Featured
+    </div>
+    <div class="card-content">
+      <h5 class="card-title">Special title treatment</h5>
+      <p class="card-body">With supporting text below as a natural lead-in to additional content.</p>
+      <a href="#" class="button primary">Go somewhere</a>
+    </div>
+    <div class="card-footer fg-subtle">
+      2 days ago
+    </div>
+  </div>`} />
+
+### Image caps
+
+Use `.card-image-top` and `.card-image-bottom` to add images that match the card's border radius at the top or bottom.
+
+<Example code={`<div class="row">
+    <div class="col-medium-6 mb-medium mb-small-0">
+      <div class="card">
+        <Placeholder width="100%" height="180" class="card-image-top" text="Image cap" />
+        <div class="card-content">
+          <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-medium-6">
+      <div class="card">
+        <div class="card-content">
+          <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        </div>
+        <Placeholder width="100%" height="180" class="card-image-bottom" text="Image cap" />
+      </div>
+    </div>
+  </div>`} />
+
+### Image overlays
+
+Create image backgrounds with text overlays using the `.card-overlay` class.
+
+<Example code={`<div class="card">
+    <Placeholder width="100%" height="270" class="cxd-placeholder-image-large card-image" text="Card image" />
+    <div class="card-overlay dim-subtle fg-inverse">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-body">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+      <p class="card-body"><small>Last updated 3 mins ago</small></p>
+    </div>
+  </div>`} />
+
+<Callout>
+Note that content should not be larger than the height of the image. Since `.card-overlay` has `overflow: hidden`, content will be clipped if it is larger than the image.
+</Callout>
+
+### Image contents
+
+Use `.card-image` within `.card-content` for proper spacing around images.
+
+<Example code={`<div class="row">
+    <div class="col-medium-6 mb-medium mb-small-0">
+      <div class="card">
+        <div class="card-content">
+          <Placeholder width="100%" height="180" class="card-image" text="Image content" />
+        </div>
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <h6 class="card-subtitle">Card subtitle</h6>
+          <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-medium-6">
+      <div class="card h-100">
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <h6 class="card-subtitle">Card subtitle</h6>
+          <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        </div>
+        <div class="card-content">
+          <Placeholder width="100%" height="180" class="card-image" text="Image content" />
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+### List groups
+
+Create lists of content in a card with flush list groups.
+
+<Example code={`<div class="card" style="width: 18rem;">
+    <ul class="list-group list-flush">
+      <li class="list-item">An item</li>
+      <li class="list-item">A second item</li>
+      <li class="list-item">The third item</li>
+      <li class="list-item">Fourth item</li>
+    </ul>
+  </div>`} />
+
+<Example code={`<div class="row">
+    <div class="col-medium-6 mb-medium mb-small-0">
+      <div class="card">
+        <div class="card-header">
+          Card header
+        </div>
+        <ul class="list-group list-flush">
+          <li class="list-item">An item</li>
+          <li class="list-item">A second item</li>
+          <li class="list-item">A third item</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-medium-6">
+      <div class="card">
+        <ul class="list-group list-flush">
+          <li class="list-item">An item</li>
+          <li class="list-item">A second item</li>
+          <li class="list-item">A third item</li>
+        </ul>
+        <div class="card-footer">
+          Card footer
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+### Combined elements
+
+Mix multiple content types to create complex card layouts. Below is an example combining images, text elements, and a list group.
+
+<Example code={`<div class="card" style="width: 18rem;">
+    <Placeholder width="100%" height="180" class="card-image-top" text="Image cap" />
+    <div class="card-content">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    </div>
+    <ul class="list-group list-flush">
+      <li class="list-item">An item</li>
+      <li class="list-item">A second item</li>
+      <li class="list-item">A third item</li>
+    </ul>
+    <div class="card-content">
+      <a href="#" class="card-link">Card link</a>
+      <a href="#" class="card-link">Another link</a>
+    </div>
+  </div>`} />
+
+## Size variants
+
+Cards have `.small` and `.large` variants in addition to the default size. These adjust font-size and spacing to create compact cards or emphasize content.
+
+<Example code={`<div class="row">
+    <div class="col-medium-5 mb-medium mb-small-0">
+      <div class="card small">
+        <Placeholder width="100%" height="180" class="card-image-top" text="Image cap" />
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <h5 class="card-subtitle">Card subtitle</h5>
+          <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" class="button primary">Go somewhere</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-medium-7">
+      <div class="card large">
+        <Placeholder width="100%" height="180" class="card-image-top" text="Image cap" />
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <h5 class="card-subtitle">Card subtitle</h5>
+          <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" class="button primary">Go somewhere</a>
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+## Card width
+
+Cards have no specific width by default and will expand to 100% of their container. Use grid classes, utilities, or custom CSS to control card width.
+
+### Using grid markup
+
+Wrap cards in columns and rows using the grid system.
+
+<Example code={`<div class="row">
+    <div class="col-small-6 mb-medium mb-xsmall-0">
+      <div class="card">
+        <div class="card-content">
+          <h5 class="card-title">Special title treatment</h5>
+          <p class="card-body">With supporting text below as a natural lead-in to additional content.</p>
+          <a href="#" class="button primary">Go somewhere</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-small-6">
+      <div class="card">
+        <div class="card-content">
+          <h5 class="card-title">Special title treatment</h5>
+          <p class="card-body">With supporting text below as a natural lead-in to additional content.</p>
+          <a href="#" class="button primary">Go somewhere</a>
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+### Using utilities
+
+Apply sizing utilities to control a card's width.
+
+<Example code={`<div class="card w-75 mb-medium">
+    <div class="card-content">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-body">With supporting text below as a natural lead-in to additional content.</p>
+      <a href="#" class="button primary">Button</a>
+    </div>
+  </div>
+  <div class="card w-50">
+    <div class="card-content">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-body">With supporting text below as a natural lead-in to additional content.</p>
+      <a href="#" class="button primary">Button</a>
+    </div>
+  </div>`} />
+
+### Using custom CSS
+
+Use inline styles or custom CSS to set specific card widths.
+
+<Example code={`<div class="card" style="width: 18rem;">
+    <div class="card-content">
+      <h5 class="card-title">Special title treatment</h5>
+      <p class="card-body">With supporting text below as a natural lead-in to additional content.</p>
+      <a href="#" class="button primary">Go somewhere</a>
+    </div>
+  </div>`} />
+
+## Text alignment
+
+Change card text alignment using text utility classes.
+
+<Example code={`<div class="row">
+    <div class="col-medium-6 mb-medium mb-small-0">
+      <div class="card text-center">
+        <div class="card-content">
+          <h5 class="card-title">Special title treatment</h5>
+          <p class="card-body">With supporting text below as a natural lead-in to additional content.</p>
+          <a href="#" class="button primary">Go somewhere</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-medium-6">
+      <div class="card text-end">
+        <div class="card-content">
+          <h5 class="card-title">Special title treatment</h5>
+          <p class="card-body">With supporting text below as a natural lead-in to additional content.</p>
+          <a href="#" class="button primary">Go somewhere</a>
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+## Navigation
+
+Add navigation components to card headers for additional functionality.
+
+<Example code={`<div class="card text-center">
+    <div class="card-header">
+      <ul class="nav nav-tabs card-header-tabs">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="true" href="#">Active</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+        </li>
+      </ul>
+    </div>
+    <div class="card-content">
+      <h5 class="card-title">Special title treatment</h5>
+      <p class="card-body">With supporting text below as a natural lead-in to additional content.</p>
+      <a href="#" class="button primary">Go somewhere</a>
+    </div>
+  </div>`} />
+
+<Example code={`<div class="card text-center">
+    <div class="card-header">
+      <ul class="nav nav-pills card-header-pills">
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Active</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+        </li>
+      </ul>
+    </div>
+    <div class="card-content">
+      <h5 class="card-title">Special title treatment</h5>
+      <p class="card-body">With supporting text below as a natural lead-in to additional content.</p>
+      <a href="#" class="button primary">Go somewhere</a>
+    </div>
+  </div>`} />
+
+## Horizontal cards
+
+Create horizontal cards using the grid system with responsive behavior. Layouts adapt to different screen sizes while maintaining proper image spacing and border radius.
+
+Place images in a separate column outside the content area using specific classes for different screen sizes. Use `.card-image-top` with `d-block d-medium-none` for mobile displays and `.card-image-start` with `d-none d-medium-block` for larger screens to create a clean separation between image and content:
+
+<Example code={`<div class="card mb-medium">
+    <div class="row g-0">
+      <div class="col-medium-4">
+        <!-- Mobile image (shown only on small screens) -->
+        <Placeholder width="100%" height="200" class="card-image-top d-block d-medium-none" text="Card image" aria-hidden="true" />
+        <!-- Desktop image (shown only on medium screens and above) -->
+        <Placeholder width="100%" height="100%" class="card-image-start h-100 d-none d-medium-block" text="Card image" />
+      </div>
+      <div class="col-medium-8 card-content">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-body">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        <p class="card-body"><small class="fg-subtle">Last updated 3 mins ago</small></p>
+      </div>
+    </div>
+  </div>`} />
+
+Integrate images directly within the card content area by wrapping them in a `.card-content` container for both mobile and desktop layouts. The `.card-content` container maintains spacing while `.card-image` preserves proper border radius:
+
+<Example code={`<div class="card mb-medium">
+    <div class="row g-0">
+      <!-- Mobile image container (shown only on small screens) -->
+      <div class="d-block d-medium-none card-content">
+        <Placeholder width="100%" height="200" class="card-image" text="Card image" aria-hidden="true" />
+      </div>
+      <!-- Desktop image container (shown only on medium screens and above) -->
+      <div class="col-medium-4 d-none d-medium-block card-content">
+        <Placeholder width="100%" height="100%" class="card-image h-100" text="Card image" />
+      </div>
+      <div class="col-medium-8 card-content">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-body">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        <p class="card-body"><small class="fg-subtle">Last updated 3 mins ago</small></p>
+      </div>
+    </div>
+  </div>`} />
+
+<Callout>
+Apply `aria-hidden="true"` to one of the images in horizontal cards to improve accessibility, as the same image is being repeated for different screen sizes. This prevents screen readers from announcing the same image content multiple times.
+</Callout>
+
+## Card layouts
+
+Chassis offers several options for arranging multiple cards on a page.
+
+### Grid cards
+
+Use the grid system's `.row-cols-*` classes to control how many cards appear per row.
+
+<Example code={`<div class="row row-cols-1 row-cols-medium-2 g-large">
+    <div class="col">
+      <div class="card">
+        <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" />
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-body">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" />
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-body">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" />
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-body">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" />
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-body">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+### Equal heights
+
+Add `.h-100` to cards to equalize their heights regardless of content length.
+
+<Example code={`<div class="row row-cols-1 row-cols-medium-3 g-4">
+    <div class="col">
+      <div class="card h-100">
+        <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" />
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-body">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100">
+        <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" />
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-body">This is a short card.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100">
+        <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" />
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-body">This card has even longer content that will display with equal height.</p>
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+Card footers will automatically align at the bottom with this approach.
+
+<Example code={`<div class="row row-cols-1 row-cols-medium-3 g-large">
+    <div class="col">
+      <div class="card h-100">
+        <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" />
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-body">This card has supporting text below as a natural lead-in.</p>
+        </div>
+        <div class="card-footer">
+          <small class="fg-subtle">Last updated 3 mins ago</small>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100">
+        <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" />
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-body">This card has shorter content.</p>
+        </div>
+        <div class="card-footer">
+          <small class="fg-subtle">Last updated 3 mins ago</small>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100">
+        <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" />
+        <div class="card-content">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-body">This card has longer content that shows the equal height action across all cards.</p>
+        </div>
+        <div class="card-footer">
+          <small class="fg-subtle">Last updated 3 mins ago</small>
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+### Card groups
+
+Use `.card-group` to create a series of connected cards with equal dimensions. Card groups use flexbox to create attached elements with uniform width and height.
+
+<Example code={`<div class="card-group">
+    <div class="card">
+      <Placeholder width="100%" height="180" class="card-image-top" text="Image cap" />
+      <div class="card-content">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-body">This is a wider card with supporting text below as a natural lead-in to additional content.</p>
+        <p class="card-body"><small class="fg-subtle">Last updated 3 mins ago</small></p>
+      </div>
+    </div>
+    <div class="card">
+      <Placeholder width="100%" height="180" class="card-image-top" text="Image cap" />
+      <div class="card-content">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-body">This card has supporting text below as a natural lead-in to additional content.</p>
+        <p class="card-body"><small class="fg-subtle">Last updated 3 mins ago</small></p>
+      </div>
+    </div>
+    <div class="card">
+      <Placeholder width="100%" height="180" class="card-image-top" text="Image cap" />
+      <div class="card-content">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-body">This is a wider card with supporting text below as a natural lead-in to additional content.</p>
+        <p class="card-body"><small class="fg-subtle">Last updated 3 mins ago</small></p>
+      </div>
+    </div>
+  </div>`} />
+
+## Style variations
+
+Chassis cards support various styling options to match your design needs.
+
+### Context classes
+
+Use context classes with cards for consistent color theming. Add `.context` along with a contextual class like `.primary` to apply themed styles.
+
+<Example code={`<div class="row row-cols-1 row-cols-medium-2 g-large">
+    <div class="col">
+      <div class="card context primary h-100">
+        <div class="card-header">Header</div>
+        <div class="card-content">
+          <h5 class="card-title">Primary card</h5>
+          <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card context primary solid h-100">
+        <div class="card-header">Header</div>
+        <div class="card-content">
+          <h5 class="card-title">Primary solid</h5>
+          <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card context primary smooth h-100">
+        <div class="card-header">Header</div>
+        <div class="card-content">
+          <h5 class="card-title">Primary smooth</h5>
+          <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card context primary outline h-100">
+        <div class="card-header">Header</div>
+        <div class="card-content">
+          <h5 class="card-title">Primary outline</h5>
+          <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+<Callout name="warning-color-assistive-technologies" />
+
+### Utility classes
+
+You can also style card sections independently using utility classes.
+
+<Example code={`<div class="row row-cols-1 row-cols-medium-2 g-large">
+    <div class="col">
+      <div class="card border-primary h-100">
+        <div class="card-header primary-bg-evident">Header</div>
+        <div class="card-content primary-bg-main">
+          <h5 class="card-title">Primary background</h5>
+          <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        </div>
+        <div class="card-footer primary-bg-even">Footer</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-header fg-primary border-primary">Header</div>
+        <div class="card-content fg-secondary">
+          <h5 class="card-title">Custom text color</h5>
+          <p class="card-body">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        </div>
+        <div class="card-footer fg-subtle primary-border-main">Footer</div>
+      </div>
+    </div>
+  </div>`} />
+
+## CSS
+
+<DocsCSS />
+
+### Custom properties
+
+<DocsCSSVars />
+
+<ScssDocs name="card-css-vars" file="scss/_card.scss" />
+
+### Sass variables
+
+<DocsSASSVars />
+
+<ScssDocs name="card-variables" file="scss/_variables.scss" />

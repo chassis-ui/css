@@ -1,0 +1,346 @@
+//
+// Color utility functions for Chassis CSS
+//
+// This file contains functions for color manipulation, conversion, and accessibility.
+// Includes RGB conversion, color contrast calculation, color mixing,
+// CSS variable handling, and alpha value processing.
+//
+// Many of these functions are adapted from Bootstrap.
+// Special thanks to the Bootstrap Authors.
+//
+
+/// Convert a color to RGB values
+/// Returns the red, green and blue components as comma-separated values
+///
+/// @param {Color} $value - The color to convert to RGB
+/// @return {List} - List of RGB values (0-255)
+/// @example
+///   to-rgb(#ff0000) => 255, 0, 0
+@function to-rgb($value) {
+  @return red($value), green($value), blue($value);
+}
+
+/// Generate an rgba() color value from CSS variables
+/// Creates a dynamic color based on RGB and opacity CSS variables
+///
+/// @param {String} $identifier - Color identifier (e.g., "primary", "link-color")
+/// @param {String} $target - Target component for opacity variable (e.g., "bg", "icon")
+/// @return {String} - CSS rgba() value using CSS variables
+/// @example
+///   rgba-css-var("primary", "bg") => rgba(var(--cx-primary-rgb), var(--cx-bg-opacity, 1))
+@function rgba-css-var($identifier, $target) {
+  @return rgba(var(--#{$prefix}#{$identifier}-rgb), var(--#{$prefix}#{$target}-opacity, 1));
+}
+
+/// Convert a list of values to CSS variable references
+///
+/// @param {List} $list - List of variable names to convert
+/// @param {String} $comp - Optional component prefix to add before each variable name
+/// @return {List} - List of CSS variable references with proper prefix
+/// @example
+///   varify(("border", "radius")) => var(--cx-border) var(--cx-radius)
+///   varify(("small", "large"), "space") => var(--cx-space-small) var(--cx-space-large)
+@function varify($list, $comp: null) {
+  $result: null;
+  @each $entry in $list {
+    $result: append($result, var(--#{$prefix}#{if($comp, "#{$comp}-", "")}#{$entry}), space);
+  }
+  @return $result;
+}
+
+
+/// Calculate color contrast and return appropriate foreground color
+/// Uses WCAG 2.1 contrast ratio formula to determine the most readable foreground color
+/// against a given background color.
+///
+/// @param {Color} $background - Background color to check against
+/// @param {Color} $color-contrast-dark - Dark color option (default from variables)
+/// @param {Color} $color-contrast-light - Light color option (default from variables)
+/// @param {Number} $min-contrast-ratio - Minimum contrast ratio (default from variables)
+/// @return {Color} - Best contrast color from available options
+/// @see https://github.com/twbs/bootstrap/pull/30168
+/// @example
+///   color-contrast(#fff) => #000 (or $color-contrast-dark)
+///   color-contrast(#000) => #fff (or $color-contrast-light)
+@function color-contrast($background, $color-contrast-dark: $color-contrast-dark, $color-contrast-light: $color-contrast-light, $min-contrast-ratio: $min-contrast-ratio) {
+  $foregrounds: $color-contrast-light, $color-contrast-dark, $white, $black;
+  $max-ratio: 0;
+  $max-ratio-color: null;
+
+  @each $color in $foregrounds {
+    $contrast-ratio: contrast-ratio($background, $color);
+    @if $contrast-ratio > $min-contrast-ratio {
+      @return $color;
+    } @else if $contrast-ratio > $max-ratio {
+      $max-ratio: $contrast-ratio;
+      $max-ratio-color: $color;
+    }
+  }
+
+  @warn "Found no color leading to #{$min-contrast-ratio}:1 contrast ratio against #{$background}...";
+
+  @return $max-ratio-color;
+}
+
+/// Calculate contrast ratio between two colors
+/// Follows WCAG 2.1 contrast ratio formula
+///
+/// @param {Color} $background - Background color
+/// @param {Color} $foreground - Foreground color (defaults to light contrast color)
+/// @see https://www.w3.org/TR/WCAG/#contrast-ratio
+/// @return {Number} - Contrast ratio value (1-21)
+@function contrast-ratio($background, $foreground: $color-contrast-light) {
+  $l1: luminance($background);
+  $l2: luminance(opaque($background, $foreground));
+
+  @return if($l1 > $l2, divide($l1 + .05, $l2 + .05), divide($l2 + .05, $l1 + .05));
+}
+
+/// Calculate WCAG 2.1 relative luminance of a color
+/// Determines how bright a color appears to the human eye
+/// @see https://www.w3.org/TR/WCAG/#dfn-relative-luminance
+/// @see https://www.w3.org/TR/WCAG/#dfn-contrast-ratio
+///
+/// @param {Color} $color - Color to calculate luminance for
+/// @return {Number} - Luminance value between 0 (black) and 1 (white)
+@function luminance($color) {
+  // A list of pre-calculated numbers of pow(divide((divide($value, 255) + .055), 1.055), 2.4). (from 0 to 255)
+  $luminance-list: .0008 .001 .0011 .0013 .0015 .0017 .002 .0022 .0025 .0027 .003 .0033 .0037 .004 .0044 .0048 .0052 .0056 .006 .0065 .007 .0075 .008 .0086 .0091 .0097 .0103 .011 .0116 .0123 .013 .0137 .0144 .0152 .016 .0168 .0176 .0185 .0194 .0203 .0212 .0222 .0232 .0242 .0252 .0262 .0273 .0284 .0296 .0307 .0319 .0331 .0343 .0356 .0369 .0382 .0395 .0409 .0423 .0437 .0452 .0467 .0482 .0497 .0513 .0529 .0545 .0561 .0578 .0595 .0612 .063 .0648 .0666 .0685 .0704 .0723 .0742 .0762 .0782 .0802 .0823 .0844 .0865 .0887 .0908 .0931 .0953 .0976 .0999 .1022 .1046 .107 .1095 .1119 .1144 .117 .1195 .1221 .1248 .1274 .1301 .1329 .1356 .1384 .1413 .1441 .147 .15 .1529 .1559 .159 .162 .1651 .1683 .1714 .1746 .1779 .1812 .1845 .1878 .1912 .1946 .1981 .2016 .2051 .2086 .2122 .2159 .2195 .2232 .227 .2307 .2346 .2384 .2423 .2462 .2502 .2542 .2582 .2623 .2664 .2705 .2747 .2789 .2831 .2874 .2918 .2961 .3005 .305 .3095 .314 .3185 .3231 .3278 .3325 .3372 .3419 .3467 .3515 .3564 .3613 .3663 .3712 .3763 .3813 .3864 .3916 .3968 .402 .4072 .4125 .4179 .4233 .4287 .4342 .4397 .4452 .4508 .4564 .4621 .4678 .4735 .4793 .4851 .491 .4969 .5029 .5089 .5149 .521 .5271 .5333 .5395 .5457 .552 .5583 .5647 .5711 .5776 .5841 .5906 .5972 .6038 .6105 .6172 .624 .6308 .6376 .6445 .6514 .6584 .6654 .6724 .6795 .6867 .6939 .7011 .7084 .7157 .7231 .7305 .7379 .7454 .7529 .7605 .7682 .7758 .7835 .7913 .7991 .807 .8148 .8228 .8308 .8388 .8469 .855 .8632 .8714 .8796 .8879 .8963 .9047 .9131 .9216 .9301 .9387 .9473 .956 .9647 .9734 .9823 .9911 1;
+  $rgb: (
+    "r": red($color),
+    "g": green($color),
+    "b": blue($color)
+  );
+
+  @each $name, $value in $rgb {
+    $value: if(divide($value, 255) < .04045, divide(divide($value, 255), 12.92), nth($luminance-list, $value + 1));
+    $rgb: map-merge($rgb, ($name: $value));
+  }
+
+  @return (map-get($rgb, "r") * .2126) + (map-get($rgb, "g") * .7152) + (map-get($rgb, "b") * .0722);
+}
+
+/// Return an opaque version of a color when placed over a background
+/// Calculates the resulting color when a semi-transparent foreground
+/// is placed over a background color
+///
+/// @param {Color} $background - Background color
+/// @param {Color} $foreground - Foreground color with transparency
+/// @return {Color} - Resulting opaque color
+/// @example
+///   opaque(#fff, rgba(0, 0, 0, .5)) => #808080
+@function opaque($background, $foreground) {
+  @return mix(rgba($foreground, 1), $background, opacity($foreground) * 100%);
+}
+
+// scss-docs-start color-functions
+/// Tint a color by mixing it with white
+///
+/// @param {Color} $color - Base color to tint
+/// @param {Number} $weight - Amount of white to mix in (0-100%)
+/// @return {Color} - Tinted color
+/// @example
+///   tint-color(#007bff, 10%) => #1a88ff
+@function tint-color($color, $weight) {
+  @return mix(white, $color, $weight);
+}
+
+/// Shade a color by mixing it with black
+///
+/// @param {Color} $color - Base color to shade
+/// @param {Number} $weight - Amount of black to mix in (0-100%)
+/// @return {Color} - Shaded color
+/// @example
+///   shade-color(#007bff, 10%) => #006fe6
+@function shade-color($color, $weight) {
+  @return mix(black, $color, $weight);
+}
+
+/// Shade or tint a color based on weight sign
+/// Positive weight = shade, negative weight = tint
+///
+/// @param {Color} $color - Base color to transform
+/// @param {Number} $weight - Signed percentage (-100% to 100%)
+/// @return {Color} - Transformed color
+/// @example
+///   shift-color(#007bff, 10%) => shade by 10%
+///   shift-color(#007bff, -10%) => tint by 10%
+@function shift-color($color, $weight) {
+  @return if($weight > 0, shade-color($color, $weight), tint-color($color, -$weight));
+}
+// scss-docs-end color-functions
+
+
+// scss-docs-start shadow-functions
+/// Generate a shadow with customizable color from a shadow token
+///
+/// @param {List} $token - The shadow token (list of shadow values)
+/// @param {Number} $shadow - Index of the shadow component in the token list
+/// @param {Number} $color - Index of the color component in the shadow
+/// @return {List} - Shadow list with customized color
+/// @example
+///   make-color-shadow($box-shadow-sm) => shadow with customizable color
+@function make-color-shadow($token, $shadow: 2, $color: 5) {
+  $c: nth($token, $shadow);
+  $s: append($token, nth($token, $shadow));
+  $c: set-nth($c, $color, #{var(--#{$prefix}shadow-color, transparent)});
+  @return set-nth($s, $shadow, $c);
+}
+
+/// Generate a shadow color using CSS variables
+///
+/// @param {String} $color - Color name to use from CSS variables
+/// @param {Number} $opacity - Opacity value for the shadow (default from variables)
+/// @return {String} - CSS rgba value using color variables
+/// @example
+///   make-shadow-color("primary") => rgba(var(--cx-primary-rgb), 0.15)
+@function make-shadow-color($color, $opacity: $shadow-color-opacity) {
+  @return #{rgba(var(--#{$prefix}#{$color}-rgb), $opacity)};
+}
+// scss-docs-end shadow-functions
+
+
+// scss-docs-start color-variable-functions
+
+/// Get a color value from various input formats (CSS variable, color name, or direct color)
+/// This is a versatile function that handles multiple color input formats and converts them
+/// to Sass color objects. It's particularly useful for theme color processing and for handling
+/// CSS variable references in Sass.
+///
+/// @param {Color|String} $color-var - The color variable or name to process
+///   - Direct color value (e.g., #ff0000, rgb(255,0,0))
+///   - CSS variable format (e.g., var(--cx-primary))
+///   - RGBA CSS variable format (e.g., rgba(var(--cx-primary-rgb), 0.5))
+///   - Direct color name matching a key in the palette (e.g., "primary")
+/// @param {Boolean} $dark [false] - Whether to use the dark mode color palette
+/// @return {Color} The processed color value as a Sass color object
+/// @throws {Error} When the color variable cannot be found in the palette
+/// @example
+///   .element {
+///     // From direct color (returns as-is)
+///     color: get-sass-color(#ff0000);  // #ff0000
+///
+///     // From CSS variable (converts to actual color)
+///     background-color: get-sass-color(var(--cx-primary));  // e.g., #0d6efd
+///
+///     // From RGBA CSS variable with alpha (converts to color with opacity)
+///     border-color: get-sass-color(rgba(var(--cx-secondary-rgb), 0.5));  // rgba(108, 117, 125, 0.5)
+///
+///     // From color name (with dark mode option)
+///     box-shadow: 0 0 5px get-sass-color("primary", true);  // dark theme primary color
+///   }
+@function get-sass-color($color-var, $dark: false) {
+
+  // If it's already a color, just return it
+  @if type-of($color-var) == "color" {
+    @return $color-var;
+  }
+
+  // Setup context map based on light/dark mode
+  $palette: if($dark, $context-palette-dark, $context-palette);
+  $map: map-merge($palette, $base-palette);
+
+  // If it's an RGBA CSS variable string with alpha, extract the variable name and alpha value
+  @if type-of($color-var) == "string" and str-index($color-var, "rgba(var(--#{$prefix}") {
+    $var-string: str-replace($color-var, "rgba(var(--#{$prefix}", "");
+    $parts: str-index($var-string, "-rgb),");
+
+    @if $parts {
+      // Extract the base color name (before -rgb)
+      $var-name: str-slice($var-string, 1, $parts - 1);
+
+      // Extract and clean the alpha value
+      $alpha-part: str-slice($var-string, $parts + 5); // Skip "-rgb),"
+      $alpha-val: clean-alpha-value(str-replace($alpha-part, ")", ""));
+
+      // Look up the base color in our map
+      $color: map-get($map, $var-name);
+
+      // Look up the base color in our map
+      $color: map-get($map, $var-name);
+
+      @if $color {
+        // Return the color with the specified alpha value
+        @return rgba($color, $alpha-val);
+      } @else {
+        @warn "Could not find color for variable #{$var-name} in the color palette.";
+        @return $color-var; // Return original if not found
+      }
+    }
+  }
+
+  // If it's a CSS variable string, extract the variable name
+  @if type-of($color-var) == "string" and str-index($color-var, "var(--#{$prefix}") {
+    $var-name: str-replace($color-var, "var(--#{$prefix}", "");
+    $var-name: str-replace($var-name, ")", "");
+
+    // Look up the variable name in our color map
+    $color: map-get($map, $var-name);
+
+    @if $color {
+      @return $color;
+    } @else {
+      @warn "Could not find color for variable #{$var-name} in the color palette.";
+      @return $color-var; // Return original if not found
+    }
+  }
+
+  // If it's a direct color name in our palette
+  @if type-of($color-var) == "string" {
+    $color: map-get($map, $color-var);
+
+    @if $color {
+      @return $color;
+    }
+  }
+
+  @error "Could not find color for variable #{$var-name}.";
+  // If we get here, just return the original value
+  // @return $color-var;
+}
+
+/// Helper function to clean and convert alpha values to a valid number
+/// Processes different formats of alpha values and ensures they're valid
+/// numbers between 0 and 1. Handles leading commas, spaces, percentages,
+/// and different decimal notations.
+///
+/// @access private
+/// @param {String} $alpha-string - The alpha value string to process
+/// @return {Number} A numeric alpha value between 0 and 1
+/// @example
+///   clean-alpha-value("0.65")     // Returns 0.65
+///   clean-alpha-value(".65")      // Returns 0.65
+///   clean-alpha-value(" , 0.75")  // Returns 0.75
+///   clean-alpha-value("50%")      // Returns 0.5
+///   clean-alpha-value("")         // Returns 1 (default)
+@function clean-alpha-value($alpha-string) {
+  // Remove spaces
+  $alpha-val: str-replace($alpha-string, " ", "");
+
+  // Remove commas
+  @if str-index($alpha-val, ",") == 1 {
+    $alpha-val: str-slice($alpha-val, 2); // Remove leading comma
+  } @else {
+    $alpha-val: str-replace($alpha-val, ",", ""); // Remove any commas
+  }
+
+  // Set default
+  $alpha-numeric: 1;
+
+  // Convert to number if not empty
+  @if $alpha-val != "" {
+    // Handle percentage values
+    @if str-index($alpha-val, "%") {
+      $alpha-val: str-replace($alpha-val, "%", "");
+      $alpha-numeric: divide(str-to-number($alpha-val), 100);
+    } @else {
+      // Handle decimal values using our number function
+      $alpha-numeric: str-to-number($alpha-val);
+      // Ensure it's within valid range
+      $alpha-numeric: min(max(0, $alpha-numeric), 1);
+    }
+  }
+
+  @return $alpha-numeric;
+}
+

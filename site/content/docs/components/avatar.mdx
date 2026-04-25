@@ -1,0 +1,106 @@
+---
+title: Avatar
+description: Avatars are are typically used to display a user profile as a picture or short text. They can be used in various contexts, such as in lists, groups, or as buttons.
+toc: true
+---
+
+import { getData } from '@libs/data'
+
+## How it works
+
+Use the `.avatar` class to create an avatar. The `.avatar-image` class is used for images, while `.avatar-text` is used for text.
+
+<Example code={`<span class="avatar">
+    <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+  </span>
+  <span class="avatar">
+    <span class="avatar-text">CX</span>
+  </span>`} />
+
+## Sizes
+
+Use the `.small` or `.large` classes to set the size of the avatar. You can also use the `--cx-avatar-size` CSS variable to set a custom size.
+
+<Example class="d-flex align-items-center gap-small" code={`<span class="avatar large">
+    <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+  </span>
+  <span class="avatar large">
+    <span class="avatar-text">CX</span>
+  </span>
+  <span class="avatar small">
+    <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+  </span>
+  <span class="avatar small">
+    <span class="avatar-text">CX</span>
+  </span>
+
+  <span class="vr mx-medium"></span>
+
+  <span class="avatar" style="--cx-avatar-size: 2rem;">
+    <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+  </span>
+  <span class="avatar" style="--cx-avatar-size: 2rem;">
+    <span class="avatar-text">CX</span>
+  </span>`} />
+
+## Buttons
+
+Use the button tag with `.button` class to create an avatar button.
+
+<Example class="d-flex align-items-center gap-small" code={`<button type="button" class="button avatar">
+    <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+  </button>
+  <button type="button" class="button avatar">
+    <span class="avatar-text">CX</span>
+  </button>`} />
+
+## Links
+
+Use the anchor tag with `.avatar` class to create an avatar link.
+
+<Example class="d-flex align-items-center gap-small" code={`<a class="avatar" href="#">
+    <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+  </a>
+  <a class="avatar" href="#">
+    <span class="avatar-text">CX</span>
+  </a>`} />
+
+## Colors
+
+Use with a context color class to create an avatar with a background color.
+
+<Example class="d-flex align-items-center gap-small" code={getData('context-colors').map((color) => `<span class="avatar ${color.name}">
+    <span class="avatar-text">CX</span>
+  </span>`)} />
+
+<Example class="d-flex align-items-center gap-small" code={getData('context-colors').map((color) => `<button type="button" class="button avatar ${color.name}">
+    <span class="avatar-text">CX</span>
+  </button>`)} />
+
+## Badges
+
+Use the `.badge` class to create a badge on top of the avatar. Use position utilities to position the badge.
+
+<Example class="d-flex align-items-center gap-small" code={`<a class="avatar" href="#">
+    <span class="avatar-text">CX</span>
+    <span class="badge primary circle top-100 start-100 translate-middle"><span class="visually-hidden"></span></span>
+  </a>
+  <a class="avatar" href="#">
+    <span class="avatar-text">CX</span>
+    <span class="badge primary circle top-100 start-100 translate-middle">24</span>
+  </a>
+  <a class="avatar" href="#">
+    <span class="avatar-text">CX</span>
+    <span class="badge primary top-100 start-100 translate-middle">new</span>
+  </a>`} />
+
+## Groups
+
+Use the `.avatar-group` class to create a group of avatars. Use the `.avatar` class for each avatar in the group. Set the `--cx-avatar-overlap` CSS variable to set the overlap of the avatars.
+
+<Example code={[`<div class="avatar-group">`, [...Array.from({ length: 9 }, (_, i) => {
+                const value = Math.floor(Math.random() * 64); // Generates 10, 20, ..., 90
+                return `<button type="button" class="button avatar">
+    <span class="avatar-image"><img src="https://i.pravatar.cc/256?img=${value}" alt="Profile picture" /></span>
+  </button>`})].join('\n'), `</div>`]} />
+

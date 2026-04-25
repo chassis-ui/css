@@ -1,0 +1,120 @@
+//
+// Button Component
+//
+// This file implements the core button component using Chassis CSS's placeholder pattern.
+// It defines the base `.button` class and its style variants through SCSS extensions.
+//
+// Implementation Features:
+// - Uses placeholder extensions (%button, %button-medium, %solid-button, %component)
+// - Implements contextual variant support through color modifiers
+// - Provides style variants (.outline, .smooth, .link) through placeholder extensions
+// - Implements responsive sizing (.small, .large) with separate placeholder sets
+// - Includes icon positioning logic for icon+text combinations
+// - Supports all interactive states (hover, focus, active, disabled)
+//
+// This modular implementation allows for maximal code reuse through placeholders
+// while maintaining clean, consistent styling patterns across different button variants.
+
+.button {
+  // Inherit core button behaviors from placeholders
+  // - %button: Core button styles with state handling (hover, focus, active, disabled)
+  // - %button-medium: Default size configuration (padding, font, border-radius)
+  // - %solid-button: Applies contextual solid background style variants
+  // - %component: Base component styling (typography, colors, borders)
+  @extend %button, %button-medium, %solid-button, %component;
+  // scss-docs-start button-css-vars
+  --#{$prefix}border-width: var(--#{$prefix}button-border-width, #{$button-border-width});
+  --#{$prefix}box-shadow: var(--#{$prefix}button-box-shadow, #{$button-box-shadow});
+  --#{$prefix}focus-box-shadow: var(--#{$prefix}button-focus-box-shadow, #{$button-focus-box-shadow});
+  --#{$prefix}transition: var(--#{$prefix}button-transition, $button-transition);
+  // scss-docs-end button-css-vars
+
+  display: inline-flex;
+  gap: var(--#{$prefix}gap);
+  align-items: center;
+  justify-content: center;
+  min-width: var(--#{$prefix}min-size);
+  min-height: var(--#{$prefix}min-size);
+  @include exclude-strokes(button);
+  text-align: center;
+  text-decoration: if($link-decoration == none, null, none);
+  white-space: $button-white-space;
+  vertical-align: middle;
+  cursor: if($enable-button-pointers, pointer, null);
+  user-select: none;
+
+  @include gradient-bg(var(--#{$prefix}bg-color));
+  @include box-shadow(var(--#{$prefix}box-shadow));
+  @include transition(var(--#{$prefix}transition));
+
+  &.outline {
+    @extend %outline-button;
+  }
+
+  &.smooth {
+    @extend %smooth-button;
+  }
+
+  &.large {
+    @extend %button-large;
+  }
+
+  &.small {
+    @extend %button-small;
+  }
+
+  > .icon {
+    line-height: 0;
+    vertical-align: top;
+  }
+
+  > .icon:first-child:not(:only-child) {
+    margin-right: var(--#{$prefix}nudge);
+    margin-left: #{calc(-1 * var(--#{$prefix}nudge))};
+  }
+  > .icon:last-child:not(:only-child) {
+    margin-right: #{calc(-1 * var(--#{$prefix}nudge))};
+    margin-left: var(--#{$prefix}nudge);
+  }
+  &:has(.icon:only-child) {
+    --#{$prefix}padding-x: var(--#{$prefix}padding-y);
+  }
+
+  //
+  // Link buttons
+  //
+
+  // Make a button look and behave like a link
+  &.link {
+    --#{$prefix}button-font-weight: #{$font-weight-normal};
+    --#{$prefix}button-idle-fg-color: #{$button-link-color};
+    --#{$prefix}button-idle-bg-color: transparent;
+    --#{$prefix}button-idle-border-color: transparent;
+    --#{$prefix}button-hover-fg-color: #{$button-hover-color};
+    --#{$prefix}button-hover-bg-color: transparent;
+    --#{$prefix}button-hover-border-color: transparent;
+    --#{$prefix}button-press-fg-color: #{$button-hover-color};
+    --#{$prefix}button-press-bg-color: transparent;
+    --#{$prefix}button-press-border-color: transparent;
+    --#{$prefix}button-disabled-fg-color: #{$fg-subtle};
+    --#{$prefix}button-disabled-bg-color: transparent;
+    --#{$prefix}button-disabled-border-color: transparent;
+    --#{$prefix}box-shadow: 0 0 0 #000; // Can't use `none` as keyword negates all values when used with multiple shadows
+
+    text-decoration: $link-decoration;
+    @if $enable-component-gradients {
+      background-image: none;
+    }
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: $link-hover-decoration;
+    }
+
+    &:focus-visible {
+      color: var(--#{$prefix}fg-color);
+    }
+
+  }
+
+}

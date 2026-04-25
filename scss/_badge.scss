@@ -1,0 +1,136 @@
+//
+// Badge Component
+//
+// This file implements badge styling through CSS custom properties and placeholder extensions.
+// It provides a customizable badge system that integrates with Chassis's context system.
+//
+// Implementation Features:
+// - Leverages %context, %component extensions for contextual styling
+// - Uses CSS custom properties for adaptive sizing and consistent theming
+// - Implements three size variants with appropriate typography and spacing
+// - Provides multiple style variations (solid, outline, smooth) via placeholders
+// - Includes circle shape variant with specialized sizing
+// - Supports icon positioning with automatic spacing adjustments
+// - Implements adaptive sizing with badge-adaptive class for relative scaling
+//
+// The implementation follows a variable-first approach for maximum theming flexibility.
+
+.badge {
+  @extend %context, %solid-context, %component;
+  // scss-docs-start badge-css-vars
+  --#{$prefix}size: var(--#{$prefix}badge-size, #{$badge-medium-size});
+  --#{$prefix}padding-y: var(--#{$prefix}badge-padding-y, #{$badge-medium-padding-y});
+  --#{$prefix}padding-x: var(--#{$prefix}badge-padding-x, #{$badge-medium-padding-x + $badge-medium-nudge});
+  --#{$prefix}gap: var(--#{$prefix}badge-gap, #{$badge-medium-gap});
+  --#{$prefix}nudge: var(--#{$prefix}badge-nudge, #{$badge-medium-nudge});
+  --#{$prefix}border-width: var(--#{$prefix}badge-border-width, #{$badge-border-width});
+  --#{$prefix}border-radius: var(--#{$prefix}badge-border-radius, #{$badge-medium-border-radius});
+  --#{$prefix}icon-size: var(--#{$prefix}badge-icon-size, #{$badge-medium-icon-size});
+  @include map-font($badge-medium-font, badge); // e.g. --#{$prefix}[property-name]: var(--#{$prefix}badge-[propery-name], [value]);
+  // scss-docs-end badge-css-vars
+
+  display: inline-flex;
+  gap: var(--#{$prefix}nudge);
+  align-items: center;
+  justify-content: center;
+  @include exclude-strokes(badge);
+  text-decoration: none;
+  text-wrap: nowrap;
+  vertical-align: middle;
+
+  // Circle variant
+  // Creates a perfectly circular badge with equal width/height
+  // Ideal for numeric indicators, status dots, or notification counters
+  &.round {
+    @extend .rounded-round;
+    box-sizing: border-box;
+    width: var(--#{$prefix}size);
+    height: var(--#{$prefix}size);
+    padding: 0;
+  }
+
+  // Outline variant
+  // Creates a badge with transparent background, colored border and text
+  // Provides a more subtle visual presence while maintaining context
+  &.outline {
+    @extend %outline-context;
+  }
+
+  // Smooth variant
+  // Creates a badge with low-opacity background of the contextual color
+  // Offers a softer appearance while maintaining the color context
+  &.smooth {
+    @extend %smooth-context;
+  }
+
+  // Large size variant
+  // Increases badge dimensions, padding, font size, and icon size
+  // Used for greater emphasis or when badges need to stand out more
+  &.large {
+    --#{$prefix}size: #{$badge-large-size};
+    --#{$prefix}padding-y: #{$badge-large-padding-y};
+    --#{$prefix}padding-x: #{$badge-large-padding-x + $badge-large-nudge};
+    --#{$prefix}gap: #{$badge-large-gap};
+    --#{$prefix}nudge: #{$badge-large-nudge};
+    @include map-font($badge-large-font, badge);
+    --#{$prefix}border-radius: #{$badge-large-border-radius};
+    --#{$prefix}icon-size: #{$badge-large-icon-size};
+  }
+
+  // Small size variant
+  // Decreases badge dimensions, padding, font size, and icon size
+  // Ideal for compact layouts or when badges should be subtle
+  &.small {
+    --#{$prefix}size: #{$badge-small-size};
+    --#{$prefix}padding-y: #{$badge-small-padding-y};
+    --#{$prefix}padding-x: #{$badge-small-padding-x + $badge-small-nudge};
+    --#{$prefix}gap: #{$badge-small-gap};
+    --#{$prefix}nudge: #{$badge-small-nudge};
+    @include map-font($badge-small-font, badge);
+    --#{$prefix}border-radius: #{$badge-small-border-radius};
+    --#{$prefix}icon-size: #{$badge-small-icon-size};
+  }
+
+  // Icon positioning helpers
+  // These classes optimize the positioning of icons within badges
+  // by adjusting margins to ensure proper visual alignment
+
+  // Left-aligned icon (before text)
+  > .icon:first-child {
+    margin-left: #{calc(-1 * var(--#{$prefix}nudge))};
+  }
+
+  // Right-aligned icon (after text)
+  > .icon:last-child {
+    margin-right: #{calc(-1 * var(--#{$prefix}nudge))};
+  }
+
+  // Empty badge handling
+  // Automatically hides badges with no content to prevent
+  // unwanted empty visual elements
+  &:empty {
+    display: none;
+  }
+}
+
+// Adaptive badge
+//
+// Creates responsive badges that automatically adjust their size
+// based on their parent element's font size. This allows badges
+// to maintain consistent visual proportions regardless of context.
+//
+// Usage:
+// - With headings of different sizes
+// - In varying text contexts
+// - For badges that need to scale with their container
+//
+// Uses relative units (em) to create proportional sizing
+.badge-adaptive {
+  --#{$prefix}badge-font-size: .75em;
+  --#{$prefix}badge-line-height: 1.5;
+  --#{$prefix}badge-icon-size: 1.25em;
+  --#{$prefix}badge-padding-y: .125em;
+  --#{$prefix}badge-padding-x: .5em;
+  --#{$prefix}badge-gap: .25em;
+}
+

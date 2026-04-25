@@ -1,0 +1,239 @@
+// Reset rfs settings to default values before importing
+$enable-rfs: true;
+$rfs-base-value: 1.25rem;
+$rfs-unit: rem;
+$rfs-rem-value: 16;
+$rfs-breakpoint: 1200px;
+$rfs-breakpoint-unit: px;
+$rfs-factor: 10;
+$rfs-mode: min-media-query;
+$rfs-two-dimensional: false;
+$rfs-disable-class: false;
+
+// Import necessary files for the tests
+@import "../../settings";
+@import "../../vendor";
+@import "../../functions";
+@import "../../tokens";
+@import "../../variables";
+@import "../../maps";
+@import "../../rfs";
+@import "../../mixins";
+
+// Create a test font map for the mixin tests
+$test-font-map: (
+  "font-family": var(--#{$prefix}font-family-test),
+  "font-weight": var(--#{$prefix}font-weight-test),
+  "font-size": var(--#{$prefix}font-size-test),
+  "line-height": var(--#{$prefix}line-height-test),
+  "font-style": normal,
+  "letter-spacing": 0,
+  "margin-bottom": 0rem,
+  "text-transform": none,
+  "text-decoration": none
+) !default;
+
+// stylelint-disable property-disallowed-list
+
+@include describe("map-font mixin") {
+  @include it("creates font variables for a compnent") {
+    @include assert() {
+      @include output() {
+        .test-map-font-component-and-element {
+          @include map-font($test-font-map, "component");
+        }
+      }
+      @include expect() {
+        .test-map-font-component-and-element {
+          --#{$prefix}font-family: var(--#{$prefix}component-font-family, var(--#{$prefix}font-family-test));
+          --#{$prefix}font-size: var(--#{$prefix}component-font-size, var(--#{$prefix}font-size-test));
+          --#{$prefix}font-weight: var(--#{$prefix}component-font-weight, var(--#{$prefix}font-weight-test));
+          --#{$prefix}line-height: var(--#{$prefix}component-line-height, var(--#{$prefix}line-height-test));
+        }
+      }
+    }
+  }
+  @include it("creates font variables for child elements of a compnent") {
+    @include assert() {
+      @include output() {
+        .test-map-font-component-and-element {
+          @include map-font($test-font-map, "component", "element");
+        }
+      }
+      @include expect() {
+        .test-map-font-component-and-element {
+          --#{$prefix}element-font-family: var(--#{$prefix}component-element-font-family, var(--#{$prefix}font-family-test));
+          --#{$prefix}element-font-size: var(--#{$prefix}component-element-font-size, var(--#{$prefix}font-size-test));
+          --#{$prefix}element-font-weight: var(--#{$prefix}component-element-font-weight, var(--#{$prefix}font-weight-test));
+          --#{$prefix}element-line-height: var(--#{$prefix}component-element-line-height, var(--#{$prefix}line-height-test));
+        }
+      }
+    }
+  }
+  @include it("creates font properties for a compnent") {
+    @include assert() {
+      @include output() {
+        .test-map-font-component-and-element {
+          @include map-font($test-font-map, "component", $prop: true);
+        }
+      }
+      @include expect() {
+        .test-map-font-component-and-element {
+          font-family: var(--#{$prefix}component-font-family, var(--#{$prefix}font-family-test));
+          font-size: var(--#{$prefix}component-font-size, var(--#{$prefix}font-size-test));
+          font-weight: var(--#{$prefix}component-font-weight, var(--#{$prefix}font-weight-test));
+          line-height: var(--#{$prefix}component-line-height, var(--#{$prefix}line-height-test));
+        }
+      }
+    }
+  }
+  @include it("font properties for child elements of a compnent") {
+    @include assert() {
+      @include output() {
+        .test-map-font-component-and-element {
+          @include map-font($test-font-map, "component", "element", true);
+        }
+      }
+      @include expect() {
+        .test-map-font-component-and-element {
+          font-family: var(--#{$prefix}component-element-font-family, var(--#{$prefix}font-family-test));
+          font-size: var(--#{$prefix}component-element-font-size, var(--#{$prefix}font-size-test));
+          font-weight: var(--#{$prefix}component-element-font-weight, var(--#{$prefix}font-weight-test));
+          line-height: var(--#{$prefix}component-element-line-height, var(--#{$prefix}line-height-test));
+        }
+      }
+    }
+  }
+}
+
+@include describe("font mixin") {
+  @include it("creates font shorthand property for a class") {
+    @include assert() {
+      @include output() {
+        .test-default-font {
+          @include font();
+        }
+        .test-component-font {
+          @include font("component");
+        }
+      }
+      @include expect() {
+        .test-default-font {
+          font: var(--#{$prefix}font-weight) var(--#{$prefix}font-size) / var(--#{$prefix}line-height) var(--#{$prefix}font-family);
+        }
+        .test-component-font {
+          font: var(--#{$prefix}component-font-weight) var(--#{$prefix}component-font-size) / var(--#{$prefix}component-line-height) var(--#{$prefix}component-font-family);
+        }
+      }
+    }
+  }
+  @include it("creates font properties for a class") {
+    @include assert() {
+      @include output() {
+        .test-default-font {
+          @include font($short: false);
+        }
+        .test-component-font {
+          @include font("component", false);
+        }
+      }
+      @include expect() {
+        .test-default-font {
+          font-family: var(--#{$prefix}font-family);
+          font-size: var(--#{$prefix}font-size);
+          font-weight: var(--#{$prefix}font-weight);
+          line-height: var(--#{$prefix}line-height);
+        }
+        .test-component-font {
+          font-family: var(--#{$prefix}component-font-family);
+          font-size: var(--#{$prefix}component-font-size);
+          font-weight: var(--#{$prefix}component-font-weight);
+          line-height: var(--#{$prefix}component-line-height);
+        }
+      }
+    }
+  }
+}
+
+@include describe("font-size & line-height mixins") {
+  @include it("create font-size & line height properties with default variables.") {
+    @include assert() {
+      @include output() {
+        .test-default-font-size {
+          @include font-size();
+        }
+        .test-font-size-var {
+          @include font-size($component: "component");
+        }
+        .test-default-line-height {
+          @include line-height();
+        }
+        .test-line-height-var {
+          @include line-height($component: "component");
+        }
+      }
+      @include expect() {
+        .test-default-font-size {
+          font-size: var(--#{$prefix}font-size);
+        }
+        .test-font-size-var {
+          font-size: var(--#{$prefix}component-font-size);
+        }
+        .test-default-line-height {
+          line-height: var(--#{$prefix}line-height);
+        }
+        .test-line-height-var {
+          line-height: var(--#{$prefix}component-line-height);
+        }
+      }
+    }
+  }
+  @include it("applies rfs to font size values") {
+    @include assert() {
+      @include output() {
+        .test-font-size-px {
+          @include font-size(64px);
+        }
+        .test-font-size-rem {
+          @include font-size(4rem);
+        }
+        .test-line-height-px {
+          @include line-height(64px);
+        }
+        .test-line-height-rem {
+          @include line-height(4rem);
+        }
+        @include rfs-collected-rules();
+      }
+      @include expect() {
+        .test-font-size-px {
+          font-size: #{rfs-fluid-value(64px)};
+        }
+        .test-font-size-rem {
+          font-size: #{rfs-fluid-value(4rem)};
+        }
+        .test-line-height-px {
+          line-height: #{rfs-fluid-value(64px, "line-height")};
+        }
+        .test-line-height-rem {
+          line-height: #{rfs-fluid-value(4rem, "line-height")};
+        }
+        @media (min-width: 1200px) {
+          .test-font-size-px {
+            font-size: #{rfs-value(64px)};
+          }
+          .test-font-size-rem {
+            font-size: #{rfs-value(4rem)};
+          }
+          .test-line-height-px {
+            line-height: #{rfs-value(64px)};
+          }
+          .test-line-height-rem {
+            line-height: #{rfs-value(4rem)};
+          }
+        }
+      }
+    }
+  }
+}
+// stylelint-enable property-disallowed-list

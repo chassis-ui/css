@@ -1,0 +1,97 @@
+//
+// Form Mixins
+//
+// This file contains mixins specifically for handling form-related styling,
+// particularly for validation states and other form functionality.
+// These mixins simplify complex selector generation and ensure consistent
+// styling across different form elements.
+//
+
+// scss-docs-start form-select-mixins
+// Utility mixin for setting form select caret icon
+// Makes the code more DRY by centralizing caret icon styling logic.
+//
+// @param {string} $state - The state of the select element ("idle" or "disabled")
+// @param {boolean} $dark - Whether to use dark mode colors (default: false)
+@mixin form-select-caret($state, $dark: false) {
+  @if $state == "idle" {
+    --#{$prefix}caret-icon: #{svg-color($form-select-caret-icon, $form-idle-caret-color, $dark)};
+  } @else if $state == "disabled" {
+    --#{$prefix}caret-icon: #{svg-color($form-select-caret-icon, $form-disabled-caret-color, $dark)};
+  }
+}
+
+// Mixin for applying dark mode styling based on the color mode type
+// This centralizes the logic for both media query and class-based dark mode.
+@mixin form-select-dark() {
+  @if $color-mode-type == "media-query" {
+    // For media query-based dark mode
+    @media (prefers-color-scheme: dark) {
+      @include form-select-caret("idle", true);
+
+      &[disabled],
+      &:disabled {
+        @include form-select-caret("disabled", true);
+      }
+    }
+  } @else {
+    // For class-based dark mode (data attribute)
+    [data-cx-theme="dark"] &:not(&[data-cx-theme="light"], [data-cx-theme="dark"] [data-cx-theme="light"] &),
+    &[data-cx-theme="dark"] {
+      @include form-select-caret("idle", true);
+
+      &[disabled],
+      &:disabled {
+        @include form-select-caret("disabled", true);
+      }
+    }
+  }
+}
+// scss-docs-end form-select-mixins
+
+// scss-docs-start form-validation-mixins
+// Mixin for generating form validation state selectors
+//
+// Generates the appropriate selectors for form validation states,
+// supporting both native validation (:valid/:invalid) and class-based validation
+// (.is-valid/.is-invalid). Handles the complexity of nesting and parent selectors.
+//
+// @param {string} $element - The form element selector to apply validation styling to
+// @content - The styles to apply to elements in validation states
+@mixin form-validation-icons-selector($element) {
+  #{$element} {
+    #{if($form-validated-class, ".#{$form-validated-class} ", "")}#{if(&, "&", "")}:valid,
+    #{if($form-validated-class, ".#{$form-validated-class} ", "")}#{if(&, "&", "")}:invalid,
+    #{if(&, "&", "")}.#{$form-valid-class},
+    #{if(&, "&", "")}.#{$form-invalid-class} {
+      @content;
+    }
+  }
+}
+
+// Mixin for applying dark mode styling to form validation icons.
+// This centralizes the logic for both media query and class-based dark mode.
+//
+// @param {string} $state - The validation state ("valid" or "invalid")
+@mixin form-validation-dark($state: "valid") {
+  // Select the appropriate color variable based on variant and state
+  $icon: if($state == "valid", $form-feedback-valid-icon, $form-feedback-invalid-icon);
+  $color: if($state == "valid", $form-valid-help-color, $form-invalid-help-color);
+
+  // Set the icon with dark mode colors
+  $dark-icon: svg-color($icon, $color, true);
+
+  @if $color-mode-type == "media-query" {
+    // For media query-based dark mode
+    @media (prefers-color-scheme: dark) {
+      --#{$prefix}feedback-icon: #{$dark-icon};
+    }
+  } @else {
+    // For class-based dark mode (data attribute)
+    [data-cx-theme="dark"] &:not(&[data-cx-theme="light"], [data-cx-theme="dark"] [data-cx-theme="light"] &),
+    &[data-cx-theme="dark"] {
+      --#{$prefix}feedback-icon: #{$dark-icon};
+    }
+  }
+}
+// scss-docs-end form-validation-mixins

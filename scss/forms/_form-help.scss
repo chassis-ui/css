@@ -1,0 +1,39 @@
+//
+// Form Help
+//
+// Form help provides contextual help text for form elements.
+// It is typically placed below form inputs to provide additional guidance,
+// hints, or validation messages to users.
+//
+// Features:
+// - Consistent styling across different form contexts
+// - Automatic positioning based on parent form element type
+// - Accessible text size and color contrast
+//
+// When used with specific form elements:
+// - Standard form fields: Appears below the input
+// - Checkbox/radio options: Aligns with the option label
+// - Range inputs: Uses appropriate spacing to maintain visual hierarchy
+//
+
+.form-help,
+.valid-feedback,
+.invalid-feedback {
+  @extend %form-colors; // Inherit base form color variables
+  margin-top: $form-input-help-margin-t; // Consistent spacing from the form input
+  color: var(--#{$prefix}form-idle-help-color); // Uses a lighter text color to distinguish from primary content
+  @include font(); // Apply standard font styling
+
+  // Special positioning for form-help within checkbox/radio options
+  // Aligns the text with the option label by adding left margin equal to
+  // the width of the input element plus the gap
+  .form-check > & {
+    margin-top: $form-check-help-margin-t;
+    margin-left: #{calc(var(--#{$prefix}input-size) + var(--#{$prefix}gap))};
+  }
+
+  // Adjusted top margin when used with range inputs
+  .form-range ~ & {
+    margin-top: $form-check-help-margin-t;
+  }
+}

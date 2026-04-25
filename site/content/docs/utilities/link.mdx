@@ -1,0 +1,93 @@
+---
+title: Link
+description: Link utilities are used to stylize your anchors to adjust their color, opacity, underline offset, underline color, and more.
+toc: true
+added:
+  version: "5.3"
+---
+
+import { getData } from '@libs/data'
+import { titleCase } from '@chassis-ui/docs'
+
+## Link colors
+
+You can use the `.link-*` classes to colorize links. Unlike the [`.fg-*` classes]([[docsref:/utilities/colors]]), these classes have `:hover`, `:focus`, `:active` and `:visited` states. Some of the link styles use a relatively light foreground color, and should only be used on a dark background in order to have sufficient contrast.
+
+<Example code={[...getData('context-colors').map((color) => `<p><a href="#" class="link-${color.name}">${titleCase(color.name)} link</a> — <a href="https://example.com" class="link-${color.name}">visited link</a></p>`), '<p><a href="#" class="link-body">Body link</a> — <a href="https://example.com" class="link-body">visited link</a></p>']} />
+
+<Callout name="warning-color-assistive-technologies" />
+
+### Reset color
+
+Reset a text or link's color with `.fg-reset`, so that it inherits the color from its parent.
+
+<Example code={`<p class="fg-subtle">
+    Secondary body text with a <a href="#" class="fg-reset">reset link</a>.
+  </p>
+  <p class="fg-subtle">
+    Secondary body text with a <a href="#">normal link</a>.
+  </p>`} />
+
+## Link opacity
+
+Change the alpha opacity of the link `rgba()` color value with utilities. Please be aware that changes to a color’s opacity can lead to links with [*insufficient* contrast]([[docsref:getting-started/accessibility/#color-contrast]]).
+
+<Example code={[...getData('basic-opacities').map((opacity) => `<p><a href="#" class="link-opacity-${opacity.name}">Link opacity ${opacity.name} link</a>`)]} />
+<Example code={[...getData('basic-opacities').map((opacity) => `<p><a href="#" class="link-secondary link-opacity-${opacity.name}">Link opacity ${opacity.name} link</a>`)]} />
+
+### Hover opacity
+
+You can even change the opacity level on hover.
+
+<Example code={[...getData('basic-opacities').map((opacity) => `<p><a href="#" class="link-opacity-${opacity.name}-hover">Link hover opacity ${opacity.name} link</a>`)]} />
+
+## Link underlines
+
+Links underlines also be modified by their color and offset.
+
+### Underline color
+
+Change the underline’s color independent of the link text color.
+
+<Example code={getData('context-colors').map((contextColor) => `<p><a href="#" class="link-underline-${contextColor.name}">${titleCase(contextColor.title)} underline</a></p>`)} />
+
+### Underline offset
+
+Change the underline’s distance from your text. Offset is set in `em` units to automatically scale with the element’s current `font-size`.
+
+<Example code={`<p><a href="#">Default link</a></p>
+<p><a class="underline-offset-1" href="#">Offset 1 link</a></p>
+<p><a class="underline-offset-2" href="#">Offset 2 link</a></p>
+<p><a class="underline-offset-3" href="#">Offset 3 link</a></p>`} />
+
+### Underline opacity
+
+Change the underline’s opacity. Requires adding `.text-underline` to first set an `rgba()` color we use to then modify the alpha opacity.
+
+<Example code={[...getData('basic-opacities').map((opacity) => `<p><a href="#" class="link-secondary link-underline underline-offset-2 underline-info underline-opacity-${opacity.name}">Underline opacity ${opacity.name}</a>`)]} />
+
+### Hover variants
+
+Just like the `.link-opacity-*-hover` utilities, `.underline-offset` and `.underline-opacity` utilities include `:hover` variants by default. Mix and match to create unique link styles.
+
+<Example code={`<a class="link-underline underline-opacity-0 underline-opacity-50-hover underline-offset-3" href="#">
+    Underline opacity 0
+  </a>`} />
+
+## Icon links
+
+See the [Icon Link]([[docsref:/utilities/icon-link]]) documentation for more information on how to use icons with links.
+
+## Streched links
+
+See the [Stretched Link]([[docsref:/utilities/stretched-link]]) documentation for more information on how to use stretched links.
+
+## CSS
+
+In addition to the following Sass functionality, consider reading about our included [CSS custom properties]([[docsref:/customize/css-variables]]) (aka CSS variables) for colors and more.
+
+### Sass utilities API
+
+Link utilities are declared in our utilities API in `scss/utilities/_index.scss`. [Learn how to use the utilities API.]([[docsref:/utilities/api#using-the-api]])
+
+<ScssDocs name="utils-links" file="scss/utilities/_index.scss" />

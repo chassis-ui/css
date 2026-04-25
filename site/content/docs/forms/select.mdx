@@ -1,0 +1,122 @@
+---
+title: Select
+description: Create accessible, customized dropdown controls with Chassis CSS's enhanced native select styling.
+toc: true
+---
+
+## Overview
+
+Chassis CSS enhances native `<select>` elements with consistent styling that matches other form components while maintaining browser accessibility features.
+
+Apply the `.form-select` class to create styled dropdown menus with custom appearance, focus states, and sizing options.
+
+<Example code={`<select class="form-select" aria-label="Default select example">
+    <option selected>Open this select menu</option>
+    <option value="1">One</option>
+    <option value="2">Two</option>
+    <option value="3">Three</option>
+  </select>`} />
+
+## Sizing options
+
+Use the `.small` and `.large` modifier classes to create select elements that match the dimensions of corresponding form inputs.
+
+<Example code={`<select class="form-select large mb-medium" aria-label="Large select example">
+    <option selected>Open this select menu</option>
+    <option value="1">One</option>
+    <option value="2">Two</option>
+    <option value="3">Three</option>
+  </select>
+
+  <select class="form-select small" aria-label="Small select example">
+    <option selected>Open this select menu</option>
+    <option value="1">One</option>
+    <option value="2">Two</option>
+    <option value="3">Three</option>
+  </select>`} />
+
+## Multiple selections
+
+Chassis CSS styles support the native `multiple` attribute for selecting multiple options. The appearance remains consistent with other form elements while enabling multi-select functionality.
+
+<Example code={`<select class="form-select" multiple aria-label="Multiple select example">
+    <option selected>Choose an option</option>
+    <option value="1">One</option>
+    <option value="2">Two</option>
+    <option value="3">Three</option>
+  </select>`} />
+
+### Visible options
+
+Control the number of visible options by using the `size` attribute. This creates a scrollable list with the specified number of options visible at once.
+
+<Example code={`<select class="form-select" size="3" aria-label="Size 3 select example">
+    <option selected>Choose an option</option>
+    <option value="1">One</option>
+    <option value="2">Two</option>
+    <option value="3">Three</option>
+  </select>`} />
+
+## Disabled state
+
+Apply the HTML `disabled` attribute to the select element to indicate it's unavailable for interaction. Disabled selects receive a muted appearance with visual cues that match other disabled form elements.
+
+<Example code={`<select class="form-select" aria-label="Disabled select example" disabled>
+    <option selected>Open this select menu</option>
+    <option value="1">One</option>
+    <option value="2">Two</option>
+    <option value="3">Three</option>
+  </select>`} />
+
+## Accessibility considerations
+
+Chassis CSS select components maintain native browser accessibility features while providing enhanced styling. Keep these guidelines in mind:
+
+- Always include a descriptive label (either with a `<label>` element or with `aria-label`/`aria-labelledby`)
+- Use `aria-describedby` if additional description is needed
+- Consider adding a default instructional option (like "Choose an option...")
+- For required selects, use the `required` attribute
+
+## CSS
+
+Chassis CSS uses a powerful combination of Sass and CSS variables to create a flexible form system that adapts to themes and design requirements.
+
+<DocsCSS />
+
+### Custom properties
+
+<DocsCSSVars />
+
+<ScssDocs name="form-input-variables" file="scss/placeholders/_form.scss" />
+
+Check the [overview]([[docsref:forms/overview#custom-properties]]) page to see the CSS variables shared by all form elements.
+
+### Sass variables
+
+<DocsSASSVars notExposed={true} />
+
+<hr />
+
+The following variables control select appearance:
+
+<ScssDocs name="form-select-variables" file="scss/_variables.scss" />
+
+These variables control common properties for all form controls:
+
+<ScssDocs name="form-input-variables" file="scss/_variables.scss" />
+
+These variables define the appearance of form labels accross all form elements:
+
+<ScssDocs name="form-label-variables" file="scss/_variables.scss" />
+
+### Design tokens
+
+<DocsDesignTokens />
+
+<hr />
+
+The following design tokens define the caret icon appearance and size of select elements:
+
+<ScssDocs name="form-select-tokens" file="scss/tokens/_forms.scss" />
+
+Check the [overview]([[docsref:forms/overview#design-tokens]]) page to see the design tokens shared by all form elements.

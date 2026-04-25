@@ -1,0 +1,178 @@
+// --- Avatar ---
+$avatar-size: 2.5rem !default;
+$avatar-size-small: 1.5rem !default;
+$avatar-size-large: 3.5rem !default;
+$avatar-font-size-scale: .5 !default;
+$avatar-badge-font-size-scale: $avatar-font-size-scale * .7 !default;
+$avatar-fg-color: var(--#{$prefix}fg-solid) !default;
+$avatar-bg-color: var(--#{$prefix}bg-solid) !default;
+$avatar-border-width: var(--#{$prefix}border-width-medium) !default;
+$avatar-border-color: var(--#{$prefix}border-subtle) !default;
+$avatar-border-radius: var(--#{$prefix}border-radius-round) !default;
+$avatar-font-family: var(--#{$prefix}font-family-text) !default;
+// $avatar-font-size: 1.25em !default;
+$avatar-font-weight: var(--#{$prefix}font-weight-mass) !default;
+$avatar-group-overlap: -.25 !default;
+
+.avatar {
+  --#{$prefix}fg-color: var(--#{$prefix}avatar-fg-color, #{$avatar-fg-color});
+  --#{$prefix}bg-color: var(--#{$prefix}avatar-bg-color, #{$avatar-bg-color});
+  --#{$prefix}border-color: var(--#{$prefix}avatar-border-color, #{$avatar-border-color});
+  --#{$prefix}border-width: var(--#{$prefix}avatar-border-width, #{$avatar-border-width});
+  --#{$prefix}border-radius: var(--#{$prefix}avatar-border-radius, #{$avatar-border-radius});
+  --#{$prefix}size: var(--#{$prefix}avatar-size, #{$avatar-size});
+  --#{$prefix}font-family: var(--#{$prefix}avatar-font-family, #{$avatar-font-family});
+  --#{$prefix}font-size: var(--#{$prefix}avatar-font-size, #{$avatar-size * $avatar-font-size-scale});
+  --#{$prefix}font-weight: var(--#{$prefix}avatar-font-weight, #{$avatar-font-weight});
+  --#{$prefix}transition: var(--#{$prefix}avatar-transition, #{$button-transition});
+  --#{$prefix}group-overlap: var(--#{$prefix}avatar-group-overlap, #{$avatar-group-overlap});
+
+  // --#{$prefix}font-size-scale: #{$avatar-font-size-scale};
+  // --#{$prefix}badge-font-size-scale: #{$avatar-badge-font-size-scale};
+  // --#{$prefix}badge-size: calc(#{$avatar-size} * #{$avatar-badge-font-size-scale});
+  // --#{$prefix}badge-size-small: calc(#{$avatar-size-small} * #{$avatar-badge-font-size-scale});
+  // --#{$prefix}badge-size-large: calc(#{$avatar-size-large} * #{$avatar-badge-font-size-scale});
+  // --#{$prefix}badge-font-size-scale: #{$avatar-badge-font-size-scale};
+  // --#{$prefix}badge-font-size: calc(#{$avatar-size} * #{$avatar-badge-font-size-scale});
+  // --#{$prefix}badge-font-size-small: calc(#{$avatar-size-small} * #{$avatar-badge-font-size-scale});
+  // --#{$prefix}badge-font-size-large: calc(#{$avatar-size-large} * #{$avatar-badge-font-size-scale});
+
+  @extend %context;
+
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--#{$prefix}size);
+  max-width: 100%;
+  height: var(--#{$prefix}size);
+  max-height: auto;
+  overflow: visible;
+  font-family: var(--#{$prefix}font-family);
+  font-size: var(--#{$prefix}font-size); //stylelint-disable-line property-disallowed-list
+  font-weight: var(--#{$prefix}font-weight);
+  line-height: 1;
+  color: var(--#{$prefix}fg-color);
+  text-align: center;
+  vertical-align: middle;
+  background-color: var(--#{$prefix}bg-color);
+  border-color: var(--#{$prefix}border-color)!important; //stylelint-disable-line
+  border-style: var(--#{$prefix}avatar-border-style, solid) !important; //stylelint-disable-line
+  border-width: var(--#{$prefix}border-width) !important; //stylelint-disable-line
+  border-radius: var(--#{$prefix}border-radius); //stylelint-disable-line property-disallowed-list
+  transition: var(--#{$prefix}transition); //stylelint-disable-line property-disallowed-list
+
+  > .avatar-text,
+  > .avatar-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit; //stylelint-disable-line property-disallowed-list
+    // https://gist.github.com/ayamflow/b602ab436ac9f05660d9c15190f4fd7b
+    // mask-image: radial-gradient(#fff, #000);
+  }
+
+  > .avatar-text {
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  > .avatar-image > img {
+    width: 100%;
+    height: 100%;
+    // max-height: auto;
+    object-fit: cover;
+    border-radius: inherit; //stylelint-disable-line property-disallowed-list
+  }
+
+  > .badge {
+    // Positioning will be handled via inline styles
+    // --#{$prefix}size: 1rem;
+    position: absolute;
+    z-index: 1;
+    width: 1.5em;
+    height: 1.5em;
+    // padding: .25em;
+    // font-size: 70%; //stylelint-disable-line property-disallowed-list
+    // font-weight: 700;
+    // line-height: 1;
+    // border-radius: 10em; //stylelint-disable-line property-disallowed-list
+  }
+
+  &:focus {
+    outline: 0;
+  }
+
+  &.button,
+  &[href] {
+    padding: 0;
+    border: 0;
+
+    > .avatar-image img {
+      transition: transform .15s ease-in-out; //stylelint-disable-line property-disallowed-list
+    }
+
+    &:not(:disabled):not(.disabled) {
+      cursor: pointer;
+
+      &:hover {
+        .avatar-image img {
+          transform: scale(1.125);
+        }
+      }
+    }
+  }
+
+  &.disabled,
+  &:disabled,
+  &[disabled] {
+    pointer-events: none;
+    opacity: .65;
+  }
+
+  &[href] {
+    text-decoration: none;
+    &:hover {
+      color: var(--#{$prefix}fg-color);
+    }
+  }
+
+  > .icon {
+    width: 60%;
+    max-width: 100%;
+    height: auto;
+  }
+
+  &.large {
+    --#{$prefix}avatar-size: #{$avatar-size-large};
+    --#{$prefix}avatar-font-size: #{$avatar-size-large * $avatar-font-size-scale};
+  }
+
+  &.small {
+    --#{$prefix}avatar-size: #{$avatar-size-small};
+    --#{$prefix}avatar-font-size: #{$avatar-size-small * $avatar-font-size-scale};
+  }
+
+}
+
+.avatar-group {
+  display: flex;
+  flex-wrap: wrap;
+
+  > .avatar:not(:first-child) {
+    // border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
+    margin-left: #{calc(var(--#{$prefix}group-overlap) * var(--#{$prefix}size))};
+  }
+
+  a,
+  .button {
+    //stylelint-disable-next-line
+    &.avatar:hover:not(.disabled):not(disabled) {
+      z-index: 1;
+    }
+  }
+}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../../../dist/css/chassis.min.css" rel="stylesheet">
+    <title>Popover</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Popover <small>Chassis Visual Test</small></h1>
+
+      <button type="button" class="btn btn-secondary" data-cx-container="body" data-cx-toggle="popover" data-cx-placement="auto" data-cx-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+        Popover on auto
+      </button>
+
+      <button type="button" class="btn btn-secondary" data-cx-container="body" data-cx-toggle="popover" data-cx-placement="top" data-cx-content="Default placement was on top but not enough place">
+        Popover on top
+      </button>
+
+      <button type="button" class="btn btn-secondary" data-cx-container="body" data-cx-toggle="popover" data-cx-placement="right" data-cx-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+        Popover on end
+      </button>
+
+      <button type="button" class="btn btn-secondary" data-cx-container="body" data-cx-toggle="popover" data-cx-placement="bottom" data-cx-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+        Popover on bottom
+      </button>
+
+      <button type="button" class="btn btn-secondary" data-cx-container="body" data-cx-toggle="popover" data-cx-placement="left" data-cx-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+        Popover on start
+      </button>
+    </div>
+
+    <script src="../../../dist/js/chassis.bundle.js"></script>
+    <script>
+      /* global chassis: false */
+
+      document.querySelectorAll('[data-cx-toggle="popover"]').forEach(popoverEl => new chassis.Popover(popoverEl))
+    </script>
+  </body>
+</html>

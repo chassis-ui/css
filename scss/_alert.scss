@@ -1,0 +1,111 @@
+//
+// Alert Component
+//
+// Specialized modal dialog system for displaying critical messages requiring
+// immediate user attention or action. Provides focused, accessible interfaces
+// for confirmations, warnings, and important notifications.
+//
+// Unlike regular modals, alerts are specifically designed for:
+// - Critical confirmations (e.g., delete operations)
+// - Important notifications requiring acknowledgment
+// - Decision-forcing interfaces with limited options
+//
+
+.alert-window {
+  // Extends %component to inherit common component behaviors
+  @extend %component;
+  // scss-docs-start alert-css-vars
+  // Z-index and sizing variables
+  --#{$prefix}zindex: var(--#{$prefix}alert-zindex, #{$zindex-alert});
+  --#{$prefix}padding-y: var(--#{$prefix}alert-padding-y, #{$alert-padding-y});
+  --#{$prefix}padding-x: var(--#{$prefix}alert-padding-x, #{$alert-padding-x});
+  --#{$prefix}gap: var(--#{$prefix}alert-gap, #{$alert-gap});
+
+  // Color scheme variables
+  --#{$prefix}fg-color: var(--#{$prefix}alert-fg-color, #{$alert-fg-color});
+  --#{$prefix}bg-color: var(--#{$prefix}alert-bg-color, #{$alert-bg-color});
+  --#{$prefix}border-color: var(--#{$prefix}alert-border-color, #{$alert-border-color});
+
+  // Border and shape properties
+  --#{$prefix}border-width: var(--#{$prefix}alert-border-width, #{$alert-border-width});
+  --#{$prefix}border-radius: var(--#{$prefix}alert-border-radius, #{$alert-border-radius});
+  --#{$prefix}inner-border-radius: var(--#{$prefix}alert-inner-border-radius, #{$alert-inner-border-radius});
+
+  // Icon and typography settings
+  --#{$prefix}icon-size: var(--#{$prefix}alert-icon-size, #{$alert-icon-size});
+  @include map-font($alert-message-font, alert-message);
+  @include map-font($alert-title-font, alert, title);
+
+  // Spacing and shadow properties
+  --#{$prefix}title-margin: var(--#{$prefix}alert-title-margin, #{$alert-title-margin});
+  --#{$prefix}footer-gap: var(--#{$prefix}alert-footer-gap, #{$alert-footer-gap});
+  --#{$prefix}box-shadow: var(--#{$prefix}alert-box-shadow, #{$alert-shadow});
+  // scss-docs-end alert-css-vars
+
+  position: relative;
+  z-index: var(--#{$prefix}zindex); // Ensure alert window is above everything else
+  display: flex;
+  flex-direction: column;
+  width: 100%; // Ensure `.modal-content` extends the full width of the parent `.modal-dialog`
+  @include exclude-strokes(alert);
+  pointer-events: auto;
+  background-clip: padding-box;
+  outline: 0;
+  box-shadow: var(--#{$prefix}box-shadow);
+
+  // Title element styling
+  // Applies consistent typography based on title font variables
+  .alert-title {
+    @include font(title);
+    margin-bottom: var(--#{$prefix}title-margin);
+  }
+
+  // Special layout handling for alerts with icons
+  // Adjusts the layout when an icon is present to position it properly
+  &:has(> .alert-icon) {
+    display: block;
+    padding-left: #{calc($alert-padding-x + $alert-icon-size + $alert-gap)};
+
+    // Icon positioning and sizing
+    .alert-icon {
+      float: left;
+      width: $alert-icon-size;
+      margin-left: #{calc(($alert-icon-size + $alert-gap) * -1)};
+    }
+  }
+
+}
+
+// Footer (for actions)
+// Container for alert action buttons with consistent spacing and alignment
+.alert-footer {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: var(--#{$prefix}footer-gap);
+  align-items: center; // vertically center
+  justify-content: flex-end; // Right align buttons with flex property because text-align doesn't work on flex items
+  @include border-bottom-radius(var(--#{$prefix}inner-border-radius));
+}
+
+// Alert animation handling
+// Special animation behavior when alerts are used within modal containers
+.modal-container:has(> .alert-window) {
+  // Slide-down entrance animation
+  // Creates a distinctive entrance effect for alerts
+  .modal.fade & {
+    transform: $alert-fade-transform;
+    @include transition($alert-transition);
+  }
+
+  // Final position after entrance animation completes
+  .modal.show & {
+    transform: $alert-show-transform;
+  }
+
+  // Static alert handling (when user tries to dismiss but isn't allowed)
+  // Creates a visual feedback animation
+  .modal.modal-static & {
+    transform: $alert-scale-transform;
+  }
+}

@@ -1,0 +1,91 @@
+// .cxd-gutter {
+//   --cx-gutter-x: #{$cxd-gutter-x};
+// }
+
+.hero-notice {
+  color: var(--cx-info-fg-main);
+  background-color: var(--cx-info-bg-even);
+  border: 1px solid var(--cx-info-border-subtle);
+
+  @media (min-width: 540px) {
+    @include border-radius(5em);
+  }
+}
+
+.button-figma {
+  --cx-button-color: var(--cx-fg-main);
+  --cx-button-border-color: var(--cx-fg-main);
+  --cx-button-hover-color: var(--cx-bg-main);
+  --cx-button-hover-bg: var(--cx-fg-main);
+  --cx-button-hover-border-color: var(--cx-button-hover-bg-color);
+}
+
+.icon-search {
+  @media (min-width: 768px) {
+    width: 35%;
+  }
+}
+
+.icon-list {
+  @include font-size(2rem);
+
+  // stylelint-disable  declaration-no-important
+  a:hover,
+  a:focus {
+    &,
+    .name {
+      color: var(--cx-link-hover) !important;
+    }
+  }
+  // stylelint-enable  declaration-no-important
+
+  &:empty::before {
+    display: block;
+    width: 100%;
+    padding: 100px 2rem;
+    margin-right: 15px;
+    margin-left: 15px;
+    color: var(--cx-fg-subtle);
+    text-align: center;
+    content: "Nothing found, try searching again.";
+    background-color: var(--cx-bg-even);
+    @include border-radius(.5rem);
+  }
+}
+
+.button-group > .button {
+  flex-shrink: 0;
+}
+
+.name {
+  @include font-size(.8125rem);
+}
+
+@media (min-width: 1200px) {
+  .row-cols-xlarge-8 {
+    > * {
+      flex: 0 0 12.5%;
+      max-width: 12.5%;
+    }
+  }
+}
+
+.icon-demo {
+  padding: 6rem 2rem;
+  margin-bottom: 2rem;
+  background-color: var(--cx-bg-even);
+  background-image: radial-gradient(circle, var(--cx-border-subtle) 1px, rgba(0, 0, 0, 0) 1px);
+  background-size: 1rem 1rem;
+}
+
+.icon-demo,
+.icon-demo-examples {
+  --cx-border-color: var(--cx-border-subtle);
+}
+
+aside h3 {
+  font-weight: var(--cx-font-weight-strong);
+}
+aside h3:not(:first-child) {
+  margin-top: 1.5rem;
+}

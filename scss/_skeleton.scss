@@ -1,0 +1,62 @@
+.skeleton {
+  display: inline-block;
+  min-height: 1em;
+  vertical-align: middle;
+  cursor: wait !important; // stylelint-disable-line
+  opacity: var(--#{$prefix}skeleton-opacity-max, #{$skeleton-opacity-max});
+
+  &:not(.button) {
+    background-color: var(--#{$prefix}skeleton-color, currentcolor);
+  }
+
+  &.button::before {
+    display: inline-block;
+    content: "";
+  }
+}
+
+// Animation
+.skeleton-glow {
+  .skeleton {
+    animation: skeleton-glow 2s ease-in-out infinite;
+  }
+}
+
+@keyframes skeleton-glow {
+  50% {
+    opacity: var(--#{$prefix}skeleton-opacity-min, #{$skeleton-opacity-min});
+  }
+}
+
+.skeleton-wave {
+  mask-image: linear-gradient(135deg, $black 40%, rgba(0, 0, 0, #{calc((1 - var(--#{$prefix}skeleton-opacity-min, #{$skeleton-opacity-min})))}) 50%, $black 60%);
+  mask-size: 200% 100%;
+  animation: skeleton-wave 2s linear infinite;
+}
+
+@keyframes skeleton-wave {
+  100% {
+    mask-position: -200% 0%;
+  }
+}
+
+//
+// Skeleton utilities
+//
+
+$utilities: () !default;
+@if $utilities {
+  $utilities: map-merge(
+    $utilities,
+    (
+      // scss-docs-start utils-skeletons
+      "skeleton-color": (
+        css-var: true,
+        css-variable-name: skeleton-color,
+        class: skeleton,
+        values: map-loop($context-colors, varify, "$key"),
+      ),
+      // scss-docs-end utils-skeletons
+    )
+  );
+}

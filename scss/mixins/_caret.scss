@@ -1,0 +1,42 @@
+// scss-docs-start caret-mixin
+@mixin caret(
+  $direction: down,
+  $icon: var(--#{$prefix}caret-icon, $caret-icon),
+  $size: var(--#{$prefix}caret-size, $caret-size),
+  $color: var(--#{$prefix}caret-color, $caret-color),
+  $vertical-align: $caret-vertical-align,
+) {
+  &::after,
+  &::before {
+    display: none;
+    flex-shrink: 0;
+    width: $size;
+    height: $size;
+    vertical-align: $vertical-align;
+    content: "";
+    background-color: $color;
+    mask-image: $icon;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: $size;
+  }
+  @if $direction != start {
+    &::after {
+      display: inline-block;
+      @if $direction == down {
+        transform: rotate(0deg);
+      } @else if $direction == up {
+        transform: rotate(180deg);
+      } @else if $direction == end {
+        transform: rotate(-90deg);
+      }
+    }
+  }
+  @if $direction == start {
+    &::before {
+      display: inline-block;
+      transform: rotate(90deg);
+    }
+  }
+}
+// scss-docs-end caret-mixin

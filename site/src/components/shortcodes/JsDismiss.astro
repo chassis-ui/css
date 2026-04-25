@@ -1,0 +1,37 @@
+---
+import Code from '@shortcodes/Code.astro'
+import Callout from '@chassis-ui/docs/shortcodes/Callout.astro'
+
+interface Props {
+  name: string
+}
+
+const { name } = Astro.props
+---
+
+<p>
+  Enable dismissal with the <code>data-cx-dismiss</code> attribute on a button <strong
+    >within the {name}</strong
+  >:
+</p>
+
+<Code
+  code={`<button type="button" class="close-button" data-cx-dismiss="${name}" aria-label="Dismiss"></button>`}
+  lang="html"
+/>
+
+<p>
+  Or on a button <strong>outside the {name}</strong> using the additional <code>data-cx-target</code
+  > attribute:
+</p>
+
+<Code
+  code={`<button type="button" class="close-button" data-cx-dismiss="${name}" data-cx-target="#my-${name}" aria-label="Dismiss ${name}"></button>`}
+  lang="html"
+/>
+
+<Callout type="warning">
+  When a {name} is dismissed, it is completely removed from the DOM. If you need to maintain focus management
+  for accessibility, listen for the <code>closed.cx.{name}</code> event to set focus to an appropriate
+  element.
+</Callout>

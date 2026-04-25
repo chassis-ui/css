@@ -1,0 +1,467 @@
+---
+title: List group
+description: Create organized, flexible content containers with Chassis's token-based list group component that adapts seamlessly to various content types and interaction patterns.
+toc: true
+---
+
+import { getData } from '@libs/data'
+
+## Introduction
+
+List groups in Chassis CSS provide structured containers for related content with consistent styling and behavior. Beyond simple lists, they support interactive elements, custom content, and integration with other components—all while maintaining design token consistency with your broader interface.
+
+## Basic implementation
+
+The foundation of the list group component is an unordered list with the `.list-group` container class and `.list-item` for individual entries. This structure establishes consistent spacing, borders, and typography through Chassis's design token system.
+
+<Example code={`<ul class="list-group">
+    <li class="list-item">An item</li>
+    <li class="list-item">A second item</li>
+    <li class="list-item">A third item</li>
+    <li class="list-item">A fourth item</li>
+    <li class="list-item">And a fifth one</li>
+  </ul>`} />
+
+### Active state
+
+Apply the `.active` class to indicate the current selection or focused item within a list group. For better accessibility, include the `aria-current="true"` attribute to communicate the active state to assistive technologies.
+
+<Example code={`<ul class="list-group">
+    <li class="list-item active" aria-current="true">An active item</li>
+    <li class="list-item">A second item</li>
+    <li class="list-item">A third item</li>
+    <li class="list-item">A fourth item</li>
+    <li class="list-item">And a fifth one</li>
+  </ul>`} />
+
+### Disabled state
+
+Apply the `.disabled` class to create visually disabled list items. Include the `aria-disabled="true"` attribute to properly communicate this state to assistive technologies.
+
+<Callout type="warning">
+  The `.disabled` class only changes the visual appearance. For interactive elements like links, additional JavaScript is needed to fully disable interaction behavior.
+</Callout>
+
+<Example code={`<ul class="list-group">
+    <li class="list-item disabled" aria-disabled="true">A disabled item</li>
+    <li class="list-item">A second item</li>
+    <li class="list-item">A third item</li>
+    <li class="list-item">A fourth item</li>
+    <li class="list-item">And a fifth one</li>
+  </ul>`} />
+
+## Interactive elements
+
+Transform list items into interactive elements using `<a>` or `<button>` elements with the `.list-action` modifier class. This creates actionable list items with appropriate hover, disabled, and active states based on your design token system.
+
+<Callout type="info">
+  The `.list-action` class provides distinct visual feedback for interactive elements while maintaining the list group's cohesive visual language. Unlike the `.button` component, list actions preserve the list group's distinctive appearance while adding interactivity.
+</Callout>
+
+Chassis CSS separates these interactive states from standard list items to maintain a clear distinction between read-only content and interactive elements, ensuring users receive appropriate visual affordances.
+
+<Example code={`<div class="list-group">
+    <a href="#" class="list-item list-action active" aria-current="true">
+      The current link item
+    </a>
+    <a href="#" class="list-item list-action">A second link item</a>
+    <a href="#" class="list-item list-action">A third link item</a>
+    <a href="#" class="list-item list-action">A fourth link item</a>
+    <a class="list-item list-action disabled" aria-disabled="true">A disabled link item</a>
+  </div>`} />
+
+### Links vs buttons
+
+Both anchors and buttons can be used to create interactive list items, but they serve different semantic purposes:
+
+- Use `<a>` elements when the action navigates to a new location or resource
+- Use `<button>` elements when the action triggers an in-page behavior or state change
+
+<Callout type="info">
+  When using `<button>` elements, you can use the native `disabled` attribute, which both visually styles the element and prevents interaction. For `<a>` elements, the `.disabled` class only provides visual styling, and requires JavaScript to fully prevent interaction.
+</Callout>
+
+<Example code={`<div class="list-group">
+    <button type="button" class="list-item list-action active" aria-current="true">
+      The current button
+    </button>
+    <button type="button" class="list-item list-action">A second button item</button>
+    <button type="button" class="list-item list-action">A third button item</button>
+    <button type="button" class="list-item list-action">A fourth button item</button>
+    <button type="button" class="list-item list-action" disabled>A disabled button item</button>
+  </div>`} />
+
+## Layout variations
+
+Different presentation contexts may require variations in how list groups appear. Chassis provides several layout modifier classes that change how list groups display while maintaining design token consistency.
+
+### Flush list
+
+Apply `.list-flush` to remove outer borders and rounded corners, creating an edge-to-edge appearance. Ideal for lists inside other components like cards where a seamless visual connection is desired.
+
+<Example code={`<ul class="list-group list-flush">
+    <li class="list-item">An item</li>
+    <li class="list-item">A second item</li>
+    <li class="list-item">A third item</li>
+    <li class="list-item">A fourth item</li>
+    <li class="list-item">And a fifth one</li>
+  </ul>`} />
+
+### Plain layout
+
+Apply `.list-plain` for a minimal list that removes outer borders, rounded corners, and horizontal padding. Creates a sleek appearance suitable for main content areas like search results or content feeds.
+
+<Example code={`<ul class="list-group list-plain">
+    <li class="list-item">An item</li>
+    <li class="list-item">A second item</li>
+    <li class="list-item">A third item</li>
+    <li class="list-item">A fourth item</li>
+    <li class="list-item">And a fifth one</li>
+  </ul>`} />
+
+<Callout type="info">
+  Both `.list-flush` and `.list-plain` remove outer borders and rounded corners. The key difference is that `.list-plain` also removes horizontal padding for a more compact appearance.
+</Callout>
+
+### Numbered lists
+
+Create sequentially numbered list items by applying the `.list-numbered` modifier class to your list group. For semantic correctness, pair this with an `<ol>` element, though the numbering is generated through CSS rather than browser defaults.
+
+<Callout type="info">
+  Chassis CSS implements numbered list groups using design token-driven CSS counters. The numbering applies `counter-reset` on the container, and then uses `::before` pseudo-elements with `counter-increment` to generate and position numbers consistently across different design contexts.
+</Callout>
+
+This approach ensures numbers maintain proper positioning and styling regardless of content complexity, providing better flexibility than browser defaults while remaining fully accessible.
+
+<Example code={`<ol class="list-group list-numbered">
+    <li class="list-item">A list item</li>
+    <li class="list-item">A list item</li>
+    <li class="list-item">A list item</li>
+  </ol>`} />
+
+These work great with custom content as well.
+
+<Example code={`<ol class="list-group list-numbered">
+    <li class="list-item d-flex justify-content-between align-items-start">
+      <div class="ms-xsmall me-auto">
+        <div class="font-strong">Subheading</div>
+        Content for list item
+      </div>
+      <span class="badge primary">14</span>
+    </li>
+    <li class="list-item d-flex justify-content-between align-items-start">
+      <div class="ms-xsmall me-auto">
+        <div class="font-strong">Subheading</div>
+        Content for list item
+      </div>
+      <span class="badge primary">14</span>
+    </li>
+    <li class="list-item d-flex justify-content-between align-items-start">
+      <div class="ms-xsmall me-auto">
+        <div class="font-strong">Subheading</div>
+        Content for list item
+      </div>
+      <span class="badge primary">14</span>
+    </li>
+  </ol>`} />
+
+### Horizontal layout
+
+Create horizontally arranged list groups with the `.list-horizontal` modifier class. This transforms the default vertical stack into a row-based layout that maintains the list group's visual language and token-based styling.
+
+For responsive designs, Chassis provides breakpoint-specific variants (`.list-horizontal-{sall|medium|large|xlarge|2xlarge}`) that activate the horizontal layout only at or above the specified breakpoint size. This enables adaptive layouts that respond to available screen space while maintaining consistent styling.
+
+<Callout type="warning">
+  Horizontal list groups cannot currently be combined with flush list groups due to their conflicting border handling strategies.
+</Callout>
+
+<Example code={getData('breakpoints').map((breakpoint) => `<ul class="list-group list-horizontal${breakpoint.abbr} mb-medium">
+    <li class="list-item">An item</li>
+    <li class="list-item">A second item</li>
+    <li class="list-item">A third item</li>
+  </ul>`)} />
+
+Apply `.flex-fill` or `flex-grow-1` utility classes on list items for full-width horizontal lists:
+- Use `.flex-fill` to distribute space evenly, giving each item equal width regardless of content
+- Use `.flex-grow-1` for proportional distribution, where items grow to fill available space based on their content
+
+<Example code={`<ul class="list-group list-horizontal mb-medium">
+    <li class="list-item flex-fill">An item</li>
+    <li class="list-item flex-fill">Second item</li>
+    <li class="list-item flex-fill">And the longer third item</li>
+  </ul>
+  <ul class="list-group list-horizontal">
+    <li class="list-item flex-grow-1">An item</li>
+    <li class="list-item flex-grow-1">Second item</li>
+    <li class="list-item flex-grow-1">And the longer third item</li>
+  </ul>`} />
+
+## Contextual variations
+
+Chassis's design token system includes contextual color variants that communicate meaning through consistent visual language. Apply these contextual classes to list items to indicate state, importance, or category through your design system's color semantics.
+
+<Example code={[
+    `<ul class="list-group">`,
+    ...getData('context-colors').map((contextColor) => `  <li class="list-item context ${contextColor.name}">A simple ${contextColor.name} list item</li>`),
+    `</ul>`
+  ]} />
+
+### Interactive items
+
+Combine contextual color variations with the `.list-action` class to create interactive elements that maintain semantic color meaning while adding appropriate hover and focus states. The design token system ensures that interactive states (hover, focus, active) maintain sufficient contrast and visual differentiation while preserving the contextual meaning of each color variant.
+
+Apply the `.active` class to indicate the currently selected item within a contextually styled interactive list group.
+
+<Example code={[
+    `<div class="list-group list-action">`,
+    ...getData('context-colors').map((contextColor) => `  <a href="#" class="list-item context ${contextColor.name}">A simple ${contextColor.name} list action</a>`),
+    `</div>`
+  ]} />
+
+<Callout name="warning-color-assistive-technologies" />
+
+### Context styles
+
+Contextual styles are applied to list groups or items using `.solid`, `.outline`, or `.smooth` classes. These classes apply the appropriate background, border, and text colors based on your design system's color palette.
+
+<Example code={`<div class="row row-cols-medium-2 g-large">
+    <div class="col">
+      <ul class="list-group context primary">
+        <li class="list-item">An item</li>
+        <li class="list-item">A second item</li>
+        <li class="list-item">A third item</li>
+        <li class="list-item">A fourth item</li>
+        <li class="list-item">And a fifth one</li>
+      </ul>
+    </div>
+    <div class="col">
+      <ul class="list-group context primary solid">
+        <li class="list-item">An item</li>
+        <li class="list-item">A second item</li>
+        <li class="list-item">A third item</li>
+        <li class="list-item">A fourth item</li>
+        <li class="list-item">And a fifth one</li>
+      </ul>
+    </div>
+    <div class="col">
+      <ul class="list-group context primary smooth">
+        <li class="list-item">An item</li>
+        <li class="list-item">A second item</li>
+        <li class="list-item">A third item</li>
+        <li class="list-item">A fourth item</li>
+        <li class="list-item">And a fifth one</li>
+      </ul>
+    </div>
+    <div class="col">
+      <ul class="list-group context primary outline">
+        <li class="list-item">An item</li>
+        <li class="list-item">A second item</li>
+        <li class="list-item">A third item</li>
+        <li class="list-item">A fourth item</li>
+        <li class="list-item">And a fifth one</li>
+      </ul>
+    </div>
+  </div>`} />
+
+
+## Component combinations
+
+Chassis CSS is designed as a cohesive system where components maintain design consistency when combined. List groups work effectively with other components to create rich, informative interfaces while preserving your design token system's visual language.
+
+### Items with badges
+
+Combine list items with badges to display counts, status indicators, or other supplementary information. The flex utilities help position and align badges consistently while maintaining the list group's design integrity.
+
+<Example code={`<ul class="list-group">
+    <li class="list-item d-flex justify-content-between align-items-center">
+      A list item
+      <span class="badge primary">14</span>
+    </li>
+    <li class="list-item d-flex justify-content-between align-items-center">
+      A second list item
+      <span class="badge primary">2</span>
+    </li>
+    <li class="list-item d-flex justify-content-between align-items-center">
+      A third list item
+      <span class="badge primary">1</span>
+    </li>
+  </ul>`} />
+
+### Rich content
+
+List groups can accommodate complex content structures while maintaining design consistency. By leveraging [flexbox utilities]([[docsref:/utilities/flex]]), you can create sophisticated layouts within list items that include headings, paragraphs, metadata, and other HTML elements—all while preserving your design token system's spacing, typography, and color relationships.
+
+<Example code={`<div class="list-group">
+    <a href="#" class="list-item list-action active" aria-current="true">
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-2xsmall">List group item heading</h5>
+        <small>3 days ago</small>
+      </div>
+      <p class="mb-2xsmall">Some placeholder content in a paragraph.</p>
+      <small>And some small print.</small>
+    </a>
+    <a href="#" class="list-item list-action">
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-2xsmall">List group item heading</h5>
+        <small class="fg-subtle">3 days ago</small>
+      </div>
+      <p class="mb-2xsmall">Some placeholder content in a paragraph.</p>
+      <small class="fg-subtle">And some muted small print.</small>
+    </a>
+    <a href="#" class="list-item list-action">
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-2xsmall">List group item heading</h5>
+        <small class="fg-subtle">3 days ago</small>
+      </div>
+      <p class="mb-2xsmall">Some placeholder content in a paragraph.</p>
+      <small class="fg-subtle">And some muted small print.</small>
+    </a>
+  </div>`} />
+
+### Form controls
+
+List groups seamlessly integrate with Chassis's form controls to create selectable lists that maintain your design system's visual consistency. By combining list items with checkboxes and radio inputs, you can create selection interfaces that preserve the familiar list structure while adding form functionality.
+
+<Callout type="info">
+  When incorporating form controls within list groups, maintain accessibility through proper labeling. If visual labels aren't included, provide an `aria-label` attribute to ensure the control's purpose is communicated to assistive technologies.
+</Callout>
+
+<Example code={`<ul class="list-group">
+    <li class="list-item">
+      <input class="check-input me-xsmall" type="checkbox" value="" id="firstCheckbox">
+      <label class="check-label" for="firstCheckbox">First checkbox</label>
+    </li>
+    <li class="list-item">
+      <input class="check-input me-xsmall" type="checkbox" value="" id="secondCheckbox">
+      <label class="check-label" for="secondCheckbox">Second checkbox</label>
+    </li>
+    <li class="list-item">
+      <input class="check-input me-xsmall" type="checkbox" value="" id="thirdCheckbox">
+      <label class="check-label" for="thirdCheckbox">Third checkbox</label>
+    </li>
+  </ul>`} />
+
+#### Stretched labels
+
+Apply the `.stretched-link` utility to `<label>` elements to expand the clickable/tappable area to cover the entire list item. This improves usability on touch devices while maintaining the visual appearance of the standard form control.
+
+<Example code={`<ul class="list-group">
+    <li class="list-item">
+      <input class="check-input me-xsmall" type="checkbox" value="" id="firstCheckboxStretched">
+      <label class="check-label stretched-link" for="firstCheckboxStretched">First checkbox</label>
+    </li>
+    <li class="list-item">
+      <input class="check-input me-xsmall" type="checkbox" value="" id="secondCheckboxStretched">
+      <label class="check-label stretched-link" for="secondCheckboxStretched">Second checkbox</label>
+    </li>
+    <li class="list-item">
+      <input class="check-input me-xsmall" type="checkbox" value="" id="thirdCheckboxStretched">
+      <label class="check-label stretched-link" for="thirdCheckboxStretched">Third checkbox</label>
+    </li>
+  </ul>`} />
+
+## CSS
+
+<DocsCSS />
+
+### Custom properties
+
+<DocsCSSVars />
+
+<ScssDocs name="list-item-css-vars" file="scss/_list.scss" />
+
+### Sass variables
+
+<DocsSASSVars />
+
+<ScssDocs name="list-variables" file="scss/_variables.scss" />
+
+### Sass mixins
+
+Chassis CSS interactive placeholder selector used to create context variant and interactive list items. This mixin applies the appropriate styles for interactive elements like links and buttons within list groups, ensuring consistent design token usage across different states.
+
+<ScssDocs name="interactive-placeholder-selector" file="scss/placeholders/_interactive.scss" />
+
+## JavaScript behaviors
+
+Chassis CSS includes JavaScript functionality that extends list groups with dynamic behaviors while maintaining design token consistency across state changes. The most common interactive pattern is using list groups as navigation for tabbed content.
+
+### Tabbed navigation
+
+The tab JavaScript plugin—available either as an individual module or through the compiled `chassis.js` file—transforms list groups into interactive tab navigation systems. This creates a cohesive interface where list group styling is applied to navigational elements that control content visibility.
+
+<div class="cxd-example" role="tabpanel">
+  <div class="row">
+    <div class="col-4">
+      <div class="list-group" id="list-tab" role="tablist">
+        <a class="list-item list-action active" id="list-home-item" data-cx-toggle="tab" href="#list-home" role="tab" aria-controls="list-home">Home</a>
+        <a class="list-item list-action" id="list-profile-item" data-cx-toggle="tab" href="#list-profile" role="tab" aria-controls="list-profile">Profile</a>
+        <a class="list-item list-action" id="list-messages-item" data-cx-toggle="tab" href="#list-messages" role="tab" aria-controls="list-messages">Messages</a>
+        <a class="list-item list-action" id="list-settings-item" data-cx-toggle="tab" href="#list-settings" role="tab" aria-controls="list-settings">Settings</a>
+      </div>
+    </div>
+    <div class="col-8">
+      <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-item">
+          <p>Some placeholder content in a paragraph relating to "Home". And some more content, used here just to pad out and fill this tab panel. In production, you would obviously have more real content here. And not just text. It could be anything, really. Text, images, forms.</p>
+        </div>
+        <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-item">
+          <p>Some placeholder content in a paragraph relating to "Profile". And some more content, used here just to pad out and fill this tab panel. In production, you would obviously have more real content here. And not just text. It could be anything, really. Text, images, forms.</p>
+        </div>
+        <div class="tab-pane fade" id="list-messages" role="tabpanel" aria-labelledby="list-messages-item">
+          <p>Some placeholder content in a paragraph relating to "Messages". And some more content, used here just to pad out and fill this tab panel. In production, you would obviously have more real content here. And not just text. It could be anything, really. Text, images, forms.</p>
+        </div>
+        <div class="tab-pane fade" id="list-settings" role="tabpanel" aria-labelledby="list-settings-item">
+          <p>Some placeholder content in a paragraph relating to "Settings". And some more content, used here just to pad out and fill this tab panel. In production, you would obviously have more real content here. And not just text. It could be anything, really. Text, images, forms.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+```html
+<div class="row">
+  <div class="col-4">
+    <div class="list-group" id="list-tab" role="tablist">
+      <a class="list-item list-action active" id="list-home-item" data-cx-toggle="list" href="#list-solid-home" role="tab" aria-controls="list-home">Home</a>
+      <a class="list-item list-action" id="list-profile-item" data-cx-toggle="list" href="#list-solid-profile" role="tab" aria-controls="list-profile">Profile</a>
+      <a class="list-item list-action" id="list-messages-item" data-cx-toggle="list" href="#list-solid-messages" role="tab" aria-controls="list-messages">Messages</a>
+      <a class="list-item list-action" id="list-settings-item" data-cx-toggle="list" href="#list-solid-settings" role="tab" aria-controls="list-settings">Settings</a>
+    </div>
+  </div>
+  <div class="col-8">
+    <div class="tab-content" id="nav-tabContent">
+      <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-item">...</div>
+      <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-item">...</div>
+      <div class="tab-pane fade" id="list-messages" role="tabpanel" aria-labelledby="list-messages-item">...</div>
+      <div class="tab-pane fade" id="list-settings" role="tabpanel" aria-labelledby="list-settings-item">...</div>
+    </div>
+  </div>
+</div>
+```
+
+### Data attribute
+
+Chassis supports a declarative implementation approach that requires no custom JavaScript. By adding the `data-cx-toggle="list"` attribute to list items, you enable the tabbed behavior through Chassis's data attribute API. This approach maintains separation of concerns while ensuring your list group tabs have consistent behavior and appearance.
+
+```html
+<div role="tabpanel">
+  <!-- List group -->
+  <div class="list-group" id="myList" role="tablist">
+    <a class="list-item list-action active" data-cx-toggle="list" href="#home" role="tab">Home</a>
+    <a class="list-item list-action" data-cx-toggle="list" href="#profile" role="tab">Profile</a>
+    <a class="list-item list-action" data-cx-toggle="list" href="#messages" role="tab">Messages</a>
+    <a class="list-item list-action" data-cx-toggle="list" href="#settings" role="tab">Settings</a>
+  </div>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div class="tab-pane active" id="home" role="tabpanel">...</div>
+    <div class="tab-pane" id="profile" role="tabpanel">...</div>
+    <div class="tab-pane" id="messages" role="tabpanel">...</div>
+    <div class="tab-pane" id="settings" role="tabpanel">...</div>
+  </div>
+</div>
+```
+
+See [tab plugin documentation]([[docsref:/components/navs-tabs#initialization]]) for more details on the tabbed navigation system, including options for programmatic control, event handling, and advanced usage patterns.

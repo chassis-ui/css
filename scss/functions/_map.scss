@@ -1,0 +1,159 @@
+//
+// Map utility functions for Chassis CSS
+//
+// Functions and mixins for manipulating and validating Sass maps.
+// Includes utilities for map validation, key-value operations,
+// map merging, and specialized map transformations.
+//
+// Several map utilities are adapted from Bootstrap.
+// Special thanks to the Bootstrap Authors.
+//
+
+/// Check if a map's numeric values are in ascending order
+/// Validates that numeric values in a map increase from one key to the next.
+/// Used primarily to validate breakpoint maps and other ordered maps where
+/// sequentially increasing values are required for proper functionality.
+///
+/// @param {Map} $map - Map to check for ascending values
+/// @param {String} $map-name - Name of map for warning messages
+@mixin _assert-ascending($map, $map-name) {
+  $prev-key: null;
+  $prev-num: null;
+  @each $key, $num in $map {
+    @if $prev-num == null or unit($num) == "%" or unit($prev-num) == "%" {
+      // Do nothing
+    } @else if not comparable($prev-num, $num) {
+      @warn "Potentially invalid value for #{$map-name}: This map must be in ascending order, but key '#{$key}' has value #{$num} whose unit makes it incomparable to #{$prev-num}, the value of the previous key '#{$prev-key}' !";
+    } @else if $prev-num >= $num {
+      @warn "Invalid value for #{$map-name}: This map must be in ascending order, but key '#{$key}' has value #{$num} which isn't greater than #{$prev-num}, the value of the previous key '#{$prev-key}' !";
+    }
+    $prev-key: $key;
+    $prev-num: $num;
+  }
+}
+
+/// Verify that a map's first value starts at zero
+/// Used primarily to validate breakpoint maps where the lowest breakpoint
+/// should start at 0 for proper mobile-first behavior.
+///
+/// @param {Map} $map - Map to check (usually breakpoint map)
+/// @param {String} $map-name - Name of map for warning messages
+@mixin _assert-starts-at-zero($map, $map-name: "$grid-breakpoints") {
+  @if length($map) > 0 {
+    $values: map-values($map);
+    $first-value: nth($values, 1);
+    @if $first-value != 0 {
+      @warn "First breakpoint in #{$map-name} must start at 0, but starts at #{$first-value}.";
+    }
+  }
+}
+
+/// Create a negative version of a map
+/// Takes a map of values and creates a new map where keys are prefixed with 'n'
+/// and values are converted to negative. Useful for creating negative margin/spacing utilities.
+///
+/// @param {Map} $map - Original map to convert
+/// @return {Map} - New map with negative values and prefixed keys
+/// @example
+///   map-negativify((1: 0.25rem, 2: 0.5rem)) => (n1: -0.25rem, n2: -0.5rem)
+@function map-negativify($map) {
+  $result: ();
+  @each $key, $value in $map {
+    @if $key != 0 {
+      $result: map-merge($result, ("n" + $key: (-$value)));
+    }
+  }
+  @return $result;
+}
+
+// stylelint-disable scss/dollar-variable-pattern
+/// Apply a function to each value in a map
+/// Processes each key-value pair in a map through a specified function and returns
+/// a new map with the same keys but transformed values. Special placeholders
+/// $key and $value can be used to reference the current iteration's key and value.
+///
+/// @param {Map} $map - Map to process
+/// @param {String} $func - Name of function to call on each value
+/// @param {List} $args - Arguments to pass to the function (can include $key and $value placeholders)
+/// @return {Map} - New map with transformed values
+/// @example
+///   map-loop($theme-colors, "lighten", "$value", 10%)
+///   // Returns a map with all colors lightened by 10%
+@function map-loop($map, $func, $args...) {
+  $_map: ();
+
+  @each $key, $value in $map {
+    // allow to pass the $key and $value of the map as an function argument
+    $_args: ();
+    @each $arg in $args {
+      $_args: append($_args, if($arg == "$key", $key, if($arg == "$value", $value, $arg)));
+    }
+
+    $_map: map-merge($_map, ($key: call(get-function($func), $_args...)));
+  }
+
+  @return $_map;
+}
+// stylelint-enable scss/dollar-variable-pattern
+
+/// Extract multiple keys from a Sass map
+/// Creates a new map containing only the specified keys from the original map.
+/// Useful for filtering large configuration maps to only required values.
+///
+/// @param {Map} $map - Original map to extract from
+/// @param {List} $values - List of keys to extract
+/// @return {Map} - New map containing only the requested keys and their values
+/// @example
+///   map-get-multiple((a: 1, b: 2, c: 3), (a, c)) => (a: 1, c: 3)
+@function map-get-multiple($map, $values) {
+  $result: ();
+  @each $key, $value in $map {
+    @if (index($values, $key) != null) {
+      $result: map-merge($result, ($key: $value));
+    }
+  }
+  @return $result;
+}
+
+/// Merge multiple maps into a single map
+/// Combines any number of maps into one, with later maps' values
+/// overriding earlier ones if keys conflict.
+///
+/// @param {ArgList} $maps - Any number of maps to merge
+/// @return {Map} - Combined map containing all keys and values
+/// @example
+///   map-merge-multiple((a: 1), (b: 2), (a: 3)) => (a: 3, b: 2)
+@function map-merge-multiple($maps...) {
+  $merged-maps: ();
+
+  @each $map in $maps {
+    $merged-maps: map-merge($merged-maps, $map);
+  }
+  @return $merged-maps;
+}
+
+/// Rename all keys in a map by adding a prefix or suffix
+/// Creates a new map with the same values but renamed keys, adding
+/// a string to either the start or end of each key name.
+///
+/// @param {Map} $map - Original map to transform
+/// @param {String} $string - String to add to each key
+/// @param {String} $position - Where to add the string ("start" or "end")
+/// @return {Map} - New map with renamed keys
+/// @example
+///   map-rename-keys((primary: blue, secondary: gray), "fg-", "start") => (fg-primary: blue, fg-secondary: gray)
+///   map-rename-keys((sm: 1rem, lg: 2rem), "-size", "end") => (sm-size: 1rem, lg-size: 2rem)
+@function map-rename-keys($map, $string, $position) {
+  $-map: ();
+  $-key: null;
+  @each $key, $value in $map {
+    @if $position == "end" {
+      $-key: #{$key}#{$string};
+    } @else {
+      $-key: #{$string}#{$key};
+    }
+    $-map: map-merge($-map, ($-key: $value));
+  }
+
+  @return $-map;
+}

@@ -1,0 +1,29 @@
+---
+import BaseLayout from '@chassis-ui/docs/layouts/BaseLayout.astro'
+import HeroSection from '@components/homepage/HeroSection.astro'
+import IntroSection from '@components/homepage/IntroSection.astro'
+import FeaturesSection from '@components/homepage/FeaturesSection.astro'
+import HowSection from '@components/homepage/HowSection.astro'
+import TechSection from '@components/homepage/TechSection.astro'
+import DocsSection from '@components/homepage/DocsSection.astro'
+import HomeIcons from '/static/icons/cx-sprite.svg?raw'
+---
+
+<BaseLayout title="Chassis CSS - Enterprise CSS Framework">
+  <!-- Hero Section -->
+  <HeroSection />
+  <hr class="hr container" />
+  <!-- Value Proposition -->
+  <IntroSection />
+  <!-- Key Features -->
+  <FeaturesSection />
+  <!-- How It Works -->
+  <HowSection />
+  <!-- Technical Stack -->
+  <TechSection />
+  <!-- Documentation Section -->
+  <DocsSection />
+  <div class="d-none">
+    <Fragment set:html={HomeIcons} />
+  </div>
+</BaseLayout>

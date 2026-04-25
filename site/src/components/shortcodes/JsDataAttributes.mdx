@@ -1,0 +1,5 @@
+Chassis components offer flexible configuration through both data attributes and JavaScript. To use data attributes, prefix any option with `data-cx-` followed by the option name in kebab-case format (using hyphens instead of camelCase). For example, write `data-cx-custom-class="my-class"` rather than `data-cx-customClass="my-class"`.
+
+For more complex configurations, Chassis provides the `data-cx-config` attribute which accepts a JSON string of multiple settings. This approach simplifies markup when configuring several options at once. If the same option appears in both `data-cx-config` and as a separate data attribute (like `data-cx-title`), the individual attribute takes precedence. You can also use JSON values in individual attributes, such as `data-cx-delay='{"show":100,"hide":200}'` for more granular control.
+
+When initializing components, Chassis merges configurations from multiple sources in this priority order: default settings, `data-cx-config` values, individual `data-cx-*` attributes, and finally any JavaScript object options. Values defined later in this sequence override earlier ones.

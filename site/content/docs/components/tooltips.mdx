@@ -1,0 +1,305 @@
+---
+title: Tooltips
+description: Enhance user experience with Chassis CSS's accessible tooltip system, providing contextual information through CSS3 animations and intelligent positioning.
+toc: true
+---
+
+## Introduction
+
+Tooltips in Chassis CSS deliver contextual information and helpful hints without disrupting user workflows. Built on modern web standards with intelligent positioning via Popper.js, tooltips seamlessly integrate with your design system while maintaining accessibility and performance best practices.
+
+Chassis CSS tooltips operate on a manual initialization model for optimal performance and control:
+
+- Explicit initialization required to prevent performance impact on unused elements
+- Intelligent positioning powered by Popper.js for dynamic placement and collision detection
+- Automatic placement adjustment based on viewport constraints
+- Comprehensive event integration for application logic
+- Accessibility through proper ARIA attributes and keyboard navigation support
+- CSS custom properties for seamless theming and brand consistency
+
+### Implementation
+
+Before implementing tooltips, ensure these dependencies and considerations are addressed:
+
+- Include [popper.min.js]([[config:cdn.popper]]) before `chassis.js`, or use `chassis.bundle.min.js`
+- Tooltips with empty titles will not display
+- Hidden elements cannot trigger tooltips
+- Use `container: 'body'` for complex component layouts (input groups, button groups)
+- Only apply tooltips to keyboard-focusable, interactive elements for accessibility compliance
+- Hide tooltips before removing their trigger elements from the DOM
+
+<Callout name="info-sanitizer" />
+
+<Callout name="info-prefersreducedmotion" />
+
+## Examples
+
+Explore practical tooltip implementations demonstrating initialization patterns, positioning strategies, and customization techniques. These examples showcase Chassis CSS's flexible tooltip system across various use cases.
+
+### Initialization patterns
+
+Tooltips require explicit initialization before use. The recommended approach is to initialize all tooltips using their `data-cx-toggle` attribute:
+
+```js
+const tooltipTriggerList = document.querySelectorAll('[data-cx-toggle="tooltip"]')
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new chassis.Tooltip(tooltipTriggerEl))
+```
+
+### Interactive examples
+
+Hover over the links below to see tooltips in action within contextual content:
+
+<Example addStackblitzJs class="tooltip-demo" code={`<p class="muted">Placeholder text to demonstrate some <a href="#" data-cx-toggle="tooltip" data-cx-title="Default tooltip">inline links</a> with tooltips. This is now just filler, no killer. Content placed here just to mimic the presence of <a href="#" data-cx-toggle="tooltip" data-cx-title="Another tooltip">real text</a>. And all that just to give you an idea of how tooltips would look when used in real-world situations. So hopefully you've now seen how <a href="#" data-cx-toggle="tooltip" data-cx-title="Another one here too">these tooltips on links</a> can work in practice, once you use them on <a href="#" data-cx-toggle="tooltip" data-cx-title="The last tip!">your own</a> site or project.</p>`} />
+
+<Callout name="warning-data-cx-title-vs-title" type="warning" />
+
+### Custom appearance
+
+Customize tooltip appearance using CSS custom properties. Apply custom classes with `data-cx-custom-class="custom-tooltip"` to scope styling and override CSS variables for brand-specific theming.
+
+<ScssDocs name="custom-tooltip" file="site/src/scss/_component-examples.scss" />
+
+<Example addStackblitzJs class="tooltip-demo" code={`<button type="button" class="button secondary"
+          data-cx-toggle="tooltip" data-cx-placement="top"
+          data-cx-custom-class="custom-tooltip"
+          data-cx-title="This top tooltip is themed via CSS variables.">
+    Custom tooltip
+  </button>`} />
+
+### Positioning system
+
+Chassis CSS tooltips support four directional placements with automatic RTL adaptation. Popper.js handles collision detection and fallback positioning for optimal visibility.
+
+<Example showMarkup={false} class="tooltip-demo" code={`<div class="cxd-example-tooltips">
+    <button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="top" data-cx-title="Tooltip on top">Tooltip on top</button>
+    <button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="right" data-cx-title="Tooltip on right">Tooltip on right</button>
+    <button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="bottom" data-cx-title="Tooltip on bottom">Tooltip on bottom</button>
+    <button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="left" data-cx-title="Tooltip on left">Tooltip on left</button>
+    <button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-html="true" data-cx-title="<em>Tooltip</em> <u>with</u> <b>HTML</b>">Tooltip with HTML</button>
+  </div>`} />
+
+```html
+<button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="top" data-cx-title="Tooltip on top">
+  Tooltip on top
+</button>
+<button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="right" data-cx-title="Tooltip on right">
+  Tooltip on right
+</button>
+<button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="bottom" data-cx-title="Tooltip on bottom">
+  Tooltip on bottom
+</button>
+<button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="left" data-cx-title="Tooltip on left">
+  Tooltip on left
+</button>
+```
+
+And with custom HTML added:
+
+```html
+<button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-html="true" data-cx-title="<em>Tooltip</em> <u>with</u> <b>HTML</b>">
+  Tooltip with HTML
+</button>
+```
+
+With an SVG:
+
+<div class="cxd-example tooltip-demo">
+  <a href="#" class="d-inline-block" data-cx-toggle="tooltip" data-cx-title="Default tooltip" aria-label="Hover or focus to see default tooltip">
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100" aria-hidden="true">
+      <rect width="100%" height="100%" fill="#563d7c"/>
+      <circle cx="50" cy="50" r="30" fill="#007bff"/>
+    </svg>
+  </a>
+</div>
+
+### Disabled elements
+
+Elements with the `disabled` attribute aren't interactive, meaning users cannot focus, hover, or click them to trigger a tooltip. As a workaround, you'll want to trigger the tooltip from a wrapper `<div>` or `<span>`, ideally made keyboard-focusable using `tabindex="0"`.
+
+<Example class="tooltip-demo" addStackblitzJs code={`<span class="d-inline-block" tabindex="0" data-cx-toggle="tooltip" data-cx-title="Disabled tooltip">
+    <button class="button primary" type="button" disabled>Disabled button</button>
+  </span>`} />
+
+## Accessibility
+
+Tooltip components in Chassis CSS prioritize accessibility through semantic markup, proper ARIA attributes, and keyboard navigation support. These features ensure tooltips enhance rather than hinder the user experience for all users.
+
+### Screen readers
+
+Tooltips utilize standard HTML `title` attributes and proper ARIA labeling to communicate contextual information to assistive technologies. When implemented correctly, tooltips provide supplementary information without breaking the document flow.
+
+### Keyboard navigation
+
+Chassis CSS tooltips provide comprehensive keyboard accessibility, ensuring equal access for all users through focus management and intuitive navigation patterns:
+
+- Tooltips appear on focus for keyboard users, ensuring equal access to interactive elements
+- Press escape to dismiss visible tooltips and return focus to the trigger element
+- Tooltips don't interfere with natural tab order progression
+
+### Best practices
+
+Follow these guidelines to ensure tooltips enhance accessibility rather than create barriers for users with disabilities.
+
+Only apply tooltips to inherently focusable, interactive elements (links, buttons, form controls) to maintain accessibility standards. While other elements can be made focusable with `tabindex="0"`, this creates confusing tab stops for keyboard users and may not announce properly in screen readers.
+
+<Callout type="warning">
+Keep tooltips accessible to keyboard and assistive technology users by only adding them to HTML elements that are traditionally keyboard-focusable and interactive (such as links or form inputs). Additionally, do not rely solely on `hover` as the trigger for your tooltips as this will make them impossible to trigger for keyboard users.
+</Callout>
+
+## CSS
+
+Customize tooltip appearance and behavior through Chassis CSS's comprehensive styling system, featuring CSS custom properties and Sass variables for design system integration.
+
+### Custom properties
+
+Chassis CSS tooltips utilize CSS custom properties for runtime customization and design token integration. Local CSS variables on `.tooltip` enable dynamic theming while maintaining backward compatibility with Sass customization.
+
+<ScssDocs name="tooltip-css-vars" file="scss/_tooltip.scss" />
+
+### Sass variables
+
+Design system integration through Sass variables provides comprehensive tooltip customization for build-time theming and brand alignment.
+
+<ScssDocs name="tooltip-variables" file="scss/_variables.scss" />
+
+## JavaScript API
+
+Control tooltip behavior programmatically with Chassis CSS's comprehensive JavaScript interface, featuring dynamic content generation, intelligent positioning, and accessibility features.
+
+The tooltip plugin generates content and markup on demand, placing tooltips after their trigger element by default for optimal performance and accessibility. Initialize tooltips via JavaScript:
+
+```js
+const exampleEl = document.getElementById('example')
+const tooltip = new chassis.Tooltip(exampleEl, options)
+```
+
+<Callout type="warning">
+Tooltips automatically attempt to change positions when a parent container has `overflow: auto` or `overflow: scroll`, but still keeps the original placement's positioning. Set the [`boundary` option](https://popper.js.org/docs/v2/modifiers/flip/#boundary) (for the flip modifier using the `popperConfig` option) to any HTMLElement to override the default value, `'clippingParents'`, such as `document.body`:
+
+```js
+const tooltip = new chassis.Tooltip('#example', {
+  boundary: document.body // or document.querySelector('#boundary')
+})
+```
+</Callout>
+
+### Data attributes
+
+Individual tooltip options can be specified through data attributes for declarative configuration without JavaScript initialization.
+
+Tooltips require minimal markup while generating semantic HTML with proper ARIA attributes for optimal accessibility and screen reader support. The required markup for a tooltip is only a `data` attribute and `title` on the HTML element:
+
+```html
+<!-- HTML to write -->
+<a href="#" data-cx-toggle="tooltip" data-cx-title="Some tooltip text!">Hover over me</a>
+
+<!-- Generated markup by the plugin -->
+<div class="tooltip cx-tooltip-auto" role="tooltip">
+  <div class="tooltip-arrow"></div>
+  <div class="tooltip-inner">
+    Some tooltip text!
+  </div>
+</div>
+```
+
+### Options
+
+<JsDataAttributes />
+
+<Callout type="warning">
+Note that for security reasons the `sanitize`, `sanitizeFn`, and `allowList` options cannot be supplied using data attributes.
+</Callout>
+
+<CxTable>
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `allowList` | object | [Default value]([[docsref:/getting-started/javascript#sanitizer]]) | Object which contains allowed attributes and tags. |
+| `animation` | boolean | `true` | Apply a CSS fade transition to the tooltip. |
+| `boundary` | string, element | `'clippingParents'` | Overflow constraint boundary of the tooltip (applies only to Popper's preventOverflow modifier). By default, it's `'clippingParents'` and can accept an HTMLElement reference (via JavaScript only). For more information refer to Popper's [detectOverflow docs](https://popper.js.org/docs/v2/utils/detect-overflow/#boundary). |
+| `container` | string, element, false | `false` | Appends the tooltip to a specific element. Example: `container: 'body'`. This option is particularly useful in that it allows you to position the tooltip in the flow of the document near the triggering element - which will prevent the tooltip from floating away from the triggering element during a window resize. |
+| `customClass` | string, function | `''` | Add classes to the tooltip when it is shown. Note that these classes will be added in addition to any classes specified in the template. To add multiple classes, separate them with spaces: `'class-1 class-2'`. You can also pass a function that should return a single string containing additional class names. |
+| `delay` | number, object | `0` | Delay showing and hiding the tooltip (ms)—doesn't apply to manual trigger type. If a number is supplied, delay is applied to both hide/show. Object structure is: `delay: { "show": 500, "hide": 100 }`. |
+| `fallbackPlacements` | array | `['top', 'right', 'bottom', 'left']` | Define fallback placements by providing a list of placements in array (in order of preference). For more information refer to Popper's [behavior docs](https://popper.js.org/docs/v2/modifiers/flip/#fallbackplacements). |
+| `html` | boolean | `false` | Allow HTML in the tooltip. If true, HTML tags in the tooltip's `title` will be rendered in the tooltip. If false, `innerText` property will be used to insert content into the DOM. Use text if you're worried about XSS attacks. |
+| `offset` | array, string, function | `[0, 6]` | Offset of the tooltip relative to its target. You can pass a string in data attributes with comma separated values like: `data-cx-offset="10,20"`. When a function is used to determine the offset, it is called with an object containing the popper placement, the reference, and popper rects as its first argument. The triggering element DOM node is passed as the second argument. The function must return an array with two numbers: [skidding](https://popper.js.org/docs/v2/modifiers/offset/#skidding-1), [distance](https://popper.js.org/docs/v2/modifiers/offset/#distance-1). For more information refer to Popper's [offset docs](https://popper.js.org/docs/v2/modifiers/offset/#options). |
+| `placement` | string, function | `'top'` | How to position the tooltip: auto, top, bottom, left, right. When `auto` is specified, it will dynamically reorient the tooltip. When a function is used to determine the placement, it is called with the tooltip DOM node as its first argument and the triggering element DOM node as its second. The `this` context is set to the tooltip instance. |
+| `popperConfig` | null, object, function | `null` | To change Chassis CSS's default Popper config, see [Popper's configuration](https://popper.js.org/docs/v2/constructors/#options). When a function is used to create the Popper configuration, it's called with an object that contains the Chassis CSS's default Popper configuration. It helps you use and merge the default with your own configuration. The function must return a configuration object for Popper. |
+| `sanitize` | boolean | `true` | Enable or disable the sanitization. If activated `'template'`, `'content'` and `'title'` options will be sanitized. |
+| `sanitizeFn` | null, function | `null` | Here you can supply your own sanitize function. This can be useful if you prefer to use a dedicated library to perform sanitization. |
+| `selector` | string, false | `false` | If a selector is provided, tooltip objects will be delegated to the specified targets. In practice, this is used to also apply tooltips to dynamically added DOM elements (`jQuery.on` support). See [this issue]([[config:repo]]/issues/4215) and [an informative example](https://codepen.io/Johann-S/pen/djJYPb). **Note**: `title` attribute must not be used as a selector. |
+| `template` | string | `'<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'` | Base HTML to use when creating the tooltip. The tooltip's `title` will be injected into the `.tooltip-inner`. `.tooltip-arrow` will become the tooltip's arrow. The outermost wrapper element should have the `.tooltip` class and `role="tooltip"`. |
+| `title` | string, element, function | `''` | The tooltip title. If a function is given, it will be called with its `this` reference set to the element that the tooltip is attached to. |
+| `trigger` | string | `'hover focus'` | How tooltip is triggered: click, hover, focus, manual. You may pass multiple triggers; separate them with a space. `'manual'` indicates that the tooltip will be triggered programmatically via the `.tooltip('show')`, `.tooltip('hide')` and `.tooltip('toggle')` methods; this value cannot be combined with any other trigger. `'hover'` on its own will result in tooltips that cannot be triggered via the keyboard, and should only be used if alternative methods for conveying the same information for keyboard users is present. |
+</CxTable>
+
+### Popper configuration
+
+Advanced Popper.js configuration can be customized through a function that receives the default Chassis CSS configuration and returns a modified configuration object.
+
+```js
+const tooltip = new chassis.Tooltip(element, {
+  popperConfig(defaultCxPopperConfig) {
+    // const newPopperConfig = {...}
+    // use defaultCxPopperConfig if needed...
+    // return newPopperConfig
+  }
+})
+```
+
+### Methods
+
+Chassis CSS provides a comprehensive set of methods for programmatic tooltip control, enabling dynamic content updates and lifecycle management.
+
+<Callout name="danger-async-methods" type="danger" />
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `disable` | Removes the ability for an element's tooltip to be shown. The tooltip will only be able to be shown if it is re-enabled. |
+| `dispose` | Hides and destroys an element's tooltip (Removes stored data on the DOM element). Tooltips that use delegation (which are created using [the `selector` option](#options)) cannot be individually destroyed on descendant trigger elements. |
+| `enable` | Gives an element's tooltip the ability to be shown. **Tooltips are enabled by default.** |
+| `getInstance` | *Static* method which allows you to get the tooltip instance associated with a DOM element. |
+| `getOrCreateInstance` | *Static* method which allows you to get the tooltip instance associated with a DOM element, or create a new one in case it wasn't initialized. |
+| `hide` | Hides an element's tooltip. **Returns to the caller before the tooltip has actually been hidden** (i.e. before the `hidden.cx.tooltip` event occurs). This is considered a "manual" triggering of the tooltip. |
+| `setContent` | Gives a way to change the tooltip's content after its initialization. |
+| `show` | Reveals an element's tooltip. **Returns to the caller before the tooltip has actually been shown** (i.e. before the `shown.cx.tooltip` event occurs). This is considered a "manual" triggering of the tooltip. Tooltips with zero-length titles are never displayed. |
+| `toggle` | Toggles an element's tooltip. **Returns to the caller before the tooltip has actually been shown or hidden** (i.e. before the `shown.cx.tooltip` or `hidden.cx.tooltip` event occurs). This is considered a "manual" triggering of the tooltip. |
+| `toggleEnabled` | Toggles the ability for an element's tooltip to be shown or hidden. |
+| `update` | Updates the position of an element's tooltip. |
+</CxTable>
+
+```js
+const tooltip = chassis.Tooltip.getInstance('#example') // Returns a Chassis CSS tooltip instance
+
+// setContent example
+tooltip.setContent({ '.tooltip-inner': 'another title' })
+```
+
+<Callout>
+The `setContent` method accepts an `object` argument, where each property-key is a valid `string` selector within the tooltip template, and each related property-value can be `string` | `element` | `function` | `null`
+</Callout>
+
+### Events
+
+Listen to tooltip lifecycle events to integrate with your application logic and create responsive user interactions.
+
+<CxTable>
+| Event | Description |
+| --- | --- |
+| `hide.cx.tooltip` | This event is fired immediately when the `hide` instance method has been called. |
+| `hidden.cx.tooltip` | This event is fired when the tooltip has finished being hidden from the user (will wait for CSS transitions to complete). |
+| `inserted.cx.tooltip` | This event is fired after the `show.cx.tooltip` event when the tooltip template has been added to the DOM. |
+| `show.cx.tooltip` | This event fires immediately when the `show` instance method is called. |
+| `shown.cx.tooltip` | This event is fired when the tooltip has been made visible to the user (will wait for CSS transitions to complete). |
+</CxTable>
+
+```js
+const myTooltipEl = document.getElementById('myTooltip')
+const tooltip = chassis.Tooltip.getOrCreateInstance(myTooltipEl)
+
+myTooltipEl.addEventListener('hidden.cx.tooltip', () => {
+  // do something...
+})
+
+tooltip.hide()
+```

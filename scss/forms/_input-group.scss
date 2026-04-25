@@ -1,0 +1,231 @@
+//
+// Input Groups
+//
+// Input groups allow combining multiple form inputs, text, and buttons
+// in a single composite component. They provide a seamless way to append,
+// prepend, or inset elements next to form inputs.
+//
+// The component supports:
+// - Size variations (small, medium, large)
+// - Input addons (text and icons)
+// - Validation states
+// - Floating labels
+// - Icons with positioning
+//
+
+//
+// Base styles
+//
+
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+
+  > .form-input,
+  > .form-select,
+  > .form-floating {
+    position: relative; // For focus state's z-index
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 0; // https://stackoverflow.com/questions/36247140/why-dont-flex-items-shrink-past-content-size
+  }
+
+  // Bring the "active" form input to the top of surrounding elements
+  > .form-input:focus,
+  > .form-select:focus,
+  > .form-floating:focus-within {
+    z-index: 5;
+  }
+
+  // Ensure buttons are always above inputs for more visually pleasing borders.
+  // This isn't needed for `.input-addon` since it shares the same border-color
+  // as our inputs.
+  .button {
+    position: relative;
+    z-index: 2;
+
+    &:focus {
+      z-index: 5;
+    }
+  }
+}
+
+
+//
+// Input Addons
+//
+// Flexible elements that can be prepended or appended to form inputs
+// to provide additional context, actions, or visual indicators.
+// Automatically adapts to the size of its parent input group and
+// supports both text and icon content.
+//
+
+.input-addon {
+  @extend %form-colors;
+  @include map-font($form-medium-text-font, input-group);
+  --#{$prefix}fg-color: var(--#{$prefix}input-addon-fg-color);
+  --#{$prefix}bg-color: var(--#{$prefix}input-addon-bg-color);
+  --#{$prefix}border-color: var(--#{$prefix}input-addon-border-color);
+  --#{$prefix}icon-color: var(--#{$prefix}input-addon-fg-color);
+  --#{$prefix}border-width: #{$form-regular-border-width};
+  --#{$prefix}border-radius: #{$form-medium-border-radius};
+  --#{$prefix}icon-size: #{$form-medium-icon-size};
+  --#{$prefix}min-height: var(--#{$prefix}input-min-height, #{$form-input-min-height});
+
+  display: flex;
+  align-items: center;
+  text-align: center;
+  white-space: nowrap;
+  background-image: var(--#{$prefix}input-addon-bg-image);
+
+  @extend %component, %form-colors;
+  @include exclude-strokes(form-control);
+
+  &:has(+ .form-floating),
+  .form-floating ~ & {
+    @include border-bottom-radius(0);
+    border-width: 0 0 $form-floating-border-width;
+  }
+
+}
+
+//
+// Size Variations
+//
+// Provides consistent sizing across all elements within an input group.
+// Uses shared form size placeholders for consistent sizing across form components.
+//
+
+.input-group > .form-input,
+.input-group > .form-select,
+.input-group > .input-addon,
+.input-group > .button {
+  @extend %form-colors, %form-size-medium;
+}
+
+.input-group.large > .form-input,
+.input-group.large > .form-select,
+.input-group.large > .input-addon,
+.input-group.large > .button {
+  @extend %form-size-large;
+}
+
+.input-group.small > .form-input,
+.input-group.small > .form-select,
+.input-group.small > .input-addon,
+.input-group.small > .button {
+  @extend %form-size-small;
+}
+
+//
+// Border Radius Management
+//
+// Controls the border radius of elements within input groups to ensure
+// visually connected components while handling various combinations of
+// elements and validation states.
+//
+// Elements at the ends of the group display appropriate rounded corners,
+// while internal elements have flattened sides to create a unified appearance.
+//
+
+// stylelint-disable-next-line no-duplicate-selectors
+.input-group {
+  > :not(:last-child):not(.dropdown-toggle):not(.dropdown-menu):not(.form-floating):not(:has(~ .icon-addon)),
+  > .dropdown-toggle:nth-last-child(n + 3),
+  > .form-floating:not(:last-child):not(:has(~ .icon-addon)) > .form-input,
+  > .form-floating:not(:last-child):not(:has(~ .icon-addon)) > .form-select {
+    @include border-end-radius(0);
+  }
+
+  // $validation-messages: "";
+  // @each $state in map-keys($form-validation-states) {
+  //   $validation-messages: $validation-messages + ":not(." + unquote($state) + "-tooltip)" + ":not(." + unquote($state) + "-feedback)";
+  // }
+
+  // > :not(:first-child):not(.dropdown-menu)#{$validation-messages} {
+  > :not(:first-child):not(.dropdown-menu) {
+    margin-left: calc(#{$form-regular-border-width} * -1); // stylelint-disable-line function-disallowed-list
+    &:not(.icon-addon ~ .form-input) {
+      @include border-start-radius(0);
+    }
+  }
+
+  > .form-floating:not(:first-child):not(:has(~ .icon-addon)):not(.icon-addon + .form-floating) > .form-input,
+  > .form-floating:not(:first-child):not(:has(~ .icon-addon)):not(.icon-addon + .form-floating) > .form-select {
+    @include border-start-radius(0);
+  }
+}
+
+//
+// Icon Input Addon
+//
+// Specialized addon for displaying icons within input fields.
+// Supports positioning (prepend/append), floating labels, and
+// automatically adjusts spacing and appearance based on the
+// form input state (enabled/disabled).
+//
+
+.icon-addon {
+  position: absolute;
+  z-index: 10;
+  min-width: var(--#{$prefix}min-height);
+  min-height: var(--#{$prefix}min-height);
+  padding: 0 var(--#{$prefix}padding-x);
+  background: none;
+  border: 0;
+
+  // Position icon on the right when it follows a form input
+  .form-input + & {
+    right: 0;
+  }
+
+  // Position icon on the right when it follows a floating label
+  .form-floating ~ & {
+    right: 0;
+    height: $form-floating-min-height;
+    padding: 0 var(--#{$prefix}padding-x);
+    border: 0;
+  }
+
+  // Adjust icon color when associated with a disabled form input
+  &:has(+ .form-input:disabled),
+  &:has(+ .form-floating > .form-input:disabled),
+  .form-input:disabled ~ &,
+  .form-floating:has(.form-input:disabled) ~ & {
+    --#{$prefix}icon-color: #{$form-disabled-fg-active};
+  }
+
+  // Adjust icon position when it's before a floating label
+  &:has(+ .form-floating) {
+    height: $form-floating-min-height;
+    padding: 0 var(--#{$prefix}padding-x);
+    border: 0;
+  }
+
+  // Adjust left padding when icon is prepended to control or floating label
+  + .form-input,
+  + .form-floating > .form-input {
+    padding-left: #{calc(var(--#{$prefix}icon-size) + var(--#{$prefix}padding-x) * 2)};
+  }
+
+  // Adjust label position when icon is prepended to floating label
+  + .form-floating > label {
+    padding-left: #{calc(var(--#{$prefix}icon-size) + $form-medium-padding-x * 2)};
+    transform-origin: 25% 0;
+  }
+
+  // Adjust right padding when icon is appended to control or floating label
+  .form-input:has(+ &),
+  .form-floating:has(+ &) {
+    padding-right: #{calc(var(--#{$prefix}icon-size) + var(--#{$prefix}padding-x) * 2)};
+    @include border-radius($form-medium-border-radius);
+  }
+
+  // Adjust form input padding when icon follows floating label
+  .form-floating:has(~ &) > .form-input {
+    padding-right: #{calc(var(--#{$prefix}icon-size) + var(--#{$prefix}padding-x) * 2)};
+  }
+
+}

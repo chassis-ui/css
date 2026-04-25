@@ -1,0 +1,189 @@
+// Group class
+//
+// Easily usable on <ul>, <ol>, or <div>.
+
+.list-group {
+  // scss-docs-start list-item-css-vars
+  --#{$prefix}padding-y: var(--#{$prefix}list-padding-y, #{$list-padding-y});
+  --#{$prefix}padding-x: var(--#{$prefix}list-padding-x, #{$list-padding-x});
+  --#{$prefix}fg-color: var(--#{$prefix}list-fg-color, #{$list-fg-color});
+  --#{$prefix}bg-color: var(--#{$prefix}list-bg-color, #{$list-bg-color});
+  --#{$prefix}fg-active: var(--#{$prefix}list-fg-active, #{$list-active-fg-color});
+  --#{$prefix}bg-active: var(--#{$prefix}list-bg-active, #{$list-active-bg-color});
+  --#{$prefix}fg-disabled: var(--#{$prefix}list-fg-disabled, #{$list-disabled-fg-color});
+  --#{$prefix}bg-disabled: var(--#{$prefix}list-bg-disabled, #{$list-disabled-bg-color});
+  --#{$prefix}border-active: var(--#{$prefix}list-border-active, #{$list-active-border-color});
+  --#{$prefix}border-color: var(--#{$prefix}list-border-color, #{$list-border-color});
+  --#{$prefix}border-width: var(--#{$prefix}list-border-width, #{$list-border-width});
+  --#{$prefix}border-radius: var(--#{$prefix}list-border-radius, #{$list-border-radius});
+  // scss-docs-end list-item-css-vars
+
+  display: flex;
+  flex-direction: column;
+
+  // No need to set list-style: none; since .list-item is block level
+  padding-left: 0; // reset padding because ul and ol
+  margin-bottom: 0;
+  @include border-radius(var(--#{$prefix}border-radius));
+
+  &.outline {
+    border: 0;
+  }
+}
+
+.list-numbered {
+  list-style-type: none;
+  counter-reset: section;
+
+  > .list-item::before {
+    // Increments only this instance of the section counter
+    content: counters(section, ".") ". ";
+    counter-increment: section;
+  }
+
+}
+
+// Individual list items
+//
+// Use on `li`s or `div`s within the `.list-group` parent.
+
+.list-item {
+  position: relative;
+  display: block;
+  color: var(--#{$prefix}fg-color);
+  text-decoration: if($link-decoration == none, null, none);
+  background-color: var(--#{$prefix}bg-color);
+  border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
+
+  // We apply a special exclude-strokes mixin to make all heights equal, since the border is on the bottom only unless it is :first-child
+  @if $enable-exclude-strokes == true or index($enable-exclude-strokes, list) {
+    $border-width: var(--#{$prefix}border-width);
+    $padding-modifier: #{calc(var(--#{$prefix}border-width) * var(--#{$prefix}padding-factor, 1))};
+    $padding-y: #{calc(var(--#{$prefix}padding-y) - #{$padding-modifier})};
+    $padding-x: #{calc(var(--#{$prefix}padding-x) - #{$border-width})};
+    padding: $padding-y $padding-x;
+  } @else {
+    @include padding();
+  }
+
+  &:first-child {
+    @include border-top-radius(inherit);
+  }
+
+  &:last-child {
+    @include border-bottom-radius(inherit);
+    // border: 0;
+  }
+
+  &.disabled,
+  &:disabled {
+    --#{$prefix}fg-color: var(--#{$prefix}list-fg-disabled);
+    --#{$prefix}bg-color: var(--#{$prefix}list-bg-disabled);
+    pointer-events: none;
+  }
+
+  &.active,
+  &.active:hover {
+    --#{$prefix}fg-color: var(--#{$prefix}fg-active);
+    --#{$prefix}bg-color: var(--#{$prefix}bg-active);
+    --#{$prefix}border-color: var(--#{$prefix}border-active);
+    z-index: 2; // Place active items above their siblings for proper border styling
+  }
+
+  + .list-item {
+    --#{$prefix}padding-factor: .5;
+    // border-top-color: transparent; // Remove the color only so padding calculations work;
+    border-top-width: 0;
+  }
+
+}
+
+// Interactive list items
+//
+// Use anchor or button elements instead of `li`s or `div`s to create interactive
+// list items. Includes an extra `.active` modifier class for selected items.
+
+.list-group.list-action > .list-item,
+.list-group > .list-item.list-action {
+  @extend %interactive;
+  &.active,
+  &.active:hover {
+    @extend %context, %solid-context;
+    --#{$prefix}fg-color: var(--#{$prefix}fg-active);
+    --#{$prefix}bg-color: var(--#{$prefix}bg-active);
+    z-index: 2; // Place active items above their siblings for proper border styling
+  }
+
+}
+
+// Horizontal
+//
+// Change the layout of list group items from vertical (default) to horizontal.
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    .list-horizontal#{$infix} {
+      flex-direction: row;
+
+      > .list-item {
+        // border-top-width: var(--#{$prefix}border-width);
+        // @include padding(); // restore vertical padding since horizontal list items have no bottom border
+        // border: 0;
+        // &:not(:last-child) {
+        //   border-right: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
+        // }
+        &:first-child:not(:last-child) {
+          @include border-bottom-start-radius(var(--#{$prefix}border-radius));
+          @include border-top-end-radius(0);
+        }
+
+        &:last-child:not(:first-child) {
+          @include border-top-end-radius(var(--#{$prefix}border-radius));
+          @include border-bottom-start-radius(0);
+        }
+        + .list-item {
+          --#{$prefix}padding-factor: 1;
+          border-top-width: var(--#{$prefix}border-width);
+          border-left-width: 0;
+        }
+      }
+    }
+  }
+}
+
+
+// Flush & Plain lists
+//
+// Remove borders and border-radius to keep list group items edge-to-edge. Most
+// useful within other components (e.g., cards).
+
+.list-flush,
+.list-plain {
+  border: 0;
+  @include border-radius(0);
+
+  > .list-item {
+    // --#{$prefix}padding-factor: .5;
+    border-width: 0 0 var(--#{$prefix}border-width);
+
+    // &:first-child {
+    //   --#{$prefix}padding-factor: .5;
+    //   border-top-width: 0;
+    // }
+    &:last-child {
+      // --#{$prefix}padding-factor: .25;
+      border-bottom-width: 0;
+    }
+  }
+}
+
+// Remove horizontal padding for plain lists. Most useful for lists
+// that are the main contents of a page (e.g., search results).
+.list-plain {
+  > .list-item {
+    padding-right: 0;
+    padding-left: 0;
+  }
+}

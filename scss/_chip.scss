@@ -1,0 +1,100 @@
+//
+// Button Class
+//
+.chip {
+
+  @extend %button, %solid-button, %component;
+  // scss-docs-start chip-css-vars
+  --#{$prefix}border-width: var(--#{$prefix}chip-border-width, #{$chip-border-width});
+  --#{$prefix}box-shadow: var(--#{$prefix}chip-box-shadow, #{$button-box-shadow});
+  --#{$prefix}focus-box-shadow: var(--#{$prefix}chip-focus-box-shadow, #{$button-focus-box-shadow});
+  // Sizing
+  --#{$prefix}min-size: var(--#{$prefix}chip-min-size, #{$chip-medium-min-size});
+  --#{$prefix}padding-y: var(--#{$prefix}chip-padding-y, #{$chip-medium-padding-y});
+  --#{$prefix}padding-x: var(--#{$prefix}chip-padding-x, #{$chip-medium-padding-x + $chip-medium-gap});
+  --#{$prefix}gap: var(--#{$prefix}chip-gap, #{$chip-medium-gap});
+  --#{$prefix}nudge: var(--#{$prefix}chip-nudge, #{$chip-medium-nudge});
+  --#{$prefix}border-radius: var(--#{$prefix}chip-border-radius, #{$chip-medium-border-radius});
+  --#{$prefix}close-button-icon: var(--#{$prefix}chip-remove-icon, #{$chip-remove-icon});
+  --#{$prefix}close-button-fg-color: var(--#{$prefix}chip-remove-color, var(--#{$prefix}fg-color));
+  --#{$prefix}close-button-fg-hover: var(--#{$prefix}chip-remove-hover, var(--#{$prefix}fg-color));
+  --#{$prefix}close-button-idle-opacity: var(--#{$prefix}chip-remove-idle-opacity, 1);
+  --#{$prefix}close-button-hover-opacity: var(--#{$prefix}chip-remove-hover-opacity, 1);
+  --#{$prefix}icon-size: var(--#{$prefix}chip-icons-size, #{$chip-medium-icon-size});
+  --#{$prefix}avatar-size: var(--#{$prefix}chip-avatar-size, #{$chip-medium-avatar-size});
+  --#{$prefix}close-button-size: var(--#{$prefix}icon-size);
+  @include map-font($chip-medium-font, button);
+  // scss-docs-end chip-css-vars
+
+  display: inline-flex;
+  gap: var(--#{$prefix}gap);
+  align-items: center;
+  justify-content: center;
+  min-width: var(--#{$prefix}min-size);
+  min-height: var(--#{$prefix}min-size);
+  @include exclude-strokes(chip);
+  text-align: center;
+  text-decoration: if($link-decoration == none, null, none);
+  white-space: $button-white-space;
+  vertical-align: middle;
+  // cursor: if($enable-button-pointers, pointer, null);
+  user-select: none;
+
+  @include gradient-bg(var(--#{$prefix}bg-color));
+  @include box-shadow(var(--#{$prefix}box-shadow));
+  @include transition($button-transition);
+
+  &.outline {
+    @extend %outline-button;
+  }
+
+  &.smooth {
+    @extend %smooth-button;
+  }
+
+  &.large {
+    --#{$prefix}min-size: var(--#{$prefix}chip-large-min-size, #{$chip-large-min-size});
+    --#{$prefix}padding-y: var(--#{$prefix}chip-large-padding-y, #{$chip-large-padding-y});
+    --#{$prefix}padding-x: var(--#{$prefix}chip-large-padding-x, #{$chip-large-padding-x + $chip-large-gap});
+    --#{$prefix}gap: var(--#{$prefix}chip-large-gap, #{$chip-large-gap});
+    --#{$prefix}nudge: var(--#{$prefix}chip-large-nudge, #{$chip-large-nudge});
+    --#{$prefix}border-radius: var(--#{$prefix}chip-large-border-radius, #{$chip-large-border-radius});
+    --#{$prefix}icon-size: #{$chip-large-icon-size};
+    --#{$prefix}avatar-size: #{$chip-large-avatar-size};
+    @include map-font($chip-large-font, button);
+  }
+
+  &.small {
+    --#{$prefix}min-size: var(--#{$prefix}chip-small-min-size, #{$chip-small-min-size});
+    --#{$prefix}padding-y: var(--#{$prefix}chip-small-padding-y, #{$chip-small-padding-y});
+    --#{$prefix}padding-x: var(--#{$prefix}chip-small-padding-x, #{$chip-small-padding-x + $chip-small-gap});
+    --#{$prefix}gap: var(--#{$prefix}chip-small-gap, #{$chip-small-gap});
+    --#{$prefix}nudge: var(--#{$prefix}chip-small-nudge, #{$chip-small-nudge});
+    --#{$prefix}border-radius: var(--#{$prefix}chip-small-border-radius, #{$chip-small-border-radius});
+    --#{$prefix}icon-size: #{$chip-small-icon-size};
+    --#{$prefix}avatar-size: #{$chip-small-avatar-size};
+    @include map-font($chip-small-font, button);
+  }
+
+  > .icon:first-child {
+    //margin-right: var(--#{$prefix}nudge);
+    margin-left: #{calc(-1 * var(--#{$prefix}nudge))};
+  }
+  > .icon:last-child,
+  > .close-button {
+    margin-right: #{calc(-1 * var(--#{$prefix}nudge))};
+  }
+
+  > .avatar {
+    margin: #{calc(-1 * var(--#{$prefix}nudge))} 0 #{calc(-1 * var(--#{$prefix}nudge))} #{calc(-1 * var(--#{$prefix}gap))};
+  }
+
+  &.disabled > .avatar {
+    opacity: var(--#{$prefix}opacity-fg-slight);
+  }
+
+  > .close-button {
+    padding: 0;
+  }
+
+}

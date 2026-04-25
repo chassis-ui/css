@@ -1,0 +1,175 @@
+// RFS Mixins
+//
+// Mixins used by RFS to handle responsive font sizes, paddings, margins, etc.
+
+// Internal mixin used to determine which media query needs to be used
+@mixin _rfs-media-query {
+  @if $rfs-two-dimensional {
+    @if $rfs-mode == max-media-query {
+      @media (#{$rfs-mq-property-width}: #{$rfs-mq-value}), (#{$rfs-mq-property-height}: #{$rfs-mq-value}) {
+        @content;
+      }
+    }
+    @else {
+      @media (#{$rfs-mq-property-width}: #{$rfs-mq-value}) and (#{$rfs-mq-property-height}: #{$rfs-mq-value}) {
+        @content;
+      }
+    }
+  }
+  @else {
+    @media (#{$rfs-mq-property-width}: #{$rfs-mq-value}) {
+      @content;
+    }
+  }
+}
+
+// Mixin to output all collected rules in a single media query
+@mixin rfs-collected-rules() {
+  $selector-count: length($rfs-rules-map);
+  $property-count: 0;
+
+  // Count total properties for debugging
+  @each $selector, $properties in $rfs-rules-map {
+    $property-count: $property-count + length($properties);
+  }
+
+  // If disable-rfs is enabled and we're in min-media-query mode,
+  // output disable rules at the root level
+  @if $rfs-disable-class and $rfs-mode == min-media-query {
+    @each $selector-str, $properties in $rfs-disable-class-map {
+      // Handle each selector part separately
+      #{$selector-str}.disable-rfs,
+      .disable-rfs #{$selector-str} {
+        @each $property, $value in $properties {
+          #{$property}: #{$value};
+        }
+      }
+    }
+  }
+
+  // Output fluid rules inside the media query
+  @if $selector-count > 0 {
+    // Use _rfs-media-query mixin to properly handle the two-dimensional option
+    @include _rfs-media-query() {
+      // First output regular fluid rules
+      @each $selector, $properties in $rfs-rules-map {
+        @at-root #{$selector} {
+          @each $property, $value in $properties {
+            #{$property}: #{$value};
+          }
+        }
+      }
+
+      // For max-media-query mode, output disable rules inside media query
+      @if $rfs-disable-class and $rfs-mode == max-media-query {
+        @each $selector-str, $properties in $rfs-disable-class-map {
+          // Handle each selector part separately
+          #{$selector-str}.disable-rfs,
+          .disable-rfs #{$selector-str} {
+            @each $property, $value in $properties {
+              #{$property}: #{$value};
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// RFS mixin - core functionality for responsive font sizing
+@mixin rfs($values, $property: font-size, $variable: null) {
+  @if $values != null {
+    // Get both fixed and fluid values
+    $fixed-val: rfs-value($values);
+    $fluid-val: rfs-fluid-value($values, $property);
+
+    // Do not print the media query if responsive & non-responsive values are the same
+    @if $fixed-val == $fluid-val {
+      @if $variable != null {
+        #{$property}: var(#{$variable}, $fixed-val);
+      } @else {
+        #{$property}: $fixed-val;
+      }
+    }
+    @else {
+      // Initial value depends on mode and whether this is a disable-rfs selector
+      $base-value: if($rfs-mode == max-media-query, $fixed-val, $fluid-val);
+      @if $variable != null {
+        // If a variable is provided, set it as a CSS variable fallback
+        #{$property}: var(#{$variable}, $base-value);
+      } @else {
+        // Otherwise, set the property directly
+        #{$property}: $base-value;
+      }
+
+      // Instead of creating a media query for each rule, collect them
+      // For disable-rfs rules, use fixed value in the media query
+      $media-query-value: if($rfs-mode == max-media-query, $fluid-val, $fixed-val);
+
+      // Get the current selector context
+      $current-selector: &;
+
+      // Store this rule using the collector, passing both fluid and fixed values
+      $result: rfs-collect-rule($current-selector, $property, $media-query-value, $variable, $fixed-val);
+    }
+  }
+}
+
+// Shorthand helper mixins for common CSS properties
+
+// Use the `font-size` typograpy mixin insted
+@mixin rfs-font-size($value, $variable: null) {
+  @include rfs($value, font-size, $variable);
+}
+
+// Use the `line-height` typograpy mixin insted
+@mixin rfs-line-height($value, $variable: null) {
+  @include rfs($value, line-height, $variable);
+}
+
+// Gap shorthand
+@mixin rfs-gap($value, $variable: null) {
+  @include rfs($value, gap, $variable);
+}
+
+// Padding shorthands
+@mixin rfs-padding($value, $variable: null) {
+  @include rfs($value, padding, $variable);
+}
+
+@mixin rfs-padding-top($value, $variable: null) {
+  @include rfs($value, padding-top, $variable);
+}
+
+@mixin rfs-padding-right($value, $variable: null) {
+  @include rfs($value, padding-right, $variable);
+}
+
+@mixin rfs-padding-bottom($value, $variable: null) {
+  @include rfs($value, padding-bottom, $variable);
+}
+
+@mixin rfs-padding-left($value, $variable: null) {
+  @include rfs($value, padding-left, $variable);
+}
+
+// Margin shorthands
+@mixin rfs-margin($value, $variable: null) {
+  @include rfs($value, margin, $variable);
+}
+
+@mixin rfs-margin-top($value, $variable: null) {
+  @include rfs($value, margin-top, $variable);
+}
+
+@mixin rfs-margin-right($value, $variable: null) {
+  @include rfs($value, margin-right, $variable);
+}
+
+@mixin rfs-margin-bottom($value, $variable: null) {
+  @include rfs($value, margin-bottom, $variable);
+}
+
+@mixin rfs-margin-left($value, $variable: null) {
+  @include rfs($value, margin-left, $variable);
+}

@@ -1,0 +1,268 @@
+//
+// Form Validation
+//
+// Provides styling for form validation states (valid and invalid) including
+// feedback messages, tooltips, and visual indicators. Supports dark mode.
+//
+// The validation system works with:
+// - Native form validation (:valid, :invalid pseudo-classes)
+// - Class-based validation (.is-valid, .is-invalid classes)
+// - Supports validation icons when $enable-validation-icons is true
+//
+
+// Validation feedback messages
+// Text-based feedback that appears below form inputs
+
+.form-help:not(.always-show) {
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}:valid:has(~ .valid-feedback) ~ &,
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}:invalid:has(~ .invalid-feedback) ~ &,
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}.input-group:has(:valid):has(~ .valid-feedback) ~ &,
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}.input-group:has(:invalid):has(~ .invalid-feedback) ~ &,
+  .input-group:has(.#{$form-valid-class}):has(~ .valid-feedback) ~ &,
+  .input-group:has(.#{$form-invalid-class}):has(~ .invalid-feedback) ~ &,
+  .#{$form-valid-class} ~ &:has(~ .valid-feedback),
+  .#{$form-invalid-class} ~ &:has(~ .invalid-feedback) {
+    display: none;
+  }
+}
+
+.valid-feedback,
+.invalid-feedback {
+  display: none;
+  width: 100%;
+}
+
+.valid-feedback {
+  color: var(--#{$prefix}form-valid-help-color);
+}
+.invalid-feedback {
+  color: var(--#{$prefix}form-invalid-help-color);
+}
+
+// Validation tooltips
+// Absolute positioned tooltips for providing validation feedback
+.valid-tooltip,
+.invalid-tooltip {
+  position: absolute;
+  top: 100%;
+  z-index: 5;
+  display: none;
+  max-width: 100%; // Contain to parent when possible
+  padding: $form-feedback-tooltip-padding-y $form-feedback-tooltip-padding-x;
+  margin-top: .1rem;
+  @include font-size($form-feedback-tooltip-font-size);
+  @include line-height($form-feedback-tooltip-line-height);
+  @include border-radius($form-feedback-tooltip-border-radius);
+}
+
+.valid-tooltip {
+  color: $form-valid-tooltip-fg-color;
+  background-color: $form-valid-tooltip-bg-color;
+}
+
+.invalid-tooltip {
+  color: $form-invalid-tooltip-fg-color;
+  background-color: $form-invalid-tooltip-bg-color;
+}
+
+// Display logic for validation feedback
+// Shows feedback only when form elements have the appropriate validation state
+.valid-feedback,
+.valid-tooltip {
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}:valid ~ &,
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}.input-group:has(:valid) ~ &,
+  .input-group:has(.#{$form-valid-class}) ~ &,
+  .#{$form-valid-class} ~ & {
+    display: block;
+  }
+}
+.invalid-feedback,
+.invalid-tooltip {
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}:invalid ~ &,
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}.input-group:has(:invalid) ~ &,
+  .input-group:has(.#{$form-invalid-class}) ~ &,
+  .#{$form-invalid-class} ~ & {
+    display: block;
+  }
+}
+
+// Base validation styles for form inputs
+// Applied to elements that use the %form-input placeholder
+%form-input {
+  // Valid state styling
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:valid,
+  &.#{$form-valid-class} {
+    --#{$prefix}fg-color: var(--#{$prefix}form-valid-fg-active);
+    --#{$prefix}bg-color: var(--#{$prefix}form-valid-bg-regular);
+    --#{$prefix}border-color: var(--#{$prefix}form-valid-border-color);
+    --#{$prefix}box-shadow: #{$form-valid-box-shadow};
+
+    @if $enable-validation-icons {
+      --#{$prefix}feedback-icon: #{svg-color($form-feedback-valid-icon, $form-valid-help-color)};
+      @if $enable-dark-mode {
+        @include form-validation-dark("valid");
+      }
+    }
+  }
+
+  // Invalid state styling
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:invalid,
+  &.#{$form-invalid-class} {
+    --#{$prefix}fg-color: var(--#{$prefix}form-invalid-fg-active);
+    --#{$prefix}bg-color: var(--#{$prefix}form-invalid-bg-regular);
+    --#{$prefix}border-color: var(--#{$prefix}form-invalid-border-color);
+    --#{$prefix}box-shadow: #{$form-invalid-box-shadow};
+
+    @if $enable-validation-icons {
+      --#{$prefix}feedback-icon: #{svg-color($form-feedback-invalid-icon, $form-invalid-help-color)};
+      @if $enable-dark-mode {
+        @include form-validation-dark("invalid");
+      }
+    }
+  }
+}
+
+// Floating label validation styles
+// Changes label color based on validation state
+.form-floating > %form-input {
+  // Valid state label styling
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:valid,
+  &.#{$form-valid-class} {
+    ~ label {
+      color: var(--#{$prefix}form-valid-help-color);
+    }
+  }
+
+  // Invalid state label styling
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:invalid,
+  &.#{$form-invalid-class} {
+    ~ label {
+      color: var(--#{$prefix}form-invalid-help-color);
+    }
+  }
+}
+
+// Checkbox/radio validation styles
+// Applied to .check-input (checkboxes and radio buttons)
+.check-input {
+  // Valid state styling
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:valid,
+  &.#{$form-valid-class} {
+    --#{$prefix}bg-color: var(--#{$prefix}form-valid-bg-regular);
+    --#{$prefix}border-color: var(--#{$prefix}form-valid-border-color);
+    --#{$prefix}box-shadow: #{$form-valid-box-shadow};
+
+    // Checked & indeterminate states gets special coloring
+    &:checked,
+    &[type="checkbox"]:indeterminate {
+      --#{$prefix}bg-color: var(--#{$prefix}form-valid-help-color);
+      --#{$prefix}border-color: var(--#{$prefix}form-valid-border-color);
+    }
+
+    // Maintain disabled appearance regardless of validation state
+    &:disabled,
+    &[type="checkbox"]:indeterminate:disabled {
+      --#{$prefix}bg-color: var(--#{$prefix}form-disabled-bg-regular);
+    }
+
+    // Label styling for validated checkboxes/radios
+    ~ .check-label {
+      --#{$prefix}fg-color: var(--#{$prefix}form-valid-help-color);
+    }
+  }
+
+  // Invalid state styling
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:invalid,
+  &.#{$form-invalid-class} {
+    --#{$prefix}bg-color: var(--#{$prefix}form-invalid-bg-regular);
+    --#{$prefix}border-color: var(--#{$prefix}form-invalid-border-color);
+    --#{$prefix}box-shadow: #{$form-invalid-box-shadow};
+
+    // Checked & indeterminate states gets special coloring
+    &:checked,
+    &[type="checkbox"]:indeterminate {
+      --#{$prefix}bg-color: var(--#{$prefix}form-invalid-help-color);
+      --#{$prefix}border-color: var(--#{$prefix}form-invalid-border-color);
+    }
+
+    // Maintain disabled appearance regardless of validation state
+    &:disabled,
+    &[type="checkbox"]:indeterminate:disabled {
+      --#{$prefix}bg-color: var(--#{$prefix}form-disabled-bg-regular);
+    }
+
+    // Label styling for validated checkboxes/radios
+    ~ .check-label {
+      --#{$prefix}fg-color: var(--#{$prefix}form-invalid-help-color);
+    }
+  }
+}
+
+// Labels having valid/invalid inputs
+// Changes label color based on validation state
+.check-label{
+  // Valid state label styling
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:has(.check-input:valid),
+  &:has(.check-input.#{$form-valid-class}) {
+    --#{$prefix}fg-color: var(--#{$prefix}form-valid-help-color);
+  }
+  // Invalid state label styling
+  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:has(.check-input:invalid),
+  &:has(.check-input.#{$form-invalid-class}) {
+    --#{$prefix}fg-color: var(--#{$prefix}form-invalid-help-color);
+  }
+}
+
+// Validation icons styling
+// Only applied when $enable-validation-icons is true
+@if $enable-validation-icons {
+  // Standard form input validation icons
+  @include form-validation-icons-selector(".form-input") {
+    padding-right: $form-feedback-icon-input-padding-e;
+    background-image: var(--#{$prefix}feedback-icon);
+    background-repeat: no-repeat;
+    background-position: $form-feedback-icon-input-position;
+    background-size: $form-feedback-icon-size;
+
+    // Special positioning for textareas
+    &:is(textarea) {
+      background-position: $form-feedback-icon-textarea-position;
+    }
+  }
+
+  // Select element validation icons
+  @include form-validation-icons-selector(".form-select") {
+    // Only apply to standard single-select dropdowns
+    &:not([multiple]):not([size]),
+    &:not([multiple])[size="1"] {
+      padding-right: $form-feedback-icon-select-padding-e;
+      background-position: $form-select-caret-position, $form-feedback-icon-select-position;
+      background-size: $form-feedback-icon-size;
+    }
+  }
+
+  // Ensure color inputs have adequate width for validation icons
+  @include form-validation-icons-selector(".color-input") {
+    width: #{calc(var(--#{$prefix}input-color-width, var(--#{$prefix}min-height)) + $form-feedback-icon-size + var(--#{$prefix}padding-y) * 2)};
+  }
+
+}
+
+// Input group validation z-index handling
+// Ensures that validation states correctly layer in input groups
+.input-group {
+  > .form-input:not(:focus),
+  > .form-select:not(:focus),
+  > .form-floating:not(:focus-within) {
+    // Valid state gets lower z-index
+    #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:valid,
+    &.#{$form-valid-class} {
+      z-index: 3;
+    }
+    // Invalid state gets higher z-index to appear above valid elements
+    #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:invalid,
+    &.#{$form-invalid-class} {
+      z-index: 4;
+    }
+  }
+}

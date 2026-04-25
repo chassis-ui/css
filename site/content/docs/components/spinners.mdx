@@ -1,0 +1,243 @@
+---
+title: Spinners
+description: Indicate the loading state of a component or page with Chassis - CSS spinners, built entirely with HTML, CSS, and no JavaScript.
+toc: true
+---
+
+import { getData } from '@libs/data'
+
+## About
+
+Chassis - CSS “spinners” can be used to show the loading state in your projects. They’re built only with HTML and CSS, meaning you don’t need any JavaScript to create them. You will, however, need some custom JavaScript to toggle their visibility. Their appearance, alignment, and sizing can be easily customized with our amazing utility classes.
+
+<Callout type="warning">
+For accessibility purposes, each loader here includes `role="status"` and a nested `<span class="visually-hidden">Loading...</span>`. We didn't include them in some examples here to keep focus on utilities.
+</Callout>
+
+## Border spinner
+
+Use the border spinners for a lightweight loading indicator.
+
+<Example code={`<div class="spinner-border" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>`} />
+
+## Growing spinner
+
+If you don’t fancy a border spinner, switch to the grow spinner. While it doesn’t technically spin, it does repeatedly grow!
+
+<Example code={`<div class="spinner-grow" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>`} />
+
+### Default spinner
+
+You can set default spinner in options and use `.spinner` class only.
+
+<Example code={`<div class="spinner" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>`} />
+
+### Colors
+
+Spinners use `--cx-spinner-color` variable for their color, which is set to `--cx-icon-color` by default and can be changed in options. Use `.spinner-*` classes to pain them any `context` color.
+
+<Example code={getData('context-colors').map((contextColor) => `<div class="spinner spinner-${contextColor.name}" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>`)} />
+
+## Sizes
+
+Spinners have a default `size` setting in options, still their size can be changed in different ways.
+
+### Icon Sizes
+
+Spinners use icon sizes for their sizing, use `.spinner-*` class to apply a size.
+
+<Example code={`<span class="spinner spinner-2xsmall"></span>
+<span class="spinner spinner-xsmall"></span>
+<span class="spinner spinner-small"></span>
+<span class="spinner spinner-medium"></span>
+<span class="spinner spinner-large"></span>
+<span class="spinner spinner-xlarge"></span>
+<span class="spinner spinner-2xlarge"></span>
+<span class="spinner spinner-3xlarge"></span>
+<span class="spinner spinner-4xlarge"></span>`} />
+
+### CSS Variables
+
+You can use custom CSS or inline styles to change the dimensions as needed.
+
+<Example code={`<div style="--cx-spinner-size: 3rem;">
+    <span class="spinner-grow"></span>
+    <span class="spinner-grow" style="--cx-spinner-border-radius: 0;"></span>
+    <span class="spinner-border" style="--cx-spinner-animation-speed: 2s"></span>
+    <span class="spinner-border" style="--cx-spinner-border-width: .25rem;"></span>
+  </div>`} />
+
+### Adaptive
+
+Use the `.spinner-adaptive` class to make a spinner adapt to the font size of its parent element. This is useful for making spinners that are the same size as text.
+
+<Example code={`<h1>
+  <span class="spinner spinner-adaptive"></span>
+  Heading 1
+</h1>
+<h2>
+  <span class="spinner spinner-adaptive"></span>
+  Heading 1
+</h2>
+<h3>
+  <span class="spinner spinner-adaptive"></span>
+  Heading 1
+</h3>`} />
+
+## Opacity
+
+Using CSS variables for `spinner` utilities allows for real-time color changes without compilation and dynamic alpha transparency changes.
+
+### How it works
+
+Consider our default `.spinner-*` classes.
+
+```css
+.spinner {
+  /* This is just an example, actual spinner classes are a bit more complex than this. */
+  --cx-spinner-color: var(--cx-icon-color-rgb);
+  color: rgba(var(--cx-spinner-color), var(--cx-spinner-opacity, 1));
+}
+.spinner-primary {
+  --cx-spinner-color: var(--cx-primary-rgb);
+}
+.spinner-opacity-50 {
+  --cx-spinner-opacity: var(--cx-opacity-50);
+}
+```
+
+We use an RGB version of our `--cx-primary` (with the value of `255, 91, 20`) CSS variable and attached a second CSS variable, `--cx-spinner-opacity`, for the alpha transparency (with a default value `1` thanks to a local CSS variable). That means anytime you use `.spinner-primary` now, your computed `color` value is `rgba(255, 91, 20, 1)`. The local CSS variable inside each `.spinner-*` class avoids inheritance issues so nested instances of the utilities don't automatically have a modified alpha transparency.
+
+### Example
+
+To change that opacity, override `--cx-spinner-opacity` via custom styles or inline styles, or choose from any of the `.spinner-opacity-*` utilities:
+
+<Example code={[`<span class="spinner"></span>
+<span class="spinner spinner-primary" style="--cx-spinner-opacity: .6;"></span>
+
+<span class="vr mx-medium"></span>
+`].concat(getData('basic-opacities').map((opacity) => `<div class="spinner spinner-primary spinner-opacity-${opacity.name}" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>`))} />
+
+### Context Opacity
+
+You can directly apply a **context opacity** utility to match `icon` contexts:
+
+<Example code={`<span class="spinner-border"></span>
+<span class="spinner-border spinner-primary spinner-opacity-subtle"></span>
+<span class="spinner-border spinner-primary spinner-opacity-slight"></span>
+
+<span class="vr mx-medium"></span>
+
+<span class="spinner-grow"></span>
+<span class="spinner-grow spinner-primary spinner-opacity-subtle"></span>
+<span class="spinner-grow spinner-primary spinner-opacity-slight"></span>`} />
+
+
+## Buttons
+
+Use spinners within buttons to indicate an action is currently processing or taking place. You may also swap the text out of the spinner element and utilize button text as needed.
+
+Spinners match to icon size and color automatically when placed inside a `.button`.
+
+<div class="button-examples">
+<Example code={`<button class="button default" type="button">
+    <span class="spinner-border"></span>
+  </button>
+  <button class="button default" type="button" disabled>
+    <span class="spinner-border"></span>
+    Loading...
+  </button>
+  <button class="button primary large" type="button">
+    <span class="spinner-border"></span>
+  </button>
+  <button class="button primary large" type="button" disabled>
+    <span class="spinner-border"></span>
+  </button>
+  <button class="button secondary small" type="button">
+    <span class="spinner-grow"></span>
+  </button>
+  <button class="button secondary small" type="button" disabled>
+    <span class="spinner-grow"></span>
+    Loading...
+  </button>`} />
+</div>
+
+## Positioning
+
+Spinners in Chassis - CSS are built with `rem`s and `display: inline-flex`. This means they can easily be resized, recolored, and quickly aligned.
+
+### Margin
+
+Use [margin utilities][margin] like `.m-xlarge` for easy spacing.
+
+<Example code={`<span class="spinner-border m-xlarge"></span>`} />
+
+### Flex
+
+Use [flexbox utilities][flex], [float utilities][float], or [text alignment][text] utilities to place spinners exactly where you need them in any situation.
+
+<Example code={`<div class="d-flex justify-content-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>`} />
+
+<Example code={`<div class="d-flex align-items-center">
+    <strong role="status">Loading...</strong>
+    <div class="spinner-border ms-auto" aria-hidden="true"></div>
+  </div>`} />
+
+### Floats
+
+<Example code={`<div class="clearfix">
+    <div class="spinner-border float-end" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>`} />
+
+### Text align
+
+<Example code={`<div class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>`} />
+
+## CSS
+
+<DocsCSS />
+
+### Custom properties
+
+<DocsCSSVars />
+
+### Sass variables
+
+<DocsSASSVars />
+
+<ScssDocs name="spinner-variables" file="scss/_variables.scss" />
+
+### Keyframes
+
+Used for creating the CSS animations for our spinners. Included in `scss/_spinners.scss`.
+
+<ScssDocs name="spinner-border-keyframes" file="scss/_spinners.scss" />
+
+<ScssDocs name="spinner-grow-keyframes" file="scss/_spinners.scss" />
+
+
+[color]:   [[docsref:/utilities/colors]]
+[flex]:    [[docsref:/utilities/flex]]
+[float]:   [[docsref:/utilities/float]]
+[margin]:  [[docsref:/utilities/spacing]]
+[text]:    [[docsref:/utilities/text]]

@@ -1,0 +1,130 @@
+---
+title: Background
+description: Convey meaning through `background-color` and add decoration with gradients.
+toc: true
+---
+
+import { getData } from '@libs/data'
+
+<Callout name="warning-color-assistive-technologies" />
+
+## Background Color
+
+Similar to the foreground classes, set the background of an element to any contextual class. Background utilities **do not set** `color` property, so in some cases you'll want to use in combination with `.fg-*`  [color utilities]([[docsref:/utilities/colors]]).
+
+### Body Backgrounds
+
+<Example code={`<p class="bg-main p-2xsmall">.bg-main</p>
+<p class="bg-even p-2xsmall">.bg-even</p>
+<p class="bg-evident p-2xsmall">.bg-evident</p>
+<p class="bg-inverse fg-inverse p-2xsmall">.bg-inverse</p>
+<p class="base-color contrast-color p-2xsmall">.base-color</p>
+<p class="bg-highlight p-2xsmall">.bg-highlight</p>`} />
+
+### Color Backgrounds
+
+Base **context colors** can be used as background with `.bg-*` classes.
+
+<Example code={getData('context-colors').map((contextColor) => `<p class="bg-${contextColor.name } fg-contrast p-2xsmall">.bg-${contextColor.name}</p>`)} />
+
+### Context Backgrounds
+
+Body backgrounds are available for every **context color**.
+
+<Example code={`<p class="primary-bg-main primary-fg-main p-2xsmall">.primary-bg-main</p>
+<p class="primary-bg-even primary-fg-main p-2xsmall">.primary-bg-even</p>
+<p class="primary-bg-evident primary-fg-main p-2xsmall">.primary-bg-evident</p>
+<p class="primary-bg-inverse primary-fg-inverse p-2xsmall">.primary-bg-inverse</p>
+<p class="primary-base-color primary-contrast-color p-2xsmall">.primary-base-color</p>
+<p class="primary-bg-highlight primary-fg-main p-2xsmall">.primary-bg-highlight</p>`} />
+
+### Context Scenes
+
+<Example code={`<p class="dim-main fg-inverse p-2xsmall">.dim-main</p>
+<p class="dim-subtle p-2xsmall">.dim-subtle</p>
+<p class="dim-slight p-2xsmall">.dim-slight</p>
+<p class="transparent-color p-2xsmall">.transparent-color</p>`} />
+
+<Example code={`<p class="secondary-dim-main p-2xsmall">.secondary-dim-main</p>
+<p class="secondary-dim-subtle p-2xsmall">.secondary-dim-subtle</p>
+<p class="secondary-dim-slight p-2xsmall">.secondary-dim-slight</p>
+<p class="secondary-transparent-color p-2xsmall">.secondary-transparent-color</p>`} />
+
+## Background gradient
+
+By adding a `.bg-gradient` class, a linear gradient is added as background image to the backgrounds. This gradient starts with a semi-transparent white which fades out to the bottom.
+
+Do you need a gradient in your custom CSS? Just add `background-image: var(--cx-gradient);`.
+
+<Example code={getData('context-colors').map((contextColor) => `<p class="bg-${contextColor.name } bg-gradient fg-contrast p-xsmall">.bg-${contextColor.name}.bg-gradient</p>`)} />
+
+## Opacity
+
+Using CSS variables for `background-color` utilities allows for real-time color changes without compilation and dynamic alpha transparency changes.
+
+### How it works
+
+Consider our default `.bg-primary` utility.
+
+```css
+.bg-primary {
+  background-color: rgba(var(--cx-primary-rgb), var(--cx-bg-opacity, 1)) !important;
+}
+.bg-opacity-50 {
+  --cx-bg-opacity: var(--cx-opacity-50);
+}
+```
+
+We use an RGB version of our `--cx-primary` (with the value of `255, 91, 20`) CSS variable and attached a second CSS variable, `--cx-bg-opacity`, for the alpha transparency (with a default value `1`). That means anytime you use `.bg-primary` now, your computed `background-color` value is `rgba(255, 91, 20, 1)`. Then, the opacity class overrides default opacity value of color by adding `--cx-bg-opacity` variable to the element.
+
+### Example
+
+To change that opacity, override `--cx-bg-opacity` via custom styles or inline styles.
+
+<Example code={`<div class="bg-primary p-2xsmall primary-contrast-color">
+  This is default primary background</div>
+<div style="--cx-bg-opacity: .4;" class="bg-primary p-2xsmall">
+  This is 40% opacity primary background</div>`} />
+
+Or, choose from any of the `.bg-opacity-*` utilities:
+
+<Example code={getData('token-opacities').map((opacity) => `<div class="bg-primary bg-opacity-${opacity.name } p-2xsmall">This is <code>bg-opacity-${opacity.name}</code> background</div>`)} />
+
+### Context Opacity
+
+You can directly apply a **context opacity** utility to match `scene-*` colors:
+
+<Example code={`<div class="bg-primary bg-opacity-dim p-2xsmall">This is <code>dim-main</code> opacity primary background</div>
+<div class="bg-primary bg-opacity-blur p-2xsmall">This is <code>dim-subtle</code> opacity primary background</div>
+<div class="bg-primary bg-opacity-shade p-2xsmall">This is <code>dim-slight</code> opacity primary background</div>
+<div class="bg-primary bg-opacity-clear p-2xsmall">This is <code>transparent-color</code> opacity primary background</div>`} />
+
+## CSS
+
+<DocsCSS />
+
+### Variables
+
+<DocsCSSVars />
+
+### Sass variables
+
+<DocsSASSVars />
+
+Most `background-color` utilities are generated by our [context colors]([[docsref:/customize/color]]), reassigned from our generic color palette variables.
+
+<ScssDocs name="context-color-variables" file="scss/tokens/_colors.scss" />
+<ScssDocs name="bg-opacity-tokens" file="scss/tokens/_index.scss" />
+<ScssDocs name="variable-gradient" file="scss/_variables.scss" />
+
+Generated utilities.
+
+<ScssDocs name="utils-bg-color" file="scss/utilities/_index.scss" />
+
+### Sass maps
+
+Theme colors are then put into a Sass map so we can loop over them to generate our utilities, component modifiers, and more.
+
+<ScssDocs name="context-colors-map" file="scss/maps/_colors.scss" />
+<ScssDocs name="opacities-map" file="scss/maps/_opacities.scss" />
+

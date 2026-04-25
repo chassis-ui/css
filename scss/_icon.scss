@@ -1,0 +1,108 @@
+.icon {
+  margin: 0;
+  color: var(--#{$prefix}icon-color);
+  fill: var(--#{$prefix}icon-color);
+
+  &:not(:empty) {
+    flex-shrink: 0;
+    width: var(--#{$prefix}icon-size);
+    height: var(--#{$prefix}icon-size);
+    vertical-align: -.25em;
+    font-family: chassis-icons; // stylelint-disable-line
+    font-size: var(--#{$prefix}icon-size); //stylelint-disable-line
+  }
+
+  // stylelint-disable
+  &:empty:before {
+    display: inline-block;
+    vertical-align: -.2em;
+    font-family: "chassis-icons" !important;
+    font-style: normal;
+    font-variant: normal;
+    font-size: var(--#{$prefix}icon-size);
+    font-weight: normal !important;
+    line-height: 1;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  // stylelint-enable
+
+}
+
+.icon-adaptive {
+  &:not(:empty) {
+    --#{$prefix}icon-size: 1.125em;
+  }
+  &:empty::before {
+    --#{$prefix}icon-size: 1.25em;
+  }
+}
+
+//
+// Icon utilities
+//
+
+$utilities: () !default;
+@if $utilities {
+  $utilities: map-merge(
+    $utilities,
+    (
+      // scss-docs-start utils-icons
+      "icon-color": (
+        css-var: true,
+        css-variable-name: icon-color,
+        class: icon,
+        values: map-merge(
+          map-loop(map-loop($context-colors, to-rgb, "$value"), rgba-css-var, #{"$key"}, #{"icon"}),
+          ( "transparent": transparent )
+        )
+      ),
+      "context-icon-color": (
+        css-var: true,
+        css-variable-name: icon-color,
+        // property: (color, fill),
+        class: null,
+        values: map-merge-multiple(
+          map-loop($context-icon-colors, varify, "$key"),
+          map-loop($body-icon-colors, varify, "$key"),
+          ("icon-reset": currentColor)
+        )
+      ),
+      "icon-opacity": (
+        css-var: true,
+        css-variable-name: icon-opacity,
+        class: icon-opacity,
+        values: $icon-opacities
+      ),
+      // "icon-size": (
+      //   css-var: true,
+      //   css-variable-name: icon-size,
+      //   class: null,
+      //   values: map-loop(map-rename-keys($icon-sizes, "icon-", "start"), varify, "$key")
+      // ),
+      // scss-docs-end utils-icons
+    )
+  );
+}
+
+@if $enable-responsive-utilities {
+  @each $breakpoint in map-keys($grid-breakpoints) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
+      @each $name, $value in $icon-sizes {
+        .icon#{$infix}-#{$name} {
+          --#{$prefix}icon-size: var(--#{$prefix}icon-#{$name});
+        }
+      }
+    }
+  }
+} @else {
+  @each $name, $value in $icon-sizes {
+    .icon-#{$name} {
+      --#{$prefix}icon-size: var(--#{$prefix}icon-#{$name});
+    }
+  }
+}
+

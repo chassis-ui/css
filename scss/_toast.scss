@@ -1,0 +1,71 @@
+.toast {
+  // scss-docs-start toast-css-vars
+  --#{$prefix}zindex: var(--#{$prefix}toast-zindex, #{$zindex-toast});
+  --#{$prefix}padding-y: var(--#{$prefix}toast-padding-y, #{$toast-padding-y});
+  --#{$prefix}padding-x: var(--#{$prefix}toast-padding-x, #{$toast-padding-x});
+  --#{$prefix}spacing: var(--#{$prefix}toast-spacing, #{$toast-spacing});
+  --#{$prefix}max-width: var(--#{$prefix}toast-max-width, #{$toast-max-width});
+  @include rfs($toast-font-size, --#{$prefix}font-size);
+  --#{$prefix}fg-color: var(--#{$prefix}toast-fg-color, #{$toast-fg-color});
+  --#{$prefix}bg-color: var(--#{$prefix}toast-bg-color, #{$toast-bg-color});
+  --#{$prefix}border-width: var(--#{$prefix}toast-border-width, #{$toast-border-width});
+  --#{$prefix}border-color: var(--#{$prefix}toast-border-color, #{$toast-border-color});
+  --#{$prefix}border-radius: var(--#{$prefix}toast-border-radius, #{$toast-border-radius});
+  --#{$prefix}box-shadow: var(--#{$prefix}toast-box-shadow, #{$toast-box-shadow});
+  --#{$prefix}header-fg-color: var(--#{$prefix}toast-header-fg-color, #{$toast-header-fg-color});
+  --#{$prefix}header-bg-color: var(--#{$prefix}toast-header-bg-color, #{$toast-header-bg-color});
+  --#{$prefix}header-border-color: var(--#{$prefix}toast-border-color, #{$toast-header-border-color});
+  // scss-docs-end toast-css-vars
+
+  @extend %component;
+
+  width: var(--#{$prefix}max-width);
+  max-width: 100%;
+  pointer-events: auto;
+  background-clip: padding-box;
+  box-shadow: var(--#{$prefix}box-shadow);
+
+  &.showing {
+    opacity: 0;
+  }
+
+  &:not(.show) {
+    display: none;
+  }
+
+  .close-button {
+    --#{$prefix}fg-color: var(--#{$prefix}header-fg-color);
+    margin-right: #{calc(-.5 * var(--#{$prefix}padding-x))};
+    margin-left: var(--#{$prefix}space-xsmall);
+  }
+}
+
+.toast-container {
+  --#{$prefix}zindex: #{$zindex-toast};
+
+  position: absolute;
+  z-index: var(--#{$prefix}zindex);
+  width: max-content;
+  max-width: 100%;
+  pointer-events: none;
+
+  > :not(:last-child) {
+    margin-bottom: var(--#{$prefix}spacing);
+  }
+}
+
+.toast-header {
+  display: flex;
+  align-items: center;
+  padding: var(--#{$prefix}padding-y) var(--#{$prefix}padding-x);
+  color: var(--#{$prefix}header-fg-color);
+  background-color: var(--#{$prefix}header-bg-color);
+  background-clip: padding-box;
+  border-bottom: var(--#{$prefix}border-width) solid var(--#{$prefix}header-border-color);
+  @include border-top-radius(calc(var(--#{$prefix}border-radius) - var(--#{$prefix}border-width)));
+}
+
+.toast-body {
+  padding: var(--#{$prefix}padding-x);
+  word-wrap: break-word;
+}

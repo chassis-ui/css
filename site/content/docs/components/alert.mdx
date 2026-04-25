@@ -1,0 +1,303 @@
+---
+title: Alert
+description: Alert dialogs provide focused, important messages that require user acknowledgment or decision.
+toc: true
+---
+
+## Overview
+
+Alert dialogs are specialized modal interfaces designed for critical messages that require immediate user attention and response. Unlike standard modals that may contain various types of content, alerts are specifically structured to present important information and prompt for user decisions.
+
+<Callout name="info-prefersreducedmotion" />
+
+### Key features
+
+- **Focused attention**: Overlays the interface to demand immediate user acknowledgment
+- **Decision-oriented**: Typically includes confirm/cancel actions
+- **Visual emphasis**: Includes alert icons to communicate urgency or importance
+- **Non-dismissible**: Requires explicit user response (backdrop clicks don't dismiss)
+- **Simplified structure**: Streamlined design compared to general-purpose modals
+
+### How alerts work
+
+The Alert component uses the Modal component's JavaScript functionality but with a simpler, purpose-built window structure:
+
+- Alerts leverage the same modal overlay system but with specialized styling
+- The backdrop is typically static, preventing dismissal by clicking outside
+- Alert windows have dedicated header, content, and footer sections optimized for alerts
+- Visual indicators (icons) communicate the alert type or severity
+
+### Basic structure
+
+Alert dialogs consist of these key components:
+
+- **Modal Container**: The outer wrapper that controls position
+- **Alert window**: The visible alert dialogue with styling and shadow effects
+- **Alert icon**: Visual indicator of the alert type (optional)
+- **Alert header**: Contains the alert title
+- **Alert content**: Contains the message or information
+- **Alert footer**: Contains response actions (buttons)
+
+## Examples
+
+Explore these practical examples to see Chassis CSS alert dialogs in action across a variety of use cases. Each example demonstrates different features and functionality to help you implement alerts effectively in your projects.
+
+### Basic alert dialog
+
+Below is a static example of an alert dialog with its standard components:
+
+
+<Example class="bg-evident" showMarkup={false} code={`<div class="modal position-static d-block" tabindex="-1">
+    <div class="modal-container">
+      <div class="alert-window">
+        <svg class="icon icon-danger alert-icon">
+          <use xlink:href="#exclamation-triangle-solid"/>
+        </svg>
+        <div class="alert-header">
+          <h4 class="alert-title">Confirm Delete</h4>
+        </div>
+        <div class="alert-content">
+          <p>Are you sure you want to delete this file? This action cannot be undone.</p>
+        </div>
+        <div class="alert-footer">
+          <button type="button" class="button default" data-cx-dismiss="modal">Cancel</button>
+          <button type="button" class="button danger">Delete File</button>
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+<Code lang="html" code={`<div class="modal" tabindex="-1">
+    <div class="modal-container">
+      <div class="alert-window">
+        <svg class="icon icon-danger alert-icon">
+          <use xlink:href="#exclamation-triangle-solid"/>
+        </svg>
+        <div class="alert-header">
+          <h4 class="alert-title">Confirm Delete</h4>
+        </div>
+        <div class="alert-content">
+          <p>Are you sure you want to delete this file? This action cannot be undone.</p>
+        </div>
+        <div class="alert-footer">
+          <button type="button" class="button default" data-cx-dismiss="modal">Cancel</button>
+          <button type="button" class="button danger">Delete File</button>
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+<Callout>
+  Alert titles use the `.alert-title` class which sets typography properties as defined in design tokens. You can use [typography utilities]([[docsref:/utilities/text]]) to further customize the heading's appearance.
+</Callout>
+
+### Live alert demo
+
+Click the button below to see a working alert dialog. Note how it slides down and fades in from the top of the page, and requires explicit user action to dismiss.
+
+<div class="cxd-example">
+  <button type="button" class="button primary" data-cx-toggle="modal" data-cx-target="#exampleAlert">Show Alert Dialog</button>
+</div>
+
+<div class="modal fade" id="exampleAlert" tabindex="-1" data-cx-backdrop="static" data-cx-keyboard="false" aria-labelledby="exampleAlertLabel" aria-hidden="true" role="alertdialog">
+  <div class="modal-container centered">
+    <div class="alert-window">
+      <svg class="icon icon-danger alert-icon">
+        <use xlink:href="#exclamation-triangle-solid"/>
+      </svg>
+      <div class="alert-header">
+        <h4 class="alert-title" id="exampleAlertLabel">Important Notice</h4>
+      </div>
+      <div class="alert-content">
+        <p>This action will permanently remove selected data. Are you sure you want to continue?</p>
+      </div>
+      <div class="alert-footer">
+        <button type="button" class="button default" data-cx-dismiss="modal">Cancel</button>
+        <button type="button" class="button danger">Proceed</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<Code lang="html" code={`<!-- Button to trigger the alert -->
+  <button type="button" class="button primary" data-cx-toggle="modal" data-cx-target="#exampleAlert">
+    Show Alert Dialog
+  </button>
+
+  <!-- Alert Dialog -->
+  <div class="modal fade" id="exampleAlert" tabindex="-1" data-cx-backdrop="static" data-cx-keyboard="false" aria-labelledby="exampleAlertLabel" aria-hidden="true" role="alertdialog">
+    <div class="modal-container centered">
+      <div class="alert-window">
+        <svg class="icon icon-danger alert-icon">
+          <use xlink:href="#exclamation-triangle-solid"/>
+        </svg>
+        <div class="alert-header">
+          <h4 class="alert-title" id="exampleAlertLabel">Important Notice</h4>
+        </div>
+        <div class="alert-content">
+          <p>This action will permanently remove selected data. Are you sure you want to continue?</p>
+        </div>
+        <div class="alert-footer">
+          <button type="button" class="button default" data-cx-dismiss="modal">Cancel</button>
+          <button type="button" class="button danger">Proceed</button>
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+<Callout type="info">
+  Notice the `data-cx-backdrop="static"` and `data-cx-keyboard="false"` attributes, which prevent dismissal by clicking outside or pressing Escape. This reinforces that the user must make an explicit choice.
+</Callout>
+
+### Sequential alerts
+
+For complex confirmation processes, you can chain multiple alert dialogs in sequence. This example shows how to toggle between two related alerts:
+
+<div class="cxd-example">
+  <button class="button danger" data-cx-target="#exampleAlertToggle" data-cx-toggle="modal">Delete Account</button>
+</div>
+
+<div class="modal fade" id="exampleAlertToggle" aria-hidden="true" data-cx-backdrop="static" aria-labelledby="exampleAlertToggleLabel" tabindex="-1">
+  <div class="modal-container centered">
+    <div class="alert-window">
+      <svg class="icon icon-danger alert-icon">
+        <use xlink:href="#exclamation-triangle-solid"/>
+      </svg>
+      <div class="alert-header">
+        <h4 class="alert-title" id="exampleAlertToggleLabel">Delete Account</h4>
+      </div>
+      <div class="alert-content">
+        <p>Are you sure you want to delete your account? This will remove all your data.</p>
+      </div>
+      <div class="alert-footer">
+        <button type="button" class="button default" data-cx-dismiss="modal">Cancel</button>
+        <button class="button danger" data-cx-target="#exampleAlertToggle2" data-cx-toggle="modal">Delete Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="exampleAlertToggle2" aria-hidden="true" data-cx-backdrop="static" aria-labelledby="exampleAlertToggleLabel2" tabindex="-1">
+  <div class="modal-container centered">
+    <div class="alert-window">
+      <svg class="icon icon-danger alert-icon">
+        <use xlink:href="#exclamation-triangle-solid"/>
+      </svg>
+      <div class="alert-header">
+        <h4 class="alert-title" id="exampleAlertToggleLabel2">Final Confirmation</h4>
+      </div>
+      <div class="alert-content">
+        <p>This action is permanent and cannot be undone. Type "<b>DELETE</b>" below to confirm:</p>
+        <p><input type="text" class="form-input" placeholder="Type DELETE to confirm" /></p>
+      </div>
+      <div class="alert-footer">
+        <button type="button" class="button default" data-cx-target="#exampleAlertToggle" data-cx-toggle="modal">Go Back</button>
+        <button class="button danger" disabled>Confirm Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<Code lang="html" code={`<!-- Button to trigger the alert -->
+  <button class="button danger" data-cx-target="#exampleAlertToggle" data-cx-toggle="modal">Delete Account</button>
+
+  <!-- Alert 1 -->
+  <div class="modal fade" id="exampleAlertToggle" aria-hidden="true" data-cx-backdrop="static" aria-labelledby="exampleAlertToggleLabel" tabindex="-1">
+    <div class="modal-container centered">
+      <div class="alert-window">
+        <svg class="icon icon-danger alert-icon">
+          <use xlink:href="#exclamation-triangle-solid"/>
+        </svg>
+        <div class="alert-header">
+          <h4 class="alert-title" id="exampleAlertToggleLabel">Delete Account</h4>
+        </div>
+        <div class="alert-content">
+          <p>Are you sure you want to delete your account? This will remove all your data.</p>
+        </div>
+        <div class="alert-footer">
+          <button type="button" class="button default" data-cx-dismiss="modal">Cancel</button>
+          <button class="button danger" data-cx-target="#exampleAlertToggle2" data-cx-toggle="modal">Delete Account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert 2 -->
+  <div class="modal fade" id="exampleAlertToggle2" aria-hidden="true" data-cx-backdrop="static" aria-labelledby="exampleAlertToggleLabel2" tabindex="-1">
+    <div class="modal-container centered">
+      <div class="alert-window">
+        <svg class="icon icon-danger alert-icon">
+          <use xlink:href="#exclamation-triangle-solid"/>
+        </svg>
+        <div class="alert-header">
+          <h4 class="alert-title" id="exampleAlertToggleLabel2">Final Confirmation</h4>
+        </div>
+        <div class="alert-content">
+          <p>This action is permanent and cannot be undone. Type "<b>DELETE</b>" below to confirm:</p>
+          <p><input type="text" class="form-input" placeholder="Type DELETE to confirm" /></p>
+        </div>
+        <div class="alert-footer">
+          <button type="button" class="button default" data-cx-target="#exampleAlertToggle" data-cx-toggle="modal">Go Back</button>
+          <button class="button danger" disabled>Confirm Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>`} />
+
+<Callout type="warning">
+  Only one alert can be displayed at a time. When chaining alerts, each new alert replaces the previous one.
+</Callout>
+
+## Use cases
+
+Alert dialogs are appropriate for:
+
+- **Destructive actions**: Confirming deletions, removals, or other irreversible operations
+- **Security confirmations**: Verifying identity or permissions for sensitive operations
+- **Critical warnings**: Alerting users to important consequences before proceeding
+- **Error notifications**: Communicating problems that require acknowledgment
+
+For less critical interactions, consider using standard modals, toasts, or inline messaging instead.
+
+## Accessibility
+
+Alert dialogs should be properly configured for accessibility:
+
+- Use the `role="alertdialog"` attribute to indicate the dialog's purpose
+- Ensure proper focus management with `aria-labelledby` pointing to the title
+- Set `aria-describedby` if there is a longer description
+- Provide keyboard focus handling for all interactive elements
+
+## CSS
+
+Alert dialogs use specialized CSS classes to create their distinctive appearance while leveraging the underlying modal functionality.
+
+### Alert-specific classes
+
+- `.alert-window`: The container for the alert dialog (instead of `.modal-window`)
+- `.alert-header`: Container for the alert title
+- `.alert-title`: Styling for the alert heading
+- `.alert-content`: Container for the alert message
+- `.alert-footer`: Container for the alert buttons
+- `.alert-icon`: Styling for the alert's indicator icon
+
+<DocsCSS />
+
+### Custom properties
+
+<DocsCSSVars />
+
+<ScssDocs name="alert-css-vars" file="scss/_alert.scss" />
+<ScssDocs name="modal-backdrop-css-vars" file="scss/_modal.scss" />
+
+### Sass variables
+
+<DocsSASSVars />
+
+<ScssDocs name="alert-variables" file="scss/_variables.scss" />
+
+See [modal]([[docsref:/components/modal/#sass-variables]]) page for backdrop and transition variables that also apply to alert dialogs.
+
+## JavaScript
+
+Alerts use the same JavaScript functionality as modals, providing a consistent API for controlling dialog behavior. This consistency makes it easy to implement and manage alert dialogs within your application. See [modal]([[docsref:/components/modal#javascript-usage]]) documentation for more details.

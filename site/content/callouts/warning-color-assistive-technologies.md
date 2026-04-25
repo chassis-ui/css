@@ -1,0 +1,1 @@
+**Accessibility tip:** Color alone shouldn't convey meaning as it's not perceived by assistive technology users. Ensure clarity through text with adequate contrast, ARIA attributes where needed, and consider using `.visually-hidden` for screen reader content.

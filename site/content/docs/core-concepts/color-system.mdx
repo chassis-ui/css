@@ -1,0 +1,163 @@
+---
+title: Color System
+description: The Chassis - CSS provides a comprehensive approach to managing colors in UI design. Colors are categorized and defined based on area of use, and contextual palettes are created to ensure consistency and clarity across the user interface.
+toc: true
+---
+import { getData } from '@libs/data'
+import { sassVars } from '@libs/sass'
+
+## Base Colors
+
+Seven colors are chosen based on brand identity and UI context, with primitive color palettes created for each.
+
+<div class="overflow-scroll text-nowrap mb-medium">
+  <div class="grid font-code" style="--cx-grid-columns: 11; --cx-grid-gap: var(--cx-space-2xsmall);">
+  {
+    getData('colors').map((color) => {
+      return (
+        <div class="grid" style="width: 12rem; --cx-grid-columns: 1; grid-template-rows: auto;">
+          <div class={`p-medium rounded-small mb-xsmall position-relative swatch-${color.name} bg-${color.name} fg-contrast`}>
+            <strong class="d-block">{color.name}</strong>
+            {sassVars('color')?.[color.name]}
+          </div>
+          <div class={`p-medium rounded-small cxd-${color.name}-05`}>{color.name}-05</div>
+            {
+              Array.from({ length: 9 }, (_, i) => {
+                const value = (i + 1) * 10; // Generates 10, 20, ..., 90
+                return <div class={`p-medium rounded-small cxd-${color.name}-${value}`}>{color.name}-{value}</div>
+              })
+            }
+          <div class={`p-medium rounded-small cxd-${color.name}-95`}>{color.name}-95</div>
+        </div>
+      )
+    })
+  }
+  </div>
+</div>
+
+These colors are not utilized by classes for any property and are available as CSS variables to use in components if needed.
+
+## Context Colors
+
+For basic use, two variable colors —in addition to black and white— have been added, which behave differently in light and dark modes.
+
+These **11** colors are named as `context colors`.
+
+<div class="row g-xsmall mb-medium font-code">
+  {
+    getData('context-colors').map((color) => {
+      return (
+        <div class="col-medium-4">
+          <div class={`p-medium m-0 bg-${color.name} fg-contrast rounded-small`}>--cx-{color.name}</div>
+        </div>
+      )
+    })
+  }
+</div>
+
+The `default` is the body color used for dark text on light background in light mode. The `alternate` is for emphasized content on the page, used for light text on colored backgrounds such as sections of a page, sidebars, banners, etc.
+
+While `default` usually inverts in dark mode, `alternate` may stay the same depending on the design.
+
+### Context Palettes
+
+Common color needs of UI design have been defined, categorized, and named by their area of use. Palettes for each `context color` have been created by referencing primitive color palettes.
+
+<DocsContextPalette />
+
+These colors are created using `base color` and `opacity` references. This is done by design tokens, but here is an example Sass version to make it clear.
+
+```sass
+// Light theme
+$default-fg-main:      $black;
+$default-fg-subtle:    rgba($default-fg-main-rgb, $opacity-fg-subtle);
+$default-fg-slight:    rgba($default-fg-main-rgb, $opacity-fg-slight);
+$default-bg-main:      $white;
+$default-bg-even:      $neutral-05;
+$default-bg-evident:   $neutral-10;
+```
+
+### Body Colors
+
+From the context colors, the `default` palette is copied as the `body` palette, which can be set in options. Newly copied colors don't get a context prefix and become like `--cx-fg-main`, which is a copy of `--cx-default-fg-main`.
+
+The body palette created above is used to declare body variables, which are then assigned to the related properties of the body and its children.
+
+<DocsBodyPalette />
+
+Switching between these palettes in contextual components is done by changing CSS variables.
+
+## Examples
+
+The `context` class changes the palette first then re-assigns the body colors with the new context.
+
+### Context Class
+
+Switching between contexts is like moving horizontally on the context palettes.
+
+<Example code={[`<p class="p-xsmall">
+    <span class="icon icon-info-circle-solid"></span>
+    This is body context <a href="#">with link</a>, same as default.
+  </p>`].concat(getData('context-colors').map((color) => `<p class="context ${color.name} p-xsmall">
+    <span class="icon icon-info-circle-solid"></span>
+    This is ${color.name} context <a href="#">with link</a>.
+  </p>`))} />
+
+### Context Style
+
+It is also possible to easily switch between component styles by changing body colors, like moving vertically on the `context` palette.
+
+<Example code={`<p class="context primary p-xsmall">
+    <span class="icon icon-info-circle-solid"></span>
+    This is a basic context component <a href="#">with link</a>.
+  </p>
+  <p class="context primary solid p-xsmall">
+    <span class="icon icon-info-circle-solid"></span>
+    This is a solid context component <a href="#">with link</a>.
+  </p>
+  <p class="context primary smooth p-xsmall">
+    <span class="icon icon-info-circle-solid"></span>
+    This is a smooth context component <a href="#">with link</a>.
+  </p>
+  <p class="context primary outline p-xsmall">
+    <span class="icon icon-info-circle-solid"></span>
+    This is an outline context component <a href="#">with link</a>.
+  </p>`} />
+
+## Summary
+
+The Chassis - CSS's color system provides a structured approach to managing colors in a UI design. By defining base colors and context colors, and creating context palettes, it ensures consistency and flexibility. For more details, check out the [documentation]([[docsref:/customize/color]]) pages for customizing colors or visit the [color]([[docsref:/utilities/colors]]) and [background]([[docsref:/utilities/background]]) utility pages for more examples. Additionally, see the [Context Class]([[docsref:/core-concepts/context-class]]) page for more explanation, code examples, and tips for creating your components.
+
+
+### Base Colors:
+
+- Seven colors are selected based on brand and UI contexts.
+- Primitive color palettes are created for each base color.
+- These colors are available as CSS variables for use in components.
+
+### Context Colors:
+
+- Two additional variable colors (`default` and `alternate`) are added for basic use, behaving differently - in light and dark modes.
+- Eleven context colors are defined, named by their area of use.
+
+### Context Palettes:
+
+- Common UI color needs are categorized and named.
+- Palettes for each context color are created by referencing primitive color palettes.
+- Colors are created using base color and opacity references.
+
+### Body Colors:
+
+- The `default` palette is copied as the `body` palette, which can be set in options.
+- Body variables are declared from the body palette and assigned to related properties of the body and its children.
+
+### Switching Contexts:
+
+- Switching between context palettes is done by changing CSS variables.
+- The `context` class changes the palette and re-assigns body colors with the new context.
+- Component styles can be switched by changing body colors.
+
+### Examples:
+
+- Examples are provided to demonstrate switching between contexts and component styles.
+- The color system ensures a structured and flexible approach to managing colors, promoting consistency across the UI design. For more details, refer to the documentation pages for customizing colors and utility examples.
