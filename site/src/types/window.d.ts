@@ -13,13 +13,11 @@ export declare global {
    *
    *  - `chassis.Tooltip.getOrCreateInstance`
    *  - `chassis.Tooltip.getInstance`
-   *
    */
+
   export const chassis: typeof import('chassis')
-  // export const chassis: any
 
   interface Window {
     chassis: typeof import('chassis')
-    // chassis: any
   }
 }

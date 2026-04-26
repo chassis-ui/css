@@ -407,12 +407,9 @@ Create complex layouts within modals using the Chassis CSS grid system.
 ### Dynamic content
 
 Use data attributes and JavaScript to dynamically change modal content based on the triggering element.
-
-<div class="cxd-example button-examples">
-  <button type="button" class="button primary" data-cx-toggle="modal" data-cx-target="#dynamicModal" data-cx-whatever="@first">Content for first user</button>
-  <button type="button" class="button primary" data-cx-toggle="modal" data-cx-target="#dynamicModal" data-cx-whatever="@second">Content for second user</button>
-  <button type="button" class="button primary" data-cx-toggle="modal" data-cx-target="#dynamicModal" data-cx-whatever="@chassis">Content for Chassis</button>
-</div>
+<Example addStackblitzJs code={`<button type="button" class="button primary" data-cx-toggle="modal" data-cx-target="#dynamicModal" data-cx-whatever="@first">Content for first user</button>
+<button type="button" class="button primary" data-cx-toggle="modal" data-cx-target="#dynamicModal" data-cx-whatever="@second">Content for second user</button>
+<button type="button" class="button primary" data-cx-toggle="modal" data-cx-target="#dynamicModal" data-cx-whatever="@chassis">Content for Chassis</button>
 
 <div class="modal fade" id="dynamicModal" tabindex="-1" aria-labelledby="dynamicModalLabel" aria-hidden="true">
   <div class="modal-container">
@@ -439,36 +436,7 @@ Use data attributes and JavaScript to dynamically change modal content based on 
       </div>
     </div>
   </div>
-</div>
-
-```html
-<div class="modal fade" id="dynamicModal" tabindex="-1" aria-labelledby="dynamicModalLabel" aria-hidden="true">
-  <div class="modal-container">
-    <div class="modal-window">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="dynamicModalLabel">New message</h1>
-        <button type="button" class="close-button" data-cx-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-content">
-        <form>
-          <div class="mb-medium">
-            <label for="recipient-name" class="col-form-label">Recipient:</label>
-            <input type="text" class="form-input" id="recipient-name" />
-          </div>
-          <div class="mb-medium">
-            <label for="message-text" class="col-form-label">Message:</label>
-            <textarea class="form-input" id="message-text"></textarea>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="button secondary" data-cx-dismiss="modal">Close</button>
-        <button type="button" class="button primary">Send message</button>
-      </div>
-    </div>
-  </div>
-</div>
-```
+</div>`} />
 
 <JsDocs name="varying-modal-window" file="site/src/assets/snippets.js" />
 

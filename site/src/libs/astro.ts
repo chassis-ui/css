@@ -9,15 +9,10 @@ import type { Element } from 'hast'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import { getConfig } from './config'
 import { configurePrism } from './prism'
-import {
-  // configurePrism,
-  rehypeCxTable
-} from '@chassis-ui/docs'
+import { rehypeCxTable } from '@chassis-ui/docs'
 import { remarkCxConfig, remarkCxDocsref } from './remark'
 import {
-  docsDirectory,
   getDocsFsPath,
-  getChassisDocsPath,
   getChassisAssetsFsPath,
   getChassisCSSFsPath,
   getChassisIconsFsPath,
@@ -34,7 +29,7 @@ const staticFileAliases = {
 }
 
 // A list of pages that will be excluded from the sitemap.
-const sitemapExcludes = ['/404', '/docs', `/docs/${getConfig().docs_version}`]
+const sitemapExcludes = ['/404', '/docs']
 
 const headingsRangeRegex = new RegExp(`^h[${getConfig().anchors.min}-${getConfig().anchors.max}]$`)
 
@@ -122,8 +117,6 @@ function copyChassisAssets() {
   const source = getChassisAssetsFsPath()
   const destination = path.join(getDocsPublicFsPath(), 'static')
 
-  // fs.mkdirSync(destination, { recursive: true })
-  // copyStaticRecursively(source, destination)
   fs.mkdirSync(destination, { recursive: true })
   fs.cpSync(source, destination, { recursive: true })
 }
