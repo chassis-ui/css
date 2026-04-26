@@ -1,5 +1,16 @@
 {
   "buildCommand": "pnpm site:build",
   "outputDirectory": "_site",
-  "public": true
+  "public": true,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "has": [
+        { "type": "header", "key": "host", "value": ".*-staging\\.vercel\\.app" }
+      ],
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    }
+  ]
 }
