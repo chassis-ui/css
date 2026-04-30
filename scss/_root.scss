@@ -1,24 +1,27 @@
+@use "sass:color";
 :root,
 [data-cx-theme="light"] {
 
   // Generate color variables
   @each $name, $value in $context-colors {
-    --#{$prefix}#{$name}: #{$value};
-    --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+    --#{$prefix}#{$name}: #{to-oklch($value)};
+    // --#{$prefix}#{$name}: #{clean-oklch($value)};
+    // --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
   }
   @each $name, $value in $contrast-colors {
-    --#{$prefix}#{$name}: #{$value};
-    --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+    --#{$prefix}#{$name}: #{to-oklch($value)};
+    // --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
   }
   @each $name, $value in $base-palette {
-    --#{$prefix}#{$name}: #{$value};
-    --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+    --#{$prefix}#{$name}: #{to-oklch($value)};
+    // --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
   }
   @each $name, $value in $context-palette {
-    --#{$prefix}#{$name}: #{$value};
-    @if not str-index($name, "subtle") and not str-index($name, "slight") {
-      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
-    }
+    // --#{$prefix}#{$name}: #{color.to-space($value, oklch)};
+    --#{$prefix}#{$name}: #{to-oklch($value)};
+    // @if not str-index($name, "subtle") and not str-index($name, "slight") {
+    //   --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+    // }
     // --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
   }
 
