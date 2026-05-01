@@ -25,6 +25,5 @@
   fill: var(--#{$prefix}icon-color) if($enable-important-utilities, !important, null);
 }
 %link-color {
-  color: RGBA(var(--#{$prefix}link-main-color-rgb), var(--#{$prefix}link-opacity, 1)) if($enable-important-utilities, !important, null);
-  // text-decoration-color: RGBA(var(--#{$prefix}link-main-color-rgb), var(--#{$prefix}underline-opacity, 1)) if($enable-important-utilities, !important, null);
+  color: to-opacity(var(--#{$prefix}link-main-color), var(--#{$prefix}link-opacity, 1)) if($enable-important-utilities, !important, null);
 }

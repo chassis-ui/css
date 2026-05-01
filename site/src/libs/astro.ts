@@ -100,7 +100,7 @@ export function chassis(): AstroIntegration[] {
 }
 
 function cleanPublicDirectory() {
-  fs.rmSync(getDocsPublicFsPath(), { force: true, recursive: true })
+  fs.rmSync(getDocsPublicFsPath(), { force: true, recursive: true, maxRetries: 5, retryDelay: 100 })
 }
 
 // Copy the `dist` folder from the root of the repo containing the latest version of Chassis to make it available from

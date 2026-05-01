@@ -1,3 +1,6 @@
+@use "sass:math";
+@use "sass:color";
+
 //
 // Color utility functions for Chassis CSS
 //
@@ -27,9 +30,10 @@
 /// @param {String} $target - Target component for opacity variable (e.g., "bg", "icon")
 /// @return {String} - CSS rgba() value using CSS variables
 /// @example
-///   rgba-css-var("primary", "bg") => rgba(var(--cx-primary-rgb), var(--cx-bg-opacity, 1))
-@function rgba-css-var($identifier, $target) {
-  @return rgba(var(--#{$prefix}#{$identifier}-rgb), var(--#{$prefix}#{$target}-opacity, 1));
+///   opacity-var("primary", "bg") => rgba(var(--cx-primary-rgb), var(--cx-bg-opacity, 1))
+@function opacity-var($identifier, $target) {
+  // @return rgba(var(--#{$prefix}#{$identifier}-rgb), var(--#{$prefix}#{$target}-opacity, 1));
+  @return #{"oklch(from var(--#{$prefix}#{$identifier}) l c h / var(--#{$prefix}#{$target}-opacity, 1))"};
 }
 
 /// Convert a list of values to CSS variable references
@@ -46,6 +50,54 @@
     $result: append($result, var(--#{$prefix}#{if($comp, "#{$comp}-", "")}#{$entry}), space);
   }
   @return $result;
+}
+
+/// Convert a color to an oklch() value with rounded channel values
+/// Converts any Sass-supported color to the OKLCh color space, rounding lightness
+/// to 2 decimal places, chroma to 3 decimal places, and hue to 2 decimal places.
+/// Alpha is preserved when less than 1.
+///
+/// @param {Color} $color - Any Sass-compatible color value
+/// @return {Color} - An oklch() color with rounded L, C, H channels and preserved alpha
+/// @example
+///   to-color(#ff0000) => oklch(0.63 0.258 29.23)
+///   to-color(rgba(#ff0000, 0.5)) => oklch(0.63 0.258 29.23 / 0.5)
+@function to-color($color) {
+  $oklch: color.to-space($color, oklch);
+
+  // Extract and round channels
+  $l: math.div(math.round(color.channel($oklch, "lightness", oklch) * 100), 100);
+  $c: math.div(math.round(color.channel($oklch, "chroma", oklch) * 1000), 1000);
+  $a: color.alpha($color);
+
+  // Achromatic colors (chroma rounds to 0) have no meaningful hue;
+  // skip math on the 'none' keyword to avoid calc(NaN * 1deg) output.
+  $h: none;
+  @if $c != 0 {
+    $h: math.div(math.round(color.channel($oklch, "hue", oklch) * 100), 100);
+  }
+
+  // Use string interpolation so the CSS '/' is a channel separator, not Sass division.
+  @if $a < 1 {
+    @return #{"oklch(#{$l} #{$c} #{$h} / #{$a})"};
+  }
+
+  @return #{"oklch(#{$l} #{$c} #{$h})"};
+}
+
+
+/// Generate a CSS relative color expression that applies an opacity variable to a CSS custom property
+/// Uses the CSS relative color syntax to derive an oklch color from an existing
+/// CSS variable and apply a separate opacity (alpha) CSS variable to it.
+///
+/// @param {String} $identifier - Color CSS variable name without prefix (e.g., "primary", "link-color")
+/// @param {String} $target - Target component for the opacity variable (e.g., "text", "bg", "icon")
+/// @return {String} - Unquoted CSS relative color string using oklch
+/// @example
+///   to-opacity("primary", "text") => oklch(from var(--cx-primary) l c h / var(--cx-text-opacity, 1))
+///   to-opacity("link-color", "bg") => oklch(from var(--cx-link-color) l c h / var(--cx-bg-opacity, 1))
+@function to-opacity($color, $opacity) {
+  @return #{"oklch(from #{$color} l c h / #{$opacity})"};
 }
 
 

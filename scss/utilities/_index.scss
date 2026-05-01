@@ -17,8 +17,8 @@ $utilities: map-merge(
       css-variable-name: fg-color,
       class: fg,
       values: map-merge-multiple(
-        map-loop(map-loop($context-colors, to-rgb, "$value"), rgba-css-var, #{"$key"}, #{"fg"}),
-        map-loop(map-loop($contrast-colors, to-rgb, "$value"), rgba-css-var, #{"$key"}, #{"fg"}),
+        map-loop($context-colors, opacity-var, #{"$key"}, #{"fg"}),
+        map-loop($contrast-colors, opacity-var, #{"$key"}, #{"fg"}),
         ( "reset": inherit )
       )
     ),
@@ -35,7 +35,7 @@ $utilities: map-merge(
       css-variable-name: bg-color,
       class: bg,
       values: map-merge(
-        map-loop(map-loop($context-colors, to-rgb, "$value"), rgba-css-var, #{"$key"}, #{"bg"}),
+        map-loop($context-colors, opacity-var, #{"$key"}, #{"bg"}),
         ( "transparent": transparent )
       )
     ),
@@ -76,9 +76,9 @@ $utilities: map-merge(
       property: text-decoration-color,
       class: link-underline,
       values: map-merge(
-        map-loop($context-colors, rgba-css-var, "$key", "underline"),
+        map-loop($context-colors, opacity-var, "$key", "underline"),
         (
-          null: rgba(var(--#{$prefix}link-main-color-rgb), var(--#{$prefix}underline-opacity, 1)),
+          null: #{to-opacity(var(--#{$prefix}link-main-color), var(--#{$prefix}underline-opacity, 1))},
         )
       )
     ),
@@ -107,7 +107,7 @@ $utilities: map-merge(
       css-var: true,
       css-variable-name: focus-ring-color,
       class: focus-ring,
-      values: map-loop($context-colors-rgb, rgba-css-var, "$key", "focus-ring")
+      values: map-loop($context-colors, opacity-var, "$key", "focus-ring")
     ),
     // scss-docs-end utils-focus-ring
     // scss-docs-start utils-interaction

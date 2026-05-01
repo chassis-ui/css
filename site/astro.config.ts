@@ -18,6 +18,13 @@ export default defineConfig({
   },
   site,
   vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'if-function']
+        }
+      }
+    },
     plugins: [algoliaPlugin(), stackblitzPlugin()],
     build: {
       rollupOptions: {
