@@ -19,18 +19,18 @@
 
 @each $breakpoint in map-keys($grid-breakpoints) {
   $next: breakpoint-next($breakpoint, $grid-breakpoints);
-  $infix: breakpoint-infix($next, $grid-breakpoints);
+  $infix: breakpoint-prefix($next, $grid-breakpoints);
 
-  .offcanvas#{$infix} {
+  .#{$infix}offcanvas {
     @extend %offcanvas-css-vars;
   }
 }
 
 @each $breakpoint in map-keys($grid-breakpoints) {
   $next: breakpoint-next($breakpoint, $grid-breakpoints);
-  $infix: breakpoint-infix($next, $grid-breakpoints);
+  $infix: breakpoint-prefix($next, $grid-breakpoints);
 
-  .offcanvas#{$infix} {
+  .#{$infix}offcanvas {
     @include media-breakpoint-down($next) {
       position: fixed;
       bottom: 0;

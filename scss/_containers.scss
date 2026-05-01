@@ -3,17 +3,29 @@
 // Set the container width, and override it for fixed navbars in media queries.
 
 @if $enable-container-classes {
+  %container {
+    @include make-container();
+  }
   // Single container class with breakpoint max-widths
   .container,
   // 100% wide container at all breakpoints
-  .container-fluid {
-    @include make-container();
+  .container.fluid {
+    @extend %container;
   }
 
   // Responsive containers that are 100% wide until a breakpoint
   @each $breakpoint, $container-max-width in $container-max-widths {
-    .container-#{$breakpoint} {
-      @extend .container-fluid;
+    $infix: breakpoint-prefix($breakpoint, $grid-breakpoints);
+
+    $escaped: if(breakpoint-min($breakpoint, $container-max-widths) == null, "", ".#{$breakpoint}");
+    // $escaped: $breakpoint;
+    @if str-slice(#{$breakpoint}, 1, 1) == "2" {
+      $escaped: ".\\32 " + str-slice(#{$breakpoint}, 2);
+    }
+
+
+    .container#{$escaped} {
+      @extend %container;
     }
 
     @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
@@ -26,7 +38,11 @@
 
       @each $name, $width in $grid-breakpoints {
         @if ($extend-breakpoint) {
-          .container#{breakpoint-infix($name, $grid-breakpoints)} {
+          $escaped: if(breakpoint-min($name, $container-max-widths) == null, "", ".#{$name}");
+          @if str-slice(#{$name}, 1, 1) == "2" {
+            $escaped: ".\\32 " + str-slice(#{$name}, 2);
+          }
+          .container#{$escaped} {
             @extend %responsive-container-#{$breakpoint};
           }
 

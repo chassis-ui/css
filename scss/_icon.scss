@@ -88,11 +88,11 @@ $utilities: () !default;
 
 @if $enable-responsive-utilities {
   @each $breakpoint in map-keys($grid-breakpoints) {
-    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+    $infix: breakpoint-prefix($breakpoint, $grid-breakpoints);
 
     @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
       @each $name, $value in $icon-sizes {
-        .icon#{$infix}-#{$name} {
+        .#{$infix}icon-#{$name} {
           --#{$prefix}icon-size: var(--#{$prefix}icon-#{$name});
         }
       }

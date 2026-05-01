@@ -67,7 +67,13 @@
   }
 
   @each $breakpoint, $container-max-width in $container-max-widths {
-    > .container#{breakpoint-infix($breakpoint, $container-max-widths)} {
+    $escaped: if(breakpoint-min($breakpoint, $container-max-widths) == null, "", ".#{$breakpoint}");
+    // $escaped: $breakpoint;
+    @if str-slice(#{$breakpoint}, 1, 1) == "2" {
+      $escaped: ".\\32 " + str-slice(#{$breakpoint}, 2);
+    }
+
+    > .container#{$escaped} {
       @extend %container-flex-properties;
     }
   }
@@ -255,72 +261,69 @@
 //
 // Example: .navbar-expand-lg will be collapsed on screens smaller than 'lg'
 // and expanded on 'lg' screens and above.
-.navbar-expand {
-  @each $breakpoint in map-keys($grid-breakpoints) {
-    $next: breakpoint-next($breakpoint, $grid-breakpoints);
-    $infix: breakpoint-infix($next, $grid-breakpoints);
+@each $breakpoint in map-keys($grid-breakpoints) {
+  $next: breakpoint-next($breakpoint, $grid-breakpoints);
+  $prefix-bp: breakpoint-prefix($next, $grid-breakpoints);
 
-    // stylelint-disable-next-line scss/selector-no-union-class-name
-    &#{$infix} {
-      @include media-breakpoint-up($next) {
-        flex-wrap: nowrap;
-        justify-content: flex-start;
+  .#{$prefix-bp}navbar-expand {
+    @include media-breakpoint-up($next) {
+      flex-wrap: nowrap;
+      justify-content: flex-start;
 
-        .navbar-nav {
-          flex-direction: row;
+      .navbar-nav {
+        flex-direction: row;
 
-          .dropdown-menu {
-            position: absolute;
-          }
+        .dropdown-menu {
+          position: absolute;
+        }
 
-          .nav-link {
-            padding-right: var(--#{$prefix}navbar-nav-link-padding-x);
-            padding-left: var(--#{$prefix}navbar-nav-link-padding-x);
-            &::after {
-              margin-right: #{calc(-.5 * var(--#{$prefix}caret-spacing))};
-              margin-left: #{calc(.5 * var(--#{$prefix}caret-spacing))};
-            }
+        .nav-link {
+          padding-right: var(--#{$prefix}navbar-nav-link-padding-x);
+          padding-left: var(--#{$prefix}navbar-nav-link-padding-x);
+          &::after {
+            margin-right: #{calc(-.5 * var(--#{$prefix}caret-spacing))};
+            margin-left: #{calc(.5 * var(--#{$prefix}caret-spacing))};
           }
         }
+      }
 
-        .navbar-nav-scroll {
-          overflow: visible;
-        }
+      .navbar-nav-scroll {
+        overflow: visible;
+      }
 
-        .navbar-collapse {
-          display: flex !important; // stylelint-disable-line declaration-no-important
-          flex-basis: auto;
-        }
+      .navbar-collapse {
+        display: flex !important; // stylelint-disable-line declaration-no-important
+        flex-basis: auto;
+      }
 
-        .navbar-toggler {
+      .navbar-toggler {
+        display: none;
+      }
+
+      .offcanvas {
+        // stylelint-disable declaration-no-important
+        position: static;
+        z-index: auto;
+        flex-grow: 1;
+        width: auto !important;
+        height: auto !important;
+        visibility: visible !important;
+        background-color: transparent !important;
+        border: 0 !important;
+        transform: none !important;
+        @include box-shadow(none);
+        @include transition(none);
+        // stylelint-enable declaration-no-important
+
+        .offcanvas-header {
           display: none;
         }
 
-        .offcanvas {
-          // stylelint-disable declaration-no-important
-          position: static;
-          z-index: auto;
-          flex-grow: 1;
-          width: auto !important;
-          height: auto !important;
-          visibility: visible !important;
-          background-color: transparent !important;
-          border: 0 !important;
-          transform: none !important;
-          @include box-shadow(none);
-          @include transition(none);
-          // stylelint-enable declaration-no-important
-
-          .offcanvas-header {
-            display: none;
-          }
-
-          .offcanvas-body {
-            display: flex;
-            flex-grow: 0;
-            padding: 0;
-            overflow-y: visible;
-          }
+        .offcanvas-body {
+          display: flex;
+          flex-grow: 0;
+          padding: 0;
+          overflow-y: visible;
         }
       }
     }

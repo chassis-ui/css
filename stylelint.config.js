@@ -1,3 +1,32 @@
+const forbiddenGenericClasses = [
+  '2xlarge',
+  'xlarge',
+  'large',
+  'medium',
+  'small',
+  'xsmall',
+  '2xsmall',
+  'default',
+  'alternate',
+  'primary',
+  'secondary',
+  'neutral',
+  'danger',
+  'success',
+  'warning',
+  'info',
+  'black',
+  'white',
+  'light',
+  'dark',
+  'basic',
+  'solid',
+  'outline'
+]
+
+// This maps the words into the regex format: /(^|\s)\.word($|\s)/
+const disallowedPatternList = forbiddenGenericClasses.map((name) => `/(^|\\s)\\.${name}($|\\s)/`)
+
 export default {
   extends: ['stylelint-config-twbs-bootstrap'],
   ignoreFiles: [
@@ -17,6 +46,13 @@ export default {
     {
       files: ['**/*.scss'],
       rules: {
+        'selector-disallowed-list': [
+          disallowedPatternList,
+          {
+            message: (selector) =>
+              `The generic class "${selector}" is not allowed. Please qualify it (e.g., .button${selector}) or use a more specific name.`
+          }
+        ],
         'declaration-property-value-disallowed-list': {
           border: 'none',
           outline: 'none'

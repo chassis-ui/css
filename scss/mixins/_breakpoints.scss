@@ -57,7 +57,7 @@
 }
 
 @function breakpoint-prefix($name, $breakpoints: $grid-breakpoints) {
-  $infix: if(breakpoint-min($name, $breakpoints) == null, "", "#{$name}\:");
+  $infix: if(breakpoint-min($name, $breakpoints) == null, "", "#{$name}\\:");
   @if $infix != "" and str-slice(#{$name}, 1, 1) == "2" {
     $escaped: "\\32 " + str-slice(#{$name}, 2);
     @return "#{$escaped}\\:";
