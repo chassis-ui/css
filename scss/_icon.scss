@@ -54,7 +54,7 @@ $utilities: () !default;
         css-variable-name: icon-color,
         class: icon,
         values: map-merge(
-          map-loop(map-loop($context-colors, to-rgb, "$value"), to-opacity, #{"$key"}, #{var(--#{$prefix}icon-opacity, 1)}),
+          map-loop($context-colors, opacity-var, #{"$key"}, #{"icon"}),
           ( "transparent": transparent )
         )
       ),

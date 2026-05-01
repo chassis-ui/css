@@ -30,9 +30,10 @@
 /// @param {String} $target - Target component for opacity variable (e.g., "bg", "icon")
 /// @return {String} - CSS rgba() value using CSS variables
 /// @example
-///   rgba-css-var("primary", "bg") => rgba(var(--cx-primary-rgb), var(--cx-bg-opacity, 1))
-@function rgba-css-var($identifier, $target) {
-  @return rgba(var(--#{$prefix}#{$identifier}-rgb), var(--#{$prefix}#{$target}-opacity, 1));
+///   opacity-var("primary", "bg") => rgba(var(--cx-primary-rgb), var(--cx-bg-opacity, 1))
+@function opacity-var($identifier, $target) {
+  // @return rgba(var(--#{$prefix}#{$identifier}-rgb), var(--#{$prefix}#{$target}-opacity, 1));
+  @return #{"oklch(from var(--#{$prefix}#{$identifier}) l c h / var(--#{$prefix}#{$target}-opacity, 1))"};
 }
 
 /// Convert a list of values to CSS variable references
@@ -59,9 +60,9 @@
 /// @param {Color} $color - Any Sass-compatible color value
 /// @return {Color} - An oklch() color with rounded L, C, H channels and preserved alpha
 /// @example
-///   to-oklch(#ff0000) => oklch(0.63 0.258 29.23)
-///   to-oklch(rgba(#ff0000, 0.5)) => oklch(0.63 0.258 29.23 / 0.5)
-@function to-oklch($color) {
+///   to-color(#ff0000) => oklch(0.63 0.258 29.23)
+///   to-color(rgba(#ff0000, 0.5)) => oklch(0.63 0.258 29.23 / 0.5)
+@function to-color($color) {
   $oklch: color.to-space($color, oklch);
 
   // Extract and round channels
@@ -95,8 +96,8 @@
 /// @example
 ///   to-opacity("primary", "text") => oklch(from var(--cx-primary) l c h / var(--cx-text-opacity, 1))
 ///   to-opacity("link-color", "bg") => oklch(from var(--cx-link-color) l c h / var(--cx-bg-opacity, 1))
-@function to-opacity($identifier, $target) {
-  @return #{"oklch(from var(--#{$prefix}#{$identifier}) l c h / #{$target})"};
+@function to-opacity($color, $opacity) {
+  @return #{"oklch(from #{$color} l c h / #{$opacity})"};
 }
 
 

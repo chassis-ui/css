@@ -29,7 +29,7 @@
 }
 
 .skeleton-wave {
-  mask-image: linear-gradient(135deg, $black 40%, rgba(0, 0, 0, #{calc((1 - var(--#{$prefix}skeleton-opacity-min, #{$skeleton-opacity-min})))}) 50%, $black 60%);
+  mask-image: linear-gradient(135deg, $black 40%, #{to-opacity($black, #{calc((1 - var(--#{$prefix}skeleton-opacity-min, #{$skeleton-opacity-min})))})} 50%, $black 60%);
   mask-size: 200% 100%;
   animation: skeleton-wave 2s linear infinite;
 }

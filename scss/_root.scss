@@ -4,21 +4,21 @@
 
   // Generate color variables
   @each $name, $value in $context-colors {
-    --#{$prefix}#{$name}: #{to-oklch($value)};
+    --#{$prefix}#{$name}: #{to-color($value)};
     // --#{$prefix}#{$name}: #{clean-oklch($value)};
     // --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
   }
   @each $name, $value in $contrast-colors {
-    --#{$prefix}#{$name}: #{to-oklch($value)};
+    --#{$prefix}#{$name}: #{to-color($value)};
     // --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
   }
   @each $name, $value in $base-palette {
-    --#{$prefix}#{$name}: #{to-oklch($value)};
+    --#{$prefix}#{$name}: #{to-color($value)};
     // --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
   }
   @each $name, $value in $context-palette {
     // --#{$prefix}#{$name}: #{color.to-space($value, oklch)};
-    --#{$prefix}#{$name}: #{to-oklch($value)};
+    --#{$prefix}#{$name}: #{to-color($value)};
     // @if not str-index($name, "subtle") and not str-index($name, "slight") {
     //   --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
     // }
@@ -154,19 +154,15 @@
     // scss-docs-start root-dark-mode-vars
     @each $name, $value in $context-colors-dark {
       --#{$prefix}#{$name}: #{$value};
-      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
     }
     @each $name, $value in $contrast-colors-dark {
       --#{$prefix}#{$name}: #{$value};
-      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
     }
     @each $name, $value in $context-palette-dark {
       --#{$prefix}#{$name}: #{$value};
-      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
     }
     @each $name, $value in $body-colors-dark {
       --#{$prefix}#{$name}: #{$value};
-      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
     }
 
     @include body-colors();
