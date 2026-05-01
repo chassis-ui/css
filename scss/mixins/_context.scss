@@ -1,4 +1,14 @@
 // scss-docs-start context-mixin
+/// Activate a named context by mapping all context-scoped CSS custom properties to
+/// a specific color palette. This overwrites every `--cx-context-*` variable on the
+/// element so child components can consume `--cx-context-fg-main`, `--cx-context-bg-main`,
+/// etc. without knowing which palette is active.
+///
+/// @param {String} $context - Context name corresponding to a registered color palette
+///   (e.g., "primary", "success", "neutral")
+/// @example
+///   .my-component { @include context(primary); }
+///   // => --cx-context-fg-main: var(--cx-primary-fg-main); etc.
 @mixin context($context) {
   --#{$prefix}context-base-color: var(--#{$prefix}#{$context}-base-color);
   --#{$prefix}context-contrast-color: var(--#{$prefix}#{$context}-contrast-color);
@@ -40,6 +50,13 @@
 }
 // scss-docs-end context-mixin
 // scss-docs-start context-body-mixin
+/// Apply context-aware semantic color variables for standard body-level properties.
+/// Reads from `--cx-context-*` variables (set by `context()`) and falls back to the
+/// global design-token defaults when no context is active.
+///
+/// @example
+///   .card { @include body-colors(); }
+///   // => --cx-fg-color: var(--cx-context-fg-main, var(--cx-fg-main)); etc.
 @mixin body-colors() {
   --#{$prefix}fg-color: var(--#{$prefix}context-fg-main, var(--#{$prefix}fg-main));
   --#{$prefix}bg-color: var(--#{$prefix}context-bg-main, var(--#{$prefix}bg-main));

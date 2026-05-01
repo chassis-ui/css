@@ -1,4 +1,12 @@
 // scss-docs-start caret-mixin
+/// Render a directional caret icon using a CSS mask on a pseudo-element.
+/// The caret is drawn on `::after` for all directions except `start`, which uses `::before`.
+///
+/// @param {String} $direction [down] - Caret direction: `down`, `up`, `end`, or `start`
+/// @param {String} $icon [var(--cx-caret-icon, $caret-icon)] - Mask image for the caret
+/// @param {Number|String} $size [var(--cx-caret-size, $caret-size)] - Width and height of the caret
+/// @param {Color|String} $color [var(--cx-caret-color, $caret-color)] - Background color applied through the mask
+/// @param {Number|String} $vertical-align [$caret-vertical-align] - Vertical alignment of the pseudo-element
 @mixin caret(
   $direction: down,
   $icon: var(--#{$prefix}caret-icon, $caret-icon),

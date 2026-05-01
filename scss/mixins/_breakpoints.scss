@@ -6,14 +6,16 @@
 //
 // The map defined in the `$grid-breakpoints` global variable is used as the `$breakpoints` argument by default.
 
-// Name of the next breakpoint, or null for the last breakpoint.
-//
-//    >> breakpoint-next(small)
-//    md
-//    >> breakpoint-next(sm, (xsmall: 0, small: 576px, medium: 768px, large: 992px, xlarge: 1200px, 2xlarge: 1400px))
-//    md
-//    >> breakpoint-next(sm, $breakpoint-names: (xsmall sm medium lg xl xxl))
-//    md
+/// Name of the next breakpoint, or `null` for the last breakpoint.
+///
+/// @param {String} $name - Breakpoint name (e.g., "small", "medium")
+/// @param {Map} $breakpoints [$grid-breakpoints] - Breakpoint map
+/// @param {List} $breakpoint-names [map-keys($breakpoints)] - Ordered list of breakpoint names
+/// @return {String|null} - Name of the next breakpoint, or `null` if `$name` is the last
+/// @example
+///   breakpoint-next(small)   => medium
+///   breakpoint-next(xlarge)  => 2xlarge
+///   breakpoint-next(2xlarge) => null
 @function breakpoint-next($name, $breakpoints: $grid-breakpoints, $breakpoint-names: map-keys($breakpoints)) {
   $n: index($breakpoint-names, $name);
   @if not $n {
@@ -22,40 +24,65 @@
   @return if($n < length($breakpoint-names), nth($breakpoint-names, $n + 1), null);
 }
 
-// Minimum breakpoint width. Null for the smallest (first) breakpoint.
-//
-//    >> breakpoint-min(sm, (xsmall: 0, small: 576px, medium: 768px, large: 992px, xlarge: 1200px, 2xlarge: 1400px))
-//    576px
+/// Minimum breakpoint width, or `null` for the smallest (first) breakpoint.
+///
+/// @param {String} $name - Breakpoint name
+/// @param {Map} $breakpoints [$grid-breakpoints] - Breakpoint map
+/// @return {Number|null} - Minimum width in `px`, or `null` for the smallest breakpoint
+/// @example
+///   breakpoint-min(xsmall, (...)) => null
+///   breakpoint-min(small, (...))  => 576px
+///   breakpoint-min(medium, (...)) => 768px
 @function breakpoint-min($name, $breakpoints: $grid-breakpoints) {
   $min: map-get($breakpoints, $name);
   @return if($min != 0, $min, null);
 }
 
-// Maximum breakpoint width.
-// The maximum value is reduced by 0.02px to work around the limitations of
-// `min-` and `max-` prefixes and viewports with fractional widths.
-// See https://www.w3.org/TR/mediaqueries-4/#mq-min-max
-// Uses 0.02px rather than 0.01px to work around a current rounding bug in Safari.
-// See https://bugs.webkit.org/show_bug.cgi?id=178261
-//
-//    >> breakpoint-max(medium, (xsmall: 0, small: 576px, medium: 768px, large: 992px, xlarge: 1200px, 2xlarge: 1400px))
-//    767.98px
+/// Maximum breakpoint width, or `null` for the largest breakpoint.
+/// The maximum value is reduced by 0.02px to work around limitations of `min-`/`max-` prefixes
+/// and viewports with fractional widths. Uses 0.02px rather than 0.01px to work around a
+/// rounding bug in Safari. See https://bugs.webkit.org/show_bug.cgi?id=178261
+///
+/// @param {String} $name - Breakpoint name
+/// @param {Map} $breakpoints [$grid-breakpoints] - Breakpoint map
+/// @return {Number|null} - Maximum width in `px` (reduced by 0.02), or `null` for the largest breakpoint
+/// @example
+///   breakpoint-max(medium, (...)) => 767.98px
+///   breakpoint-max(large, (...))  => 991.98px
+///   breakpoint-max(2xlarge, (...)) => null
 @function breakpoint-max($name, $breakpoints: $grid-breakpoints) {
   $max: map-get($breakpoints, $name);
   @return if($max and $max > 0, $max - .02, null);
 }
 
-// Returns a blank string if smallest breakpoint, otherwise returns the name with a dash in front.
-// Useful for making responsive utilities.
-//
-//    >> breakpoint-infix(xsmall, (xsmall: 0, small: 576px, medium: 768px, large: 992px, xlarge: 1200px, 2xlarge: 1400px))
-//    ""  (Returns a blank string)
-//    >> breakpoint-infix(small, (xsmall: 0, small: 576px, medium: 768px, large: 992px, xlarge: 1200px, 2xlarge: 1400px))
-//    "-small"
+/// Returns a blank string for the smallest breakpoint, otherwise returns the name
+/// with a trailing dash (Bootstrap-style infix). e.g. `"-large"`.
+///
+/// @deprecated Use `breakpoint-prefix()` instead, which returns a Tailwind-style
+///   colon prefix (e.g. `"large\:"`) compatible with the prefix-first naming convention.
+///
+/// @param {String} $name - Breakpoint name
+/// @param {Map} $breakpoints [$grid-breakpoints] - Breakpoint map
+/// @return {String} - Empty string for smallest breakpoint, otherwise `"-{name}"`
+/// @example
+///   breakpoint-infix(xsmall, (...)) => ""
+///   breakpoint-infix(large, (...))  => "-large"
 @function breakpoint-infix($name, $breakpoints: $grid-breakpoints) {
   @return if(breakpoint-min($name, $breakpoints) == null, "", "-#{$name}");
 }
 
+/// Returns a blank string for the smallest breakpoint, otherwise returns the name
+/// with a trailing escaped colon (Tailwind-style prefix). e.g. `"large\:"`.
+/// Handles numeric-starting breakpoint names (e.g. `2xlarge`) by escaping the
+/// leading digit to produce a valid CSS class name.
+///
+/// @param {String} $name - Breakpoint name
+/// @param {Map} $breakpoints [$grid-breakpoints] - Breakpoint map
+/// @return {String} - Empty string for smallest breakpoint, otherwise `"{name}\:"`
+/// @example
+///   breakpoint-prefix(xsmall, (...)) => ""
+///   breakpoint-prefix(large, (...))  => "large\:"
+///   breakpoint-prefix(2xlarge, (...)) => "\32 xlarge\:"
 @function breakpoint-prefix($name, $breakpoints: $grid-breakpoints) {
   $infix: if(breakpoint-min($name, $breakpoints) == null, "", "#{$name}\\:");
   @if $infix != "" and str-slice(#{$name}, 1, 1) == "2" {
@@ -66,8 +93,16 @@
 }
 
 
-// Media of at least the minimum breakpoint width. No query for the smallest breakpoint.
-// Makes the @content apply to the given breakpoint and wider.
+/// Apply styles for screens at least as wide as the given breakpoint.
+/// No wrapping media query is emitted for the smallest (`xsmall`) breakpoint —
+/// the `@content` block is output unconditionally.
+///
+/// @param {String} $name - Breakpoint name (e.g., "medium", "large")
+/// @param {Map} $breakpoints [$grid-breakpoints] - Breakpoint map
+/// @content Styles to apply at this breakpoint and wider
+/// @example
+///   @include media-breakpoint-up(medium) { ... }
+///   // => @media (min-width: 768px) { ... }
 @mixin media-breakpoint-up($name, $breakpoints: $grid-breakpoints) {
   $min: breakpoint-min($name, $breakpoints);
   @if $min {
@@ -79,8 +114,16 @@
   }
 }
 
-// Media of at most the maximum breakpoint width. No query for the largest breakpoint.
-// Makes the @content apply to the given breakpoint and narrower.
+/// Apply styles for screens no wider than the given breakpoint.
+/// No wrapping media query is emitted for the largest (`2xlarge`) breakpoint —
+/// the `@content` block is output unconditionally.
+///
+/// @param {String} $name - Breakpoint name (e.g., "small", "medium")
+/// @param {Map} $breakpoints [$grid-breakpoints] - Breakpoint map
+/// @content Styles to apply at this breakpoint and narrower
+/// @example
+///   @include media-breakpoint-down(medium) { ... }
+///   // => @media (max-width: 767.98px) { ... }
 @mixin media-breakpoint-down($name, $breakpoints: $grid-breakpoints) {
   $max: breakpoint-max($name, $breakpoints);
   @if $max {
@@ -92,8 +135,16 @@
   }
 }
 
-// Media that spans multiple breakpoint widths.
-// Makes the @content apply between the min and max breakpoints
+/// Apply styles for screens between two breakpoints (inclusive on both ends).
+/// Falls back to `media-breakpoint-up` or `media-breakpoint-down` when one bound is null.
+///
+/// @param {String} $lower - Lower bound breakpoint name
+/// @param {String} $upper - Upper bound breakpoint name
+/// @param {Map} $breakpoints [$grid-breakpoints] - Breakpoint map
+/// @content Styles to apply between the two breakpoints
+/// @example
+///   @include media-breakpoint-between(small, large) { ... }
+///   // => @media (min-width: 576px) and (max-width: 991.98px) { ... }
 @mixin media-breakpoint-between($lower, $upper, $breakpoints: $grid-breakpoints) {
   $min: breakpoint-min($lower, $breakpoints);
   $max: breakpoint-max($upper, $breakpoints);
@@ -113,9 +164,15 @@
   }
 }
 
-// Media between the breakpoint's minimum and maximum widths.
-// No minimum for the smallest breakpoint, and no maximum for the largest one.
-// Makes the @content apply only to the given breakpoint, not viewports any wider or narrower.
+/// Apply styles for a single breakpoint only (min-width and max-width bounded).
+/// No media query bounds are emitted for the smallest or largest breakpoints.
+///
+/// @param {String} $name - Breakpoint name
+/// @param {Map} $breakpoints [$grid-breakpoints] - Breakpoint map
+/// @content Styles to apply only at this breakpoint
+/// @example
+///   @include media-breakpoint-only(medium) { ... }
+///   // => @media (min-width: 768px) and (max-width: 991.98px) { ... }
 @mixin media-breakpoint-only($name, $breakpoints: $grid-breakpoints) {
   $min:  breakpoint-min($name, $breakpoints);
   $next: breakpoint-next($name, $breakpoints);

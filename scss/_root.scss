@@ -1,3 +1,11 @@
+//
+// CSS Custom Properties
+//
+// Generates all :root-level CSS custom properties from the Chassis token system.
+// Includes color variables, semantic context tokens, and dark mode overrides.
+// Dark mode values are applied via the color-mode() mixin.
+//
+
 @use "sass:color";
 :root,
 [data-cx-theme="light"] {
@@ -105,7 +113,6 @@
   // scss-docs-end root-body-variables
 
   --#{$prefix}icon-size: #{$icon-size};
-  //--#{$prefix}border-width: var(--#{$prefix}border-width-medium);
 
   --#{$prefix}link-decoration: #{$link-decoration};
   @if $link-hover-decoration != null {
@@ -113,14 +120,13 @@
   }
   // scss-docs-end root-body-variables
 
-  // // scss-docs-start root-border-var
+  // scss-docs-start root-border-var
   --#{$prefix}border-width: #{$border-width};
   --#{$prefix}border-style: #{$border-style};
   --#{$prefix}border-color: #{$border-color};
   --#{$prefix}border-radius: #{$border-radius};
-  // // scss-docs-end root-border-var
+  // scss-docs-end root-border-var
 
-  //--#{$prefix}box-shadow: #{$box-shadow};
   --#{$prefix}box-shadow-small: #{$box-shadow-small};
   --#{$prefix}box-shadow-medium: #{$box-shadow-medium};
   --#{$prefix}box-shadow-large: #{$box-shadow-large};
@@ -140,7 +146,7 @@
     --#{$prefix}root-font-size: #{$font-size-root};
   }
   @if $text-align != null {
-    --#{$prefix}text-align: #{$text-aligm};
+    --#{$prefix}text-align: #{$text-align};
   }
 
   --#{$prefix}heading-color: var(--#{$prefix}fg-main);

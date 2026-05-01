@@ -2,6 +2,10 @@
 //
 // Generate context grid columns with these mixins.
 
+/// Create a flex row with negative margins to compensate for column gutters.
+/// Sets CSS custom properties `--cx-gutter-x` and `--cx-gutter-y`.
+///
+/// @param {Number} $gutter [$grid-gutter-width] - Horizontal gutter width
 @mixin make-row($gutter: $grid-gutter-width) {
   --#{$prefix}gutter-x: #{$gutter};
   --#{$prefix}gutter-y: 0;
@@ -13,6 +17,8 @@
   margin-left: calc(-.5 * var(--#{$prefix}gutter-x)); // stylelint-disable-line function-disallowed-list
 }
 
+/// Prepare a grid column: set up box-sizing, flex properties, full width, and gutter padding.
+/// Call this before `make-col()` to ensure a column is fully initialized.
 @mixin make-col-ready() {
   // Add box sizing if only the grid is loaded
   box-sizing: if(variable-exists(include-column-box-sizing) and $include-column-box-sizing, border-box, null);
@@ -27,6 +33,10 @@
   margin-top: var(--#{$prefix}gutter-y);
 }
 
+/// Set a column to a specific fraction of the grid, or to grow/shrink freely.
+///
+/// @param {Number|false} $size [false] - Number of columns to span; `false` for a fluid flex column
+/// @param {Number} $columns [$grid-columns] - Total number of grid columns
 @mixin make-col($size: false, $columns: $grid-columns) {
   @if $size {
     flex: 0 0 auto;
@@ -38,21 +48,24 @@
   }
 }
 
+/// Set a column to shrink to its content width (`width: auto`).
 @mixin make-col-auto() {
   flex: 0 0 auto;
   width: auto;
 }
 
+/// Push a column to the right by a given number of grid columns using `margin-left`.
+///
+/// @param {Number} $size - Number of columns to offset
+/// @param {Number} $columns [$grid-columns] - Total number of grid columns
 @mixin make-col-offset($size, $columns: $grid-columns) {
   $num: divide($size, $columns);
   margin-left: if($num == 0, 0, percentage($num));
 }
 
-// Row columns
-//
-// Specify on a parent element(e.g., .row) to force immediate children into NN
-// number of columns. Supports wrapping to new lines, but does not do a Masonry
-// style grid.
+/// Force direct children of a flex row into an equal-width column layout.
+///
+/// @param {Number} $count - Number of columns per row
 @mixin row-cols($count) {
   > * {
     flex: 0 0 auto;
@@ -60,11 +73,11 @@
   }
 }
 
-// Framework grid generation
-//
-// Used only by Bootstrap to generate the correct number of grid classes given
-// any value of `$grid-columns`.
-
+/// Generate all responsive column, offset, and row-cols utility classes for every breakpoint.
+///
+/// @param {Number} $columns [$grid-columns] - Number of grid columns
+/// @param {Number} $gutter [$grid-gutter-width] - Gutter width
+/// @param {Map} $breakpoints [$grid-breakpoints] - Breakpoint map
 @mixin make-grid-columns($columns: $grid-columns, $gutter: $grid-gutter-width, $breakpoints: $grid-breakpoints) {
   @each $breakpoint in map-keys($breakpoints) {
     $infix: breakpoint-prefix($breakpoint, $breakpoints);

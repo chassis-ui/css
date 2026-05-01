@@ -1,5 +1,21 @@
-// Utility generator
-// Used to generate utilities & print utilities
+/// Generate a utility class (or set of classes) from a utility configuration map.
+/// Iterates over the utility's `values` map and emits one CSS rule per value,
+/// optionally scoped to a responsive infix, CSS variable, local variables, states,
+/// and RFS scaling. Used internally by `_utilities-api.scss` and the utility maps in
+/// `utilities/`.
+///
+/// @param {Map} $utility - Utility configuration map with the following keys:
+///   - `property` {String|List} - CSS property name(s) to set (required)
+///   - `values` {Map|List} - Map of class-name-suffix → value, or a plain list (required)
+///   - `class` {String} - Override for the generated class name prefix (optional)
+///   - `css-variable-name` {String} - If set, emits a CSS custom property instead of a plain property (optional)
+///   - `local-vars` {Map} - Map of local CSS custom properties to set on each rule (optional)
+///   - `state` {List} - Pseudo-state selectors to add (e.g., `hover focus`) (optional)
+///   - `css-var` {Boolean} - When `true`, sets the value as a CSS variable on `:root` (optional)
+///   - `rfs` {Boolean} - When `true`, applies RFS fluid scaling to numeric values (optional)
+///   - `rtl` {Boolean} - When `false`, wraps the rule in a `/* rtl:begin:ignore */` block (optional)
+/// @param {String} $infix [""] - Responsive class name infix (e.g., `"large\\:"` from `breakpoint-prefix()`)
+/// @param {Boolean} $is-rfs-media-query [false] - When `true`, suppresses redundant RFS output inside an RFS media query
 @mixin generate-utility($utility, $infix: "", $is-rfs-media-query: false) {
   $values: map-get($utility, values);
 

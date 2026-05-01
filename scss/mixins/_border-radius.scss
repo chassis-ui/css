@@ -1,7 +1,13 @@
 // stylelint-disable property-disallowed-list
 // Single side border-radius
 
-// Helper function to replace negative values with 0
+/// Replace any negative values in a radius list with `0`.
+/// Ensures `border-radius` shorthand values never produce negative results,
+/// which is invalid CSS.
+///
+/// @access private
+/// @param {List|Number} $radius - A single radius value or list of radius values
+/// @return {List} - Same list with negative numbers replaced by `0`
 @function valid-radius($radius) {
   $return: ();
   @each $value in $radius {
@@ -15,6 +21,12 @@
 }
 
 // scss-docs-start border-radius-mixins
+/// Apply `border-radius` when `$enable-rounded-borders` is `true`.
+/// Falls back to `$fallback-border-radius` when rounded borders are disabled
+/// and a fallback is provided.
+///
+/// @param {Number|String} $radius [var(--cx-border-radius)] - Radius value
+/// @param {Number|false} $fallback-border-radius [false] - Fallback radius when rounded borders are disabled
 @mixin border-radius($radius: var(--#{$prefix}border-radius), $fallback-border-radius: false) {
   @if $enable-rounded-borders {
     border-radius: valid-radius($radius);
@@ -24,6 +36,9 @@
   }
 }
 
+/// Apply `border-radius` to the top two corners (top-left and top-right).
+///
+/// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-top-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
     border-top-left-radius: valid-radius($radius);
@@ -31,6 +46,9 @@
   }
 }
 
+/// Apply `border-radius` to the two right (end) corners (top-right and bottom-right).
+///
+/// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-end-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
     border-top-right-radius: valid-radius($radius);
@@ -38,6 +56,9 @@
   }
 }
 
+/// Apply `border-radius` to the two bottom corners (bottom-right and bottom-left).
+///
+/// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-bottom-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
     border-bottom-right-radius: valid-radius($radius);
@@ -45,6 +66,9 @@
   }
 }
 
+/// Apply `border-radius` to the two left (start) corners (top-left and bottom-left).
+///
+/// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-start-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
     border-top-left-radius: valid-radius($radius);
@@ -52,24 +76,36 @@
   }
 }
 
+/// Apply `border-radius` to the top-left corner only.
+///
+/// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-top-start-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
     border-top-left-radius: valid-radius($radius);
   }
 }
 
+/// Apply `border-radius` to the top-right corner only.
+///
+/// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-top-end-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
     border-top-right-radius: valid-radius($radius);
   }
 }
 
+/// Apply `border-radius` to the bottom-right corner only.
+///
+/// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-bottom-end-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
     border-bottom-right-radius: valid-radius($radius);
   }
 }
 
+/// Apply `border-radius` to the bottom-left corner only.
+///
+/// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-bottom-start-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
     border-bottom-left-radius: valid-radius($radius);

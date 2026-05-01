@@ -1,8 +1,10 @@
-// Deprecate mixin
-//
-// This mixin can be used to deprecate mixins or functions.
-// `$enable-deprecation-messages` is a global variable, `$ignore-warning` is a variable that can be passed to
-// some deprecated mixins to suppress the warning (for example if the mixin is still be used in the current version of Bootstrap)
+/// Emit a Sass `@warn` deprecation message unless suppressed.
+/// Use on mixins and functions that have been replaced by a newer API.
+///
+/// @param {String} $name - Name of the deprecated feature (e.g., "`list-item-variant()`")
+/// @param {String} $deprecate-version - Version when it was deprecated (e.g., "v1.2.0")
+/// @param {String} $remove-version - Version when it will be removed (e.g., "v2.0.0")
+/// @param {Boolean} $ignore-warning [false] - Pass `true` to silence the warning
 @mixin deprecate($name, $deprecate-version, $remove-version, $ignore-warning: false) {
   @if ($enable-deprecation-messages != false and $ignore-warning != true) {
     @warn "#{$name} has been deprecated as of #{$deprecate-version}. It will be removed entirely in #{$remove-version}.";
