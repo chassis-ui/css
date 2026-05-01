@@ -56,6 +56,16 @@
   @return if(breakpoint-min($name, $breakpoints) == null, "", "-#{$name}");
 }
 
+@function breakpoint-prefix($name, $breakpoints: $grid-breakpoints) {
+  $infix: if(breakpoint-min($name, $breakpoints) == null, "", "#{$name}\\:");
+  @if $infix != "" and str-slice(#{$name}, 1, 1) == "2" {
+    $escaped: "\\32 " + str-slice(#{$name}, 2);
+    @return "#{$escaped}\\:";
+  }
+  @return $infix;
+}
+
+
 // Media of at least the minimum breakpoint width. No query for the smallest breakpoint.
 // Makes the @content apply to the given breakpoint and wider.
 @mixin media-breakpoint-up($name, $breakpoints: $grid-breakpoints) {

@@ -122,9 +122,9 @@
 
 @each $breakpoint in map-keys($grid-breakpoints) {
   @include media-breakpoint-up($breakpoint) {
-    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+    $infix: breakpoint-prefix($breakpoint, $grid-breakpoints);
 
-    .list-horizontal#{$infix} {
+    .#{$infix}list-horizontal {
       flex-direction: row;
 
       > .list-item {

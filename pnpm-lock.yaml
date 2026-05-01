@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@chassis-ui/docs': link:../chassis-website/packages/docs
+
 importers:
 
   .:
@@ -24,8 +27,8 @@ importers:
         specifier: ^3.7.2
         version: 3.7.2
       '@chassis-ui/docs':
-        specifier: ^0.1.10
-        version: 0.1.10(astro@5.18.1(@types/node@22.19.17)(rollup@4.60.2)(sass@1.99.0)(terser@5.46.2)(typescript@5.9.3)(yaml@2.8.3))
+        specifier: link:../chassis-website/packages/docs
+        version: link:../chassis-website/packages/docs
       '@chassis-ui/icons':
         specifier: github:chassis-ui/icons#app/docs
         version: https://codeload.github.com/chassis-ui/icons/tar.gz/c887bda2aecbc96e6fc20cb9564463651fdede31
@@ -492,11 +495,6 @@ packages:
   '@capsizecss/unpack@4.0.0':
     resolution: {integrity: sha512-VERIM64vtTP1C4mxQ5thVT9fK0apjPFobqybMtA1UdUujWka24ERHbRHFGmpbbhp73MhV+KSsHQH9C6uOTdEQA==}
     engines: {node: '>=18'}
-
-  '@chassis-ui/docs@0.1.10':
-    resolution: {integrity: sha512-HP/tjC1l2o+AUl1qoCKbyFzb3zlOjNcfLvCHvvtNQuVxJUUGE3c0Sdt8G/t7GNZ4XmacmeDYcEYLiL1yYmaP8w==}
-    peerDependencies:
-      astro: ^5.0.0
 
   '@chassis-ui/icons@https://codeload.github.com/chassis-ui/icons/tar.gz/c887bda2aecbc96e6fc20cb9564463651fdede31':
     resolution: {tarball: https://codeload.github.com/chassis-ui/icons/tar.gz/c887bda2aecbc96e6fc20cb9564463651fdede31}
@@ -6082,10 +6080,6 @@ snapshots:
   '@capsizecss/unpack@4.0.0':
     dependencies:
       fontkitten: 1.0.3
-
-  '@chassis-ui/docs@0.1.10(astro@5.18.1(@types/node@22.19.17)(rollup@4.60.2)(sass@1.99.0)(terser@5.46.2)(typescript@5.9.3)(yaml@2.8.3))':
-    dependencies:
-      astro: 5.18.1(@types/node@22.19.17)(rollup@4.60.2)(sass@1.99.0)(terser@5.46.2)(typescript@5.9.3)(yaml@2.8.3)
 
   '@chassis-ui/icons@https://codeload.github.com/chassis-ui/icons/tar.gz/c887bda2aecbc96e6fc20cb9564463651fdede31': {}
 

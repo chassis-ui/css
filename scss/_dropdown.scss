@@ -103,9 +103,9 @@
 
 @each $breakpoint in map-keys($grid-breakpoints) {
   @include media-breakpoint-up($breakpoint) {
-    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+    $infix: breakpoint-prefix($breakpoint, $grid-breakpoints);
 
-    .dropdown-menu#{$infix}-start {
+    .#{$infix}dropdown-menu-start {
       --cx-position: start;
 
       &[data-cx-popper] {
@@ -114,7 +114,7 @@
       }
     }
 
-    .dropdown-menu#{$infix}-end {
+    .#{$infix}dropdown-menu-end {
       --cx-position: end;
 
       &[data-cx-popper] {
