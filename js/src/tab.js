@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis - CSS tab.js
+ * Chassis CSS tab.js
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

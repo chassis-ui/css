@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis - CSS dom/data.js
+ * Chassis CSS dom/data.js
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

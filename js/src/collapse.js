@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis - CSS collapse.js
+ * Chassis CSS collapse.js
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

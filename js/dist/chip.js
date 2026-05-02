@@ -11,7 +11,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS Chip.js
+   * Chassis CSS Chip.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
