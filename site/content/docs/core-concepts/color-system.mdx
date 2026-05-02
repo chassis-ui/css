@@ -1,6 +1,6 @@
 ---
 title: Color System
-description: The Chassis - CSS provides a comprehensive approach to managing colors in UI design. Colors are categorized and defined based on area of use, and contextual palettes are created to ensure consistency and clarity across the user interface.
+description: The Chassis CSS provides a comprehensive approach to managing colors in UI design. Colors are categorized and defined based on area of use, and contextual palettes are created to ensure consistency and clarity across the user interface.
 toc: true
 ---
 import { getData } from '@libs/data'
@@ -47,7 +47,7 @@ These **11** colors are named as `context colors`.
   {
     getData('context-colors').map((color) => {
       return (
-        <div class="col-medium-4">
+        <div class="medium:col-4">
           <div class={`p-medium m-0 bg-${color.name} fg-contrast rounded-small`}>--cx-{color.name}</div>
         </div>
       )
@@ -70,8 +70,8 @@ These colors are created using `base color` and `opacity` references. This is do
 ```sass
 // Light theme
 $default-fg-main:      $black;
-$default-fg-subtle:    rgba($default-fg-main-rgb, $opacity-fg-subtle);
-$default-fg-slight:    rgba($default-fg-main-rgb, $opacity-fg-slight);
+$default-fg-subtle:    to-opacity($default-fg-main, $opacity-fg-subtle);
+$default-fg-slight:    to-opacity($default-fg-main, $opacity-fg-slight);
 $default-bg-main:      $white;
 $default-bg-even:      $neutral-05;
 $default-bg-evident:   $neutral-10;
@@ -126,7 +126,7 @@ It is also possible to easily switch between component styles by changing body c
 
 ## Summary
 
-The Chassis - CSS's color system provides a structured approach to managing colors in a UI design. By defining base colors and context colors, and creating context palettes, it ensures consistency and flexibility. For more details, check out the [documentation]([[docsref:/customize/color]]) pages for customizing colors or visit the [color]([[docsref:/utilities/colors]]) and [background]([[docsref:/utilities/background]]) utility pages for more examples. Additionally, see the [Context Class]([[docsref:/core-concepts/context-class]]) page for more explanation, code examples, and tips for creating your components.
+The Chassis CSS's color system provides a structured approach to managing colors in a UI design. By defining base colors and context colors, and creating context palettes, it ensures consistency and flexibility. For more details, check out the [documentation]([[docsref:/customize/color]]) pages for customizing colors or visit the [color]([[docsref:/utilities/colors]]) and [background]([[docsref:/utilities/background]]) utility pages for more examples. Additionally, see the [Context Class]([[docsref:/core-concepts/context-class]]) page for more explanation, code examples, and tips for creating your components.
 
 
 ### Base Colors:

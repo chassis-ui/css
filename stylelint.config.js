@@ -21,7 +21,12 @@ const forbiddenGenericClasses = [
   'dark',
   'basic',
   'solid',
-  'outline'
+  'outline',
+  'fluid',
+  'flush',
+  'plain',
+  'horizontal',
+  'vertical'
 ]
 
 // This maps the words into the regex format: /(^|\s)\.word($|\s)/

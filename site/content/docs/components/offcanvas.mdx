@@ -197,24 +197,24 @@ Responsive offcanvas classes hide content outside the viewport from a specified 
 | Class | Behavior |
 | --- | --- |
 | `.offcanvas` | Always behaves as offcanvas |
-| `.offcanvas-small` | Offcanvas below small breakpoint |
-| `.offcanvas-medium` | Offcanvas below medium breakpoint |
-| `.offcanvas-large` | Offcanvas below large breakpoint |
-| `.offcanvas-xlarge` | Offcanvas below xlarge breakpoint |
-| `.offcanvas-2xlarge` | Offcanvas below 2xlarge breakpoint |
+| `.small:offcanvas` | Offcanvas below small breakpoint |
+| `.medium:offcanvas` | Offcanvas below medium breakpoint |
+| `.large:offcanvas` | Offcanvas below large breakpoint |
+| `.xlarge:offcanvas` | Offcanvas below xlarge breakpoint |
+| `.2xlarge:offcanvas` | Offcanvas below 2xlarge breakpoint |
 </CxTable>
 
-<Example code={`<button class="button primary d-large-none" type="button" data-cx-toggle="offcanvas" data-cx-target="#offcanvasResponsive" aria-controls="offcanvasResponsive">Toggle offcanvas</button>
+<Example code={`<button class="button primary large:d-none" type="button" data-cx-toggle="offcanvas" data-cx-target="#offcanvasResponsive" aria-controls="offcanvasResponsive">Toggle offcanvas</button>
 
-  <div class="alert alert-info d-none d-large-block">Resize your browser to show the responsive offcanvas toggle.</div>
+  <div class="alert alert-info d-none large:d-block">Resize your browser to show the responsive offcanvas toggle.</div>
 
-  <div class="offcanvas-large offcanvas-end" tabindex="-1" id="offcanvasResponsive" aria-labelledby="offcanvasResponsiveLabel">
+  <div class="large:offcanvas offcanvas-end" tabindex="-1" id="offcanvasResponsive" aria-labelledby="offcanvasResponsiveLabel">
     <div class="offcanvas-header">
       <h5 class="offcanvas-title" id="offcanvasResponsiveLabel">Responsive offcanvas</h5>
       <button type="button" class="close-button" data-cx-dismiss="offcanvas" data-cx-target="#offcanvasResponsive" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-      <p class="mb-0">This is content within an <code>.offcanvas-large</code>.</p>
+      <p class="mb-0">This is content within an <code>.large:offcanvas</code>.</p>
     </div>
   </div>`} />
 
@@ -368,7 +368,7 @@ Below is an offcanvas example that is shown by default (via `.show` on `.offcanv
       <button type="button" class="close-button" data-cx-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-      Content for the offcanvas goes here. You can place just about any Chassis - CSS component or custom elements here.
+      Content for the offcanvas goes here. You can place just about any Chassis CSS component or custom elements here.
     </div>
   </div>`} />
 
@@ -466,28 +466,28 @@ When backdrop is set to static, the offcanvas will not close when clicking outsi
 
 <AddedIn version="5.2.0" />
 
-Responsive offcanvas classes hide content outside the viewport from a specified breakpoint and down. Above that breakpoint, the contents within will behave as usual. For example, `.offcanvas-large` hides content in an offcanvas below the `lg` breakpoint, but shows the content above the `lg` breakpoint. Responsive offcanvas classes are available for each breakpoint.
+Responsive offcanvas classes hide content outside the viewport from a specified breakpoint and down. Above that breakpoint, the contents within will behave as usual. For example, `.large:offcanvas` hides content in an offcanvas below the `lg` breakpoint, but shows the content above the `lg` breakpoint. Responsive offcanvas classes are available for each breakpoint.
 
 - `.offcanvas`
-- `.offcanvas-small`
-- `.offcanvas-medium`
-- `.offcanvas-large`
-- `.offcanvas-xlarge`
-- `.offcanvas-2xlarge`
+- `.small:offcanvas`
+- `.medium:offcanvas`
+- `.large:offcanvas`
+- `.xlarge:offcanvas`
+- `.2xlarge:offcanvas`
 
 To make a responsive offcanvas, replace the `.offcanvas` base class with a responsive variant and ensure your close button has an explicit `data-cx-target`.
 
-<Example code={`<button class="button primary d-large-none" type="button" data-cx-toggle="offcanvas" data-cx-target="#offcanvasResponsive" aria-controls="offcanvasResponsive">Toggle offcanvas</button>
+<Example code={`<button class="button primary large:d-none" type="button" data-cx-toggle="offcanvas" data-cx-target="#offcanvasResponsive" aria-controls="offcanvasResponsive">Toggle offcanvas</button>
 
-  <div class="alert alert-info d-none d-large-block">Resize your browser to show the responsive offcanvas toggle.</div>
+  <div class="alert alert-info d-none large:d-block">Resize your browser to show the responsive offcanvas toggle.</div>
 
-  <div class="offcanvas-large offcanvas-end" tabindex="-1" id="offcanvasResponsive" aria-labelledby="offcanvasResponsiveLabel">
+  <div class="large:offcanvas offcanvas-end" tabindex="-1" id="offcanvasResponsive" aria-labelledby="offcanvasResponsiveLabel">
     <div class="offcanvas-header">
       <h5 class="offcanvas-title" id="offcanvasResponsiveLabel">Responsive offcanvas</h5>
       <button type="button" class="close-button" data-cx-dismiss="offcanvas" data-cx-target="#offcanvasResponsive" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-      <p class="mb-0">This is content within an <code>.offcanvas-large</code>.</p>
+      <p class="mb-0">This is content within an <code>.large:offcanvas</code>.</p>
     </div>
   </div>`} />
 
@@ -633,7 +633,7 @@ const cxOffcanvas = new chassis.Offcanvas('#myOffcanvas')
 
 ### Events
 
-Chassis - CSS’s offcanvas class exposes a few events for hooking into offcanvas functionality.
+Chassis CSS’s offcanvas class exposes a few events for hooking into offcanvas functionality.
 
 <CxTable>
 | Event type | Description |

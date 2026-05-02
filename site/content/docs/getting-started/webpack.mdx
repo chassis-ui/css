@@ -1,6 +1,6 @@
 ---
-title: Chassis - CSS and Webpack
-description: The official guide for how to include and bundle Chassis - CSS’s CSS and JavaScript in your project using Webpack.
+title: Chassis CSS and Webpack
+description: The official guide for how to include and bundle Chassis CSS’s CSS and JavaScript in your project using Webpack.
 toc: true
 ---
 
@@ -15,7 +15,7 @@ toc: true
 
 ## Setup
 
-We’re building a Webpack project with Chassis - CSS from scratch, so there are some prerequisites and upfront steps before we can really get started. This guide requires you to have Node.js installed and some familiarity with the terminal.
+We’re building a Webpack project with Chassis CSS from scratch, so there are some prerequisites and upfront steps before we can really get started. This guide requires you to have Node.js installed and some familiarity with the terminal.
 
 1. **Create a project folder and set up npm.** We'll create the `my-project` folder and initialize npm with the `-y` argument to avoid it asking us all the interactive questions.
 
@@ -36,7 +36,7 @@ We’re building a Webpack project with Chassis - CSS from scratch, so there are
    npm i --save chassis-css @popperjs/core
    ```
 
-4. **Install additional dependencies.** In addition to Webpack and Chassis, we need a few more dependencies to properly import and bundle Chassis - CSS’s CSS and JS with Webpack. These include Sass, some loaders, and Autoprefixer.
+4. **Install additional dependencies.** In addition to Webpack and Chassis, we need a few more dependencies to properly import and bundle Chassis CSS’s CSS and JS with Webpack. These include Sass, some loaders, and Autoprefixer.
 
    ```sh
    npm i --save-dev autoprefixer css-loader postcss-loader sass sass-loader style-loader
@@ -108,18 +108,18 @@ With dependencies installed and our project folder ready for us to start coding,
      <head>
        <meta charset="utf-8">
        <meta name="viewport" content="width=device-width, initial-scale=1">
-       <title>Chassis - CSS w/ Webpack</title>
+       <title>Chassis CSS w/ Webpack</title>
      </head>
      <body>
        <div class="container py-large px-medium mx-auto">
-         <h1>Hello, Chassis - CSS and Webpack!</h1>
+         <h1>Hello, Chassis CSS and Webpack!</h1>
          <button class="button primary">Primary button</button>
        </div>
      </body>
    </html>
    ```
 
-   We’re including a little bit of Chassis - CSS styling here with the `div class="container"` and `<button>` so that we see when Chassis - CSS’s CSS is loaded by Webpack.
+   We’re including a little bit of Chassis CSS styling here with the `div class="container"` and `<button>` so that we see when Chassis CSS’s CSS is loaded by Webpack.
 
 3. **Now we need an npm script to run Webpack.** Open `package.json` and add the `start` script shown below (you should already have the test script). We'll use this script to start our local Webpack dev server. You can also add a `build` script shown below to build your project.
 
@@ -142,11 +142,11 @@ With dependencies installed and our project folder ready for us to start coding,
    ```
 
 
-In the next and final section to this guide, we'll set up the Webpack loaders and import all of Chassis - CSS’s CSS and JavaScript.
+In the next and final section to this guide, we'll set up the Webpack loaders and import all of Chassis CSS’s CSS and JavaScript.
 
 ## Import Chassis
 
-Importing Chassis - CSS into Webpack requires the loaders we installed in the first section. We’ve installed them with npm, but now Webpack needs to be configured to use them.
+Importing Chassis CSS into Webpack requires the loaders we installed in the first section. We’ve installed them with npm, but now Webpack needs to be configured to use them.
 
 1. **Set up the loaders in `webpack.config.js`.** Your configuration file is now complete and should match the snippet below. The only new part here is the `module` section.
 
@@ -222,22 +222,22 @@ Importing Chassis - CSS into Webpack requires the loaders we installed in the fi
 
    **Note:** Sass deprecation warnings are shown when compiling source Sass files with the latest versions of Dart Sass. This does not prevent compilation or usage of Chassis. We’re [working on a long-term fix]([[config:repo]]/issues/40962), but in the meantime these deprecation notices can be ignored.
 
-2. **Now, let’s import Chassis - CSS’s CSS.** Add the following to `src/scss/styles.scss` to import all of Chassis - CSS’s source Sass.
+2. **Now, let’s import Chassis CSS’s CSS.** Add the following to `src/scss/styles.scss` to import all of Chassis CSS’s source Sass.
 
    ```scss
-   // Import all of Chassis - CSS’s CSS
+   // Import all of Chassis CSS’s CSS
    @import "chassis-css/scss/chassis";
    ```
 
    *You can also import our stylesheets individually if you want. [Read our Sass import docs]([[docsref:/customize/sass#importing]]) for details.*
 
-3. **Next we load the CSS and import Chassis - CSS’s JavaScript.** Add the following to `src/js/main.js` to load the CSS and import all of Chassis - CSS’s JS. Popper will be imported automatically through Chassis.
+3. **Next we load the CSS and import Chassis CSS’s JavaScript.** Add the following to `src/js/main.js` to load the CSS and import all of Chassis CSS’s JS. Popper will be imported automatically through Chassis.
 
    ```js
    // Import our custom CSS
    import '../scss/styles.scss'
 
-   // Import all of Chassis - CSS’s JS
+   // Import all of Chassis CSS’s JS
    import * as chassis from 'chassis-css'
    ```
 
@@ -250,12 +250,12 @@ Importing Chassis - CSS into Webpack requires the loaders we installed in the fi
    import { Tooltip, Toast, Popover } from 'chassis-css'
    ```
 
-   *[Read our JavaScript docs]([[docsref:/getting-started/javascript/]]) for more information on how to use Chassis - CSS’s plugins.*
+   *[Read our JavaScript docs]([[docsref:/getting-started/javascript/]]) for more information on how to use Chassis CSS’s plugins.*
 
-4. **And you’re done! 🎉** With Chassis - CSS’s source Sass and JS fully loaded, your local development server should now look like this:
+4. **And you’re done! 🎉** With Chassis CSS’s source Sass and JS fully loaded, your local development server should now look like this:
 
 
-   Now you can start adding any Chassis - CSS components you want to use. Be sure to [check out the complete Webpack example project](https://github.com/twbs/examples/tree/main/webpack) for how to include additional custom Sass and optimize your build by importing only the parts of Chassis - CSS’s CSS and JS that you need.
+   Now you can start adding any Chassis CSS components you want to use. Be sure to [check out the complete Webpack example project](https://github.com/twbs/examples/tree/main/webpack) for how to include additional custom Sass and optimize your build by importing only the parts of Chassis CSS’s CSS and JS that you need.
 
 ## Production optimizations
 
@@ -318,14 +318,14 @@ After running `npm run build` again, there will be a new file `dist/main.css`, w
      <meta charset="utf-8">
      <meta name="viewport" content="width=device-width, initial-scale=1">
 +    <link rel="stylesheet" href="./main.css">
-     <title>Chassis - CSS w/ Webpack</title>
+     <title>Chassis CSS w/ Webpack</title>
    </head>
    <body>
 ```
 
 ### Extracting SVG files
 
-Chassis - CSS’s CSS includes multiple references to SVG files via inline `data:` URIs. If you define a Content Security Policy for your project that blocks `data:` URIs for images, then these SVG files will not load. You can get around this problem by extracting the inline SVG files using Webpack’s asset modules feature.
+Chassis CSS’s CSS includes multiple references to SVG files via inline `data:` URIs. If you define a Content Security Policy for your project that blocks `data:` URIs for images, then these SVG files will not load. You can get around this problem by extracting the inline SVG files using Webpack’s asset modules feature.
 
 Configure Webpack to extract inline SVG files like this:
 

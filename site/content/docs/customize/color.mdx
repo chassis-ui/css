@@ -1,6 +1,6 @@
 ---
 title: Color
-description: Chassis - CSS is supported by an extensive color system that themes our styles and components. This enables more comprehensive customization and extension for any project.
+description: Chassis CSS is supported by an extensive color system that themes our styles and components. This enables more comprehensive customization and extension for any project.
 toc: true
 ---
 
@@ -11,9 +11,9 @@ import { getSequence } from '@chassis-ui/docs'
 
 <AddedIn version="5.3.0" />
 
-Chassis - CSS’s color palette has continued to expand and become more nuanced in v5.3.0. We’ve added new variables for `secondary` and `tertiary` text and background colors, plus `{color}-bg-subtle`, `{color}-border-subtle`, and `{color}-text-emphasis` for our theme colors. These new colors are available through Sass and CSS variables (but not our color maps or utility classes) with the express goal of making it easier to customize across multiple colors modes like light and dark. These new variables are globally set on `:root` and are adapted for our new dark color mode while our original theme colors remain unchanged.
+Chassis CSS’s color palette has continued to expand and become more nuanced in v5.3.0. We’ve added new variables for `secondary` and `tertiary` text and background colors, plus `{color}-bg-subtle`, `{color}-border-subtle`, and `{color}-text-emphasis` for our theme colors. These new colors are available through Sass and CSS variables (but not our color maps or utility classes) with the express goal of making it easier to customize across multiple colors modes like light and dark. These new variables are globally set on `:root` and are adapted for our new dark color mode while our original theme colors remain unchanged.
 
-Colors ending in `-rgb` provide the `red, green, blue` values for use in `rgb()` and `rgba()` color modes. For example, `rgba(var(--cx-bg-even-rgb), .5)`.
+Colors ending in `-rgb` provide the `red, green, blue` values for backward-compatible use in `rgb()` and `rgba()` color modes. For color opacity effects in custom CSS, prefer the CSS relative color syntax: `oklch(from var(--cx-bg-even) l c h / .5)`.
 
 <Callout type="warning">
 **Heads up!** There’s some potential confusion with our new secondary and tertiary colors, and our existing secondary theme color, as well as our light and dark theme colors. Expect this to be ironed out in v6.
@@ -367,12 +367,12 @@ These new colors are accessible via CSS variables and utility classes—like `--
 
 ### Theme colors
 
-We use a subset of all colors to create a smaller color palette for generating color schemes, also available as Sass variables and a Sass map in Chassis - CSS’s `scss/_variables.scss` file.
+We use a subset of all colors to create a smaller color palette for generating color schemes, also available as Sass variables and a Sass map in Chassis CSS’s `scss/_variables.scss` file.
 
 <div class="row">
   {getData('context-colors').map((contextColor) => {
     return (
-      <div class="col-medium-4">
+      <div class="medium:col-4">
         <div class={`p-medium mb-medium bg-contrast fg-${contextColor.name} rounded-3`}>{contextColor.title}</div>
       </div>
     )
@@ -387,7 +387,7 @@ Check out [our Sass maps and loops docs]([[docsref:/customize/sass#maps-and-loop
 
 ### All colors
 
-All Chassis - CSS colors are available as Sass variables and a Sass map in `scss/_variables.scss` file. To avoid increased file sizes, we don’t create text or background color classes for each of these variables. Instead, we choose a subset of these colors for a [theme palette](#).
+All Chassis CSS colors are available as Sass variables and a Sass map in `scss/_variables.scss` file. To avoid increased file sizes, we don’t create text or background color classes for each of these variables. Instead, we choose a subset of these colors for a [theme palette](#).
 
 Be sure to monitor contrast ratios as you customize colors. As shown below, we’ve added three contrast ratios to each of the main colors—one for the swatch’s current colors, one for against white, and one for against black.
 
@@ -395,7 +395,7 @@ Be sure to monitor contrast ratios as you customize colors. As shown below, we�
   {getData('colors').map((color) => {
     if ((color.name !== "white") && (color.name !== "gray") && (color.name !== "gray-dark")) {
       return (
-        <div class="col-medium-4 mb-medium">
+        <div class="medium:col-4 mb-medium">
           <div class={`p-medium mb-xsmall position-relative swatch-${color.name}`}>
             <strong class="d-block">${color.name}</strong>
             {color.hex}
@@ -411,7 +411,7 @@ Be sure to monitor contrast ratios as you customize colors. As shown below, we�
     }
   })}
 
-  <div class="col-medium-4 mb-medium">
+  <div class="medium:col-4 mb-medium">
     <div class="p-medium mb-xsmall position-relative swatch-gray-500"><strong class="d-block">$gray-500</strong>#adb5bd</div>
     {getData('grays').map((gray) => {
       return (
@@ -420,7 +420,7 @@ Be sure to monitor contrast ratios as you customize colors. As shown below, we�
     })}
   </div>
 
-  <div class="col-medium-4 mb-medium">
+  <div class="medium:col-4 mb-medium">
     <div class="p-medium mb-xsmall cxd-black text-white">
       <strong class="d-block">$black</strong>
       #000
@@ -442,13 +442,13 @@ Our `tint-color()` and `shade-color()` functions use `mix()` alongside our `$the
 
 ## Color Sass maps
 
-Chassis - CSS’s source Sass files include three maps to help you quickly and easily loop over a list of colors and their hex values.
+Chassis CSS’s source Sass files include three maps to help you quickly and easily loop over a list of colors and their hex values.
 
 - `$colors` lists all our available base (`500`) colors
 - `$context-colors` lists all semantically named theme colors (shown below)
 - `$grays` lists all tints and shades of gray
 
-Within `scss/_variables.scss`, you’ll find Chassis - CSS’s color variables and Sass map. Here’s an example of the `$colors` Sass map:
+Within `scss/_variables.scss`, you’ll find Chassis CSS’s color variables and Sass map. Here’s an example of the `$colors` Sass map:
 
 <ScssDocs name="context-colors-map" file="scss/maps/_colors.scss" />
 
@@ -472,7 +472,7 @@ Here’s how you can use these in your Sass:
 
 <AddedIn version="5.1.0"/>
 
-Chassis - CSS doesn’t include `color` and `background-color` utilities for every color variable, but you can generate these yourself with our [utility API]([[docsref:/utilities/api]]) and our extended Sass maps added in v5.1.0.
+Chassis CSS doesn’t include `color` and `background-color` utilities for every color variable, but you can generate these yourself with our [utility API]([[docsref:/utilities/api]]) and our extended Sass maps added in v5.1.0.
 
 1. To start, make sure you’ve imported our functions, variables, mixins, and utilities.
 2. Use our `map-merge-multiple()` function to quickly merge multiple Sass maps together in a new map.

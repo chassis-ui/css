@@ -33,18 +33,52 @@
   &.outline {
     border: 0;
   }
-}
 
-.list-numbered {
-  list-style-type: none;
-  counter-reset: section;
+  &.numbered {
+    list-style-type: none;
+    counter-reset: section;
 
-  > .list-item::before {
-    // Increments only this instance of the section counter
-    content: counters(section, ".") ". ";
-    counter-increment: section;
+    > .list-item::before {
+      // Increments only this instance of the section counter
+      content: counters(section, ".") ". ";
+      counter-increment: section;
+    }
+
   }
 
+  // Flush & Plain lists
+  //
+  // Remove borders and border-radius to keep list group items edge-to-edge. Most
+  // useful within other components (e.g., cards).
+
+  &.flush,
+  &.plain {
+    border: 0;
+    @include border-radius(0);
+
+    > .list-item {
+      // --#{$prefix}padding-factor: .5;
+      border-width: 0 0 var(--#{$prefix}border-width);
+
+      // &:first-child {
+      //   --#{$prefix}padding-factor: .5;
+      //   border-top-width: 0;
+      // }
+      &:last-child {
+        // --#{$prefix}padding-factor: .25;
+        border-bottom-width: 0;
+      }
+    }
+  }
+
+  // Remove horizontal padding for plain lists. Most useful for lists
+  // that are the main contents of a page (e.g., search results).
+  &.plain {
+    > .list-item {
+      padding-right: 0;
+      padding-left: 0;
+    }
+  }
 }
 
 // Individual list items
@@ -128,7 +162,7 @@
   @include media-breakpoint-up($breakpoint) {
     $infix: breakpoint-prefix($breakpoint, $grid-breakpoints);
 
-    .#{$infix}list-horizontal {
+    .list-group.#{$infix}horizontal {
       flex-direction: row;
 
       > .list-item {
@@ -154,40 +188,5 @@
         }
       }
     }
-  }
-}
-
-
-// Flush & Plain lists
-//
-// Remove borders and border-radius to keep list group items edge-to-edge. Most
-// useful within other components (e.g., cards).
-
-.list-flush,
-.list-plain {
-  border: 0;
-  @include border-radius(0);
-
-  > .list-item {
-    // --#{$prefix}padding-factor: .5;
-    border-width: 0 0 var(--#{$prefix}border-width);
-
-    // &:first-child {
-    //   --#{$prefix}padding-factor: .5;
-    //   border-top-width: 0;
-    // }
-    &:last-child {
-      // --#{$prefix}padding-factor: .25;
-      border-bottom-width: 0;
-    }
-  }
-}
-
-// Remove horizontal padding for plain lists. Most useful for lists
-// that are the main contents of a page (e.g., search results).
-.list-plain {
-  > .list-item {
-    padding-right: 0;
-    padding-left: 0;
   }
 }

@@ -1,6 +1,6 @@
 ---
-title: Chassis - CSS and Vite
-description: The official guide for how to include and bundle Chassis - CSS’s CSS and JavaScript in your project using Vite.
+title: Chassis CSS and Vite
+description: The official guide for how to include and bundle Chassis CSS’s CSS and JavaScript in your project using Vite.
 toc: true
 added:
   show_badge: false
@@ -18,7 +18,7 @@ added:
 
 ## Setup
 
-We’re building a Vite project with Chassis - CSS from scratch, so there are some prerequisites and upfront steps before we can really get started. This guide requires you to have Node.js installed and some familiarity with the terminal.
+We’re building a Vite project with Chassis CSS from scratch, so there are some prerequisites and upfront steps before we can really get started. This guide requires you to have Node.js installed and some familiarity with the terminal.
 
 1. **Create a project folder and set up npm.** We'll create the `my-project` folder and initialize npm with the `-y` argument to avoid it asking us all the interactive questions.
 
@@ -39,7 +39,7 @@ We’re building a Vite project with Chassis - CSS from scratch, so there are so
    npm i --save chassis-css @popperjs/core
    ```
 
-4. **Install additional dependency.** In addition to Vite and Chassis, we need another dependency (Sass) to properly import and bundle Chassis - CSS’s CSS.
+4. **Install additional dependency.** In addition to Vite and Chassis, we need another dependency (Sass) to properly import and bundle Chassis CSS’s CSS.
 
    ```sh
    npm i --save-dev sass
@@ -116,19 +116,19 @@ With dependencies installed and our project folder ready for us to start coding,
      <head>
        <meta charset="utf-8">
        <meta name="viewport" content="width=device-width, initial-scale=1">
-       <title>Chassis - CSS w/ Vite</title>
+       <title>Chassis CSS w/ Vite</title>
        <script type="module" src="./js/main.js"></script>
      </head>
      <body>
        <div class="container py-large px-medium mx-auto">
-         <h1>Hello, Chassis - CSS and Vite!</h1>
+         <h1>Hello, Chassis CSS and Vite!</h1>
          <button class="button primary">Primary button</button>
        </div>
      </body>
    </html>
    ```
 
-   We’re including a little bit of Chassis - CSS styling here with the `div class="container"` and `<button>` so that we see when Chassis - CSS’s CSS is loaded by Vite.
+   We’re including a little bit of Chassis CSS styling here with the `div class="container"` and `<button>` so that we see when Chassis CSS’s CSS is loaded by Vite.
 
 3. **Now we need an npm script to run Vite.** Open `package.json` and add the `start` script shown below (you should already have the test script). We'll use this script to start our local Vite dev server.
 
@@ -150,26 +150,26 @@ With dependencies installed and our project folder ready for us to start coding,
    ```
 
 
-In the next and final section to this guide, we’ll import all of Chassis - CSS’s CSS and JavaScript.
+In the next and final section to this guide, we’ll import all of Chassis CSS’s CSS and JavaScript.
 
 ## Import Chassis
 
-1. **Import Chassis - CSS’s CSS.** Add the following to `src/scss/styles.scss` to import all of Chassis - CSS’s source Sass.
+1. **Import Chassis CSS’s CSS.** Add the following to `src/scss/styles.scss` to import all of Chassis CSS’s source Sass.
 
    ```scss
-   // Import all of Chassis - CSS’s CSS
+   // Import all of Chassis CSS’s CSS
    @import "chassis-css/scss/chassis";
    ```
 
    *You can also import our stylesheets individually if you want. [Read our Sass import docs]([[docsref:/customize/sass#importing]]) for details.*
 
-3. **Next we load the CSS and import Chassis - CSS’s JavaScript.** Add the following to `src/js/main.js` to load the CSS and import all of Chassis - CSS’s JS. Popper will be imported automatically through Chassis.
+3. **Next we load the CSS and import Chassis CSS’s JavaScript.** Add the following to `src/js/main.js` to load the CSS and import all of Chassis CSS’s JS. Popper will be imported automatically through Chassis.
 
    ```js
    // Import our custom CSS
    import '../scss/styles.scss'
 
-   // Import all of Chassis - CSS’s JS
+   // Import all of Chassis CSS’s JS
    import * as chassis from 'chassis-css'
    ```
 
@@ -182,11 +182,11 @@ In the next and final section to this guide, we’ll import all of Chassis - CSS
    import { Tooltip, Toast, Popover } from 'chassis-css';
    ```
 
-   *[Read our JavaScript docs]([[docsref:/getting-started/javascript/]]) for more information on how to use Chassis - CSS’s plugins.*
+   *[Read our JavaScript docs]([[docsref:/getting-started/javascript/]]) for more information on how to use Chassis CSS’s plugins.*
 
-4. **And you’re done! 🎉** With Chassis - CSS’s source Sass and JS fully loaded, your local development server should now look like this:
+4. **And you’re done! 🎉** With Chassis CSS’s source Sass and JS fully loaded, your local development server should now look like this:
 
 
-   Now you can start adding any Chassis - CSS components you want to use. Be sure to [check out the complete Vite example project](https://github.com/twbs/examples/tree/main/vite) for how to include additional custom Sass and optimize your build by importing only the parts of Chassis - CSS’s CSS and JS that you need.
+   Now you can start adding any Chassis CSS components you want to use. Be sure to [check out the complete Vite example project](https://github.com/twbs/examples/tree/main/vite) for how to include additional custom Sass and optimize your build by importing only the parts of Chassis CSS’s CSS and JS that you need.
 
 <GuideFooter />

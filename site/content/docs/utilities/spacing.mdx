@@ -1,6 +1,6 @@
 ---
 title: Spacing
-description: Chassis - CSS includes a wide range of shorthand responsive margin, padding, and gap utility classes to modify an element’s appearance.
+description: Chassis CSS includes a wide range of shorthand responsive margin, padding, and gap utility classes to modify an element’s appearance.
 toc: true
 ---
 
@@ -16,9 +16,9 @@ Assign responsive-friendly `margin` or `padding` values to an element or a subse
 
 ### Notation
 
-Spacing utilities that apply to all breakpoints, from `xsmall` to `2xlarge`, have no breakpoint abbreviation in them. This is because those classes are applied from `min-width: 0` and up, and thus are not bound by a media query. The remaining breakpoints, however, do include a breakpoint abbreviation.
+Spacing utilities that apply to all breakpoints, from `xsmall` to `2xlarge`, have no breakpoint prefix in them. This is because those classes are applied from `min-width: 0` and up, and thus are not bound by a media query. The remaining breakpoints, however, do include a breakpoint prefix.
 
-The classes are named using the format `{property}{sides}-{size}` for `xsmall` and `{property}{sides}-{breakpoint}-{size}` for `small`, `medium`, `large`, `xlarge`, and `2xlarge`.
+The classes are named using the format `{property}{sides}-{size}` for `xsmall` and `{breakpoint}:{property}{sides}-{size}` for `small`, `medium`, `large`, `xlarge`, and `2xlarge`.
 
 Where *property* is one of:
 
@@ -73,7 +73,7 @@ Here are some representative examples of these classes:
 
 ### Horizontal centering
 
-Additionally, Chassis - CSS also includes an `.mx-auto` class for horizontally centering fixed-width block level content—that is, content that has `display: block` and a `width` set—by setting the horizontal margins to `auto`.
+Additionally, Chassis CSS also includes an `.mx-auto` class for horizontally centering fixed-width block level content—that is, content that has `display: block` and a `width` set—by setting the horizontal margins to `auto`.
 
 <Example showMarkup={false} code={`<div class="mx-auto p-xsmall" style="width: 200px;
     background-color: rgba(var(--cxd-subtle-rgb),.15);
@@ -110,7 +110,7 @@ When using `display: grid` or `display: flex`, you can make use of `gap` utiliti
     <div class="p-xsmall g-col-6">Grid item 4</div>
   </div>`} />
 
-Support includes responsive options for all of Chassis - CSS’s grid breakpoints, as well as six sizes from the `$spacers` map (`0`–`5`). There is no `.gap-auto` utility class as it’s effectively the same as `.gap-0`.
+Support includes responsive options for all of Chassis CSS’s grid breakpoints, as well as six sizes from the `$spacers` map (`0`–`5`). There is no `.gap-auto` utility class as it’s effectively the same as `.gap-0`.
 
 ### row-gap
 

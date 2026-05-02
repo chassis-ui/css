@@ -8,7 +8,7 @@ import { getData } from '@libs/data'
 
 ## Examples
 
-While shadows on components are disabled by default in Chassis - CSS and can be enabled via `$enable-component-shadows`, you can also quickly add or remove a shadow with our `box-shadow` utility classes. Includes support for `.shadow-none` and three default sizes (which have associated variables to match).
+While shadows on components are disabled by default in Chassis CSS and can be enabled via `$enable-component-shadows`, you can also quickly add or remove a shadow with our `box-shadow` utility classes. Includes support for `.shadow-none` and three default sizes (which have associated variables to match).
 
 <Example class="overflow-hidden" code={`<div class="shadow-none rounded p-medium mb-xlarge">No shadow</div>
 <div class="shadow-small rounded p-medium mb-xlarge">Small shadow</div>
@@ -45,11 +45,11 @@ Consider our `.shadow-50` utility.
   box-shadow: 0rem 0.5rem 2rem -0.5rem rgba(0, 0, 0, 0.1), 0rem 0.15rem 1rem -0.15rem var(--cx-shadow-color, transparent), 0rem 0.15rem 1rem -0.15rem rgba(0, 0, 0, 0.1) !important;
 }
 .shadow-primary {
-  --cx-shadow-color: rgba(var(--cx-primary-rgb), 0.1);
+  --cx-shadow-color: oklch(from var(--cx-primary) l c h / 0.1);
 }
 ```
 
-During creation of our shadow utilities, a `--cx-shadow-color` variable with **transparent** value also defined in the class. Our `create-color-shadow` function creates another shadow value according to design token, with `var(--cx-shadow-color, transparent)` color. Then `shadow-primary` class sets the `--cx-shadow-color` variable with a special color created by `--cx-primary-rgb` and `$shadow-color-opacity` SaSS variable. Now the transparent shadow gets activated and adds a slight primary color to the shadow, similar in the design tokens.
+During creation of our shadow utilities, a `--cx-shadow-color` variable with **transparent** value also defined in the class. Our `create-color-shadow` function creates another shadow value according to design token, with `var(--cx-shadow-color, transparent)` color. Then `shadow-primary` class sets the `--cx-shadow-color` variable using CSS relative color syntax derived from `--cx-primary` and `$shadow-color-opacity`. Now the transparent shadow gets activated and adds a slight primary color to the shadow, similar in the design tokens.
 
 <Callout type="warning">
   While this way is not yet in direct control of designer but helps to avoid increasing file size by creating every color shadows including their hover states.

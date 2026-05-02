@@ -5,7 +5,7 @@ aliases: "[[docsref:/utilities]]"
 toc: true
 ---
 
-Chassis - CSS utilities are generated with our utility API and can be used to modify or extend our default set of utility classes via Sass. Our utility API is based on a series of Sass maps and functions for generating families of classes with various options. If you’re unfamiliar with Sass maps, read up on the [official Sass docs](https://sass-lang.com/documentation/values/maps/) to get started.
+Chassis CSS utilities are generated with our utility API and can be used to modify or extend our default set of utility classes via Sass. Our utility API is based on a series of Sass maps and functions for generating families of classes with various options. If you’re unfamiliar with Sass maps, read up on the [official Sass docs](https://sass-lang.com/documentation/values/maps/) to get started.
 
 The `$utilities` map contains all our utilities and is later merged with your custom `$utilities` map, if present. The utility map contains a keyed list of utility groups which accept the following options:
 
@@ -213,7 +213,7 @@ Output:
 ```css
 .bg-primary {
   --cx-bg-opacity: 1;
-  background-color: rgba(var(--cx-primary-rgb), var(--cx-bg-opacity)) !important;
+  background-color: oklch(from var(--cx-primary) l c h / var(--cx-bg-opacity)) !important;
 }
 ```
 
@@ -280,43 +280,43 @@ Output:
 .opacity-100 { opacity: 1 !important; }
 
 @media (min-width: 576px) {
-  .opacity-small-0 { opacity: 0 !important; }
-  .opacity-small-25 { opacity: .25 !important; }
-  .opacity-small-50 { opacity: .5 !important; }
-  .opacity-small-75 { opacity: .75 !important; }
-  .opacity-small-100 { opacity: 1 !important; }
+  .small:opacity-0 { opacity: 0 !important; }
+  .small:opacity-25 { opacity: .25 !important; }
+  .small:opacity-50 { opacity: .5 !important; }
+  .small:opacity-75 { opacity: .75 !important; }
+  .small:opacity-100 { opacity: 1 !important; }
 }
 
 @media (min-width: 768px) {
-  .opacity-medium-0 { opacity: 0 !important; }
-  .opacity-medium-25 { opacity: .25 !important; }
-  .opacity-medium-50 { opacity: .5 !important; }
-  .opacity-medium-75 { opacity: .75 !important; }
-  .opacity-medium-100 { opacity: 1 !important; }
+  .medium:opacity-0 { opacity: 0 !important; }
+  .medium:opacity-25 { opacity: .25 !important; }
+  .medium:opacity-50 { opacity: .5 !important; }
+  .medium:opacity-75 { opacity: .75 !important; }
+  .medium:opacity-100 { opacity: 1 !important; }
 }
 
 @media (min-width: 992px) {
-  .opacity-large-0 { opacity: 0 !important; }
-  .opacity-large-25 { opacity: .25 !important; }
-  .opacity-large-50 { opacity: .5 !important; }
-  .opacity-large-75 { opacity: .75 !important; }
-  .opacity-large-100 { opacity: 1 !important; }
+  .large:opacity-0 { opacity: 0 !important; }
+  .large:opacity-25 { opacity: .25 !important; }
+  .large:opacity-50 { opacity: .5 !important; }
+  .large:opacity-75 { opacity: .75 !important; }
+  .large:opacity-100 { opacity: 1 !important; }
 }
 
 @media (min-width: 1200px) {
-  .opacity-xlarge-0 { opacity: 0 !important; }
-  .opacity-xlarge-25 { opacity: .25 !important; }
-  .opacity-xlarge-50 { opacity: .5 !important; }
-  .opacity-xlarge-75 { opacity: .75 !important; }
-  .opacity-xlarge-100 { opacity: 1 !important; }
+  .xlarge:opacity-0 { opacity: 0 !important; }
+  .xlarge:opacity-25 { opacity: .25 !important; }
+  .xlarge:opacity-50 { opacity: .5 !important; }
+  .xlarge:opacity-75 { opacity: .75 !important; }
+  .xlarge:opacity-100 { opacity: 1 !important; }
 }
 
 @media (min-width: 1400px) {
-  .opacity-2xlarge-0 { opacity: 0 !important; }
-  .opacity-2xlarge-25 { opacity: .25 !important; }
-  .opacity-2xlarge-50 { opacity: .5 !important; }
-  .opacity-2xlarge-75 { opacity: .75 !important; }
-  .opacity-2xlarge-100 { opacity: 1 !important; }
+  .2xlarge:opacity-0 { opacity: 0 !important; }
+  .2xlarge:opacity-25 { opacity: .25 !important; }
+  .2xlarge:opacity-50 { opacity: .5 !important; }
+  .2xlarge:opacity-75 { opacity: .75 !important; }
+  .2xlarge:opacity-100 { opacity: 1 !important; }
 }
 ```
 

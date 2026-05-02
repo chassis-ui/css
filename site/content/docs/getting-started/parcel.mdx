@@ -1,6 +1,6 @@
 ---
-title: Chassis - CSS and Parcel
-description: The official guide for how to include and bundle Chassis - CSS’s CSS and JavaScript in your project using Parcel.
+title: Chassis CSS and Parcel
+description: The official guide for how to include and bundle Chassis CSS’s CSS and JavaScript in your project using Parcel.
 toc: true
 ---
 
@@ -14,7 +14,7 @@ toc: true
 
 ## Setup
 
-We’re building a Parcel project with Chassis - CSS from scratch, so there are some prerequisites and upfront steps before we can really get started. This guide requires you to have Node.js installed and some familiarity with the terminal.
+We’re building a Parcel project with Chassis CSS from scratch, so there are some prerequisites and upfront steps before we can really get started. This guide requires you to have Node.js installed and some familiarity with the terminal.
 
 1. **Create a project folder and set up npm.** We'll create the `my-project` folder and initialize npm with the `-y` argument to avoid it asking us all the interactive questions.
 
@@ -74,20 +74,20 @@ With dependencies installed and our project folder ready for us to start coding,
      <head>
        <meta charset="utf-8">
        <meta name="viewport" content="width=device-width, initial-scale=1">
-       <title>Chassis - CSS w/ Parcel</title>
+       <title>Chassis CSS w/ Parcel</title>
        <link rel="stylesheet" href="scss/styles.scss">
        <script type="module" src="js/main.js"></script>
      </head>
      <body>
        <div class="container py-large px-medium mx-auto">
-         <h1>Hello, Chassis - CSS and Parcel!</h1>
+         <h1>Hello, Chassis CSS and Parcel!</h1>
          <button class="button primary">Primary button</button>
        </div>
      </body>
    </html>
    ```
 
-   We’re including a little bit of Chassis - CSS styling here with the `div class="container"` and `<button>` so that we see when Chassis - CSS’s CSS is loaded by Parcel.
+   We’re including a little bit of Chassis CSS styling here with the `div class="container"` and `<button>` so that we see when Chassis CSS’s CSS is loaded by Parcel.
 
    Parcel will automatically detect we’re using Sass and install the [Sass Parcel plugin](https://parceljs.org/languages/sass/) to support it. However, if you wish, you can also manually run `npm i --save-dev @parcel/transformer-sass`.
 
@@ -111,16 +111,16 @@ With dependencies installed and our project folder ready for us to start coding,
    ```
 
 
-In the next and final section to this guide, we'll import all of Chassis - CSS’s CSS and JavaScript.
+In the next and final section to this guide, we'll import all of Chassis CSS’s CSS and JavaScript.
 
 ## Import Chassis
 
-Importing Chassis - CSS into Parcel requires two imports, one into our `styles.scss` and one into our `main.js`.
+Importing Chassis CSS into Parcel requires two imports, one into our `styles.scss` and one into our `main.js`.
 
-1. **Import Chassis - CSS’s CSS.** Add the following to `src/scss/styles.scss` to import all of Chassis - CSS’s source Sass.
+1. **Import Chassis CSS’s CSS.** Add the following to `src/scss/styles.scss` to import all of Chassis CSS’s source Sass.
 
    ```scss
-   // Import all of Chassis - CSS’s CSS
+   // Import all of Chassis CSS’s CSS
    @import "chassis-css/scss/chassis";
    ```
 
@@ -134,10 +134,10 @@ Importing Chassis - CSS into Parcel requires two imports, one into our `styles.s
    }
    ```
 
-2. **Import Chassis - CSS’s JS.** Add the following to `src/js/main.js` to import all of Chassis - CSS’s JS. Popper will be imported automatically through Chassis.
+2. **Import Chassis CSS’s JS.** Add the following to `src/js/main.js` to import all of Chassis CSS’s JS. Popper will be imported automatically through Chassis.
 
    ```js
-   // Import all of Chassis - CSS’s JS
+   // Import all of Chassis CSS’s JS
    import * as chassis from 'chassis-css'
    ```
 
@@ -150,11 +150,11 @@ Importing Chassis - CSS into Parcel requires two imports, one into our `styles.s
    import { Tooltip, Toast, Popover } from 'chassis-css'
    ```
 
-   *[Read our JavaScript docs]([[docsref:/getting-started/javascript/]]) for more information on how to use Chassis - CSS’s plugins.*
+   *[Read our JavaScript docs]([[docsref:/getting-started/javascript/]]) for more information on how to use Chassis CSS’s plugins.*
 
-3. **And you’re done! 🎉** With Chassis - CSS’s source Sass and JS fully loaded, your local development server should now look like this:
+3. **And you’re done! 🎉** With Chassis CSS’s source Sass and JS fully loaded, your local development server should now look like this:
 
 
-   Now you can start adding any Chassis - CSS components you want to use. Be sure to [check out the complete Parcel example project](https://github.com/twbs/examples/tree/main/parcel) for how to include additional custom Sass and optimize your build by importing only the parts of Chassis - CSS’s CSS and JS that you need.
+   Now you can start adding any Chassis CSS components you want to use. Be sure to [check out the complete Parcel example project](https://github.com/twbs/examples/tree/main/parcel) for how to include additional custom Sass and optimize your build by importing only the parts of Chassis CSS’s CSS and JS that you need.
 
 <GuideFooter />

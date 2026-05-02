@@ -5,21 +5,21 @@
 // images scale to fit their containers without exceeding their intrinsic size.
 //
 
-.image-fluid {
-  @include image-fluid();
-}
+.image {
+  &.fluid {
+    @include image-fluid();
+  }
+  // Image thumbnails
+  &.thumbnail {
+    padding: $thumbnail-padding;
+    background-color: $thumbnail-bg;
+    border: $thumbnail-border-width solid $thumbnail-border-color;
+    @include border-radius($thumbnail-border-radius);
+    @include box-shadow($thumbnail-box-shadow);
 
-
-// Image thumbnails
-.image-thumbnail {
-  padding: $thumbnail-padding;
-  background-color: $thumbnail-bg;
-  border: $thumbnail-border-width solid $thumbnail-border-color;
-  @include border-radius($thumbnail-border-radius);
-  @include box-shadow($thumbnail-box-shadow);
-
-  // Keep them at most 100% wide
-  @include image-fluid();
+    // Keep them at most 100% wide
+    @include image-fluid();
+  }
 }
 
 //

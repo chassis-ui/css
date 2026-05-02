@@ -78,7 +78,7 @@ Use `.icon-*` size classes to adjust icon size
 
 ### Responsive Utilities
 
-Chassis - CSS provides responsive icon size utilities that adapt to different breakpoints. Enable this feature through the `$enable-responsive-utilities` variable, allowing you to control icon sizes across device sizes for optimal visual consistency.
+Chassis CSS provides responsive icon size utilities that adapt to different breakpoints. Enable this feature through the `$enable-responsive-utilities` variable, allowing you to control icon sizes across device sizes for optimal visual consistency.
 
 These utilities follow a mobile-first approach, allowing you to stack classes for progressive scaling. Classes use the format `icon-{size}` for the base size (applying from `xsmall` and up) and `icon-{breakpoint}-{size}` for breakpoint-specific sizes (`small`, `medium`, `large`, `xlarge`, and `2xlarge`). Each breakpoint class overrides the previous icon size at that breakpoint and larger viewports.
 
@@ -134,19 +134,18 @@ Consider our default `.icon-primary` utility.
 
 ```css
 .icon {
-  /* This is just an example, actual icon class is a bit more complex than this. */
-  --cx-icon-color: var(--cx-default-icon-main-rgb);
-  color: rgba(var(--cx-icon-color), var(--cx-icon-opacity, 1));
+  color: var(--cx-icon-color);
+  fill: var(--cx-icon-color);
 }
 .icon-primary {
-  --cx-icon-color: var(--cx-primary-rgb);
+  --cx-icon-color: oklch(from var(--cx-primary) l c h / var(--cx-icon-opacity, 1));
 }
 .icon-opacity-50 {
   --cx-icon-opacity: var(--cx-opacity-50);
 }
 ```
 
-We use an RGB version of our `--cx-primary` (with the value of `255, 91, 20`) CSS variable and attached a second CSS variable, `--cx-icon-opacity`, for the alpha transparency (with a default value `1` thanks to a local CSS variable). That means anytime you use `.icon-primary` now, your computed `color` value is `rgba(255, 91, 20, 1)`. The local CSS variable inside each `.icon-*` class avoids inheritance issues so nested instances of the utilities don't automatically have a modified alpha transparency.
+We use the `--cx-primary` CSS variable directly with CSS relative color syntax, and attach a second CSS variable, `--cx-icon-opacity`, for the alpha transparency (with a default value `1`). The `oklch(from ...)` expression derives the color from the variable and applies the opacity channel. Then, the opacity class overrides the default opacity by setting `--cx-icon-opacity` on the element.
 
 ### Example
 
@@ -157,12 +156,6 @@ To change that opacity, override `--cx-icon-opacity` via custom styles or inline
 
 <span class="vr mx-medium"></span>
 `].concat(getData('basic-opacities').map((opacity) => `<svg class="icon icon-secondary icon-opacity-${opacity.name}"><use xlink:href="#info-circle-solid" /></svg>`))} />
-
-<Example code={[`<span class="icon icon-secondary icon-info-circle-solid"></span>
-<span style="--cx-icon-opacity: .6;" class="icon icon-secondary icon-info-circle-solid"></span>
-
-<span class="vr mx-medium"></span>
-`].concat(getData('basic-opacities').map((opacity) => `<span class="icon icon-secondary icon-opacity-${opacity.name} icon-info-circle-solid"></span>`))} />
 
 ### Context Opacity
 

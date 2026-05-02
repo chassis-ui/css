@@ -13,24 +13,15 @@
   // Generate color variables
   @each $name, $value in $context-colors {
     --#{$prefix}#{$name}: #{to-color($value)};
-    // --#{$prefix}#{$name}: #{clean-oklch($value)};
-    // --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
   }
   @each $name, $value in $contrast-colors {
     --#{$prefix}#{$name}: #{to-color($value)};
-    // --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
   }
   @each $name, $value in $base-palette {
     --#{$prefix}#{$name}: #{to-color($value)};
-    // --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
   }
   @each $name, $value in $context-palette {
-    // --#{$prefix}#{$name}: #{color.to-space($value, oklch)};
     --#{$prefix}#{$name}: #{to-color($value)};
-    // @if not str-index($name, "subtle") and not str-index($name, "slight") {
-    //   --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
-    // }
-    // --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
   }
 
   // Generate font variables
@@ -48,7 +39,6 @@
   }
   @each $name, $value in $typography {
     @include rfs($value, --#{$prefix}#{$name});
-    // --#{$prefix}#{$name}: #{$value};
   }
   // Generate spacers variables
   @each $name, $value in $spacers {
@@ -159,29 +149,16 @@
 
     // scss-docs-start root-dark-mode-vars
     @each $name, $value in $context-colors-dark {
-      --#{$prefix}#{$name}: #{$value};
+      --#{$prefix}#{$name}: #{to-color($value)};
     }
     @each $name, $value in $contrast-colors-dark {
-      --#{$prefix}#{$name}: #{$value};
+      --#{$prefix}#{$name}: #{to-color($value)};
     }
     @each $name, $value in $context-palette-dark {
-      --#{$prefix}#{$name}: #{$value};
+      --#{$prefix}#{$name}: #{to-color($value)};
     }
     @each $name, $value in $body-colors-dark {
-      --#{$prefix}#{$name}: #{$value};
+      --#{$prefix}#{$name}: #{to-color($value)};
     }
-
-    @include body-colors();
-    // scss-docs-end root-dark-mode-vars
-
-    // --#{$prefix}code-color: #{$code-color-dark};
-    // --#{$prefix}highlight-color: #{$mark-color-dark};
-    // --#{$prefix}highlight-bg: #{$mark-bg-dark};
-
-    // --#{$prefix}form-valid-color: #{$form-valid-color-dark};
-    // --#{$prefix}form-valid-border-color: #{$form-valid-border-color-dark};
-    // --#{$prefix}form-invalid-color: #{$form-invalid-color-dark};
-    // --#{$prefix}form-invalid-border-color: #{$form-invalid-border-color-dark};
-
   }
 }

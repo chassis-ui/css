@@ -280,8 +280,8 @@
 ///     // From CSS variable (converts to actual color)
 ///     background-color: get-sass-color(var(--cx-primary));  // e.g., #0d6efd
 ///
-///     // From RGBA CSS variable with alpha (legacy format — requires -rgb custom properties)
-///     border-color: get-sass-color(rgba(var(--cx-secondary-rgb), 0.5));  // rgba(108, 117, 125, 0.5)
+///     // From oklch relative color with alpha (new format)
+///     border-color: get-sass-color(oklch(from var(--cx-secondary) l c h / 0.5));  // rgba(108, 117, 125, 0.5)
 ///
 ///     // From color name (with dark mode option)
 ///     box-shadow: 0 0 5px get-sass-color("primary", true);  // dark theme primary color
@@ -297,17 +297,17 @@
   $palette: if($dark, $context-palette-dark, $context-palette);
   $map: map-merge($palette, $base-palette);
 
-  // If it's an RGBA CSS variable string with alpha, extract the variable name and alpha value
-  @if type-of($color-var) == "string" and str-index($color-var, "rgba(var(--#{$prefix}") {
-    $var-string: str-replace($color-var, "rgba(var(--#{$prefix}", "");
-    $parts: str-index($var-string, "-rgb),");
+  // If it's an oklch relative color string with alpha, extract the variable name and alpha value
+  @if type-of($color-var) == "string" and str-index($color-var, "oklch(from var(--#{$prefix}") {
+    $var-string: str-replace($color-var, "oklch(from var(--#{$prefix}", "");
+    $parts: str-index($var-string, ") l c h / ");
 
     @if $parts {
-      // Extract the base color name (before -rgb)
+      // Extract the base color name (before closing paren)
       $var-name: str-slice($var-string, 1, $parts - 1);
 
-      // Extract and clean the alpha value
-      $alpha-part: str-slice($var-string, $parts + 5); // Skip "-rgb),"
+      // Extract and clean the alpha value (after ") l c h / " — 10 chars)
+      $alpha-part: str-slice($var-string, $parts + 10);
       $alpha-val: clean-alpha-value(str-replace($alpha-part, ")", ""));
 
       // Look up the base color in our map

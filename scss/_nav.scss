@@ -42,13 +42,14 @@
   // scss-docs-end nav-link-css-vars
 
   display: block;
+  color: var(--#{$prefix}fg-color);
+  text-decoration: if($link-decoration == none, null, none);
+  white-space: nowrap;
+  background: none;
+  border: 0;
   // align-items: center;
   @include exclude-strokes(nav-link);
   @include font(link);
-  color: var(--#{$prefix}fg-color);
-  text-decoration: if($link-decoration == none, null, none);
-  background: none;
-  border: 0;
   @include transition($nav-link-transition);
 
   &:hover,
