@@ -16,6 +16,11 @@
    * --------------------------------------------------------------------------
    */
 
+
+  /**
+   * Constants
+   */
+
   const NAME = 'accordion';
   const DATA_KEY = 'cx.accordion';
   const EVENT_KEY = `.${DATA_KEY}`;
@@ -29,7 +34,13 @@
   const SELECTOR_TITLE = '.accordion-title';
   const SELECTOR_CONTENT = '.accordion-body';
   const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`;
+
+  /**
+   * Class definition
+   */
+
   class Accordion extends BaseComponent {
+    // Getters
     static get NAME() {
       return NAME;
     }
@@ -46,6 +57,8 @@
         attributes: true
       });
     }
+
+    // Public
     open() {
       const openEvent = EventHandler.trigger(this._element, EVENT_OPEN);
       if (this._isTransitioning || openEvent.defaultPrevented) {
@@ -85,6 +98,8 @@
       };
       this._queueCallback(complete, this._element, true);
     }
+
+    // Private
     _createObserver() {
       return new MutationObserver(mutationsList => {
         for (const mutation of mutationsList) {
@@ -98,7 +113,7 @@
       this._pElement = this._element.cloneNode(true);
       this._pElement.name = '';
       this._pElement.open = true;
-      this._pSummary = SelectorEngine.findOne(SELECTOR_SUMMARY, this._pElement); // this._pElement.querySelector(SELECTOR_SUMMARY)
+      this._pSummary = SelectorEngine.findOne(SELECTOR_SUMMARY, this._pElement);
       this._element.before(this._pElement);
       this._pElement.style.overflow = 'hidden';
       this._pElement.style.position = 'absolute';
@@ -115,11 +130,21 @@
       }
     }
   }
+
+  /**
+   * Data API implementation
+   */
+
   EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DETAILS, () => {
     for (const element of SelectorEngine.find(SELECTOR_DETAILS)) {
       Accordion.getOrCreateInstance(element);
     }
   });
+
+  /**
+   * jQuery
+   */
+
   index_js.defineJQueryPlugin(Accordion);
 
   return Accordion;

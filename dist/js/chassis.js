@@ -30,7 +30,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS dom/data.js
+   * Chassis CSS dom/data.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -78,7 +78,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS util/index.js
+   * Chassis CSS util/index.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -99,8 +99,6 @@
     }
     return selector;
   };
-
-  // Shout-out Angus Croll (https://goo.gl/pxwQGp)
   const toType = object => {
     if (object === null || object === undefined) {
       return `${object}`;
@@ -222,7 +220,6 @@
    * Trick to restart an element's animation
    *
    * @param {HTMLElement} element
-   * @return void
    *
    * @see https://www.harrytheo.com/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
    */
@@ -300,11 +297,11 @@
   /**
    * Return the previous/next element of a list.
    *
-   * @param {array} list    The list of elements
-   * @param activeElement   The active element
-   * @param shouldGetNext   Choose to get next or previous element
-   * @param isCycleAllowed
-   * @return {Element|elem} The proper element
+   * @param {array} list               The list of elements
+   * @param {Element} activeElement     The active element
+   * @param {boolean} shouldGetNext     Whether to get the next or previous element
+   * @param {boolean} isCycleAllowed    Whether to cycle from end to start and vice versa
+   * @returns {Element} The previous or next element
    */
   const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed) => {
     const listLength = list.length;
@@ -324,7 +321,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS dom/event-handler.js
+   * Chassis CSS dom/event-handler.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -545,7 +542,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS dom/manipulator.js
+   * Chassis CSS dom/manipulator.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -602,7 +599,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS util/config.js
+   * Chassis CSS util/config.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -655,7 +652,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS base-component.js
+   * Chassis CSS base-component.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -724,7 +721,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS dom/selector-engine.js
+   * Chassis CSS dom/selector-engine.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -811,9 +808,14 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS accordion.js
+   * Chassis CSS accordion.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
+   */
+
+
+  /**
+   * Constants
    */
 
   const NAME$h = 'accordion';
@@ -829,7 +831,13 @@
   const SELECTOR_TITLE$1 = '.accordion-title';
   const SELECTOR_CONTENT$1 = '.accordion-body';
   const EVENT_CLICK_DATA_API$8 = `click${EVENT_KEY$d}${DATA_API_KEY$8}`;
+
+  /**
+   * Class definition
+   */
+
   class Accordion extends BaseComponent {
+    // Getters
     static get NAME() {
       return NAME$h;
     }
@@ -846,6 +854,8 @@
         attributes: true
       });
     }
+
+    // Public
     open() {
       const openEvent = EventHandler.trigger(this._element, EVENT_OPEN);
       if (this._isTransitioning || openEvent.defaultPrevented) {
@@ -885,6 +895,8 @@
       };
       this._queueCallback(complete, this._element, true);
     }
+
+    // Private
     _createObserver() {
       return new MutationObserver(mutationsList => {
         for (const mutation of mutationsList) {
@@ -898,7 +910,7 @@
       this._pElement = this._element.cloneNode(true);
       this._pElement.name = '';
       this._pElement.open = true;
-      this._pSummary = SelectorEngine.findOne(SELECTOR_SUMMARY, this._pElement); // this._pElement.querySelector(SELECTOR_SUMMARY)
+      this._pSummary = SelectorEngine.findOne(SELECTOR_SUMMARY, this._pElement);
       this._element.before(this._pElement);
       this._pElement.style.overflow = 'hidden';
       this._pElement.style.position = 'absolute';
@@ -915,16 +927,26 @@
       }
     }
   }
+
+  /**
+   * Data API implementation
+   */
+
   EventHandler.on(document, EVENT_CLICK_DATA_API$8, SELECTOR_DETAILS, () => {
     for (const element of SelectorEngine.find(SELECTOR_DETAILS)) {
       Accordion.getOrCreateInstance(element);
     }
   });
+
+  /**
+   * jQuery
+   */
+
   defineJQueryPlugin(Accordion);
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS button.js
+   * Chassis CSS button.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -988,7 +1010,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS util/swipe.js
+   * Chassis CSS util/swipe.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1108,7 +1130,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS carousel.js
+   * Chassis CSS carousel.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1478,7 +1500,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS util/component-functions.js
+   * Chassis CSS util/component-functions.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1503,7 +1525,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS Chip.js
+   * Chassis CSS chip.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1545,18 +1567,16 @@
       const isAnimated = this._element.classList.contains(CLASS_NAME_FADE$6);
       this._queueCallback(() => this._destroyElement(), this._element, isAnimated);
     }
+    toggle() {
+      // Toggle class and sync the `aria-pressed` attribute with the return value of the `.toggle()` method
+      this._element.setAttribute('aria-pressed', this._element.classList.toggle(CLASS_NAME_ACTIVE$2));
+    }
 
     // Private
     _destroyElement() {
       this._element.remove();
       EventHandler.trigger(this._element, EVENT_CLOSED$1);
       this.dispose();
-    }
-
-    // Public
-    toggle() {
-      // Toggle class and sync the `aria-pressed` attribute with the return value of the `.toggle()` method
-      this._element.setAttribute('aria-pressed', this._element.classList.toggle(CLASS_NAME_ACTIVE$2));
     }
 
     // Static
@@ -1594,7 +1614,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS collapse.js
+   * Chassis CSS collapse.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1828,7 +1848,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS dropdown.js
+   * Chassis CSS dropdown.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -2193,7 +2213,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS util/backdrop.js
+   * Chassis CSS util/backdrop.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -2317,7 +2337,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS util/focustrap.js
+   * Chassis CSS util/focustrap.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -2415,7 +2435,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS util/scrollBar.js
+   * Chassis CSS util/scrollbar.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -2513,7 +2533,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS modal.js
+   * Chassis CSS modal.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -2818,7 +2838,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis notification.js
+   * Chassis CSS notification.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -2893,7 +2913,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS offcanvas.js
+   * Chassis CSS offcanvas.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -3124,7 +3144,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS util/sanitizer.js
+   * Chassis CSS util/sanitizer.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -3220,7 +3240,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS util/template-factory.js
+   * Chassis CSS util/template-factory.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -3356,7 +3376,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS tooltip.js
+   * Chassis CSS tooltip.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -3863,7 +3883,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS popover.js
+   * Chassis CSS popover.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -3944,7 +3964,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS scrollspy.js
+   * Chassis CSS scrollspy.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -4199,7 +4219,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS tab.js
+   * Chassis CSS tab.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -4249,7 +4269,6 @@
       this._parent = this._element.closest(SELECTOR_TAB_PANEL);
       if (!this._parent) {
         return;
-        // throw new TypeError(`${element.outerHTML} has not a valid parent ${SELECTOR_INNER_ELEM}`)
       }
 
       // Set up initial aria attributes
@@ -4468,7 +4487,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS toast.js
+   * Chassis CSS toast.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -4652,7 +4671,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS index.umd.js
+   * Chassis CSS index.umd.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */

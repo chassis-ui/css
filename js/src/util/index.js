@@ -23,7 +23,6 @@ const parseSelector = selector => {
   return selector
 }
 
-// Shout-out Angus Croll (https://goo.gl/pxwQGp)
 const toType = object => {
   if (object === null || object === undefined) {
     return `${object}`
@@ -168,7 +167,6 @@ const noop = () => {}
  * Trick to restart an element's animation
  *
  * @param {HTMLElement} element
- * @return void
  *
  * @see https://www.harrytheo.com/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
  */
@@ -258,11 +256,11 @@ const executeAfterTransition = (callback, transitionElement, waitForTransition =
 /**
  * Return the previous/next element of a list.
  *
- * @param {array} list    The list of elements
- * @param activeElement   The active element
- * @param shouldGetNext   Choose to get next or previous element
- * @param isCycleAllowed
- * @return {Element|elem} The proper element
+ * @param {array} list               The list of elements
+ * @param {Element} activeElement     The active element
+ * @param {boolean} shouldGetNext     Whether to get the next or previous element
+ * @param {boolean} isCycleAllowed    Whether to cycle from end to start and vice versa
+ * @returns {Element} The previous or next element
  */
 const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed) => {
   const listLength = list.length

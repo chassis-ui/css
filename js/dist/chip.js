@@ -11,7 +11,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis CSS Chip.js
+   * Chassis CSS chip.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -53,18 +53,16 @@
       const isAnimated = this._element.classList.contains(CLASS_NAME_FADE);
       this._queueCallback(() => this._destroyElement(), this._element, isAnimated);
     }
+    toggle() {
+      // Toggle class and sync the `aria-pressed` attribute with the return value of the `.toggle()` method
+      this._element.setAttribute('aria-pressed', this._element.classList.toggle(CLASS_NAME_ACTIVE));
+    }
 
     // Private
     _destroyElement() {
       this._element.remove();
       EventHandler.trigger(this._element, EVENT_CLOSED);
       this.dispose();
-    }
-
-    // Public
-    toggle() {
-      // Toggle class and sync the `aria-pressed` attribute with the return value of the `.toggle()` method
-      this._element.setAttribute('aria-pressed', this._element.classList.toggle(CLASS_NAME_ACTIVE));
     }
 
     // Static

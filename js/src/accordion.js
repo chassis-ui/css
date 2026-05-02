@@ -10,6 +10,10 @@ import SelectorEngine from './dom/selector-engine.js'
 import EventHandler from './dom/event-handler.js'
 import { defineJQueryPlugin } from './util/index.js'
 
+/**
+ * Constants
+ */
+
 const NAME = 'accordion'
 
 const DATA_KEY = 'cx.accordion'
@@ -27,7 +31,12 @@ const SELECTOR_TITLE = '.accordion-title'
 const SELECTOR_CONTENT = '.accordion-body'
 const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`
 
+/**
+ * Class definition
+ */
+
 class Accordion extends BaseComponent {
+  // Getters
   static get NAME() {
     return NAME
   }
@@ -45,6 +54,7 @@ class Accordion extends BaseComponent {
     this._observer.observe(this._element, { attributes: true })
   }
 
+  // Public
   open() {
     const openEvent = EventHandler.trigger(this._element, EVENT_OPEN)
     if (this._isTransitioning || openEvent.defaultPrevented) {
@@ -96,6 +106,7 @@ class Accordion extends BaseComponent {
     this._queueCallback(complete, this._element, true)
   }
 
+  // Private
   _createObserver() {
     return new MutationObserver(mutationsList => {
       for (const mutation of mutationsList) {
@@ -110,7 +121,7 @@ class Accordion extends BaseComponent {
     this._pElement = this._element.cloneNode(true)
     this._pElement.name = ''
     this._pElement.open = true
-    this._pSummary = SelectorEngine.findOne(SELECTOR_SUMMARY, this._pElement) // this._pElement.querySelector(SELECTOR_SUMMARY)
+    this._pSummary = SelectorEngine.findOne(SELECTOR_SUMMARY, this._pElement)
     this._element.before(this._pElement)
     this._pElement.style.overflow = 'hidden'
     this._pElement.style.position = 'absolute'
@@ -129,11 +140,19 @@ class Accordion extends BaseComponent {
   }
 }
 
+/**
+ * Data API implementation
+ */
+
 EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DETAILS, () => {
   for (const element of SelectorEngine.find(SELECTOR_DETAILS)) {
     Accordion.getOrCreateInstance(element)
   }
 })
+
+/**
+ * jQuery
+ */
 
 defineJQueryPlugin(Accordion)
 
