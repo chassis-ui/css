@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*!
- * Chassis CSS v0.2.2 (https://ozgurgunes.github.io/chassis-css/)
+ * Chassis CSS v0.2.3 (https://ozgurgunes.github.io/chassis-css/)
  * Copyright 2025 Ozgur Gunes
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  */
@@ -5146,7 +5146,6 @@ ol.inline li:not(:last-child) {
   --cx-fg-color: var(--cx-fg-hover);
   --cx-border-color: var(--cx-border-hover);
   background-color: var(--cx-bg-hover);
-  background-image: var(--cx-bg-gradient);
   outline: 0;
   box-shadow: var(--cx-focus-box-shadow);
 }
@@ -5155,7 +5154,6 @@ ol.inline li:not(:last-child) {
   --cx-bg-color: var(--cx-button-press-bg-color, var(--cx-bg-press));
   --cx-icon-color: var(--cx-button-press-icon-color, var(--cx-fg-press));
   --cx-border-color: var(--cx-button-press-border-color, var(--cx-border-press));
-  background-image: none;
 }
 .button-check:checked + .chip:focus-visible, .button-check:checked + .button:focus-visible, :not(.button-check) + .chip:active:focus-visible, :not(.button-check) + .button:active:focus-visible, .chip:first-child:active:focus-visible, .button:first-child:active:focus-visible, .active.chip:focus-visible, .active.button:focus-visible, .show.chip:focus-visible, .show.button:focus-visible {
   box-shadow: var(--cx-focus-box-shadow);
@@ -5173,7 +5171,6 @@ ol.inline li:not(:last-child) {
   --cx-icon-color: var(--cx-button-disabled-icon-color, var(--cx-fg-disabled));
   --cx-border-color: var(--cx-button-disabled-border-color, var(--cx-border-disabled));
   pointer-events: none;
-  background-image: none;
   opacity: 1;
 }
 
@@ -6401,7 +6398,6 @@ ol.inline li:not(:last-child) {
   margin-inline-end: var(--cx-padding-x);
   padding: var(--cx-padding-y) var(--cx-padding-x);
   background-color: var(--cx-file-button-bg-color);
-  background-image: var(--cx-bg-gradient);
   pointer-events: none;
   background-image: var(--cx-file-button-bg-image);
   border-inline-end-width: var(--cx-border-width);
@@ -6417,7 +6413,6 @@ ol.inline li:not(:last-child) {
   margin-inline-end: var(--cx-padding-x);
   padding: var(--cx-padding-y) var(--cx-padding-x);
   background-color: var(--cx-file-button-bg-color);
-  background-image: var(--cx-bg-gradient);
   pointer-events: none;
   background-image: var(--cx-file-button-bg-image);
   border-inline-end-width: var(--cx-border-width);
@@ -6563,7 +6558,7 @@ textarea.form-input {
   -webkit-print-color-adjust: exact;
   color-adjust: exact;
   print-color-adjust: exact;
-  background-image: var(--cx-icon), var(--cx-bg-gradient);
+  background-image: var(--cx-icon);
 }
 .check-input[type=checkbox] {
   border-radius: 0.125rem;
@@ -6636,7 +6631,7 @@ textarea.form-input {
 }
 .form-switch .check-input {
   width: 2em;
-  background-image: var(--cx-form-switch-icon), var(--cx-bg-gradient);
+  background-image: var(--cx-form-switch-icon);
   background-position: left center;
   border-radius: 2em;
   transition: background-position 0.15s ease-in-out;
@@ -6723,7 +6718,6 @@ textarea.form-input {
   -webkit-appearance: none;
   appearance: none;
   background-color: var(--cx-form-range-thumb-color);
-  background-image: var(--cx-bg-gradient);
   border: 0;
   border-radius: 1rem;
   -webkit-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -6737,7 +6731,6 @@ textarea.form-input {
 }
 .form-range::-webkit-slider-thumb:active {
   background-color: var(--cx-form-range-thumb-active);
-  background-image: var(--cx-bg-gradient);
 }
 .form-range::-webkit-slider-runnable-track {
   width: 100%;
@@ -6754,7 +6747,6 @@ textarea.form-input {
   -moz-appearance: none;
   appearance: none;
   background-color: var(--cx-form-range-thumb-color);
-  background-image: var(--cx-bg-gradient);
   border: 0;
   border-radius: 1rem;
   -moz-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -6768,7 +6760,6 @@ textarea.form-input {
 }
 .form-range::-moz-range-thumb:active {
   background-color: var(--cx-form-range-thumb-active);
-  background-image: var(--cx-bg-gradient);
 }
 .form-range::-moz-range-track {
   width: 100%;
@@ -7233,7 +7224,6 @@ textarea.form-input {
   -moz-user-select: none;
   user-select: none;
   background-color: var(--cx-bg-color);
-  background-image: var(--cx-bg-gradient);
   transition: var(--cx-transition);
 }
 @media (prefers-reduced-motion: reduce) {
@@ -7272,7 +7262,6 @@ textarea.form-input {
   --cx-button-disabled-border-color: transparent;
   --cx-box-shadow: 0 0 0 #000;
   text-decoration: underline;
-  background-image: none;
 }
 .button.link:focus-visible {
   color: var(--cx-fg-color);
@@ -7423,7 +7412,6 @@ textarea.form-input {
   -moz-user-select: none;
   user-select: none;
   background-color: var(--cx-bg-color);
-  background-image: var(--cx-bg-gradient);
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -7897,19 +7885,16 @@ textarea.form-input {
 .dropdown-item:hover, .dropdown-item:focus {
   color: var(--cx-link-hover-fg-color);
   background-color: var(--cx-link-hover-bg-color);
-  background-image: var(--cx-bg-gradient);
 }
 .dropdown-item.active, .dropdown-item:active {
   color: var(--cx-link-active-fg-color);
   text-decoration: none;
   background-color: var(--cx-link-active-bg-color);
-  background-image: var(--cx-bg-gradient);
 }
 .dropdown-item.disabled, .dropdown-item:disabled {
   color: var(--cx-link-disabled-fg-color);
   pointer-events: none;
   background-color: transparent;
-  background-image: none;
 }
 
 .dropdown-menu.show {
@@ -8024,7 +8009,6 @@ textarea.form-input {
 .nav-pills .show > .nav-link {
   color: var(--cx-active-fg-color);
   background-color: var(--cx-active-bg-color);
-  background-image: var(--cx-bg-gradient);
 }
 
 .nav-underline {
@@ -8170,7 +8154,6 @@ textarea.form-input {
   align-items: center;
   justify-content: space-between;
   padding: var(--cx-navbar-padding-y) var(--cx-navbar-padding-x);
-  background-image: var(--cx-bg-gradient);
 }
 .navbar > .container.\32 xlarge, .navbar > .container.xlarge, .navbar > .container.large, .navbar > .container.medium, .navbar > .container.small, .navbar > .container,
 .navbar > .container-fluid {
@@ -9162,7 +9145,6 @@ textarea.form-input {
   z-index: 3;
   color: var(--cx-pagination-active-fg-color, var(--cx-primary-fg-solid));
   background-color: var(--cx-pagination-active-bg-color, var(--cx-primary-bg-solid));
-  background-image: var(--cx-bg-gradient);
   border-color: var(--cx-pagination-active-border-color, var(--cx-primary-bg-solid));
 }
 .page-link.disabled, .disabled > .page-link {
@@ -10616,12 +10598,10 @@ textarea.form-input {
 
 .carousel-control-prev {
   left: 0;
-  background-image: linear-gradient(90deg, oklch(from #000 l c h / 0.25), oklch(from #000 l c h / 0.001));
 }
 
 .carousel-control-next {
   right: 0;
-  background-image: linear-gradient(270deg, oklch(from #000 l c h / 0.25), oklch(from #000 l c h / 0.001));
 }
 
 .carousel-control-prev-icon,

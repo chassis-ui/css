@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.3] - 2026-05-03
+
+### Changed
+- `$enable-responsive-gradients` default value changed to `false`
+
+### Fixed
+- Added `scss-docs` start/end markers to `opacity-var()`, `to-color()`, and `to-opacity()` in `_color.scss` for documentation extraction
+- Fixed `cleanPublicDirectory()` to delete directory contents rather than the directory itself, preventing `ENOTEMPTY` errors on macOS and Windows caused by OS-managed metadata files
+- Fixed misplaced parenthesis in `copyStaticRecursively()` that caused `{ recursive: true }` to be ignored in `mkdirSync`
+- Fixed documentation issues in Sass customization, background, colors, and focus-ring pages
+- Removed unused shortcode components (`CSSOnly`, `DeprecatedIn`, `InFigma`)
+
+## [0.2.2] - 2026-05-03
+
+### Fixed
+- Fixed `publish-release.yml` GitHub Actions workflow
+
+## [0.2.1] - 2026-05-03
+
+### Fixed
+- Added `publishConfig` to `package.json` for correct npm registry targeting
+- Removed `pnpm-workspace.yaml` (not needed for single-package repo)
+- Fixed deployment configuration issues
+
 ## [0.2.0] - 2026-05-03
 
 ### Added
@@ -178,6 +202,11 @@ The project was transferred to the chassis-ui organization, establishing it as a
 
 ---
 
+[0.2.3]: https://github.com/chassis-ui/css/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/chassis-ui/css/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/chassis-ui/css/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/chassis-ui/css/compare/v0.1.2...v0.2.0
+[0.1.2]: https://github.com/chassis-ui/css/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/chassis-ui/css/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/chassis-ui/css/compare/v0.0.1...v0.1.0
 [0.0.1]: https://github.com/chassis-ui/css/releases/tag/v0.0.1
