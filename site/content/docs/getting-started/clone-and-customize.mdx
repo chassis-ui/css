@@ -6,84 +6,83 @@ toc: true
 
 Chassis CSS is designed to be cloned and owned. You don't configure it with a few Sass variables; you replace its token foundation with yours, adapt the settings to your needs, and ship a CSS build that belongs entirely to your product.
 
+If you only need Chassis as a dependency in an existing project — without forking the framework — see [Installation]([[docsref:/getting-started/installation]]) instead.
+
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) 18 or later
 - [pnpm](https://pnpm.io/) (the project uses pnpm workspaces)
 - A built output from [Chassis Tokens](https://github.com/chassis-ui/tokens) for your brand, or the default `chassis` brand to start
 
-## 1. Clone the repository
+## Extending the framework
 
-```shell
-git clone https://github.com/chassis-ui/css.git my-design-system
-cd my-design-system
-pnpm install
-```
+To extend the framework, you clone the repository, connect your token build, configure the settings, and build your CSS. The resulting CSS is yours to ship and maintain as you see fit.
 
-## 2. Connect your token build
+1. ### Clone the repository
+   
+    ```shell
+    git clone https://github.com/chassis-ui/css.git my-design-system
+    cd my-design-system
+    pnpm install
+    ```
 
-Chassis CSS loads design tokens from `@chassis-ui/tokens` via `scss/_vendor.scss`. This file contains a single import — the path to your token build's `main.scss`:
+2. ### Connect your tokens
 
-```scss
-// scss/_vendor.scss
-@import "../node_modules/@chassis-ui/tokens/dist/web/{brand}/{app}/main";
-```
+    Chassis CSS loads design tokens from `@chassis-ui/tokens` via `scss/_vendor.scss`. This file contains a single import — the path to your token build's `main.scss`, and imported in several places across the framework's source Sass files (e.g. `scss/chassis.scss`, `scss/test/**/*.scss`):
 
-The `{brand}` and `{app}` segments correspond to the brand and app names you configured when building Chassis Tokens. For example, a `docs` app build for the `chassis` brand:
+    ```scss
+    // scss/_vendor.scss
+    @import "@chassis-ui/tokens/dist/web/{brand}/{app}/main";
+    ```
 
-```scss
-@import "../node_modules/@chassis-ui/tokens/dist/web/docs/chassis/main";
-```
+    The `{brand}` and `{app}` segments correspond to the brand and app names you configured when building Chassis Tokens. For example, a `docs` app build for the `chassis` brand:
 
-The token file provides all the `$cx-*` Sass variables that `scss/tokens/` maps to Chassis CSS's internal variable names. If you're starting without a custom token build, the default `chassis` brand tokens are included in the package and work out of the box.
+    ```scss
+    @import "@chassis-ui/tokens/dist/web/docs/chassis/main";
+    ```
 
-### Color mode and screen size token files
+    The token file provides all the `$cx-*` Sass variables that `scss/tokens/` maps to Chassis CSS's internal variable names. If you're starting without a custom token build, the default `chassis` brand tokens are included in the package and work out of the box.
 
-In addition to `main.scss`, the token build produces separate files for color modes and screen sizes:
+    #### Color modes
 
-```scss
-// Light and dark color palettes
-@import "...dist/web/{brand}/{app}/color-light";
-@import "...dist/web/{brand}/{app}/color-dark";
+    While Chassis CSS maps all light and dark color tokens using `main.scss`, the token build produces separate files for color modes if you want to customize the theming system beyond the default:
 
-// Responsive number tokens (spacing, sizing)
-@import "...dist/web/{brand}/{app}/number-small";
-@import "...dist/web/{brand}/{app}/number-medium";
-@import "...dist/web/{brand}/{app}/number-large";
-```
+    ```scss
+    // Light and dark color palettes
+    @import "...dist/web/{brand}/{app}/color-light";
+    @import "...dist/web/{brand}/{app}/color-dark";
+    ```
 
-These are loaded automatically by Chassis CSS's `scss/root.scss` at the correct breakpoints. You don't need to import them manually unless you're customizing the root output.
+3. ### Configure the settings
 
-## 3. Configure feature flags
+    `scss/_settings.scss` controls which framework features are active. All variables use `!default`, so you can override them in a file you import *before* the framework. The most commonly changed settings:
 
-`scss/_settings.scss` controls which framework features are active. All variables use `!default`, so you can override them in a file you import *before* the framework. The most commonly changed settings:
+    ```scss
+    // your-settings.scss — import this before chassis.scss
+    $enable-dark-mode:          true;   // false to ship light mode only
+    $enable-exclude-strokes:    true;   // see Core Concepts > Box Model
+    $enable-rfs:                false;  // responsive font scaling
+    $color-mode-type:           data;   // 'data' (data-cx-theme attr) or 'media-query'
+    ```
 
-```scss
-// your-settings.scss — import this before chassis.scss
-$enable-dark-mode:          true;   // false to ship light mode only
-$enable-exclude-strokes:    true;   // see Core Concepts > Box Model
-$enable-rfs:                false;  // responsive font scaling
-$color-mode-type:           data;   // 'data' (data-cx-theme attr) or 'media-query'
-```
+    See [Options]([[docsref:/customize/options]]) for the full list.
 
-See [Options]([[docsref:/customize/options]]) for the full list.
+4. ### Build your CSS
 
-## 4. Build your CSS
+    ```shell
+    # Development build with source maps
+    pnpm build
 
-```shell
-# Development build with source maps
-pnpm build
+    # Watch mode
+    pnpm watch
 
-# Watch mode
-pnpm watch
+    # Production build (minified)
+    pnpm build:prod
+    ```
 
-# Production build (minified)
-pnpm build:prod
-```
+    The output goes to `dist/css/`. You can configure the output paths in `package.js`.
 
-The output goes to `dist/css/`. You can configure the output paths in `package.js`.
-
-## Importing the framework in your own project
+## Importing in your project
 
 If your project has its own SCSS build pipeline, import Chassis CSS as a source dependency rather than a compiled stylesheet. The correct import order is:
 

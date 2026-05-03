@@ -19,11 +19,26 @@ Three pieces work together:
 
 ### Placeholder selector
 
-The `%context` placeholder declares the context-scoped variables and iterates over `$context-colors` to generate one nested selector per color:
+The `%context` placeholder declares the full set of context-scoped variables, iterates over `$context-colors` to generate one nested selector per color, and extends `%basic-context` so the basic style applies whenever `.context` is used without a style modifier. The shape of it:
 
-<ScssDocs name="context-placeholder-selector" file="scss/placeholders/_context.scss" />
+```scss
+%context {
+  // 36 context-scoped variables, each pointing at the active body context
+  --cx-fg-main: var(--cx-context-fg-main, var(--cx-{body-context}-fg-main));
+  --cx-bg-main: var(--cx-context-bg-main, var(--cx-{body-context}-bg-main));
+  // … one declaration per palette token
 
-It also extends `%basic-context` so the basic style is the default whenever `.context` is used without a style modifier.
+  // One nested selector per context color, each remapping the variables above
+  @each $color in map-keys($context-colors) {
+    &.#{$color} { @include context($color); }
+  }
+
+  // Basic style is the default
+  @extend %basic-context;
+}
+```
+
+The full source — including every variable declaration — lives under [Sass mixins → Context placeholder](#context-placeholder).
 
 ### Style placeholders
 
@@ -101,9 +116,15 @@ Adding a style modifier controls how the palette tokens are mapped onto each vis
 
 ## Sass mixins
 
+### Context placeholder
+
+The full source of `%context` — every variable declaration, the loop over `$context-colors`, and the `@extend %basic-context` — referenced from [How it works](#placeholder-selector) above:
+
+<ScssDocs name="context-placeholder-selector" file="scss/placeholders/_context.scss" />
+
 ### Context mixin
 
-The `context()` mixin generates the variable assignments for a single palette. Pass it a color name and a style and it emits the CSS rules that point the context variables at that palette.
+The `context()` mixin generates the variable assignments for a single palette. Pass it a color name and it emits the CSS rules that point the context-scoped variables at that palette.
 
 <ScssDocs name="context-mixin" file="scss/mixins/_context.scss" />
 

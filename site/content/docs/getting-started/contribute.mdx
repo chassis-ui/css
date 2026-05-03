@@ -1,65 +1,93 @@
 ---
 title: Contribute
-description: Help develop Chassis CSS with our documentation build scripts and tests.
+description: Set up the Chassis CSS project locally — pnpm workflow, the Astro-powered docs site, and the test suite.
 toc: true
-aliases: "[[docsref:/getting-started/build-tools]]"
-added:
-  show_badge: false
-  version: "5.1"
+aliases:
+  - "[[docsref:/getting-started/build-tools]]"
 ---
+
+This page is for contributors working on Chassis CSS itself. If you only want to use Chassis in your own project, [Installation]([[docsref:/getting-started/installation]]) and [Clone and Customize]([[docsref:/getting-started/clone-and-customize]]) cover what you need.
+
 ## Tooling setup
 
-Chassis CSS uses [npm scripts](https://docs.npmjs.com/misc/scripts/) to build the documentation and compile source files. Our [package.json]([[config:repo]]/blob/v[[config:current_version]]/package.json) houses these scripts for compiling code, running tests, and more. These aren’t intended for use outside our repository and documentation.
+Chassis CSS is a [pnpm workspace](https://pnpm.io/workspaces). Local development depends on Node and pnpm; the documentation site is built with [Astro](https://astro.build/).
 
-To use our build system and run our documentation locally, you’ll need a copy of Chassis CSS’s source files and Node. Follow these steps and you should be ready to rock:
+1. **Install Node.js 18 or later.** [nodejs.org](https://nodejs.org/) ships installers; Volta and nvm are good options if you manage multiple Node versions.
+2. **Install pnpm.** Either via Corepack (`corepack enable && corepack prepare pnpm@latest --activate`) or directly: see [pnpm.io/installation](https://pnpm.io/installation).
+3. **Fork and clone the repository.**
 
-1. [Download and install Node.js](https://nodejs.org/en/download/), which we use to manage our dependencies.
-2. Either [download Chassis CSS’s sources]([[config:download.source]]) or fork and clone [Chassis CSS’s repository]([[config:repo]]).
-3. Navigate to the root `/chassis` directory and run `npm install` to install our local dependencies listed in [package.json]([[config:repo]]/blob/v[[config:current_version]]/package.json).
+   ```sh
+   git clone https://github.com/chassis-ui/css.git
+   cd css
+   pnpm install
+   ```
 
-When completed, you’ll be able to run the various commands provided from the command line.
+   `pnpm install` resolves and installs every workspace dependency, including the documentation site and the linked `@chassis-ui/tokens` and `@chassis-ui/icons` packages.
 
-## Using npm scripts
+When the install finishes, the scripts documented below are ready to run.
 
-Our [package.json]([[config:repo]]/blob/v[[config:current_version]]/package.json) includes numerous tasks for developing the project. Run `npm run` to see all the npm scripts in your terminal. **Primary tasks include:**
+## pnpm scripts
+
+The full list of scripts lives in [`package.json`]([[config:repo]]/blob/main/package.json). The ones you'll use most often:
 
 <CxTable>
-| Task | Description |
+| Command | What it does |
 | --- | --- |
-| `npm start` | Compiles CSS and JavaScript, builds the documentation, and starts a local server. |
-| `npm run dist` | Creates the `dist/` directory with compiled files. Uses [Sass](https://sass-lang.com/), [Autoprefixer](https://github.com/postcss/autoprefixer), and [terser](https://github.com/terser/terser). |
-| `npm test` | Runs tests locally after running `npm run dist` |
-| `npm run docs-serve` | Builds and runs the documentation locally. |
+| `pnpm dev` | Compiles CSS and JS in watch mode and starts the docs site dev server. The fastest feedback loop for working on the framework or the docs. |
+| `pnpm dist` | Produces the full `dist/` output — compiled, prefixed, RTL-converted, and minified CSS and JS. |
+| `pnpm test` | Lints CSS and JS, builds the distribution, runs the Sass test suite, runs the JS test suite, builds the docs site, and lints the built docs. The full pre-merge check. |
+| `pnpm css:compile` | Compiles SCSS to CSS using Dart Sass with source maps. |
+| `pnpm css:test` | Runs the Sass test suite (`scss/tests/`). |
+| `pnpm js:test` | Runs the Karma test suite for the JS plugins. |
+| `pnpm site:build` | Builds the static docs site for production. |
 </CxTable>
 
-<Callout name="info-npm-starter" />
+Run `pnpm run` with no arguments to see every available script.
 
 ## Sass
 
-Chassis CSS uses [Dart Sass](https://sass-lang.com/dart-sass/) for compiling our Sass source files into CSS files (included in our build process), and we recommend you do the same if you’re compiling Sass using your own asset pipeline. We previously used Node Sass for Chassis CSS v4, but LibSass and packages built on top of it, including Node Sass, are now [deprecated](https://sass-lang.com/blog/libsass-is-deprecated/).
+Chassis CSS uses [Dart Sass](https://sass-lang.com/dart-sass/). The Sass build runs at precision 10 (Dart Sass's default for efficiency) and the output is post-processed with Autoprefixer and minified with [clean-css](https://github.com/clean-css/clean-css). If you produce a custom build outside the project's tooling, keep precision at 6 or higher to avoid sub-pixel rounding artefacts.
 
-Dart Sass uses a rounding precision of 10 and for efficiency reasons does not allow adjustment of this value. We don’t lower this precision during further processing of our generated CSS, such as during minification, but if you chose to do so we recommend maintaining a precision of at least 6 to prevent issues with browser rounding.
+[Sass deprecation warnings](https://sass-lang.com/documentation/breaking-changes/) appear during compile when a transitional Sass syntax is used. They don't block the build. The project [tracks the long-term cleanup work]([[config:repo]]/issues) — silencing the warnings in your local config is fine in the meantime.
 
 ## Autoprefixer
 
-Chassis CSS uses [Autoprefixer](https://github.com/postcss/autoprefixer) (included in our build process) to automatically add vendor prefixes to some CSS properties at build time. Doing so saves us time and code by allowing us to write key parts of our CSS a single time while eliminating the need for vendor mixins like those found in v3.
-
-We maintain the list of browsers supported through Autoprefixer in a separate file within our GitHub repository. See [.browserslistrc]([[config:repo]]/blob/v[[config:current_version]]/.browserslistrc) for details.
+Compiled CSS is post-processed with [Autoprefixer](https://github.com/postcss/autoprefixer) using the targets defined in [`.browserslistrc`]([[config:repo]]/blob/main/.browserslistrc). The build invokes Autoprefixer automatically; if you compile Chassis from source in your own pipeline, run Autoprefixer on the output to match the support matrix in our distribution build.
 
 ## RTLCSS
 
-Chassis CSS uses [RTLCSS](https://rtlcss.com/) to process compiled CSS and convert them to RTL – basically replacing horizontal direction aware properties (e.g. `padding-left`) with their opposite. It allows us only write our CSS a single time and make minor tweaks using RTLCSS [control](https://rtlcss.com/learn/usage-guide/control-directives/) and [value](https://rtlcss.com/learn/usage-guide/value-directives/) directives.
+The RTL builds (`dist/css/chassis.rtl.css` and friends) are produced by [RTLCSS](https://rtlcss.com/) running over the LTR output. Maintaining a single source for both directions cuts the maintenance cost and keeps them in sync. RTLCSS [control directives](https://rtlcss.com/learn/usage-guide/control-directives/) and [value directives](https://rtlcss.com/learn/usage-guide/value-directives/) are used in a few places where mechanical flipping isn't enough — see [RTL]([[docsref:/getting-started/rtl]]) for examples.
 
-## Local documentation
+## Documentation site
 
-Running our documentation locally requires the use of Astro. Astro is a modern static site generator that allows us to build our documentation with a combination of Markdown and React components. Here’s how to get it started:
+The documentation is a static [Astro](https://astro.build/) site under `site/`. To run it locally:
 
-1. Run through the [tooling setup](#tooling-setup) above to install all dependencies.
-2. From the root `/chassis` directory, run `npm run docs-serve` in the command line.
-3. Open `http://localhost:4321/` in your browser, and voilà.
+1. Run through the [tooling setup](#tooling-setup) above so dependencies are installed.
+2. From the project root, run `pnpm dev`.
+3. Open [`http://localhost:4323/`](http://localhost:4323/) in your browser. Edits to the docs MDX files hot-reload automatically.
 
-Learn more about using Astro by reading its [documentation](https://docs.astro.build/en/getting-started/).
+The site source is in `site/`; content lives under `site/content/docs/`. Astro's [documentation](https://docs.astro.build/) covers the rendering side of the stack.
 
 ## Troubleshooting
 
-Should you encounter problems with installing dependencies, uninstall all previous dependency versions (global and local). Then, rerun `npm install`.
+If a fresh clone refuses to install or build cleanly:
+
+```sh
+rm -rf node_modules pnpm-lock.yaml
+pnpm install
+```
+
+If the Sass test suite reports unexpected failures, regenerate the snapshot output the suite expects:
+
+```sh
+pnpm css:compile
+pnpm css:test
+```
+
+For anything that survives those resets, [open an issue]([[config:repo]]/issues/new/choose) with the failing command and your environment (Node version, pnpm version, OS).
+
+## Further reading
+
+- [Astro documentation](https://docs.astro.build/) — the docs site renderer.
+- [Dart Sass changelog](https://sass-lang.com/documentation/breaking-changes/) — context on the deprecation warnings.
+- [`.browserslistrc`]([[config:repo]]/blob/main/.browserslistrc) — the canonical browser-support list.

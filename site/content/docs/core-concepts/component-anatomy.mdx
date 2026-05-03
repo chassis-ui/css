@@ -1,0 +1,153 @@
+---
+title: Component Anatomy
+description: How Chassis CSS components are built — CSS variables, placeholder extends, and a small set of mixins that turn design tokens into ready-to-use classes.
+toc: true
+aliases:
+  - "[[docsref:/customize/components]]"
+  - "[[docsref:/core-concepts/component-architecture]]"
+---
+
+Every Chassis CSS component follows the same recipe: a base class declares the component's CSS variables (sourced from design tokens), extends a few placeholder selectors to inherit shared behaviour, and calls a handful of mixins to apply those variables to actual properties. The pattern keeps the source short, the output consistent, and the result fully theme-aware.
+
+This page walks through the recipe using two real components as worked examples — `.notification` (a self-contained context-aware container) and `.list-action` (which layers an interactive state onto an existing component) — then summarises the building blocks you can reuse.
+
+## The recipe
+
+A typical component is built from four moving parts.
+
+**1. CSS variables, sourced from tokens.** The class declares its own CSS variables and points each one at a design-token value (with the corresponding token-side fallback). This is what makes the component customizable: any consumer can override the variable on an ancestor or on the element itself without touching the source. See [Design Tokens]([[docsref:/core-concepts/design-tokens]]) for the token side of this.
+
+**2. Placeholder extends.** Most components extend `%component` to inherit typography, color, border, and border-radius assignments. Context-aware components also extend `%context` so they can react to the [Context Class]([[docsref:/core-concepts/context-class]]) on themselves or on an ancestor. Interactive items extend `%interactive` to pick up hover, focus, active, and disabled states.
+
+**3. Mixins.** A small set of mixins in `scss/mixins/_component.scss` wires the CSS variables onto actual properties. They handle the parts that don't fit cleanly into a placeholder — for instance, padding that varies per component, or the stroke-exclusion calculation.
+
+**4. The component's own rules.** Layout, positioning, gaps, and any structural CSS unique to the component round out the class.
+
+## Worked example: `.notification`
+
+`.notification` is a banner with optional title, icon, and dismiss button. It needs full theming, contextual color variants, and pixel-perfect padding regardless of border width — so it's a fair representative of the pattern.
+
+```scss
+.notification {
+  @extend %context, %component;
+  --#{$prefix}bg-color: var(--#{$prefix}notification-bg-color, #{$notification-bg-color});
+  --#{$prefix}padding-y: var(--#{$prefix}notification-padding-y, #{$notification-padding-y});
+  --#{$prefix}padding-x: var(--#{$prefix}notification-padding-x, #{$notification-padding-x});
+  --#{$prefix}gap: var(--#{$prefix}notification-gap, #{$notification-gap});
+  --#{$prefix}border-width: var(--#{$prefix}notification-border-width, #{$notification-border-width});
+  --#{$prefix}border-radius: var(--#{$prefix}notification-border-radius, #{$notification-border-radius});
+
+  position: relative;
+  gap: var(--#{$prefix}gap);
+  @include exclude-strokes(notification);
+  @include last-mb-0();
+
+  &.solid { @extend %solid-context; }
+}
+```
+
+Three things to notice:
+
+- **Variables are namespaced first, then aliased to the canonical names.** `--cx-padding-y` reads from `--cx-notification-padding-y`, which itself falls back to the `$notification-padding-y` Sass token. A consumer can therefore override `--cx-notification-padding-y` to retheme one notification, or `--cx-padding-y` to retheme this single instance, without ever touching the source. The same pattern applies to color, gap, and border properties.
+- **`%component` and `%context` carry the heavy lifting.** `%component` includes the typography, color, border, and border-radius mixins; `%context` exposes every context-scoped variable so the notification reacts to a `.context primary` (or any other) ancestor. Adding `.solid` extends `%solid-context` to flip the palette to the filled variant.
+- **`exclude-strokes(notification)` and `last-mb-0()` are the only direct mixin calls.** The first keeps the visual padding pixel-aligned with Figma regardless of border width (see [Box Model]([[docsref:/core-concepts/box-model#stroke-exclusion]])). The second extends the `.last-mb-0` utility so a trailing paragraph inside the notification doesn't add unwanted margin.
+
+## Worked example: `.list-action`
+
+`.list-action` is a different shape of customization: it doesn't define a new component — it adds an interaction layer to an existing one (`.list-item`).
+
+```scss
+.list-group.list-action > .list-item,
+.list-group > .list-item.list-action {
+  @extend %interactive;
+
+  &.active,
+  &.active:hover {
+    @extend %context, %solid-context;
+    --#{$prefix}fg-color: var(--#{$prefix}fg-active);
+    --#{$prefix}bg-color: var(--#{$prefix}bg-active);
+    z-index: 2; // Place active items above their siblings for proper border styling
+  }
+}
+```
+
+The pattern here is composition rather than authorship:
+
+- **`%interactive` adds the state behaviour.** Hover, focus, active, and disabled — all driven by CSS variables, so the colours adapt automatically to whatever palette is active on the parent `.list-group`.
+- **The active state opts in to a context palette on demand.** Extending `%context, %solid-context` inside `&.active` means a selected item adopts a filled, context-coloured treatment without needing a permanent `.context` class on every list item.
+- **No new variables are declared.** `.list-action` rides on the variables that `.list-item` already exposes, so customizations to the parent component flow through automatically.
+
+Use this approach whenever you need a behaviour modifier that should compose with — rather than replace — an existing component.
+
+## Building blocks
+
+All the pieces the recipe relies on live in three folders. Pick the one that fits and `@extend` or `@include` it.
+
+### Component placeholders
+
+`scss/placeholders/_component.scss` provides the foundational placeholders:
+
+- **`%component`** — typography + colors + border + border-radius. The default extend for any component that needs the full Chassis treatment.
+- **`%typography`** — font properties only.
+- **`%colors`** — color, background-color, and border-color only.
+- **`%border`** — border shorthand only.
+
+Other placeholder files cover specialised behaviour: `%context` and the four style placeholders (`%basic-context`, `%solid-context`, `%smooth-context`, `%outline-context`) live in `_context.scss`; `%interactive` in `_interactive.scss`.
+
+### Component mixins
+
+`scss/mixins/_component.scss` exposes four mixins for direct use, each accepting an optional component namespace string:
+
+<ScssDocs name="colors-mixin" file="scss/mixins/_component.scss" />
+<ScssDocs name="padding-mixin" file="scss/mixins/_component.scss" />
+<ScssDocs name="border-mixin" file="scss/mixins/_component.scss" />
+<ScssDocs name="last-mb-0-mixin" file="scss/mixins/_component.scss" />
+
+Plus the stroke-exclusion mixin, which subtracts the border width from the padding so visual spacing matches the design token. It's documented in detail under [Box Model → Stroke exclusion]([[docsref:/core-concepts/box-model#stroke-exclusion]]):
+
+<ScssDocs name="exclude-strokes-mixin" file="scss/mixins/_component.scss" />
+
+When `$comp` is supplied to the namespaced mixins, they read from `--cx-{comp}-{property}` instead of `--cx-{property}` — useful if a component needs to keep its variables namespaced rather than aliased onto the canonical CSS variables.
+
+## Building your own component
+
+Putting it together, a custom component that wants the same theming and contextual behaviour as the built-ins follows this skeleton:
+
+```scss
+.my-component {
+  // 1. Inherit shared behaviour
+  @extend %component;             // typography + colors + border + border-radius
+  @extend %context;               // optional: react to .context.* on ancestors
+
+  // 2. Declare component-scoped CSS variables, with token fallbacks
+  --#{$prefix}padding-y: var(--#{$prefix}my-component-padding-y, #{$my-component-padding-y});
+  --#{$prefix}padding-x: var(--#{$prefix}my-component-padding-x, #{$my-component-padding-x});
+  --#{$prefix}border-radius: var(--#{$prefix}my-component-border-radius, #{$my-component-border-radius});
+
+  // 3. Wire the variables onto properties via mixins
+  @include exclude-strokes(my-component);   // or @include padding();
+
+  // 4. Component-specific layout
+  display: inline-flex;
+  align-items: center;
+
+  // 5. Optional: opt in to context style modifiers
+  &.solid   { @extend %solid-context; }
+  &.smooth  { @extend %smooth-context; }
+  &.outline { @extend %outline-context; }
+}
+```
+
+A few practical tips:
+
+- Keep component-specific values namespaced (`--cx-my-component-*`) and alias them onto the canonical names (`--cx-padding-y`, `--cx-bg-color`, …) inside the component. That gives consumers two override surfaces — one per component, one per element — without you doing extra work.
+- Reach for a placeholder before a mixin. Placeholders compile down to grouped selectors and shrink the output; mixins inline the same rules into every callsite.
+- If you need responsive variants, pair `@each $breakpoint in map-keys($grid-breakpoints)` with `media-breakpoint-up` — the same pattern Chassis uses for the dropdown alignment classes and the horizontal list group:
+
+<ScssDocs name="responsive-breakpoints" file="scss/_dropdown.scss" />
+
+`$grid-breakpoints` is itself just a Sass map; modify it and every loop that iterates over it adapts on the next compile:
+
+<ScssDocs name="grid-breakpoints" file="scss/_variables.scss" />
+
+For the wider Sass-map and loop pattern — including how to add, modify, or remove entries from these maps — see [Sass maps and loops]([[docsref:/customize/sass#maps-and-loops]]).

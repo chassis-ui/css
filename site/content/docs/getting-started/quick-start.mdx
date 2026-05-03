@@ -1,0 +1,93 @@
+---
+title: Quick Start
+description: Drop the compiled Chassis CSS into a single HTML file and see what it looks like — no npm, no bundler, no build step.
+toc: true
+aliases:
+  - "[[docsref:/getting-started/introduction]]"
+---
+
+The fastest way to try Chassis is to load the pre-compiled CSS into an HTML file and open it in a browser. No build step, no package manager, no configuration. Use this approach to evaluate Chassis or to prototype a layout before investing in a real build pipeline.
+
+For a real project, you'll want [Installation]([[docsref:/getting-started/installation]]) instead — the pre-built CSS uses the default Chassis brand and default settings, so you can't override tokens or feature flags without recompiling.
+
+## Try it in one HTML file
+
+Create an `index.html` file with the markup below. The pre-built `chassis.min.css` is in `dist/css/` of the `@chassis-ui/css` package; you can either install the package (`npm install @chassis-ui/css`) and reference it from `node_modules/`, or download a release archive from the repository and reference it directly.
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chassis CSS quick start</title>
+    <link rel="stylesheet" href="node_modules/@chassis-ui/css/dist/css/chassis.min.css">
+  </head>
+  <body>
+    <main class="container py-large">
+      <h1 class="mb-medium">Hello, Chassis</h1>
+      <p class="fg-subtle mb-large">A button, a notification, a card — rendered with the default brand and settings.</p>
+
+      <button class="button primary">Primary button</button>
+      <button class="button outline">Outline button</button>
+
+      <div class="notification info my-large">
+        Chassis ships with sensible defaults so a page like this looks reasonable with zero configuration.
+      </div>
+    </main>
+
+    <!-- Optional: only needed if you use interactive components -->
+    <script src="node_modules/@chassis-ui/css/dist/js/chassis.bundle.min.js"></script>
+  </body>
+</html>
+```
+
+Open the file in a browser. You should see a styled heading, two buttons, and an info notification. That's a default Chassis page.
+
+## Required HTML
+
+A few things in the markup above are non-negotiable:
+
+- **HTML5 doctype.** `<!doctype html>` on the first line. Without it, browsers run in quirks mode and several Chassis styles render unpredictably.
+- **Viewport meta.** `<meta name="viewport" content="width=device-width, initial-scale=1">`. Chassis is designed mobile-first; without the viewport tag, mobile devices render the page at desktop width and scale it down.
+- **Language attribute.** `<html lang="en">` (or whatever language). Required for accessibility and for some Chassis features (`dir="rtl"` for right-to-left layouts; see [RTL]([[docsref:/getting-started/rtl]])).
+
+## What you get with the pre-built CSS
+
+The compiled bundle includes everything Chassis ships: the reset, the type system, the layout grid, every component, and every utility — built with the default `chassis` brand tokens and the default `$enable-*` settings.
+
+What you don't get without a build:
+
+- **Token overrides.** The pre-built CSS is fixed at the brand it was compiled for. To use your own colors, typography, or spacing, you need to point Chassis at a different `@chassis-ui/tokens` build and recompile.
+- **Settings overrides.** Flags like `$enable-rfs`, `$enable-dark-mode`, or `$enable-component-shadows` are baked in at compile time. To change them, you need a Sass build.
+- **Tree-shaking.** The pre-built bundle includes every component and utility. To ship only what you use, import from source via [Sass]([[docsref:/customize/sass]]).
+
+When you're ready for any of those, move on to [Installation]([[docsref:/getting-started/installation]]).
+
+## JavaScript components
+
+Several Chassis components require JavaScript to function. If you only use static layout and content, you can omit the `<script>` tag entirely. The components that need it are:
+
+- **Accordion** — expand/collapse panels
+- **Carousel** — slide behaviours, controls, indicators
+- **Chip** — dismissible chips
+- **Collapse** — show/hide content
+- **Dropdown** — positioning and toggle (also requires Popper)
+- **Modal** — display, focus management, scroll behaviour
+- **Notification** — dismiss
+- **Offcanvas** — slide-in panels
+- **Popover** — display and positioning (also requires Popper)
+- **ScrollSpy** — scroll-linked navigation updates
+- **Tab** — tabbed interfaces
+- **Toast** — display and dismiss
+- **Tooltip** — display and positioning (also requires Popper)
+
+The `chassis.bundle.min.js` file in the example above includes Popper. If you don't use dropdowns, popovers, or tooltips, you can swap it for the smaller `chassis.min.js` and skip Popper.
+
+See [JavaScript]([[docsref:/getting-started/javascript]]) for data attributes, the programmatic API, and event names.
+
+## Next steps
+
+- [Installation]([[docsref:/getting-started/installation]]) — the real setup with custom tokens and settings.
+- [What is Chassis?]([[docsref:/getting-started/what-is-chassis]]) — the conceptual frame for everything else in these docs.
+- [Core Concepts]([[docsref:/core-concepts/overview]]) — design tokens, the color system, the context class, and component anatomy.

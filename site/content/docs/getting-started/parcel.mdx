@@ -1,52 +1,46 @@
 ---
-title: Chassis CSS and Parcel
-description: The official guide for how to include and bundle Chassis CSS’s CSS and JavaScript in your project using Parcel.
+title: Parcel
+description: Bundle Chassis CSS and JavaScript with Parcel — zero-config Sass detection and the import order that keeps tokens loading first.
 toc: true
 ---
 
-<Callout>
-**Want to skip to the end?** Download the source code and working demo for this guide from the [twbs/examples repository](https://github.com/twbs/examples/tree/main/parcel). You can also [open the example in StackBlitz](https://stackblitz.com/github/twbs/examples/tree/main/parcel?file=index.html) but not run it because Parcel isn’t currently supported there.
-</Callout>
+[Parcel](https://parceljs.org/) is a zero-configuration web application bundler. It automatically installs language transformers as it detects them, which makes it the lightest of the three guides — most of the work is just creating files and importing things in the right order.
 
-## What is Parcel?
-
-[Parcel](https://parceljs.org/) is a web application bundler designed to simplify the development process with a zero-configuration setup out of the box. It offers features found in more advanced bundlers while focusing on ease of use, making it ideal for developers seeking a quick start.
+If you've read [Installation]([[docsref:/getting-started/installation]]), the moving parts are familiar; this guide just shows how they fit into a Parcel project.
 
 ## Setup
 
-We’re building a Parcel project with Chassis CSS from scratch, so there are some prerequisites and upfront steps before we can really get started. This guide requires you to have Node.js installed and some familiarity with the terminal.
+This guide assumes Node.js is installed and you're comfortable in a terminal.
 
-1. **Create a project folder and set up npm.** We'll create the `my-project` folder and initialize npm with the `-y` argument to avoid it asking us all the interactive questions.
+1. **Create a project folder and initialize npm.**
 
    ```sh
    mkdir my-project && cd my-project
-   npm init -y
+   pnpm init
    ```
 
-2. **Install Parcel.** Unlike our Webpack guide, there’s only a single build tool dependency here. Parcel will automatically install language transformers (like Sass) as it detects them. We use `--save-dev` to signal that this dependency is only for development use and not for production.
+2. **Install Parcel.** Parcel is the only build dependency — it'll install the Sass transformer for you when it sees a `.scss` file.
 
    ```sh
-   npm i --save-dev parcel
+   pnpm add -D parcel
    ```
 
-3. **Install Chassis.** Now we can install Chassis. We'll also install Popper since our dropdowns, popovers, and tooltips depend on it for their positioning. If you don’t plan on using those components, you can omit Popper here.
+3. **Install Chassis CSS, its tokens, and Popper.** Popper is needed by dropdowns, popovers, and tooltips; if you're not using those plugins you can omit it.
 
    ```sh
-   npm i --save chassis-css @popperjs/core
+   pnpm add @chassis-ui/css @chassis-ui/tokens @popperjs/core
    ```
-
-Now that we have all the necessary dependencies installed, we can get to work creating the project files and importing Chassis.
 
 ## Project structure
 
-We’ve already created the `my-project` folder and initialized npm. Now we'll also create our `src` folder, stylesheet, and JavaScript file to round out the project structure. Run the following from `my-project`, or manually create the folder and file structure shown below.
+Create the source folders and the empty files you'll fill in below:
 
 ```sh
-mkdir {src,src/js,src/scss}
+mkdir -p src/js src/scss
 touch src/index.html src/js/main.js src/scss/styles.scss
 ```
 
-When you’re done, your complete project should look like this:
+The result:
 
 ```text
 my-project/
@@ -56,17 +50,17 @@ my-project/
 │   ├── scss/
 │   │   └── styles.scss
 │   └── index.html
-├── package-lock.json
-└── package.json
+├── package.json
+└── pnpm-lock.yaml
 ```
 
-At this point, everything is in the right place, but Parcel needs an HTML page and npm script to start our server.
+Parcel needs an HTML page as its entry point and an npm script to start the server. We'll set those up next.
 
 ## Configure Parcel
 
-With dependencies installed and our project folder ready for us to start coding, we can now configure Parcel and run our project locally. Parcel itself requires no configuration file by design, but we do need an npm script and an HTML file to start our server.
+Parcel itself needs no configuration file. The HTML page is the entry point, and Parcel follows the imports from there.
 
-1. **Fill in the `src/index.html` file.** Parcel needs a page to render, so we use our `index.html` page to set up some basic HTML, including our CSS and JavaScript files.
+1. **Fill in `src/index.html`.** Reference the stylesheet and the script from this file directly — Parcel resolves both, compiles them, and rewrites the references at build time.
 
    ```html
    <!doctype html>
@@ -87,74 +81,72 @@ With dependencies installed and our project folder ready for us to start coding,
    </html>
    ```
 
-   We’re including a little bit of Chassis CSS styling here with the `div class="container"` and `<button>` so that we see when Chassis CSS’s CSS is loaded by Parcel.
+   When Parcel sees the `.scss` reference, it'll auto-install the [Sass transformer](https://parceljs.org/languages/sass/). If you'd rather install it manually, run `pnpm add -D @parcel/transformer-sass`.
 
-   Parcel will automatically detect we’re using Sass and install the [Sass Parcel plugin](https://parceljs.org/languages/sass/) to support it. However, if you wish, you can also manually run `npm i --save-dev @parcel/transformer-sass`.
-
-2. **Add the Parcel npm scripts.** Open the `package.json` and add the following `start` script to the `scripts` object. We'll use this script to start our Parcel development server and render the HTML file we created after it’s compiled into the `dist` directory.
+2. **Add the `start` script to `package.json`.**
 
    ```json
    {
-      // ...
-      "scripts": {
-        "start": "parcel serve src/index.html --public-url / --dist-dir dist",
-        "test": "echo \"Error: no test specified\" && exit 1"
-      },
-      // ...
+     "scripts": {
+       "start": "parcel serve src/index.html --public-url / --dist-dir dist"
+     }
    }
    ```
 
-3. **And finally, we can start Parcel.** From the `my-project` folder in your terminal, run that newly added npm script:
+3. **Start the dev server.**
 
    ```sh
-   npm start
+   pnpm start
    ```
 
-
-In the next and final section to this guide, we'll import all of Chassis CSS’s CSS and JavaScript.
+   Parcel opens a local server on `http://localhost:1234`. The page won't be styled yet — we still need to fill in the stylesheet and the script.
 
 ## Import Chassis
 
-Importing Chassis CSS into Parcel requires two imports, one into our `styles.scss` and one into our `main.js`.
+The order matters: tokens must resolve before `chassis.scss` because the framework's `_vendor.scss` consumes `$cx-*` variables that the tokens package defines.
 
-1. **Import Chassis CSS’s CSS.** Add the following to `src/scss/styles.scss` to import all of Chassis CSS’s source Sass.
+1. **Import tokens, then Chassis, in `src/scss/styles.scss`.**
 
    ```scss
-   // Import all of Chassis CSS’s CSS
-   @import "chassis-css/scss/chassis";
+   // 1. Token source (must come before chassis.scss)
+   @import "@chassis-ui/tokens/dist/web/chassis/docs/main";
+
+   // 2. Optional: settings overrides
+   // $enable-rfs: false;
+   // $enable-component-shadows: true;
+
+   // 3. Chassis CSS
+   @import "@chassis-ui/css/scss/chassis";
    ```
 
-   *You can also import our stylesheets individually if you want. [Read our Sass import docs]([[docsref:/customize/sass#importing]]) for details.*
+   The token build path follows the pattern `dist/web/{brand}/{app}/main`. The default Chassis package ships with the `chassis/docs` build; for your own brand or app, switch the path accordingly.
 
-   **Optional:** You may see Sass deprecation warnings with the latest versions of Dart Sass. These can silenced by adding the following configuration in a `.sassrc.js` file in the root folder with the following:
+2. **Import the Chassis JS in `src/js/main.js`.** Popper is loaded automatically through Chassis when needed.
 
    ```js
-   module.exports = {
-     silenceDeprecations: ['import', 'mixed-decls', 'color-functions', 'global-builtin']
-   }
+   import * as chassis from '@chassis-ui/css'
    ```
 
-2. **Import Chassis CSS’s JS.** Add the following to `src/js/main.js` to import all of Chassis CSS’s JS. Popper will be imported automatically through Chassis.
+   For smaller bundles, import only the plugins you use:
 
    ```js
-   // Import all of Chassis CSS’s JS
-   import * as chassis from 'chassis-css'
+   import { Modal, Tooltip } from '@chassis-ui/css'
    ```
 
-   You can also import JavaScript plugins individually as needed to keep bundle sizes down:
+3. **Reload.** With both files filled in, Parcel hot-reloads the page; you should now see the Chassis-styled heading and primary button.
 
-   ```js
-   import Alert from 'chassis-css/js/dist/alert'
+## Sass deprecation warnings
 
-   // or, specify which plugins you need:
-   import { Tooltip, Toast, Popover } from 'chassis-css'
-   ```
+Recent Dart Sass versions print deprecation warnings for syntax used in older codebases. They don't prevent compilation. To silence them in Parcel, add a `.sassrc.js` file to the project root:
 
-   *[Read our JavaScript docs]([[docsref:/getting-started/javascript/]]) for more information on how to use Chassis CSS’s plugins.*
+```js
+module.exports = {
+  silenceDeprecations: ['import', 'mixed-decls', 'color-functions', 'global-builtin']
+}
+```
 
-3. **And you’re done! 🎉** With Chassis CSS’s source Sass and JS fully loaded, your local development server should now look like this:
+## Next steps
 
-
-   Now you can start adding any Chassis CSS components you want to use. Be sure to [check out the complete Parcel example project](https://github.com/twbs/examples/tree/main/parcel) for how to include additional custom Sass and optimize your build by importing only the parts of Chassis CSS’s CSS and JS that you need.
-
-<GuideFooter />
+- [JavaScript]([[docsref:/getting-started/javascript]]) — using the JS plugins, the programmatic API, and event names.
+- [Customize → Sass]([[docsref:/customize/sass]]) — variable overrides and importing only the partials you need.
+- [Customize → Optimize]([[docsref:/customize/optimize]]) — keeping the Chassis output lean.

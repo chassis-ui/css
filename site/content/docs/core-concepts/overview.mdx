@@ -1,0 +1,50 @@
+---
+title: Core Concepts
+description: The architectural ideas behind Chassis CSS — design tokens, the layered color system, the context class, component anatomy, and a few smaller rules that keep code and design pixel-perfect.
+toc: false
+aliases: "[[docsref:/core-concepts]]"
+sections:
+  - title: Design Tokens
+    description: The single source of truth for every visual decision — colors, spacing, typography, motion, and effects, layered for multi-brand and multi-theme builds.
+  - title: Color System
+    description: A three-layer architecture from primitive scales to semantic context palettes to body variables, designed to retheme cleanly across light and dark modes.
+  - title: Context Class
+    description: The `.context` class is how Chassis applies a color palette to a component — re-aiming CSS variables so a single class change retints an entire subtree.
+  - title: Component Anatomy
+    description: How components are built — token-fed CSS variables, placeholder extends, a small set of mixins, and the patterns Chassis uses for its own classes.
+  - title: Box Model
+    description: The global `border-box` reset plus stroke exclusion, the small padding adjustment that keeps Chassis components pixel-perfect against Figma regardless of border width.
+  - title: Line Heights
+    description: Per-size line-height tokens — set by designers, not derived from a ratio — so headings and body text both feel right and align with Figma.
+---
+
+## What's in this section
+
+Chassis CSS is built on a few architectural ideas that show up in every component, utility, and customization path. The pages in this section explain what those ideas are, how they fit together, and how to apply them to your own work.
+
+You don't need to read these pages to use Chassis — the components and utilities work fine without any of it. You'll want to read them when you start customizing, theming, or extending Chassis, because every customization surface — Sass variables, CSS custom properties, contexts, mixins — bottoms out in one of these concepts.
+
+## Where to start
+
+The pages have a natural reading order. Earlier pages set up vocabulary the later ones rely on:
+
+1. **[Design Tokens]([[docsref:/core-concepts/design-tokens]])** — the foundation. Tokens hold every value Chassis uses, organized in layers (metric, brand, theme, app, effect, motion). Every CSS variable in Chassis comes from one.
+2. **[Color System]([[docsref:/core-concepts/color-system]])** — how the largest token category is structured. Three layers: primitive scales, semantic context palettes, and the body variables that components consume.
+3. **[Context Class]([[docsref:/core-concepts/context-class]])** — how that color architecture surfaces in markup. `.context primary` re-aims the body variables and any nested component picks up the new palette automatically.
+4. **[Component Anatomy]([[docsref:/core-concepts/component-anatomy]])** — how all of the above composes inside a component. Walks through `.notification` and `.list-action` as worked examples and lists the placeholders and mixins available for your own work.
+5. **[Box Model]([[docsref:/core-concepts/box-model]])** and **[Line Heights]([[docsref:/core-concepts/line-heights]])** — smaller, cross-cutting concerns. Stroke exclusion keeps padding pixel-aligned with Figma; per-size line-height tokens keep type rhythm correct at every size. Both can be read independently of the rest.
+
+If you're customizing existing components, the first three are the most useful. If you're writing your own components, read all five in order.
+
+## How it fits together
+
+The five concepts compose into a single data flow:
+
+```
+Chassis Tokens  →  CSS variables  →  Context palettes  →  Body variables  →  Components
+   (Figma)         (--cx-*-{step})    (--cx-{ctx}-{tok})    (--cx-{tok})       (.button, .notification, …)
+```
+
+A token authored in Figma surfaces as a `--cx-*` custom property. Color tokens additionally surface as palettes — one per context color — that the `.context` class can switch between. The active palette's tokens are aliased onto the canonical body variables (`--cx-fg-main`, `--cx-bg-main`, …) that components actually read. Components declare component-scoped variables (`--cx-button-padding-y`, …) and alias them onto those canonical names, giving consumers two override surfaces — one per component, one per element — without any extra source code.
+
+Every customization mechanism in Chassis hooks into this flow at one of those points. Theming swaps tokens. Switching context re-aims the palette layer. Overriding a component CSS variable replaces a single value at the leaf. The pages that follow explain each layer in detail.

@@ -30,21 +30,32 @@ The Figma component library is fully tokenized, so a designer can switch a brand
 
 The class names and CSS variable names mirror the Figma layer structure directly. A text layer with Figma styles `font/text/large/mass` maps to the HTML class combination `font-large font-mass`:
 
-```html
+<a href="#imageModal" data-cx-toggle="modal"
+  data-image-src="/static/images/css/docs-figma-font-specs.png"
+  data-image-srcset="/static/images/css/docs-figma-font-specs.png.png, /static/images/css/docs-figma-font-specs@2x.png 2x"
+  data-image-alt="Figma text layer properties">
+  <img class="d-block mb-medium image-fluid w-100 rounded" srcset="/static/images/css/docs-figma-font-specs.png, /static/images/css/docs-figma-font-specs@2x.png 2x" src="/static/images/css/docs-figma-font-specs.png" alt="Figma text layer properties" /></a>
+
+<Example code={`<p>font/text/medium/normal</p>
 <p class="font-large font-mass">font/text/large/mass</p>
-<p class="font-display font-strong">font/display/medium/strong</p>
-```
+<p class="font-display font-strong">font/display/medium/strong</p>`} />
 
 A Figma frame with padding, border, and shadow tokens maps to the equivalent utility classes:
 
-```html
-<div class="rounded-xlarge border border-2xlarge
-            py-small px-medium
-            default-bg-main primary-border-subtle
-            shadow-40 shadow-primary">
-  Matches the Figma spec exactly.
-</div>
-```
+<a href="#imageModal" data-cx-toggle="modal"
+  data-image-src="/static/images/css/docs-figma-frame-specs.png"
+  data-image-srcset="/static/images/css/docs-figma-frame-specs.png.png, /static/images/css/docs-figma-frame-specs@2x.png 2x"
+  data-image-alt="Figma frame layer properties">
+  <img id="image" class="d-block mb-medium image-fluid rounded" srcset="/static/images/css/docs-figma-frame-specs.png, /static/images/css/docs-figma-frame-specs@2x.png 2x" src="/static/images/css/docs-figma-frame-specs.png" alt="Figma frame layer properties" /></a>
+
+
+<Example code={`<div style="width: 128px; height: 128px;"
+    class="rounded-xlarge border border-2xlarge
+      py-small px-medium gap-2xsmall
+      default-bg-main primary-border-subtle
+      shadow-40 shadow-primary">
+    I look just like in Figma!
+  </div>`} />
 
 ## Who it's for
 
@@ -54,6 +65,8 @@ If you're evaluating Chassis for a single project with one brand and no design s
 
 ## Next steps
 
-- [Clone and Customize]([[docsref:/getting-started/clone-and-customize]]) — set up Chassis CSS for your own team
-- [Design Tokens]([[docsref:/core-concepts/design-tokens]]) — how the token system works
-- [Color System]([[docsref:/core-concepts/color-system]]) — the layered color architecture
+- [Quick Start]([[docsref:/getting-started/quick-start]]) — try Chassis in a single HTML file with no build step.
+- [Installation]([[docsref:/getting-started/installation]]) — install `@chassis-ui/css` and its tokens peer for your own project.
+- [Clone and Customize]([[docsref:/getting-started/clone-and-customize]]) — for teams who want to own the framework rather than depend on it.
+- [Design Tokens]([[docsref:/core-concepts/design-tokens]]) — how the token system works.
+- [Color System]([[docsref:/core-concepts/color-system]]) — the layered color architecture.
