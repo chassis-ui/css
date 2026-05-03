@@ -1,37 +1,43 @@
 ---
 title: Line Heights
-description: Don't stuck in to `1.5em` line heights for headings. Chassis CSS provides individual line heights for every font size classes.
+description: Chassis CSS assigns a distinct line height to every font size, set by designers in Chassis Tokens — never derived from a single ratio or an algorithm.
 toc: true
 ---
 
-Of course we believe 150% line height is ideal for readability but for which size and distance? On screen design, larger fonts need slightly lesser line height than their descendants for both readability and feelings.
+Most CSS frameworks assign one line height to all body text, another to headings, or scale the value algorithmically — either way, the values are out of the designer's hands. Chassis CSS does it differently. **Every font size has its own line-height token**, set by the designer in Chassis Tokens and pushed straight to CSS.
 
-Also design side may be problematic with percentage based line heights. Layers not align properly or separator lines get lost in sub-pixel etc.
+This matters for two reasons:
 
-<Callout>
-**Heads up!** Chassis CSS design system lets designer pick separate line-height for every font size and push them directly to code by design tokens.
-</Callout>
+1. **Larger text needs tighter line spacing.** A `1.5` ratio that reads well at `16px` looks awkward at `32px`; a `1.2` ratio that suits a 32-pixel heading turns small body text into a wall.
+2. **Pixel alignment with Figma.** Percentage-based or unitless line heights cause Figma layers to misalign and separators to land on sub-pixel boundaries, breaking the pixel-perfect match between design and code.
+
+With per-size line-height tokens, designers control the exact value for each size, each font-family variant, and each platform — and the CSS reflects those decisions without any developer intervention.
+
+The example below shows the token-driven heading next to a heading forced to the typical `1.5em` ratio. Notice how the latter looks loose and breaks the visual rhythm:
 
 <div class="cxd-example">
-<div>
-<p class="h2">This is a long heading text with a specific line-height value coming from design tokens.</p>
-<p>The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
-</div>
+  <div>
+    <p class="h2">This is a long heading text with a specific line-height value comes from design tokens.</p>
+    <p>The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
+  </div>
 </div>
 <div class="cxd-example">
-<div>
-<p class="h2" style="line-height: 1.5em">This is a long heading text with a standard 1.5em line-height of most design systems.</p>
-<p>The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
-</div>
+  <div>
+    <p class="h2" style="line-height: 1.5em">This is a long heading text with a standard 1.5em line-height of most design systems.</p>
+    <p>The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
+  </div>
 </div>
 
-It is still possible to adjust line-height with `lh-*` utility.
+## Overriding with utilities
+
+Token-driven line heights are the right default, but you can still override them on a per-element basis with the [`lh-*` utilities]([[docsref:/utilities/text#line-height]]):
 
 <Example code={`<p class="lh-1">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
 <p class="lh-small">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
 <p class="lh-base">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
 <p class="lh-large">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>`} />
 
-## Typography
+## See also
 
-Check our [typography]([[docsref:/content/typography]]) Documentation and examples for Chassis CSS typography, including global settings, headings, body text, lists, and more.
+- [Typography]([[docsref:/content/typography]]) — global settings, headings, body text, lists, and the full type scale.
+- [Design Tokens]([[docsref:/core-concepts/design-tokens]]) — how typography tokens are defined and exposed.

@@ -1,16 +1,16 @@
 ---
 title: Color System
-description: Chassis CSS uses a layered color architecture — from primitive color scales to semantic context palettes to body variables — ensuring consistent, flexible theming across light and dark modes.
+description: A layered color architecture — primitive scales, semantic context palettes, and body variables — that gives Chassis CSS consistent, flexible theming across light and dark modes.
 toc: true
 ---
 import { getData } from '@libs/data'
 import { sassVars } from '@libs/sass'
 
-Chassis CSS organizes color into three layers: **primitive colors** give each brand hue a numbered scale, **context colors** map those scales to semantic roles, and **body colors** expose them as the CSS variables components use directly. To switch a theme or context, only the active palette needs to change — all components update automatically.
+Chassis CSS organizes color into three layers that build on each other. **Primitive colors** give every brand hue a numbered scale. **Context colors** map those scales onto semantic roles such as `fg-main` or `bg-evident`. **Body colors** alias the active context's tokens to the CSS variables components consume directly. To switch a theme or change the active context, only the active palette changes — every component picks up the new colors automatically.
 
-## Primitive Colors
+## Primitive colors
 
-Primitive colors and their scale values are defined in Chassis Tokens. By default there are seven hues, one per brand role — and any project can swap them for its own palette.
+Primitive colors and their scale steps are defined in Chassis Tokens. By default there are seven hues — one per brand role — and any project can swap them for its own palette.
 
 <div class="overflow-scroll text-nowrap mb-medium">
   <div class="grid font-code" style="--cx-grid-columns: 11; --cx-grid-gap: var(--cx-space-2xsmall);">
@@ -37,11 +37,11 @@ Primitive colors and their scale values are defined in Chassis Tokens. By defaul
   </div>
 </div>
 
-Each hue has eleven scale steps: `05`, `10`–`90` in increments of 10, and `95`, with `50` as the mid-point. Components and utilities don't reference these scales directly — they're exposed as CSS variables (e.g. `--cx-primary-50`) if you need them in custom work.
+Each hue has eleven scale steps: `05`, `10`–`90` in increments of ten, and `95`, with `50` as the mid-point. Components and utilities never reference these scales directly — they consume them through the context layer. The scales are still exposed as CSS variables (e.g. `--cx-primary-50`) for cases where you need a primitive value in custom code.
 
-## Context Colors
+## Context colors
 
-There are **eleven context colors** in total: the seven brand hues, plus `default`, `alternate`, `black`, and `white`. These are the colors you can use with the `.context` class and all context-aware components.
+A context color is a palette of semantic tokens that adapts to light and dark mode. Chassis CSS ships with **eleven**: the seven brand hues — `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`, `info` — plus four non-brand contexts: `default`, `alternate`, `black`, and `white`.
 
 <div class="row g-xsmall mb-medium font-code">
   {
@@ -55,23 +55,23 @@ There are **eleven context colors** in total: the seven brand hues, plus `defaul
   }
 </div>
 
-The four non-brand context colors each have a specific role:
+Each non-brand context plays a specific role:
 
-- **`default`** — the standard page background and text. In dark mode it inverts automatically: light background with dark text becomes dark background with light text.
-- **`alternate`** — for prominent regions like sidebars, banners, or callout sections. Whether it inverts in dark mode is controlled by the Chassis Tokens configuration.
-- **`black`** and **`white`** — fixed values that stay the same in both light and dark mode.
+- **`default`** — the standard page background and text. In dark mode it inverts automatically: light-on-dark instead of dark-on-light.
+- **`alternate`** — for prominent regions such as sidebars, banners, and callout sections. Whether it inverts in dark mode is controlled by the Chassis Tokens configuration.
+- **`black`** and **`white`** — fixed values that do not adapt to light or dark mode.
 
-### Context Palettes
+### Context palettes
 
-Each context color comes with a full palette of **36 semantic tokens** grouped into nine categories. Each token maps to a CSS variable: `--cx-{context}-{token}` — for example, `--cx-primary-fg-main`.
+Each context color comes with a full palette of **36 semantic tokens** grouped into nine categories — foreground, background, border, icon, link, cue, dim, and interactive (idle/hover/press/disabled). Each token maps to a CSS variable named `--cx-{context}-{token}`, for example `--cx-primary-fg-main`.
 
 <DocsContextPalette />
 
-Palette values are resolved at build time by Chassis Tokens, using Tokens Studio's color processor. Each shade combines a primitive color reference with an opacity value — both defined as tokens. The output arrives in CSS as pre-computed custom properties, ready to use. The example below shows the derivation pattern:
+Palette values are resolved at build time by Chassis Tokens through Tokens Studio's color processor. Each token combines a primitive color reference with an opacity value — both defined as tokens themselves — and the output arrives in CSS as a pre-computed custom property, ready to use. The example below shows the derivation pattern:
 
 ```scss
-// Illustrative — derivation happens in Chassis Tokens at build time
-// Light theme
+// Illustrative — derivation happens in Chassis Tokens at build time.
+// Light theme.
 $default-fg-main:      $black;
 $default-fg-subtle:    to-opacity($default-fg-main, $opacity-fg-subtle);
 $default-fg-slight:    to-opacity($default-fg-main, $opacity-fg-slight);
@@ -80,18 +80,18 @@ $default-bg-even:      $neutral-05;
 $default-bg-evident:   $neutral-10;
 ```
 
-### Body Colors
+### Body colors
 
-The body context is set in Chassis Tokens — `default` by default. That context's palette becomes the page-level palette: the context prefix is dropped, so `--cx-default-fg-main` becomes `--cx-fg-main`, `--cx-default-bg-main` becomes `--cx-bg-main`, and so on.
+The body context — `default` out of the box — is set in Chassis Tokens. Its palette becomes the page-level palette: the context prefix is dropped, so `--cx-default-fg-main` is exposed as `--cx-fg-main`, `--cx-default-bg-main` as `--cx-bg-main`, and so on.
 
-From there, each palette token gets one more alias — a **body semantic variable** that maps directly to the CSS property it controls:
+From there, each palette token gets one more alias — a **body semantic variable** that maps directly to the CSS property it controls (for example `color`, `background-color`, or `border-color`):
 
 <DocsBodyPalette />
 
-The [Context Class]([[docsref:/core-concepts/context-class]]) is how you trigger a palette switch in markup. Add `.context primary` to any element and its body variables instantly shift to the `primary` palette — for that element and everything inside it.
+The [`.context` class]([[docsref:/core-concepts/context-class]]) is how you re-aim those body variables in markup. Add `class="context primary"` to any element and its body variables instantly switch to the `primary` palette — for that element and everything inside it.
 
-## Further Reading
+## Further reading
 
-Primitive colors, scale values, opacity levels, and context mappings are all configured in Chassis Tokens. The CSS variable names in Chassis CSS match the Figma variable paths in Chassis Figma — `color/context/{context}/{token}` in Figma becomes `--cx-{context}-{token}` in CSS, so designs and code always point to the same value.
+Primitive colors, scale values, opacity levels, and context mappings are all configured in Chassis Tokens. The CSS variable names mirror the Figma variable paths in Chassis Figma — `color/context/{context}/{token}` in Figma becomes `--cx-{context}-{token}` in CSS — so designs and code always point to the same value.
 
 For applying colors in markup, see the [Colors]([[docsref:/utilities/colors]]) and [Background]([[docsref:/utilities/background]]) utility pages. To build context-aware components, see the [Context Class]([[docsref:/core-concepts/context-class]]) page.

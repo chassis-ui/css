@@ -1,0 +1,110 @@
+---
+title: Clone and Customize
+description: How to set up Chassis CSS for your own team — clone the repository, connect your token build, and own the output.
+toc: true
+---
+
+Chassis CSS is designed to be cloned and owned. You don't configure it with a few Sass variables; you replace its token foundation with yours, adapt the settings to your needs, and ship a CSS build that belongs entirely to your product.
+
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) 18 or later
+- [pnpm](https://pnpm.io/) (the project uses pnpm workspaces)
+- A built output from [Chassis Tokens](https://github.com/chassis-ui/tokens) for your brand, or the default `chassis` brand to start
+
+## 1. Clone the repository
+
+```shell
+git clone https://github.com/chassis-ui/css.git my-design-system
+cd my-design-system
+pnpm install
+```
+
+## 2. Connect your token build
+
+Chassis CSS loads design tokens from `@chassis-ui/tokens` via `scss/_vendor.scss`. This file contains a single import — the path to your token build's `main.scss`:
+
+```scss
+// scss/_vendor.scss
+@import "../node_modules/@chassis-ui/tokens/dist/web/{brand}/{app}/main";
+```
+
+The `{brand}` and `{app}` segments correspond to the brand and app names you configured when building Chassis Tokens. For example, a `docs` app build for the `chassis` brand:
+
+```scss
+@import "../node_modules/@chassis-ui/tokens/dist/web/docs/chassis/main";
+```
+
+The token file provides all the `$cx-*` Sass variables that `scss/tokens/` maps to Chassis CSS's internal variable names. If you're starting without a custom token build, the default `chassis` brand tokens are included in the package and work out of the box.
+
+### Color mode and screen size token files
+
+In addition to `main.scss`, the token build produces separate files for color modes and screen sizes:
+
+```scss
+// Light and dark color palettes
+@import "...dist/web/{brand}/{app}/color-light";
+@import "...dist/web/{brand}/{app}/color-dark";
+
+// Responsive number tokens (spacing, sizing)
+@import "...dist/web/{brand}/{app}/number-small";
+@import "...dist/web/{brand}/{app}/number-medium";
+@import "...dist/web/{brand}/{app}/number-large";
+```
+
+These are loaded automatically by Chassis CSS's `scss/root.scss` at the correct breakpoints. You don't need to import them manually unless you're customizing the root output.
+
+## 3. Configure feature flags
+
+`scss/_settings.scss` controls which framework features are active. All variables use `!default`, so you can override them in a file you import *before* the framework. The most commonly changed settings:
+
+```scss
+// your-settings.scss — import this before chassis.scss
+$enable-dark-mode:          true;   // false to ship light mode only
+$enable-exclude-strokes:    true;   // see Core Concepts > Box Model
+$enable-rfs:                false;  // responsive font scaling
+$color-mode-type:           data;   // 'data' (data-cx-theme attr) or 'media-query'
+```
+
+See [Options]([[docsref:/customize/options]]) for the full list.
+
+## 4. Build your CSS
+
+```shell
+# Development build with source maps
+pnpm build
+
+# Watch mode
+pnpm watch
+
+# Production build (minified)
+pnpm build:prod
+```
+
+The output goes to `dist/css/`. You can configure the output paths in `package.js`.
+
+## Importing the framework in your own project
+
+If your project has its own SCSS build pipeline, import Chassis CSS as a source dependency rather than a compiled stylesheet. The correct import order is:
+
+```scss
+// 1. Your token overrides (optional — before everything else)
+@import "@chassis-ui/tokens/dist/web/{brand}/{app}/main";
+
+// 2. Your settings overrides (optional — before chassis.scss)
+@import "your-settings";
+
+// 3. Chassis CSS
+@import "@chassis-ui/css/scss/chassis";
+```
+
+The `@chassis-ui/tokens` import must come before `@chassis-ui/css/scss/chassis` because the framework's `_vendor.scss` and `_tokens.scss` files consume the `$cx-*` variables that your token build provides.
+
+If you use the compiled CSS distribution instead, you lose the ability to override settings and tokens at build time.
+
+## Further reading
+
+- [Chassis Tokens](https://github.com/chassis-ui/tokens) — token authoring, Tokens Studio setup, and Style Dictionary configuration
+- [Options]([[docsref:/customize/options]]) — full `$enable-*` settings reference
+- [Sass]([[docsref:/customize/sass]]) — Sass variables, maps, and how to extend the framework
+- [Design Tokens]([[docsref:/core-concepts/design-tokens]]) — how the token architecture works

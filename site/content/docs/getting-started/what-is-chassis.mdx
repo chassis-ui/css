@@ -1,0 +1,59 @@
+---
+title: What is Chassis CSS?
+description: Chassis CSS is a design-system-first CSS framework that keeps Figma and code in sync — for teams building across multiple brands, products, and platforms.
+toc: true
+---
+
+Most CSS frameworks give you a stylesheet. Chassis CSS gives you a system.
+
+The difference matters when you're building for more than one brand, supporting light and dark modes, or working in a team where designers and developers need to stay in sync. With a typical framework, every one of those scenarios requires custom overrides. With Chassis, they're built into how the framework works from the start.
+
+## The problem it solves
+
+In large-scale product design, visual decisions multiply fast: colors, spacing, typography, border radii, shadows — each one potentially varying by brand, theme, app, or screen size. Maintaining those decisions consistently across Figma and code is where most teams break down. Designers make a change in Figma; developers find out about it weeks later.
+
+Chassis CSS is built around a single source of truth: **Chassis Tokens**. Every visual value in the framework — every color, every spacing step, every component padding — is a token defined in one place and distributed to Figma and CSS automatically.
+
+## How it fits together
+
+Three repositories form the system:
+
+**[Chassis Tokens](https://github.com/chassis-ui/tokens)** — The source of truth. Designers author tokens in Figma using [Tokens Studio](https://tokens.studio), and those tokens sync to a repository as JSON. [Style Dictionary](https://amzn.github.io/style-dictionary/) builds them into platform-specific output: SCSS for web, Swift for iOS, XML for Android.
+
+**Chassis CSS** — This repository. It consumes the built token files and generates a complete CSS framework: a color system, layout utilities, component styles, and a full Figma-to-code naming convention. Components use CSS custom properties so designs and rendered HTML match at the pixel level.
+
+**[Chassis Icons](https://github.com/chassis-ui/icons)** — An icon library available as both SVG sprites and icon fonts, governed by the same token system. Designers control icon sizes through design tokens.
+
+## From Figma to code
+
+The Figma component library is fully tokenized, so a designer can switch a brand, toggle dark mode, or update a spacing value in Figma and see it reflected across every component immediately. When those tokens are synced and built, the CSS updates to match — no manual reconciliation.
+
+The class names and CSS variable names mirror the Figma layer structure directly. A text layer with Figma styles `font/text/large/mass` maps to the HTML class combination `font-large font-mass`:
+
+```html
+<p class="font-large font-mass">font/text/large/mass</p>
+<p class="font-display font-strong">font/display/medium/strong</p>
+```
+
+A Figma frame with padding, border, and shadow tokens maps to the equivalent utility classes:
+
+```html
+<div class="rounded-xlarge border border-2xlarge
+            py-small px-medium
+            default-bg-main primary-border-subtle
+            shadow-40 shadow-primary">
+  Matches the Figma spec exactly.
+</div>
+```
+
+## Who it's for
+
+Chassis CSS is designed for teams who need to maintain a design system across multiple products — not for drop-in use via CDN. The primary use case is to clone the repository, connect it to your own Chassis Tokens build, and own the result.
+
+If you're evaluating Chassis for a single project with one brand and no design system, a simpler framework may serve you better. If you're building infrastructure that multiple teams and products will build on, Chassis is designed for exactly that.
+
+## Next steps
+
+- [Clone and Customize]([[docsref:/getting-started/clone-and-customize]]) — set up Chassis CSS for your own team
+- [Design Tokens]([[docsref:/core-concepts/design-tokens]]) — how the token system works
+- [Color System]([[docsref:/core-concepts/color-system]]) — the layered color architecture

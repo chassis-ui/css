@@ -1,20 +1,20 @@
 ---
 title: Design Tokens
-description: Chassis Tokens is the single source of truth for every visual decision in Chassis CSS — colors, spacing, typography, component metrics, and motion — with built-in support for multiple brands, themes, and platforms.
+description: Chassis Tokens is the single source of truth for every visual decision in Chassis CSS — colors, spacing, typography, component metrics, motion, and effects — with built-in support for multiple brands, themes, and platforms.
 toc: true
 ---
 
-Every color, spacing step, border radius, font size, and shadow in Chassis CSS comes from a token. Nothing is hardcoded. This means a single change in Chassis Tokens flows out to every component and utility that references it — in CSS, in Figma, and across every platform you build for.
+Every color, spacing step, border radius, font size, and shadow in Chassis CSS comes from a token. Nothing is hardcoded. A single change in Chassis Tokens flows out to every component and utility that references it — in CSS, in Figma, and across every platform you build for.
 
-## How Tokens Are Structured
+## How tokens are structured
 
-Tokens are layered. The lower layers hold raw values; the higher layers turn those values into named design decisions.
+Tokens are layered. Lower layers hold raw values; higher layers turn those values into named design decisions.
 
 <CxTable>
 | Layer | Token set files | What it contains |
 | --- | --- | --- |
 | **Metric** | `base/metric-base`, `base/metric-px` | Unit scale, spacing scale, opacity levels |
-| **Brand** | `base/brand-base`, `brand-{name}/brand-base` | Primitive color palettes, typography (family, weight, size, line-height) |
+| **Brand** | `base/brand-base`, `brand-{name}/brand-base` | Primitive color palettes; typography (family, weight, size, line-height) |
 | **Theme** | `base/theme-base`, `base/theme-light`, `base/theme-dark` | Semantic context color palettes for light and dark modes |
 | **App** | `base/app-base`, `base/app-{name}` | Component-level metrics: spacing, color, font, shadow, grid, border |
 | **Effect** | `base/effect-base` | Shadow definitions |
@@ -23,33 +23,33 @@ Tokens are layered. The lower layers hold raw values; the higher layers turn tho
 
 A token build composes these layers — brand × theme × app — and resolves the result for a specific platform and screen size.
 
-## Collections and Modes
+## Collections and modes
 
-In Figma, token layers map to variable collections. Each collection has modes, so one token can hold different values depending on what's active — a brand, a theme, or an app. The four collections are:
+In Figma, token layers map to variable collections. Each collection has modes, so a single token can hold different values depending on what's active — a brand, a theme, or an app. The three collections that switch independently are:
 
 <CxTable>
 | Collection | Modes |
 | --- | --- |
-| **Brand** | One per brand (e.g. `chassis`, `test`) |
+| **Brand** | One mode per brand (e.g. `chassis`, `test`) |
 | **Theme** | `light`, `dark` |
-| **App** | One per app (e.g. `docs`, `demo`) |
+| **App** | One mode per app (e.g. `docs`, `demo`) |
 </CxTable>
 
-Collections are switched independently. Changing the Theme from `light` to `dark` updates every component that references a theme token — without touching any Brand or App settings.
+Because the collections are independent, switching the Theme from `light` to `dark` updates every component that references a theme token without touching any Brand or App settings.
 
-## What's Inside
+## What's inside
 
-Here's an overview of each token category and how it shows up in CSS.
+Here's an overview of each token category and the CSS variable shape it produces.
 
 ### Color
 
 Color tokens follow the three-layer structure of the [Color System]([[docsref:/core-concepts/color-system]]):
 
-- **`color/palette/{hue}/{step}`** — the primitive scale (e.g. `color/palette/primary/50`)
-- **`color/context/{context}/{token}`** — the semantic palette for each context color (e.g. `color/context/primary/fg-main`)
-- **Component color definitions** in `app` layer — per-component values that reference context tokens (e.g. `color/button/primary/bg-idle`)
+- **`color/palette/{hue}/{step}`** — the primitive scale, e.g. `color/palette/primary/50`.
+- **`color/context/{context}/{token}`** — the semantic palette for each context color, e.g. `color/context/primary/fg-main`.
+- **Component color definitions** in the `app` layer — per-component values that reference context tokens, e.g. `color/button/primary/bg-idle`.
 
-A context token becomes `--cx-{context}-{token}` in CSS. The body shorthand `--cx-fg-main` is an alias for the active body context's `fg-main`.
+A context token becomes `--cx-{context}-{token}` in CSS, and the body shorthand `--cx-fg-main` is an alias for the active body context's `fg-main`.
 
 ### Spacing
 
@@ -57,37 +57,41 @@ Spacing uses a named scale rather than numeric steps. It runs from `zero` to `6x
 
 `zero` · `4xsmall` · `3xsmall` · `2xsmall` · `xsmall` · `small` · `medium` · `large` · `xlarge` · `2xlarge` · `3xlarge` · `4xlarge` · `5xlarge` · `6xlarge`
 
-The global scale lives under `space/context/{step}` in Figma and becomes `--cx-space-{step}` in CSS. Component-level spacing (like button padding) lives under `space/{component}/{variant|size}/{property}` and maps to `--cx-{component}-{property}`.
+The global scale lives under `space/context/{step}` in Figma and surfaces as `--cx-space-{step}` in CSS. Component-level spacing — for example button padding — lives under `space/{component}/{variant|size}/{property}` and surfaces as `--cx-{component}-{property}`.
 
 ### Typography
 
-Brand tokens define the font family, weight scale, and size scale. App tokens then compose these into named text styles: `font/{family}/{size}/{weight}`. The resulting CSS variables follow the `--cx-font-{property}` pattern.
+Brand tokens define the font family, weight scale, and size scale. App tokens compose these into named text styles under `font/{family}/{size}/{weight}`. The resulting CSS variables follow the `--cx-font-{property}` pattern.
 
 ### Metrics
 
-Component metrics — border radius, border width, icon size, grid columns, and gap — live in `app-base`. Global values become `--cx-{property}`; component-specific ones become `--cx-{component}-{property}`.
+Component metrics — border radius, border width, icon size, grid columns, gap — live in the `app-base` layer. Global values become `--cx-{property}`; component-specific values become `--cx-{component}-{property}`.
 
 ### Motion
 
-Duration and easing tokens live in `base/motion-base` and are exposed as `--cx-motion-{property}`. Use them to keep transitions consistent across components.
+Duration and easing tokens live in `base/motion-base` and surface as `--cx-motion-{property}`. Use them to keep transitions consistent across components.
 
-## Figma and CSS Variables
+### Effects
 
-Chassis Tokens and Chassis CSS use the same naming structure, so a token in Figma and its CSS variable always point to the same design decision:
+Shadow definitions live in `base/effect-base`. They are applied through utilities and the elevation system rather than referenced directly.
+
+## Figma and CSS variables
+
+Chassis Tokens and Chassis CSS share a naming structure, so a token in Figma and its CSS variable always point to the same design decision:
 
 ```
 color/context/{context}/{token}  →  --cx-{context}-{token}
 space/context/{step}             →  --cx-space-{step}
 ```
 
-For example, `color/context/primary/fg-main` in Figma is `--cx-primary-fg-main` in CSS — the same value, used by the `fg-primary` utility class and the `.context.primary` palette.
+For example, `color/context/primary/fg-main` in Figma is `--cx-primary-fg-main` in CSS — the same value used by the `fg-primary` utility class and the `.context.primary` palette.
 
 ## Toolchain
 
-Tokens are authored with [Tokens Studio](https://tokens.studio) in Figma and synced to the `chassis-tokens` repository as JSON. [Style Dictionary](https://amzn.github.io/style-dictionary/) then transforms them into platform-specific output: SCSS for web, Swift for iOS, and XML for Android. See the Chassis Tokens repository for build instructions and configuration details.
+Tokens are authored with [Tokens Studio](https://tokens.studio) inside Figma and synced to the `chassis-tokens` repository as JSON. [Style Dictionary](https://amzn.github.io/style-dictionary/) then transforms them into platform-specific output: SCSS for the web, Swift for iOS, and XML for Android. See the Chassis Tokens repository for build instructions and configuration details.
 
-## Further Reading
+## Further reading
 
-- [Color System]([[docsref:/core-concepts/color-system]]) — how color layers map to CSS variables
-- [Context Class]([[docsref:/core-concepts/context-class]]) — how context palettes are applied in markup
-- [Tokens](/tokens) — browse all token values
+- [Color System]([[docsref:/core-concepts/color-system]]) — how the color layers map to CSS variables.
+- [Context Class]([[docsref:/core-concepts/context-class]]) — how context palettes are applied in markup.
+- [Tokens](/tokens) — browse all token values.
