@@ -23,6 +23,7 @@
   @return red($value), green($value), blue($value);
 }
 
+// scss-docs-start opacity-var
 /// Generate a CSS relative color expression that applies a component opacity variable to a color token
 /// Uses CSS relative color syntax to derive an oklch color from a CSS custom property and apply
 /// a separate opacity CSS variable to it. Designed to work as a `map-loop` callback.
@@ -36,6 +37,7 @@
 @function opacity-var($identifier, $target) {
   @return #{"oklch(from var(--#{$prefix}#{$identifier}) l c h / var(--#{$prefix}#{$target}-opacity, 1))"};
 }
+// scss-docs-end opacity-var
 
 /// Convert a list of values to CSS variable references
 ///
@@ -43,8 +45,8 @@
 /// @param {String} $comp - Optional component prefix to add before each variable name
 /// @return {List} - List of CSS variable references with proper prefix
 /// @example
-///   varify(("border", "radius")) => var(--cx-border) var(--cx-radius)
-///   varify(("small", "large"), "space") => var(--cx-space-small) var(--cx-space-large)
+///   varify(("border", "radius"))  => var(--cx-border) var(--cx-radius)
+///   varify(("small", "large"), "space")  => var(--cx-space-small) var(--cx-space-large)
 @function varify($list, $comp: null) {
   $result: null;
   @each $entry in $list {
@@ -53,6 +55,7 @@
   @return $result;
 }
 
+// scss-docs-start to-color
 /// Convert a color to an oklch() value with rounded channel values
 /// Converts any Sass-supported color to the OKLCh color space, rounding lightness
 /// to 2 decimal places, chroma to 3 decimal places, and hue to 2 decimal places.
@@ -85,8 +88,9 @@
 
   @return #{"oklch(#{$l} #{$c} #{$h})"};
 }
+// scss-docs-end to-color
 
-
+// scss-docs-start to-opacity
 /// Generate a CSS relative color expression that applies an opacity variable to a CSS custom property
 /// Uses the CSS relative color syntax to derive an oklch color from an existing
 /// CSS variable and apply a separate opacity (alpha) CSS variable to it.
@@ -95,13 +99,13 @@
 /// @param {Number|String} $opacity - Alpha value (0–1) or `var()` expression for the opacity channel
 /// @return {String} - Unquoted CSS relative color string: oklch(from {color} l c h / {opacity})
 /// @example
-///   to-opacity(var(--cx-primary), 0.5)                       => oklch(from var(--cx-primary) l c h / 0.5)
-///   to-opacity($white, .15)                                   => oklch(from #fff l c h / 0.15)
-///   to-opacity(var(--cx-fg-main), var(--cx-fg-opacity, 1))   => oklch(from var(--cx-fg-main) l c h / var(--cx-fg-opacity, 1))
+///   to-opacity(var(--cx-primary), 0.5)  => oklch(from var(--cx-primary) l c h / 0.5)
+///   to-opacity($white, .15)  => oklch(from #fff l c h / 0.15)
+///   to-opacity(var(--cx-fg-main), var(--cx-fg-opacity, 1))  => oklch(from var(--cx-fg-main) l c h / var(--cx-fg-opacity, 1))
 @function to-opacity($color, $opacity) {
   @return #{"oklch(from #{$color} l c h / #{$opacity})"};
 }
-
+// scss-docs-end to-opacity
 
 /// Calculate color contrast and return appropriate foreground color
 /// Uses WCAG 2.1 contrast ratio formula to determine the most readable foreground color

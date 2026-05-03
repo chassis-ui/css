@@ -7,12 +7,14 @@
  */
 export declare global {
   export const AddedIn: typeof import('@chassis-ui/docs/shortcodes/AddedIn.astro').default
+  export const Blockquote: typeof import('@chassis-ui/docs/shortcodes/Blockquote.astro').default
+  export const CSSOnly: typeof import('@chassis-ui/docs/shortcodes/CSSOnly.astro').default
   export const Callout: typeof import('@chassis-ui/docs/shortcodes/Callout.astro').default
   export const CxTable: typeof import('@chassis-ui/docs/shortcodes/CxTable.astro').default
-  export const CSSOnly: typeof import('@shortcodes/CSSOnly.astro').default
+  export const DeprecatedIn: typeof import('@chassis-ui/docs/shortcodes/DeprecatedIn.astro').default
+  export const InFigma: typeof import('@chassis-ui/docs/shortcodes/InFigma.astro').default
   export const CalloutDeprecatedDarkVariants: typeof import('@shortcodes/CalloutDeprecatedDarkVariants.astro').default
   export const Code: typeof import('@shortcodes/Code.astro').default
-  export const DeprecatedIn: typeof import('@shortcodes/DeprecatedIn.astro').default
   export const DocsBodyPalette: typeof import('@shortcodes/DocsBodyPalette.astro').default
   export const DocsCSS: typeof import('@shortcodes/DocsCSS.astro').default
   export const DocsCSSVars: typeof import('@shortcodes/DocsCSSVars.astro').default
@@ -20,7 +22,6 @@ export declare global {
   export const DocsDesignTokens: typeof import('@shortcodes/DocsDesignTokens.astro').default
   export const DocsSASSVars: typeof import('@shortcodes/DocsSASSVars.astro').default
   export const Example: typeof import('@shortcodes/Example.astro').default
-  export const InFigma: typeof import('@shortcodes/InFigma.astro').default
   export const JsDismiss: typeof import('@shortcodes/JsDismiss.astro').default
   export const JsDocs: typeof import('@shortcodes/JsDocs.astro').default
   export const Placeholder: typeof import('@shortcodes/Placeholder.astro').default

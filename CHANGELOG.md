@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.3] - 2026-05-03
+
+### Changed
+- `$enable-responsive-gradients` default value changed to `false`
+
+### Fixed
+- Added `scss-docs` start/end markers to `opacity-var()`, `to-color()`, and `to-opacity()` in `_color.scss` for documentation extraction
+- Fixed `cleanPublicDirectory()` to delete directory contents rather than the directory itself, preventing `ENOTEMPTY` errors on macOS and Windows caused by OS-managed metadata files
+- Fixed misplaced parenthesis in `copyStaticRecursively()` that caused `{ recursive: true }` to be ignored in `mkdirSync`
+- Fixed documentation issues in Sass customization, background, colors, and focus-ring pages
+- Removed unused shortcode components (`CSSOnly`, `DeprecatedIn`, `InFigma`)
+
+## [0.2.2] - 2026-05-03
+
+### Fixed
+- Fixed `publish-release.yml` GitHub Actions workflow
+
+## [0.2.1] - 2026-05-03
+
+### Fixed
+- Added `publishConfig` to `package.json` for correct npm registry targeting
+- Removed `pnpm-workspace.yaml` (not needed for single-package repo)
+- Fixed deployment configuration issues
+
 ## [0.2.0] - 2026-05-03
 
 ### Added
@@ -13,8 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `opacity-var()` SCSS function: replaces `rgba-css-var()` — generates `oklch(from var(--cx-{identifier}) l c h / var(--cx-{target}-opacity, 1))` for component color utilities
 - Breakpoint prefix support for utility classes: responsive variants now use `{breakpoint}:` prefix convention (e.g. `sm:icon-md`, `lg:list-horizontal`)
 - Breakpoint prefix support for `.navbar-expand` — expanded to use the new prefix convention instead of infix
-- Container selector syntax changed from `.container-{breakpoint|fluid}` to `.container.{breakpoint|fluid}` (compound class), with CSS escaping for numeric breakpoint names (e.g. `.container.2xlarge` → `.container.\32 xlarge`)
-- `$enable-component-gradients` now defaults to `true`
 - GitHub Actions workflow (`publish-release.yml`) that detects version bumps on `main` and auto-publishes releases
 
 ### Changed
@@ -24,6 +46,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed legacy `-rgb` variable aliases (`$fg-main-rgb`, `$bg-main-rgb`, `$border-main-rgb`, etc.) from `_variables.scss` — color opacity is now applied directly via `opacity-var()` and `to-opacity()`
 - Navbar `container` selector generation refactored to use escaped breakpoint strings with proper handling for numeric breakpoints
 - Cleaned up `_navbar.scss` comment block and removed unused `&#{$infix}` pattern in favor of explicit `breakpoint-prefix` loop
+- Container selector syntax changed from `.container-{breakpoint|fluid}` to `.container.{breakpoint|fluid}` (compound class), with CSS escaping for numeric breakpoint names (e.g. `.container.2xlarge` → `.container.\32 xlarge`)
+- Image class selectors changed from `.image-fluid` / `.image-thumbnail` to compound classes `.image.fluid` / `.image.thumbnail`
+- List variant selectors changed from `.list-numbered` / `.list-flush` / `.list-plain` to compound classes `.list-group.numbered` / `.list-group.flush` / `.list-group.plain`
+- List horizontal variant renamed from `.list-horizontal` to `.list-group.horizontal`; responsive variant changed from `.list-horizontal-{breakpoint}` to `.list-group.{breakpoint}:horizontal` (e.g. `.list-group.large:horizontal`)
+- Utility breakpoint infix convention replaced with prefix across all utilities — infix pattern `{utility}-{breakpoint}-{value}` is now `{breakpoint}:{utility}-{value}` (e.g. `p-large-xlarge` → `large:p-xlarge`)
+- Offcanvas responsive class renamed from `.offcanvas-{breakpoint}` to `.{breakpoint}:offcanvas` (e.g. `offcanvas-large` → `large:offcanvas`)
+- Table responsive class renamed from `.table-responsive-{breakpoint}` to `.{breakpoint}:table-responsive` (e.g. `table-responsive-large` → `large:table-responsive`)
+- Modal fullscreen breakpoint class renamed from `.fullscreen-{breakpoint}-down` to `.{breakpoint}:down:fullscreen` (e.g. `fullscreen-large-down` → `large:down:fullscreen`)
 - SCSS source files across all components updated with standardized JSDoc-style block comments describing component purpose, variants, and dependencies
 - JS source across all components cleaned up: standardized JSDoc block comments (`Constants`, `Class definition`, `Data API implementation`, `jQuery`), removed inline workaround comments
 - `eslint.config.js` minor update
@@ -172,6 +202,11 @@ The project was transferred to the chassis-ui organization, establishing it as a
 
 ---
 
+[0.2.3]: https://github.com/chassis-ui/css/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/chassis-ui/css/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/chassis-ui/css/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/chassis-ui/css/compare/v0.1.2...v0.2.0
+[0.1.2]: https://github.com/chassis-ui/css/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/chassis-ui/css/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/chassis-ui/css/compare/v0.0.1...v0.1.0
 [0.0.1]: https://github.com/chassis-ui/css/releases/tag/v0.0.1

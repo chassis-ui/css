@@ -233,69 +233,64 @@ For example, we use the `primary`, `success`, and `danger` keys from `$context-c
 
 ### Colors
 
-Next to the [Sass maps]([[docsref:/customize/color#color-sass-maps]]) we have, theme colors can also be used as standalone variables, like `$primary`.
+Chassis uses **oklch** as its default color space. For a full overview of how the color system works — including design tokens, CSS custom properties, and palette maps — see [Color System]([[docsref:/core-concepts/color-system]]) and [Design Tokens]([[docsref:/core-concepts/design-tokens]]).
+
+The following functions in `scss/functions/_color.scss` are the primary tools for working with colors in Sass.
+
+#### `to-color()`
+
+Converts any Sass-compatible color value to a rounded `oklch()` string. This is used internally to normalize colors into the oklch space before they are written to CSS custom properties.
+
+<ScssDocs name="to-color" file="scss/functions/_color.scss" />
 
 ```scss
-.custom-element {
-  color: $gray-100;
-  background-color: $dark;
-}
+// Input: any Sass color
+$converted: to-color(#0d6efd);
+// Output: oklch(0.55 0.215 262.88)
+
+$with-alpha: to-color(rgba(#0d6efd, 0.5));
+// Output: oklch(0.55 0.215 262.88 / 0.5)
 ```
 
-You can lighten or darken colors with Chassis CSS’s `tint-color()` and `shade-color()` functions. These functions will mix colors with black or white, unlike Sass’ native `lighten()` and `darken()` functions which will change the lightness by a fixed amount, which often doesn’t lead to the desired effect.
+Because `to-color()` outputs a plain string using the oklch color space, it works in any browser that supports oklch. If you want to use a different color space as your system default, replace calls to `to-color()` with a function that outputs your preferred space (e.g. `color(display-p3 ...)` or `lch(...)`).
 
-`shift-color()` combines these two functions by shading the color if the weight is positive and tinting the color if the weight is negative.
+#### `to-opacity()`
 
-<ScssDocs name="color-functions" file="scss/functions/_color.scss" />
+Wraps a color or CSS variable in a CSS [relative color](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_colors/Relative_colors) expression that applies an opacity value via the `oklch` channel syntax. This is how Chassis applies contextual opacity to tokens at runtime without generating separate color variants.
 
-In practice, you’d call the function and pass in the color and weight parameters.
+<ScssDocs name="to-opacity" file="scss/functions/_color.scss" />
 
 ```scss
-.custom-element {
-  color: tint-color($primary, 10%);
-}
+// Static alpha on a CSS variable
+to-opacity(var(--cx-primary), 0.5)
+// => oklch(from var(--cx-primary) l c h / 0.5)
 
-.custom-element-2 {
-  color: shade-color($danger, 30%);
-}
+// Static alpha on a Sass color
+to-opacity($white, .15)
+// => oklch(from #fff l c h / 0.15)
 
-.custom-element-3 {
-  color: shift-color($success, 40%);
-  background-color: shift-color($success, -60%);
-}
+// Dynamic alpha via another CSS variable
+to-opacity(var(--cx-fg-main), var(--cx-fg-opacity, 1))
+// => oklch(from var(--cx-fg-main) l c h / var(--cx-fg-opacity, 1))
 ```
 
-### Color contrast
+The `from` keyword and channel names (`l c h`) are specific to oklch. If you change the default color space, update the channel names accordingly — for example, `lch(from ... l c h)` stays the same, but `color(display-p3 from ... r g b)` would differ.
 
-In order to meet the [Web Content Accessibility Guidelines (WCAG)](https://www.w3.org/TR/WCAG/) contrast requirements, authors **must** provide a minimum [text color contrast of 4.5:1](https://www.w3.org/TR/WCAG/#contrast-minimum) and a minimum [non-text color contrast of 3:1](https://www.w3.org/TR/WCAG/#non-text-contrast), with very few exceptions.
+#### `opacity-var()`
 
-To help with this, we included the `color-contrast` function in Chassis. It uses the [WCAG contrast ratio algorithm](https://www.w3.org/TR/WCAG/#dfn-contrast-ratio) for calculating contrast thresholds based on [relative luminance](https://www.w3.org/TR/WCAG/#dfn-relative-luminance) in an `sRGB` color space to automatically return a light (`#fff`), dark (`#212529`) or black (`#000`) contrast color based on the specified base color. This function is especially useful for mixins or loops where you’re generating multiple classes.
+A shorthand variant of `to-opacity()` designed to work as a `map-loop` callback. It takes a color token identifier and an opacity variable name and returns a relative color expression using the `--cx-` prefix convention.
 
-For example, to generate color swatches from our `$context-colors` map:
+<ScssDocs name="opacity-var" file="scss/functions/_color.scss" />
 
 ```scss
-@each $color, $value in $ {
-  .swatch-#{$color} {
-    color: color-contrast($value);
-  }
-}
+opacity-var("primary", "bg")
+// => oklch(from var(--cx-primary) l c h / var(--cx-bg-opacity, 1))
+
+opacity-var("fg-main", "fg")
+// => oklch(from var(--cx-fg-main) l c h / var(--cx-fg-opacity, 1))
 ```
 
-It can also be used for one-off contrast needs:
-
-```scss
-.custom-element {
-  color: color-contrast(#000); // returns `color: #fff`
-}
-```
-
-You can also specify a base color with our color map functions:
-
-```scss
-.custom-element {
-  color: color-contrast($dark); // returns `color: #fff`
-}
-```
+This function is used when generating utility classes and component styles that need to respect a runtime opacity variable.
 
 ### Escape SVG
 

@@ -100,7 +100,12 @@ export function chassis(): AstroIntegration[] {
 }
 
 function cleanPublicDirectory() {
-  fs.rmSync(getDocsPublicFsPath(), { force: true, recursive: true, maxRetries: 5, retryDelay: 100 })
+  const dir = getDocsPublicFsPath()
+  if (!fs.existsSync(dir)) return
+  // Delete contents rather than the directory itself to avoid ENOTEMPTY on the root public dir.
+  for (const entry of fs.readdirSync(dir)) {
+    fs.rmSync(path.join(dir, entry), { force: true, recursive: true })
+  }
 }
 
 // Copy the `dist` folder from the root of the repo containing the latest version of Chassis to make it available from
@@ -158,7 +163,7 @@ function copyStaticRecursively(source: string, destination: string) {
     if (entry.isFile()) {
       fs.cpSync(path.join(source, entry.name), path.join(destination, entry.name))
     } else if (entry.isDirectory()) {
-      ;(fs.mkdirSync(path.join(destination, entry.name)), { recursive: true })
+      fs.mkdirSync(path.join(destination, entry.name), { recursive: true })
 
       copyStaticRecursively(path.join(source, entry.name), path.join(destination, entry.name))
     }
