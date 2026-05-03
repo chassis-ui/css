@@ -1,0 +1,98 @@
+name: Publish Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      css-changed: ${{ steps.changes.outputs.css-changed }}
+      css-version: ${{ steps.version.outputs.css-version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 2 # Need at least 2 commits to compare
+
+      - name: Check for package changes
+        id: changes
+        run: |
+          # Check if package.json version changed
+          if git diff HEAD~1 HEAD --name-only | grep -q "package.json"; then
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            PREVIOUS_VERSION=$(git show HEAD~1:package.json | node -p "JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')).version")
+
+            echo "Current version: $CURRENT_VERSION"
+            echo "Previous version: $PREVIOUS_VERSION"
+
+            if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+              echo "css-changed=true" >> $GITHUB_OUTPUT
+            else
+              echo "css-changed=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "css-changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get current version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "css-version=$VERSION" >> $GITHUB_OUTPUT
+
+  publish-css:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.css-changed == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Check if version already published on npm
+        id: npm-check
+        run: |
+          VERSION="${{ needs.detect-changes.outputs.css-version }}"
+          if npm view "@chassis-ui/css@$VERSION" version 2>/dev/null | grep -q "$VERSION"; then
+            echo "already-published=true" >> $GITHUB_OUTPUT
+            echo "Version $VERSION already on npm, skipping publish"
+          else
+            echo "already-published=false" >> $GITHUB_OUTPUT
+            echo "Version $VERSION not on npm, will publish"
+          fi
+
+      - name: Publish @chassis-ui/css
+        if: steps.npm-check.outputs.already-published == 'false'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_CHASSIS_CSS }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v${{ needs.detect-changes.outputs.css-version }}"
+          name: "@chassis-ui/css v${{ needs.detect-changes.outputs.css-version }}"
+          body: |
+            Published @chassis-ui/css v${{ needs.detect-changes.outputs.css-version }} to npm.
+
+            Install with:
+            ```bash
+            npm install @chassis-ui/css@${{ needs.detect-changes.outputs.css-version }}
+            ```
+          draft: false
+          prerelease: false
