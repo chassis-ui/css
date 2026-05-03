@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis - CSS popover.js
+ * Chassis CSS popover.js
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

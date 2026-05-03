@@ -133,8 +133,8 @@
 .cxd-example-cssgrid [class*="grid"] > * {
   padding-top: .75rem;
   padding-bottom: .75rem;
-  background-color: rgba(var(--cxd-subtle-rgb), .15);
-  border: 1px solid rgba(var(--cxd-subtle-rgb), .3);
+  background-color: #{to-opacity(var(--cxd-subtle), .2)};
+  border: 1px solid #{to-opacity(var(--cxd-subtle), .4)};
 }
 
 .cxd-example-row .row + .row,
@@ -144,12 +144,12 @@
 
 .cxd-example-row-flex-cols .row {
   min-height: 10rem;
-  background-color: rgba(var(--cxd-subtle-rgb), .15);
+  background-color: #{to-opacity(var(--cxd-subtle), .2)};
 }
 
 .cxd-example-flex div:not(.vr) {
-  background-color: rgba(var(--cxd-subtle-rgb), .15);
-  border: 1px solid rgba(var(--cxd-subtle-rgb), .3);
+  background-color: #{to-opacity(var(--cxd-subtle), .2)};
+  border: 1px solid #{to-opacity(var(--cxd-subtle), .4)};
 }
 
 // Grid mixins
@@ -265,7 +265,7 @@
 
 .simple-list-example-scrollspy {
   .active {
-    background-color: rgba(var(--cxd-subtle-rgb), .15);
+    background-color: #{to-opacity(var(--cxd-subtle), .2)};
   }
 }
 
@@ -434,9 +434,7 @@
 // scss-docs-start custom-color-mode
 [data-cx-theme="primary"] {
   --cx-fg-color: var(--cx-white);
-  --cx-fg-color-rgb: #{to-rgb($white)};
   --cx-bg-color: var(--cx-primary);
-  --cx-bg-color-rgb: #{to-rgb($primary)};
   --cx-border-subtle: var(--cx-primary-30);
 
   .dropdown-menu {

@@ -1,4 +1,8 @@
 // scss-docs-start solid-button-mixin
+/// Set all state-specific CSS custom properties for a solid (filled) button variant.
+/// Reads from `$button-colors` map for fallback values, with per-color CSS variable overrides.
+///
+/// @param {String} $color - Button color name (e.g., "primary", "danger") matching a key prefix in `$button-colors`
 @mixin solid-button($color) {
   // Idle
   --#{$prefix}fg-idle: var(--#{$prefix}button-#{$color}-fg-idle, #{map-get($button-colors, #{#{$color}-fg-idle})});
@@ -20,6 +24,11 @@
 // scss-docs-end solid-button-mixin
 
 // scss-docs-start outline-button-mixin
+/// Set all state-specific CSS custom properties for an outline button variant.
+/// Idle state uses the base context color for foreground and border; hover inverts to solid fill.
+/// Reads from `$button-colors` map for press/disabled states.
+///
+/// @param {String} $color - Button color name (e.g., "primary", "danger")
 @mixin outline-button($color) {
   // Idle
   --#{$prefix}fg-idle: var(--#{$prefix}button-outline-#{$color}-fg-idle, var(--#{$prefix}#{$color}-base-color));
@@ -43,6 +52,10 @@
 // scss-docs-end outline-button-mixin
 
 // scss-docs-start smooth-button-mixin
+/// Set all state-specific CSS custom properties for a smooth (subtle/tonal) button variant.
+/// Uses light background tones derived from the context palette with transparent borders.
+///
+/// @param {String} $color - Button color name (e.g., "primary", "danger")
 @mixin smooth-button($color) {
   // Idle
   --#{$prefix}fg-idle: var(--#{$prefix}button-subtle-#{$color}-fg-idle, var(--#{#{$prefix}#{$color}-fg-main}));

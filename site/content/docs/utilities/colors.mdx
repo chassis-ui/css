@@ -44,18 +44,18 @@ Using CSS variables for `color` utilities allows for real-time color changes wit
 
 ### How it works
 
-Consider our default `.fg-primary` utility.
+Consider our `.fg-primary` utility.
 
 ```css
 .fg-primary {
-  color: rgba(var(--cx-primary-rgb), var(--cx-fg-opacity, 1)) !important;
+  color: oklch(from var(--cx-primary) l c h / var(--cx-fg-opacity, 1)) !important;
 }
 .fg-opacity-50 {
   --cx-fg-opacity: var(--cx-opacity-50);
 }
 ```
 
-We use an RGB version of our `--cx-primary` (with the value of `255, 91, 20`) CSS variable and attached a second CSS variable, `--cx-fg-opacity`, for the alpha transparency (with a default value `1`). That means anytime you use `.fg-primary` now, your computed `color` value is `rgba(255, 91, 20, 1)`. Then, the opacity class overrides default opacity value of color by adding `--cx-fg-opacity` variable to the element.
+We use the `--cx-primary` CSS variable directly with CSS relative color syntax, and attach a second CSS variable, `--cx-fg-opacity`, for the alpha transparency (with a default value `1`). The `oklch(from ...)` expression derives the color from the variable and applies the opacity channel. Then, the opacity class overrides the default opacity by setting `--cx-fg-opacity` on the element.
 
 ### Example
 

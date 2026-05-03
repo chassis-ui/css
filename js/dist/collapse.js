@@ -1,5 +1,5 @@
 /*!
-  * Chassis collapse.js v0.1.2 (https://chassis-ui.com)
+  * Chassis collapse.js v0.2.0 (https://chassis-ui.com)
   * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
   * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
   */
@@ -11,7 +11,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS collapse.js
+   * Chassis CSS collapse.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */

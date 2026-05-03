@@ -1,6 +1,13 @@
+/// Emit the CSS comment banner for a built Chassis CSS file.
+/// The banner includes the file name, version, project URL, copyright notice, and license.
+///
+/// @param {String|null} $file - Optional sub-file name to include in the banner title
+/// @example
+///   @include cxBanner("grid");
+///   // => /*! Chassis CSS - grid v... (https://...) ... */
 @mixin cxBanner($file) {
   /*!
-   * Chassis - CSS#{if($file, " - #{$file}", "")} v0.1.2 (https://ozgurgunes.github.io/chassis-css/)
+   * Chassis CSS#{if($file, " - #{$file}", "")} v0.2.0 (https://ozgurgunes.github.io/chassis-css/)
    * Copyright 2025 Ozgur Gunes
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    */

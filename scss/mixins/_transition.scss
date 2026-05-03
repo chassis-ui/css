@@ -1,4 +1,11 @@
 // stylelint-disable property-disallowed-list
+/// Apply a CSS transition when `$enable-transitions` is `true`.
+/// Defaults to `$transition-base` when no arguments are provided.
+/// Automatically adds a `transition: none` rule inside a
+/// `@media (prefers-reduced-motion: reduce)` query when
+/// `$enable-reduced-motion` is `true`.
+///
+/// @param {List} $transition... - One or more `transition` shorthand values
 @mixin transition($transition...) {
   @if length($transition) == 0 {
     $transition: $transition-base;

@@ -618,7 +618,7 @@ First, add `data-cx-display="static"` to the trigger element to disable Popper's
     <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" data-cx-display="static" aria-expanded="false">
       Left on small screens, right on medium+
     </button>
-    <ul class="dropdown-menu dropdown-menu-medium-end">
+    <ul class="dropdown-menu medium:dropdown-menu-end">
       <li><a class="dropdown-item" href="#">Action</a></li>
       <li><a class="dropdown-item" href="#">Another action</a></li>
       <li><a class="dropdown-item" href="#">Something else</a></li>
@@ -630,7 +630,7 @@ First, add `data-cx-display="static"` to the trigger element to disable Popper's
     <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" data-cx-display="static" aria-expanded="false">
       Left on small screens, right on medium+
     </button>
-    <ul class="dropdown-menu dropdown-menu-medium-end">
+    <ul class="dropdown-menu medium:dropdown-menu-end">
       ...
     </ul>
   </div>
@@ -642,9 +642,9 @@ Available responsive alignment classes:
 - **Positions:** `start` (left), `end` (right)
 
 For example:
-- `.dropdown-menu-small-end` - Left-aligned by default, right-aligned from small screens up
-- `.dropdown-menu-medium-start` - Right-aligned by default (using `.dropdown-menu-end`), left-aligned from medium screens up
-- `.dropdown-menu-large-end` - Left-aligned by default, right-aligned from large screens up
+- `.small:dropdown-menu-end` - Left-aligned by default, right-aligned from small screens up
+- `.medium:dropdown-menu-start` - Right-aligned by default (using `.dropdown-menu-end`), left-aligned from medium screens up
+- `.large:dropdown-menu-end` - Left-aligned by default, right-aligned from large screens up
 
 ### Offset and reference
 
@@ -760,8 +760,8 @@ Available options provide granular control over closing behavior:
 
 Chassis provides specialized integration for dropdowns within navigation bars. Unlike standard dropdowns, navbar dropdowns use static positioning (rather than Popper.js) for improved performance in complex navigation structures.
 
-<Example code={`<nav class="navbar navbar-expand-medium bg-evident">
-    <div class="container-fluid">
+<Example code={`<nav class="navbar medium:navbar-expand bg-evident">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Navbar</a>
       <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarExample" aria-controls="navbarExample" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>

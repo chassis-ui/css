@@ -64,10 +64,9 @@
   // Close button positioning
   // Positions the close button in the top-right corner of the modal
   .close-button {
-    --#{$prefix}size: var(--#{$prefix}icon-large);
+    --#{$prefix}size: var(--#{$prefix}icon-medium);
     position: absolute;
-    top: $modal-header-padding-x * .75;
-    right: $modal-header-padding-x * .5;
+    right: $modal-header-padding-x * .75;
   }
 
 }
@@ -237,11 +236,11 @@
   // Creates variants that become fullscreen at different breakpoints (e.g., fullscreen-md-down)
   // scss-docs-start modal-fullscreen-loop
   @each $breakpoint in map-keys($grid-breakpoints) {
-    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
-    $postfix: if($infix != "", $infix + "-down", "");
+    $infix: breakpoint-prefix($breakpoint, $grid-breakpoints);
+    $postfix: if($infix != "", "down\\:", "");
 
     @include media-breakpoint-down($breakpoint) {
-      &.fullscreen#{$postfix} {
+      &.#{$infix}#{$postfix}fullscreen {
         width: 100vw;
         max-width: none;
         height: 100%;

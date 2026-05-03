@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis notification.js
+ * Chassis CSS notification.js
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

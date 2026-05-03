@@ -79,6 +79,70 @@ $test-map-dark: (
     }
   }
 
+  @include it("extracts a color from an oklch relative color string with alpha") {
+    @include assert() {
+      @include output() {
+        $oklch-string: to-opacity(var(--#{$prefix}test-primary), 0.5);
+        $result: get-sass-color($oklch-string);
+        color: $result;
+      }
+      @include expect() {
+        color: rgba($test-color-primary, 0.5);
+      }
+    }
+  }
+
+  @include it("extracts a color from an oklch relative color string with low alpha") {
+    @include assert() {
+      @include output() {
+        $oklch-string: to-opacity(var(--#{$prefix}test-primary), 0.15);
+        $result: get-sass-color($oklch-string);
+        color: $result;
+      }
+      @include expect() {
+        color: rgba($test-color-primary, 0.15);
+      }
+    }
+  }
+
+  @include it("extracts an opaque color from an oklch relative color string with alpha 1") {
+    @include assert() {
+      @include output() {
+        $oklch-string: to-opacity(var(--#{$prefix}test-primary), 1);
+        $result: get-sass-color($oklch-string);
+        color: $result;
+      }
+      @include expect() {
+        color: $test-color-primary;
+      }
+    }
+  }
+
+  @include it("extracts a color from a quoted oklch string") {
+    @include assert() {
+      @include output() {
+        $result: get-sass-color("oklch(from var(--#{$prefix}test-primary) l c h / 0.5)");
+        color: $result;
+      }
+      @include expect() {
+        color: rgba($test-color-primary, 0.5);
+      }
+    }
+  }
+
+  @include it("extracts a dark palette color from an oklch relative color string") {
+    @include assert() {
+      @include output() {
+        $oklch-string: to-opacity(var(--#{$prefix}test-primary), 0.5);
+        $result: get-sass-color($oklch-string, true);
+        color: $result;
+      }
+      @include expect() {
+        color: rgba($test-dark-primary, 0.5);
+      }
+    }
+  }
+
   // We test clean-alpha-value in detail in a separate test block below
 }
 

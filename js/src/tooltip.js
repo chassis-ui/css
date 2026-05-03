@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis - CSS tooltip.js
+ * Chassis CSS tooltip.js
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

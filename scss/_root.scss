@@ -1,25 +1,27 @@
+//
+// CSS Custom Properties
+//
+// Generates all :root-level CSS custom properties from the Chassis token system.
+// Includes color variables, semantic context tokens, and dark mode overrides.
+// Dark mode values are applied via the color-mode() mixin.
+//
+
+@use "sass:color";
 :root,
 [data-cx-theme="light"] {
 
   // Generate color variables
   @each $name, $value in $context-colors {
-    --#{$prefix}#{$name}: #{$value};
-    --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+    --#{$prefix}#{$name}: #{to-color($value)};
   }
   @each $name, $value in $contrast-colors {
-    --#{$prefix}#{$name}: #{$value};
-    --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+    --#{$prefix}#{$name}: #{to-color($value)};
   }
   @each $name, $value in $base-palette {
-    --#{$prefix}#{$name}: #{$value};
-    --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+    --#{$prefix}#{$name}: #{to-color($value)};
   }
   @each $name, $value in $context-palette {
-    --#{$prefix}#{$name}: #{$value};
-    @if not str-index($name, "subtle") and not str-index($name, "slight") {
-      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
-    }
-    // --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+    --#{$prefix}#{$name}: #{to-color($value)};
   }
 
   // Generate font variables
@@ -37,7 +39,6 @@
   }
   @each $name, $value in $typography {
     @include rfs($value, --#{$prefix}#{$name});
-    // --#{$prefix}#{$name}: #{$value};
   }
   // Generate spacers variables
   @each $name, $value in $spacers {
@@ -102,7 +103,6 @@
   // scss-docs-end root-body-variables
 
   --#{$prefix}icon-size: #{$icon-size};
-  //--#{$prefix}border-width: var(--#{$prefix}border-width-medium);
 
   --#{$prefix}link-decoration: #{$link-decoration};
   @if $link-hover-decoration != null {
@@ -110,14 +110,13 @@
   }
   // scss-docs-end root-body-variables
 
-  // // scss-docs-start root-border-var
+  // scss-docs-start root-border-var
   --#{$prefix}border-width: #{$border-width};
   --#{$prefix}border-style: #{$border-style};
   --#{$prefix}border-color: #{$border-color};
   --#{$prefix}border-radius: #{$border-radius};
-  // // scss-docs-end root-border-var
+  // scss-docs-end root-border-var
 
-  //--#{$prefix}box-shadow: #{$box-shadow};
   --#{$prefix}box-shadow-small: #{$box-shadow-small};
   --#{$prefix}box-shadow-medium: #{$box-shadow-medium};
   --#{$prefix}box-shadow-large: #{$box-shadow-large};
@@ -137,7 +136,7 @@
     --#{$prefix}root-font-size: #{$font-size-root};
   }
   @if $text-align != null {
-    --#{$prefix}text-align: #{$text-aligm};
+    --#{$prefix}text-align: #{$text-align};
   }
 
   --#{$prefix}heading-color: var(--#{$prefix}fg-main);
@@ -150,33 +149,16 @@
 
     // scss-docs-start root-dark-mode-vars
     @each $name, $value in $context-colors-dark {
-      --#{$prefix}#{$name}: #{$value};
-      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+      --#{$prefix}#{$name}: #{to-color($value)};
     }
     @each $name, $value in $contrast-colors-dark {
-      --#{$prefix}#{$name}: #{$value};
-      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+      --#{$prefix}#{$name}: #{to-color($value)};
     }
     @each $name, $value in $context-palette-dark {
-      --#{$prefix}#{$name}: #{$value};
-      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+      --#{$prefix}#{$name}: #{to-color($value)};
     }
     @each $name, $value in $body-colors-dark {
-      --#{$prefix}#{$name}: #{$value};
-      --#{$prefix}#{$name}-rgb: #{to-rgb($value)};
+      --#{$prefix}#{$name}: #{to-color($value)};
     }
-
-    @include body-colors();
-    // scss-docs-end root-dark-mode-vars
-
-    // --#{$prefix}code-color: #{$code-color-dark};
-    // --#{$prefix}highlight-color: #{$mark-color-dark};
-    // --#{$prefix}highlight-bg: #{$mark-bg-dark};
-
-    // --#{$prefix}form-valid-color: #{$form-valid-color-dark};
-    // --#{$prefix}form-valid-border-color: #{$form-valid-border-color-dark};
-    // --#{$prefix}form-invalid-color: #{$form-invalid-color-dark};
-    // --#{$prefix}form-invalid-border-color: #{$form-invalid-border-color-dark};
-
   }
 }

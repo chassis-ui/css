@@ -60,22 +60,22 @@ Or modify the default `border-color` of a component:
 
 ## Opacity
 
-Chassis - CSS `border-{color}` utilities are generated with Sass using CSS variables. This allows for real-time color changes without compilation and dynamic alpha transparency changes.
+Chassis CSS `border-{color}` utilities are generated with Sass using CSS variables. This allows for real-time color changes without compilation and dynamic alpha transparency changes.
 
 ### How it works
 
-Consider our default `.border-success` utility.
+Consider our `.border-primary` utility.
 
 ```css
-.border-success {
-  border-color: rgba(var(--cx-success-rgb), var(--cx-border-opacity, 1)) !important;
+.border-primary {
+  border-color: oklch(from var(--cx-primary) l c h / var(--cx-border-opacity, 1)) !important;
 }
 .border-opacity-50 {
   --cx-border-opacity: var(--cx-opacity-50);
 }
 ```
 
-We use an RGB version of our `--cx-primary` (with the value of `255, 91, 20`) CSS variable and attached a second CSS variable, `--cx-border-opacity`, for the alpha transparency (with a default value `1`). That means anytime you use `.border-primary` now, your computed `border-color` value is `rgba(255, 91, 20, 1)`. Then, the opacity class overrides default opacity value of color by adding `--cx-border-opacity` variable to the element.
+We use the `--cx-primary` CSS variable directly with CSS relative color syntax, and attach a second CSS variable, `--cx-border-opacity`, for the alpha transparency (with a default value `1`). The `oklch(from ...)` expression derives the color from the variable and applies the opacity channel. Then, the opacity class overrides the default opacity by setting `--cx-border-opacity` on the element.
 
 ### Example
 

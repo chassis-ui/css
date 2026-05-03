@@ -1,3 +1,10 @@
+//
+// Tooltip Component
+//
+// Small informational overlay that appears on hover or focus. Supports four
+// directional placements and is positioned via the Popper.js engine.
+//
+
 // Base class
 .tooltip {
   // scss-docs-start tooltip-css-vars
@@ -18,7 +25,6 @@
   z-index: var(--#{$prefix}zindex);
   display: block;
   margin: var(--#{$prefix}margin);
-  @include deprecate("`$tooltip-margin`", "v5", "v5.x", true);
   // Our parent element can be arbitrary since tooltips are by default inserted as a sibling of their target element.
   // So reset our font and text properties to avoid inheriting weird values.
   @include reset-text();

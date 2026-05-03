@@ -11,14 +11,14 @@ toc: true
 
 - **Use media queries to architect your CSS by breakpoint.** Media queries are a feature of CSS that allow you to conditionally apply styles based on a set of browser and operating system parameters. We most commonly use `min-width` in our media queries.
 
-- **Mobile first, responsive design is the goal.** Chassis - CSS’s CSS aims to apply the bare minimum of styles to make a layout work at the smallest breakpoint, and then layers on styles to adjust that design for larger devices. This optimizes your CSS, improves rendering time, and provides a great experience for your visitors.
+- **Mobile first, responsive design is the goal.** Chassis CSS’s CSS aims to apply the bare minimum of styles to make a layout work at the smallest breakpoint, and then layers on styles to adjust that design for larger devices. This optimizes your CSS, improves rendering time, and provides a great experience for your visitors.
 
 ## Available breakpoints
 
-Chassis - CSS includes six default breakpoints, sometimes referred to as _grid tiers_, for building responsively. These breakpoints can be customized if you’re using our source Sass files.
+Chassis CSS includes six default breakpoints, sometimes referred to as _grid tiers_, for building responsively. These breakpoints can be customized if you’re using our source Sass files.
 
 <CxTable>
-| Breakpoint | Class infix | Dimensions |
+| Breakpoint | Class prefix | Dimensions |
 | --- | --- | --- |
 | Extra small | <em>None</em> |&lt;576px |
 | Small | `small` | &ge;576px |
@@ -38,16 +38,16 @@ These breakpoints are customizable via Sass—you’ll find them in a Sass map i
 For more information and examples on how to modify our Sass maps and variables, please refer to [the CSS section of the Grid documentation]([[docsref:/layout/grid#css]]).
 
 <Callout type="warning">
-**Note:** While it is generally recommended to avoid using arguments that start with digits (e.g., `2xlarge`), Sass supports them because they are treated as strings. The `2xlarge` naming convention is intentionally chosen to maintain consistency with other sizing definitions and potential usage in HTML and CSS classes, such as `class="container-2xlarge"` or `class="col-2xlarge-4"`. This ensures alignment across the codebase and does not cause any issues in Sass and CSS.
+**Note:** While it is generally recommended to avoid using arguments that start with digits (e.g., `2xlarge`), Sass supports them because they are treated as strings. The `2xlarge` naming convention is intentionally chosen to maintain consistency with other sizing definitions and potential usage in HTML and CSS classes, such as `class="container 2xlarge"` or `class="2xlarge:col-4"`. This ensures alignment across the codebase and does not cause any issues in Sass and CSS.
 </Callout>
 
 ## Media queries
 
-Since Chassis - CSS is developed to be mobile first, we use a handful of [media queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries) to create sensible breakpoints for our layouts and interfaces. These breakpoints are mostly based on minimum viewport widths and allow us to scale up elements as the viewport changes.
+Since Chassis CSS is developed to be mobile first, we use a handful of [media queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries) to create sensible breakpoints for our layouts and interfaces. These breakpoints are mostly based on minimum viewport widths and allow us to scale up elements as the viewport changes.
 
 ### Min-width
 
-Chassis - CSS primarily uses the following media query ranges—or breakpoints—in our source Sass files for our layout, grid system, and components.
+Chassis CSS primarily uses the following media query ranges—or breakpoints—in our source Sass files for our layout, grid system, and components.
 
 ```scss
 // Source mixins
@@ -58,7 +58,6 @@ Chassis - CSS primarily uses the following media query ranges—or breakpoints�
 @include media-breakpoint-up(large) { ... }
 @include media-breakpoint-up(xlarge) { ... }
 @include media-breakpoint-up(2xlarge) { ... }
-// Note that the `2xlarge` argument is treated as a string in Sass, which ensures it does not cause any issues.
 
 // Usage
 

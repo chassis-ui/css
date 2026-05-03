@@ -1,5 +1,5 @@
 /*!
-  * Chassis template-factory.js v0.1.2 (https://chassis-ui.com)
+  * Chassis template-factory.js v0.2.0 (https://chassis-ui.com)
   * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
   * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
   */
@@ -11,7 +11,7 @@
 
   /**
    * --------------------------------------------------------------------------
-   * Chassis - CSS util/template-factory.js
+   * Chassis CSS util/template-factory.js
    * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */

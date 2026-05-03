@@ -1,3 +1,10 @@
+//
+// Icon Component
+//
+// Styles for inline SVG icons and icon-font glyphs. Controls size, color, and
+// vertical alignment using CSS custom properties that inherit from the parent context.
+//
+
 .icon {
   margin: 0;
   color: var(--#{$prefix}icon-color);
@@ -54,7 +61,7 @@ $utilities: () !default;
         css-variable-name: icon-color,
         class: icon,
         values: map-merge(
-          map-loop(map-loop($context-colors, to-rgb, "$value"), rgba-css-var, #{"$key"}, #{"icon"}),
+          map-loop($context-colors, opacity-var, #{"$key"}, #{"icon"}),
           ( "transparent": transparent )
         )
       ),
@@ -86,13 +93,13 @@ $utilities: () !default;
   );
 }
 
-@if $enable-responsive-utilities {
+@if $enable-adaptive-font-sizes {
   @each $breakpoint in map-keys($grid-breakpoints) {
-    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+    $infix: breakpoint-prefix($breakpoint, $grid-breakpoints);
 
     @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
       @each $name, $value in $icon-sizes {
-        .icon#{$infix}-#{$name} {
+        .#{$infix}icon-#{$name} {
           --#{$prefix}icon-size: var(--#{$prefix}icon-#{$name});
         }
       }

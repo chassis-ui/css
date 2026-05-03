@@ -1,6 +1,14 @@
 // Gradients
 
 // scss-docs-start gradient-bg-mixin
+/// Apply a background color and optionally overlay the component's CSS gradient image.
+/// The gradient is only applied when `$enable-component-gradients` is `true`.
+///
+/// @param {Color|null} $color [null] - Background color to set; pass `null` to skip
+/// @content None
+/// @example
+///   @include gradient-bg($primary);
+///   // => background-color: $primary; background-image: var(--cx-bg-gradient);
 @mixin gradient-bg($color: null) {
   background-color: $color;
 
@@ -11,37 +19,68 @@
 // scss-docs-end gradient-bg-mixin
 
 // scss-docs-start gradient-mixins
-// Horizontal gradient, from left to right
-//
-// Creates two color stops, start and end, by specifying a color and position for each color stop.
-@mixin gradient-x($start-color: $gray-700, $end-color: $gray-800, $start-percent: 0%, $end-percent: 100%) {
+/// Horizontal linear gradient from left to right.
+///
+/// @param {Color} $start-color [$neutral-70] - Starting color (left side)
+/// @param {Color} $end-color [$neutral-80] - Ending color (right side)
+/// @param {Percentage} $start-percent [0%] - Position of the start color stop
+/// @param {Percentage} $end-percent [100%] - Position of the end color stop
+@mixin gradient-x($start-color: $neutral-70, $end-color: $neutral-80, $start-percent: 0%, $end-percent: 100%) {
   background-image: linear-gradient(to right, $start-color $start-percent, $end-color $end-percent);
 }
 
-// Vertical gradient, from top to bottom
-//
-// Creates two color stops, start and end, by specifying a color and position for each color stop.
-@mixin gradient-y($start-color: $gray-700, $end-color: $gray-800, $start-percent: null, $end-percent: null) {
+/// Vertical linear gradient from top to bottom.
+///
+/// @param {Color} $start-color [$neutral-70] - Starting color (top)
+/// @param {Color} $end-color [$neutral-80] - Ending color (bottom)
+/// @param {Percentage|null} $start-percent [null] - Position of the start color stop
+/// @param {Percentage|null} $end-percent [null] - Position of the end color stop
+@mixin gradient-y($start-color: $neutral-70, $end-color: $neutral-80, $start-percent: null, $end-percent: null) {
   background-image: linear-gradient(to bottom, $start-color $start-percent, $end-color $end-percent);
 }
 
-@mixin gradient-directional($start-color: $gray-700, $end-color: $gray-800, $deg: 45deg) {
+/// Linear gradient at an arbitrary angle.
+///
+/// @param {Color} $start-color [$neutral-70] - Starting color
+/// @param {Color} $end-color [$neutral-80] - Ending color
+/// @param {Angle} $deg [45deg] - Gradient direction angle
+@mixin gradient-directional($start-color: $neutral-70, $end-color: $neutral-80, $deg: 45deg) {
   background-image: linear-gradient($deg, $start-color, $end-color);
 }
 
+/// Horizontal linear gradient with three color stops.
+///
+/// @param {Color} $start-color [$blue] - Starting color
+/// @param {Color} $mid-color [$purple] - Middle color
+/// @param {Percentage} $color-stop [50%] - Position of the middle color stop
+/// @param {Color} $end-color [$red] - Ending color
 @mixin gradient-x-three-colors($start-color: $blue, $mid-color: $purple, $color-stop: 50%, $end-color: $red) {
   background-image: linear-gradient(to right, $start-color, $mid-color $color-stop, $end-color);
 }
 
+/// Vertical linear gradient with three color stops.
+///
+/// @param {Color} $start-color [$blue] - Starting color
+/// @param {Color} $mid-color [$purple] - Middle color
+/// @param {Percentage} $color-stop [50%] - Position of the middle color stop
+/// @param {Color} $end-color [$red] - Ending color
 @mixin gradient-y-three-colors($start-color: $blue, $mid-color: $purple, $color-stop: 50%, $end-color: $red) {
   background-image: linear-gradient($start-color, $mid-color $color-stop, $end-color);
 }
 
-@mixin gradient-radial($inner-color: $gray-700, $outer-color: $gray-800) {
+/// Radial gradient from an inner color outward.
+///
+/// @param {Color} $inner-color [$neutral-70] - Center color
+/// @param {Color} $outer-color [$neutral-80] - Outer edge color
+@mixin gradient-radial($inner-color: $neutral-70, $outer-color: $neutral-80) {
   background-image: radial-gradient(circle, $inner-color, $outer-color);
 }
 
-@mixin gradient-striped($color: rgba($white, .15), $angle: 45deg) {
+/// Diagonal striped gradient, typically used for progress bar animations.
+///
+/// @param {Color} $color [to-opacity($white, .15)] - Stripe color (semi-transparent white by default)
+/// @param {Angle} $angle [45deg] - Angle of the stripes
+@mixin gradient-striped($color: #{to-opacity($white, .15)}, $angle: 45deg) {
   background-image: linear-gradient($angle, $color 25%, transparent 25%, transparent 50%, $color 50%, $color 75%, transparent 75%, transparent);
 }
 // scss-docs-end gradient-mixins

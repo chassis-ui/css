@@ -1,18 +1,18 @@
 ---
 title: Color modes
-description: Chassis - CSS now supports color modes, or themes, as of v5.3.0. Explore our default light color mode and the new dark mode, or create your own using our styles as your template.
+description: Chassis CSS now supports color modes, or themes, as of v5.3.0. Explore our default light color mode and the new dark mode, or create your own using our styles as your template.
 toc: true
 ---
 
 import { getDocsRelativePath } from '@libs/path'
 
 <Callout>
-**Try it yourself!** Download the source code and working demo for using Chassis - CSS with Stylelint, and the color modes from the [twbs/examples repository](https://github.com/twbs/examples/tree/main/color-modes). You can also [open the example in StackBlitz](https://stackblitz.com/github/twbs/examples/tree/main/color-modes?file=index.html).
+**Try it yourself!** Download the source code and working demo for using Chassis CSS with Stylelint, and the color modes from the [twbs/examples repository](https://github.com/twbs/examples/tree/main/color-modes). You can also [open the example in StackBlitz](https://stackblitz.com/github/twbs/examples/tree/main/color-modes?file=index.html).
 </Callout>
 
 ## Dark mode
 
-**Chassis - CSS now supports color modes, starting with dark mode!** With v5.3.0 you can implement your own color mode toggler (see below for an example from Chassis - CSS’s docs) and apply the different color modes as you see fit. We support a light mode (default) and now dark mode. Color modes can be toggled globally on the `<html>` element, or on specific components and elements, thanks to the `data-cx-theme` attribute.
+**Chassis CSS now supports color modes, starting with dark mode!** With v5.3.0 you can implement your own color mode toggler (see below for an example from Chassis CSS’s docs) and apply the different color modes as you see fit. We support a light mode (default) and now dark mode. Color modes can be toggled globally on the `<html>` element, or on specific components and elements, thanks to the `data-cx-theme` attribute.
 
 Alternatively, you can also switch to a media query implementation thanks to our color mode mixin—see [the usage section for details](#building-with-sass). Heads up though—this eliminates your ability to change themes on a per-component basis as shown below.
 
@@ -50,7 +50,7 @@ For example, to change the color mode of a dropdown menu, add `data-cx-theme="li
 
 ## How it works
 
-- As shown above, color mode styles are controlled by the `data-cx-theme` attribute. This attribute can be applied to the `<html>` element, or to any other element or Chassis - CSS component. If applied to the `<html>` element, it will apply to everything. If applied to a component or element, it will be scoped to that specific component or element.
+- As shown above, color mode styles are controlled by the `data-cx-theme` attribute. This attribute can be applied to the `<html>` element, or to any other element or Chassis CSS component. If applied to the `<html>` element, it will apply to everything. If applied to a component or element, it will be scoped to that specific component or element.
 
 - For each color mode you wish to support, you’ll need to add new overrides for the shared global CSS variables. We do this already in our `_root.scss` stylesheet for dark mode, with light mode being the default values. In writing color mode specific styles, use the mixin:
 
@@ -67,7 +67,7 @@ For example, to change the color mode of a dropdown menu, add `data-cx-theme="li
 
 ### Enable dark mode
 
-Enable the built in dark color mode across your entire project by adding the `data-cx-theme="dark"` attribute to the `<html>` element. This will apply the dark color mode to all components and elements, other than those with a specific `data-cx-theme` attribute applied. Building on the [quick start template]([[docsref:/getting-started/introduction#quick-start]]):
+Enable the built in dark color mode across your entire project by adding the `data-cx-theme="dark"` attribute to the `<html>` element. This will apply the dark color mode to all components and elements, other than those with a specific `data-cx-theme` attribute applied. Building on the [Quick Start template]([[docsref:/getting-started/quick-start]]):
 
 ```html
 <!doctype html>
@@ -75,7 +75,7 @@ Enable the built in dark color mode across your entire project by adding the `da
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Chassis - CSS demo</title>
+    <title>Chassis CSS demo</title>
     <link href="[[config:cdn.css]]" rel="stylesheet" integrity="[[config:cdn.css_hash]]" crossorigin="anonymous">
   </head>
   <body>
@@ -85,7 +85,7 @@ Enable the built in dark color mode across your entire project by adding the `da
 </html>
 ```
 
-Chassis - CSS does not yet ship with a built-in color mode picker, but you can use the one from our own documentation if you like. [Learn more in the JavaScript section.](#javascript)
+Chassis CSS does not yet ship with a built-in color mode picker, but you can use the one from our own documentation if you like. [Learn more in the JavaScript section.](#javascript)
 
 ### Building with Sass
 
@@ -141,7 +141,7 @@ Outputs to:
 
 ## Custom color modes
 
-While the primary use case for color modes is light and dark mode, custom color modes are also possible. Create your own `data-cx-theme` selector with a custom value as the name of your color mode, then modify our Sass and CSS variables as needed. We opted to create a separate `_variables-dark.scss` stylesheet to house Chassis - CSS’s dark mode specific Sass variables, but that’s not required for you.
+While the primary use case for color modes is light and dark mode, custom color modes are also possible. Create your own `data-cx-theme` selector with a custom value as the name of your color mode, then modify our Sass and CSS variables as needed. We opted to create a separate `_variables-dark.scss` stylesheet to house Chassis CSS’s dark mode specific Sass variables, but that’s not required for you.
 
 For example, you can create a “blue theme” with the selector `data-cx-theme="blue"`. In your custom Sass or CSS file, add the new selector and override any global or component CSS variables as needed. If you’re using Sass, you can also use Sass’s functions within your CSS variable overrides.
 
@@ -224,7 +224,7 @@ $context-colors-fg-main-dark: map-merge($context-colors-text-dark, $custom-color
 $context-colors-bg-evident-dark: map-merge($context-colors-bg-subtle-dark, $custom-colors-bg-subtle-dark);
 $context-colors-border-subtle-dark: map-merge($context-colors-border-subtle-dark, $custom-colors-border-subtle-dark);
 
-// Remainder of Chassis - CSS imports
+// Remainder of Chassis CSS imports
 @import "root";
 @import "reboot";
 // etc

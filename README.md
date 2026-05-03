@@ -3,7 +3,7 @@
 > A tokenized CSS framework bridging Figma designs to seamless code implementation.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-blue.svg)](https://github.com/chassis-ui/css)
+[![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-blue.svg)](https://github.com/chassis-ui/css)
 
 ## Overview
 

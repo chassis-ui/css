@@ -1,5 +1,7 @@
-// Resize anything
-
+/// Make an element user-resizable in the given direction.
+/// Sets `overflow: auto` as required by the CSS3 UI spec (resize only applies when overflow is not visible).
+///
+/// @param {String} $direction - Resize direction: `horizontal`, `vertical`, or `both`
 @mixin resizable($direction) {
   overflow: auto; // Per CSS3 UI, `resize` only applies when `overflow` isn't `visible`
   resize: $direction; // Options: horizontal, vertical, both

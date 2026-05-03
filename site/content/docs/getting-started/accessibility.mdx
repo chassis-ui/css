@@ -1,60 +1,72 @@
 ---
 title: Accessibility
-description: A brief overview of Chassis - CSS’s features and limitations for the creation of accessible content.
+description: What Chassis CSS gives you for free, what's still your responsibility, and how the token-driven color system makes contrast guarantees possible.
 toc: true
 ---
 
-Chassis - CSS provides an easy-to-use framework of ready-made styles, layout tools, and interactive components, allowing developers to create websites and applications that are visually appealing, functionally rich, and accessible out of the box.
+Chassis CSS provides a foundation for building accessible web applications: a token-driven color system designed in contrast pairs, interactive components built around relevant ARIA roles and attributes, support for `prefers-reduced-motion`, and utilities for visually-hidden content. The framework gives you a strong starting point — but accessibility ultimately depends on the markup, semantics, and content choices you make in your own code.
 
-## Overview and limitations
+## What Chassis provides
 
-The overall accessibility of any project built with Chassis - CSS depends in large part on the author’s markup, additional styling, and scripting they’ve included. However, provided that these have been implemented correctly, it should be perfectly possible to create websites and applications with Chassis - CSS that fulfill [<abbr title="Web Content Accessibility Guidelines">WCAG</abbr> 2.2](https://www.w3.org/TR/WCAG/) (A/AA/AAA), [Section 508](https://www.section508.gov/), and similar accessibility standards and requirements.
+### Contrast-aware color palettes
 
-### Structural markup
+Every Chassis context palette is built from token pairs designed to meet [WCAG 2.2 contrast ratios](https://www.w3.org/TR/WCAG/#contrast-minimum) for body text (4.5:1) and large text or UI components (3:1). When a component reads `--cx-fg-main` against `--cx-bg-main` from the same context, it inherits that contrast guarantee — for both light and dark modes.
 
-Chassis - CSS’s styling and layout can be applied to a wide range of markup structures. This documentation aims to provide developers with best practice examples to demonstrate the use of Chassis - CSS itself and illustrate appropriate semantic markup, including ways in which potential accessibility concerns can be addressed.
+This guarantee holds for the default Chassis brand. If you swap in a custom token build, the responsibility moves to the token authors: as long as your token pairs maintain those ratios, the framework propagates them through every component automatically. See the [Color System]([[docsref:/core-concepts/color-system]]) for how the layered palette is structured.
+
+That said, **always test with real content**. Long-form text, dense data tables, and custom component combinations can produce contrast situations the generic palette tokens don't anticipate.
 
 ### Interactive components
 
-Chassis - CSS’s interactive components—such as modal dialogs, dropdown menus, and custom tooltips—are designed to work for touch, mouse, and keyboard users. Through the use of relevant [<abbr title="Web Accessibility Initiative">WAI</abbr>-<abbr title="Accessible Rich Internet Applications">ARIA</abbr>](https://www.w3.org/WAI/standards-guidelines/aria/) roles and attributes, these components should also be understandable and operable using assistive technologies (such as screen readers).
+Chassis's interactive components — modals, dropdowns, tooltips, popovers, accordions, tabs, and so on — are designed to work for touch, mouse, and keyboard input. They use relevant [WAI-ARIA](https://www.w3.org/WAI/standards-guidelines/aria/) roles and attributes so assistive technologies can interpret them correctly.
 
-Because Chassis - CSS’s components are purposely designed to be fairly generic, authors may need to include further <abbr title="Accessible Rich Internet Applications">ARIA</abbr> roles and attributes, as well as JavaScript behavior, to more accurately convey the precise nature and functionality of their component. This is usually noted in the documentation.
+The components are deliberately generic. Authors typically need to add component-specific ARIA roles, properties, and labels to convey the precise nature and purpose of the component in context — for example, `aria-label` on icon-only buttons, `aria-describedby` for help text on form fields, `aria-current` on active navigation items. The component documentation calls out these additions where they apply.
 
-### Color contrast
+### Reduced motion
 
-Some combinations of colors that currently make up Chassis - CSS’s default palette—used throughout the framework for things such as button variations, alert variations, form validation indicators—may lead to *insufficient* color contrast (below the recommended [WCAG 2.2 text color contrast ratio of 4.5:1](https://www.w3.org/TR/WCAG/#contrast-minimum) and the [WCAG 2.2 non-text color contrast ratio of 3:1](https://www.w3.org/TR/WCAG/#non-text-contrast)), particularly when used against a light background. Authors are encouraged to test their specific uses of color and, where necessary, manually modify/extend these default colors to ensure adequate color contrast ratios.
+Chassis CSS respects the [`prefers-reduced-motion` media feature](https://www.w3.org/TR/mediaqueries-5/#prefers-reduced-motion). When a user signals a preference for reduced motion at the OS level, Chassis disables most CSS transitions (modal open/close, carousel slides, accordion expand/collapse) and slows down animations that carry meaning (loading spinners, progress indicators).
 
-### Visually hidden content
+When `prefers-reduced-motion: no-preference` is in effect — the user has not opted out — Chassis enables `scroll-behavior: smooth` for in-page navigation. To disable smooth scrolling globally, set `$enable-smooth-scroll: false` before importing Chassis.
 
-Content which should be visually hidden, but remain accessible to assistive technologies such as screen readers, can be styled using the `.visually-hidden` class. This can be useful in situations where additional visual information or cues (such as meaning denoted through the use of color) need to also be conveyed to non-visual users.
+### Visually hidden utilities
+
+For content that should be available to assistive technologies but invisible on screen, use the `.visually-hidden` class:
 
 ```html
-<p class="text-danger">
+<p class="fg-danger">
   <span class="visually-hidden">Danger: </span>
-  This action is not reversible
+  This action is not reversible.
 </p>
 ```
 
-For visually hidden interactive controls, such as traditional “skip” links, use the `.visually-hidden-focusable` class. This will ensure that the control becomes visible once focused (for sighted keyboard users). **Watch out, compared to the equivalent `.sr-only` and `.sr-only-focusable` classes in past versions, Chassis - CSS 5’s `.visually-hidden-focusable` is a standalone class, and must not be used in combination with the `.visually-hidden` class.**
+For interactive controls that should appear when focused — typical "skip to main content" links — use `.visually-hidden-focusable`. The control is invisible until it receives focus, at which point it becomes visible for sighted keyboard users:
 
 ```html
 <a class="visually-hidden-focusable" href="#content">Skip to main content</a>
 ```
 
-### Reduced motion
+`.visually-hidden-focusable` is a standalone class — don't combine it with `.visually-hidden`.
 
-Chassis - CSS includes support for the [`prefers-reduced-motion` media feature](https://www.w3.org/TR/mediaqueries-5/#prefers-reduced-motion). In browsers/environments that allow the user to specify their preference for reduced motion, most CSS transition effects in Chassis - CSS (for instance, when a modal dialog is opened or closed, or the sliding animation in carousels) will be disabled, and meaningful animations (such as spinners) will be slowed down.
+## What's still your responsibility
 
-On browsers that support `prefers-reduced-motion`, and where the user has *not* explicitly signaled that they’d prefer reduced motion (i.e. where `prefers-reduced-motion: no-preference`), Chassis - CSS enables smooth scrolling using the `scroll-behavior` property.
+The framework can't make decisions about your content for you. Producing an accessible page requires you to:
+
+- **Write semantic HTML.** Use `<button>` for buttons, `<a>` for links, headings in order, lists for lists. Chassis styles work on any element, but assistive technology relies on the element type to convey meaning.
+- **Provide text alternatives.** Every meaningful image needs `alt` text; icon-only buttons need `aria-label` or visually-hidden text; SVG decorative graphics need `aria-hidden="true"`.
+- **Manage focus.** When opening a modal, focus moves to it; when closing, focus returns to the trigger. Chassis's interactive plugins handle the common cases, but custom components are your responsibility.
+- **Test with real assistive technology.** Screen readers, voice control, switch input, and keyboard-only navigation all reveal issues that automated tools miss.
+- **Verify contrast in custom components.** The token-driven contrast guarantees apply to the default Chassis brand and to custom components that consume body color variables. Hardcoded colors break the guarantee.
+
+## Conformance
+
+The overall accessibility of any project built with Chassis CSS depends on the markup, content, scripting, and additional styling you author. When implemented carefully, it's possible to build websites and applications with Chassis CSS that meet [WCAG 2.2](https://www.w3.org/TR/WCAG/) (A/AA/AAA), [Section 508](https://www.section508.gov/), and similar standards.
 
 ## Additional resources
 
 - [Web Content Accessibility Guidelines (WCAG) 2.2](https://www.w3.org/TR/WCAG/)
 - [The A11Y Project](https://www.a11yproject.com/)
 - [MDN accessibility documentation](https://developer.mozilla.org/en-US/docs/Web/Accessibility)
-- [Tenon.io Accessibility Checker](https://tenon.io/)
 - [Color Contrast Analyser (CCA)](https://www.tpgi.com/color-contrast-checker/)
-- ["HTML Codesniffer" bookmarklet for identifying accessibility issues](https://github.com/squizlabs/HTML_CodeSniffer)
 - [Microsoft Accessibility Insights](https://accessibilityinsights.io/)
-- [Deque Axe testing tools](https://www.deque.com/axe/)
+- [Deque axe-core](https://github.com/dequelabs/axe-core)
 - [Introduction to Web Accessibility](https://www.w3.org/WAI/fundamentals/accessibility-intro/)

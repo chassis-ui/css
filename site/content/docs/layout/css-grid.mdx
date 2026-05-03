@@ -8,7 +8,7 @@ added:
 
 ## How it works
 
-Chassis - CSS has the option to enable a separate grid system that’s built on CSS Grid. You still get classes you can apply on a whim to build responsive layouts, but with a different approach under the hood.
+Chassis CSS has the option to enable a separate grid system that’s built on CSS Grid. You still get classes you can apply on a whim to build responsive layouts, but with a different approach under the hood.
 
 - **CSS Grid is opt-in.** Disable the default grid system by setting `$enable-grid-classes: false` and enable the CSS Grid by setting `$enable-cssgrid: true`. Then, recompile your Sass.
 
@@ -18,7 +18,7 @@ Chassis - CSS has the option to enable a separate grid system that’s built on 
 
 - **Columns and gutter sizes are set via CSS variables.** Set these on the parent `.grid` and customize however you want, inline or in a stylesheet, with `--cx-grid-columns` and `--cx-grid-gap`.
 
-In the future, Chassis - CSS will likely shift to a hybrid solution as the `gap` property has achieved nearly full browser support for flexbox.
+In the future, Chassis CSS will likely shift to a hybrid solution as the `gap` property has achieved nearly full browser support for flexbox.
 
 ## Key differences
 
@@ -51,9 +51,9 @@ Three equal-width columns across all viewports and devices can be created by usi
 Use responsive classes to adjust your layout across viewports. Here we start with two columns on the narrowest viewports, and then grow to three columns on medium viewports and above.
 
 <Example class="cxd-example-cssgrid" code={`<div class="grid text-center">
-    <div class="g-col-6 g-col-medium-4">.g-col-6 .g-col-medium-4</div>
-    <div class="g-col-6 g-col-medium-4">.g-col-6 .g-col-medium-4</div>
-    <div class="g-col-6 g-col-medium-4">.g-col-6 .g-col-medium-4</div>
+    <div class="g-col-6 medium:g-col-4">.g-col-6 .medium:g-col-4</div>
+    <div class="g-col-6 medium:g-col-4">.g-col-6 .medium:g-col-4</div>
+    <div class="g-col-6 medium:g-col-4">.g-col-6 .medium:g-col-4</div>
   </div>`} />
 
 Compare that to this two column layout at all viewports.
