@@ -1,3 +1,9 @@
+/// Apply one or more box shadows when `$enable-component-shadows` is `true`.
+/// Multiple shadow values are joined as a comma-separated list. Passing `none`
+/// as part of a multi-value shadow list triggers a warning, since the `none`
+/// keyword is only valid when used alone.
+///
+/// @param {List} $shadow... - One or more `box-shadow` values to apply
 @mixin box-shadow($shadow...) {
   @if $enable-component-shadows {
     $result: ();

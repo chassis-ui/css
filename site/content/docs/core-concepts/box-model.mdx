@@ -1,0 +1,73 @@
+---
+title: Box Model
+description: How Chassis CSS sets up box-sizing globally and keeps component padding pixel-perfect with Figma designs through stroke exclusion.
+toc: true
+aliases: "[[docsref:/core-concepts/box-sizing]]"
+---
+
+Chassis CSS applies two rules to every element on the page. The first is the `border-box` reset every modern CSS framework uses. The second is unique to Chassis: a small padding adjustment that keeps rendered components pixel-perfect against your Figma designs no matter how thick their borders are.
+
+## Border-box sizing
+
+Chassis CSS sets `box-sizing: border-box` globally, including on the `::before` and `::after` pseudo-elements:
+
+```scss
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+```
+
+With this rule, padding and borders count toward an element's declared width and height instead of being added on top of them. A button declared at `120px` wide stays `120px` wide whether it has a `1px` border or a `2px` one — the layout never shifts because of a border change.
+
+If a third-party widget assumes the legacy `content-box` model and breaks under this reset, scope an override to that widget alone:
+
+```css
+.third-party-widget {
+  box-sizing: content-box;
+}
+```
+
+## Stroke exclusion
+
+Border-box keeps element dimensions predictable, but it introduces a subtle mismatch with Figma. When a designer specifies `12px` padding in Figma, they mean the visual gap between the border edge and the content. In CSS, applying `padding: 12px` together with `border: 2px` produces a `14px` visual gap — `2px` more than the design intends.
+
+Chassis CSS solves this with **stroke exclusion**: components subtract their border width from their padding so the rendered gap always equals the token value.
+
+```scss
+// What the exclude-strokes mixin emits when a component has a 2px border:
+padding: calc(var(--cx-padding-y) - var(--cx-border-width))
+         calc(var(--cx-padding-x) - var(--cx-border-width));
+```
+
+The result: a button with a `12px` padding token and a `2px` border renders with a `12px` gap between content and border — exactly what the designer specified.
+
+### Configuring stroke exclusion
+
+The `$enable-exclude-strokes` setting in `_settings.scss` controls which components apply this compensation. It accepts three values:
+
+```scss
+// Apply to every component (default)
+$enable-exclude-strokes: true;
+
+// Disable everywhere
+$enable-exclude-strokes: false;
+
+// Apply only to the listed components
+$enable-exclude-strokes: button, badge, chip, notification;
+```
+
+When set to a list, only the named components subtract their border width from padding; everything else uses the token value as-is. See [Options]([[docsref:/customize/options]]) for the full set of `$enable-*` flags.
+
+### Using the mixin in custom components
+
+If you're building a custom component that follows the same token pattern, call the `exclude-strokes` mixin directly:
+
+```scss
+.my-component {
+  @include exclude-strokes(my-component);
+}
+```
+
+The mixin checks whether `my-component` is enabled by `$enable-exclude-strokes` and applies the compensation only when it should. Otherwise it falls through to the standard `padding` mixin and emits the token value unchanged.

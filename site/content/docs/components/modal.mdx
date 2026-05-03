@@ -200,7 +200,7 @@ For long content, the modal scrolls independently from the page. This example ha
 
 #### Content scrolling
 
-For better user experience with long content and fixed headers/footers, use the `.modal-container-scrollable` class. This keeps the header and footer in view while only scrolling the content area.
+For better user experience with long content and fixed headers/footers, use the `.modal-container.scrollable` class. This keeps the header and footer in view while only scrolling the content area.
 
 <div class="cxd-example">
   <button type="button" class="button primary" data-cx-toggle="modal" data-cx-target="#exampleModalScrollable">Scrollable content</button>
@@ -227,15 +227,15 @@ For better user experience with long content and fixed headers/footers, use the 
 </div>
 
 ```html
-<!-- Add modal-container-scrollable to make only the content area scroll -->
-<div class="modal-container modal-container-scrollable">
+<!-- Add .modal-container.scrollable to make only the content area scroll -->
+<div class="modal-container scrollable">
  ...
 </div>
 ```
 
 ### Centered modals
 
-Center your modal vertically for better visual balance by adding the `.modal-container-centered` class.
+Center your modal vertically for better visual balance by adding the `.modal-container.centered` class.
 
 <div class="cxd-example button-examples">
   <button type="button" class="button primary" data-cx-toggle="modal" data-cx-target="#exampleModalCenter">Centered modal</button>
@@ -282,12 +282,12 @@ Center your modal vertically for better visual balance by adding the `.modal-con
 
 ```html
 <!-- Vertically centered modal -->
-<div class="modal-container modal-container-centered">
+<div class="modal-container centered">
   ...
 </div>
 
 <!-- Combine centered positioning with scrollable content -->
-<div class="modal-container modal-container-centered modal-container-scrollable">
+<div class="modal-container centered scrollable">
   ...
 </div>
 ```
@@ -352,27 +352,27 @@ Create complex layouts within modals using the Chassis CSS grid system.
         <button type="button" class="close-button" data-cx-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-content">
-        <div class="container-fluid cxd-example-row">
+        <div class="container fluid cxd-example-row">
           <div class="row">
-            <div class="col-medium-4">.col-medium-4</div>
-            <div class="col-medium-4 ms-auto">.col-medium-4 .ms-auto</div>
+            <div class="medium:col-4">.medium:col-4</div>
+            <div class="medium:col-4 ms-auto">.medium:col-4 .ms-auto</div>
           </div>
           <div class="row">
-            <div class="col-medium-3 ms-auto">.col-medium-3 .ms-auto</div>
-            <div class="col-medium-2 ms-auto">.col-medium-2 .ms-auto</div>
+            <div class="medium:col-3 ms-auto">.medium:col-3 .ms-auto</div>
+            <div class="medium:col-2 ms-auto">.medium:col-2 .ms-auto</div>
           </div>
           <div class="row">
-            <div class="col-medium-6 ms-auto">.col-medium-6 .ms-auto</div>
+            <div class="medium:col-6 ms-auto">.medium:col-6 .ms-auto</div>
           </div>
           <div class="row">
-            <div class="col-small-9">
-              Level 1: .col-small-9
+            <div class="small:col-9">
+              Level 1: .small:col-9
               <div class="row">
-                <div class="col-8 col-small-6">
-                  Level 2: .col-8 .col-small-6
+                <div class="col-8 small:col-6">
+                  Level 2: .col-8 .small:col-6
                 </div>
-                <div class="col-4 col-small-6">
-                  Level 2: .col-4 .col-small-6
+                <div class="col-4 small:col-6">
+                  Level 2: .col-4 .small:col-6
                 </div>
               </div>
             </div>
@@ -394,10 +394,10 @@ Create complex layouts within modals using the Chassis CSS grid system.
 ```html
 <div class="modal-content">
   <!-- Add container-fluid to use the grid system -->
-  <div class="container-fluid">
+  <div class="container fluid">
     <div class="row">
-      <div class="col-medium-6">Column one</div>
-      <div class="col-medium-6">Column two</div>
+      <div class="medium:col-6">Column one</div>
+      <div class="medium:col-6">Column two</div>
     </div>
     <!-- Add more rows and columns as needed -->
   </div>
@@ -444,51 +444,10 @@ Use data attributes and JavaScript to dynamically change modal content based on 
 
 You can switch between modals by setting up the proper data attributes. This is useful for multi-step forms or wizards.
 
-<div class="cxd-example">
-  <button class="button primary" data-cx-target="#firstModal" data-cx-toggle="modal">Open first modal</button>
-</div>
-
-<div class="modal fade" id="firstModal" aria-hidden="true" aria-labelledby="firstModalLabel" tabindex="-1">
-  <div class="modal-container modal-container-centered">
-    <div class="modal-window">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="firstModalLabel">First step</h1>
-        <button type="button" class="close-button" data-cx-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-content">
-        <p>This is the first step of a multi-step process. Continue to the next step with the button below.</p>
-      </div>
-      <div class="modal-footer">
-        <button class="button secondary" data-cx-dismiss="modal">Cancel</button>
-        <button class="button primary" data-cx-target="#secondModal" data-cx-toggle="modal">Continue to step 2</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="secondModal" aria-hidden="true" aria-labelledby="secondModalLabel" tabindex="-1">
-  <div class="modal-container modal-container-centered">
-    <div class="modal-window">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="secondModalLabel">Second step</h1>
-        <button type="button" class="close-button" data-cx-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-content">
-        <p>This is the second step. You can go back to the first step or complete the process.</p>
-      </div>
-      <div class="modal-footer">
-        <button class="button default" data-cx-target="#firstModal" data-cx-toggle="modal">Back to step 1</button>
-        <button class="button secondary" data-cx-dismiss="modal">Cancel</button>
-        <button class="button primary">Complete</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-```html
+<Example addStackblitzJs code={`<button class="button primary" data-cx-target="#firstModal" data-cx-toggle="modal">Open first modal</button>
 <!-- First modal -->
 <div class="modal fade" id="firstModal" aria-hidden="true" aria-labelledby="firstModalLabel" tabindex="-1">
-  <div class="modal-container modal-container-centered">
+  <div class="modal-container centered">
     <div class="modal-window">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="firstModalLabel">First step</h1>
@@ -506,7 +465,7 @@ You can switch between modals by setting up the proper data attributes. This is 
 </div>
 <!-- Second modal -->
 <div class="modal fade" id="secondModal" aria-hidden="true" aria-labelledby="secondModalLabel" tabindex="-1">
-  <div class="modal-container modal-container-centered">
+  <div class="modal-container centered">
     <div class="modal-window">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="secondModalLabel">Second step</h1>
@@ -522,54 +481,13 @@ You can switch between modals by setting up the proper data attributes. This is 
       </div>
     </div>
   </div>
-</div>
-```
+</div>`} />
 
 ### Stacked modals
 
 While generally not recommended for optimal user experience, there are rare cases where you might need to display one modal over another. Here's how to implement this in Chassis CSS:
 
-<div class="cxd-example">
-  <button class="button primary" data-cx-target="#baseModal" data-cx-toggle="modal">Open base modal</button>
-</div>
-
-<div class="modal fade" id="baseModal" aria-hidden="true" aria-labelledby="baseModalLabel" tabindex="-1">
-  <div class="modal-container centered">
-    <div class="modal-window">
-      <div class="modal-header">
-        <h1 class="modal-title" id="baseModalLabel">Base modal</h1>
-        <button type="button" class="close-button" data-cx-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-content">
-        <p>This is the base modal. Click the button below to show another modal on top of this one.</p>
-        <p><strong>Note:</strong> Stacked modals should be used sparingly as they can create confusion and usability issues.</p>
-      </div>
-      <div class="modal-footer">
-        <button class="button secondary" data-cx-dismiss="modal">Close</button>
-        <button class="button primary" onclick="openStackedModal()">Show stacked modal</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="stackedModal" aria-hidden="true" aria-labelledby="stackedModalLabel" tabindex="-1">
-  <div class="modal-container centered">
-    <div class="modal-window">
-      <div class="modal-header">
-        <h1 class="modal-title" id="stackedModalLabel">Stacked modal</h1>
-        <button type="button" class="close-button" data-cx-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-content">
-        <p>This modal is stacked on top of the base modal.</p>
-      </div>
-      <div class="modal-footer">
-        <button class="button primary" data-cx-dismiss="modal">Close and return to base modal</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-```html
+<Example addStackblitzJs code={`<button class="button primary" data-cx-target="#baseModal" data-cx-toggle="modal">Open base modal</button>
 <!-- Base modal -->
 <div class="modal fade" id="baseModal" aria-hidden="true" aria-labelledby="baseModalLabel" tabindex="-1">
   <div class="modal-container centered">
@@ -584,7 +502,7 @@ While generally not recommended for optimal user experience, there are rare case
       </div>
       <div class="modal-footer">
         <button class="button secondary" data-cx-dismiss="modal">Close</button>
-        <button class="button primary" onclick="openStackedModal()">Show stacked modal</button>
+        <button class="button primary" id="showStackedModal">Show stacked modal</button>
       </div>
     </div>
   </div>
@@ -605,23 +523,9 @@ While generally not recommended for optimal user experience, there are rare case
       </div>
     </div>
   </div>
-</div>
-```
+</div>`} />
 
-```js
-// JavaScript to handle stacked modals
-function openStackedModal() {
-  const stackedModal = new chassis.Modal(document.getElementById('stackedModal'))
-  stackedModal.show()
-}
-```
-
-<Fragment set:html={`<script>
-function openStackedModal() {
-  const stackedModal = new chassis.Modal(document.getElementById('stackedModal'))
-  stackedModal.show()
-}
-</script>`} />
+<JsDocs name="stacked-modal" file="site/src/assets/snippets.js" />
 
 ## Customization options
 
@@ -744,11 +648,11 @@ For immersive experiences or mobile-focused interfaces, use fullscreen modals. Y
 | Class | Behavior |
 | --- | --- |
 | `.fullscreen` | Always fullscreen |
-| `.fullscreen-small-down` | Fullscreen at the small breakpoint and below (< {`${sassBreakpointValue('small')}`}) |
-| `.fullscreen-medium-down` | Fullscreen at the medium breakpoint and below (< {`${sassBreakpointValue('medium')}`}) |
-| `.fullscreen-large-down` | Fullscreen at the large breakpoint and below (< {`${sassBreakpointValue('large')}`}) |
-| `.fullscreen-xlarge-down` | Fullscreen at the xlarge breakpoint and below (< {`${sassBreakpointValue('xlarge')}`}) |
-| `.fullscreen-2xlarge-down` | Fullscreen at the 2xlarge breakpoint and below (< {`${sassBreakpointValue('2xlarge')}`}) |
+| `.small:down:fullscreen` | Fullscreen at the small breakpoint and below (< {`${sassBreakpointValue('small')}`}) |
+| `.medium:down:fullscreen` | Fullscreen at the medium breakpoint and below (< {`${sassBreakpointValue('medium')}`}) |
+| `.large:down:fullscreen` | Fullscreen at the large breakpoint and below (< {`${sassBreakpointValue('large')}`}) |
+| `.xlarge:down:fullscreen` | Fullscreen at the xlarge breakpoint and below (< {`${sassBreakpointValue('xlarge')}`}) |
+| `.2xlarge:down:fullscreen` | Fullscreen at the 2xlarge breakpoint and below (< {`${sassBreakpointValue('2xlarge')}`}) |
 </CxTable>
 
 <Example class="button-examples" showMarkup={false} code={`<button type="button" class="button primary" data-cx-toggle="modal" data-cx-target="#modalFullscreen">Always full screen</button>
@@ -777,7 +681,7 @@ For immersive experiences or mobile-focused interfaces, use fullscreen modals. Y
 </div>
 
 <div class="modal fade" id="modalFullscreenSmall" tabindex="-1" aria-labelledby="modalFullscreenSmallLabel" aria-hidden="true">
-  <div class="modal-container fullscreen-small-down">
+  <div class="modal-container small:down:fullscreen">
     <div class="modal-window">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="modalFullscreenSmallLabel">Small Breakpoint Fullscreen Modal</h1>
@@ -795,7 +699,7 @@ For immersive experiences or mobile-focused interfaces, use fullscreen modals. Y
 </div>
 
 <div class="modal fade" id="modalFullscreenMedium" tabindex="-1" aria-labelledby="modalFullscreenMediumLabel" aria-hidden="true">
-  <div class="modal-container fullscreen-medium-down">
+  <div class="modal-container medium:down:fullscreen">
     <div class="modal-window">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="modalFullscreenMediumLabel">Medium Breakpoint Fullscreen Modal</h1>
@@ -813,7 +717,7 @@ For immersive experiences or mobile-focused interfaces, use fullscreen modals. Y
 </div>
 
 <div class="modal fade" id="modalFullscreenLarge" tabindex="-1" aria-labelledby="modalFullscreenLargeLabel" aria-hidden="true">
-  <div class="modal-container fullscreen-large-down">
+  <div class="modal-container large:down:fullscreen">
     <div class="modal-window">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="modalFullscreenLargeLabel">Large Breakpoint Fullscreen Modal</h1>
@@ -831,7 +735,7 @@ For immersive experiences or mobile-focused interfaces, use fullscreen modals. Y
 </div>
 
 <div class="modal fade" id="modalFullscreenXlarge" tabindex="-1" aria-labelledby="modalFullscreenXlargeLabel" aria-hidden="true">
-  <div class="modal-container fullscreen-xlarge-down">
+  <div class="modal-container xlarge:down:fullscreen">
     <div class="modal-window">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="modalFullscreenXlargeLabel">XLarge Breakpoint Fullscreen Modal</h1>
@@ -849,7 +753,7 @@ For immersive experiences or mobile-focused interfaces, use fullscreen modals. Y
 </div>
 
 <div class="modal fade" id="modalFullscreen2xlarge" tabindex="-1" aria-labelledby="modalFullscreen2xlargeLabel" aria-hidden="true">
-  <div class="modal-container fullscreen-2xlarge-down">
+  <div class="modal-container 2xlarge:down:fullscreen">
     <div class="modal-window">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="modalFullscreen2xlargeLabel">2XLarge Breakpoint Fullscreen Modal</h1>
@@ -873,7 +777,7 @@ For immersive experiences or mobile-focused interfaces, use fullscreen modals. Y
 </div>
 
 <!-- Responsive fullscreen (only on smaller screens) -->
-<div class="modal-container fullscreen-medium-down">
+<div class="modal-container medium:down:fullscreen">
   <!-- Modal content -->
 </div>
 ```

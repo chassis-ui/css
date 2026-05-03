@@ -32,14 +32,14 @@ Consider our default `.bg-primary` utility.
 
 ```css
 .bg-primary {
-  background-color: rgba(var(--cx-primary-rgb), var(--cx-bg-opacity, 1)) !important;
+  background-color: oklch(from var(--cx-primary) l c h / var(--cx-bg-opacity, 1)) !important;
 }
 .bg-opacity-50 {
   --cx-bg-opacity: var(--cx-opacity-50);
 }
 ```
 
-We use an RGB version of our `--cx-primary` (with the value of `255, 91, 20`) CSS variable and attached a second CSS variable, `--cx-bg-opacity`, for the alpha transparency (with a default value `1`). That means anytime you use `.bg-primary` now, your computed `background-color` value is `rgba(255, 91, 20, 1)`. Then, the opacity class overrides default opacity value of color by adding `--cx-bg-opacity` variable to the element.
+We use the `--cx-primary` CSS variable directly with CSS relative color syntax, and attach a second CSS variable, `--cx-bg-opacity`, for the alpha transparency (with a default value `1`). The `oklch(from ...)` expression derives the color from the variable and applies the opacity channel. Then, the opacity class overrides the default opacity by setting `--cx-bg-opacity` on the element.
 
 ### Example
 

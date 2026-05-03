@@ -484,14 +484,14 @@ Across every breakpoint, use `.table-responsive` for horizontally scrolling tabl
 
 ### Breakpoint specific
 
-Use `.table-responsive{-small|-medium|-large|-xlarge|-2xlarge}` as needed to create responsive tables up to a particular breakpoint. From that breakpoint and up, the table will behave normally and not scroll horizontally.
+Use `.{breakpoint}:table-responsive` as needed to create responsive tables up to a particular breakpoint. From that breakpoint and up, the table will behave normally and not scroll horizontally.
 
 **These tables may appear broken until their responsive styles apply at specific viewport widths.**
 
 {getData('breakpoints').map((breakpoint) => {
   return (
     <div class="cxd-example">
-      <div class={`table-responsive${breakpoint.abbr}`}>
+      <div class={`${breakpoint.abbr}table-responsive`}>
         <table class="table">
           <thead>
             <tr>
@@ -547,7 +547,7 @@ Use `.table-responsive{-small|-medium|-large|-xlarge|-2xlarge}` as needed to cre
   )
 })}
 
-<Code code={getData('breakpoints').map((breakpoint) => `<div class="table-responsive${breakpoint.abbr}">
+<Code code={getData('breakpoints').map((breakpoint) => `<div class="${breakpoint.abbr}table-responsive">
     <table class="table">
       ...
     </table>

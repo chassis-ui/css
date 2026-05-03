@@ -247,10 +247,10 @@
 // and the colors of the striped, hovered & active tables
 
 @each $breakpoint in map-keys($grid-breakpoints) {
-  $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+  $infix: breakpoint-prefix($breakpoint, $grid-breakpoints);
 
   @include media-breakpoint-down($breakpoint) {
-    .table-responsive#{$infix} {
+    .#{$infix}table-responsive {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }

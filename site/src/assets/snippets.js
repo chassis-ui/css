@@ -153,6 +153,17 @@
   }
   // js-docs-end varying-modal-window
 
+  // Modal 'Stacked modal' example in docs and StackBlitz
+  // js-docs-start stacked-modal
+  // JavaScript to handle showing a stacked modal
+  const showStackedModal = document.getElementById('showStackedModal')
+  if (showStackedModal) {
+    showStackedModal.addEventListener('click', () => {
+      chassis.Modal.getOrCreateInstance('#stackedModal').show()
+    })
+  }
+  // js-docs-end stacked-modal
+
   // -------------------------------
   // Offcanvas
   // -------------------------------

@@ -1,28 +1,39 @@
 ---
 title: RFS
-description: Chassis - CSS’s resizing engine responsively scales common CSS properties to better utilize available space across viewports and devices.
+description: Responsive Font Sizes — the resizing engine Chassis uses to scale typography and spacing fluidly with the viewport.
 toc: true
 ---
 
 ## What is RFS?
 
-Chassis - CSS’s side project [RFS](https://github.com/twbs/rfs/tree/) is a unit resizing engine which was initially developed to resize font sizes (hence its abbreviation for Responsive Font Sizes). Nowadays RFS is capable of rescaling most CSS properties with unit values like `margin`, `padding`, `border-radius`, or even `box-shadow`.
+[RFS](https://github.com/twbs/rfs) (Responsive Font Sizes) is a small Sass library that produces fluid CSS values — values that scale smoothly between a minimum and maximum based on the viewport width. Despite the name, RFS handles any unit-bearing CSS property: `font-size`, `margin`, `padding`, `border-radius`, even `box-shadow`.
 
-The mechanism automatically calculates the appropriate values based on the dimensions of the browser viewport. It will be compiled into `calc()` functions with a mix of `rem` and viewport units to enable the responsive scaling behavior.
+The compiled output uses `calc()` plus a mix of `rem` and viewport units, so the responsive scaling happens entirely in CSS without media queries breaking the curve into steps.
 
-## Using RFS
+Chassis CSS uses RFS internally for its type scale and spacing. The mixins are bundled in the framework, available wherever Chassis Sass is imported. RFS can also be installed [standalone](https://github.com/twbs/rfs) if you want to use it outside Chassis.
 
-The mixins are included in Chassis - CSS and are available once you include Chassis - CSS’s `scss`. RFS can also be [installed standalone](https://github.com/twbs/rfs/tree/) if needed.
+## Toggling RFS
 
-### Using the mixins
+RFS is on by default. To disable it across Chassis, set `$enable-rfs: false` before importing the framework:
 
-The `rfs()` mixin has shorthands for `font-size`, `margin`, `margin-top`, `margin-right`, `margin-bottom`, `margin-left`, `padding`, `padding-top`, `padding-right`, `padding-bottom`, and `padding-left`. See the example below for source Sass and compiled CSS.
+```scss
+$enable-rfs: false;
+@import "@chassis-ui/css/scss/chassis";
+```
+
+When disabled, every RFS mixin emits the static value — the fluid scaling drops out and you're left with the design-time token value.
+
+## Using the mixins
+
+The `rfs()` mixin has shorthand wrappers for the most common CSS properties — `font-size`, `margin`, `margin-top` (and the other three sides), `padding`, `padding-top` (and the other three sides):
 
 ```scss
 .title {
   @include font-size(4rem);
 }
 ```
+
+Compiles to:
 
 ```css
 .title {
@@ -36,7 +47,7 @@ The `rfs()` mixin has shorthands for `font-size`, `margin`, `margin-top`, `margi
 }
 ```
 
-Any other property can be passed to the `rfs()` mixin like this:
+For any other property, pass it as the second argument to `rfs()`:
 
 ```scss
 .selector {
@@ -44,7 +55,7 @@ Any other property can be passed to the `rfs()` mixin like this:
 }
 ```
 
-`!important` can also just be added to whatever value you want:
+`!important` works as expected on the value:
 
 ```scss
 .selector {
@@ -52,14 +63,14 @@ Any other property can be passed to the `rfs()` mixin like this:
 }
 ```
 
-### Using the functions
+## Using the functions
 
-When you don’t want to use the includes, there are also two functions:
+When you'd rather not include a mixin (for example, inside an existing media query), the two RFS functions return values directly:
 
-- `rfs-value()` converts a value into a `rem` value if a `px` value is passed, in other cases it returns the same result.
-- `rfs-fluid-value()` returns the fluid version of a value if the property needs rescaling.
+- **`rfs-value()`** — converts a `px` value into `rem`; pass-through for other units.
+- **`rfs-fluid-value()`** — returns the fluid `calc()` form of a value if RFS would resize it; pass-through otherwise.
 
-In this example, we use one of Chassis - CSS’s built-in [responsive breakpoint mixins]([[docsref:/layout/breakpoints]]) to only apply styling below the `lg` breakpoint.
+The example below uses `rfs-fluid-value()` inside a `media-breakpoint-down` block to apply fluid scaling only below the `lg` breakpoint:
 
 ```scss
 .selector {
@@ -70,15 +81,19 @@ In this example, we use one of Chassis - CSS’s built-in [responsive breakpoint
 }
 ```
 
+Compiles to:
+
 ```css
 @media (max-width: 991.98px) {
   .selector {
     padding: calc(1.325rem + 0.9vw);
-    font-size: 1.125rem; /* 1.125rem is small enough, so RFS won’t rescale this */
+    font-size: 1.125rem; /* small enough; RFS leaves it alone */
   }
 }
 ```
 
-## Extended documentation
+Values below RFS's lower threshold are returned unchanged — the engine only rescales values that would actually benefit from it.
 
-RFS is a separate project under the Chassis - CSS organization. More about RFS and its configuration can be found on its [GitHub repository](https://github.com/twbs/rfs/tree/).
+## Further reading
+
+RFS is maintained as a separate project under the same upstream organization. For configuration options (breakpoint, base font size, factor, two-dimensional scaling), see the [RFS GitHub repository](https://github.com/twbs/rfs).

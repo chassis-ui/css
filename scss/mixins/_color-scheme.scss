@@ -1,4 +1,8 @@
 // scss-docs-start mixin-color-scheme
+/// Wrap `@content` in a `@media (prefers-color-scheme: ...)` query.
+///
+/// @param {String} $name - Color scheme name (`light` or `dark`)
+/// @content Styles to apply under this color scheme preference
 @mixin color-scheme($name) {
   @media (prefers-color-scheme: #{$name}) {
     @content;

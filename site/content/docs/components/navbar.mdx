@@ -32,14 +32,14 @@ A complete navbar combines several key components to create a functional navigat
 
 Here's a basic navbar with these components:
 
-<Example code={`<nav class="navbar navbar-expand-large bg-evident">
-    <div class="container-fluid">
+<Example code={`<nav class="navbar large:navbar-expand bg-evident">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Brand</a>
       <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarBasic" aria-controls="navbarBasic" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+        <span class="icon icon-bars-solid icon-default"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarBasic">
-        <ul class="navbar-nav me-auto mb-xsmall mb-large-0">
+        <ul class="navbar-nav me-auto mb-xsmall large:mb-0">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li>
@@ -96,14 +96,14 @@ Use `.navbar-brand` to create a text-based brand identifier:
 
 <Example code={`<!-- As a link -->
   <nav class="navbar bg-evident">
-    <div class="container-fluid">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Brand</a>
     </div>
   </nav>
 
   <!-- As a heading -->
   <nav class="navbar bg-evident">
-    <div class="container-fluid">
+    <div class="container fluid">
       <span class="navbar-brand mb-0 h1">Brand</span>
     </div>
   </nav>`} />
@@ -115,7 +115,7 @@ Use an image within `.navbar-brand` for a logo.
 <Example code={`<nav class="navbar bg-evident">
     <div class="container">
       <a class="navbar-brand" href="#">
-        <img src="/static/images/chassis-logo.svg" alt="Chassis CSS Logo" width="30" height="24">
+        <img src="/static/images/site-logo.svg" alt="Chassis CSS Logo" height="24">
       </a>
     </div>
   </nav>`} />
@@ -125,10 +125,10 @@ Use an image within `.navbar-brand` for a logo.
 Use both an image and text for a more complete branding element. Use the `d-inline-block` and `align-text-top` classes to align the image with the text.
 
 <Example code={`<nav class="navbar bg-evident">
-    <div class="container-fluid">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">
-        <img src="/static/images/chassis-logo.svg" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
-        Chassis CSS
+        <img src="/static/images/site-logo.svg" alt="Logo" height="24" class="d-inline-block align-text-top">
+        <span class="font-strong ms-xsmall">CSS</span>
       </a>
     </div>
   </nav>`} />
@@ -137,8 +137,8 @@ Use both an image and text for a more complete branding element. Use the `d-inli
 
 Navbar navigation links use the `.nav-link` class within a `.navbar-nav` container and support active states, disabled states, and dropdowns.
 
-<Example code={`<nav class="navbar navbar-expand-large bg-evident">
-    <div class="container-fluid">
+<Example code={`<nav class="navbar large:navbar-expand bg-evident">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Navigation</a>
       <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -166,8 +166,8 @@ Navbar navigation links use the `.nav-link` class within a `.navbar-nav` contain
 
 You can use a non-list structure for your navigation when preferred:
 
-<Example code={`<nav class="navbar navbar-expand-large bg-evident">
-    <div class="container-fluid">
+<Example code={`<nav class="navbar large:navbar-expand bg-evident">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Navigation</a>
       <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -187,8 +187,8 @@ You can use a non-list structure for your navigation when preferred:
 
 Dropdowns in navbars need proper nesting to work correctly:
 
-<Example code={`<nav class="navbar navbar-expand-large bg-evident">
-    <div class="container-fluid">
+<Example code={`<nav class="navbar large:navbar-expand bg-evident">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Navigation</a>
       <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -220,7 +220,7 @@ Dropdowns in navbars need proper nesting to work correctly:
 Navbars can include forms for search functionality or other input needs:
 
 <Example code={`<nav class="navbar bg-evident">
-    <div class="container-fluid">
+    <div class="container fluid">
       <form class="d-flex" role="search">
         <input class="form-input me-xsmall" type="search" placeholder="Search" aria-label="Search"/>
         <button class="button outline primary" type="submit">Search</button>
@@ -231,7 +231,7 @@ Navbars can include forms for search functionality or other input needs:
 You can combine forms with other navbar elements:
 
 <Example code={`<nav class="navbar bg-evident">
-    <div class="container-fluid">
+    <div class="container fluid">
       <a class="navbar-brand">Brand</a>
       <form class="d-flex" role="search">
         <input class="form-input me-xsmall" type="search" placeholder="Search" aria-label="Search"/>
@@ -243,7 +243,7 @@ You can combine forms with other navbar elements:
 Input groups are also supported:
 
 <Example code={`<nav class="navbar bg-evident">
-    <form class="container-fluid">
+    <form class="container fluid">
       <div class="input-group">
         <span class="input-addon" id="basic-addon1">@</span>
         <input type="text" class="form-input" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"/>
@@ -256,7 +256,7 @@ Input groups are also supported:
 For simple text elements, use `.navbar-text`:
 
 <Example code={`<nav class="navbar bg-evident">
-    <div class="container-fluid">
+    <div class="container fluid">
       <span class="navbar-text">
         Simple navbar text content
       </span>
@@ -265,14 +265,14 @@ For simple text elements, use `.navbar-text`:
 
 You can combine text with other navbar components:
 
-<Example code={`<nav class="navbar navbar-expand-large bg-evident">
-    <div class="container-fluid">
+<Example code={`<nav class="navbar large:navbar-expand bg-evident">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Brand</a>
       <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarText">
-        <ul class="navbar-nav me-auto mb-xsmall mb-large-0">
+        <ul class="navbar-nav me-auto mb-xsmall large:mb-0">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li>
@@ -299,14 +299,14 @@ Customize the appearance of your navbars with Chassis CSS's powerful theming sys
 Use `data-cx-theme="dark"` to apply dark mode styling to your navbar:
 
 <div class="cxd-example">
-  <nav class="navbar navbar-expand-large bg-main fg-main" data-cx-theme="dark">
-    <div class="container-fluid">
+  <nav class="navbar large:navbar-expand bg-main fg-main" data-cx-theme="dark">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Dark Theme</a>
       <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarColor01">
-        <ul class="navbar-nav me-auto mb-xsmall mb-large-0">
+        <ul class="navbar-nav me-auto mb-xsmall large:mb-0">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li>
@@ -330,7 +330,7 @@ Use `data-cx-theme="dark"` to apply dark mode styling to your navbar:
 </div>
 
 ```html
-<nav class="navbar navbar-expand-large bg-main fg-main" data-cx-theme="dark">
+<nav class="navbar large:navbar-expand bg-main fg-main" data-cx-theme="dark">
   <!-- Navbar content -->
 </nav>
 ```
@@ -340,14 +340,14 @@ Use `data-cx-theme="dark"` to apply dark mode styling to your navbar:
 Apply contextual colors to your navbar using the `context` class with color variants:
 
 <div class="cxd-example">
-  <nav class="navbar navbar-expand-large context primary solid" data-cx-theme="dark">
-    <div class="container-fluid">
+  <nav class="navbar large:navbar-expand context primary solid" data-cx-theme="dark">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Primary Color</a>
       <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarColor02">
-        <ul class="navbar-nav me-auto mb-xsmall mb-large-0">
+        <ul class="navbar-nav me-auto mb-xsmall large:mb-0">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li>
@@ -369,14 +369,14 @@ Apply contextual colors to your navbar using the `context` class with color vari
     </div>
   </nav>
 
-  <nav class="navbar navbar-expand-large context primary bg-even" data-cx-theme="light">
-    <div class="container-fluid">
+  <nav class="navbar large:navbar-expand context primary bg-even" data-cx-theme="light">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Light Theme</a>
       <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarColor03">
-        <ul class="navbar-nav me-auto mb-xsmall mb-large-0">
+        <ul class="navbar-nav me-auto mb-xsmall large:mb-0">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li>
@@ -400,11 +400,11 @@ Apply contextual colors to your navbar using the `context` class with color vari
 </div>
 
 ```html
-<nav class="navbar navbar-expand-large context primary solid" data-cx-theme="dark">
+<nav class="navbar large:navbar-expand context primary solid" data-cx-theme="dark">
   <!-- Navbar content -->
 </nav>
 
-<nav class="navbar navbar-expand-large context primary bg-even" data-cx-theme="light">
+<nav class="navbar large:navbar-expand context primary bg-even" data-cx-theme="light">
   <!-- Navbar content -->
 </nav>
 ```
@@ -418,8 +418,8 @@ Control how your navbar is positioned, sized, and contained within your page lay
 Wrap your navbar in a container to control its width and positioning:
 
 <Example code={`<div class="container">
-    <nav class="navbar navbar-expand-large bg-evident">
-      <div class="container-fluid">
+    <nav class="navbar large:navbar-expand bg-evident">
+      <div class="container fluid">
         <a class="navbar-brand" href="#">Contained Navbar</a>
       </div>
     </nav>
@@ -427,8 +427,8 @@ Wrap your navbar in a container to control its width and positioning:
 
 You can also use responsive containers within the navbar:
 
-<Example code={`<nav class="navbar navbar-expand-large bg-evident">
-    <div class="container-medium">
+<Example code={`<nav class="navbar large:navbar-expand bg-evident">
+    <div class="container medium">
       <a class="navbar-brand" href="#">Medium Width</a>
     </div>
   </nav>`} />
@@ -438,31 +438,31 @@ You can also use responsive containers within the navbar:
 Use Chassis position utilities to create fixed, sticky, or static navbars:
 
 <Example code={`<nav class="navbar bg-evident">
-    <div class="container-fluid">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Default</a>
     </div>
   </nav>`} />
 
 <Example code={`<nav class="navbar fixed-top bg-evident">
-    <div class="container-fluid">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Fixed Top</a>
     </div>
   </nav>`} />
 
 <Example code={`<nav class="navbar fixed-bottom bg-evident">
-    <div class="container-fluid">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Fixed Bottom</a>
     </div>
   </nav>`} />
 
 <Example code={`<nav class="navbar sticky-top bg-evident">
-    <div class="container-fluid">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Sticky Top</a>
     </div>
   </nav>`} />
 
 <Example code={`<nav class="navbar sticky-bottom bg-evident">
-    <div class="container-fluid">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Sticky Bottom</a>
     </div>
   </nav>`} />
@@ -475,14 +475,14 @@ Extend your navbar's functionality with scrollable navigation, external content 
 
 For navbars with many items, add `.navbar-nav-scroll` to enable scrolling:
 
-<Example code={`<nav class="navbar navbar-expand-large bg-evident">
-    <div class="container-fluid">
+<Example code={`<nav class="navbar large:navbar-expand bg-evident">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Scrollable Nav</a>
       <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarScroll">
-        <ul class="navbar-nav me-auto my-xsmall my-large-0 navbar-nav-scroll" style="--cx-scroll-height: 100px;">
+        <ul class="navbar-nav me-auto my-xsmall large:my-0 navbar-nav-scroll" style="--cx-scroll-height: 100px;">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li>
@@ -521,13 +521,13 @@ For navbars with many items, add `.navbar-nav-scroll` to enable scrolling:
 
 ### Responsive behavior
 
-Control when your navbar collapses with the `.navbar-expand-*` classes:
+Control when your navbar collapses with the `.{breakpoint}:navbar-expand` classes:
 
-- `.navbar-expand-small` - Collapses below the small breakpoint
-- `.navbar-expand-medium` - Collapses below the medium breakpoint
-- `.navbar-expand-large` - Collapses below the large breakpoint
-- `.navbar-expand-xlarge` - Collapses below the extra large breakpoint
-- `.navbar-expand-2xlarge` - Collapses below the 2x large breakpoint
+- `.small:navbar-expand` - Collapses below the small breakpoint
+- `.medium:navbar-expand` - Collapses below the medium breakpoint
+- `.large:navbar-expand` - Collapses below the large breakpoint
+- `.xlarge:navbar-expand` - Collapses below the extra large breakpoint
+- `.2xlarge:navbar-expand` - Collapses below the 2x large breakpoint
 - `.navbar-expand` - Never collapses
 - No `.navbar-expand` class - Always collapsed
 
@@ -535,14 +535,14 @@ Control when your navbar collapses with the `.navbar-expand-*` classes:
 
 The position of the toggle button depends on the order of elements in your markup:
 
-<Example code={`<nav class="navbar navbar-expand-large bg-evident">
-    <div class="container-fluid">
+<Example code={`<nav class="navbar large:navbar-expand bg-evident">
+    <div class="container fluid">
       <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarTogglePosition1" aria-controls="navbarTogglePosition1" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <a class="navbar-brand" href="#">Brand on Right</a>
       <div class="collapse navbar-collapse" id="navbarTogglePosition1">
-        <ul class="navbar-nav me-auto mb-xsmall mb-large-0">
+        <ul class="navbar-nav me-auto mb-xsmall large:mb-0">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li>
@@ -572,7 +572,7 @@ The navbar toggler can control content outside the navbar:
     </div>
   </div>
   <nav class="navbar bg-evident">
-    <div class="container-fluid">
+    <div class="container fluid">
       <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -584,7 +584,7 @@ The navbar toggler can control content outside the navbar:
 Transform your navbar into an offcanvas drawer for a modern interface pattern:
 
 <Example code={`<nav class="navbar bg-evident fixed-top">
-    <div class="container-fluid">
+    <div class="container fluid">
       <a class="navbar-brand" href="#">Offcanvas Navbar</a>
       <button class="navbar-toggler" type="button" data-cx-toggle="offcanvas" data-cx-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon icon-main"></span>

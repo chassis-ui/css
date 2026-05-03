@@ -24,7 +24,13 @@ for (const testFile of testFiles) {
   const sassString = TRUE_SETUP + data
 
   runSass({ describe, it, sourceType: 'string' }, sassString, {
-    loadPaths: [dirname(testFile), join(__dirname, '..', 'scss')]
+    loadPaths: [dirname(testFile), join(__dirname, '..', 'scss')],
+    logger: {
+      warn(message, options) {
+        if (options.deprecation) return
+        console.warn(message)
+      }
+    }
   })
 }
 

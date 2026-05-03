@@ -1,6 +1,6 @@
 ---
 title: Spinners
-description: Indicate the loading state of a component or page with Chassis - CSS spinners, built entirely with HTML, CSS, and no JavaScript.
+description: Indicate the loading state of a component or page with Chassis CSS spinners, built entirely with HTML, CSS, and no JavaScript.
 toc: true
 ---
 
@@ -8,7 +8,7 @@ import { getData } from '@libs/data'
 
 ## About
 
-Chassis - CSS “spinners” can be used to show the loading state in your projects. They’re built only with HTML and CSS, meaning you don’t need any JavaScript to create them. You will, however, need some custom JavaScript to toggle their visibility. Their appearance, alignment, and sizing can be easily customized with our amazing utility classes.
+Chassis CSS “spinners” can be used to show the loading state in your projects. They’re built only with HTML and CSS, meaning you don’t need any JavaScript to create them. You will, however, need some custom JavaScript to toggle their visibility. Their appearance, alignment, and sizing can be easily customized with our amazing utility classes.
 
 <Callout type="warning">
 For accessibility purposes, each loader here includes `role="status"` and a nested `<span class="visually-hidden">Loading...</span>`. We didn't include them in some examples here to keep focus on utilities.
@@ -98,23 +98,21 @@ Using CSS variables for `spinner` utilities allows for real-time color changes w
 
 ### How it works
 
-Consider our default `.spinner-*` classes.
+Consider our `.spinner-*` classes.
 
 ```css
 .spinner {
-  /* This is just an example, actual spinner classes are a bit more complex than this. */
-  --cx-spinner-color: var(--cx-icon-color-rgb);
-  color: rgba(var(--cx-spinner-color), var(--cx-spinner-opacity, 1));
+  --cx-color: var(--cx-spinner-color, var(--cx-icon-color));
 }
 .spinner-primary {
-  --cx-spinner-color: var(--cx-primary-rgb);
+  --cx-spinner-color: var(--cx-primary);
 }
 .spinner-opacity-50 {
   --cx-spinner-opacity: var(--cx-opacity-50);
 }
 ```
 
-We use an RGB version of our `--cx-primary` (with the value of `255, 91, 20`) CSS variable and attached a second CSS variable, `--cx-spinner-opacity`, for the alpha transparency (with a default value `1` thanks to a local CSS variable). That means anytime you use `.spinner-primary` now, your computed `color` value is `rgba(255, 91, 20, 1)`. The local CSS variable inside each `.spinner-*` class avoids inheritance issues so nested instances of the utilities don't automatically have a modified alpha transparency.
+We use the `--cx-primary` CSS variable directly with CSS relative color syntax, and attach a second CSS variable, `--cx-spinner-opacity`, for the alpha transparency (with a default value `1`). The `oklch(from ...)` expression derives the color from the variable and applies the opacity channel. Then, the opacity class overrides the default opacity by setting `--cx-spinner-opacity` on the element.
 
 ### Example
 
@@ -174,7 +172,7 @@ Spinners match to icon size and color automatically when placed inside a `.butto
 
 ## Positioning
 
-Spinners in Chassis - CSS are built with `rem`s and `display: inline-flex`. This means they can easily be resized, recolored, and quickly aligned.
+Spinners in Chassis CSS are built with `rem`s and `display: inline-flex`. This means they can easily be resized, recolored, and quickly aligned.
 
 ### Margin
 

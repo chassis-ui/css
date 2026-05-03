@@ -1,101 +1,50 @@
 ---
-title: A Complete Design Ecosystem
-description: Chassis - CSS provides a comprehensive toolkit, including Figma components, design tokens, and transformers, enabling seamless design and development for multiple products, platforms, and brands.
-toc: true
+title: Core Concepts
+description: The architectural ideas behind Chassis CSS — design tokens, the layered color system, the context class, component anatomy, and a few smaller rules that keep code and design pixel-perfect.
+toc: false
+aliases: "[[docsref:/core-concepts]]"
+sections:
+  - title: Design Tokens
+    description: The single source of truth for every visual decision — colors, spacing, typography, motion, and effects, layered for multi-brand and multi-theme builds.
+  - title: Color System
+    description: A three-layer architecture from primitive scales to semantic context palettes to body variables, designed to retheme cleanly across light and dark modes.
+  - title: Context Class
+    description: The `.context` class is how Chassis applies a color palette to a component — re-aiming CSS variables so a single class change retints an entire subtree.
+  - title: Component Anatomy
+    description: How components are built — token-fed CSS variables, placeholder extends, a small set of mixins, and the patterns Chassis uses for its own classes.
+  - title: Box Model
+    description: The global `border-box` reset plus stroke exclusion, the small padding adjustment that keeps Chassis components pixel-perfect against Figma regardless of border width.
+  - title: Line Heights
+    description: Per-size line-height tokens — set by designers, not derived from a ratio — so headings and body text both feel right and align with Figma.
 ---
 
-<Callout>
-**Heads up!** This document is a work in progress.
-</Callout>
+## What's in this section
 
-The rapid pace of product design can make it easy to lose track of color and component variants, especially in large-scale environments.
+Chassis CSS is built on a few architectural ideas that show up in every component, utility, and customization path. The pages in this section explain what those ideas are, how they fit together, and how to apply them to your own work.
 
-Beyond challenges in the hand-off process and production, maintaining consistency even in Figma design files for multi-product environments can be difficult.
+You don't need to read these pages to use Chassis — the components and utilities work fine without any of it. You'll want to read them when you start customizing, theming, or extending Chassis, because every customization surface — Sass variables, CSS custom properties, contexts, mixins — bottoms out in one of these concepts.
 
-Chassis - CSS helps centralize all design decisions using design tokens, which can be seamlessly pushed to Figma prototypes and code repositories for multiple products.
+## Where to start
 
-With a fully tokenized Figma component library, designers can quickly create prototypes for different brands and push updated design decisions directly to code repositories.
+The pages have a natural reading order. Earlier pages set up vocabulary the later ones rely on:
 
-Designers have full control over settings such as sizing, spacing, icon colors, border radii, font sizes, and detailed typography (including letter-spacing). These settings can be applied to Figma prototypes or product releases with ease.
+1. **[Design Tokens]([[docsref:/core-concepts/design-tokens]])** — the foundation. Tokens hold every value Chassis uses, organized in layers (metric, brand, theme, app, effect, motion). Every CSS variable in Chassis comes from one.
+2. **[Color System]([[docsref:/core-concepts/color-system]])** — how the largest token category is structured. Three layers: primitive scales, semantic context palettes, and the body variables that components consume.
+3. **[Context Class]([[docsref:/core-concepts/context-class]])** — how that color architecture surfaces in markup. `.context primary` re-aims the body variables and any nested component picks up the new palette automatically.
+4. **[Component Anatomy]([[docsref:/core-concepts/component-anatomy]])** — how all of the above composes inside a component. Walks through `.notification` and `.list-action` as worked examples and lists the placeholders and mixins available for your own work.
+5. **[Box Model]([[docsref:/core-concepts/box-model]])** and **[Line Heights]([[docsref:/core-concepts/line-heights]])** — smaller, cross-cutting concerns. Stroke exclusion keeps padding pixel-aligned with Figma; per-size line-height tokens keep type rhythm correct at every size. Both can be read independently of the rest.
 
-## Let's Get Started
+If you're customizing existing components, the first three are the most useful. If you're writing your own components, read all five in order.
 
-### From Figma to Code
+## How it fits together
 
-Let’s apply these Figma font specifications using Chassis - CSS text utilities.
+The five concepts compose into a single data flow:
 
-<a href="#imageModal" data-cx-toggle="modal"
-  data-image-src="/static/images/css/docs-figma-font-specs.png"
-  data-image-srcset="/static/images/css/docs-figma-font-specs.png.png, /static/images/css/docs-figma-font-specs@2x.png 2x"
-  data-image-alt="Figma text layer properties">
-  <img class="d-block mb-medium image-fluid w-100 rounded" srcset="/static/images/css/docs-figma-font-specs.png, /static/images/css/docs-figma-font-specs@2x.png 2x" src="/static/images/css/docs-figma-font-specs.png" alt="Figma text layer properties" /></a>
+```
+Chassis Tokens  →  CSS variables  →  Context palettes  →  Body variables  →  Components
+   (Figma)         (--cx-*-{step})    (--cx-{ctx}-{tok})    (--cx-{tok})       (.button, .notification, …)
+```
 
-These Figma properties can be applied as follows:
+A token authored in Figma surfaces as a `--cx-*` custom property. Color tokens additionally surface as palettes — one per context color — that the `.context` class can switch between. The active palette's tokens are aliased onto the canonical body variables (`--cx-fg-main`, `--cx-bg-main`, …) that components actually read. Components declare component-scoped variables (`--cx-button-padding-y`, …) and alias them onto those canonical names, giving consumers two override surfaces — one per component, one per element — without any extra source code.
 
-<Example code={`<p>font/text/medium/normal</p>
-<p class="font-large font-mass">font/text/large/mass</p>
-<p class="font-display font-strong">font/display/medium/strong</p>`} />
-
-The same approach applies to other elements.
-
-<a href="#imageModal" data-cx-toggle="modal"
-  data-image-src="/static/images/css/docs-figma-frame-specs.png"
-  data-image-srcset="/static/images/css/docs-figma-frame-specs.png.png, /static/images/css/docs-figma-frame-specs@2x.png 2x"
-  data-image-alt="Figma frame layer properties">
-  <img id="image" class="d-block mb-medium image-fluid rounded" srcset="/static/images/css/docs-figma-frame-specs.png, /static/images/css/docs-figma-frame-specs@2x.png 2x" src="/static/images/css/docs-figma-frame-specs.png" alt="Figma frame layer properties" /></a>
-
-Let’s apply these frame specifications in left-to-right order:
-
-<Example code={`<div style="width: 128px; height: 128px;"
-    class="rounded-xlarge border border-2xlarge
-      py-small px-medium gap-2xsmall
-      default-bg-main primary-border-subtle
-      shadow-40 shadow-primary">
-    I look just like in Figma!
-  </div>`} />
-
-It’s that simple. Designers now have full control over these values, which can be updated without developer intervention for individual brands, products, or even CSS themes.
-
-## Learn More
-
-Chassis - CSS introduces a new approach to UI colors. Learn more about our [**Color System**]([[docsref:/core-concepts/color-system]]).
-
-### Connecting Figma with Chassis - CSS
-
-Chassis - CSS's fully tokenized Figma component library allows designers to preview design changes across multiple apps and brands in Figma. These changes can then be injected directly into developers' code as transformed class files for each platform.
-
-[Learn more about design tokens](/tokens)
-
-### Simplified Icons with Chassis - CSS
-
-Chassis - CSS Icons are available as both SVG sprites and icon fonts. They are easy for developers to use and remain under designers' control through component design tokens.
-
-[Explore icons](/icons)
-
-<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-container lightbox">
-  <button type="button" data-cx-dismiss="modal" aria-label="Close"
-   class="close-button xlarge position-absolute top-0 end-0">
-  <svg class="icon icon-white"><use href="#times-alt" /></svg></button>
-  <div class="modal-content">
-  <figure>
-    <img id="modalImage" class="modal-image pointer-event-auto d-block my-auto mx-auto image-fluid rounded" src="." alt="" />
-  </figure>
-    </div>
-  </div>
-</div>
-
-<Fragment set:html={`<script>
-const imageModal = document.getElementById('imageModal')
-if (imageModal) {
-  imageModal.addEventListener('show.cx.modal', event => {
-    const imageButton = event.relatedTarget
-    const modalImage = imageModal.querySelector('.modal-image')
-    modalImage.src = imageButton.getAttribute('data-image-src')
-    modalImage.srcset = imageButton.getAttribute('data-image-srcset')
-    modalImage.alt = imageButton.getAttribute('data-image-alt')
-  })
-}
-</script>`} />
-
-
+Every customization mechanism in Chassis hooks into this flow at one of those points. Theming swaps tokens. Switching context re-aims the palette layer. Overriding a component CSS variable replaces a single value at the leaf. The pages that follow explain each layer in detail.

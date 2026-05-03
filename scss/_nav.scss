@@ -1,17 +1,10 @@
-// Navigation Component Styles
 //
-// This file defines styles for all navigation components in the Chassis CSS framework.
-// It includes:
-// - Base navigation (.nav) - Flexible container for all navigation types
-// - Navigation links (.nav-link) - Individual clickable navigation items
-// - Tabs (.nav-tabs) - Tab-style navigation with borders and active states
-// - Pills (.nav-pills) - Pill-style navigation with rounded corners
-// - Underline (.nav-underline) - Navigation with bottom border highlighting
-// - Collapsible items - Expandable navigation sections with indicators
-// - Layout variants (.nav-fill, .nav-justified) - Different spacing approaches
-// - Tab panes (.tab-content) - Content containers controlled by tabs
+// Navigation Component
 //
-// Works with semantic HTML elements like `<nav>`, `<ul>`, or `<ol>` as containers.
+// Styles for all navigation patterns. Includes the base .nav container, link
+// styles, and four built-in variants: tabs, pills, underline, and fill/justified
+// layouts. Tab pane content visibility is managed here.
+//
 
 .nav {
   // scss-docs-start nav-css-vars
@@ -49,13 +42,14 @@
   // scss-docs-end nav-link-css-vars
 
   display: block;
+  color: var(--#{$prefix}fg-color);
+  text-decoration: if($link-decoration == none, null, none);
+  white-space: nowrap;
+  background: none;
+  border: 0;
   // align-items: center;
   @include exclude-strokes(nav-link);
   @include font(link);
-  color: var(--#{$prefix}fg-color);
-  text-decoration: if($link-decoration == none, null, none);
-  background: none;
-  border: 0;
   @include transition($nav-link-transition);
 
   &:hover,

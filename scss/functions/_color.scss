@@ -1,3 +1,6 @@
+@use "sass:math";
+@use "sass:color";
+
 //
 // Color utility functions for Chassis CSS
 //
@@ -20,16 +23,18 @@
   @return red($value), green($value), blue($value);
 }
 
-/// Generate an rgba() color value from CSS variables
-/// Creates a dynamic color based on RGB and opacity CSS variables
+/// Generate a CSS relative color expression that applies a component opacity variable to a color token
+/// Uses CSS relative color syntax to derive an oklch color from a CSS custom property and apply
+/// a separate opacity CSS variable to it. Designed to work as a `map-loop` callback.
 ///
-/// @param {String} $identifier - Color identifier (e.g., "primary", "link-color")
-/// @param {String} $target - Target component for opacity variable (e.g., "bg", "icon")
-/// @return {String} - CSS rgba() value using CSS variables
+/// @param {String} $identifier - Color CSS variable name without prefix (e.g., "primary", "fg-main")
+/// @param {String} $target - Opacity variable component name without prefix (e.g., "fg", "bg", "icon")
+/// @return {String} - Unquoted CSS relative color: oklch(from var(--cx-{identifier}) l c h / var(--cx-{target}-opacity, 1))
 /// @example
-///   rgba-css-var("primary", "bg") => rgba(var(--cx-primary-rgb), var(--cx-bg-opacity, 1))
-@function rgba-css-var($identifier, $target) {
-  @return rgba(var(--#{$prefix}#{$identifier}-rgb), var(--#{$prefix}#{$target}-opacity, 1));
+///   opacity-var("primary", "bg")  => oklch(from var(--cx-primary) l c h / var(--cx-bg-opacity, 1))
+///   opacity-var("fg-main", "fg")  => oklch(from var(--cx-fg-main) l c h / var(--cx-fg-opacity, 1))
+@function opacity-var($identifier, $target) {
+  @return #{"oklch(from var(--#{$prefix}#{$identifier}) l c h / var(--#{$prefix}#{$target}-opacity, 1))"};
 }
 
 /// Convert a list of values to CSS variable references
@@ -46,6 +51,55 @@
     $result: append($result, var(--#{$prefix}#{if($comp, "#{$comp}-", "")}#{$entry}), space);
   }
   @return $result;
+}
+
+/// Convert a color to an oklch() value with rounded channel values
+/// Converts any Sass-supported color to the OKLCh color space, rounding lightness
+/// to 2 decimal places, chroma to 3 decimal places, and hue to 2 decimal places.
+/// Alpha is preserved when less than 1.
+///
+/// @param {Color} $color - Any Sass-compatible color value
+/// @return {Color} - An oklch() color with rounded L, C, H channels and preserved alpha
+/// @example
+///   to-color(#ff0000) => oklch(0.63 0.258 29.23)
+///   to-color(rgba(#ff0000, 0.5)) => oklch(0.63 0.258 29.23 / 0.5)
+@function to-color($color) {
+  $oklch: color.to-space($color, oklch);
+
+  // Extract and round channels
+  $l: math.div(math.round(color.channel($oklch, "lightness", oklch) * 100), 100);
+  $c: math.div(math.round(color.channel($oklch, "chroma", oklch) * 1000), 1000);
+  $a: color.alpha($color);
+
+  // Achromatic colors (chroma rounds to 0) have no meaningful hue;
+  // skip math on the 'none' keyword to avoid calc(NaN * 1deg) output.
+  $h: none;
+  @if $c != 0 {
+    $h: math.div(math.round(color.channel($oklch, "hue", oklch) * 100), 100);
+  }
+
+  // Use string interpolation so the CSS '/' is a channel separator, not Sass division.
+  @if $a < 1 {
+    @return #{"oklch(#{$l} #{$c} #{$h} / #{$a})"};
+  }
+
+  @return #{"oklch(#{$l} #{$c} #{$h})"};
+}
+
+
+/// Generate a CSS relative color expression that applies an opacity variable to a CSS custom property
+/// Uses the CSS relative color syntax to derive an oklch color from an existing
+/// CSS variable and apply a separate opacity (alpha) CSS variable to it.
+///
+/// @param {Color|String} $color - Color value or `var()` expression used as the relative color origin
+/// @param {Number|String} $opacity - Alpha value (0–1) or `var()` expression for the opacity channel
+/// @return {String} - Unquoted CSS relative color string: oklch(from {color} l c h / {opacity})
+/// @example
+///   to-opacity(var(--cx-primary), 0.5)                       => oklch(from var(--cx-primary) l c h / 0.5)
+///   to-opacity($white, .15)                                   => oklch(from #fff l c h / 0.15)
+///   to-opacity(var(--cx-fg-main), var(--cx-fg-opacity, 1))   => oklch(from var(--cx-fg-main) l c h / var(--cx-fg-opacity, 1))
+@function to-opacity($color, $opacity) {
+  @return #{"oklch(from #{$color} l c h / #{$opacity})"};
 }
 
 
@@ -187,15 +241,18 @@
   @return set-nth($s, $shadow, $c);
 }
 
-/// Generate a shadow color using CSS variables
+/// Generate a shadow color using CSS relative color syntax.
+/// Applies an opacity value to a CSS custom property via `to-opacity()`,
+/// producing an `oklch(from var(--cx-{color}) l c h / {opacity})` expression.
 ///
-/// @param {String} $color - Color name to use from CSS variables
-/// @param {Number} $opacity - Opacity value for the shadow (default from variables)
-/// @return {String} - CSS rgba value using color variables
+/// @param {String} $color - Color name without prefix (e.g., "primary", "danger")
+/// @param {Number} $opacity [$shadow-color-opacity] - Alpha value for the shadow (0–1)
+/// @return {String} - CSS relative color expression
 /// @example
-///   make-shadow-color("primary") => rgba(var(--cx-primary-rgb), 0.15)
+///   make-shadow-color("primary")        => oklch(from var(--cx-primary) l c h / 0.15)
+///   make-shadow-color("danger", 0.25)   => oklch(from var(--cx-danger) l c h / 0.25)
 @function make-shadow-color($color, $opacity: $shadow-color-opacity) {
-  @return #{rgba(var(--#{$prefix}#{$color}-rgb), $opacity)};
+  @return #{to-opacity(var(--#{$prefix}#{$color}), $opacity)};
 }
 // scss-docs-end shadow-functions
 
@@ -223,8 +280,8 @@
 ///     // From CSS variable (converts to actual color)
 ///     background-color: get-sass-color(var(--cx-primary));  // e.g., #0d6efd
 ///
-///     // From RGBA CSS variable with alpha (converts to color with opacity)
-///     border-color: get-sass-color(rgba(var(--cx-secondary-rgb), 0.5));  // rgba(108, 117, 125, 0.5)
+///     // From oklch relative color with alpha (new format)
+///     border-color: get-sass-color(oklch(from var(--cx-secondary) l c h / 0.5));  // rgba(108, 117, 125, 0.5)
 ///
 ///     // From color name (with dark mode option)
 ///     box-shadow: 0 0 5px get-sass-color("primary", true);  // dark theme primary color
@@ -240,21 +297,18 @@
   $palette: if($dark, $context-palette-dark, $context-palette);
   $map: map-merge($palette, $base-palette);
 
-  // If it's an RGBA CSS variable string with alpha, extract the variable name and alpha value
-  @if type-of($color-var) == "string" and str-index($color-var, "rgba(var(--#{$prefix}") {
-    $var-string: str-replace($color-var, "rgba(var(--#{$prefix}", "");
-    $parts: str-index($var-string, "-rgb),");
+  // If it's an oklch relative color string with alpha, extract the variable name and alpha value
+  @if type-of($color-var) == "string" and str-index($color-var, "oklch(from var(--#{$prefix}") {
+    $var-string: str-replace($color-var, "oklch(from var(--#{$prefix}", "");
+    $parts: str-index($var-string, ") l c h / ");
 
     @if $parts {
-      // Extract the base color name (before -rgb)
+      // Extract the base color name (before closing paren)
       $var-name: str-slice($var-string, 1, $parts - 1);
 
-      // Extract and clean the alpha value
-      $alpha-part: str-slice($var-string, $parts + 5); // Skip "-rgb),"
+      // Extract and clean the alpha value (after ") l c h / " — 10 chars)
+      $alpha-part: str-slice($var-string, $parts + 10);
       $alpha-val: clean-alpha-value(str-replace($alpha-part, ")", ""));
-
-      // Look up the base color in our map
-      $color: map-get($map, $var-name);
 
       // Look up the base color in our map
       $color: map-get($map, $var-name);
@@ -294,7 +348,7 @@
     }
   }
 
-  @error "Could not find color for variable #{$var-name}.";
+  @error "Could not find color for variable '#{$color-var}' in the color palette.";
   // If we get here, just return the original value
   // @return $color-var;
 }

@@ -97,9 +97,9 @@ Different presentation contexts may require variations in how list groups appear
 
 ### Flush list
 
-Apply `.list-flush` to remove outer borders and rounded corners, creating an edge-to-edge appearance. Ideal for lists inside other components like cards where a seamless visual connection is desired.
+Apply `.flush` to remove outer borders and rounded corners, creating an edge-to-edge appearance. Ideal for lists inside other components like cards where a seamless visual connection is desired.
 
-<Example code={`<ul class="list-group list-flush">
+<Example code={`<ul class="list-group flush">
     <li class="list-item">An item</li>
     <li class="list-item">A second item</li>
     <li class="list-item">A third item</li>
@@ -109,9 +109,9 @@ Apply `.list-flush` to remove outer borders and rounded corners, creating an edg
 
 ### Plain layout
 
-Apply `.list-plain` for a minimal list that removes outer borders, rounded corners, and horizontal padding. Creates a sleek appearance suitable for main content areas like search results or content feeds.
+Apply `.plain` for a minimal list that removes outer borders, rounded corners, and horizontal padding. Creates a sleek appearance suitable for main content areas like search results or content feeds.
 
-<Example code={`<ul class="list-group list-plain">
+<Example code={`<ul class="list-group plain">
     <li class="list-item">An item</li>
     <li class="list-item">A second item</li>
     <li class="list-item">A third item</li>
@@ -120,12 +120,12 @@ Apply `.list-plain` for a minimal list that removes outer borders, rounded corne
   </ul>`} />
 
 <Callout type="info">
-  Both `.list-flush` and `.list-plain` remove outer borders and rounded corners. The key difference is that `.list-plain` also removes horizontal padding for a more compact appearance.
+  Both `.flush` and `.plain` remove outer borders and rounded corners. The key difference is that `.plain` also removes horizontal padding for a more compact appearance.
 </Callout>
 
 ### Numbered lists
 
-Create sequentially numbered list items by applying the `.list-numbered` modifier class to your list group. For semantic correctness, pair this with an `<ol>` element, though the numbering is generated through CSS rather than browser defaults.
+Create sequentially numbered list items by applying the `.numbered` modifier class to your list group. For semantic correctness, pair this with an `<ol>` element, though the numbering is generated through CSS rather than browser defaults.
 
 <Callout type="info">
   Chassis CSS implements numbered list groups using design token-driven CSS counters. The numbering applies `counter-reset` on the container, and then uses `::before` pseudo-elements with `counter-increment` to generate and position numbers consistently across different design contexts.
@@ -133,7 +133,7 @@ Create sequentially numbered list items by applying the `.list-numbered` modifie
 
 This approach ensures numbers maintain proper positioning and styling regardless of content complexity, providing better flexibility than browser defaults while remaining fully accessible.
 
-<Example code={`<ol class="list-group list-numbered">
+<Example code={`<ol class="list-group numbered">
     <li class="list-item">A list item</li>
     <li class="list-item">A list item</li>
     <li class="list-item">A list item</li>
@@ -141,7 +141,7 @@ This approach ensures numbers maintain proper positioning and styling regardless
 
 These work great with custom content as well.
 
-<Example code={`<ol class="list-group list-numbered">
+<Example code={`<ol class="list-group numbered">
     <li class="list-item d-flex justify-content-between align-items-start">
       <div class="ms-xsmall me-auto">
         <div class="font-strong">Subheading</div>
@@ -167,15 +167,15 @@ These work great with custom content as well.
 
 ### Horizontal layout
 
-Create horizontally arranged list groups with the `.list-horizontal` modifier class. This transforms the default vertical stack into a row-based layout that maintains the list group's visual language and token-based styling.
+Create horizontally arranged list groups with the `.horizontal` modifier class. This transforms the default vertical stack into a row-based layout that maintains the list group's visual language and token-based styling.
 
-For responsive designs, Chassis provides breakpoint-specific variants (`.list-horizontal-{sall|medium|large|xlarge|2xlarge}`) that activate the horizontal layout only at or above the specified breakpoint size. This enables adaptive layouts that respond to available screen space while maintaining consistent styling.
+For responsive designs, Chassis provides breakpoint-specific variants (`.{breakpoint}:horizontal`) that activate the horizontal layout only at or above the specified breakpoint size. This enables adaptive layouts that respond to available screen space while maintaining consistent styling.
 
 <Callout type="warning">
   Horizontal list groups cannot currently be combined with flush list groups due to their conflicting border handling strategies.
 </Callout>
 
-<Example code={getData('breakpoints').map((breakpoint) => `<ul class="list-group list-horizontal${breakpoint.abbr} mb-medium">
+<Example code={getData('breakpoints').map((breakpoint) => `<ul class="list-group ${breakpoint.abbr}horizontal mb-medium">
     <li class="list-item">An item</li>
     <li class="list-item">A second item</li>
     <li class="list-item">A third item</li>
@@ -185,12 +185,12 @@ Apply `.flex-fill` or `flex-grow-1` utility classes on list items for full-width
 - Use `.flex-fill` to distribute space evenly, giving each item equal width regardless of content
 - Use `.flex-grow-1` for proportional distribution, where items grow to fill available space based on their content
 
-<Example code={`<ul class="list-group list-horizontal mb-medium">
+<Example code={`<ul class="list-group horizontal mb-medium">
     <li class="list-item flex-fill">An item</li>
     <li class="list-item flex-fill">Second item</li>
     <li class="list-item flex-fill">And the longer third item</li>
   </ul>
-  <ul class="list-group list-horizontal">
+  <ul class="list-group horizontal">
     <li class="list-item flex-grow-1">An item</li>
     <li class="list-item flex-grow-1">Second item</li>
     <li class="list-item flex-grow-1">And the longer third item</li>
@@ -224,7 +224,7 @@ Apply the `.active` class to indicate the currently selected item within a conte
 
 Contextual styles are applied to list groups or items using `.solid`, `.outline`, or `.smooth` classes. These classes apply the appropriate background, border, and text colors based on your design system's color palette.
 
-<Example code={`<div class="row row-cols-medium-2 g-large">
+<Example code={`<div class="row medium:row-cols-2 g-large">
     <div class="col">
       <ul class="list-group context primary">
         <li class="list-item">An item</li>
@@ -235,7 +235,7 @@ Contextual styles are applied to list groups or items using `.solid`, `.outline`
       </ul>
     </div>
     <div class="col">
-      <ul class="list-group context primary solid">
+      <ul class="list-group context primary solid flush rounded">
         <li class="list-item">An item</li>
         <li class="list-item">A second item</li>
         <li class="list-item">A third item</li>
@@ -244,7 +244,7 @@ Contextual styles are applied to list groups or items using `.solid`, `.outline`
       </ul>
     </div>
     <div class="col">
-      <ul class="list-group context primary smooth">
+      <ul class="list-group context primary smooth flush rounded">
         <li class="list-item">An item</li>
         <li class="list-item">A second item</li>
         <li class="list-item">A third item</li>

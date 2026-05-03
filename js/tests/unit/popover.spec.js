@@ -58,7 +58,7 @@ describe('Popover', () => {
   describe('show', () => {
     it('should show a popover', () => {
       return new Promise(resolve => {
-        fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis - CSS</a>'
+        fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis CSS</a>'
 
         const popoverEl = fixtureEl.querySelector('a')
         const popover = new Popover(popoverEl)
@@ -74,7 +74,7 @@ describe('Popover', () => {
 
     it('should set title and content from functions', () => {
       return new Promise(resolve => {
-        fixtureEl.innerHTML = '<a href="#">Chassis - CSS</a>'
+        fixtureEl.innerHTML = '<a href="#">Chassis CSS</a>'
 
         const popoverEl = fixtureEl.querySelector('a')
         const popover = new Popover(popoverEl, {
@@ -173,7 +173,7 @@ describe('Popover', () => {
     })
 
     it('"setContent" should keep the initial template', () => {
-      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/" data-cx-custom-class="custom-class">Chassis - CSS</a>'
+      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/" data-cx-custom-class="custom-class">Chassis CSS</a>'
 
       const popoverEl = fixtureEl.querySelector('a')
       const popover = new Popover(popoverEl)
@@ -190,7 +190,7 @@ describe('Popover', () => {
 
     it('should call setContent once', () => {
       return new Promise(resolve => {
-        fixtureEl.innerHTML = '<a href="#">Chassis - CSS</a>'
+        fixtureEl.innerHTML = '<a href="#">Chassis CSS</a>'
 
         const popoverEl = fixtureEl.querySelector('a')
         const popover = new Popover(popoverEl, {
@@ -224,7 +224,7 @@ describe('Popover', () => {
 
     it('should show a popover with provided custom class', () => {
       return new Promise(resolve => {
-        fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/" data-cx-custom-class="custom-class">Chassis - CSS</a>'
+        fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/" data-cx-custom-class="custom-class">Chassis CSS</a>'
 
         const popoverEl = fixtureEl.querySelector('a')
         const popover = new Popover(popoverEl)
@@ -244,7 +244,7 @@ describe('Popover', () => {
   describe('hide', () => {
     it('should hide a popover', () => {
       return new Promise(resolve => {
-        fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis - CSS</a>'
+        fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis CSS</a>'
 
         const popoverEl = fixtureEl.querySelector('a')
         const popover = new Popover(popoverEl)
@@ -265,7 +265,7 @@ describe('Popover', () => {
 
   describe('jQueryInterface', () => {
     it('should create a popover', () => {
-      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis - CSS</a>'
+      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis CSS</a>'
 
       const popoverEl = fixtureEl.querySelector('a')
 
@@ -278,7 +278,7 @@ describe('Popover', () => {
     })
 
     it('should create a popover with a config object', () => {
-      fixtureEl.innerHTML = '<a href="#" title="Popover">Chassis - CSS</a>'
+      fixtureEl.innerHTML = '<a href="#" title="Popover">Chassis CSS</a>'
 
       const popoverEl = fixtureEl.querySelector('a')
 
@@ -293,7 +293,7 @@ describe('Popover', () => {
     })
 
     it('should not re create a popover', () => {
-      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis - CSS</a>'
+      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis CSS</a>'
 
       const popoverEl = fixtureEl.querySelector('a')
       const popover = new Popover(popoverEl)
@@ -307,7 +307,7 @@ describe('Popover', () => {
     })
 
     it('should throw error on undefined method', () => {
-      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis - CSS</a>'
+      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis CSS</a>'
 
       const popoverEl = fixtureEl.querySelector('a')
       const action = 'undefinedMethod'
@@ -321,7 +321,7 @@ describe('Popover', () => {
     })
 
     it('should should call show method', () => {
-      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis - CSS</a>'
+      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis CSS</a>'
 
       const popoverEl = fixtureEl.querySelector('a')
       const popover = new Popover(popoverEl)
@@ -339,7 +339,7 @@ describe('Popover', () => {
 
   describe('getInstance', () => {
     it('should return popover instance', () => {
-      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis - CSS</a>'
+      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis CSS</a>'
 
       const popoverEl = fixtureEl.querySelector('a')
       const popover = new Popover(popoverEl)
@@ -349,7 +349,7 @@ describe('Popover', () => {
     })
 
     it('should return null when there is no popover instance', () => {
-      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis - CSS</a>'
+      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://ozgurgunes.github.io/chassis-css/">Chassis CSS</a>'
 
       const popoverEl = fixtureEl.querySelector('a')
 

@@ -1,5 +1,9 @@
 //
-// Rotating border
+// Spinner Component
+//
+// Animated loading indicators in two variants: a rotating border (.spinner-border)
+// and a growing circle (.spinner-grow). Size and color are controlled through
+// CSS custom properties.
 //
 
 .spinner-grow,
@@ -90,7 +94,7 @@ $utilities: () !default;
         css-variable-name: spinner-color,
         class: spinner,
         values: map-merge(
-          map-loop(map-loop($context-colors, to-rgb, "$value"), rgba-css-var, #{"$key"}, #{"spinner"}),
+          map-loop($context-colors, opacity-var, #{"$key"}, #{"spinner"}),
           ( "transparent": transparent )
         )
       ),

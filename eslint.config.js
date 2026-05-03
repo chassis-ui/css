@@ -90,7 +90,7 @@ export default defineConfig([
     }
   },
   {
-    files: ['js/tests/*.js', 'js/tests/integration/rollup*.js'],
+    files: ['js/tests/*.js', 'js/tests/integration/rollup*.js', 'scss/tests/*.js'],
     languageOptions: {
       globals: { ...globals.node }
     }

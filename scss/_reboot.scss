@@ -1,12 +1,12 @@
 // stylelint-disable declaration-no-important, selector-no-qualifying-type, property-no-vendor-prefix
 
-
+//
 // Reboot
 //
 // Normalization of HTML elements, manually forked from Normalize.css to remove
 // styles targeting irrelevant browsers while applying new styles.
+// Normalize is licensed MIT: https://github.com/necolas/normalize.css
 //
-// Normalize is licensed MIT. https://github.com/necolas/normalize.css
 
 
 // Document
@@ -64,7 +64,7 @@ body {
   text-align: #{$text-align};
   background-color: #{$body-bg-color}; // 2
   -webkit-text-size-adjust: 100%; // 3
-  -webkit-tap-highlight-color: rgba($black, 0); // 4
+  -webkit-tap-highlight-color: #{to-opacity($black, 0)}; // 4
 }
 // scss-docs-end reboot-body-rules
 
@@ -265,21 +265,21 @@ sup { top: -.5em; }
 // Links
 
 a {
-  color: var(--#{$prefix}link-main-color, rgba(var(--#{$prefix}link-main-color-rgb), var(--#{$prefix}link-opacity, 1)));
+  color: to-opacity(var(--#{$prefix}link-main-color), var(--#{$prefix}link-opacity, 1));
   text-decoration: $link-decoration;
 
   &:hover {
-    color: var(--#{$prefix}link-hover-color, rgba(var(--#{$prefix}link-hover-color-rgb), var(--#{$prefix}link-opacity, 1)));
+    color: to-opacity(var(--#{$prefix}link-hover-color), var(--#{$prefix}link-opacity, 1));
     text-decoration: $link-hover-decoration;
   }
 
   &:active {
-    color: var(--#{$prefix}link-active-color, rgba(var(--#{$prefix}link-active-color-rgb), var(--#{$prefix}link-opacity, 1)));
+    color: to-opacity(var(--#{$prefix}link-active-color), var(--#{$prefix}link-opacity, 1));
   }
 
   @if ($enable-visited-links) {
     &:visited {
-      color: var(--#{$prefix}link-visited-color, rgba(var(--#{$prefix}link-visited-color-rgb), var(--#{$prefix}link-opacity, 1)));
+      color: to-opacity(var(--#{$prefix}link-visited-color), var(--#{$prefix}link-opacity, 1));
     }
   }
 
