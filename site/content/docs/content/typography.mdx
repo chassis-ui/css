@@ -102,9 +102,9 @@ For responsive font sizes, refer to the [Responsive Font Sizes](#responsive-font
 
 ### Responsive Utilities
 
-Chassis CSS provides responsive font size utilities that adapt to different breakpoints. Enable this feature through the `$enable-responsive-utilities` variable, allowing you to control typography across device sizes for optimal readability and design consistency.
+Chassis CSS provides responsive font size utilities that adapt to different breakpoints. Enable this feature through the `$enable-adaptive-font-sizes` variable, allowing you to control typography across device sizes for optimal readability and design consistency.
 
-These utilities follow a mobile-first approach, allowing you to stack classes for progressive scaling. Classes use the format `font-{size}` for the base size (applying from `xsmall` and up) and `font-{breakpoint}-{size}` for breakpoint-specific sizes (`small`, `medium`, `large`, `xlarge`, and `2xlarge`). Each breakpoint class overrides the previous font size at that breakpoint and larger viewports.
+These utilities follow a mobile-first approach, allowing you to stack classes for progressive scaling. Classes use the format `font-{size}` for the base size (applying from `xsmall` and up) and `{breakpoint}:font-{size}` for breakpoint-specific sizes (`small`, `medium`, `large`, `xlarge`, and `2xlarge`). Each breakpoint class overrides the previous font size at that breakpoint and larger viewports.
 
 <Example code={`<p class="font-small font-medium-large large:font-2xlarge xlarge:font-4xlarge">
   Progressively larger text
