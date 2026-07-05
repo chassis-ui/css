@@ -1,6 +1,6 @@
 import Tab from '../../src/tab.js'
 import {
-  clearFixture, createEvent, getFixture, jQueryMock
+  clearFixture, createEvent, getFixture
 } from '../helpers/fixture.js'
 
 describe('Tab', () => {
@@ -376,17 +376,17 @@ describe('Tab', () => {
           '<ul class="nav nav-tabs" role="tablist">',
           '  <li class="nav-item" role="presentation">',
           '    <a class="nav-link nav-tab" href="#profile" role="tab" data-cx-toggle="tab">',
-          '      <button class="btn-close" aria-label="Close"></button>',
+          '      <button class="close-button" aria-label="Close"></button>',
           '    </a>',
           '  </li>',
           '  <li class="nav-item" role="presentation">',
           '    <a id="secondNav" class="nav-link nav-tab" href="#buzz" role="tab" data-cx-toggle="tab">',
-          '      <button class="btn-close" aria-label="Close"></button>',
+          '      <button class="close-button" aria-label="Close"></button>',
           '    </a>',
           '  </li>',
           '  <li class="nav-item" role="presentation">',
           '    <a class="nav-link nav-tab" href="#references" role="tab" data-cx-toggle="tab">',
-          '      <button id="btnClose" class="btn-close" aria-label="Close"></button>',
+          '      <button id="btnClose" class="close-button" aria-label="Close"></button>',
           '    </a>',
           '  </li>',
           '</ul>',
@@ -827,66 +827,6 @@ describe('Tab', () => {
     })
   })
 
-  describe('jQueryInterface', () => {
-    it('should create a tab', () => {
-      fixtureEl.innerHTML = '<div class="nav"><div class="nav-link"></div></div>'
-
-      const div = fixtureEl.querySelector('.nav > div')
-
-      jQueryMock.fn.tab = Tab.jQueryInterface
-      jQueryMock.elements = [div]
-
-      jQueryMock.fn.tab.call(jQueryMock)
-
-      expect(Tab.getInstance(div)).not.toBeNull()
-    })
-
-    it('should not re create a tab', () => {
-      fixtureEl.innerHTML = '<div class="nav"><div class="nav-link"></div></div>'
-
-      const div = fixtureEl.querySelector('.nav > div')
-      const tab = new Tab(div)
-
-      jQueryMock.fn.tab = Tab.jQueryInterface
-      jQueryMock.elements = [div]
-
-      jQueryMock.fn.tab.call(jQueryMock)
-
-      expect(Tab.getInstance(div)).toEqual(tab)
-    })
-
-    it('should call a tab method', () => {
-      fixtureEl.innerHTML = '<div class="nav"><div class="nav-link"></div></div>'
-
-      const div = fixtureEl.querySelector('.nav > div')
-      const tab = new Tab(div)
-
-      const spy = spyOn(tab, 'show')
-
-      jQueryMock.fn.tab = Tab.jQueryInterface
-      jQueryMock.elements = [div]
-
-      jQueryMock.fn.tab.call(jQueryMock, 'show')
-
-      expect(Tab.getInstance(div)).toEqual(tab)
-      expect(spy).toHaveBeenCalled()
-    })
-
-    it('should throw error on undefined method', () => {
-      fixtureEl.innerHTML = '<div class="nav"><div class="nav-link"></div></div>'
-
-      const div = fixtureEl.querySelector('.nav > div')
-      const action = 'undefinedMethod'
-
-      jQueryMock.fn.tab = Tab.jQueryInterface
-      jQueryMock.elements = [div]
-
-      expect(() => {
-        jQueryMock.fn.tab.call(jQueryMock, action)
-      }).toThrowError(TypeError, `No method named "${action}"`)
-    })
-  })
-
   describe('getInstance', () => {
     it('should return null if there is no instance', () => {
       expect(Tab.getInstance(fixtureEl)).toBeNull()
@@ -951,16 +891,16 @@ describe('Tab', () => {
       })
     })
 
-    it('selected tab should deactivate previous selected link in dropdown', () => {
+    it('selected tab should deactivate previous selected link in menu', () => {
       fixtureEl.innerHTML = [
         '<ul class="nav nav-tabs">',
         '  <li class="nav-item"><a class="nav-link" href="#home" data-cx-toggle="tab">Home</a></li>',
         '  <li class="nav-item"><a class="nav-link" href="#profile" data-cx-toggle="tab">Profile</a></li>',
-        '  <li class="nav-item dropdown">',
-        '    <a class="nav-link dropdown-toggle active" data-cx-toggle="dropdown" href="#">Dropdown</a>',
-        '    <div class="dropdown-menu">',
-        '      <a class="dropdown-item active" href="#dropdown1" id="dropdown1-tab" data-cx-toggle="tab">@fat</a>',
-        '      <a class="dropdown-item" href="#dropdown2" id="dropdown2-tab" data-cx-toggle="tab">@mdo</a>',
+        '  <li class="nav-item">',
+        '    <a class="nav-link active" data-cx-toggle="menu" href="#">Menu</a>',
+        '    <div class="menu">',
+        '      <a class="menu-item active" href="#menu1" id="menu1-tab" data-cx-toggle="tab">@fat</a>',
+        '      <a class="menu-item" href="#menu2" id="menu2-tab" data-cx-toggle="tab">@mdo</a>',
         '    </div>',
         '  </li>',
         '</ul>'
@@ -970,18 +910,18 @@ describe('Tab', () => {
 
       firstLiLinkEl.click()
       expect(firstLiLinkEl).toHaveClass('active')
-      expect(fixtureEl.querySelector('li:last-child a')).not.toHaveClass('active')
-      expect(fixtureEl.querySelector('li:last-child .dropdown-menu a:first-child')).not.toHaveClass('active')
+      expect(fixtureEl.querySelector('li:last-child > [data-cx-toggle="menu"]')).not.toHaveClass('active')
+      expect(fixtureEl.querySelector('li:last-child .menu a:first-child')).not.toHaveClass('active')
     })
 
-    it('selecting a dropdown tab does not activate another', () => {
+    it('selecting a menu tab does not activate another', () => {
       const nav1 = [
         '<ul class="nav nav-tabs" id="nav1">',
         '  <li class="nav-item active"><a class="nav-link" href="#home" data-cx-toggle="tab">Home</a></li>',
-        '  <li class="nav-item dropdown">',
-        '    <a class="nav-link dropdown-toggle" data-cx-toggle="dropdown" href="#">Dropdown</a>',
-        '    <div class="dropdown-menu">',
-        '      <a class="dropdown-item" href="#dropdown1" id="dropdown1-tab" data-cx-toggle="tab">@fat</a>',
+        '  <li class="nav-item">',
+        '    <a class="nav-link" data-cx-toggle="menu" href="#">Menu</a>',
+        '    <div class="menu">',
+        '      <a class="menu-item" href="#menu1" id="menu1-tab" data-cx-toggle="tab">@fat</a>',
         '    </div>',
         '  </li>',
         '</ul>'
@@ -989,10 +929,10 @@ describe('Tab', () => {
       const nav2 = [
         '<ul class="nav nav-tabs" id="nav2">',
         '  <li class="nav-item active"><a class="nav-link" href="#home" data-cx-toggle="tab">Home</a></li>',
-        '  <li class="nav-item dropdown">',
-        '    <a class="nav-link dropdown-toggle" data-cx-toggle="dropdown" href="#">Dropdown</a>',
-        '    <div class="dropdown-menu">',
-        '      <a class="dropdown-item" href="#dropdown1" id="dropdown1-tab" data-cx-toggle="tab">@fat</a>',
+        '  <li class="nav-item">',
+        '    <a class="nav-link" data-cx-toggle="menu" href="#">Menu</a>',
+        '    <div class="menu">',
+        '      <a class="menu-item" href="#menu1" id="menu1-tab" data-cx-toggle="tab">@fat</a>',
         '    </div>',
         '  </li>',
         '</ul>'
@@ -1000,35 +940,35 @@ describe('Tab', () => {
 
       fixtureEl.innerHTML = nav1 + nav2
 
-      const firstDropItem = fixtureEl.querySelector('#nav1 .dropdown-item')
+      const firstMenuItem = fixtureEl.querySelector('#nav1 .menu-item')
 
-      firstDropItem.click()
-      expect(firstDropItem).toHaveClass('active')
-      expect(fixtureEl.querySelector('#nav1 .dropdown-toggle')).toHaveClass('active')
-      expect(fixtureEl.querySelector('#nav2 .dropdown-toggle')).not.toHaveClass('active')
-      expect(fixtureEl.querySelector('#nav2 .dropdown-item')).not.toHaveClass('active')
+      firstMenuItem.click()
+      expect(firstMenuItem).toHaveClass('active')
+      expect(fixtureEl.querySelector('#nav1 [data-cx-toggle="menu"]')).toHaveClass('active')
+      expect(fixtureEl.querySelector('#nav2 [data-cx-toggle="menu"]')).not.toHaveClass('active')
+      expect(fixtureEl.querySelector('#nav2 .menu-item')).not.toHaveClass('active')
     })
 
-    it('should support li > .dropdown-item', () => {
+    it('should support li > .menu-item', () => {
       fixtureEl.innerHTML = [
         '<ul class="nav nav-tabs">',
         '  <li class="nav-item"><a class="nav-link active" href="#home" data-cx-toggle="tab">Home</a></li>',
         '  <li class="nav-item"><a class="nav-link" href="#profile" data-cx-toggle="tab">Profile</a></li>',
-        '  <li class="nav-item dropdown">',
-        '    <a class="nav-link dropdown-toggle" data-cx-toggle="dropdown" href="#">Dropdown</a>',
-        '    <ul class="dropdown-menu">',
-        '      <li><a class="dropdown-item" href="#dropdown1" id="dropdown1-tab" data-cx-toggle="tab">@fat</a></li>',
-        '      <li><a class="dropdown-item" href="#dropdown2" id="dropdown2-tab" data-cx-toggle="tab">@mdo</a></li>',
-        '    </ul>',
+        '  <li class="nav-item">',
+        '    <a class="nav-link" data-cx-toggle="menu" href="#">Menu</a>',
+        '    <div class="menu">',
+        '      <a class="menu-item" href="#menu1" id="menu1-tab" data-cx-toggle="tab">@fat</a>',
+        '      <a class="menu-item" href="#menu2" id="menu2-tab" data-cx-toggle="tab">@mdo</a>',
+        '    </div>',
         '  </li>',
         '</ul>'
       ].join('')
 
-      const dropItems = fixtureEl.querySelectorAll('.dropdown-item')
+      const menuItems = fixtureEl.querySelectorAll('.menu-item')
 
-      dropItems[1].click()
-      expect(dropItems[0]).not.toHaveClass('active')
-      expect(dropItems[1]).toHaveClass('active')
+      menuItems[1].click()
+      expect(menuItems[0]).not.toHaveClass('active')
+      expect(menuItems[1]).toHaveClass('active')
       expect(fixtureEl.querySelector('.nav-link')).not.toHaveClass('active')
     })
 

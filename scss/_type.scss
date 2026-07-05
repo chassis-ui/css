@@ -1,3 +1,12 @@
+@use "sass:map";
+@use "./config" as *;
+@use "./maps" as *;
+@use "./mixins" as *;
+@use "./rfs" as *;
+
+// custom scale ratio for jumbo and hero
+// $clamp-font-size-scale: .6; // stylelint-disable-line scss/dollar-variable-default
+
 //
 // Typography
 //
@@ -5,181 +14,92 @@
 // lead text, blockquote, and helper classes for lists and inline text styles.
 //
 
-.h1 {
-  @extend h1;
-}
-
-.h2 {
-  @extend h2;
-}
-
-.h3 {
-  @extend h3;
-}
-
-.h4 {
-  @extend h4;
-}
-
-.h5 {
-  @extend h5;
-}
-
-.h6 {
-  @extend h6;
-}
-
-//
-// Lists
-//
-// stylelint-disable
-ul,
-ol {
-  &.bulletless {
-    @include bulletless();
-  }
-  &.inline {
-    @include bulletless();
-
-    li {
-      display: inline-block;
-
-      &:not(:last-child) {
-        margin-right: $list-inline-padding;
-      }
+@layer content {
+  //
+  // Lists
+  //
+  ul,
+  ol {
+    &.bulletless { // stylelint-disable-line selector-no-qualifying-type
+      @include bulletless();
     }
-  }
-}
-// stylelint-enable
+    &.inline { // stylelint-disable-line selector-no-qualifying-type
+      @include bulletless();
 
-//
-// Font sizes with line height
-//
-// @each $name, $value in $font-sizes {
-//   .font-#{$name} {
-//     //stylelint-disable-next-line property-disallowed-list
-//     font-size: var(--#{$prefix}font-size-#{$name}) if($enable-important-utilities, !important, null);
-//     line-height: var(--#{$prefix}line-height-#{$name}) if($enable-important-utilities, !important, null);
-//   }
-// }
+      li {
+        display: inline-block;
 
-@if $enable-adaptive-font-sizes {
-  @each $breakpoint in map-keys($grid-breakpoints) {
-    $infix: breakpoint-prefix($breakpoint, $grid-breakpoints);
-
-    @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
-      @each $name, $value in $font-sizes {
-        .#{$infix}font-#{$name} {
-          //stylelint-disable-next-line property-disallowed-list
-          font-size: var(--#{$prefix}font-size-#{$name}) if($enable-important-utilities, !important, null);
-          line-height: var(--#{$prefix}line-height-#{$name}) if($enable-important-utilities, !important, null);
+        &:not(:last-child) {
+          margin-inline-end: $list-inline-padding;
         }
       }
     }
   }
-} @else {
-  @each $name, $value in $font-sizes {
+
+  // Context font classes
+  @each $name, $value in $context-fonts {
     .font-#{$name} {
-      //stylelint-disable-next-line property-disallowed-list
-      font-size: var(--#{$prefix}font-size-#{$name}) if($enable-important-utilities, !important, null);
-      line-height: var(--#{$prefix}line-height-#{$name}) if($enable-important-utilities, !important, null);
+      // preserve the original scale ratio
+      $-scale: $clamp-font-size-scale;
+      // override the scale ratio for jumbo and hero
+      @if $name == jumbo or $name == hero {
+        $clamp-font-size-scale: $clamp-hero-jumbo-scale !global;
+      }
+      // apply the font properties from the map
+      font-family: map.get($value, "font-family");
+      font-style: map.get($value, "font-style");
+      @include clamp(map.get($value, "font-size"), font-size);
+      @include clamp(map.get($value, "line-height"), line-height);
+      font-weight: map.get($value, "font-weight");
+      text-decoration: map.get($value, "text-decoration");
+      text-transform: map.get($value, "text-transform");
+      letter-spacing: map.get($value, "letter-spacing");
+      // restore the original scale ratio
+      $clamp-font-size-scale: $-scale !global;
     }
   }
-}
 
-// Type display classes
-@each $name, $value in $display-font-sizes {
-  .font-display.font-#{$name} {
-    //stylelint-disable-next-line property-disallowed-list
-    font-size: var(--#{$prefix}font-size-display-#{$name}) if($enable-important-utilities, !important, null);
-    line-height: var(--#{$prefix}line-height-display-#{$name}) if($enable-important-utilities, !important, null);
-  }
-}
+  // Blockquotes
+  .blockquote {
+    $font-family: map.get($blockquote-font, "font-family");
+    $font-size: map.get($blockquote-font, "font-size");
+    $line-height: map.get($blockquote-font, "line-height");
+    $font-weight: map.get($blockquote-font, "font-weight");
+    $font-style: map.get($blockquote-font, "font-style");
 
-// Type display classes
-@each $name, $value in $display-font-weights {
-  .font-display.font-#{$name} {
-    font-weight: var(--#{$prefix}font-weight-display-#{$name}) if($enable-important-utilities, !important, null);
-  }
-}
+    margin-block-end: $blockquote-margin-y;
+    font: $font-style $font-weight #{$font-size} / #{$line-height} $font-family;
 
-// Type display classes
-@each $name, $value in $context-fonts {
-  .font-#{$name} {
-    // margin-bottom: map-get($value, "margin-bottom");
-    font-family: map-get($value, "font-family");
-    font-style: map-get($value, "font-style");
-    @include rfs(map-get($value, "font-size"), font-size);
-    @include rfs(map-get($value, "line-height"), line-height);
-    font-weight: map-get($value, "font-weight");
-    text-decoration: map-get($value, "text-decoration");
-    text-transform: map-get($value, "text-transform");
-    letter-spacing: map-get($value, "letter-spacing");
-  }
-}
-
-//
-// Misc
-//
-
-// Builds on `abbr`
-// Blockquotes
-.blockquote {
-  $font-family: map-get($blockquote-font, "font-family");
-  $font-size: map-get($blockquote-font, "font-size");
-  $line-height: map-get($blockquote-font, "line-height");
-  $font-weight: map-get($blockquote-font, "font-weight");
-  $font-style: map-get($blockquote-font, "font-style");
-
-  margin-bottom: $blockquote-margin-y;
-  font: $font-style $font-weight #{$font-size} / #{$line-height} $font-family;
-
-  @include last-mb-0();
-}
-
-.attribution {
-  $font-family: map-get($attribution-font, "font-family");
-  $font-size: map-get($attribution-font, "font-size");
-  $line-height: map-get($attribution-font, "line-height");
-  $font-weight: map-get($attribution-font, "font-weight");
-  $font-style: map-get($attribution-font, "font-style");
-
-  font: $font-style $font-weight #{$font-size} / #{$line-height} $font-family;
-  color: $attribution-color;
-
-  &::before {
-    content: "\2014\00A0"; // em dash, nbsp
+    @include last-mb-0();
   }
 
-  .blockquote + & {
-    margin-top: -$blockquote-margin-y;
-    margin-bottom: $blockquote-margin-y;
+  .attribution {
+    $font-family: map.get($attribution-font, "font-family");
+    $font-size: map.get($attribution-font, "font-size");
+    $line-height: map.get($attribution-font, "line-height");
+    $font-weight: map.get($attribution-font, "font-weight");
+    $font-style: map.get($attribution-font, "font-style");
+
+    font: $font-style $font-weight #{$font-size} / #{$line-height} $font-family;
+    color: $attribution-color;
+
+    &::before {
+      content: "\2014\00A0"; // em dash, nbsp
+    }
+
+    .blockquote + & {
+      margin-block-start: -$blockquote-margin-y;
+      margin-block-end: $blockquote-margin-y;
+    }
   }
-}
 
-//
-// Emphasis
-//
-// .small {
-//   @extend small;
-// }
+  .font-initials {
+    font-size: $small-font-size; //stylelint-disable-line property-disallowed-list
+    text-transform: uppercase;
+  }
 
-.text-small {
-  //stylelint-disable-next-line property-disallowed-list
-  font-size: $small-font-size if($enable-important-utilities, !important, null);
-}
-.text-large {
-  //stylelint-disable-next-line property-disallowed-list
-  font-size: $large-font-size if($enable-important-utilities, !important, null);
-}
-.text-initials {
-  //stylelint-disable-next-line property-disallowed-list
-  font-size: $initials-font-size if($enable-important-utilities, !important, null);
-  text-transform: uppercase;
-}
-.text-mark {
-  @extend mark;
-}
-.text-monospace {
-  @extend .font-code;
-}
+  .font-monospace {
+    font-family: #{$code-font-family};
+  }
+
+} // @layer content

@@ -1,0 +1,154 @@
+@use "../config" as *;
+@use "../functions/svg" as *;
+@use "../mixins" as *;
+@use "../placeholders" as *;
+
+//
+// Modern Check Inputs
+//
+// Modern styling for checkbox and radio inputs by placing `input` elements inside a container.
+//
+
+@layer components {
+
+  // Shared base — applies to every modern check container.
+  .check-input:not(input) {
+    @extend %context, %body-context, %form-colors;
+    --margin-block: var(--check-input-margin-block, calc((var(--line-height) - var(--input-height)) * .5));
+    --checked-border-color: transparent;
+    --disabled-border-color: transparent;
+    position: relative;
+    border: 0;
+
+    &:where(.default, .alternate) {
+      --border-color: var(--border-main);
+      --disabled-border-color: var(--border-subtle);
+    }
+
+    > input {
+      width: var(--input-width);
+      height: var(--input-height);
+      // Align to the container's top so the input doesn't drift down within the
+      // inherited line-box when --input-height < line-height (notably .small).
+      vertical-align: top;
+      appearance: none;
+      background-color: var(--bg-color);
+      border: $form-check-border-width solid var(--border-color);
+      outline: 0;
+    }
+  }
+
+  // Non-switch variant — checkbox/radio.
+  // stylelint-disable selector-no-qualifying-type
+  .check-input:not(input):not(:has([role="switch"])) {
+    --bg-color: var(--bg-main);
+    --fg-color: var(--fg-main);
+    --border-color: var(--border-main);
+    --checked-bg-color: var(--bg-active);
+    --checked-fg-color: var(--fg-active);
+    --disabled-bg-color: var(--bg-even);
+    --disabled-fg-color: var(--fg-slight);
+    --disabled-border-color: var(--border-subtle);
+    --check-icon: #{svg-icon($form-check-checkbox-icon)};
+    --radio-icon: #{svg-icon($form-check-radio-icon)};
+    --indeterminate-icon: #{svg-icon($form-check-indeterminate-icon)};
+    display: inline-block;
+    width: var(--input-width);
+    height: var(--input-height);
+    margin-block: var(--margin-block);
+    background: none;
+
+    > input {
+      @include border-radius(var(--border-radius));
+    }
+    &:has(input[type="checkbox"]) {
+      --icon: var(--check-icon);
+      --border-radius: #{$form-check-checkbox-border-radius};
+      @include border-radius(var(--border-radius));
+    }
+    &:has(input[type="checkbox"]:indeterminate) {
+      --icon: var(--indeterminate-icon);
+    }
+    &:has(input[type="radio"]) {
+      --icon: var(--radio-icon);
+      --border-radius: #{$form-check-radio-border-radius};
+      @include border-radius(var(--border-radius));
+    }
+    &:has(input:checked, input[type="checkbox"]:indeterminate)::before {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      content: " ";
+      background-color: var(--fg-color);
+      mask-image: var(--icon);
+      mask-repeat: no-repeat;
+      mask-position: center;
+      mask-size: 100%;
+    }
+  }
+  // stylelint-enable selector-no-qualifying-type
+
+  // Switch variant.
+  .check-input:not(input):has([role="switch"]) {
+    --switch-border-radius: #{$form-switch-border-radius};
+    --toggle-border-radius: var(--form-switch-toggle-border-radius, #{$form-switch-toggle-border-radius});
+    --bg-color: var(--bg-even);
+    --fg-color: var(--fg-main);
+    --border-color: var(--border-main);
+    --checked-bg-color: var(--bg-active);
+    --checked-fg-color: var(--fg-active);
+    --disabled-bg-color: var(--bg-even);
+    --disabled-fg-color: var(--fg-slight);
+    --disabled-border-color: var(--border-subtle);
+    margin-block-start: var(--margin-block);
+
+    > input {
+      @include border-radius(var(--switch-border-radius));
+      @include transition(background-color .15s ease-in-out);
+    }
+
+    &:has(input)::before {
+      position: absolute;
+      inset-inline-start: calc((var(--input-height) - var(--toggle-height)) / 2);
+      width: var(--toggle-width);
+      height: var(--toggle-height);
+      margin-block: calc((var(--input-height) - var(--toggle-height)) / 2);
+      pointer-events: none;
+      content: "";
+      background-color: var(--fg-color);
+      // stylelint-disable-next-line property-disallowed-list
+      border-radius: var(--toggle-border-radius);
+      @include box-shadow(var(--box-shadow-small));
+      // stylelint-disable-next-line property-disallowed-list
+      transition: inset-inline-start .15s ease-in-out;
+    }
+    &:has(input:checked)::before {
+      inset-inline-start: calc(100% - var(--toggle-width) - ((var(--input-height) - var(--toggle-height)) / 2));
+    }
+  }
+
+  // Shared states.
+  // stylelint-disable-next-line no-duplicate-selectors
+  .check-input:not(input) {
+    > input:focus-visible {
+      --focus-ring-offset: #{$form-check-focus-ring-offset};
+      @include focus-ring(true);
+      @include box-shadow($form-input-box-shadow);
+    }
+
+    &:has([type]:checked, [type="checkbox"]:indeterminate) {
+      --fg-color: var(--checked-fg-color);
+      --bg-color: var(--checked-bg-color);
+      --border-color: var(--checked-border-color);
+    }
+    &:has([type]:disabled) {
+      --fg-color: var(--disabled-fg-color);
+      --bg-color: var(--disabled-bg-color);
+      --border-color: var(--disabled-border-color);
+
+      + label {
+        color: $form-check-disabled-label-color;
+      }
+    }
+  }
+} // @layer components

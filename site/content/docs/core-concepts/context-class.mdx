@@ -5,7 +5,7 @@ toc: true
 ---
 import { getData } from '@libs/data'
 
-The `.context` class is how Chassis CSS applies a color palette to a component. Components never hardcode color values; they read CSS custom properties such as `--cx-fg-main` and `--cx-bg-main`. The `.context` class re-aims those properties at a different palette, and any element nested inside picks up the new colors automatically.
+The `.context` class applies a color palette to a component. Components never hardcode color values; they read CSS custom properties such as `--cx-fg-color` and `--cx-bg-color`. The `.context` class, combined with a color name and optional style modifier, re-aims those variables at a named palette, and every nested element picks up the new colors automatically.
 
 ## How it works
 
@@ -13,44 +13,42 @@ Chassis CSS does not write color values directly on component classes. It uses [
 
 Three pieces work together:
 
-1. **The `%context` placeholder** declares the full set of context-scoped variables and points them at the active body context. It iterates over every registered context color, generating one selector per palette (`.context.primary`, `.context.success`, …) that uses the [context mixin](#context-mixin) to remap those variables.
-2. **Style placeholders** (`%basic-context`, `%solid-context`, `%smooth-context`, `%outline-context`) translate the context-scoped variables into the body variables that components actually read — `--cx-fg-color`, `--cx-bg-color`, `--cx-border-color`, and so on. Each style maps the palette tokens differently to produce a different visual treatment.
-3. **The `.context` class** extends `%context` and the four style placeholders, which compiles into one class per color and style combination.
+1. **The `%context` placeholder** declares 31 context-scoped variables — foreground, background, border, icon, link, cue, and dim tokens — each backed by a two-layer fallback chain: a `--cx-context-*` intermediate (set when a color class is active) or the default palette. It also iterates over `$context-colors` to generate one nested selector per palette (`.context.primary`, `.context.success`, …), calling the `context()` mixin to remap those intermediates.
+2. **The `%body-context` placeholder** maps the context tokens onto the body variables that components apply directly: `--cx-fg-color`, `--cx-bg-color`, `--cx-border-color`, and so on.
+3. **The `.context` class** extends both `%context` and `%body-context`. Style modifiers use nested selectors — `.context.solid`, `.context.smooth`, `.context.outline` — each extending a matching style placeholder that overrides the semantic tokens to produce a different visual treatment.
 
 ### Placeholder selector
 
-The `%context` placeholder declares the full set of context-scoped variables, iterates over `$context-colors` to generate one nested selector per color, and extends `%basic-context` so the basic style applies whenever `.context` is used without a style modifier. The shape of it:
+The `%context` placeholder declares the 31 context-scoped variables, iterates over `$context-colors` to generate one nested selector per color, and leaves `%body-context` to the `.context` class itself. The shape of it:
 
 ```scss
 %context {
-  // 36 context-scoped variables, each pointing at the active body context
-  --cx-fg-main: var(--cx-context-fg-main, var(--cx-{body-context}-fg-main));
-  --cx-bg-main: var(--cx-context-bg-main, var(--cx-{body-context}-bg-main));
-  // … one declaration per palette token
+  // 31 context-scoped variables; each checks the context intermediate first,
+  // then falls back to the default palette
+  --fg-main: var(--context-fg-main, var(--#{$body-context}-fg-main));
+  --bg-main: var(--context-bg-main, var(--#{$body-context}-bg-main));
+  // … one declaration per semantic token
 
-  // One nested selector per context color, each remapping the variables above
-  @each $color in map-keys($context-colors) {
+  // One nested selector per context color, each activating that palette
+  @each $color in map.keys($context-colors) {
     &.#{$color} { @include context($color); }
   }
-
-  // Basic style is the default
-  @extend %basic-context;
 }
 ```
 
-The full source — including every variable declaration — lives under [Sass mixins → Context placeholder](#context-placeholder).
+Full source — including every variable declaration — is in [Sass API → Context placeholder](#context-placeholder).
 
-### Style placeholders
+### Body context
 
-Each style placeholder maps the context-scoped variables onto the body variables differently. The basic style — also the default — looks like this:
+`%body-context` bridges the context token layer and the properties components consume as CSS values. It reads from the semantic tokens declared by `%context` — `--cx-fg-main`, `--cx-bg-main`, `--cx-border-subtle`, and so on — and assigns each to the body variable a component applies directly: `--cx-fg-color`, `--cx-bg-color`, `--cx-border-color`. Any component that extends `%body-context` automatically reflects the active context palette without referencing palette-specific tokens. Full source is in [Sass API → Body context placeholder](#body-context-placeholder).
 
-<ScssDocs name="basic-style-placeholder-selector" file="scss/placeholders/_context.scss" />
+### Style modifiers
 
-The full set is documented under [Sass mixins](#sass-mixins).
+The three style placeholders — `%solid-context`, `%smooth-context`, and `%outline-context` — override a subset of the semantic tokens declared by `%context`. Because `%body-context` resolves `--cx-fg-color` from `--cx-fg-main`, any placeholder that reassigns `--cx-fg-main` automatically changes the rendered foreground color. `%solid-context` drives `%body-context`'s output toward a vivid filled surface, `%smooth-context` produces a muted tinted surface, and `%outline-context` drives foreground and border from the palette's base hue with a transparent background. Full source is in [Sass API → Style placeholders](#style-placeholders).
 
 ### Component class
 
-The `.context` class extends the placeholders so every color × style combination is generated as a real, usable class:
+The `.context` class extends `%context` and `%body-context`, making the full color system active by default. The three style modifiers are handled as nested selectors, each extending the corresponding style placeholder:
 
 <ScssDocs name="context-class" file="scss/_context.scss" />
 
@@ -63,15 +61,17 @@ The compiled output ships ready to use:
 
 ## Usage
 
+The two class groups that control context behavior are color names and style modifiers — both are optional and composable.
+
 ### Context colors
 
 Adding a color name to `.context` switches the active palette. Each context color provides coordinated foreground, background, border, icon, link, and cue values, so a single class change propagates throughout the component and its descendants.
 
 <Example code={[`<p class="p-xsmall">
-    <span class="icon icon-info-circle-solid"></span>
+    <Icon name="info-circle-solid" font />
     This is the body context <a href="#">with link</a>, same as default.
   </p>`].concat(getData('context-colors').map((color) => `<p class="context ${color.name} p-xsmall">
-    <span class="icon icon-info-circle-solid"></span>
+    <Icon name="info-circle-solid" font />
     This is the ${color.name} context <a href="#">with link</a>.
   </p>`))} />
 
@@ -90,56 +90,63 @@ A few of the contexts can look similar at first glance but play distinct semanti
 
 ### Context styles
 
-Adding a style modifier controls how the palette tokens are mapped onto each visual property. Four styles are available:
+Adding a style modifier controls how context tokens map onto the visual surface. Four styles are available:
 
-- **`basic`** (default) — inherits the ambient background; switches foreground, border, and icon colors to the context.
-- **`solid`** — fills with the context's primary background color and uses the inverted foreground for maximum contrast.
-- **`smooth`** — fills with a tinted, low-opacity variant of the context background while keeping a readable foreground.
-- **`outline`** — transparent background with the context color applied as a border and a tinted foreground.
+- **`basic`** (default) — uses the palette's main background and foreground tokens directly; without a color class applied, the surface matches the page background.
+- **`solid`** — produces a vivid filled surface with a transparent border.
+- **`smooth`** — applies a muted tinted surface while keeping the standard context foreground, with a transparent border.
+- **`outline`** — sets a transparent background, colors foreground and border from the palette's base hue, and applies a larger border width.
 
 <Example code={`<p class="context primary p-xsmall">
-    <span class="icon icon-info-circle-solid"></span>
+    <Icon name="info-circle-solid" font />
     This is a basic context component <a href="#">with link</a>.
   </p>
   <p class="context primary solid p-xsmall">
-    <span class="icon icon-info-circle-solid"></span>
+    <Icon name="info-circle-solid" font />
     This is a solid context component <a href="#">with link</a>.
   </p>
   <p class="context primary smooth p-xsmall">
-    <span class="icon icon-info-circle-solid"></span>
+    <Icon name="info-circle-solid" font />
     This is a smooth context component <a href="#">with link</a>.
   </p>
   <p class="context primary outline p-xsmall">
-    <span class="icon icon-info-circle-solid"></span>
+    <Icon name="info-circle-solid" font />
     This is an outline context component <a href="#">with link</a>.
   </p>`} />
 
-## Sass mixins
+## Sass API
+
+The context system is built from four Sass constructs: the `%context` placeholder that declares the variable layer, the `%body-context` placeholder that bridges tokens to component properties, the `context()` mixin that activates a named palette, and three style placeholders that define visual surface treatments.
 
 ### Context placeholder
 
-The full source of `%context` — every variable declaration, the loop over `$context-colors`, and the `@extend %basic-context` — referenced from [How it works](#placeholder-selector) above:
+The full source of `%context` — every variable declaration and the loop over `$context-colors`:
 
 <ScssDocs name="context-placeholder-selector" file="scss/placeholders/_context.scss" />
 
+### Body context placeholder
+
+`%body-context` maps the semantic tokens onto the body variables components consume. Extend it directly in any component that needs to respond to the active context palette without participating in style modifiers.
+
+<ScssDocs name="body-context-placeholder-selector" file="scss/placeholders/_context.scss" />
+
 ### Context mixin
 
-The `context()` mixin generates the variable assignments for a single palette. Pass it a color name and it emits the CSS rules that point the context-scoped variables at that palette.
+The `context()` mixin activates a named palette by writing all `--cx-context-*` intermediate variables to point at that palette's tokens. Pass it a color name and it emits the CSS rules that route every context-scoped variable through the named palette.
 
 <ScssDocs name="context-mixin" file="scss/mixins/_context.scss" />
 
 ### Style placeholders
 
-The four style placeholders are available for `@extend`-ing inside any component that needs to react to a style modifier — for example, to give a button a `.solid` variant.
+The three style placeholders override specific semantic tokens to change the visual surface. Extend them inside any component that needs to react to a style modifier — for example, to give a button a `.solid` variant.
 
-<ScssDocs name="basic-style-placeholder-selector" file="scss/placeholders/_context.scss" />
 <ScssDocs name="solid-style-placeholder-selector" file="scss/placeholders/_context.scss" />
 <ScssDocs name="smooth-style-placeholder-selector" file="scss/placeholders/_context.scss" />
 <ScssDocs name="outline-style-placeholder-selector" file="scss/placeholders/_context.scss" />
 
 ### Component placeholder
 
-Components such as badges and notifications also extend the `%component` placeholder, which assigns the spacing, typography, and color CSS variables to the actual properties:
+Components such as badges and notifications also extend the `%component` placeholder, which applies typography, color, border, and border-radius via the corresponding mixins:
 
 <ScssDocs name="component-placeholder-selector" file="scss/placeholders/_component.scss" />
 
@@ -147,13 +154,13 @@ Components such as badges and notifications also extend the `%component` placeho
 
 The same building blocks let you write your own context-aware components. The three examples below progress from a simple fallback chain to a fully context-aware component with a `.solid` modifier.
 
-### Custom property with a fallback
+### Property fallback chain
 
-`.example` declares a single CSS custom property with a built-in fallback chain. Override the property where you need a specific value; everywhere else it falls back to a context-aware token.
+`.example` declares a CSS custom property (`--example-fg`) with a context-aware fallback. Override the property where a specific value is needed; when the override resolves to an invalid value, the fallback chain reaches `--cx-fg-subtle`, which adapts to the active context.
 
 <ScssDocs name="example-1" file="site/src/scss/_context-example.scss" />
 
-The custom property can be overridden inline, falls back to `--cx-fg-highlight` when the override is invalid, and ultimately adapts to the active context via that token.
+The `:root` declaration gives `--example-fg` a default value. Setting it to `var(--no-color)` on a container produces an invalid value, activating the `--cx-fg-subtle` fallback.
 
 <Example code={`<div>
     <p class="example">--example-fg</p>
@@ -179,13 +186,11 @@ The custom property can be overridden inline, falls back to `--cx-fg-highlight` 
     <p>--cx-fg-main</p>
   </div>`} />
 
-### Intercepting style overrides
+### Intercepting solid styles
 
-`.example-2` is a context component that uses `--cx-fg-subtle` for its `color`. It reserves a component-scoped custom property as a hook for future overrides.
+`.example-2` extends `%context` and pins `--cx-fg-color` to a component-scoped property that reads from `--cx-fg-subtle`. Because the component sets `--cx-fg-color` directly rather than inheriting it from `%body-context`, the value stays tied to `--cx-fg-subtle` when `.solid` is applied — even as `%solid-context` overrides the other semantic tokens.
 
 <ScssDocs name="example-2" file="site/src/scss/_context-example.scss" />
-
-The `%solid-context` placeholder normally overrides `--cx-fg-color` with `--cx-fg-main`. Setting `--cx-fg-subtle` as `--cx-fg-color` first lets us intercept that override and keep the subtle foreground intact in the solid style.
 
 <Example code={`<p class="example-2">--cx-fg-subtle</p>
 <p class="example-2 primary">--cx-fg-subtle</p>
@@ -193,7 +198,7 @@ The `%solid-context` placeholder normally overrides `--cx-fg-color` with `--cx-f
 
 ### Full context component
 
-`.example-3` is a fully context-aware component. It maps component-scoped custom properties onto body color variables and supports the solid style modifier:
+`.example-3` is a fully context-aware component — it extends both `%context` and `%body-context` and maps component-scoped custom properties as overrideable hooks over the body variables. The `.solid` modifier restores the solid background explicitly, because the component uses `--component-bg-color` (reading from `--cx-bg-even`) for its background rather than `--cx-bg-color`, so `%solid-context`'s override of `--cx-bg-main` alone is not enough.
 
 <ScssDocs name="example-3" file="site/src/scss/_context-example.scss" />
 
@@ -202,6 +207,8 @@ The `%solid-context` placeholder normally overrides `--cx-fg-color` with `--cx-f
 <p class="example-3 primary solid p-xsmall">--cx-fg-main</p>`} />
 
 ## See also
+
+Related concepts and utilities that build on or compose with the context class:
 
 - [Color System]([[docsref:/core-concepts/color-system]]) — how primitive scales, context palettes, and body variables are layered.
 - [Colors utility]([[docsref:/utilities/colors]]) — `fg-*` foreground utility classes.

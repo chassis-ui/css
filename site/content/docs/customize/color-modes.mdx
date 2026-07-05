@@ -1,50 +1,46 @@
 ---
 title: Color modes
-description: Chassis CSS now supports color modes, or themes, as of v5.3.0. Explore our default light color mode and the new dark mode, or create your own using our styles as your template.
+description: Explore Chassis CSS color modes — the default light mode, dark mode, and how to create custom themes using the data-cx-theme attribute.
 toc: true
 ---
 
 import { getDocsRelativePath } from '@libs/path'
 
-<Callout>
-**Try it yourself!** Download the source code and working demo for using Chassis CSS with Stylelint, and the color modes from the [twbs/examples repository](https://github.com/twbs/examples/tree/main/color-modes). You can also [open the example in StackBlitz](https://stackblitz.com/github/twbs/examples/tree/main/color-modes?file=index.html).
-</Callout>
-
 ## Dark mode
 
-**Chassis CSS now supports color modes, starting with dark mode!** With v5.3.0 you can implement your own color mode toggler (see below for an example from Chassis CSS’s docs) and apply the different color modes as you see fit. We support a light mode (default) and now dark mode. Color modes can be toggled globally on the `<html>` element, or on specific components and elements, thanks to the `data-cx-theme` attribute.
+Chassis CSS supports color modes — light (default) and dark — controlled via the `data-cx-theme` attribute. Color modes can be toggled globally on the `<html>` element, or scoped to individual components and elements.
 
-Alternatively, you can also switch to a media query implementation thanks to our color mode mixin—see [the usage section for details](#building-with-sass). Heads up though—this eliminates your ability to change themes on a per-component basis as shown below.
+Alternatively, switch to a media query implementation using the color mode mixin — see [the usage section for details](#building-with-sass). This eliminates the ability to change themes on a per-component basis as shown below.
 
 ## Example
 
 For example, to change the color mode of a dropdown menu, add `data-cx-theme="light"` or `data-cx-theme="dark"` to the parent `.dropdown`. Now, no matter the global color mode, these dropdowns will display with the specified theme value.
 
 <Example class="d-flex justify-content-between" code={`<div class="dropdown" data-cx-theme="light">
-    <button class="button secondary dropdown-toggle" type="button" id="dropdownMenuButtonLight" data-cx-toggle="dropdown" aria-expanded="false">
+    <button class="button secondary menu-toggle" type="button" id="dropdownMenuButtonLight" data-cx-toggle="menu" aria-expanded="false">
       Default dropdown
     </button>
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonLight">
-      <li><a class="dropdown-item active" href="#">Action</a></li>
-      <li><a class="dropdown-item" href="#">Action</a></li>
-      <li><a class="dropdown-item" href="#">Another action</a></li>
-      <li><a class="dropdown-item" href="#">Something else here</a></li>
-      <li><hr class="dropdown-separator"></li>
-      <li><a class="dropdown-item" href="#">Separated link</a></li>
+    <ul class="menu" role="menu" aria-labelledby="dropdownMenuButtonLight">
+      <li><a class="menu-item active" href="#">Action</a></li>
+      <li><a class="menu-item" href="#">Action</a></li>
+      <li><a class="menu-item" href="#">Another action</a></li>
+      <li><a class="menu-item" href="#">Something else here</a></li>
+      <li><hr class="menu-divider"></li>
+      <li><a class="menu-item" href="#">Separated link</a></li>
     </ul>
   </div>
 
   <div class="dropdown" data-cx-theme="dark">
-    <button class="button secondary dropdown-toggle" type="button" id="dropdownMenuButtonDark" data-cx-toggle="dropdown" aria-expanded="false">
+    <button class="button secondary menu-toggle" type="button" id="dropdownMenuButtonDark" data-cx-toggle="menu" aria-expanded="false">
       Dark dropdown
     </button>
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonDark">
-      <li><a class="dropdown-item active" href="#">Action</a></li>
-      <li><a class="dropdown-item" href="#">Action</a></li>
-      <li><a class="dropdown-item" href="#">Another action</a></li>
-      <li><a class="dropdown-item" href="#">Something else here</a></li>
-      <li><hr class="dropdown-separator"></li>
-      <li><a class="dropdown-item" href="#">Separated link</a></li>
+    <ul class="menu" role="menu" aria-labelledby="dropdownMenuButtonDark">
+      <li><a class="menu-item active" href="#">Action</a></li>
+      <li><a class="menu-item" href="#">Action</a></li>
+      <li><a class="menu-item" href="#">Another action</a></li>
+      <li><a class="menu-item" href="#">Something else here</a></li>
+      <li><hr class="menu-divider"></li>
+      <li><a class="menu-item" href="#">Separated link</a></li>
     </ul>
   </div>`} />
 
@@ -52,7 +48,7 @@ For example, to change the color mode of a dropdown menu, add `data-cx-theme="li
 
 - As shown above, color mode styles are controlled by the `data-cx-theme` attribute. This attribute can be applied to the `<html>` element, or to any other element or Chassis CSS component. If applied to the `<html>` element, it will apply to everything. If applied to a component or element, it will be scoped to that specific component or element.
 
-- For each color mode you wish to support, you’ll need to add new overrides for the shared global CSS variables. We do this already in our `_root.scss` stylesheet for dark mode, with light mode being the default values. In writing color mode specific styles, use the mixin:
+- For each color mode you wish to support, add new overrides for the shared global CSS variables. Chassis already does this in `_root.scss` for dark mode, with light mode as the default values. To write color mode specific styles, use the mixin:
 
   ```scss
   // Color mode variables in _root.scss
@@ -61,7 +57,7 @@ For example, to change the color mode of a dropdown menu, add `data-cx-theme="li
   }
   ```
 
-- We use a custom `_variables-dark.scss` to power those shared global CSS variable overrides for dark mode. This file isn’t required for your own custom color modes, but it’s required for our dark mode for two reasons. First, it’s better to have a single place to reset global colors. Second, some Sass variables had to be overridden for background images embedded in our CSS for accordions, form components, and more.
+- Chassis ships a `_variables-dark.scss` that powers those shared global CSS variable overrides for dark mode. This file isn't required for custom color modes, but it's required for dark mode for two reasons. First, it's better to have a single place to reset global colors. Second, some Sass variables had to be overridden for background images embedded in the compiled CSS for accordions, form components, and more.
 
 ## Usage
 
@@ -85,15 +81,15 @@ Enable the built in dark color mode across your entire project by adding the `da
 </html>
 ```
 
-Chassis CSS does not yet ship with a built-in color mode picker, but you can use the one from our own documentation if you like. [Learn more in the JavaScript section.](#javascript)
+Chassis CSS does not yet ship with a built-in color mode picker, but you can use the one from the Chassis documentation. [Learn more in the JavaScript section.](#javascript)
 
 ### Building with Sass
 
-Our new dark mode option is available to use for all users of Chassis, but it’s controlled via data attributes instead of media queries and does not automatically toggle your project’s color mode. You can disable our dark mode entirely via Sass by changing `$enable-dark-mode` to `false`.
+The dark mode option is controlled via data attributes instead of media queries and does not automatically toggle the project's color mode. Disable dark mode entirely via Sass by setting `$enable-dark-mode` to `false`.
 
-We use a custom Sass mixin, `color-mode()`, to help you control _how_ color modes are applied. By default, we use a `data` attribute approach, allowing you to create more user-friendly experiences where your visitors can choose to have an automatic dark mode or control their preference (like in our own docs here). This is also an easy and scalable way to add different themes and more custom color modes beyond light and dark.
+The `color-mode()` mixin controls _how_ color modes are applied. By default, it uses a `data` attribute approach, allowing more user-friendly experiences where visitors can choose an automatic dark mode or override their preference (like in the Chassis docs). This approach also scales to additional themes and custom color modes beyond light and dark.
 
-In case you want to use media queries and only make color modes automatic, you can change the mixin’s default type via Sass variable. Consider the following snippet and its compiled CSS output.
+In case you want to use media queries and only make color modes automatic, you can change the mixin's default type via Sass variable. Consider the following snippet and its compiled CSS output.
 
 ```scss
 $color-mode-type: data;
@@ -141,11 +137,11 @@ Outputs to:
 
 ## Custom color modes
 
-While the primary use case for color modes is light and dark mode, custom color modes are also possible. Create your own `data-cx-theme` selector with a custom value as the name of your color mode, then modify our Sass and CSS variables as needed. We opted to create a separate `_variables-dark.scss` stylesheet to house Chassis CSS’s dark mode specific Sass variables, but that’s not required for you.
+While the primary use case for color modes is light and dark mode, custom color modes are also possible. Create your own `data-cx-theme` selector with a custom value as the name of your color mode, then modify the Sass and CSS variables as needed. Chassis ships a separate `_variables-dark.scss` to house dark mode Sass variables, but that's not required for custom themes.
 
-For example, you can create a “blue theme” with the selector `data-cx-theme="blue"`. In your custom Sass or CSS file, add the new selector and override any global or component CSS variables as needed. If you’re using Sass, you can also use Sass’s functions within your CSS variable overrides.
+For example, you can create a “blue theme” with the selector `data-cx-theme="blue"`. In your custom Sass or CSS file, add the new selector and override any global or component CSS variables as needed. If you're using Sass, you can also use Sass's functions within your CSS variable overrides.
 
-<ScssDocs name="custom-color-mode" file="site/src/scss/_component-examples.scss" />
+<ScssDocs name="custom-color-mode" file="site/src/scss/_examples.scss" />
 
 <Example showMarkup={false} code={`<div class="cxd-example fg-main bg-main" data-cx-theme="primary">
   <div class="h4">Example blue theme</div>
@@ -154,16 +150,16 @@ For example, you can create a “blue theme” with the selector `data-cx-theme=
   <hr class="border-large"/>
 
   <div class="dropdown">
-    <button class="button secondary dropdown-toggle" type="button" id="dropdownMenuButtonCustom" data-cx-toggle="dropdown" aria-expanded="false">
+    <button class="button secondary menu-toggle" type="button" id="dropdownMenuButtonCustom" data-cx-toggle="menu" aria-expanded="false">
       Dropdown button
     </button>
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonCustom">
-      <li><a class="dropdown-item active" href="#">Action</a></li>
-      <li><a class="dropdown-item" href="#">Action</a></li>
-      <li><a class="dropdown-item" href="#">Another action</a></li>
-      <li><a class="dropdown-item" href="#">Something else here</a></li>
-      <li><hr class="dropdown-separator"></li>
-      <li><a class="dropdown-item" href="#">Separated link</a></li>
+    <ul class="menu" role="menu" aria-labelledby="dropdownMenuButtonCustom">
+      <li><a class="menu-item active" href="#">Action</a></li>
+      <li><a class="menu-item" href="#">Action</a></li>
+      <li><a class="menu-item" href="#">Another action</a></li>
+      <li><a class="menu-item" href="#">Something else here</a></li>
+      <li><hr class="menu-divider"></li>
+      <li><a class="menu-item" href="#">Separated link</a></li>
     </ul>
   </div>
 </div>`} />
@@ -176,57 +172,47 @@ For example, you can create a “blue theme” with the selector `data-cx-theme=
 
 ## JavaScript
 
-To allow visitors or users to toggle color modes, you’ll need to create a toggle element to control the `data-cx-theme` attribute on the root element, `<html>`. We’ve built a toggler in our documentation that initially defers to a user’s current system color mode, but provides an option to override that and pick a specific color mode.
+To allow visitors to toggle color modes, create a toggle element that controls the `data-cx-theme` attribute on the root `<html>` element. The Chassis docs ship a toggler that initially defers to the system color mode but provides an option to override it and pick a specific mode.
 
-Here’s a look at the JavaScript that powers it. Feel free to inspect our own documentation navbar to see how it’s implemented using HTML and CSS from our own components. It is suggested to include the JavaScript at the top of your page to reduce potential screen flickering during reloading of your site. Note that if you decide to use media queries for your color modes, your JavaScript may need to be modified or removed if you prefer an implicit control.
+The JavaScript below powers it. Inspect the Chassis docs navbar to see how it's implemented using Chassis components. Include it at the top of the page to reduce screen flickering on reload. When using media queries for color modes, this script may need to be modified or removed if implicit control is preferred.
 
 <Code containerClass="cxd-example-snippet" lang="js" filePath={getDocsRelativePath('../node_modules/@chassis-ui/docs/src/js/color-modes.js')} />
 
 ## Adding theme colors
 
-Adding a new color in `$context-colors` is not enough for some of our components like [notifications]([[docsref:/components/notifications]]) and [list groups]([[docsref:/components/list-group]]). New colors must also be defined in `$context-colors-text`, `$context-colors-bg-subtle`, and `$context-colors-border-subtle` for light theme; but also in `$context-colors-text-dark`, `$context-colors-bg-subtle-dark`, and `$context-colors-border-subtle-dark` for dark theme.
+Adding a new color in `$context-colors` is not enough for some Chassis components like [notifications]([[docsref:/components/notification]]) and [lists]([[docsref:/components/list]]). New colors must also be defined in `$context-colors-fg-main`, `$context-colors-bg-evident`, and `$context-colors-border-subtle` for light theme; and in `$context-colors-fg-main-dark`, `$context-colors-bg-evident-dark`, and `$context-colors-border-subtle-dark` for dark theme.
 
-This is a manual process because Sass cannot generate its own Sass variables from an existing variable or map. In future versions of Chassis, we'll revisit this setup to reduce the duplication.
+This is a manual process because Sass cannot generate its own Sass variables from an existing variable or map. A future version of Chassis will revisit this setup to reduce the duplication.
 
 ```scss
-// Required
-@import "functions";
-@import "variables";
-@import "variables-dark";
+@use "sass:map";
+@use "@chassis-ui/css/scss/functions" as *;
+@use "@chassis-ui/css/scss/config/defaults" as *;
 
-// Add a custom color to $
+// Add a custom color to $context-colors
 $custom-colors: (
   "custom-color": #712cf9
 );
-$context-colors: map-merge($context-colors, $custom-colors);
+$context-colors: map.merge($context-colors, $custom-colors);
 
-@import "maps";
-@import "mixins";
-@import "utilities";
+@use "@chassis-ui/css/scss/maps" as *;
+@use "@chassis-ui/css/scss/mixins" as *;
 
-// Add a custom color to new theme maps
+// Define color-mode-specific theme maps for the new color
 
 // Light mode
-$custom-colors-fg-main: ("custom-color": #712cf9);
-$custom-colors-bg-evident: ("custom-color": #e1d2fe);
-$custom-colors-border-subtle: ("custom-color": #bfa1fc);
-
-$context-colors-fg-main: map-merge($context-colors-text, $custom-colors-text);
-$context-colors-bg-evident: map-merge($context-colors-bg-subtle, $custom-colors-bg-subtle);
-$context-colors-border-subtle: map-merge($context-colors-border-subtle, $custom-colors-border-subtle);
+$context-colors-fg-main: map.merge($context-colors-fg-main, ("custom-color": #712cf9));
+$context-colors-bg-evident: map.merge($context-colors-bg-evident, ("custom-color": #e1d2fe));
+$context-colors-border-subtle: map.merge($context-colors-border-subtle, ("custom-color": #bfa1fc));
 
 // Dark mode
-$custom-colors-fg-main-dark: ("custom-color": #e1d2f2);
-$custom-colors-bg-evident-dark: ("custom-color": #8951fa);
-$custom-colors-border-subtle-dark: ("custom-color": #e1d2f2);
+$context-colors-fg-main-dark: map.merge($context-colors-fg-main-dark, ("custom-color": #e1d2f2));
+$context-colors-bg-evident-dark: map.merge($context-colors-bg-evident-dark, ("custom-color": #8951fa));
+$context-colors-border-subtle-dark: map.merge($context-colors-border-subtle-dark, ("custom-color": #e1d2f2));
 
-$context-colors-fg-main-dark: map-merge($context-colors-text-dark, $custom-colors-text-dark);
-$context-colors-bg-evident-dark: map-merge($context-colors-bg-subtle-dark, $custom-colors-bg-subtle-dark);
-$context-colors-border-subtle-dark: map-merge($context-colors-border-subtle-dark, $custom-colors-border-subtle-dark);
-
-// Remainder of Chassis CSS imports
-@import "root";
-@import "reboot";
+// Remainder of Chassis CSS
+@use "@chassis-ui/css/scss/root";
+@use "@chassis-ui/css/scss/reboot";
 // etc
 ```
 
@@ -238,7 +224,7 @@ Dozens of root level CSS variables are repeated as overrides for dark mode. Thes
 
 ### Sass variables
 
-CSS variables for our dark color mode are partially generated from dark mode specific Sass variables in `_variables-dark.scss`. This also includes some custom overrides for changing the colors of embedded SVGs used throughout our components.
+CSS variables for the dark color mode are partially generated from dark-mode-specific Sass variables in `_variables-dark.scss`. This includes custom overrides for the colors of embedded SVGs used throughout Chassis components.
 
 ### Sass mixins
 

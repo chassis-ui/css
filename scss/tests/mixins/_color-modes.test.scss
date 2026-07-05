@@ -1,14 +1,10 @@
-@import "../../settings";
-@import "../../vendor";
-@import "../../functions";
-@import "../../tokens";
-@import "../../variables";
-@import "../../maps";
-@import "../../mixins";
+@use "../../config" as *;
+@use "../../mixins" as *;
 
 
 @include describe("global $color-mode-type: data") {
   @include it("generates data attribute selectors for dark mode") {
+    $color-mode-type: data !global;
     @include assert() {
       @include output() {
         @include color-mode(dark) {
@@ -63,6 +59,5 @@
         // }
       }
     }
-    $color-mode-type: data !global;
   }
 }

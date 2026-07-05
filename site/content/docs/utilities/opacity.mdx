@@ -1,34 +1,34 @@
 ---
 title: Opacity
-description: Control the opacity of elements.
+description: Element-level and per-property opacity utilities with context-named opacity token support.
 toc: true
-added:
-  version: "5.1"
+tokens:
+  scopes:
+    - opacity
+css_layer: utilities
 ---
 
 import { getData } from '@libs/data'
 
-The `opacity` property sets the opacity level for an element. The opacity level describes the transparency level, where `1` is not transparent at all, `.5` is 50% visible, and `0` is completely transparent.
-
-Set the `opacity` of an element using `.opacity-{value}` utilities.
+The `.opacity-{value}` utilities set the CSS `opacity` property on an element. A value of `1` is fully opaque, `.5` is 50% visible, and `0` is fully transparent.
 
 <div class="cxd-example d-flex flex-wrap">
   {
     getData('token-opacities').map((opacity) => {
-      return <div class={`bg-opacity-${opacity.name} fg-${opacity.name === 'solid' || opacity.name > 50 ? 'alternate' : 'default' } bg-default fg-opacity-80 bg-default p-small m-xsmall rounded`}>{opacity.name}</div>
+      return <div class={`bg-opacity-${opacity.name} fg-${opacity.name === 'solid' || opacity.name > 50 ? 'alternate' : 'default' } bg-default fg-opacity-80 p-small m-xsmall rounded`}>{opacity.name}</div>
     })
   }
 </div>
 
 <Code lang="html" code={getData('token-opacities').map((opacity) => `<div class="opacity-${opacity.name}">...</div>`).join('\n')} />
 
-## Property Opacities
+## Per-property opacity
 
-Using CSS variables for some utilities allows for real-time color changes without compilation and dynamic alpha transparency changes.
+Several utility types — background, foreground, and border — support per-property opacity through CSS variable overrides, allowing opacity changes without affecting the entire element.
 
 ### How it works
 
-Consider our default `.bg-primary` utility.
+These utilities depend on CSS relative color syntax. The color utility sets both the color value and a `--cx-{type}-opacity` variable (defaulting to `1`). A paired opacity utility overrides that variable to adjust transparency.
 
 ```css
 .bg-primary {
@@ -39,76 +39,99 @@ Consider our default `.bg-primary` utility.
 }
 ```
 
-We use the `--cx-primary` CSS variable directly with CSS relative color syntax, and attach a second CSS variable, `--cx-bg-opacity`, for the alpha transparency (with a default value `1`). The `oklch(from ...)` expression derives the color from the variable and applies the opacity channel. Then, the opacity class overrides the default opacity by setting `--cx-bg-opacity` on the element.
+### Opacity override
 
-### Example
-
-To change that opacity, override `--cx-bg-opacity` via custom styles or inline styles.
+The opacity variable can be set inline or via a `.bg-opacity-*` utility.
 
 <Example code={`<div class="bg-primary p-xsmall primary-contrast-color">
-    This is default primary background
+    Primary background
   </div>
   <div style="--cx-bg-opacity: .4;" class="bg-primary p-xsmall">
-    This is 40% opacity primary background
+    Primary background with 40% opacity
   </div>`} />
 
-## Context Opacities
+## Context opacities
 
-Contextual opacities can be used in combination with utilities.
+Context-named opacity utilities correspond to the design token scale and can be applied to foreground, background, and border properties.
 
 ### Foreground
 
-Text opacities are available with `fg-*` utilities.
+Foreground opacity utilities apply context-named opacity values to `.fg-*` color classes.
 
-<Example code={`<p class="fg-primary">Base opacity</p>
-<p class="fg-primary fg-opacity-subtle">Smooth opacity</p>
-<p class="fg-primary fg-opacity-slight">Slight opacity</p>`} />
+<Example code={`<p class="fg-primary">Base color</p>
+<p class="fg-primary fg-opacity-subtle"><code>fg-subtle</code> opacity</p>
+<p class="fg-primary fg-opacity-slight"><code>fg-slight</code> opacity</p>`} />
 
 Check out [color]([[docsref:/utilities/colors#opacity]]) page for more details.
 
 ### Background
 
-Scene opacities are available with `bg-*` utilities.
+Background opacity utilities apply scene-token opacity values to `.bg-*` color classes.
 
-<Example code={`<div class="bg-primary bg-opacity-dim-main p-xsmall">This is <code>dim-main</code> opacity primary background</div>
-<div class="bg-primary bg-opacity-blur p-xsmall">This is <code>dim-subtle</code> opacity primary background</div>
-<div class="bg-primary bg-opacity-shade p-xsmall">This is <code>dim-slight</code> opacity primary background</div>
-<div class="bg-primary bg-opacity-clear p-xsmall">This is <code>transparent-color</code> opacity primary background</div>`} />
+<Example code={`<div class="bg-primary p-xsmall">Base background</div>
+<div class="bg-primary bg-opacity-main p-xsmall"><code>dim-main</code> opacity</div>
+<div class="bg-primary bg-opacity-subtle p-xsmall"><code>dim-subtle</code> opacity</div>
+<div class="bg-primary bg-opacity-slight p-xsmall"><code>dim-slight</code> opacity</div>`} />
 
 Check out [background]([[docsref:/utilities/background#opacity]]) page for more details.
 
 ### Border
 
-Border opacities are available with `obj-*` utilities.
+Border opacity utilities apply context-named opacity values to `.border-*` color classes.
 
-<Example code={`<p class="border border-primary p-xsmall">Base opacity</p>
-<p class="border border-primary border-opacity-main p-xsmall">Border opacity</p>
-<p class="border border-primary border-opacity-subtle p-xsmall">Separator opacity</p>`} />
+<Example code={`<p class="border border-primary p-xsmall">Base border</p>
+<p class="border border-primary border-opacity-main p-xsmall"><code>border-main</code> opacity</p>
+<p class="border border-primary border-opacity-subtle p-xsmall"><code>border-subtle</code> opacity</p>`} />
 
 Check out [borders]([[docsref:/utilities/borders#opacity]]) page for more details.
 
 ## CSS
 
-<DocsCSS />
+Opacity utilities are generated from Sass maps built on design token values via the utilities API.
 
-### Variables
+### Reference
 
-<DocsCSSVars />
+The table lists all opacity utilities and their CSS properties.
 
-### Sass variables
+<UtilityReferenceTable utility={["opacity-", "bg-opacity-", "fg-opacity-", "icon-opacity-", "cue-opacity-", "border-opacity-"]} />
 
-<DocsSASSVars />
+### Custom properties
 
-<ScssDocs name="base-opacity-tokens" file="scss/tokens/_index.scss" />
+Opacity utilities read their values at runtime from `:root` custom properties.
+
+<ScssDocs name="root-opacity-variables" file="scss/_root.scss" />
+
+### Design tokens
+
+<DocsDesignTokens name="Opacity" type="utility" plural />
+
+<ScssDocs name="base-opacity-tokens" file="scss/tokens/_opacity.scss" />
+<ScssDocs name="fg-opacity-tokens" file="scss/tokens/_opacity.scss" />
+<ScssDocs name="border-opacity-tokens" file="scss/tokens/_opacity.scss" />
+<ScssDocs name="icon-opacity-tokens" file="scss/tokens/_opacity.scss" />
+<ScssDocs name="cue-opacity-tokens" file="scss/tokens/_opacity.scss" />
+<ScssDocs name="dim-opacity-tokens" file="scss/tokens/_opacity.scss" />
 
 ### Sass Maps
 
-Opacity utilities are generated from Sass maps using [utilities API]([[docsref:/utilities/api]]).
+Opacity utilities are generated from Sass maps in `scss/maps/_opacities.scss`.
 
-<ScssDocs name="opacities-map" file="scss/maps/_opacities.scss" />
+`$opacities` defines the full token-named opacity scale for `.opacity-{level}` utilities.
+
+<ScssDocs name="opacity-levels-map" file="scss/maps/_opacities.scss" />
+
+Each color type has its own opacity map with their semantic opacity levels for `.{type}-opacity-{level}` utilities.
+
+<ScssDocs name="fg-opacities-map" file="scss/maps/_opacities.scss" />
+<ScssDocs name="border-opacities-map" file="scss/maps/_opacities.scss" />
+<ScssDocs name="icon-opacities-map" file="scss/maps/_opacities.scss" />
+<ScssDocs name="cue-opacities-map" file="scss/maps/_opacities.scss" />
+<ScssDocs name="dim-opacities-map" file="scss/maps/_opacities.scss" />
 
 ### Utilities API
 
-Opacity utilities are declared in our utilities API in `scss/utilities/_index.scss`. [Learn how to use the utilities API.]([[docsref:/utilities/api#using-the-api]])
+`.opacity-*` utilities are declared in `scss/utilities/_index.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
 
 <ScssDocs name="utils-opacity" file="scss/utilities/_index.scss" />
+
+`.{type}-opacity-*` utilities are declared in their respective utility files. See [background]([[docsref:/utilities/background#utilities-api]]), [foreground]([[docsref:/utilities/colors#utilities-api]]), and [border]([[docsref:/utilities/borders#utilities-api]]), and [icon]([[docsref:/helpers/icon#utilities-api]]) pages for more details.

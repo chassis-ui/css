@@ -2,6 +2,9 @@
 title: Range Inputs
 description: Create consistent, accessible slider controls with Chassis CSS's range inputs that work across all modern browsers.
 toc: true
+tokens: context
+css_layer: components
+mdn: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/range
 ---
 
 ## Overview
@@ -13,7 +16,7 @@ Range inputs provide an intuitive slider interface for selecting numeric values 
 
 The styling includes:
 - A visually consistent track across all browsers
-- Responsive thumb control that indicates the current value
+- A styled thumb that indicates the current value
 - Proper focus states for keyboard navigation
 - Support for Chassis CSS's theming system
 
@@ -26,7 +29,7 @@ Range inputs can be disabled with the `disabled` attribute. This applies a visua
 
 ## Range configuration
 
-Customize range input behavior with attributes that control the slider's value boundaries and incrementation.
+Customize range input behavior with attributes that control the slider's value boundaries and step size.
 
 ### Min and max values
 
@@ -48,20 +51,18 @@ Integrate range inputs into practical UI patterns to enhance user experience and
 
 ### With value display
 
-For enhanced usability, consider pairing range inputs with value displays that update dynamically. This helps users understand the exact value they're selecting.
+Pair range inputs with a value display that updates dynamically so users can see the exact value they're selecting.
 
-<Example code={`<div class="mb-medium">
-  <label for="rangeWithOutput" class="form-label">Temperature (°C)</label>
-  <div class="d-flex align-items-center gap-medium">
-    <input type="range" class="form-range" min="15" max="30" value="22" id="rangeWithOutput"
-      oninput="rangeOutput.value = rangeWithOutput.value">
-    <output for="rangeWithOutput" id="rangeOutput" class="ms-small w-25">22</output>
+<Example code={`<div class="d-flex">
+    <label for="rangeWithOutput" class="form-label">Temperature (°C)</label>
+    <output for="rangeWithOutput" id="rangeOutput" class="ms-auto">22</output>
   </div>
-</div>`} />
+  <input type="range" class="form-range" min="15" max="30" value="22" id="rangeWithOutput"
+    oninput="rangeOutput.value = this.value">`} />
 
 ### Form layouts
 
-Range inputs integrate seamlessly with Chassis CSS's form layouts and components. They can be used alongside other input types and properly align with form groups.
+Use Chassis CSS's grid and layout utilities to arrange range inputs alongside other form controls.
 
 <Example code={`<div class="row g-medium">
   <div class="medium:col-6">
@@ -76,19 +77,24 @@ Range inputs integrate seamlessly with Chassis CSS's form layouts and components
 
 ## Accessibility considerations
 
-When using range inputs, follow these best practices to ensure accessibility:
-
-- Always include a descriptive `<label>` that explains the purpose of the control
-- Consider adding `aria-valuemin`, `aria-valuemax`, and `aria-valuenow` attributes for enhanced screen reader support
-- Use the `form-help` class to provide additional context or instructions below the range input
-- Test keyboard navigation to ensure users can adjust values with arrow keys
+- Always associate a visible `<label>` with the input using the `for` attribute so the control has an accessible name.
+- Use `aria-valuetext` when the numeric value alone doesn't convey meaning to the user — for example, a satisfaction scale where `1` should be announced as "Very dissatisfied" rather than "1".
+- Use `aria-describedby` to associate a `.form-help` element with the input when additional context is needed, so screen readers announce the description when the field receives focus.
+- Pair range inputs with a visible value display (such as an `<output>` element) so sighted users can see the exact value while adjusting the slider.
+- Range inputs are keyboard-navigable by default: arrow keys adjust by one step, and `Home`/`End` jump to the minimum and maximum values.
 
 ## CSS
 
-<DocsCSS sassOnly={true} />
+<DocsCSS name="Form Range" />
+
+### Custom properties
+
+<DocsCSSVars name="Form Range" exposed />
+
+<ScssDocs name="form-range-properties" file="scss/forms/_form-range.scss" />
 
 ### Sass variables
 
-<DocsSASSVars notExposed={true} />
+<DocsSASSVars name="Form Range" exposed />
 
-<ScssDocs name="form-range-variables" file="scss/_variables.scss" />
+<ScssDocs name="form-range-variables" file="scss/config/_defaults.scss" />

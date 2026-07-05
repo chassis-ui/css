@@ -1,0 +1,63 @@
+---
+title: Stacks
+description: Flexbox helpers for one-dimensional vertical and horizontal layouts, with container-query responsive variants.
+toc: true
+css_layer: helpers
+css_media: container
+---
+
+Stack helpers compose flexbox properties into two layout primitives: `.vstack` for vertical and `.hstack` for horizontal arrangements. The concept originates from the open source [Pylon project](https://almonk.github.io/pylon/).
+
+## Vertical
+
+`.vstack` arranges children in a column. Items stretch to full width by default; gap utilities control the spacing between them.
+
+<Example class="cxd-example-flex" code={`<div class="vstack gap-medium">
+    <div class="p-xsmall">First item</div>
+    <div class="p-xsmall">Second item</div>
+    <div class="p-xsmall">Third item</div>
+  </div>`} />
+
+## Horizontal
+
+`.hstack` arranges children in a row, aligned to the start of the cross axis. Items take only their natural width; gap utilities control the spacing between them.
+
+<Example class="cxd-example-flex" code={`<div class="hstack gap-medium">
+    <div class="p-xsmall">First item</div>
+    <div class="p-xsmall">Second item</div>
+    <div class="p-xsmall">Third item</div>
+  </div>`} />
+
+`.ms-auto` acts as a spacer, pushing following items to the far end:
+
+<Example class="cxd-example-flex" code={`<div class="hstack gap-medium">
+    <div class="p-xsmall">First item</div>
+    <div class="p-xsmall ms-auto">Second item</div>
+    <div class="p-xsmall">Third item</div>
+  </div>`} />
+
+With a [vertical rule]([[docsref:/helpers/vertical-rule]]) separator:
+
+<Example class="cxd-example-flex" code={`<div class="hstack gap-medium">
+    <div class="p-xsmall">First item</div>
+    <div class="p-xsmall ms-auto">Second item</div>
+    <div class="vr"></div>
+    <div class="p-xsmall">Third item</div>
+  </div>`} />
+
+## Responsive stacks
+
+Responsive variants use [container queries]([[docsref:/layout/breakpoints#container-queries]]) to switch direction — each `{breakpoint}:vstack` and `{breakpoint}:hstack` class activates at or above the specified container width. Wrap the stack in a `.contains-inline` parent to provide the container context, then pair a base direction class with a breakpoint-prefixed variant: `.vstack` with `.small:hstack` stacks vertically at narrow containers and switches to a row at the small breakpoint. Resize the example below to preview the transition between column and row layouts.
+
+<ResizableExample code={`<div class="contains-inline">
+    <div class="vstack small:hstack gap-medium">
+      <button type="button" class="button primary">Primary action</button>
+      <button type="button" class="button primary outline">Cancel</button>
+    </div>
+  </div>`} />
+
+## CSS
+
+Both classes share a common flex ruleset driven by four overridable custom properties: `--stack-direction`, `--stack-align-items`, `--stack-flex` (default `1 1 auto`), and `--stack-align-self` (default `stretch`). The vstack and hstack variants set `--stack-direction` and `--stack-align-items`; the other two properties are available for local overrides.
+
+<ScssDocs name="stacks" file="scss/helpers/_stacks.scss" />

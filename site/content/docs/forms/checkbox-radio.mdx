@@ -1,0 +1,507 @@
+---
+title: Checkboxes and Radio Buttons
+description: Create accessible, customized checkboxes and radio buttons with Chassis CSS's enhanced form controls.
+aliases: "[[docsref:/forms/checks]]"
+toc: true
+tokens: component
+css_layer: components
+mdn: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/checkbox
+---
+
+import { getData } from '@libs/data'
+
+## Overview
+
+Chassis CSS replaces browser default checkboxes and radios with custom-styled controls that maintain accessibility while providing consistent appearance across browsers and devices.
+
+It is possible to use both the traditional **sibling** `<input>` and `<label>` elements connected with `id` and `for` attributes and **nested** `<input>` elements within `<label>` elements for more compact markup. Both approaches look identical and maintain full accessibility, letting you choose the pattern that works best for your project.
+
+## Usage
+
+The `.form-check` component creates controls that look consistent across browsers while supporting accessibility, different sizes, and various layouts. Use the `.check-input` class on the `<input type="checkbox">` or `<input type="radio">` element to apply Chassis CSS's custom styles, and wrap it with a `.form-check` container for proper spacing and alignment.
+
+### Checkboxes
+
+Use `.check-input` class on the `<input type="checkbox">` element and wrap it with a `.form-check` container for proper spacing and alignment.
+
+<Example class="vstack gap-xsmall" code={`<!-- Sibling markup pattern -->
+  <div class="form-check">
+    <input class="check-input" type="checkbox" id="checkSibling">
+    <label for="checkSibling">Sibling checkbox</label>
+  </div>
+
+  <!-- Nested markup pattern -->
+  <label class="form-check">
+    <input class="check-input" type="checkbox" id="checkNested" checked>
+     Nested checkbox
+</label>`} />
+
+### Radio buttons
+
+Using `type="radio"` creates radio buttons, which allow users to select only one option from a group. Like checkboxes, radio buttons can be styled with Chassis CSS for a consistent look and feel.
+
+<Example class="vstack gap-xsmall" code={`<label class="form-check">
+    <input class="check-input" type="radio" name="radioExample">
+    Option one
+  </label>
+  <label class="form-check">
+    <input class="check-input" type="radio" name="radioExample" checked>
+    Option two
+</label>`} />
+
+### Indeterminate state
+
+The indeterminate state provides a third visual state for checkboxes, useful for indicating partially selected options or group selections. Since HTML has no attribute for this state, it must be set via JavaScript using the `indeterminate` property.
+
+<Example addStackblitzJs class="cxd-example-indeterminate vstack gap-xsmall" code={`<label class="form-check">
+    <input class="check-input" type="checkbox" value="" id="checkIndeterminate">
+    Indeterminate checkbox
+  </label>`} />
+
+### Disabled state
+
+Apply the HTML `disabled` attribute to indicate that a checkbox is unavailable for interaction. Chassis CSS automatically styles both the checkbox and its label with visual cues to indicate the disabled state.
+
+<Example addStackblitzJs class="cxd-example-indeterminate vstack gap-xsmall" code={`<label class="form-check">
+    <input class="check-input" type="checkbox" value="" id="checkDisabled" disabled>
+    Disabled checkbox
+  </label>
+  <label class="form-check">
+    <input class="check-input" type="checkbox" value="" id="checkCheckedDisabled" checked disabled>
+    Disabled checked checkbox
+  </label><label class="form-check">
+    <input class="check-input" type="checkbox" value="" id="checkIndeterminateDisabled" disabled>
+    Disabled indeterminate checkbox
+  </label>
+  <label class="form-check">
+    <input class="check-input" type="radio" value="" id="radioDisabled" disabled>
+    Disabled radio
+  </label>
+  <label class="form-check">
+    <input class="check-input" type="radio" value="" id="radioCheckedDisabled" checked disabled>
+    Disabled checked radio
+  </label>`} />
+
+### Switches
+
+Chassis CSS offers toggle switches as an alternative UI for boolean (on/off) selections. Switches are built on checkbox markup but with enhanced styling via the `.form-switch` class.
+
+Adding the `role="switch"` attribute improves accessibility by correctly communicating the control's purpose to assistive technologies that support this role. In older assistive technologies, it will simply be announced as a regular checkbox as a fallback. Switches also support the `disabled` attribute.
+
+<Example class="vstack gap-xsmall" code={`<label class="form-check form-switch">
+    <input class="check-input" type="checkbox" role="switch" id="switchCheckDefault">
+    Default switch checkbox input
+  </label>
+  <label class="form-check form-switch">
+    <input class="check-input" type="checkbox" role="switch" id="switchCheckChecked" checked>
+    Checked switch checkbox input
+  </label>
+  <label class="form-check form-switch">
+    <input class="check-input" type="checkbox" role="switch" id="switchCheckDisabled" disabled>
+    Disabled switch checkbox input
+  </label>
+  <label class="form-check form-switch">
+    <input class="check-input" type="checkbox" role="switch" id="switchCheckCheckedDisabled" checked disabled>
+    Disabled checked switch checkbox input
+  </label>`} />
+
+## Descriptive labels
+
+For interface designs that require controls without visible text labels, omit the wrapping `.form-check` container. While this creates a visually minimal control, remember that all form elements must still have an accessible name for screen reader users (see [forms overview accessibility]([[docsref:/forms/overview/#accessibility]])).
+
+<Example class="vstack gap-xsmall" code={`<label class="form-check">
+    <input class="check-input" type="checkbox">
+    Checkbox with description
+    <small class="form-help">
+      This is a helpful description for the checkbox.
+    </small>
+  </label>
+  <label class="form-check">
+    <input class="check-input" type="checkbox">
+    Checkbox with inline description
+    <small class="form-help fg-subtle d-inline">
+      – This is an inline help text for the checkbox.
+    </small>
+  </label>`} />
+
+### Without visible labels
+
+For interface designs that require controls without visible text labels, omit the wrapping `.form-check` container. While this creates a visually minimal control, remember that all form elements must still have an accessible name for screen reader users (see [forms overview accessibility]([[docsref:/forms/overview/#accessibility]])).
+
+<Example class="hstack gap-xsmall" code={`<input class="check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="Subscribe to newsletter">
+  <input class="check-input" type="radio" name="radioNoLabel" id="radioNoLabel1" value="1" aria-label="Select first option">
+  <input class="check-input" type="radio" name="radioNoLabel" id="radioNoLabel2" value="2" aria-label="Select second option">`} />
+
+## Sizing options
+
+Add `.small` or `.large` classes to change the size of form check.
+
+<Example class="vstack gap-xsmall" code={`<div class="form-check large">
+    <input class="check-input" type="checkbox" id="checkLarge">
+    <label class="check-label" for="checkLarge">
+      Large checkbox
+    </label>
+  </div>
+  <div class="form-check">
+    <input class="check-input" type="checkbox" id="checkMedium">
+    <label class="check-label" for="checkMedium">
+      Default checkbox
+    </label>
+  </div>
+  <div class="form-check small">
+    <input class="check-input" type="checkbox" id="checkSmall">
+    <label class="check-label" for="checkSmall">
+      Small checkbox
+    </label>
+  </div>`} />
+
+Sizing also works on switches. Add `.small` or `.large` classes to the `.form-check.form-switch` container to adjust the size of the switch and its label together.
+
+<Example class="vstack gap-xsmall" code={`<label class="form-check form-switch large">
+    <input class="check-input" type="radio" name="radioSize" id="switchLarge">
+      Large switch
+  </label>
+  <label class="form-check form-switch">
+    <input class="check-input" type="radio" name="radioSize" id="switchMedium" checked>
+    Default switch
+  </label>
+  <label class="form-check form-switch small">
+    <input class="check-input" type="radio" name="radioSize" id="switchSmall">
+    Small switch
+  </label>`} />
+
+### Sizing without labels
+
+When using checkboxes or radios without visible labels, you can apply `.small` or `.large` classes directly to the input element to adjust the size of the control itself.
+
+<Example code={`<input class="check-input large" type="checkbox">
+  <input class="check-input" type="checkbox">
+  <input class="check-input small" type="checkbox">
+    <span class="vr mx-medium"></span>
+  <input class="check-input large" name="radioSizeInput" type="radio">
+  <input class="check-input" name="radioSizeInput" type="radio">
+  <input class="check-input small" name="radioSizeInput" type="radio">
+    <span class="vr mx-medium"></span>
+  <input class="check-input large" role="switch" name="switchSizeInputLarge" type="checkbox">
+  <input class="check-input" role="switch" name="switchSizeInputMedium" type="checkbox">
+  <input class="check-input small" role="switch" name="switchSizeInputSmall" type="checkbox">`} />
+
+## Layout options
+
+By default, `.form-check` elements stack vertically with appropriate spacing, creating a clean, readable list of checks.
+
+### Inline layout
+
+Use `flex` utilities to create inline layouts for checkboxes and radio buttons when you want to save vertical space or create a more compact form design. This allows multiple controls to be displayed on the same line while maintaining proper spacing and alignment.
+
+<Example code={`<div class="d-flex gap-medium">
+    <label class="form-check">
+      <input class="check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+      Option one
+    </label>
+    <label class="form-check">
+      <input class="check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+      Option two
+    </label>
+    <label class="form-check">
+      <input class="check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3" disabled>
+      Option three (disabled)
+    </label>
+  </div>`} />
+
+### Reversed layout
+
+Use the `.reverse` modifier class to position the control on the right side of the label. This layout is useful for maintaining visual alignment with surrounding content or creating specific UI patterns.
+
+<Example code={`<div class="form-check reverse">
+    <input class="check-input" type="checkbox" value="" id="reverseCheck1">
+    <label class="check-label" for="reverseCheck1">
+      Reverse checkbox
+    </label>
+  </div>
+  <div class="form-check reverse">
+    <input class="check-input" type="checkbox" value="" id="reverseCheck2" disabled>
+    <label class="check-label" for="reverseCheck2">
+      Disabled reverse checkbox
+    </label>
+  </div>
+
+  <div class="form-check form-switch reverse">
+    <input class="check-input" type="checkbox" role="switch" id="switchCheckReverse">
+    <label class="check-label" for="switchCheckReverse">Reverse switch checkbox input</label>
+  </div>`} />
+
+## Button checks  
+
+Chassis CSS provides a way to style checkboxes and radio buttons as buttons, combining the semantic meaning of form controls with the visual appearance of buttons. These controls use the `.button-check` class on the input and `.button` styles on the corresponding `<label>` elements.
+
+### Checkbox toggles
+
+Checkbox button toggles allow users to toggle checks on and off with a button-like appearance. They maintain the same states and behaviors as standard checkboxes but with enhanced visual styling.
+
+<Example code={`<label class="button button-check default">
+    <input type="checkbox" autocomplete="off">
+    Button check
+  </label>
+  <label class="button button-check default">
+    <input type="checkbox" checked autocomplete="off">
+    Checked
+  </label>
+  <label class="button button-check default">
+    <input type="checkbox" autocomplete="off" disabled>
+    Disabled
+  </label>`} />
+
+<Callout>
+From an accessibility perspective, button-styled checkboxes are announced by screen readers as "checkbox checked"/"checkbox not checked" since they maintain their semantic role. This differs from toggle buttons created with the [button component]([[docsref:/components/button#button-plugin]]), which are announced as "button"/"button pressed". Choose the appropriate approach based on whether the control's purpose is better communicated as a state change (checkbox) or an action trigger (button).
+</Callout>
+
+### Radio toggles
+
+Radio button toggles provide a button-styled interface for mutually exclusive selections. They offer the same semantic meaning as standard radio buttons but with an enhanced visual appearance that may be more suitable for certain UI patterns.
+
+<Example code={`<label class="button button-check default">
+    <input type="radio" name="options" autocomplete="off" checked>
+    Checked
+  </label>
+  <label class="button button-check default">
+    <input type="radio" name="options" autocomplete="off">
+    Radio
+  </label>
+  <label class="button button-check default">
+    <input type="radio" name="options" autocomplete="off" disabled>
+    Disabled
+  </label>
+  <label class="button button-check default">
+    <input type="radio" name="options" autocomplete="off">
+    Radio
+  </label>`} />
+
+### Style variants
+
+Chassis CSS's button-styled toggles support all visual variants available to standard buttons. This includes outlined styles, which provide a lower-emphasis alternative that still clearly communicates the interactive nature of the control.
+
+<Example class="button-examples" code={`<label class="button button-check default">
+    <input type="radio" name="styleOptions" autocomplete="off">
+    Default
+  </label>
+  <label class="button button-check primary">
+    <input type="radio" name="styleOptions" checked autocomplete="off">
+    Primary
+  </label>
+  <label class="button button-check primary smooth">
+    <input type="radio" name="styleOptions" autocomplete="off" checked>
+    Primary smooth
+  </label>
+  <label class="button button-check secondary outline">
+    <input type="radio" name="styleOptions" autocomplete="off">
+    Secondary outlined
+  </label>`} />
+
+## Modern Inputs
+
+Chassis CSS's checkboxes and radio buttons can use contextual color classes to create custom-styled controls that fit your design. This allows you to apply any of the available color variants to the check and radio indicators while maintaining the same structure and accessibility.
+
+<Callout type="info">
+By default; both `$enable-form-check-legacy` and `$enable-form-check-modern` are set to `true`, allowing you to use either the legacy or modern check styles. It is recommended to choose one approach, and disable the unused styles in your Sass configuration to reduce CSS bundle size. See the [options]([[docsref:/customize/options]]) page for details on how to enable or disable specific form styles.
+</Callout>
+
+### Usage patterns
+
+Wrap the `<input>` element with a `.check-input` container and apply the desired context color class to the container. This pattern works with both nested and sibling markup structures, giving you flexibility in how you structure your form controls.
+
+<Example class="vstack gap-xsmall" code={`<!-- Nested input pattern -->
+  <label class="form-check">
+    <span class="check-input secondary">
+      <input type="checkbox" id="checkNestedModern" checked>
+    </span>
+    Nested input with secondary context color
+  </label>
+
+  <!-- Sibling input pattern -->
+  <div class="form-check">
+    <span class="check-input secondary">
+      <input type="checkbox" id="checkSiblingModern" checked>
+    </span>
+    <label for="checkSiblingModern">Sibling input with secondary context color</label>
+  </div>`} />
+
+### Context variants
+
+Use any of the available context color classes to create custom-styled checkboxes and radio buttons that fit your design. This allows you to maintain the same structure and accessibility while applying different visual styles to the controls.
+
+<Example class="vstack gap-xsmall" code={getData('context-colors').map((contextColor) => `<label class="form-check">
+    <span class="check-input ${contextColor.name}"><input type="checkbox" checked></span>
+    ${contextColor.title} checkbox
+  </label>`)} />
+
+### Disabled inputs
+
+Disabled state styling also works with custom context colors. Apply the `disabled` attribute to the `<input>` element, and Chassis CSS will automatically adjust the styles of both the checkbox/radio and its label to indicate the disabled state while maintaining the chosen context color.
+
+<Example class="hstack gap-xsmall" code={getData('context-colors').map((contextColor) => `<span class="check-input ${contextColor.name}">
+    <input type="checkbox" checked disabled>
+  </span>`)} />
+
+### Radio buttons
+
+<Example class="hstack gap-xsmall" code={getData('context-colors').map((contextColor) => `<span class="check-input ${contextColor.name}">
+      <input type="radio" name="radioContext">
+    </span>`)} />
+
+### Indeterminate checks
+<Example class="hstack gap-xsmall cxd-example-indeterminate" code={getData('context-colors').map((contextColor) => `<span class="check-input ${contextColor.name}">
+    <input type="checkbox" id="check${contextColor.name}Indeterminate">
+  </span>`)} />
+
+### Switch role
+<Example class="vstack gap-xsmall" code={getData('context-colors').map((contextColor) => `<label class="form-check form-switch">
+    <span class="check-input ${contextColor.name}">
+      <input type="checkbox" role="switch" checked>
+    </span>
+    ${contextColor.title} switch
+  </label>`)} />
+
+### Sizing
+
+Apply `.small` or `.large` classes to the `.form-check` container to adjust the size of the checkbox or radio button while maintaining the same context color styling.
+
+<Example class="vstack gap-xsmall" code={`<label class="form-check large">
+    <span class="check-input secondary">
+      <input type="checkbox" checked>
+    </span>
+    Large checkbox
+  </label>
+  <label class="form-check">
+    <span class="check-input secondary">
+      <input type="checkbox" checked>
+    </span>
+    Default checkbox
+  </label>
+  <label class="form-check small">
+    <span class="check-input secondary">
+      <input type="checkbox" checked>
+    </span>
+    Small checkbox
+  </label>
+  <label class="form-check large">
+    <span class="check-input secondary">
+      <input type="checkbox" role="switch" checked>
+    </span>
+    Large switch
+  </label>
+  <label class="form-check">
+    <span class="check-input secondary">
+      <input type="checkbox" role="switch" checked>
+    </span>
+    Default switch
+  </label>
+  <label class="form-check small">
+    <span class="check-input secondary">
+      <input type="checkbox" role="switch" checked>
+    </span>
+    Small switch
+  </label>`} />
+
+<Example class="hstack gap-xsmall" code={`<span class="check-input secondary small">
+    <input type="checkbox" name="checkContextSizeSmall">
+  </span>
+  <span class="check-input secondary">
+    <input type="checkbox" name="checkContextSizeMedium">
+  </span>
+  <span class="check-input secondary large">
+    <input type="checkbox" name="checkContextSizeLarge">
+  </span>
+    <span class="vr mx-medium"></span>
+  <span class="check-input secondary small">
+    <input type="radio" name="radioContextSize">
+  </span>
+  <span class="check-input secondary">
+    <input type="radio" name="radioContextSize">
+  </span>
+  <span class="check-input secondary large">
+    <input type="radio" name="radioContextSize">
+  </span>
+    <span class="vr mx-medium"></span>
+  <span class="check-input secondary small">
+    <input type="checkbox" role="switch" name="switchContextSizeSmall">
+  </span>
+  <span class="check-input secondary">
+    <input type="checkbox" role="switch" name="switchContextSizeMedium">
+  </span>
+  <span class="check-input secondary large">
+    <input type="checkbox" role="switch" name="switchContextSizeLarge">
+</span>`} />
+
+
+## Accessibility considerations
+
+Chassis CSS's checkbox and radio components are designed with accessibility in mind, but there are several best practices to follow for optimal user experience:
+
+### Grouping related controls
+
+When presenting multiple related options, use the `<fieldset>` and `<legend>` elements to create a semantic grouping:
+
+```html
+<fieldset>
+  <legend>Choose your delivery preferences:</legend>
+  <div class="form-check">
+    <input class="check-input" type="checkbox" id="optEmail">
+    <label class="check-label" for="optEmail">Email notifications</label>
+  </div>
+  <div class="form-check">
+    <input class="check-input" type="checkbox" id="optSMS">
+    <label class="check-label" for="optSMS">SMS notifications</label>
+  </div>
+</fieldset>
+```
+
+### Focus visibility
+
+Chassis CSS provides visible focus indicators for all form controls. Do not remove these indicators, as they are essential for keyboard users to navigate your forms.
+
+### State communication
+
+The different visual states of checkboxes and radio buttons (checked, unchecked, indeterminate, disabled) are designed to be perceivable through:
+
+- Visual design (color, shape changes)
+- High contrast ratios between states
+- Non-reliance on color alone to communicate state
+
+For more detailed accessibility guidance, see the [forms overview accessibility]([[docsref:/forms/overview/#accessibility]]) section.
+
+## CSS
+
+Chassis CSS uses a powerful combination of Sass and CSS variables to create a flexible form system that adapts to themes and design requirements.
+
+<DocsCSS />
+
+### Custom properties
+
+Check the [overview]([[docsref:forms/overview#custom-properties]]) page to see the CSS variables shared by all form elements.
+
+### Sass variables
+
+<DocsSASSVars />
+
+<hr />
+
+These variables control the appearance of checkboxes and radio buttons:
+
+<ScssDocs name="form-check-variables" file="scss/config/_defaults.scss" />
+
+These variables specifically affect the appearance of toggle switches:
+
+<ScssDocs name="form-switch-variables" file="scss/config/_defaults.scss" />
+
+### Design tokens
+
+<DocsDesignTokens />
+
+<hr />
+
+The following design tokens define the check and radio indicators for various states:
+
+<ScssDocs name="form-check-tokens" file="scss/tokens/_forms.scss" />
+
+Check the [overview]([[docsref:forms/overview#design-tokens]]) page to see the design tokens shared by all form elements.

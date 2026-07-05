@@ -20,7 +20,7 @@ Three repositories form the system:
 
 **[Chassis Tokens](https://github.com/chassis-ui/tokens)** — The source of truth. Designers author tokens in Figma using [Tokens Studio](https://tokens.studio), and those tokens sync to a repository as JSON. [Style Dictionary](https://amzn.github.io/style-dictionary/) builds them into platform-specific output: SCSS for web, Swift for iOS, XML for Android.
 
-**Chassis CSS** — This repository. It consumes the built token files and generates a complete CSS framework: a color system, layout utilities, component styles, and a full Figma-to-code naming convention. Components use CSS custom properties so designs and rendered HTML match at the pixel level.
+**Chassis CSS** — Consumes the built token files and generates a complete CSS framework: a color system, layout utilities, component styles, and a full Figma-to-code naming convention. Components use CSS custom properties so designs and rendered HTML match at the pixel level.
 
 **[Chassis Icons](https://github.com/chassis-ui/icons)** — An icon library available as both SVG sprites and icon fonts, governed by the same token system. Designers control icon sizes through design tokens.
 
@@ -34,7 +34,7 @@ The class names and CSS variable names mirror the Figma layer structure directly
   data-image-src="/static/images/css/docs-figma-font-specs.png"
   data-image-srcset="/static/images/css/docs-figma-font-specs.png.png, /static/images/css/docs-figma-font-specs@2x.png 2x"
   data-image-alt="Figma text layer properties">
-  <img class="d-block mb-medium image-fluid w-100 rounded" srcset="/static/images/css/docs-figma-font-specs.png, /static/images/css/docs-figma-font-specs@2x.png 2x" src="/static/images/css/docs-figma-font-specs.png" alt="Figma text layer properties" /></a>
+  <img class="d-block mb-medium image fluid w-100 rounded" srcset="/static/images/css/docs-figma-font-specs.png, /static/images/css/docs-figma-font-specs@2x.png 2x" src="/static/images/css/docs-figma-font-specs.png" alt="Figma text layer properties" /></a>
 
 <Example code={`<p>font/text/medium/normal</p>
 <p class="font-large font-mass">font/text/large/mass</p>
@@ -46,7 +46,7 @@ A Figma frame with padding, border, and shadow tokens maps to the equivalent uti
   data-image-src="/static/images/css/docs-figma-frame-specs.png"
   data-image-srcset="/static/images/css/docs-figma-frame-specs.png.png, /static/images/css/docs-figma-frame-specs@2x.png 2x"
   data-image-alt="Figma frame layer properties">
-  <img id="image" class="d-block mb-medium image-fluid rounded" srcset="/static/images/css/docs-figma-frame-specs.png, /static/images/css/docs-figma-frame-specs@2x.png 2x" src="/static/images/css/docs-figma-frame-specs.png" alt="Figma frame layer properties" /></a>
+  <img id="image" class="d-block mb-medium image fluid rounded" srcset="/static/images/css/docs-figma-frame-specs.png, /static/images/css/docs-figma-frame-specs@2x.png 2x" src="/static/images/css/docs-figma-frame-specs.png" alt="Figma frame layer properties" /></a>
 
 
 <Example code={`<div style="width: 128px; height: 128px;"
@@ -59,14 +59,18 @@ A Figma frame with padding, border, and shadow tokens maps to the equivalent uti
 
 ## Who it's for
 
-Chassis CSS is designed for teams who need to maintain a design system across multiple products — not for drop-in use via CDN. The primary use case is to clone the repository, connect it to your own Chassis Tokens build, and own the result.
+Chassis CSS is designed for teams building a long-lived design system across multiple products and brands. The primary use case is to clone the repository, connect it to your own Chassis Tokens build, and own the result — a CSS pipeline that belongs entirely to your product.
 
-If you're evaluating Chassis for a single project with one brand and no design system, a simpler framework may serve you better. If you're building infrastructure that multiple teams and products will build on, Chassis is designed for exactly that.
+A CDN-based quick start is available for evaluation, but the pre-built CSS uses the default Chassis brand and baked-in settings. To use your own tokens, dark-mode configuration, or feature flags, you need to compile from source.
+
+If you're building infrastructure that multiple teams and products will build on, Chassis is designed for exactly that. If you're looking for a lightweight stylesheet with no build step, a simpler framework may serve you better.
 
 ## Next steps
 
-- [Quick Start]([[docsref:/getting-started/quick-start]]) — try Chassis in a single HTML file with no build step.
+These pages pick up where this overview leaves off.
+
+- [Quick Start]([[docsref:/getting-started/quick-start]]) — load Chassis from a CDN and try it in a browser with no build step.
 - [Installation]([[docsref:/getting-started/installation]]) — install `@chassis-ui/css` and its tokens peer for your own project.
-- [Clone and Customize]([[docsref:/getting-started/clone-and-customize]]) — for teams who want to own the framework rather than depend on it.
+- [Clone and Customize]([[docsref:/getting-started/clone-customize]]) — for teams who want to own the framework rather than depend on it.
 - [Design Tokens]([[docsref:/core-concepts/design-tokens]]) — how the token system works.
 - [Color System]([[docsref:/core-concepts/color-system]]) — the layered color architecture.

@@ -5,6 +5,123 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-07-04
+
+Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the component set, and the JavaScript plugin layer. Almost every class, custom property, and Sass API surface changed in some way — treat this as a breaking major-style release despite the semver-minor version number.
+
+### Added
+
+**New components**
+- `Dialog` (`.dialog`): new foundational primitive built on the native `<dialog>` element, shared by Modal, Alert, and Drawer (`show()`/`showModal()`, backdrop/keyboard config, `.dialog-static`, `.scrollable`, `.translucent`, seamless "dialog swapping" between triggers inside an already-open dialog)
+- `Drawer` (`.drawer`): replaces Offcanvas; native `<dialog>`-based, `.drawer-start/-end/-top/-bottom` placements, swipe-to-dismiss gestures, `.sheet` edge-flush variant, `.fullscreen`, non-modal `scroll` mode, responsive inline-collapse
+- `Menu` (`.menu`): replaces Dropdown; rebuilt on Floating UI with native submenu (nested flyout) support — hover/click/`both` trigger modes, safe-triangle hover intent, mobile stacked/back-button submenu variant, portal `container` option, `display: dynamic|static`, keyboard nav
+- `Stepper` (`.stepper`): horizontal/vertical progress steps with automatic "completed" state derivation and container-query overflow scrolling
+- `Nav Overflow` (`.nav-overflow`): Priority+ pattern that auto-collapses overflowing nav items into a "more" menu, driven by `ResizeObserver`
+- `Datepicker`: wraps `vanilla-calendar-pro`; input-bound, button-triggered, or always-visible `inline` modes, single/multiple/ranged selection, live theme sync
+- `Combobox`: searchable select-style menu built on Menu, single or `multiple` selection, hidden-input form submission, diacritic-insensitive search
+- `Chip Input`: tag/chip entry field with keyboard navigation, multi-select, paste support, and a public `add()`/`remove()`/`getValues()` API
+- `Otp Input`: segmented one-time-passcode input with auto-advance, paste distribution, and `autocomplete="one-time-code"` SMS autofill support
+- `Strength`: password-strength meter (segmented or bar variant) with configurable scoring/thresholds and a `strengthChange` event (never exposes the password value)
+- `Toggler`: minimal utility component for toggling an arbitrary class or attribute on a target element
+- `Form Field`, `Form Help`, `Form Label`, `Input Help`: new form-layout primitives (`.form-field`, `.form-card`, `.input-help` inline icon/button slot inside `.form-input`)
+- Vertical input groups (`.input-group.vertical`), including nested groups
+
+**SCSS architecture**
+- CSS cascade layers with an explicit global order: `colors, theme, config, root, reboot, layout, content, components, custom, helpers, utilities`
+- New `scss/config/` entry point consolidating all feature flags (`_settings.scss`) and every configurable variable (`_defaults.scss`, ~1,500 lines) behind a single `@use "@chassis-ui/css/scss/config" as *`
+- Design tokens now resolve through a swappable vendor package (`scss/config/_vendor.scss` → `scss/vendor/_chassis-tokens.scss`, resolved via Sass `loadPaths`), so a consumer can override the entire token source without editing the framework
+- `scss/tokens/` and `scss/maps/` split into focused per-domain files (borders, sizing, spacing, opacity, colors-body, colors-light/dark, plus per-component token files for Alert, Datepicker, Grid, Icon, Menu, Modal, Notification, Stepper, etc.)
+- Native CSS `light-dark()` now drives dark mode in `_root.scss` (falls back to duplicated selectors only when `$enable-dark-mode: false`)
+- New `scss/rfs/_clamp.scss`: `cx-clamp()`/`clamp()` mixin family generates fluid `clamp()` values (font-size, line-height, gap, padding, margin) from a single max value, replacing the old media-query-based RFS engine
+- New mixins: `focus-ring()` (outline-based focus indicator), `translucent()` (frosted-glass backdrop-filter effect, opt out via `prefers-reduced-transparency`), `mask-icon()`, `tokens()` (dumps a Sass map as custom properties), `rtl-value()`/`rtl-prop()`, `dialog-header()`/`dialog-body()`/`backdrop-transitions()`
+- New container-query mixin family mirroring the breakpoint mixins: `container-breakpoint-up/-down/-between/-only`, `set-container()`
+- New color functions: `scss/functions/_color-context.scss` (`get-sass-color()`, `remove-context()`) for resolving/stripping context-prefixed CSS variables, including the new `oklch(from var(...) l c h / alpha)` relative-color format
+- New Sass map helpers: `defaults()` (override-merge that supports removing keys), `map-get-nested()`
+
+**New utilities**
+- `scss/utilities/_gap.scss`, `_grid.scss` (CSS grid utilities), `_icon.scss`, `_link.scss` (`.link-{context}` color utilities), `_position.scss`, `_skeleton.scss`, `_spinner.scss`
+- `space-x`/`space-y` (Tailwind-style "space between children"), `divide-x`/`divide-y`, `aspect-ratio`/`aspect-ratio-attr`, `container`/`.contains-inline`/`.contains-size`, `min-w-*`/`min-h-*`, `.dvh-{25,50,75,100}` (dynamic viewport height)
+
+**Build & tooling**
+- `build/check-imports.js`: static analyzer that flags unresolved, unused, or missing Sass `@use`/`@forward` imports (`css:lint:imports`)
+- `build/css-minify.js`: minification moved from `clean-css` to `lightningcss` (needed for `light-dark()`, `color-mix()`, and `@layer` support)
+- `build/html-validate.js`: validates built site HTML via `html-validate` (`site:lint:html`)
+- Pagefind search indexing wired into `site:build` (`site:pagefind`)
+- `postcss-prefix-custom-properties` plugin prefixes every `--*` custom property with `--cx-` at build time (see Changed)
+
+### Changed
+
+**Design tokens & color system**
+- Deprecated Sass `@import` rules replaced with `@use` and `@forward` across the entire codebase
+- Color variables now use `oklch()`
+- CSS variable prefixing (`--cx-`) now handled by PostCSS instead of Sass — Sass source and mixins/functions emit unprefixed `--name` custom properties throughout
+- RFS (Responsive Font Sizes) system replaced with CSS `clamp()`
+
+**JavaScript**
+- JavaScript is now ESM-only — the UMD build, `js/index.umd.js`, and all `jQuery` interop (`jQueryInterface()`, `defineJQueryPlugin()`) have been removed; `js/index.esm.js` is now the single entry point at `js/index.js`
+- Dropped jQuery support
+- Dropdown component replaced with the new Menu component, which adds submenu support
+- Offcanvas renamed to Drawer, built on the native `<dialog>` element
+- Modal and Alert rebuilt on the native `<dialog>` element (`.modal-window`/`.modal-container`/`.modal-backdrop` markup removed; `.modal` now applies directly to `<dialog>`)
+- Popper.js (`@popperjs/core`) replaced with Floating UI (`@floating-ui/dom`) for Menu, Tooltip, and Popover positioning, via a new shared `FloatingBase` class; adds a responsive placement syntax (e.g. `placement="bottom small:top large:right"`) tied to CSS breakpoints; `popperConfig` option renamed to `floatingConfig`; `[data-popper-placement]` attribute renamed to `[data-cx-placement]`
+- Added Vanilla Calendar Pro (`vanilla-calendar-pro`) as a peer dependency for the new Datepicker component
+- `tab.js` dropdown handling rebuilt around the new Menu component; `scrollspy.js` menu-item activation updated to match
+
+**Components**
+- Card groups now use container queries
+- List group horizontal variants now use container queries; `.list-group` renamed to `.list` (`.list.outline`, `.list.numbered`, `.list.flush`, `.list.plain`)
+- Accordion: `.indicator-end` renamed `.caret-end`; Safari/WebKit Tab-focus loss after a pointer click on `<summary>` fixed by switching `display: flex` to `list-item` and moving flex layout into a new `.accordion-title` wrapper
+- Avatar: `.avatar-group` renamed `.avatar-stack`
+- Badge: `.round` renamed `.circle`
+- Breadcrumb: `.breadcrumb-page` renamed `.breadcrumb-item`
+- Card: `.card-content` renamed `.card-body` (flex column with gap)
+- Image: `.img-fluid`/`.img-thumbnail` renamed `.image.fluid`/`.image.thumbnail`; new `.figure`/`.figure-caption`
+- Type: `.text-initials`/`.text-monospace` renamed `.font-initials`/`.font-monospace`; heading-extension classes (`.h1`–`.h6`) and the old `.font-{size}` utilities removed from `_type.scss` in favor of the new `_text.scss` utility scale
+- Button/Button-group: `.dropdown-toggle`/`.dropdown-toggle-split` renamed `.menu-toggle`/`.menu-toggle-split`
+- Navbar: offcanvas integration switched to Drawer classes; `navbar-expand` now driven by container queries instead of viewport media queries; new `.navbar.translucent`
+- Toast: new `.toast-footer`, `.toast.translucent`
+
+**Forms**
+- Consolidated `.form-select` into `.form-input` (`select.form-input`); `_form-select.scss` removed
+- Form validation icons now require a `.validation-icons` class on any ancestor (previously controlled only by a Sass flag with no markup opt-in)
+- Validation state trigger model changed from `.was-validated` + `:valid`/`:invalid` to `[data-cx-validate]` + `:user-valid`/`:user-invalid` combined with `.is-valid`/`.is-invalid`, extended to Combobox, OTP Input, and both checkbox styles
+- `_form-check.scss` split into `_check-legacy.scss` (native-input, background-image icons) and `_check-modern.scss` (wrapper-div, `:has()` + masked pseudo-element icons); size/gap/font variants consolidated into a single map-driven mixin
+- `.col-form-label-large`/`.col-form-label-small` replaced by `.col-form-label.large`/`.col-form-label.small`
+- `.icon-addon` replaced by `.input-help` (icon/button inside `.form-input`) and `.input-addon` (prepend/append inside `.input-group`)
+- Floating labels rewritten to use `:has()` instead of adjacent-sibling selectors, making label-floating robust to intervening elements like `.input-help`
+
+**Utilities**
+- Utility breakpoint variants use `{breakpoint}:` prefix (Tailwind-style) exclusively; the legacy infix form and its `breakpoint-infix()` alias are fully removed in favor of `breakpoint-prefix()`
+- Media queries switched from `min-width`/`max-width` (with a 0.02px Safari rounding offset) to CSS range syntax (`width >= Xpx`)
+- The utilities-API map format gained `property` maps (emit a CSS variable and a consuming property together), `selector` (`class`/`attr-starts`/`attr-includes`), `child-selector`, `variables`, `group` (deduplicated shared-property output), `print`, and `dark` media variants; the legacy `rfs`, `css-var`, `local-vars`, and `rtl` utility-map keys are no longer supported
+- `border-*-radius` mixins and utilities switched from physical to logical CSS properties (RTL/vertical-writing-mode aware)
+- Negative margin utilities now gated behind `$enable-negative-margins` and renamed with a `-m`/`-mt`/etc. prefix
+
+**Build & tooling**
+- Focus ring rendering switched from `box-shadow` to `outline` (new `focus-ring()` mixin)
+- `gradient-bg()` mixin renamed to `gradient()`; no longer sets `background-color` itself
+- The prebuilt RTL CSS build (`css:rtl`, the `rtlcss` PostCSS plugin, `.rtl.css`/`.rtl.min.css` output) has been dropped in favor of logical properties handling RTL directly
+- Rollup now emits a single ESM bundle (UMD format and globals mapping removed); external deps swapped `@popperjs/core` → `@floating-ui/dom` + `vanilla-calendar-pro`
+- `package.json` gained an `exports` map and `sideEffects` array in place of the `main`/`module` fields
+
+### Removed
+- jQuery peer dependency and all jQuery interop code and tests
+- UMD build output and build scripts (`js:compile:umd`, `js:minify:umd`, `js/index.umd.js`)
+- `@popperjs/core` dependency
+- Dropdown and Offcanvas components (JS and SCSS) — replaced by Menu and Drawer
+- `scss/functions/_math.scss` (`add()`, `subtract()`, custom `divide()`) and `scss/functions/_rfs.scss` (`responsive-scale()`/`rscale()`) — superseded by native Sass math and the new `clamp()`-based RFS system
+- `scss/mixins/_button.scss` (`solid-button()`, `outline-button()`, `smooth-button()`) — button color-variant logic now generated from tokens directly
+- `scss/helpers/_context.scss`, `_links.scss`, `_ratio.scss` — equivalent classes now generated through the utilities API (`fg-color`/`bg-color`/`link-{context}`) and the new `_stretched-link.scss`/aspect-ratio utilities
+- `.lightbox` and `.centered` Modal variants
+- `.navbar-nav-scroll`
+- `$negative-spacers`, `$basic-opacities`, and `$bg-opacities` Sass maps
+
+### Fixed
+- Toast `hide()` now clears the autohide timeout immediately instead of after checking `defaultPrevented`, preventing a stale autohide from firing after a manual `hide()`
+- Notification link-emphasis selector now excludes `.button`/`.close-button` children, preventing unwanted bold styling on those elements
+- `svg-icon()` now escapes already-formed `data:image/svg+xml` URIs, fixing malformed `background-image` URLs in some code paths
+- Accordion constructor now guards against malformed markup before creating its `MutationObserver`; data-API click handler now only initializes the clicked accordion and its same-`name` siblings instead of every accordion on the page
+
 ## [0.2.3] - 2026-05-03
 
 ### Changed

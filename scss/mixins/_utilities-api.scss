@@ -1,110 +1,382 @@
-/// Generate a utility class (or set of classes) from a utility configuration map.
-/// Iterates over the utility's `values` map and emits one CSS rule per value,
-/// optionally scoped to a responsive infix, CSS variable, local variables, states,
-/// and RFS scaling. Used internally by `_utilities-api.scss` and the utility maps in
-/// `utilities/`.
-///
-/// @param {Map} $utility - Utility configuration map with the following keys:
-///   - `property` {String|List} - CSS property name(s) to set (required)
-///   - `values` {Map|List} - Map of class-name-suffix → value, or a plain list (required)
-///   - `class` {String} - Override for the generated class name prefix (optional)
-///   - `css-variable-name` {String} - If set, emits a CSS custom property instead of a plain property (optional)
-///   - `local-vars` {Map} - Map of local CSS custom properties to set on each rule (optional)
-///   - `state` {List} - Pseudo-state selectors to add (e.g., `hover focus`) (optional)
-///   - `css-var` {Boolean} - When `true`, sets the value as a CSS variable on `:root` (optional)
-///   - `rfs` {Boolean} - When `true`, applies RFS fluid scaling to numeric values (optional)
-///   - `rtl` {Boolean} - When `false`, wraps the rule in a `/* rtl:begin:ignore */` block (optional)
-/// @param {String} $infix [""] - Responsive class name infix (e.g., `"large\\:"` from `breakpoint-prefix()`)
-/// @param {Boolean} $is-rfs-media-query [false] - When `true`, suppresses redundant RFS output inside an RFS media query
-@mixin generate-utility($utility, $infix: "", $is-rfs-media-query: false) {
-  $values: map-get($utility, values);
+@use "sass:map";
+@use "sass:list";
+@use "sass:meta";
+@use "../config" as *;
+@use "./breakpoints" as bp;
 
-  // If the values are a list or string, convert it into a map
-  @if type-of($values) == "string" or type-of(nth($values, 1)) != "list" {
-    $values: zip($values, $values);
+//
+// Utilities API Mixins
+//
+// Generates responsive utility classes from the $utilities map. Loops over
+// every enabled utility and emits classes for each configured breakpoint.
+//
+
+// - Utilities can use three different types of selectors:
+//   - class: .class
+//   - attr-starts: [class^="class"]
+//   - attr-includes: [class*="class"]
+// - Utilities can target children via `child-selector`, wrapped in :where() for zero specificity
+// - Utilities can generate regular CSS properties and CSS custom properties
+// - Utilities can be responsive or not
+// - Utilities can have state variants (e.g., hover, focus, active)
+// - Utilities can define local CSS variables
+//
+// CSS custom properties can be generated in two ways:
+//
+// 1. Property map with null values (CSS var receives the utility value):
+// "bg-color": (
+//   property: (
+//     "--bg": null,
+//     "background-color": var(--bg)
+//   ),
+//   class: bg,
+//   values: (
+//     primary: var(--blue-500),
+//   )
+// )
+// Generates:
+// .bg-primary {
+//   --bs-bg: var(--bs-blue-500);
+//   background-color: var(--bs-bg);
+// }
+//
+// 2. Variables map (static CSS custom properties on every class):
+// "link-underline": (
+//   property: text-decoration-color,
+//   class: link-underline,
+//   variables: (
+//     "link-underline-opacity": 1
+//   ),
+//   values: (...)
+// )
+// Generates:
+// .link-underline {
+//   --bs-link-underline-opacity: 1;
+//   text-decoration-color: ...;
+// }
+
+// Helper mixin to emit CSS custom properties from a utility's `variables` key.
+// When variables is a map, the provided static values are used on each class.
+// When variables is a list or single identifier, each variable receives the current utility value.
+// $dynamic-only: when true (group mode), skip map-type (static) variables — they are
+// already emitted in the shared group selector rule.
+@mixin generate-variables($utility, $value, $dynamic-only: false) {
+  @if map.has-key($utility, variables) {
+    $variables: map.get($utility, variables);
+    @if meta.type-of($variables) == "map" {
+      @if not $dynamic-only {
+        @each $var-key, $var-value in $variables {
+          --#{$var-key}: #{$var-value};
+        }
+      }
+    } @else {
+      // Treat as a list (or single identifier) — each variable gets the utility value
+      @each $var-name in $variables {
+        --#{$var-name}: #{$value};
+      }
+    }
+  }
+}
+
+// Helper mixin to generate CSS properties for both legacy and property map approaches.
+// $dynamic-only: when true (group mode), skip property-map entries with a non-null default
+// value — those static properties are already emitted in the shared group selector rule.
+@mixin generate-properties($utility, $property-map, $properties, $value, $dynamic-only: false) {
+  @if $property-map != null {
+    // Property-Value Mapping approach
+    @each $property, $default-value in $property-map {
+      // In dynamic-only (group) mode, skip static entries (non-null default values).
+      @if not ($dynamic-only and $default-value != null) {
+        // If value is a map, check if it has a key for this property.
+        // Otherwise, use default-value (or $value if default-value is null).
+        $actual-value: $default-value;
+        @if meta.type-of($value) == "map" and map.has-key($value, $property) {
+          $actual-value: map.get($value, $property);
+        } @else if $default-value == null {
+          $actual-value: $value;
+        }
+        @if map.get($utility, important) {
+          #{$property}: $actual-value !important; // stylelint-disable-line declaration-no-important
+        } @else {
+          #{$property}: $actual-value;
+        }
+      }
+    }
+  } @else {
+    // Legacy approach
+    @each $property in $properties {
+      @if map.get($utility, important) {
+        #{$property}: $value !important; // stylelint-disable-line declaration-no-important
+      } @else {
+        #{$property}: $value;
+      }
+    }
+  }
+}
+
+@mixin generate-utility($utility, $prefix: "") {
+  // Validate required keys
+  @if not map.has-key($utility, property) {
+    @error "Utility is missing required `property` key: #{$utility}";
+  }
+  @if not map.has-key($utility, values) {
+    @error "Utility is missing required `values` key: #{$utility}";
+  }
+
+  // Warn on unknown keys (likely typos)
+  $valid-keys: property, values, class, selector, responsive, print, dark, important, state, variables, child-selector, enabled, group;
+  @each $key in map.keys($utility) {
+    @if not list.index($valid-keys, $key) {
+      @warn "Unknown utility key `#{$key}` found. Valid keys are: #{$valid-keys}";
+    }
+  }
+
+  // Validate boolean keys
+  @each $bool-key in (responsive, print, dark, important, enabled, group) {
+    @if map.has-key($utility, $bool-key) {
+      $val: map.get($utility, $bool-key);
+      @if $val != true and $val != false {
+        @error "Utility key `#{$bool-key}` should be a boolean (true or false), got: #{$val}";
+      }
+    }
+  }
+
+  // Determine if we're generating a class, or an attribute selector
+  $selector-type: "class";
+  @if map.has-key($utility, selector) {
+    $selector-type: map.get($utility, selector);
+    // Validate selector type
+    $valid-selectors: "class", "attr-starts", "attr-includes";
+    @if not list.index($valid-selectors, $selector-type) {
+      @error "Invalid `selector` value `#{$selector-type}`. Must be one of: #{$valid-selectors}";
+    }
+  }
+  // Then get the class name to use in a class (e.g., .class) or in an attribute selector (e.g., [class^="class"])
+  $selector-class: map.get($utility, class);
+
+  // Attribute selectors require a `class` key
+  @if $selector-type != "class" and not map.has-key($utility, class) {
+    @error "Utility with `selector: #{$selector-type}` requires a `class` key.";
+  }
+
+  // Get the list or map of values and ensure it's a map
+  $values: map.get($utility, values);
+  @if meta.type-of($values) != "map" {
+    @if meta.type-of($values) == "list" {
+      $list: ();
+      @each $value in $values {
+        $list: map.merge($list, ($value: $value));
+      }
+      $values: $list;
+    } @else {
+      $values: (null: $values);
+    }
+  }
+
+  // Group mode: emit one combined selector rule containing all shared (non-null) property values,
+  // then let the per-value loop emit only the dynamic (null-valued) properties per class.
+  //
+  // Definition example:
+  //   property: ("--fg-color": null, "color": var(--fg-color)),
+  //   group: true,
+  //   values: (primary: red, secondary: blue)
+  //
+  // Output:
+  //   .text-primary, .text-secondary { color: var(--fg-color); }
+  //   .text-primary { --fg-color: red; }
+  //   .text-secondary { --fg-color: blue; }
+  $group: map.get($utility, group) == true and meta.type-of(map.get($utility, property)) == "map";
+
+  @if map.get($utility, group) == true and not $group {
+    @warn "Utility `group: true` requires `property` to be a map (with static non-null values). Ignoring group.";
+  }
+
+  @if $group {
+    $grp-prop: map.get($utility, property);
+    $grp-cls: "";
+    @if map.has-key($utility, class) { $grp-cls: map.get($utility, class); }
+    @if $grp-cls == null { $grp-cls: ""; }
+    $grp-child: null;
+    @if map.has-key($utility, child-selector) { $grp-child: map.get($utility, child-selector); }
+    $grp-state: ();
+    @if map.has-key($utility, state) { $grp-state: map.get($utility, state); }
+
+    // Collect every base + state selector for all values
+    $grp-selectors: ();
+    @each $key, $value in $values {
+      $gmod: "";
+      @if $key {
+        @if $grp-cls != "" {
+          $gmod: "-#{$key}";
+        } @else {
+          $gmod: "#{$key}";
+        }
+      }
+      $gname: "#{$grp-cls}#{$gmod}";
+      $gsel: ".#{$prefix}#{$gname}";
+      @if $grp-child {
+        $gsel: ":where(#{$gsel} #{$grp-child})";
+      }
+      $grp-selectors: list.append($grp-selectors, $gsel, comma);
+      @each $sv in $grp-state {
+        $gss: ".#{$prefix}#{$sv}\\:#{$gname}:#{$sv}";
+        @if $grp-child {
+          $gss: ":where(#{$gss} #{$grp-child})";
+        }
+        $grp-selectors: list.append($grp-selectors, $gss, comma);
+      }
+    }
+
+    // Emit shared static properties and static variables in a single combined rule
+    #{$grp-selectors} {
+      @each $prop, $static-val in $grp-prop {
+        @if $static-val != null {
+          @if map.get($utility, important) {
+            #{$prop}: $static-val !important; // stylelint-disable-line declaration-no-important
+          } @else {
+            #{$prop}: $static-val;
+          }
+        }
+      }
+      @if map.has-key($utility, variables) {
+        $gvars: map.get($utility, variables);
+        @if meta.type-of($gvars) == "map" {
+          @each $vk, $vv in $gvars {
+            --#{$vk}: #{$vv};
+          }
+        }
+      }
+    }
   }
 
   @each $key, $value in $values {
-    $properties: map-get($utility, property);
+    $properties: map.get($utility, property);
+    $property-map: null;
+    $custom-class: "";
 
-    // Multiple properties are possible, for example with vertical or horizontal margins or paddings
-    @if type-of($properties) == "string" {
-      $properties: append((), $properties);
-    }
-
-    // Use custom class if present
-    $property-class: if(map-has-key($utility, class), map-get($utility, class), nth($properties, 1));
-    $property-class: if($property-class == null, "", $property-class);
-
-    // Use custom CSS variable name if present, otherwise default to `class`
-    $css-variable-name: if(map-has-key($utility, css-variable-name), map-get($utility, css-variable-name), map-get($utility, class));
-
-    // State params to generate pseudo-classes
-    $state: if(map-has-key($utility, state), map-get($utility, state), ());
-
-    // Don't prefix if value key is null (e.g. with shadow class)
-    $property-class-modifier: if($key, if($property-class == "", "", "-") + $key, "");
-
-    @if map-get($utility, rfs) {
-      // Inside the media query
-      @if $is-rfs-media-query {
-        $val: rfs-value($value);
-
-        // Do not render anything if fluid and non fluid values are the same
-        $value: if($val == rfs-fluid-value($value), null, $val);
+    // Check if property is a map (Property-Value Mapping approach)
+    @if meta.type-of($properties) == "map" {
+      $property-map: $properties;
+      @if map.has-key($utility, class) {
+        $custom-class: map.get($utility, class);
       }
-      @else {
-        $value: rfs-fluid-value($value);
+      @if $custom-class == null {
+        $custom-class: "";
       }
-    }
-
-    $is-css-var: map-get($utility, css-var);
-    $is-local-vars: map-get($utility, local-vars);
-    $is-rtl: map-get($utility, rtl);
-
-    @if $value != null {
-      @if $is-rtl == false {
-        /* rtl:begin:remove */
+    } @else {
+      // Legacy approach: multiple properties are possible, for example with vertical or horizontal margins or paddings
+      @if meta.type-of($properties) == "string" {
+        $properties: list.append((), $properties);
       }
-
-      @if $is-css-var {
-        .#{$infix + $property-class + $property-class-modifier} {
-          --#{$prefix}#{$css-variable-name}: #{$value};
-        }
-
-        @each $pseudo in $state {
-          .#{$infix + $property-class + $property-class-modifier}-#{$pseudo}:#{$pseudo} {
-            --#{$prefix}#{$css-variable-name}: #{$value};
-          }
-        }
+      // Use custom class if present, otherwise use the first value from the list of properties
+      @if map.has-key($utility, class) {
+        $custom-class: map.get($utility, class);
       } @else {
-        .#{$infix + $property-class + $property-class-modifier} {
-          @each $property in $properties {
-            @if $is-local-vars {
-              @each $local-var, $variable in $is-local-vars {
-                --#{$prefix}#{$local-var}: #{$variable};
-              }
-            }
-            #{$property}: $value if($enable-important-utilities, !important, null);
-          }
-        }
+        $custom-class: list.nth($properties, 1);
+      }
+      @if $custom-class == null {
+        $custom-class: "";
+      }
+    }
 
-        @each $pseudo in $state {
-          .#{$infix + $property-class + $property-class-modifier}-#{$pseudo}:#{$pseudo} {
-            @each $property in $properties {
-              @if $is-local-vars {
-                @each $local-var, $variable in $is-local-vars {
-                  --#{$prefix}#{$local-var}: #{$variable};
-                }
-              }
-              #{$property}: $value if($enable-important-utilities, !important, null);
-            }
-          }
+    // State params to generate state variants
+    $state: ();
+    @if map.has-key($utility, state) {
+      $state: map.get($utility, state);
+    }
+
+    // Don't add a dash before value key if value key is null (e.g. with shadow class)
+    $custom-class-modifier: "";
+    @if $key {
+      @if $custom-class == "" {
+        $custom-class-modifier: $key;
+      } @else {
+        $custom-class-modifier: "-" + $key;
+      }
+    }
+
+    // Build the class name fragment (without prefix or dot) for reuse in state variants
+    $class-name: "";
+    @if $selector-type == "class" {
+      @if $custom-class != "" {
+        $class-name: $custom-class + $custom-class-modifier;
+      } @else if $selector-class != null and $selector-class != "" {
+        $class-name: $selector-class + $custom-class-modifier;
+      } @else {
+        $class-name: $custom-class-modifier;
+      }
+    }
+
+    $selector: "";
+    @if $selector-type == "class" {
+      $selector: ".#{$prefix + $class-name}";
+    } @else if $selector-type == "attr-starts" {
+      $selector: "[class^=\"#{$selector-class}\"]";
+    } @else if $selector-type == "attr-includes" {
+      $selector: "[class*=\"#{$selector-class}\"]";
+    }
+
+    // Apply child-selector wrapping if present (wraps in :where() for zero specificity)
+    $child-sel: null;
+    @if map.has-key($utility, child-selector) {
+      $child-sel: map.get($utility, child-selector);
+    }
+
+    $final-selector: $selector;
+    @if $child-sel {
+      $final-selector: ":where(#{$selector} #{$child-sel})";
+    }
+
+    // Build combined selector: base + state variants grouped into one rule
+    $combined-selector: $final-selector;
+    @if $state != () {
+      @each $state-variant in $state {
+        $state-selector: ".#{$prefix}#{$state-variant}\\:#{$class-name}:#{$state-variant}";
+        @if $child-sel {
+          $state-selector: ":where(#{$state-selector} #{$child-sel})";
+        }
+        $combined-selector: "#{$combined-selector}, #{$state-selector}";
+      }
+    }
+
+    #{$combined-selector} {
+      @include generate-variables($utility, $value, $group);
+      @include generate-properties($utility, $property-map, $properties, $value, $group);
+    }
+  }
+}
+
+// Generates all utility classes: base, responsive, print, and dark.
+// Extracted so that tests can call this mixin directly with a custom $utilities map
+// rather than having to mirror the loop conditions inline.
+@mixin generate-utilities-loop($utilities, $breakpoints) {
+  // Base + responsive (one pass per breakpoint)
+  @each $breakpoint in map.keys($breakpoints) {
+    @include bp.media-breakpoint-up($breakpoint, $breakpoints) {
+      $prefix: bp.breakpoint-prefix($breakpoint, $breakpoints);
+
+      @each $key, $utility in $utilities {
+        @if meta.type-of($utility) == "map" and map.get($utility, enabled) != false and (map.get($utility, responsive) or $prefix == "") {
+          @include generate-utility($utility, $prefix);
         }
       }
+    }
+  }
 
-      @if $is-rtl == false {
-        /* rtl:end:remove */
+  // Print utilities
+  @media print {
+    @each $key, $utility in $utilities {
+      @if meta.type-of($utility) == "map" and map.get($utility, enabled) != false and map.get($utility, print) == true {
+        @include generate-utility($utility, "print\\:");
+      }
+    }
+  }
+
+  // Dark utilities
+  @media (prefers-color-scheme: dark) {
+    @each $key, $utility in $utilities {
+      @if meta.type-of($utility) == "map" and map.get($utility, enabled) != false and map.get($utility, dark) == true {
+        @include generate-utility($utility, "dark\\:");
       }
     }
   }

@@ -1,0 +1,450 @@
+---
+title: Drawer
+description: Slide-in panels anchored to a viewport edge — built on the native HTML dialog element with placement variants, body scroll control, swipe gestures, and a data-attribute API.
+toc: true
+tokens: context
+css_layer: components
+css_media: viewport
+js: required
+---
+
+## Introduction
+
+A drawer is a `<dialog>` element styled with `.drawer` and a placement modifier, activated by the Drawer plugin. The placement modifier determines which edge the panel slides in from; the plugin manages the open/close lifecycle, backdrop, keyboard handling, body scroll, and focus.
+
+The plugin calls `showModal()` to place the element in the browser's [top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer), which provides automatic `position: fixed` and a native `::backdrop`. Body scroll is locked while a drawer is open (configurable via `data-cx-scroll`). Pressing Escape or clicking the backdrop closes the drawer by default (configurable via `data-cx-keyboard` and `data-cx-backdrop`). Touch swipe in the natural direction for each placement also dismisses it. When a second drawer opens while one is already open, the first closes automatically.
+
+<Example class="cxd-example-drawer bg-evident" code={`<dialog class="drawer drawer-start" id="exampleDrawerIntro" aria-labelledby="exampleDrawerIntroLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="exampleDrawerIntroLabel">Drawer title</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body">
+    <p>Drawer body content goes here.</p>
+  </div>
+  <div class="drawer-footer">
+    <button type="button" class="button primary">Take action</button>
+    <button type="button" class="button default" data-cx-dismiss="drawer">Cancel</button>
+  </div>
+</dialog>`}
+customMarkup={`<dialog class="drawer drawer-start" id="myDrawer" aria-labelledby="myDrawerLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="myDrawerLabel">Drawer title</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body">
+    <p>Drawer body content goes here.</p>
+  </div>
+  <div class="drawer-footer">
+    <button type="button" class="button primary">Take action</button>
+    <button type="button" class="button default" data-cx-dismiss="drawer">Cancel</button>
+  </div>
+</dialog>`} />
+
+<Callout name="info-prefersreducedmotion" />
+
+## Basic structure
+
+A drawer is composed of a `<dialog>` element with `.drawer` and a placement class, containing up to three region children:
+
+- **`.drawer-header`** — flex row containing the title and an optional `.close-button`. A direct-child `.close-button` is positioned absolutely at the block-start / inline-end corner of the header.
+- **`.drawer-body`** — main content area. Scrolls independently when the content is taller than the drawer.
+- **`.drawer-footer`** — optional flex row, right-aligned, for action buttons.
+
+For decision-forcing overlays that block the current flow, see [Alert]([[docsref:/components/alert]]). For full-height panels that open beside other content, see [Modal]([[docsref:/components/modal]]).
+
+## Live example
+
+To open a drawer, add `data-cx-toggle="drawer"` to any trigger element. For buttons, point at the `<dialog>` with `data-cx-target="#id"`. For links, set `href="#id"` instead — `data-cx-target` is not needed. The close button and Cancel both dismiss it; pressing Escape or clicking the backdrop also closes it by default.
+
+<Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#exampleDrawerLive">Open drawer</button>
+<a href="#exampleDrawerLive" class="button link" data-cx-toggle="drawer">Open drawer</a>
+
+<dialog class="drawer drawer-start" id="exampleDrawerLive" aria-labelledby="exampleDrawerLiveLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="exampleDrawerLiveLabel">Drawer</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body">
+    <p>Drawer body content goes here.</p>
+  </div>
+  <div class="drawer-footer">
+    <button type="button" class="button primary">Take action</button>
+    <button type="button" class="button default" data-cx-dismiss="drawer">Cancel</button>
+  </div>
+</dialog>`} />
+
+## Placement
+
+The placement modifier determines which viewport edge the panel slides in from. Always add a placement class — the default off-screen transform without one is undefined.
+
+<CxTable>
+| Class | Edge |
+| --- | --- |
+| `.drawer-start` | Left (LTR) / Right (RTL) |
+| `.drawer-end` | Right (LTR) / Left (RTL) |
+| `.drawer-top` | Top |
+| `.drawer-bottom` | Bottom |
+| `.drawer-fullscreen` | All edges |
+</CxTable>
+
+### Start
+
+`.drawer-start` anchors the panel to the inline-start edge and fills the full block height, sized by `--drawer-width`.
+
+<Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerStart">Start</button>
+
+<dialog class="drawer drawer-start" id="drawerStart" aria-labelledby="drawerStartLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="drawerStartLabel">Start drawer</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body"><p>Slides in from the left (LTR).</p></div>
+</dialog>`} />
+
+### End
+
+`.drawer-end` anchors the panel to the inline-end edge and fills the full block height, sized by `--drawer-width`.
+
+<Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerEnd">End</button>
+
+<dialog class="drawer drawer-end" id="drawerEnd" aria-labelledby="drawerEndLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="drawerEndLabel">End drawer</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body"><p>Slides in from the right (LTR).</p></div>
+</dialog>`} />
+
+### Top
+
+`.drawer-top` anchors the panel to the block-start edge and fills the full inline width, sized by `--drawer-height`.
+
+<Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerTop">Top</button>
+
+<dialog class="drawer drawer-top" id="drawerTop" aria-labelledby="drawerTopLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="drawerTopLabel">Top drawer</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body"><p>Slides down from the top.</p></div>
+</dialog>`} />
+
+### Bottom
+
+`.drawer-bottom` anchors the panel to the block-end edge and fills the full inline width, sized by `--drawer-height`. Add `.drawer-fit-content` to size the height to the drawer's content instead of the `--drawer-height` variable.
+
+<Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerBottom">Bottom</button>
+
+<dialog class="drawer drawer-bottom" id="drawerBottom" aria-labelledby="drawerBottomLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="drawerBottomLabel">Bottom drawer</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body"><p>Slides up from the bottom.</p></div>
+</dialog>`} />
+
+## Behaviors
+
+Drawer behavior and appearance are configurable with data attributes on the `<dialog>` element or modifier classes applied alongside the placement class.
+
+### Body scroll
+
+By default, body scroll is locked while a drawer is open. Set `data-cx-scroll="true"` on the `<dialog>` to allow the page to scroll while the drawer is open. Combine with `data-cx-backdrop="false"` to remove the backdrop entirely.
+
+<Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerScrolling">Scrolling, no backdrop</button>
+<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerScrollBackdrop">Scrolling with backdrop</button>
+
+<dialog class="drawer drawer-start" data-cx-scroll="true" data-cx-backdrop="false" id="drawerScrolling" aria-labelledby="drawerScrollingLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="drawerScrollingLabel">Scrolling, no backdrop</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body"><p>Body scroll is enabled and the backdrop is removed.</p></div>
+</dialog>
+
+<dialog class="drawer drawer-start" data-cx-scroll="true" id="drawerScrollBackdrop" aria-labelledby="drawerScrollBackdropLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="drawerScrollBackdropLabel">Scrolling with backdrop</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body"><p>Body scroll is enabled and the backdrop remains visible.</p></div>
+</dialog>`} />
+
+### Static backdrop
+
+`data-cx-backdrop="static"` prevents closing on backdrop click — the drawer nudges briefly to signal it requires explicit action. Add `data-cx-keyboard="false"` to also disable Escape.
+
+<Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerStatic">Static backdrop</button>
+
+<dialog class="drawer drawer-start" data-cx-backdrop="static" id="drawerStatic" aria-labelledby="drawerStaticLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="drawerStaticLabel">Static backdrop</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body"><p>Clicking outside nudges this drawer rather than closing it.</p></div>
+</dialog>`} />
+
+### Animation
+
+Drawers animate in and out by default. Add `.instant` to skip all transitions.
+
+<Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerInstant">Open instant drawer</button>
+
+<dialog class="drawer drawer-start instant" id="drawerInstant" aria-labelledby="drawerInstantLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="drawerInstantLabel">Instant drawer</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body"><p>No transition — opens and closes immediately.</p></div>
+</dialog>`} />
+
+### Appearance
+
+`.sheet` removes the inset gap, border radius, and border — the panel sits flush against the viewport edge. `.translucent` applies a frosted-glass background. Both modifiers combine freely with placement and behavior classes.
+
+<Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerSheet">Sheet</button>
+<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerTranslucent">Translucent</button>
+
+<dialog class="drawer drawer-start sheet" id="drawerSheet" aria-labelledby="drawerSheetLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="drawerSheetLabel">Sheet drawer</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body"><p>Flush against the viewport edge — no inset, rounding, or border.</p></div>
+  <div class="drawer-footer">
+    <button type="button" class="button neutral" data-cx-dismiss="drawer">Close</button>
+  </div>
+</dialog>
+
+<dialog class="drawer drawer-start translucent" id="drawerTranslucent" aria-labelledby="drawerTranslucentLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="drawerTranslucentLabel">Translucent drawer</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body"><p>Frosted-glass background over the page content.</p></div>
+  <div class="drawer-footer">
+    <button type="button" class="button neutral" data-cx-dismiss="drawer">Close</button>
+  </div>
+</dialog>`} />
+
+### Fullscreen
+
+`.fullscreen` expands the panel to fill the viewport, animating in and out from the direction of its placement class. Combine with `.sheet` or `.translucent` to adjust the appearance.
+
+<Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerFullscreen">Fullscreen</button>
+
+<dialog class="drawer drawer-bottom fullscreen" id="drawerFullscreen" aria-labelledby="drawerFullscreenLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="drawerFullscreenLabel">Fullscreen drawer</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body"><p>Fills the full viewport inset area.</p></div>
+</dialog>`} />
+
+### Footer layout
+
+The `.drawer-footer` uses `flex-direction: row-reverse`, so buttons are right-aligned without `justify-content` — write the **primary action first** in source, it renders on the right. At the small breakpoint, buttons stretch to equal widths (`flex: 1`). Add `.stacked` to stack them as full-width columns instead.
+
+<Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#exampleDrawerFooter">Open drawer</button>
+
+<dialog class="drawer drawer-start" id="exampleDrawerFooter" aria-labelledby="exampleDrawerFooterLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="exampleDrawerFooterLabel">Drawer with stacked actions</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body">
+    <p>A drawer with multiple footer actions, stacking full-width at the small breakpoint.</p>
+  </div>
+  <div class="drawer-footer stacked"><!-- [!code highlight] -->
+    <button type="button" class="button primary">Take action</button>
+    <button type="button" class="button default" data-cx-dismiss="drawer">Cancel</button>
+  </div>
+</dialog>`} />
+
+## Responsive
+
+Responsive drawer classes behave as drawers below the named breakpoint and display their contents inline above it. This is the basis for navigation that collapses off-screen on narrow viewports and expands inline on wide ones — the [Navbar]([[docsref:/components/navbar]]) uses this pattern for its collapsible menu region.
+
+<CxTable>
+| Class | Behavior |
+| --- | --- |
+| `.drawer` | Always a drawer |
+| `.max-small:drawer` | Drawer below `small`, inline above |
+| `.max-medium:drawer` | Drawer below `medium`, inline above |
+| `.max-large:drawer` | Drawer below `large`, inline above |
+| `.max-xlarge:drawer` | Drawer below `xlarge`, inline above |
+| `.max-2xlarge:drawer` | Drawer below `2xlarge`, inline above |
+</CxTable>
+
+Above the breakpoint the element resets to a flex container: `.drawer-header` is hidden (the trigger button is typically hidden with a matching utility class) and `.drawer-body` renders as a flex row within the parent layout.
+
+<Example code={`<button class="button primary large:d-none" type="button" data-cx-toggle="drawer" data-cx-target="#responsiveDrawer">Open drawer</button>
+
+<dialog class="max-large:drawer drawer-end" id="responsiveDrawer" aria-labelledby="responsiveDrawerLabel">
+  <div class="drawer-header">
+    <h2 class="drawer-title" id="responsiveDrawerLabel">Navigation</h2>
+    <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+  </div>
+  <div class="drawer-body">
+    <p>This is a <code>.max-large:drawer</code> — a drawer on small screens, inline content on large screens.</p>
+  </div>
+</dialog>`} />
+
+## Accessibility
+
+The `<dialog>` element carries an implicit `role="dialog"` when opened with `showModal()`. Provide an accessible name by placing `aria-labelledby` on the `<dialog>` pointing at the `.drawer-title` element's `id`.
+
+Focus moves to the `<dialog>` element on open. To move focus to a specific element on open, add `autofocus` to it or listen to `shown.cx.drawer`:
+
+```js
+document.getElementById('myDrawer').addEventListener('shown.cx.drawer', () => {
+  document.getElementById('myInput').focus()
+})
+```
+
+After the drawer closes, focus returns to the element that triggered the open.
+
+Touch swipe gestures dismiss the drawer toward the edge it entered from: swipe left for `.drawer-start`, swipe right for `.drawer-end`, swipe up for `.drawer-top`, swipe down for `.drawer-bottom`. Keyboard users rely on the Escape key or an explicit close button — ensure at least one dismiss path is available when both `data-cx-backdrop="static"` and `data-cx-keyboard="false"` are set.
+
+Body scroll is locked while a drawer is open (`dialog-open` is added to `<body>`). The lock releases only when all open drawers are closed.
+
+## JavaScript API
+
+The Drawer plugin opens and closes the `<dialog>` element and manages the backdrop, body-scroll lock, swipe gestures, and transition lifecycle. Chassis JS ships as an ES module — import the `Drawer` class:
+
+```js
+import { Drawer } from '@chassis-ui/css'
+```
+
+### Triggers
+
+The data-attribute API opens and closes drawers without writing any custom JavaScript:
+
+```html
+<!-- Trigger button -->
+<button data-cx-toggle="drawer" data-cx-target="#myDrawer">Open</button>
+
+<!-- Close button inside the drawer -->
+<button data-cx-dismiss="drawer" aria-label="Close"></button>
+
+<!-- Optional config on the dialog element -->
+<dialog class="drawer drawer-start"
+        data-cx-backdrop="static"
+        data-cx-keyboard="false">
+  ...
+</dialog>
+```
+
+<CxTable>
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-cx-toggle` | `"drawer"` | Marks the trigger element. |
+| `data-cx-target` | CSS selector | The `<dialog>` to toggle. |
+| `data-cx-backdrop` | `true`, `false`, `"static"` | Overrides the `backdrop` option. |
+| `data-cx-keyboard` | `true`, `false` | Overrides the `keyboard` option. |
+| `data-cx-scroll` | `true`, `false` | Overrides the `scroll` option. |
+</CxTable>
+
+### Initialization
+
+For programmatic access — calling methods or listening to events — instantiate each element with the `Drawer` class:
+
+```js
+const drawer = new Drawer('#myDrawer')
+
+// With options
+const drawer = new Drawer('#myDrawer', {
+  backdrop: 'static',
+  keyboard: false,
+  scroll: true
+})
+```
+
+### Options
+
+<JsDataAttributes />
+
+<CxTable>
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `backdrop` | `boolean \| 'static'` | `true` | Show a backdrop while open. `'static'` prevents closing on backdrop click. |
+| `keyboard` | `boolean` | `true` | Close on Escape key. |
+| `scroll` | `boolean` | `false` | Allow body scroll while the drawer is open. |
+</CxTable>
+
+### Methods
+
+<Callout name="danger-async-methods" type="danger" />
+
+The plugin exposes the following instance methods. `show()` and `hide()` return before the transition completes — listen to the `shown` and `hidden` events for post-transition timing.
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `show()` | Opens the drawer. |
+| `hide()` | Closes the drawer. |
+| `toggle()` | Toggles open or closed. |
+| `dispose()` | Removes the instance and its event listeners. |
+| `getInstance()` | *Static.* Returns the instance for an element, or `null`. |
+| `getOrCreateInstance()` | *Static.* Returns the existing instance or creates one. |
+</CxTable>
+
+```js
+const drawer = new Drawer('#myDrawer')
+
+drawer.show()
+drawer.hide()
+drawer.toggle()
+drawer.dispose()
+
+const instance = Drawer.getInstance('#myDrawer')
+const instance = Drawer.getOrCreateInstance('#myDrawer')
+```
+
+### Events
+
+All events fire on the `<dialog>` element. Cancelable events (`show.cx.drawer`, `hide.cx.drawer`) can be prevented with `event.preventDefault()` to block the action.
+
+<CxTable>
+| Event | Description |
+| --- | --- |
+| `show.cx.drawer` | Fires immediately when `show()` is called. Cancelable. `event.relatedTarget` is the trigger element. |
+| `shown.cx.drawer` | Fires after the entry transition completes and the drawer is fully visible. |
+| `hide.cx.drawer` | Fires immediately when `hide()` is called. Cancelable. |
+| `hidden.cx.drawer` | Fires after the exit transition completes and the drawer is fully hidden. |
+| `hidePrevented.cx.drawer` | Fires when a close attempt is blocked (static backdrop click or `keyboard: false`). |
+</CxTable>
+
+```js
+const el = document.getElementById('myDrawer')
+
+el.addEventListener('show.cx.drawer', event => {
+  const trigger = event.relatedTarget
+  if (trigger) console.log('Opened by:', trigger.id)
+})
+
+el.addEventListener('shown.cx.drawer', () => {
+  el.querySelector('[autofocus]')?.focus()
+})
+
+el.addEventListener('hidden.cx.drawer', () => {
+  resetTemporaryStates()
+})
+```
+
+## CSS
+
+<DocsCSS name="Drawer" />
+
+### Custom properties
+
+<DocsCSSVars name="Drawer" />
+
+<ScssDocs name="drawer-css-vars" file="scss/_drawer.scss" />
+
+### Sass variables
+
+<DocsSASSVars name="Drawer" />
+
+<ScssDocs name="drawer-variables" file="scss/config/_defaults.scss" />

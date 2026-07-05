@@ -1,14 +1,41 @@
 ---
 title: Z-index
-description: While not a part of Chassis CSS’s grid system, z-indexes play an important part in how our components overlay and interact with one another.
+description: Z-index variables for component layering and utility classes for controlling stacking order on positioned elements.
+toc: true
 ---
 
-Several Chassis CSS components utilize `z-index`, the CSS property that helps control layout by providing a third axis to arrange content. We utilize a default z-index scale in Chassis CSS that’s been designed to properly layer navigation, tooltips and popovers, modals, and more.
+## Overview
 
-These higher values start at an arbitrary number, high and specific enough to ideally avoid conflicts. We need a standard set of these across our layered components—tooltips, popovers, navbars, dropdowns, modals—so we can be reasonably consistent in the behaviors. There’s no reason we couldn’t have used `100`+ or `500`+.
+Several Chassis CSS components rely on `z-index` to control how elements layer on top of one another. Two separate scales handle this: a high-value stack (1000–1090) for full-page overlay components such as menus, modals, and tooltips; and a low-value set (1–3) for border control within compact components such as button groups and input groups.
 
-We don’t encourage customization of these individual values; should you change one, you likely need to change them all.
+## Component scale
 
-<ScssDocs name="zindex-stack" file="scss/_variables.scss" />
+The component z-index stack assigns an explicit value to each overlay tier so that layering between components is predictable and conflict-free. Values begin at `1000` and increment in steps large enough to accommodate future tiers without renumbering the existing scale.
 
-To handle overlapping borders within components (e.g., buttons and inputs in input groups), we use low single digit `z-index` values of `1`, `2`, and `3` for default, hover, and active states. On hover/focus/active, we bring a particular element to the forefront with a higher `z-index` value to show their border over the sibling elements.
+The exact starting value is arbitrary — any sufficiently high baseline would work — but the relative ordering matters. Avoid changing individual values in isolation; the stack depends on ordered increments, so adjusting one value typically requires adjusting all values above it.
+
+## Border overlap
+
+For components where adjacent borders need to stack — button groups and input groups, for example — Chassis CSS uses low single-digit z-index values to bring the interactive element to the foreground: `1` for hover, `2` for active, and `3` for focus. This ensures the focused or activated element's border renders over adjacent siblings without additional overrides.
+
+## Utility classes
+
+The `$zindex-levels` map generates `.z-{n}` utility classes for any positioned element. Values range from `.z-n1` (`z-index: -1`) through `.z-5` (`z-index: 5`). These classes have no effect on elements with `position: static`.
+
+See [Z-index utilities]([[docsref:/utilities/z-index]]) for the full class reference.
+
+## CSS
+
+The z-index system is defined entirely through Sass variables and maps — no CSS custom properties are involved.
+
+### Sass variables
+
+`$zindex-menu` through `$zindex-toast` define the component overlay stack. Adjust them before importing Chassis to shift individual tiers, keeping in mind that the stack depends on ordered increments.
+
+<ScssDocs name="zindex-stack" file="scss/config/_defaults.scss" />
+
+### Sass maps
+
+`$zindex-levels` maps named keys (`n1` through `5`) to their integer values and drives the generated `.z-*` utility classes.
+
+<ScssDocs name="zindex-levels-map" file="scss/config/_defaults.scss" />

@@ -1,94 +1,127 @@
-//stylelint-disable-next-line
-$utilities: map-merge(
-  $utilities,
-  (
-    // Margin utilities
-    // scss-docs-start utils-margin
-    "margin": (
-      responsive: true,
-      property: margin,
-      class: m,
-      values: map-merge($spacers, (auto: auto))
-    ),
-    "margin-x": (
-      responsive: true,
-      property: margin-right margin-left,
-      class: mx,
-      values: map-merge($spacers, (auto: auto))
-    ),
-    "margin-y": (
-      responsive: true,
-      property: margin-top margin-bottom,
-      class: my,
-      values: map-merge($spacers, (auto: auto))
-    ),
-    "margin-top": (
-      responsive: true,
-      property: margin-top,
-      class: mt,
-      values: map-merge($spacers, (auto: auto))
-    ),
-    "margin-end": (
-      responsive: true,
-      property: margin-right,
-      class: me,
-      values: map-merge($spacers, (auto: auto))
-    ),
-    "margin-bottom": (
-      responsive: true,
-      property: margin-bottom,
-      class: mb,
-      values: map-merge($spacers, (auto: auto))
-    ),
-    "margin-start": (
-      responsive: true,
-      property: margin-left,
-      class: ms,
-      values: map-merge($spacers, (auto: auto))
-    ),
-    // Negative margin utilities
-    "negative-margin": (
-      responsive: true,
-      property: margin,
-      class: m,
-      values: $negative-spacers
-    ),
-    "negative-margin-x": (
-      responsive: true,
-      property: margin-right margin-left,
-      class: mx,
-      values: $negative-spacers
-    ),
-    "negative-margin-y": (
-      responsive: true,
-      property: margin-top margin-bottom,
-      class: my,
-      values: $negative-spacers
-    ),
-    "negative-margin-top": (
-      responsive: true,
-      property: margin-top,
-      class: mt,
-      values: $negative-spacers
-    ),
-    "negative-margin-end": (
-      responsive: true,
-      property: margin-right,
-      class: me,
-      values: $negative-spacers
-    ),
-    "negative-margin-bottom": (
-      responsive: true,
-      property: margin-bottom,
-      class: mb,
-      values: $negative-spacers
-    ),
-    "negative-margin-start": (
-      responsive: true,
-      property: margin-left,
-      class: ms,
-      values: $negative-spacers
-    )
-    // scss-docs-end utils-margin
+@use "sass:map";
+@use "../config" as *;
+@use "../maps" as *;
+@use "../functions" as *;
+
+//
+// Margin Utilities
+//
+// Utility map for responsive margin classes across all sides and the spacing
+// scale.
+//
+
+// scss-docs-start utils-margin-values
+// Build a margin values map from $spaces. Each key maps to a spacing variable in addition to 0 and auto.
+$-margin-values: map.merge(
+  map-loop($spaces, varify, "$key", "space"),
+  (0: 0, auto: auto)
+) !default;
+
+// Build a negative margin values map from $spaces. Each key maps to a
+// negative value of the corresponding spacing variable.
+$-negative-margin-values: () !default;
+@each $name, $value in $spaces {
+  $-negative-margin-values: map.merge(
+    $-negative-margin-values,
+    ($name: #{calc(-1 * var(--space-#{$name}))})
+  );
+}
+// scss-docs-end utils-margin-values
+
+$utilities: (
+  // Margin utilities
+  // scss-docs-start utils-margin
+  "margin": (
+    responsive: true,
+    property: margin,
+    class: m,
+    values: $-margin-values
   ),
-);
+  "margin-x": (
+    responsive: true,
+    property: margin-inline,
+    class: mx,
+    values: $-margin-values
+  ),
+  "margin-y": (
+    responsive: true,
+    property: margin-block,
+    class: my,
+    values: $-margin-values
+  ),
+  "margin-top": (
+    responsive: true,
+    property: margin-block-start,
+    class: mt,
+    values: $-margin-values
+  ),
+  "margin-end": (
+    responsive: true,
+    property: margin-inline-end,
+    class: me,
+    values: $-margin-values
+  ),
+  "margin-bottom": (
+    responsive: true,
+    property: margin-block-end,
+    class: mb,
+    values: $-margin-values
+  ),
+  "margin-start": (
+    responsive: true,
+    property: margin-inline-start,
+    class: ms,
+    values: $-margin-values
+  ),
+  // Negative margin utilities
+  "negative-margin": (
+    responsive: true,
+    property: margin,
+    class: -m,
+    enabled: $enable-negative-margins,
+    values: $-negative-margin-values
+  ),
+  "negative-margin-x": (
+    responsive: true,
+    property: margin-inline,
+    class: -mx,
+    enabled: $enable-negative-margins,
+    values: $-negative-margin-values
+  ),
+  "negative-margin-y": (
+    responsive: true,
+    property: margin-block,
+    class: -my,
+    enabled: $enable-negative-margins,
+    values: $-negative-margin-values
+  ),
+  "negative-margin-top": (
+    responsive: true,
+    property: margin-block-start,
+    class: -mt,
+    enabled: $enable-negative-margins,
+    values: $-negative-margin-values
+  ),
+  "negative-margin-end": (
+    responsive: true,
+    property: margin-inline-end,
+    class: -me,
+    enabled: $enable-negative-margins,
+    values: $-negative-margin-values
+  ),
+  "negative-margin-bottom": (
+    responsive: true,
+    property: margin-block-end,
+    class: -mb,
+    enabled: $enable-negative-margins,
+    values: $-negative-margin-values
+  ),
+  "negative-margin-start": (
+    responsive: true,
+    property: margin-inline-start,
+    class: -ms,
+    enabled: $enable-negative-margins,
+    values: $-negative-margin-values
+  )
+  // scss-docs-end utils-margin
+) !default;

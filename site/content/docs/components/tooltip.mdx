@@ -1,0 +1,333 @@
+---
+title: Tooltip
+description: Small text overlays that appear on hover or focus, positioned by Floating UI and themed via CSS custom properties.
+toc: true
+tokens: context
+css_layer: components
+js: required
+deps:
+  - title: Floating UI
+    url: https://floating-ui.com/
+---
+
+## Introduction
+
+Tooltips are small informational overlays triggered by hover or focus on an interactive element. The plugin uses [Floating UI](https://floating-ui.com/) for positioning and generates the tooltip element on demand, appending it to `document.body` by default.
+
+Key behaviors:
+
+- Tooltips initialize automatically on any element with `data-cx-toggle="tooltip"`.
+- Tooltip text comes from the element's native `title` attribute or from `data-cx-title`.
+- Tooltips with zero-length content are never shown.
+- Calling `show` on an element with an inline `style.display: none` throws an error.
+- Tooltips on `.disabled` or `disabled` elements must be attached to a wrapper element.
+- Multi-line inline links center the tooltip. Add `white-space: nowrap` to `<a>` elements to prevent line-wrap centering.
+- Hide a tooltip before removing its trigger element from the DOM.
+- Trigger elements inside a shadow DOM are supported.
+
+<Callout name="info-sanitizer" />
+
+<Callout name="info-prefersreducedmotion" />
+
+## Basic structure
+
+Add `data-cx-toggle="tooltip"` to any keyboard-focusable, interactive element. Provide the tooltip text via the native `title` attribute (preferred) or `data-cx-title`. The plugin creates and positions the tooltip on first hover or focus.
+
+<Example addStackblitzJs class="tooltip-demo" code={`<button type="button" class="button primary"
+      data-cx-toggle="tooltip"
+      title="Tooltip text">
+    Example tooltip
+  </button>`} />
+
+<Callout type="info">
+On initialization, the plugin moves the native `title` value to `data-cx-original-title` and removes the attribute — suppressing the browser's built-in tooltip before showing its own.
+</Callout>
+
+The plugin generates the following markup and inserts it into the container (`document.body` by default):
+
+```html
+<div class="tooltip cx-tooltip-auto" role="tooltip">
+  <div class="tooltip-arrow"></div>
+  <div class="tooltip-inner">Tooltip text</div>
+</div>
+```
+
+After each `computePosition` call, the plugin writes the final resolved placement to `data-cx-placement` on the tooltip element. The `cx-tooltip-auto` class reads that attribute and applies the styles of the matching directional class (`cx-tooltip-top`, `cx-tooltip-end`, `cx-tooltip-bottom`, or `cx-tooltip-start`) to position the arrow correctly. The generated element receives a unique `id`; the trigger element receives a matching `aria-describedby` while the tooltip is visible, and the attribute is removed on hide.
+
+Tooltips work on any interactive element, including inline links:
+
+<Example addStackblitzJs class="tooltip-demo" code={`<p class="fg-3">Inline text with <a href="#" data-cx-toggle="tooltip" title="Default tooltip">a link tooltip</a> and a second link with <a href="#" data-cx-toggle="tooltip" title="Another tooltip">its own tooltip</a>.</p>`} />
+
+## Placement
+
+Set `data-cx-placement` to control which side the tooltip appears on. The logical values `start` and `end` resolve to the inline-start and inline-end sides and adapt to the document's text direction. The physical values `left`, `right`, `top`, and `bottom` always place the tooltip on that side regardless of direction. The default is `top`.
+
+<Example class="tooltip-demo" code={`<button type="button" class="button primary"
+    data-cx-toggle="tooltip" title="Tooltip on top"
+    data-cx-placement="top">
+  top
+</button>
+<button type="button" class="button primary"
+    data-cx-toggle="tooltip" title="Tooltip on bottom"
+    data-cx-placement="bottom">
+  bottom
+</button>
+<button type="button" class="button primary"
+    data-cx-toggle="tooltip" title="Tooltip on start"
+    data-cx-placement="start">
+  start
+</button>
+<button type="button" class="button primary"
+    data-cx-toggle="tooltip" title="Tooltip on end"
+    data-cx-placement="end">
+  end
+</button>
+<button type="button" class="button primary"
+    data-cx-toggle="tooltip" title="Tooltip on left"
+    data-cx-placement="left">
+  left
+</button>
+<button type="button" class="button primary"
+    data-cx-toggle="tooltip" title="Tooltip on right"
+    data-cx-placement="right">
+  right
+</button>`} />
+
+When the preferred placement would cause the tooltip to overflow its boundary, Floating UI's flip middleware selects a fallback from `['top', 'right', 'bottom', 'left']`. Override the fallback list with the `fallbackPlacements` option.
+
+### Responsive placement
+
+The placement value accepts breakpoint prefixes to change direction at different viewport widths. The syntax is the base placement followed by `breakpoint:placement` tokens, where breakpoints are `small`, `medium`, `large`, `xlarge`, and `2xlarge`. The plugin re-evaluates placement whenever the viewport crosses a registered breakpoint.
+
+<Example class="tooltip-demo" code={`<button type="button" class="button primary"
+    data-cx-toggle="tooltip" title="Responsive tooltip"
+    data-cx-placement="top medium:right large:bottom">
+  Top → medium:right → large:bottom
+</button>
+<button type="button" class="button primary"
+    data-cx-toggle="tooltip" title="Responsive tooltip"
+    data-cx-placement="left large:top">
+  Left → large:top
+</button>`} />
+
+## Advanced features
+
+The tooltip plugin supports HTML content, non-text trigger elements, and a wrapper pattern for attaching tooltips to disabled elements.
+
+### HTML content
+
+Set `data-cx-html="true"` to render HTML tags inside the tooltip. HTML content passes through the built-in sanitizer unless a custom `sanitizeFn` is provided. Use plain text for any content derived from user input.
+
+<Example class="tooltip-demo" code={`<button type="button" class="button primary"
+    data-cx-toggle="tooltip"
+    title="<em>Tooltip</em> <u>with</u> <b>HTML</b>"
+    data-cx-html="true">
+  Tooltip with HTML
+</button>`} />
+
+Non-text trigger elements, such as SVG graphics, require a focusable wrapper. When the wrapper has no text content and no `aria-label`, the plugin sets `aria-label` automatically from the tooltip text. An explicit `aria-label` overrides that automatic value — useful when a more descriptive label than the raw tooltip text is appropriate:
+
+<Example class="tooltip-demo" code={`<a href="#" class="d-inline-block"
+    data-cx-toggle="tooltip" title="Default tooltip"
+    aria-label="Hover or focus to see default tooltip">
+  <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100" aria-hidden="true">
+    <rect width="100%" height="100%" fill="#563d7c"/>
+    <circle cx="50" cy="50" r="30" fill="#007bff"/>
+  </svg>
+</a>`} />
+
+### Disabled elements
+
+Disabled elements do not receive hover or focus events and cannot directly trigger a tooltip. Wrap a disabled element in a `<span>` or `<div>`, place the tooltip attributes on the wrapper, and add `tabindex="0"` to keep the wrapper reachable by keyboard.
+
+<Example class="tooltip-demo" addStackblitzJs code={`<span class="d-inline-block" tabindex="0"
+    data-cx-toggle="tooltip" title="Disabled tooltip">
+  <button class="button primary" type="button" disabled>Disabled button</button>
+</span>`} />
+
+## Theming
+
+Override tooltip appearance by assigning a custom class with `data-cx-custom-class` and redefining the component's [custom properties](#custom-properties) on that class.
+
+<ScssDocs name="custom-tooltip" file="site/src/scss/_examples.scss" />
+
+<Example addStackblitzJs class="tooltip-demo" code={`<button type="button" class="button primary"
+    data-cx-toggle="tooltip"
+    title="This top tooltip is themed via CSS variables."
+    data-cx-placement="top"
+    data-cx-custom-class="custom-tooltip">
+  Custom tooltip
+</button>`} />
+
+## Accessibility
+
+The Tooltip plugin manages `aria-describedby` automatically: the trigger element receives an `aria-describedby` attribute pointing at the generated tooltip's `id` when the tooltip becomes visible, and the attribute is removed on hide. The generated tooltip element carries `role="tooltip"`.
+
+On initialization, the plugin removes the native `title` attribute from the trigger element and moves its value to `data-cx-original-title`, suppressing the browser's built-in tooltip. If the trigger has no visible text content and no `aria-label`, the plugin sets `aria-label` to the tooltip text.
+
+The default `trigger` is `'hover focus'`, so tooltips respond to both pointer and keyboard focus without additional configuration. Add tooltips only to natively interactive elements — links, buttons, and form controls — that already receive keyboard focus. Elements made focusable with `tabindex="0"` can create confusing tab stops and may not be announced consistently by screen readers.
+
+<Callout type="warning">
+A `trigger` value of `'hover'` alone makes the tooltip unreachable by keyboard. Always include `focus` in the trigger list when the tooltip conveys information not available elsewhere on the page.
+</Callout>
+
+## JavaScript API
+
+Import the `Tooltip` class for programmatic access. Floating UI must be available, either via the bundled distribution or an [import map]([[docsref:/getting-started/javascript#using-chassis-as-a-module]]):
+
+```js
+import { Tooltip } from '@chassis-ui/css'
+```
+
+### Triggers
+
+The data-attribute API activates tooltips without writing JavaScript:
+
+<CxTable>
+| Attribute | Description |
+| --- | --- |
+| `data-cx-toggle="tooltip"` | Initializes the tooltip on the element. |
+| `data-cx-title` | Tooltip text. Alternative to the native `title` attribute. |
+| `data-cx-placement` | Preferred placement. Logical: `start`, `end` (adapt to text direction). Physical: `top`, `bottom`, `left`, `right`. Default: `top`. Accepts responsive prefixes. |
+| `data-cx-trigger` | Events that show and hide the tooltip: `click`, `hover`, `focus`, `manual`. Default: `hover focus`. |
+| `data-cx-container` | CSS selector or DOM element to append the generated tooltip to. Default resolves to `document.body`. |
+| `data-cx-delay` | Show and hide delay in milliseconds. A number applies to both; an object sets them independently: `{"show":500,"hide":100}`. |
+| `data-cx-custom-class` | Extra class names added to the tooltip element for theming. |
+| `data-cx-html` | Set to `true` to render HTML in the tooltip content. |
+</CxTable>
+
+<Callout type="warning">
+For security reasons, `sanitize`, `sanitizeFn`, and `allowList` cannot be set via `data-cx-*` attributes or `data-cx-config`. Use JavaScript constructor options instead.
+</Callout>
+
+### Initialization
+
+Instantiate a `Tooltip` by passing an element reference and an optional options object. The constructor registers hover and focus listeners immediately:
+
+```js
+import { Tooltip } from '@chassis-ui/css'
+
+const tooltip = new Tooltip(document.getElementById('myTrigger'), {
+  placement: 'bottom',
+  delay: { show: 200, hide: 100 }
+})
+```
+
+<Callout type="info">
+Tooltips reposition automatically when a parent has `overflow: auto` or `overflow: scroll`. To constrain the shift boundary, pass an HTMLElement to the `boundary` option:
+
+```js
+const tooltip = new Tooltip('#example', {
+  boundary: document.body
+})
+```
+</Callout>
+
+### Methods
+
+The following methods are available on each `Tooltip` instance:
+
+<Callout name="danger-async-methods" type="danger" />
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `disable` | Prevents the tooltip from appearing until re-enabled. |
+| `dispose` | Hides and destroys the instance, removing data stored on the trigger element. Tooltips created with a `selector` option cannot be individually destroyed on descendant triggers. |
+| `enable` | Restores the tooltip after `disable`. Tooltips are enabled by default. |
+| `getInstance` | *Static.* Returns the existing `Tooltip` instance associated with a DOM element, or `null`. |
+| `getOrCreateInstance` | *Static.* Returns the existing `Tooltip` instance, or creates and returns a new one. |
+| `hide` | Hides the tooltip. Returns before the `hidden.cx.tooltip` event fires. |
+| `setContent` | Updates the tooltip content after initialization. |
+| `show` | Shows the tooltip. Returns before the `shown.cx.tooltip` event fires. Tooltips with empty content are not shown. |
+| `toggle` | Toggles the tooltip. Returns before the show or hide event fires. |
+| `toggleEnabled` | Toggles between enabled and disabled states. |
+| `update` | Recalculates the tooltip's position. |
+</CxTable>
+
+`setContent` accepts an object keyed by selector within the tooltip template. The recognized key is `.tooltip-inner`. Each value may be a `string`, `Element`, `function`, or `null`:
+
+```js
+import { Tooltip } from '@chassis-ui/css'
+
+const tooltip = Tooltip.getInstance('#myTrigger')
+tooltip.setContent({ '.tooltip-inner': 'Updated text' })
+```
+
+### Options
+
+<JsDataAttributes />
+
+<CxTable>
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `allowList` | object | [Default value]([[docsref:/getting-started/javascript#sanitizer]]) | Allowed tags and attributes for HTML content. Tags and attributes absent from this list are stripped by [the content sanitizer]([[docsref:/getting-started/javascript#sanitizer]]). <Callout type="warning">**Exercise caution when extending this list.** See [OWASP's XSS Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html).</Callout> |
+| `animation` | boolean | `true` | Applies a CSS fade transition. |
+| `boundary` | string, element | `'clippingParents'` | Overflow constraint boundary for Floating UI's shift middleware. The default string `'clippingParents'` is translated to `'clippingAncestors'` internally. Pass an HTMLElement via JavaScript to constrain to a specific element. See [Floating UI shift docs](https://floating-ui.com/docs/shift#boundary). |
+| `container` | string, element, false | `false` | Element to append the tooltip to. The value `false` resolves to `document.body` at runtime. Set explicitly to keep the tooltip in a specific stacking context. |
+| `customClass` | string, function | `''` | Additional class names applied to the tooltip on show. Pass a space-separated string for multiple classes, or a function that returns a string. |
+| `delay` | number, object | `0` | Show and hide delay in milliseconds. A number applies to both; an object sets them independently: `{ "show": 500, "hide": 100 }`. |
+| `fallbackPlacements` | array | `['top', 'right', 'bottom', 'left']` | Ordered fallback placements for Floating UI's flip middleware. Must use physical values (`top`, `right`, `bottom`, `left`); `start` and `end` are not resolved here. See [Floating UI flip docs](https://floating-ui.com/docs/flip#fallbackplacements). |
+| `floatingConfig` | null, object, function | `null` | Overrides the default Floating UI `computePosition` configuration. A function receives the default config object and must return a new config. See [Floating UI computePosition docs](https://floating-ui.com/docs/computePosition). |
+| `html` | boolean | `false` | Renders HTML tags in the tooltip content. When `false`, content is inserted via `innerText`. Use `false` for user-generated content to prevent XSS. |
+| `offset` | array, string, function | `[0, 6]` | Distance between the tooltip and its trigger `[crossAxis, mainAxis]`. Pass a comma-separated string in data attributes: `data-cx-offset="10,20"`. A function receives placement and rects and must return a two-number array. See [Floating UI offset docs](https://floating-ui.com/docs/offset). |
+| `placement` | string, function | `'top'` | Preferred placement. Logical values `start` and `end` adapt to text direction. Physical values `top`, `bottom`, `left`, and `right` always place the tooltip on that side. Accepts responsive prefixes (`'start medium:end'`). A function receives the tooltip element and the trigger element and must return a placement string. |
+| `sanitize` | boolean | `true` | Enables [content sanitization]([[docsref:/getting-started/javascript#sanitizer]]) for `template`, `content`, and `title`. <Callout type="warning">**Disabling sanitization removes XSS protection.** See [OWASP's XSS Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html). Vulnerabilities arising solely from disabled sanitization are outside Chassis CSS's security scope.</Callout> |
+| `sanitizeFn` | null, function | `null` | Custom [sanitization function]([[docsref:/getting-started/javascript#sanitizer]]). Replaces the built-in sanitizer when provided. |
+| `selector` | string, false | `false` | CSS selector for event delegation. Enables attaching tooltips to dynamically added descendants matching the selector. |
+| `template` | string | `'<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'` | Base HTML for the generated tooltip element. Content is injected into `.tooltip-inner`; `.tooltip-arrow` receives position styling. The outermost element must carry `.tooltip` and `role="tooltip"`. |
+| `title` | string, element, function | `''` | Content for `.tooltip-inner`. A function is called with the trigger element as its argument. |
+| `trigger` | string | `'hover focus'` | Events that show and hide the tooltip: `click`, `hover`, `focus`, `manual`. Pass multiple values separated by spaces. `manual` cannot be combined with other triggers and requires calling `show`, `hide`, or `toggle` programmatically. |
+</CxTable>
+
+#### `floatingConfig` function
+
+When `floatingConfig` is a function, it receives the default Floating UI configuration object and must return a new config:
+
+```js
+const tooltip = new Tooltip(element, {
+  floatingConfig(defaultConfig) {
+    return { ...defaultConfig, strategy: 'fixed' }
+  }
+})
+```
+
+### Events
+
+Each lifecycle transition fires a namespaced event on the trigger element:
+
+```js
+import { Tooltip } from '@chassis-ui/css'
+
+const trigger = document.getElementById('myTrigger')
+
+trigger.addEventListener('hidden.cx.tooltip', () => {
+  Tooltip.getInstance(trigger).dispose()
+})
+```
+
+<CxTable>
+| Event | Description |
+| --- | --- |
+| `hide.cx.tooltip` | Fires immediately when `hide` is called. |
+| `hidden.cx.tooltip` | Fires after the tooltip is fully hidden, once CSS transitions complete. |
+| `inserted.cx.tooltip` | Fires after `show.cx.tooltip` when the tooltip element has been added to the DOM. |
+| `show.cx.tooltip` | Fires immediately when `show` is called. |
+| `shown.cx.tooltip` | Fires after the tooltip is fully visible, once CSS transitions complete. |
+</CxTable>
+
+## CSS
+
+<DocsCSS name="Tooltip" exposed />
+
+### Custom properties
+
+<DocsCSSVars name="Tooltip" />
+
+<ScssDocs name="tooltip-properties" file="scss/_tooltip.scss" />
+
+### Sass variables
+
+<DocsSASSVars name="Tooltip" />
+
+<ScssDocs name="tooltip-variables" file="scss/config/_defaults.scss" />

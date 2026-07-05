@@ -1,70 +1,63 @@
-//stylelint-disable-next-line
-$utilities: map-merge(
-  $utilities,
-  (
-    // Padding utilities
-    // scss-docs-start utils-padding
-    "padding": (
-      responsive: true,
-      property: padding,
-      class: p,
-      values: $spacers
-    ),
-    "padding-x": (
-      responsive: true,
-      property: padding-right padding-left,
-      class: px,
-      values: $spacers
-    ),
-    "padding-y": (
-      responsive: true,
-      property: padding-top padding-bottom,
-      class: py,
-      values: $spacers
-    ),
-    "padding-top": (
-      responsive: true,
-      property: padding-top,
-      class: pt,
-      values: $spacers
-    ),
-    "padding-end": (
-      responsive: true,
-      property: padding-right,
-      class: pe,
-      values: $spacers
-    ),
-    "padding-bottom": (
-      responsive: true,
-      property: padding-bottom,
-      class: pb,
-      values: $spacers
-    ),
-    "padding-start": (
-      responsive: true,
-      property: padding-left,
-      class: ps,
-      values: $spacers
-    ),
-    // Gap utility
-    "gap": (
-      responsive: true,
-      property: gap,
-      class: gap,
-      values: $spacers
-    ),
-    "row-gap": (
-      responsive: true,
-      property: row-gap,
-      class: row-gap,
-      values: $spacers
-    ),
-    "column-gap": (
-      responsive: true,
-      property: column-gap,
-      class: column-gap,
-      values: $spacers
-    ),
-    // scss-docs-end utils-padding
+@use "sass:map";
+@use "../maps" as *;
+@use "../functions" as *;
+
+//
+// Padding Utilities
+//
+// Utility map for responsive padding classes across all sides and the spacing
+// scale.
+//
+
+// scss-docs-start utils-padding-values
+// Build a padding values map from $spaces. Each key maps to its :root spacing variable, plus 0.
+$-padding-values: map.merge(map-loop($spaces, varify, "$key", "space"), (0: 0)) !default;
+// scss-docs-end utils-padding-values
+
+$utilities: (
+  // Padding utilities
+  // scss-docs-start utils-padding
+  "padding": (
+    responsive: true,
+    property: padding,
+    class: p,
+    values: $-padding-values
   ),
-);
+  "padding-x": (
+    responsive: true,
+    property: padding-inline,
+    class: px,
+    values: $-padding-values
+  ),
+  "padding-y": (
+    responsive: true,
+    property: padding-block,
+    class: py,
+    values: $-padding-values
+  ),
+  "padding-top": (
+    responsive: true,
+    property: padding-block-start,
+    class: pt,
+    values: $-padding-values
+  ),
+  "padding-end": (
+    responsive: true,
+    property: padding-inline-end,
+    class: pe,
+    values: $-padding-values
+  ),
+  "padding-bottom": (
+    responsive: true,
+    property: padding-block-end,
+    class: pb,
+    values: $-padding-values
+  ),
+  "padding-start": (
+    responsive: true,
+    property: padding-inline-start,
+    class: ps,
+    values: $-padding-values
+  ),
+  // scss-docs-end utils-padding
+) !default;

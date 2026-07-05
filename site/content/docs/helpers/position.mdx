@@ -1,0 +1,77 @@
+---
+title: Position
+description: Helpers for quickly configuring the position and edge placement of an element.
+toc: true
+css_layer: helpers
+reference:
+  - class: 'fixed-top'
+    description: 'Fix an element to the top of the viewport.'
+  - class: 'fixed-bottom'
+    description: 'Fix an element to the bottom of the viewport.'
+  - class: '.sticky{-$infix}-top'
+    description: 'Responsively sticky an element to the top of the viewport.'
+  - class: '.sticky{-$infix}-bottom'
+    description: 'Responsively sticky an element to the bottom of the viewport.'
+---
+
+## Fixed top
+
+Position an element at the top of the viewport, from edge to edge. Fixed positioning removes the element from document flow — additional layout adjustments may be needed in the surrounding structure.
+
+```html
+<div class="fixed-top">...</div>
+```
+
+## Fixed bottom
+
+Position an element at the bottom of the viewport, from edge to edge. Fixed positioning removes the element from document flow — additional layout adjustments may be needed in the surrounding structure.
+
+```html
+<div class="fixed-bottom">...</div>
+```
+
+## Sticky top
+
+Position an element at the top of the viewport, from edge to edge, but only once it has been scrolled past.
+
+```html
+<div class="sticky-top">...</div>
+```
+
+## Responsive sticky top
+
+Responsive variations of `.sticky-top` activate sticky positioning at and above a given breakpoint.
+
+```html
+<div class="small:sticky-top">Stick to the top on viewports sized SM (small) or wider</div>
+<div class="medium:sticky-top">Stick to the top on viewports sized MD (medium) or wider</div>
+<div class="large:sticky-top">Stick to the top on viewports sized LG (large) or wider</div>
+<div class="xlarge:sticky-top">Stick to the top on viewports sized XL (extra-large) or wider</div>
+<div class="2xlarge:sticky-top">Stick to the top on viewports sized 2XL (extra-extra-large) or wider</div>
+```
+
+## Sticky bottom
+
+Position an element at the bottom of the viewport, from edge to edge, but only once it has been scrolled past.
+
+```html
+<div class="sticky-bottom">...</div>
+```
+
+## Responsive sticky bottom
+
+Responsive variations of `.sticky-bottom` activate sticky positioning at and above a given breakpoint.
+
+```html
+<div class="small:sticky-bottom">Stick to the bottom on viewports sized SM (small) or wider</div>
+<div class="medium:sticky-bottom">Stick to the bottom on viewports sized MD (medium) or wider</div>
+<div class="large:sticky-bottom">Stick to the bottom on viewports sized LG (large) or wider</div>
+<div class="xlarge:sticky-bottom">Stick to the bottom on viewports sized XL (extra-large) or wider</div>
+<div class="2xlarge:sticky-bottom">Stick to the bottom on viewports sized 2XL (extra-extra-large) or wider</div>
+```
+
+## CSS
+
+Fixed classes use `$zindex-fixed`; sticky classes use `$zindex-sticky` and are generated per breakpoint via a responsive loop.
+
+<ScssDocs name="position-helpers" file="scss/helpers/_position.scss" />

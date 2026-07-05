@@ -1,0 +1,135 @@
+@use "../config" as *;
+@use "../mixins" as *;
+@use "../placeholders" as *;
+
+//
+// Legacy Check Inputs
+//
+// Standard styling for checkbox and radio inputs using traditional `input`
+// elements with background icons.
+//
+
+@mixin _check-bg-image($icon) {
+  @if $enable-background-gradients {
+    background-image: #{$icon}, var(--bg-gradient);
+  } @else {
+    background-image: #{$icon};
+  }
+}
+
+@layer components {
+  // Common styles for both checkbox and radio inputs
+  .check-input:is(input) {
+    @extend %form-colors;
+    --bg-color: var(--input-bg-color, var(--form-idle-bg-regular));
+    --border-color: var(--input-border-color, var(--form-idle-border-color));
+    --margin-t: var(--check-input-margin-t, calc((var(--line-height) - var(--input-height)) * .5));
+
+    flex-shrink: 0;
+    width: var(--input-width);
+    height: var(--input-height);
+    margin-block-start: var(--margin-t);
+    vertical-align: top;
+    appearance: none;
+    background-color: var(--bg-color);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    border: $form-check-border-width solid var(--border-color);
+    print-color-adjust: exact; // Keep themed appearance for print
+    @include box-shadow($form-input-box-shadow);
+    @include transition($form-check-transition);
+
+    @include _check-bg-image(var(--icon));
+
+    &[type="checkbox"] {
+      @include border-radius($form-check-checkbox-border-radius);
+    }
+
+    &[type="radio"] {
+      // stylelint-disable-next-line property-disallowed-list
+      border-radius: $form-check-radio-border-radius;
+    }
+
+    &:focus-visible {
+      --border-color: var(--form-focus-border-color);
+      --focus-ring-offset: #{$form-check-focus-ring-offset};
+      @include focus-ring(true);
+      @include box-shadow($form-input-box-shadow);
+    }
+
+    &:checked {
+      --bg-color: var(--input-checked-bg-color, #{$form-check-checked-bg-color});
+      --border-color: var(--input-checked-border-color, #{$form-check-checked-border-color});
+
+      &[type="checkbox"] {
+        --icon: var(--form-check-icon);
+      }
+
+      &[type="radio"] {
+        --icon: var(--form-radio-icon);
+      }
+    }
+
+    &[type="checkbox"]:indeterminate {
+      --bg-color: var(--input-checked-bg-color, #{$form-check-checked-bg-color});
+      --border-color: var(--input-checked-border-color, #{$form-check-checked-border-color});
+      --icon: var(--form-indeterminate-icon);
+    }
+
+    // Use disabled attribute in addition of :disabled pseudo-class
+    &[disabled],
+    &:disabled {
+      --bg-color: var(--form-disabled-bg-color, #{$form-disabled-bg-regular});
+      --border-color: var(--form-disabled-border-color, #{$form-disabled-border-color});
+      pointer-events: none;
+      filter: none;
+
+      + label {
+        color: $form-check-disabled-label-color;
+      }
+
+      &[type="checkbox"]:checked {
+        --icon: var(--form-check-icon-disabled);
+      }
+
+      &[type="radio"]:checked {
+        --icon: var(--form-radio-icon-disabled);
+      }
+
+      &[type="checkbox"]:indeterminate {
+        --bg-color: var(--form-disabled-bg-color, #{$form-disabled-bg-regular});
+        --border-color: var(--form-disabled-border-color, #{$form-disabled-border-color});
+        --icon: var(--form-indeterminate-icon-disabled);
+      }
+    }
+
+    // Specific styles for checkboxes/radios with role="switch" to support switch styling
+    &[role="switch"] {
+      @include _check-bg-image(var(--form-switch-idle-icon));
+      background-position-x: 0;
+      [dir="rtl"] & {
+        background-position-x: 100%;
+      }
+      @include border-radius($form-switch-border-radius, 0);
+      @include transition($form-switch-transition);
+
+      &:focus {
+        @include _check-bg-image(var(--form-switch-focus-icon));
+      }
+
+      &:checked {
+        @include _check-bg-image(var(--form-switch-checked-icon));
+        background-position-x: 100%;
+        [dir="rtl"] & {
+          background-position-x: 0;
+        }
+      }
+
+      &:disabled {
+        @include _check-bg-image(var(--form-switch-disabled-icon));
+      }
+    }
+
+  }
+} // @layer components

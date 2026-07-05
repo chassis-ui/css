@@ -1,0 +1,32 @@
+@use "sass:map";
+@use "../maps" as *;
+@use "../functions" as *;
+
+//
+// Spinner Utilities
+//
+// Utility map for spinner size and color classes.
+//
+
+$utilities: (
+  // scss-docs-start utils-spinners
+  "spinner-color": (
+    property: --spinner-color,
+    class: spinner,
+    values: map.merge(
+      map-loop($context-colors, opacity-var, #{"$key"}, #{"spinner"}),
+      ( "transparent": transparent )
+    )
+  ),
+  "spinner-opacity": (
+    property: --spinner-opacity,
+    class: spinner-opacity,
+    values: $spinner-opacities
+  ),
+  "spinner-size": (
+    property: --spinner-size,
+    class: null,
+    values: map-rename-keys($spinner-sizes, "spinner-", "start")
+  ),
+  // scss-docs-end utils-spinners
+) !default;

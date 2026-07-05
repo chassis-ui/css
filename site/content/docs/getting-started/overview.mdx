@@ -1,6 +1,6 @@
 ---
 title: Getting Started
-description: Install Chassis CSS, set up the build, and orient yourself with the project — what it is, how to try it, how to install it, and how teams set it up for their own design system.
+description: Install Chassis CSS, set up the build, and get oriented — from a CDN quick start through bundler setup to a full fork-and-own workflow.
 toc: false
 aliases:
   - "/getting-started"
@@ -9,7 +9,7 @@ sections:
   - title: What is Chassis?
     description: A design-system-first CSS framework that keeps Figma and code in sync — and what makes it different from a typical stylesheet.
   - title: Quick Start
-    description: Drop the compiled CSS into a single HTML file and try Chassis without a build step. The fastest way to see what a Chassis page looks like.
+    description: Load the compiled CSS from a CDN into a single HTML file and try Chassis in a browser — no npm, no bundler, no configuration.
   - title: Installation
     description: Install `@chassis-ui/css` and its `@chassis-ui/tokens` peer with pnpm or npm. Covers the import order, settings overrides, and what the package ships.
   - title: Clone and Customize
@@ -19,17 +19,11 @@ sections:
   - title: Parcel
     description: Use Chassis with Parcel's zero-config bundler. Sass detection, project scaffolding, and the import path that matters.
   - title: Vite
-    description: Set up Chassis CSS in a Vite project. Sass plugin, Vite config, and import order.
+    description: Set up Chassis CSS in a Vite project. Sass preprocessor config, Vite setup, and token resolution.
   - title: JavaScript
     description: How Chassis JS plugins work — data attributes, the programmatic API, events, and the real list of plugins shipped in the package.
-  - title: Accessibility
-    description: How Chassis approaches accessibility — context palettes designed for contrast, reduced-motion support, and the `.visually-hidden` utilities.
   - title: Browsers & Devices
     description: Supported browsers and platforms, plus a few mobile-specific behaviours worth knowing about.
-  - title: RTL
-    description: Right-to-left support powered by RTLCSS — required HTML attributes, customizing variables, and serving LTR and RTL together.
-  - title: RFS
-    description: Responsive Font Sizes — the resizing engine Chassis uses to scale typography and spacing fluidly with the viewport.
   - title: Contribute
     description: Set up the project locally with pnpm and Astro, build the docs, and run the test suite.
 ---
@@ -44,22 +38,21 @@ You don't need to read everything to start using Chassis. If you're evaluating i
 
 The pages have a deliberate order:
 
-1. **[What is Chassis?]([[docsref:/getting-started/what-is-chassis]])** — The conceptual frame: Chassis isn't a stylesheet, it's a system rooted in Chassis Tokens. Read this first to understand the rest of the docs.
-2. **[Quick Start]([[docsref:/getting-started/quick-start]])** — Drop the compiled CSS into a `<link>` tag and see Chassis render. No npm, no build, just a page in a browser. Use it to evaluate Chassis or to prototype before investing in a build.
+1. **[What is Chassis CSS?]([[docsref:/getting-started/what-is-chassis]])** — The conceptual frame: Chassis isn't a stylesheet, it's a system rooted in Chassis Tokens. Read this first to understand the rest of the docs.
+2. **[Quick Start]([[docsref:/getting-started/quick-start]])** — Load the compiled CSS from a CDN and see Chassis render in a browser. No npm, no build step. Use it to evaluate Chassis or prototype before investing in a build.
 3. **[Installation]([[docsref:/getting-started/installation]])** — The real setup: install `@chassis-ui/css` from npm, install the `@chassis-ui/tokens` peer, and import them in the right order. This is the page most projects actually need.
-4. **[Clone and Customize]([[docsref:/getting-started/clone-and-customize]])** — For teams building a long-lived design system. Clone the framework, swap in your own token build, configure settings, and ship a CSS bundle that belongs to your product.
+4. **[Clone and Customize]([[docsref:/getting-started/clone-customize]])** — For teams building a long-lived design system. Clone the framework, swap in your own token build, configure settings, and ship a CSS bundle that belongs to your product.
 5. **[Webpack]([[docsref:/getting-started/webpack]])**, **[Parcel]([[docsref:/getting-started/parcel]])**, **[Vite]([[docsref:/getting-started/vite]])** — Bundler-specific recipes once you know the import order. Pick the one that matches your project.
 
 The remaining pages are reference material — read them when you need them.
 
 - **[JavaScript]([[docsref:/getting-started/javascript]])** — Data attributes, the programmatic API, events, and the full list of plugins.
-- **[Accessibility]([[docsref:/getting-started/accessibility]])** — What Chassis gives you for free, what's still your responsibility.
+- **[Accessibility]([[docsref:/core-concepts/accessibility]])** — What Chassis gives you for free, what's still your responsibility.
 - **[Browsers & Devices]([[docsref:/getting-started/browsers-devices]])** — Supported browsers and known mobile quirks.
-- **[RTL]([[docsref:/getting-started/rtl]])** — Right-to-left support and how to enable it.
-- **[RFS]([[docsref:/getting-started/rfs]])** — The fluid type and spacing engine Chassis uses internally.
+- **[RTL]([[docsref:/core-concepts/rtl]])** — Right-to-left support and how to enable it.
 - **[Contribute]([[docsref:/getting-started/contribute]])** — Local setup for working on Chassis itself.
 
-## How Chassis differs from "include this CSS file"
+## How Chassis differs
 
 Most CSS frameworks are a single stylesheet you drop into a `<link>` tag, possibly with a Sass entry point and a small set of override variables. Chassis adds two things on top of that:
 

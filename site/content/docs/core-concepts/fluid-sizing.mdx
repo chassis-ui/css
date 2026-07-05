@@ -1,0 +1,97 @@
+---
+title: Fluid sizing
+description: Chassis CSS scales font sizes and spacing with native CSS clamp(), transitioning smoothly between a minimum and maximum without breakpoints or extra classes.
+toc: true
+---
+
+Chassis CSS applies fluid scaling to font sizes and spacing values using native CSS `clamp()`. Instead of fixed values that jump at breakpoints, each scaled value transitions smoothly between a minimum and maximum as the viewport width changes — with no media queries and no extra classes required.
+
+The compiled output for a `4rem` font size looks like this:
+
+```css
+font-size: clamp(3.4rem, 3.165rem + 1.043vw, 4rem);
+```
+
+The minimum (`3.4rem`) is derived automatically from the maximum using a scale ratio. At 360px the value sits at the minimum; at 1280px it reaches the maximum; between those widths it interpolates linearly.
+
+## Toggling
+
+Fluid sizing is enabled by default. To disable it, pass `$enable-fluid-font-sizes: false` to the config module:
+
+```scss
+@use "@chassis-ui/css/scss/config" with (
+  $enable-fluid-font-sizes: false,
+);
+@use "@chassis-ui/css/scss/chassis";
+```
+
+When disabled, every fluid mixin emits the static maximum value — the `clamp()` output drops out entirely.
+
+## Configuration
+
+Four variables control how the scale range is calculated:
+
+<CxTable>
+| Variable | Default | Description |
+| --- | --- | --- |
+| `$clamp-min-breakpoint` | `22.5rem` (360px) | Viewport width where scaling begins. |
+| `$clamp-max-breakpoint` | `80rem` (1280px) | Viewport width where values reach their maximum. |
+| `$clamp-font-size-scale` | `0.85` | Minimum as a fraction of the maximum — `0.85` gives an 85% minimum, so `4rem` max → `3.4rem` min. |
+| `$clamp-min-font-size` | `1.25rem` | Values at or below this size are not scaled and are returned unchanged. |
+</CxTable>
+
+Pass any of these to the config module to override the defaults:
+
+```scss
+@use "@chassis-ui/css/scss/config" with (
+  $clamp-font-size-scale: .75,
+  $clamp-max-breakpoint: 90rem,
+);
+@use "@chassis-ui/css/scss/chassis";
+```
+
+See [Sass options]([[docsref:/customize/options]]) for the full Sass configuration workflow.
+
+## Sass API
+
+The fluid sizing system exposes named Sass mixins for font sizes and spacing. All accept only the maximum value — the minimum is derived automatically from the configured scale ratio.
+
+### Typography
+
+Apply fluid scaling to font size and line height using the typography shorthands:
+
+```scss
+.title {
+  @include clamp-font-size(4rem);
+  @include clamp-line-height(4.8rem);
+}
+```
+
+### Spacing
+
+Apply fluid scaling to padding, margin, and gap using the spacing shorthands, which accept shorthand values including multi-side notation:
+
+```scss
+.section {
+  @include clamp-padding(4rem 2rem);
+  @include clamp-margin-top(3rem);
+  @include clamp-gap(1.5rem);
+}
+```
+
+Directional variants are available for padding and margin: `clamp-padding-top()`, `clamp-padding-right()`, `clamp-padding-bottom()`, `clamp-padding-left()`, and their margin equivalents.
+
+### Other properties
+
+The core `clamp()` mixin accepts any CSS property as a second argument for cases not covered by a named shorthand:
+
+```scss
+.hero {
+  @include clamp(6rem, letter-spacing);
+}
+```
+
+## See also
+
+- [Typography]([[docsref:/content/typography#fluid-sizes]]) — how fluid sizing applies to font size utility classes.
+- [Line Heights]([[docsref:/core-concepts/line-heights]]) — how per-size line-height tokens work alongside fluid font sizes.

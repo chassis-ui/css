@@ -9,7 +9,7 @@ import BaseComponent from './base-component.js'
 import EventHandler from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
 import {
-  defineJQueryPlugin, getElement, isDisabled, isVisible
+  getElement, isDisabled, isVisible
 } from './util/index.js'
 
 /**
@@ -25,7 +25,7 @@ const EVENT_ACTIVATE = `activate${EVENT_KEY}`
 const EVENT_CLICK = `click${EVENT_KEY}`
 const EVENT_LOAD_DATA_API = `load${EVENT_KEY}${DATA_API_KEY}`
 
-const CLASS_NAME_DROPDOWN_ITEM = 'dropdown-item'
+const CLASS_NAME_MENU_ITEM = 'menu-item'
 const CLASS_NAME_ACTIVE = 'active'
 
 const SELECTOR_DATA_SPY = '[data-cx-spy="scroll"]'
@@ -35,11 +35,9 @@ const SELECTOR_NAV_LINKS = '.nav-link'
 const SELECTOR_NAV_ITEMS = '.nav-item'
 const SELECTOR_LIST_ITEMS = '.list-item'
 const SELECTOR_LINK_ITEMS = `${SELECTOR_NAV_LINKS}, ${SELECTOR_NAV_ITEMS} > ${SELECTOR_NAV_LINKS}, ${SELECTOR_LIST_ITEMS}`
-const SELECTOR_DROPDOWN = '.dropdown'
-const SELECTOR_DROPDOWN_TOGGLE = '.dropdown-toggle'
+const SELECTOR_MENU_TOGGLE = '[data-cx-toggle="menu"]'
 
 const Default = {
-  offset: null,
   rootMargin: '0px 0px -25%',
   smoothScroll: false,
   target: null,
@@ -47,7 +45,6 @@ const Default = {
 }
 
 const DefaultType = {
-  offset: '(number|null)',
   rootMargin: 'string',
   smoothScroll: 'boolean',
   target: 'element',
@@ -112,8 +109,6 @@ class ScrollSpy extends BaseComponent {
   // Private
   _configAfterMerge(config) {
     config.target = getElement(config.target) || document.body
-
-    config.rootMargin = config.offset ? `${config.offset}px 0px -30%` : config.rootMargin
 
     if (typeof config.threshold === 'string') {
       config.threshold = config.threshold.split(',').map(value => Number.parseFloat(value))
@@ -232,10 +227,13 @@ class ScrollSpy extends BaseComponent {
   }
 
   _activateParents(target) {
-    // Activate dropdown parents
-    if (target.classList.contains(CLASS_NAME_DROPDOWN_ITEM)) {
-      SelectorEngine.findOne(SELECTOR_DROPDOWN_TOGGLE, target.closest(SELECTOR_DROPDOWN))
-        .classList.add(CLASS_NAME_ACTIVE)
+    // Activate menu parents
+    if (target.classList.contains(CLASS_NAME_MENU_ITEM)) {
+      const menuToggle = target.closest('.menu')?.previousElementSibling
+      if (menuToggle?.matches(SELECTOR_MENU_TOGGLE)) {
+        menuToggle.classList.add(CLASS_NAME_ACTIVE)
+      }
+
       return
     }
 
@@ -256,23 +254,6 @@ class ScrollSpy extends BaseComponent {
       node.classList.remove(CLASS_NAME_ACTIVE)
     }
   }
-
-  // Static
-  static jQueryInterface(config) {
-    return this.each(function () {
-      const data = ScrollSpy.getOrCreateInstance(this, config)
-
-      if (typeof config !== 'string') {
-        return
-      }
-
-      if (data[config] === undefined || config.startsWith('_') || config === 'constructor') {
-        throw new TypeError(`No method named "${config}"`)
-      }
-
-      data[config]()
-    })
-  }
 }
 
 /**
@@ -284,11 +265,5 @@ EventHandler.on(window, EVENT_LOAD_DATA_API, () => {
     ScrollSpy.getOrCreateInstance(spy)
   }
 })
-
-/**
- * jQuery
- */
-
-defineJQueryPlugin(ScrollSpy)
 
 export default ScrollSpy

@@ -1,130 +1,164 @@
 ---
 title: Background
-description: Convey meaning through `background-color` and add decoration with gradients.
+description: Background color utilities based on the Chassis context color system, with gradient and opacity support.
 toc: true
+css_layer: utilities
 ---
 
 import { getData } from '@libs/data'
 
 <Callout name="warning-color-assistive-technologies" />
 
-## Background Color
+Background utilities cover three sub-systems: context color backgrounds, a gradient overlay, and opacity control. All three integrate with the [color system]([[docsref:/core-concepts/color-system]]).
 
-Similar to the foreground classes, set the background of an element to any contextual class. Background utilities **do not set** `color` property, so in some cases you'll want to use in combination with `.fg-*`  [color utilities]([[docsref:/utilities/colors]]).
+## Background color
 
-### Body Backgrounds
+Background utilities set `background-color` using the Chassis context color palette. They do not set `color`, so `.fg-*` [color utilities]([[docsref:/utilities/colors]]) may be needed for readable text.
+
+### Body backgrounds
+
+Body background classes draw from the `default` context palette.
 
 <Example code={`<p class="bg-main p-2xsmall">.bg-main</p>
-<p class="bg-even p-2xsmall">.bg-even</p>
-<p class="bg-evident p-2xsmall">.bg-evident</p>
-<p class="bg-inverse fg-inverse p-2xsmall">.bg-inverse</p>
-<p class="base-color contrast-color p-2xsmall">.base-color</p>
-<p class="bg-highlight p-2xsmall">.bg-highlight</p>`} />
+<p class="bg-even">.bg-even</p>
+<p class="bg-evident">.bg-evident</p>
+<p class="bg-highlight">.bg-highlight</p>
+<p class="bg-solid fg-solid">.bg-solid</p>
+<p class="bg-inverse fg-inverse">.bg-inverse</p>`} />
 
-### Color Backgrounds
+### Context backgrounds
 
-Base **context colors** can be used as background with `.bg-*` classes.
+Context color backgrounds follow the `.bg-{context}` class pattern, where `{context}` is any registered context color.
 
 <Example code={getData('context-colors').map((contextColor) => `<p class="bg-${contextColor.name } fg-contrast p-2xsmall">.bg-${contextColor.name}</p>`)} />
 
-### Context Backgrounds
+### Palette backgrounds
 
-Body backgrounds are available for every **context color**.
+Each context color exposes the full body background scale through a `{context}-bg-{role}` prefixed class pattern.
 
-<Example code={`<p class="primary-bg-main primary-fg-main p-2xsmall">.primary-bg-main</p>
-<p class="primary-bg-even primary-fg-main p-2xsmall">.primary-bg-even</p>
-<p class="primary-bg-evident primary-fg-main p-2xsmall">.primary-bg-evident</p>
-<p class="primary-bg-inverse primary-fg-inverse p-2xsmall">.primary-bg-inverse</p>
-<p class="primary-base-color primary-contrast-color p-2xsmall">.primary-base-color</p>
-<p class="primary-bg-highlight primary-fg-main p-2xsmall">.primary-bg-highlight</p>`} />
+<Example code={`<p class="primary-bg-main">.primary-bg-main</p>
+<p class="primary-bg-even">.primary-bg-even</p>
+<p class="primary-bg-evident">.primary-bg-evident</p>
+<p class="primary-bg-highlight">.primary-bg-highlight</p>
+<p class="primary-bg-solid primary-fg-solid">.primary-bg-solid</p>
+<p class="primary-bg-inverse primary-fg-inverse">.primary-bg-inverse</p>`} />
 
-### Context Scenes
+### Dimmed backgrounds
 
-<Example code={`<p class="dim-main fg-inverse p-2xsmall">.dim-main</p>
-<p class="dim-subtle p-2xsmall">.dim-subtle</p>
-<p class="dim-slight p-2xsmall">.dim-slight</p>
-<p class="transparent-color p-2xsmall">.transparent-color</p>`} />
+Dim classes apply semi-transparent background colors from the context palette. The opacity levels — `main`, `subtle`, and `slight` — are defined in the [dim opacity scale](#context-opacities).
 
-<Example code={`<p class="secondary-dim-main p-2xsmall">.secondary-dim-main</p>
-<p class="secondary-dim-subtle p-2xsmall">.secondary-dim-subtle</p>
-<p class="secondary-dim-slight p-2xsmall">.secondary-dim-slight</p>
-<p class="secondary-transparent-color p-2xsmall">.secondary-transparent-color</p>`} />
+<Example class="cxd-pattern-dots" code={`<p class="dim-main fg-inverse">.dim-main</p>
+<p class="dim-subtle">.dim-subtle</p>
+<p class="dim-slight">.dim-slight</p>`} />
+
+<Example class="cxd-pattern-dots" code={`<p class="primary-dim-main primary-fg-inverse">.primary-dim-main</p>
+<p class="primary-dim-subtle">.primary-dim-subtle</p>
+<p class="primary-dim-slight">.primary-dim-slight</p>`} />
 
 ## Background gradient
 
-By adding a `.bg-gradient` class, a linear gradient is added as background image to the backgrounds. This gradient starts with a semi-transparent white which fades out to the bottom.
+`.bg-gradient` adds a linear gradient overlay — a semi-transparent white that fades to transparent at the bottom — to any background. The gradient is exposed as a CSS custom property: `--cx-bg-gradient`.
 
-Do you need a gradient in your custom CSS? Just add `background-image: var(--cx-gradient);`.
+The gradient is also available in custom CSS via `background-image: var(--cx-bg-gradient)`.
 
 <Example code={getData('context-colors').map((contextColor) => `<p class="bg-${contextColor.name } bg-gradient fg-contrast p-xsmall">.bg-${contextColor.name}.bg-gradient</p>`)} />
 
 ## Opacity
 
-Using CSS variables for `background-color` utilities allows for real-time color changes without compilation and dynamic alpha transparency changes.
+Opacity utilities control the alpha channel of any context color background through the `--cx-bg-opacity` custom property.
 
 ### How it works
 
-Consider our `.bg-primary` utility.
+Each `.bg-{context}` class writes an OKLCH relative color expression into `--cx-bg-color`, using `--cx-bg-opacity` as the alpha channel. A shared selector applies `background-color: var(--cx-bg-color)`. `--cx-bg-opacity` defaults to `1`.
 
 ```css
 .bg-primary {
-  background-color: oklch(from var(--cx-primary) l c h / var(--cx-bg-opacity, 1)) !important;
+  --cx-bg-color: oklch(from var(--cx-primary) l c h / var(--cx-bg-opacity, 1));
 }
+
+/* shared selector */
+.bg-primary, .bg-secondary, /* … */ {
+  background-color: var(--cx-bg-color);
+}
+
 .bg-opacity-50 {
-  --cx-bg-opacity: var(--cx-opacity-50);
+  --cx-bg-opacity: 0.5;
 }
 ```
 
-We use the `--cx-primary` CSS variable directly with CSS relative color syntax, and attach a second CSS variable, `--cx-bg-opacity`, for the alpha transparency (with a default value `1`). The `oklch(from ...)` expression derives the color from the variable and applies the opacity channel. Then, the opacity class overrides the default opacity by setting `--cx-bg-opacity` on the element.
+### Opacity override
 
-### Example
+Override `--cx-bg-opacity` with an inline style or a `.bg-opacity-*` utility.
 
-To change that opacity, override `--cx-bg-opacity` via custom styles or inline styles.
-
-<Example code={`<div class="bg-primary p-2xsmall primary-contrast-color">
+<Example class="cxd-pattern-dots" code={`<div class="bg-primary p-2xsmall primary-contrast-color">
   This is default primary background</div>
 <div style="--cx-bg-opacity: .4;" class="bg-primary p-2xsmall">
   This is 40% opacity primary background</div>`} />
 
 Or, choose from any of the `.bg-opacity-*` utilities:
 
-<Example code={getData('token-opacities').map((opacity) => `<div class="bg-primary bg-opacity-${opacity.name } p-2xsmall">This is <code>bg-opacity-${opacity.name}</code> background</div>`)} />
+<Example class="cxd-pattern-dots" code={getData('token-opacities').map((opacity) => `<div class="bg-primary bg-opacity-${opacity.name } p-2xsmall">This is <code>bg-opacity-${opacity.name}</code> background</div>`)} />
 
-### Context Opacity
+### Context opacities
 
-You can directly apply a **context opacity** utility to match `scene-*` colors:
+The three dim opacity levels (`main`, `subtle`, `slight`) are also available as `.bg-opacity-main`, `.bg-opacity-subtle`, and `.bg-opacity-slight`, and can be applied to any background color.
 
-<Example code={`<div class="bg-primary bg-opacity-dim p-2xsmall">This is <code>dim-main</code> opacity primary background</div>
-<div class="bg-primary bg-opacity-blur p-2xsmall">This is <code>dim-subtle</code> opacity primary background</div>
-<div class="bg-primary bg-opacity-shade p-2xsmall">This is <code>dim-slight</code> opacity primary background</div>
-<div class="bg-primary bg-opacity-clear p-2xsmall">This is <code>transparent-color</code> opacity primary background</div>`} />
+<Example class="cxd-pattern-dots" code={`<div class="bg-primary bg-opacity-main p-2xsmall">This is <code>dim-main</code> opacity primary background</div>
+<div class="bg-primary bg-opacity-subtle p-2xsmall">This is <code>dim-subtle</code> opacity primary background</div>
+<div class="bg-primary bg-opacity-slight p-2xsmall">This is <code>dim-slight</code> opacity primary background</div>`} />
 
 ## CSS
 
-<DocsCSS />
+Background utilities are generated from Sass maps built on design token values via the utilities API.
 
-### Variables
+### Reference
 
-<DocsCSSVars />
+All background utilities set `background-color` through the shared `--cx-bg-color` custom property. Context color backgrounds embed `--cx-bg-opacity` in the color expression; body, palette, and dim backgrounds reference a pre-computed token and are not affected by opacity utilities.
+
+The tables list all background utilities and their CSS properties.
+
+**Background colors**
+
+<UtilityReferenceTable utility="bg-" exclude="bg-opacity-" />
+
+**Background opacities:**
+
+<UtilityReferenceTable utility="bg-opacity-" />
+
+**Contextual backgrounds:**
+
+<UtilityReferenceTable utility={getData('context-colors').map((contextColor) => `${contextColor.name }-bg-`)} exclude="bg-opacity-" />
+
+**Dimmed backgrounds:**
+
+<UtilityReferenceTable utility={["dim-", ...getData('context-colors').map((contextColor) => `${contextColor.name }-dim-`)]} exclude="bg-opacity-" />
+
+<Callout type="info" >
+  Primitive colors (e.g. `--cx-primary-50`) have no generated utility classes by default. Use [utilities API]([[docsref:/utilities/api#using-the-api]]) to generate classes for primitive colors if needed.
+</Callout>
 
 ### Sass variables
 
-<DocsSASSVars />
+Background color tokens are part of the [color system]([[docsref:/core-concepts/color-system]]) in `scss/tokens/` and not listed here.
 
-Most `background-color` utilities are generated by our [context colors]([[docsref:/core-concepts/color-system]]), reassigned from our generic color palette variables.
+`$bg-gradient` defines the `background-image` value applied by `.bg-gradient` and by the `gradient()` mixin when `$enable-background-gradients` is `true`.
 
-<ScssDocs name="context-color-variables" file="scss/tokens/_colors.scss" />
-<ScssDocs name="bg-opacity-tokens" file="scss/tokens/_index.scss" />
-<ScssDocs name="variable-gradient" file="scss/_variables.scss" />
-
-Generated utilities.
-
-<ScssDocs name="utils-bg-color" file="scss/utilities/_index.scss" />
+<ScssDocs name="variable-gradient" file="scss/config/_defaults.scss" />
 
 ### Sass maps
 
-Theme colors are then put into a Sass map so we can loop over them to generate our utilities, component modifiers, and more.
+Background color maps are part of the [color system]([[docsref:/core-concepts/color-system]]) in `scss/maps/` and not listed here. Background opacity utilities are generated from two Sass maps in `scss/maps/_opacities.scss`.
 
-<ScssDocs name="context-colors-map" file="scss/maps/_colors.scss" />
-<ScssDocs name="opacities-map" file="scss/maps/_opacities.scss" />
+`$opacities` defines the full token-named opacity scale for `.bg-opacity-{level}` utilities.
 
+<ScssDocs name="opacity-levels-map" file="scss/maps/_opacities.scss" />
+
+`$dim-opacities` defines three semantic dim levels.
+
+<ScssDocs name="dim-opacities-map" file="scss/maps/_opacities.scss" />
+
+### Utilities API
+
+Background utilities are declared in `scss/utilities/_index.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
+
+<ScssDocs name="utils-bg-color" file="scss/utilities/_index.scss" />

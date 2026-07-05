@@ -1,44 +1,29 @@
 ---
 title: CSS Grid
-description: Learn how to enable, use, and customize our alternate layout system built on CSS Grid with examples and code snippets.
+description: CSS Grid layout classes for column spanning, placement, and auto-fill patterns, generated across six responsive breakpoints.
 toc: true
-added:
-  version: "5.1"
+css_layer: layout
 ---
 
-## How it works
+## Overview
 
-Chassis CSS has the option to enable a separate grid system that’s built on CSS Grid. You still get classes you can apply on a whim to build responsive layouts, but with a different approach under the hood.
+The `.grid` class sets `display: grid` with a twelve-column template driven by CSS custom properties. Column spans use `.g-col-{n}` (which sets `grid-column: auto / span n`) and placement uses `.g-start-{n}` (which sets `grid-column-start`). Both class families have breakpoint-prefixed variants across all six breakpoints.
 
-- **CSS Grid is opt-in.** Disable the default grid system by setting `$enable-grid-classes: false` and enable the CSS Grid by setting `$enable-cssgrid: true`. Then, recompile your Sass.
+Both layout systems are active by default — `$enable-grid-classes: true` and `$enable-cssgrid: true`. Either can be disabled before compiling by setting its flag to `false`. See [Grid system]([[docsref:/layout/grid]]) for the flexbox alternative.
 
-- **Replace instances of `.row` with `.grid`.** The `.grid` class sets `display: grid` and creates a `grid-template` that you build on with your HTML.
+## Compared to flexbox
 
-- **Replace `.col-*` classes with `.g-col-*` classes.** This is because our CSS Grid columns use the `grid-column` property instead of `width`.
+The `.grid` system differs from `.row` / `.col-*` in a few important ways:
 
-- **Columns and gutter sizes are set via CSS variables.** Set these on the parent `.grid` and customize however you want, inline or in a stylesheet, with `--cx-grid-columns` and `--cx-grid-gap`.
+- **No negative margins.** `.grid` uses the CSS `gap` property instead of padding-and-negative-margin gutters, so there is no row-edge bleed and `.overflow-hidden` wrappers are not required.
+- **Gap applies to both axes.** The `gap` on `.grid` is horizontal and vertical simultaneously. Use `row-gap` or `column-gap` as inline styles to control axes independently.
+- **Flex utilities have no effect.** `align-items`, `justify-content`, and similar flex properties do not apply to CSS Grid items.
+- **CSS custom properties instead of modifier classes.** Column count and gap width are runtime-configurable via `--cx-grid-columns` and `--cx-grid-gap`; use inline styles where modifier classes would be used on `.row`.
+- **Nested grids inherit parent configuration.** A nested `.grid` inherits `--cx-grid-columns` from the outer grid; override it explicitly when a different column count is needed. See [Nesting](#nesting).
 
-In the future, Chassis CSS will likely shift to a hybrid solution as the `gap` property has achieved nearly full browser support for flexbox.
+## Basic usage
 
-## Key differences
-
-Compared to the default grid system:
-
-- Flex utilities don’t affect the CSS Grid columns in the same way.
-
-- Gaps replaces gutters. The `gap` property replaces the horizontal `padding` from our default grid system and functions more like `margin`.
-
-- As such, unlike `.row`s, `.grid`s have no negative margins and margin utilities cannot be used to change the grid gutters. Grid gaps are applied horizontally and vertically by default. See the [customizing section](#customizing) for more details.
-
-- Inline and custom styles should be viewed as replacements for modifier classes (e.g., `style="--cx-grid-columns: 3;"` vs `class="row-cols-3"`).
-
-- Nesting works similarly, but may require you to reset your column counts on each instance of a nested `.grid`. See the [nesting section](#nesting) for details.
-
-## Examples
-
-### Three columns
-
-Three equal-width columns across all viewports and devices can be created by using the `.g-col-4` classes. Add [responsive classes](#responsive) to change the layout by viewport size.
+Three equal-width columns in a 12-column grid each span 4 tracks (3 × 4 = 12). Add breakpoint-prefixed classes to change the layout at specific viewport widths — see [Responsive classes](#responsive-classes).
 
 <Example class="cxd-example-cssgrid" code={`<div class="grid text-center">
     <div class="g-col-4">.g-col-4</div>
@@ -46,9 +31,9 @@ Three equal-width columns across all viewports and devices can be created by usi
     <div class="g-col-4">.g-col-4</div>
   </div>`} />
 
-### Responsive
+## Responsive classes
 
-Use responsive classes to adjust your layout across viewports. Here we start with two columns on the narrowest viewports, and then grow to three columns on medium viewports and above.
+Breakpoint-prefixed column classes control span width at specific viewport widths. The example below uses two `.g-col-6` columns at all viewports, then narrows to three `.medium:g-col-4` columns at the `medium` breakpoint and above:
 
 <Example class="cxd-example-cssgrid" code={`<div class="grid text-center">
     <div class="g-col-6 medium:g-col-4">.g-col-6 .medium:g-col-4</div>
@@ -56,16 +41,16 @@ Use responsive classes to adjust your layout across viewports. Here we start wit
     <div class="g-col-6 medium:g-col-4">.g-col-6 .medium:g-col-4</div>
   </div>`} />
 
-Compare that to this two column layout at all viewports.
+A two-column layout with no breakpoint variation:
 
 <Example class="cxd-example-cssgrid" code={`<div class="grid text-center">
     <div class="g-col-6">.g-col-6</div>
     <div class="g-col-6">.g-col-6</div>
   </div>`} />
 
-## Wrapping
+## Column wrapping
 
-Grid items automatically wrap to the next line when there’s no more room horizontally. Note that the `gap` applies to horizontal and vertical gaps between grid items.
+Grid items wrap to the next row when the total span in the current row exceeds the column count. The `gap` applies to both horizontal and vertical spacing between items:
 
 <Example class="cxd-example-cssgrid" code={`<div class="grid text-center">
     <div class="g-col-6">.g-col-6</div>
@@ -75,9 +60,9 @@ Grid items automatically wrap to the next line when there’s no more room horiz
     <div class="g-col-6">.g-col-6</div>
   </div>`} />
 
-## Starts
+## Start classes
 
-Start classes aim to replace our default grid’s offset classes, but they’re not entirely the same. CSS Grid creates a grid template through styles that tell browsers to “start at this column” and “end at this column”. Those properties are `grid-column-start` and `grid-column-end`. Start classes are shorthand for the former. Pair them with the column classes to size and align your columns however you need. Start classes begin at `1` as `0` is an invalid value for these properties.
+`.g-start-{n}` sets `grid-column-start` to place an item at a specific column track. Classes are generated from `.g-start-1` through `.g-start-11` — starting at column 12 is not useful in a 12-column grid and is omitted. Pair with `.g-col-*` to control both position and span:
 
 <Example class="cxd-example-cssgrid" code={`<div class="grid text-center">
     <div class="g-col-3 g-start-2">.g-col-3 .g-start-2</div>
@@ -86,7 +71,7 @@ Start classes aim to replace our default grid’s offset classes, but they’re 
 
 ## Auto columns
 
-When there are no classes on the grid items (the immediate children of a `.grid`), each grid item will automatically be sized to one column.
+When no `.g-col-*` class is on a grid item, CSS Grid places it automatically into the next available slot at one column wide (in a 12-column grid, twelve items fill one row):
 
 <Example class="cxd-example-cssgrid" code={`<div class="grid text-center">
     <div>1</div>
@@ -103,7 +88,7 @@ When there are no classes on the grid items (the immediate children of a `.grid`
     <div>1</div>
   </div>`} />
 
-This behavior can be mixed with grid column classes.
+Explicit `.g-col-*` items and auto-sized items can coexist in the same `.grid`:
 
 <Example class="cxd-example-cssgrid" code={`<div class="grid text-center">
     <div class="g-col-6">.g-col-6</div>
@@ -115,16 +100,17 @@ This behavior can be mixed with grid column classes.
     <div>1</div>
   </div>`} />
 
+Set `--cx-grid-columns` to a smaller value to produce an auto-column layout with fewer, wider tracks:
+
+<Example class="cxd-example-cssgrid" code={`<div class="grid text-center" style="--cx-grid-columns: 3;">
+    <div>Auto-column</div>
+    <div>Auto-column</div>
+    <div>Auto-column</div>
+  </div>`} />
+
 ## Nesting
 
-Similar to our default grid system, our CSS Grid allows for easy nesting of `.grid`s. However, unlike the default, this grid inherits changes in the rows, columns, and gaps. Consider the example below:
-
-- We override the default number of columns with a local CSS variable: `--cx-grid-columns: 3`.
-- In the first auto-column, the column count is inherited and each column is one-third of the available width.
-- In the second auto-column, we’ve reset the column count on the nested `.grid` to 12 (our default).
-- The third auto-column has no nested content.
-
-In practice this allows for more complex and custom layouts when compared to our default grid system.
+A `.grid` inside another grid item inherits the outer `--cx-grid-columns` value. Override `--cx-grid-columns` on the nested `.grid` to use a different column count. The first inner grid below inherits the parent's 3-column layout; the second resets to 12:
 
 <Example class="cxd-example-cssgrid" code={`<div class="grid text-center overflow-x-auto" style="--cx-grid-columns: 3;">
     <div>
@@ -147,31 +133,21 @@ In practice this allows for more complex and custom layouts when compared to our
 
 ## Customizing
 
-Customize the number of columns, the number of rows, and the width of the gaps with local CSS variables.
+The three custom properties below can be set on any `.grid` element — inline or in a stylesheet — to override the default configuration for that instance:
 
 <CxTable>
-| Variable | Fallback value | Description |
+| Variable | Fallback | Description |
 | --- | --- | --- |
-| `--cx-grid-rows` | `1` | The number of rows in your grid template |
-| `--cx-grid-columns` | `12` | The number of columns in your grid template |
-| `--cx-grid-gap` | `1.5rem` | The size of the gap between columns (vertical and horizontal) |
+| `--cx-grid-columns` | `12` | Number of columns in the grid template |
+| `--cx-grid-rows` | `1` | Number of rows in the grid template |
+| `--cx-grid-gap` | `1.5rem` | Gap between grid items (horizontal and vertical) |
 </CxTable>
 
-These CSS variables have no default value; instead, they apply fallback values that are used _until_ a local instance is provided. For example, we use `var(--cx-rows, 1)` for our CSS Grid rows, which ignores `--cx-rows` because that hasn’t been set anywhere yet. Once it is, the `.grid` instance will use that value instead of the fallback value of `1`.
-
-### No grid classes
-
-Immediate children elements of `.grid` are grid items, so they’ll be sized without explicitly adding a `.g-col` class.
-
-<Example class="cxd-example-cssgrid" code={`<div class="grid text-center" style="--cx-grid-columns: 3;">
-    <div>Auto-column</div>
-    <div>Auto-column</div>
-    <div>Auto-column</div>
-  </div>`} />
+These properties have no default value in CSS; the fallback value kicks in when no instance has been set in the inheritance chain. For example, `.grid` reads `var(--cx-grid-columns, 12)` — it uses `12` until `--cx-grid-columns` is set on a parent or on the `.grid` element itself.
 
 ### Columns and gaps
 
-Adjust the number of columns and the gap.
+Override column count and gap together with inline styles:
 
 <Example class="cxd-example-cssgrid" code={`<div class="grid text-center" style="--cx-grid-columns: 4; --cx-grid-gap: 5rem;">
     <div class="g-col-2">.g-col-2</div>
@@ -185,7 +161,7 @@ Adjust the number of columns and the gap.
 
 ### Adding rows
 
-Adding more rows and changing the placement of columns:
+`.grid` generates a single-row template by default. Increase `--cx-grid-rows` to define a taller explicit grid, then use the `grid-row` property inline to assign items to specific rows:
 
 <Example class="cxd-example-cssgrid" code={`<div class="grid text-center" style="--cx-grid-rows: 3; --cx-grid-columns: 3;">
     <div>Auto-column</div>
@@ -195,7 +171,7 @@ Adding more rows and changing the placement of columns:
 
 ### Gaps
 
-Change the vertical gaps only by modifying the `row-gap`. Note that we use `gap` on `.grid`s, but `row-gap` and `column-gap` can be modified as needed.
+Set `row-gap` inline to override the vertical gap independently of `--cx-grid-gap`:
 
 <Example class="cxd-example-cssgrid" code={`<div class="grid text-center" style="row-gap: 0;">
     <div class="g-col-6">.g-col-6</div>
@@ -205,7 +181,7 @@ Change the vertical gaps only by modifying the `row-gap`. Note that we use `gap`
     <div class="g-col-6">.g-col-6</div>
   </div>`} />
 
-Because of that, you can have different vertical and horizontal `gap`s, which can take a single value (all sides) or a pair of values (vertical and horizontal). This can be applied with an inline style for `gap`, or with our `--cx-grid-gap` CSS variable.
+`--cx-grid-gap` accepts a two-value pair (`row-gap column-gap`) for asymmetric spacing:
 
 <Example class="cxd-example-cssgrid" code={`<div class="grid text-center" style="--cx-grid-gap: .25rem 1rem;">
     <div class="g-col-6">.g-col-6</div>
@@ -215,16 +191,35 @@ Because of that, you can have different vertical and horizontal `gap`s, which ca
     <div class="g-col-6">.g-col-6</div>
   </div>`} />
 
-## Sass
+## Auto-fill layout
 
-One limitation of the CSS Grid is that our default classes are still generated by two Sass variables, `$grid-columns` and `$grid-gutter-width`. This effectively predetermines the number of classes generated in our compiled CSS. You have two options here:
+`.grid-fill` creates a grid where columns expand equally to fill the available horizontal space, using `grid-template-columns: repeat(auto-fit, minmax(0, 1fr))`. Unlike `.grid`, the column count is not configurable — it equals the number of direct children. The gap defaults to `1.5rem` and is controlled via `--cx-gap` (not `--cx-grid-gap`):
 
-- Modify those default Sass variables and recompile your CSS.
-- Use inline or custom styles to augment the provided classes.
+<Example class="cxd-example-cssgrid" code={`<div class="grid-fill text-center">
+    <div>Column</div>
+    <div>Column</div>
+    <div>Column</div>
+    <div>Column</div>
+  </div>`} />
 
-For example, you can increase the column count and change the gap size, and then size your “columns” with a mix of inline styles and predefined CSS Grid column classes (e.g., `.g-col-4`).
+## Subgrid
 
-<Example class="cxd-example-cssgrid" code={`<div class="grid text-center" style="--cx-grid-columns: 18; --cx-grid-gap: .5rem;">
-    <div style="grid-column: span 14;">14 columns</div>
+`.grid-cols-subgrid` sets `grid-template-columns: subgrid` on an element, causing it to inherit the parent grid's column track definitions instead of creating its own. Apply it to a multi-column child alongside `.grid` to align the child's contents to the outer grid's tracks:
+
+<Example class="cxd-example-cssgrid" code={`<div class="grid text-center">
+    <div class="g-col-8 grid grid-cols-subgrid">
+      <div class="g-col-4">Subgrid .g-col-4</div>
+      <div class="g-col-4">Subgrid .g-col-4</div>
+    </div>
     <div class="g-col-4">.g-col-4</div>
   </div>`} />
+
+## CSS
+
+<DocsCSS name="CSS Grid" type="system" />
+
+### Sass variables
+
+`.g-col-*` and `.g-start-*` classes are generated at compile time from `$grid-columns`. Increasing `$grid-columns` extends the generated range; setting `--cx-grid-columns` at runtime to a value beyond the compiled range requires a `style="grid-column: span {n}"` inline override for spans without a generated class.
+
+<ScssDocs name="grid-variables" file="scss/config/_defaults.scss" />

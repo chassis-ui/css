@@ -1,0 +1,171 @@
+@use "../../config" as *;
+
+// stylelint-disable custom-property-pattern
+
+@include describe("$enable-accordion-sizes") {
+  @include it("outputs .large and .small size variants when enabled") {
+    $enable-accordion-sizes: true !global;
+
+    @include assert() {
+      @include output() {
+        .accordion {
+          @if $enable-accordion-sizes {
+            &.large { --accordion-caret-size: #{$accordion-large-caret-size}; }
+            &.small { --accordion-caret-size: #{$accordion-small-caret-size}; }
+          }
+        }
+      }
+      @include expect() {
+        .accordion.large { --accordion-caret-size: #{$accordion-large-caret-size}; }
+        .accordion.small { --accordion-caret-size: #{$accordion-small-caret-size}; }
+      }
+    }
+  }
+
+  @include it("skips size variants when disabled") {
+    $enable-accordion-sizes: false !global;
+
+    @include assert() {
+      @include output() {
+        @if $enable-accordion-sizes {
+          .accordion.large { --accordion-caret-size: #{$accordion-large-caret-size}; }
+          .accordion.small { --accordion-caret-size: #{$accordion-small-caret-size}; }
+        }
+      }
+      @include expect() {
+        // intentionally empty — no CSS should be emitted
+      }
+    }
+  }
+}
+
+@include describe("$enable-accordion-contexts") {
+  @include it("outputs .context variant when enabled") {
+    $enable-accordion-contexts: true !global;
+
+    @include assert() {
+      @include output() {
+        .accordion {
+          @if $enable-accordion-contexts {
+            &.context { --accordion-border-color: #{$accordion-border-color-context}; }
+          }
+        }
+      }
+      @include expect() {
+        .accordion.context { --accordion-border-color: #{$accordion-border-color-context}; }
+      }
+    }
+  }
+
+  @include it("skips .context variant when disabled") {
+    $enable-accordion-contexts: false !global;
+
+    @include assert() {
+      @include output() {
+        @if $enable-accordion-contexts {
+          .accordion.context { --accordion-border-color: #{$accordion-border-color-context}; }
+        }
+      }
+      @include expect() {
+        // intentionally empty — no CSS should be emitted
+      }
+    }
+  }
+}
+
+@include describe("accordion CSS variable interpolation") {
+  @include it("maps SCSS token to CSS custom property with component-scoped fallback") {
+    @include assert() {
+      @include output() {
+        .accordion {
+          --border-width: var(--accordion-border-width, #{$accordion-border-width});
+          --border-color: var(--accordion-border-color, #{$accordion-border-color});
+          --caret-size: var(--accordion-caret-size, #{$accordion-caret-size});
+        }
+      }
+      @include expect() {
+        .accordion {
+          --border-width: var(--accordion-border-width, #{$accordion-border-width});
+          --border-color: var(--accordion-border-color, #{$accordion-border-color});
+          --caret-size: var(--accordion-caret-size, #{$accordion-caret-size});
+        }
+      }
+    }
+  }
+}
+
+@include describe("accordion summary element") {
+  @include it("uses display: list-item to preserve keyboard tab order in WebKit") {
+    @include assert() {
+      @include output() {
+        .accordion > details > summary {
+          display: list-item;
+          list-style: none;
+        }
+      }
+      @include expect() {
+        .accordion > details > summary {
+          display: list-item;
+          list-style: none;
+        }
+      }
+    }
+  }
+}
+
+@include describe("accordion-title element") {
+  @include it("uses pointer-events: none so click targets always land on summary") {
+    @include assert() {
+      @include output() {
+        .accordion > details > summary > .accordion-title {
+          pointer-events: none;
+        }
+      }
+      @include expect() {
+        .accordion > details > summary > .accordion-title {
+          pointer-events: none;
+        }
+      }
+    }
+  }
+}
+
+@include describe("accordion flush variant") {
+  @include it("removes outer border and radius") {
+    @include assert() {
+      @include output() {
+        .accordion.flush {
+          border: 0;
+          border-radius: 0;
+        }
+      }
+      @include expect() {
+        .accordion.flush {
+          border: 0;
+          border-radius: 0;
+        }
+      }
+    }
+  }
+}
+
+@include describe("accordion caret-end variant") {
+  @include it("places caret after text at trailing edge") {
+    @include assert() {
+      @include output() {
+        .accordion.caret-end > details > summary > .accordion-title::before {
+          order: 1;
+          margin-inline-start: auto;
+          margin-inline-end: 0;
+        }
+      }
+      @include expect() {
+        .accordion.caret-end > details > summary > .accordion-title::before {
+          order: 1;
+          margin-inline-start: auto;
+          margin-inline-end: 0;
+        }
+      }
+    }
+  }
+}

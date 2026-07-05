@@ -1,7 +1,8 @@
 ---
 import DocsLayout from '@chassis-ui/docs/layouts/DocsLayout.astro'
 import { docsPages } from '@libs/content'
-import Code from '@shortcodes/Code.astro'
+import Code from '@chassis-ui/docs/shortcodes/Code.astro'
+import PageMeta from '@components/PageMeta.astro'
 import { render } from 'astro:content'
 import '../../../scss/docs.scss'
 
@@ -13,18 +14,22 @@ export async function getStaticPaths() {
     }
   })
 }
-
 const docsPage = Astro.props
 const { id, data } = docsPage
 const frontmatter = data
 const { Content, headings } = await render(docsPage)
+
+const parentDirectory = id.includes('/') ? id.split('/')[0] : ''
 ---
 
 <DocsLayout frontmatter={frontmatter} headings={headings} id={id}>
+  <PageMeta frontmatter={frontmatter} id={id} parentDirectory={parentDirectory} />
   <Content components={{ pre: Code }} />
   <Fragment slot="scripts">
-    <script src="../../../assets/snippets.js"></script>
-    <script src="../../../assets/stackblitz.js"></script>
-    <script is:inline src="/static/js/example-mode.js"></script>
+    <script>
+      import application from '../../../assets/application.js'
+      application()
+    </script>
+    <script src="@chassis-ui/docs/js/example-mode.js"></script>
   </Fragment>
 </DocsLayout>

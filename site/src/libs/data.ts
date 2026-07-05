@@ -1,5 +1,5 @@
 import fs from 'node:fs'
-import yaml from 'js-yaml'
+import { load } from 'js-yaml'
 import { z } from 'zod'
 import {
   zHexColor,
@@ -57,7 +57,7 @@ const dataDefinitions = {
   'docs-versions': z
     .object({
       group: z.string(),
-      baseurl: z.string().url(),
+      baseurl: z.url(),
       description: z.string(),
       versions: z.union([zVersionSemver, zVersionMajorMinor]).array()
     })
@@ -82,13 +82,13 @@ const dataDefinitions = {
     preferred: z
       .object({
         name: z.string(),
-        website: z.string().url()
+        website: z.url()
       })
       .array(),
     more: z
       .object({
         name: z.string(),
-        website: z.string().url()
+        website: z.url()
       })
       .array()
   }),
@@ -117,12 +117,13 @@ const dataDefinitions = {
       name: z.string()
     })
     .array(),
+  sizes: z.string().array(),
   translations: z
     .object({
       name: z.string(),
       code: zLanguageCode,
       description: z.string(),
-      url: z.string().url()
+      url: z.url()
     })
     .array()
 } satisfies Record<string, DataSchema>
@@ -136,15 +137,14 @@ export function getData<TType extends DataType>(
   type: TType
 ): z.infer<(typeof dataDefinitions)[TType]> {
   if (data.has(type)) {
-    // Returns the data if it has already been loaded.
-    return data.get(type)
+    return data.get(type) as z.infer<(typeof dataDefinitions)[TType]>
   }
 
   const dataPath = `./site/data/${type}.yml`
 
   try {
     // Load the data from the yml  file.
-    const rawData = yaml.load(fs.readFileSync(dataPath, 'utf8'))
+    const rawData = load(fs.readFileSync(dataPath, 'utf8'))
 
     // Parse the data using the data schema to validate its content and get back a fully typed data object.
     const parsedData = dataDefinitions[type].parse(rawData)
@@ -152,7 +152,7 @@ export function getData<TType extends DataType>(
     // Cache the data.
     data.set(type, parsedData)
 
-    return parsedData
+    return parsedData as z.infer<(typeof dataDefinitions)[TType]>
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error(`The \`${dataPath}\` file content is invalid:`, error.issues)

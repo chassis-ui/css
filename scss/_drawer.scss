@@ -1,0 +1,278 @@
+@use "./config" as *;
+@use "./mixins" as *;
+@use "./placeholders" as *;
+
+//
+// Drawer Component
+//
+// Off-screen panel that slides in from any viewport edge via placement modifiers.
+// Built on the native <dialog> element with responsive inline variants, swipe
+// gestures, body-scroll control, and animated open/close transitions.
+//
+
+@layer components {
+  // CSS custom properties are placed on a placeholder so they can be applied
+  // to every responsive variant (outside any media query) via @extend.
+  %drawer-css-vars {
+    // scss-docs-start drawer-css-vars
+    --zindex: var(--drawer-zindex, #{$zindex-drawer});
+    --inset: var(--drawer-inset, #{$drawer-inset});
+    --width: var(--drawer-width, #{$drawer-width});
+    --height: var(--drawer-height, #{$drawer-height});
+    --padding-x: var(--drawer-padding-x, #{$drawer-padding-x});
+    --padding-y: var(--drawer-padding-y, #{$drawer-padding-y});
+    --gap: var(--drawer-gap, #{$drawer-gap});
+    --footer-large-gap: var(--drawer-footer-large-gap, #{$drawer-footer-large-gap});
+    --footer-small-gap: var(--drawer-footer-small-gap, #{$drawer-footer-small-gap});
+    --fg-color: var(--drawer-fg-color, #{$drawer-fg-color});
+    --bg-color: var(--drawer-bg-color, #{$drawer-bg-color});
+    --border-color: var(--drawer-border-color, #{$drawer-border-color});
+    --border-width: var(--drawer-border-width, #{$drawer-border-width});
+    --border-radius: var(--drawer-border-radius, #{$drawer-border-radius});
+    --box-shadow: var(--drawer-box-shadow, #{$drawer-box-shadow});
+    @include map-font($drawer-title-font, drawer-title, title);
+    --transition-duration: var(--drawer-transition-duration, #{$drawer-transition-duration});
+    --transition-timing: var(--drawer-transition-timing, #{$drawer-transition-timing});
+    --backdrop-bg: var(--drawer-backdrop-bg, #{$drawer-backdrop-bg});
+    --backdrop-opacity: var(--drawer-backdrop-opacity, #{$drawer-backdrop-opacity});
+    --backdrop-blur: var(--drawer-backdrop-blur, #{$drawer-backdrop-blur});
+    // scss-docs-end drawer-css-vars
+  }
+
+  // Apply CSS vars to all drawer responsive variants
+  @include loop-breakpoints-down() using ($breakpoint, $next, $prefix) {
+    .#{max-prefix($prefix)}drawer {
+      @extend %drawer-css-vars;
+    }
+  }
+
+  // Responsive drawer styles
+  @include loop-breakpoints-down() using ($breakpoint, $next, $prefix) {
+    .#{max-prefix($prefix)}drawer {
+      @include media-breakpoint-down($next) {
+        // Reset native <dialog> UA defaults (fit-content sizing, inset, margins)
+        // and override display:none so visibility controls the hidden state.
+        position: fixed;
+        inset: auto;
+        z-index: var(--zindex);
+        display: flex;
+        flex-direction: column;
+        width: auto;
+        max-width: calc(100% - var(--inset) * 2);
+        height: auto;
+        max-height: calc(100% - var(--inset) * 2);
+        padding: 0;
+        margin: 0;
+        color: var(--fg-color);
+        visibility: hidden;
+        background-color: var(--bg-color);
+        background-clip: padding-box;
+        border: var(--border-width) solid var(--border-color);
+        outline: 0;
+
+        @include border-radius(var(--border-radius));
+        @include box-shadow(var(--box-shadow));
+
+        // Placement positioning and sizing — always applied regardless of animation mode.
+        &:where(.drawer-start) {
+          inset-block: var(--inset);
+          inset-inline-start: var(--inset);
+          width: var(--width);
+        }
+
+        &:where(.drawer-end) {
+          inset-block: var(--inset);
+          inset-inline-end: var(--inset);
+          width: var(--width);
+        }
+
+        &:where(.drawer-top) {
+          inset: var(--inset) var(--inset) auto;
+          height: var(--height);
+        }
+
+        &:where(.drawer-bottom) {
+          inset: auto var(--inset) var(--inset);
+          height: var(--height);
+        }
+
+        &:where(.fullscreen) {
+          inset: var(--inset);
+          width: auto;
+          max-width: none;
+          height: auto;
+          max-height: none;
+        }
+
+        // Animated variant (default) — transitions + off-screen transforms.
+        // Adding .instant skips all animations.
+        &:not(.instant) {
+          @include transition(transform var(--transition-duration) var(--transition-timing), visibility 0s var(--transition-duration));
+
+          // Off-screen transforms per placement
+          &:where(.drawer-start) {
+            transform: translateX(calc(-100% - var(--inset)));
+
+            :root:dir(rtl) & {
+              transform: translateX(calc(100% + var(--inset)));
+            }
+          }
+
+          &:where(.drawer-end) {
+            transform: translateX(calc(100% + var(--inset)));
+
+            :root:dir(rtl) & {
+              transform: translateX(calc(-100% - var(--inset)));
+            }
+          }
+
+          &:where(.drawer-top) {
+            transform: translateY(calc(-100% - var(--inset)));
+          }
+
+          &:where(.drawer-bottom) {
+            transform: translateY(calc(100% + var(--inset)));
+          }
+
+          // Open state: slide in with transition
+          &[open] {
+            visibility: visible;
+            @include transition(transform var(--transition-duration) var(--transition-timing), visibility 0s);
+            transform: none;
+          }
+        }
+
+        // Open state base (always applies, regardless of animation mode)
+        &[open] {
+          visibility: visible;
+          transform: none;
+        }
+
+        // Static backdrop bounce — must match specificity of &:not(.instant)[open]
+        // so it overrides transform: none on the open state.
+        &[open].static {
+          transform: scale(1.02);
+        }
+      }
+
+      // Above breakpoint - show content inline (for responsive drawer).
+      // Must fully reset all drawer styles so the element behaves as an
+      // inline flex container within its parent (e.g., a navbar).
+      @if not ($prefix == "") {
+        @include media-breakpoint-up($next) {
+          // stylelint-disable declaration-no-important
+          --drawer-height: auto;
+          --drawer-border-width: 0;
+          // Reset native <dialog> UA styles
+          position: static !important;
+          inset: auto;
+          z-index: auto;
+          display: flex !important;
+          flex-grow: 1;
+          width: auto !important;
+          max-width: none;
+          height: auto !important;
+          max-height: none;
+          padding: 0;
+          margin: 0;
+          visibility: visible !important;
+          background-color: transparent !important;
+          border: 0 !important;
+          transform: none !important;
+          @include transition(none !important);
+          // stylelint-enable declaration-no-important
+
+          .drawer-header {
+            display: none;
+          }
+
+          .drawer-body {
+            display: flex;
+            flex-grow: 0;
+            flex-direction: row;
+            width: 100%;
+            padding: 0;
+            overflow-y: visible;
+            // stylelint-disable-next-line declaration-no-important
+            background-color: transparent !important;
+          }
+          @include border-radius(0);
+          @include box-shadow(none);
+        }
+      }
+
+      &.translucent {
+        @extend %translucent;
+      }
+
+    }
+  }
+
+  // Native ::backdrop for modal drawer.
+  // ::backdrop lives in the top layer outside the DOM tree, so it does NOT
+  // inherit custom properties from the element. Tokens must be applied directly.
+  @include loop-breakpoints-down() using ($breakpoint, $next, $prefix) {
+    .#{max-prefix($prefix)}drawer::backdrop {
+      @extend %drawer-css-vars;
+      background-color: color-mix(in oklch, var(--backdrop-bg) var(--backdrop-opacity), transparent);
+      backdrop-filter: blur(var(--backdrop-blur));
+      @include backdrop-transitions(var(--transition-duration), var(--transition-timing));
+    }
+  }
+
+  // Backdrop entry animation — ::backdrop can safely use @starting-style
+  // since it only exists when the dialog is in the top layer (no responsive issue).
+  @starting-style {
+    @include loop-breakpoints-down() using ($breakpoint, $next, $prefix) {
+      .#{max-prefix($prefix)}drawer::backdrop {
+        background-color: transparent;
+        backdrop-filter: blur(0);
+      }
+    }
+  }
+
+  // Sheet variant: flush-to-edge panel with no inset, border-radius, or shadow.
+  // Overrides tokens so placement transforms (which use calc() with --drawer-inset)
+  // automatically position the drawer at the viewport edge.
+  .drawer.sheet {
+    inset: 0;
+    max-width: 100%;
+    max-height: 100%;
+    --drawer-border-radius: 0;
+    --drawer-border-width: 0;
+    // --drawer-box-shadow: none;
+  }
+
+  // Header with close button
+  .drawer-header {
+    @include dialog-header(var(--padding-y) var(--padding-x));
+
+    > .close-button {
+      margin-inline-start: auto;
+    }
+  }
+
+  // Title
+  .drawer-title {
+    margin-block-end: 0;
+    @include font(title);
+  }
+
+  // Scrollable body
+  .drawer-body {
+    position: relative;
+    @include dialog-body(var(--padding-y) var(--padding-x));
+    overflow-y: auto;
+  }
+
+  // Optional footer
+  .drawer-footer {
+    border-block-start: var(--border-width) solid var(--border-color);
+    @include padding();
+    @extend %dialog-footer;
+  }
+
+  .drawer-fit-content {
+    inset-block-end: auto;
+  }
+} // @layer components

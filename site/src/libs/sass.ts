@@ -1,4 +1,4 @@
-import variables from '../scss/_vendor.module.scss'
+import variables from '../scss/_tokens.module.scss'
 
 export function sassVars(str: string): Record<string, string | undefined> {
   switch (str) {
@@ -33,8 +33,26 @@ export function sassVars(str: string): Record<string, string | undefined> {
         xlarge: variables.breakpointXlarge,
         large: variables.breakpointLarge,
         medium: variables.breakpointMedium,
-        small: variables.breakpointSmall,
-        xsmall: variables.breakpointXsmall
+        small: variables.breakpointSmall
+      }
+    case 'container':
+      return {
+        '2xlarge': variables.container2xlarge,
+        xlarge: variables.containerXlarge,
+        large: variables.containerLarge,
+        medium: variables.containerMedium,
+        small: variables.containerSmall
+      }
+    case 'grid':
+      return {
+        gutter: variables.gridGutter
+      }
+    case 'modal':
+      return {
+        small: variables.modalSmall,
+        medium: variables.modalMedium,
+        large: variables.modalLarge,
+        xlarge: variables.modalXlarge
       }
     case 'setting':
       return {
@@ -55,9 +73,30 @@ export function sassSpaceValue(str: string) {
   }
 }
 
-export function sassBreakpointValue(str: string) {
-  const vars = sassVars('breakpoint')
-  const value = vars[str]
+export function sassBreakpointSize(str: string) {
+  const value = sassVars('breakpoint')[str]
+  if (value?.endsWith('px')) {
+    return value
+  } else {
+    return value
+      ? parseFloat(value) * parseFloat(sassVars('setting')['baseFontSize'] || '16') + 'px'
+      : 'NaN'
+  }
+}
+
+export function sassContainerSize(str: string) {
+  const value = sassVars('container')[str]
+  if (value?.endsWith('px')) {
+    return value
+  } else {
+    return value
+      ? parseFloat(value) * parseFloat(sassVars('setting')['baseFontSize'] || '16') + 'px'
+      : 'NaN'
+  }
+}
+
+export function sassModalSize(str: string) {
+  const value = sassVars('modal')[str]
   if (value?.endsWith('px')) {
     return value
   } else {

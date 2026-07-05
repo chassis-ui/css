@@ -1,34 +1,41 @@
-@each $color, $value in $context-colors {
-  .bg-#{$color}.fg-contrast {
-    color: #{to-opacity(var(--#{$prefix}#{$color}-contrast), var(--#{$prefix}fg-opacity, 1))} if($enable-important-utilities, !important, null);
-    background-color: #{to-opacity(var(--#{$prefix}#{$color}), var(--#{$prefix}bg-opacity, 1))} if($enable-important-utilities, !important, null);
-  }
-  .fg-#{$color}.bg-contrast {
-    color: #{to-opacity(var(--#{$prefix}#{$color}), var(--#{$prefix}fg-opacity, 1))} if($enable-important-utilities, !important, null);
-    background-color: #{to-opacity(var(--#{$prefix}#{$color}-contrast), var(--#{$prefix}bg-opacity, 1))} if($enable-important-utilities, !important, null);
-  }
-}
+@use "sass:map";
+@use "../maps" as *;
+@use "../functions" as *;
+@use "../mixins" as *;
 
-@each $color, $value in $context-colors {
-  .bg-#{$color}.fg-a11y {
-    color: #{color-contrast($value)} if($enable-important-utilities, !important, null);
-    background-color: #{to-opacity(var(--#{$prefix}#{$color}), var(--#{$prefix}bg-opacity, 1))} if($enable-important-utilities, !important, null);
-  }
-  .fg-#{$color}.bg-a11y {
-    color: #{to-opacity(var(--#{$prefix}#{$color}), var(--#{$prefix}fg-opacity, 1))} if($enable-important-utilities, !important, null);
-    background-color: #{color-contrast($value)} if($enable-important-utilities, !important, null);
-  }
-}
+//
+// Contrast Helpers
+//
+// Generates .bg-{context}.fg-contrast utility classes that apply a foreground
+// color with sufficient contrast against each named context background.
+//
 
-@include color-mode(dark) {
-  @each $color, $value in $context-colors-dark {
+@layer utilities {
+  // scss-docs-start contrast-helpers
+  @each $color, $value in $context-colors {
+    .bg-#{$color}.fg-contrast {
+      color: #{to-opacity(var(--#{$color}-contrast), var(--fg-opacity, 1))};
+    }
+    .fg-#{$color}.bg-contrast {
+      background-color: #{to-opacity(var(--#{$color}-contrast), var(--bg-opacity, 1))};
+    }
+  }
+
+  @each $color, $value in $context-colors {
     .bg-#{$color}.fg-a11y {
-      color: #{color-contrast($value)} if($enable-important-utilities, !important, null);
-      background-color: #{to-opacity(var(--#{$prefix}#{$color}), var(--#{$prefix}bg-opacity, 1))} if($enable-important-utilities, !important, null);
+      color:
+        light-dark(
+          #{to-opacity(color-contrast(get-sass-color($value)), var(--fg-opacity, 1))},
+          #{to-opacity(color-contrast(get-sass-color(map.get($context-colors-dark, $color), true)), var(--fg-opacity, 1))}
+        );
     }
     .fg-#{$color}.bg-a11y {
-      color: #{to-opacity(var(--#{$prefix}#{$color}), var(--#{$prefix}fg-opacity, 1))} if($enable-important-utilities, !important, null);
-      background-color: #{color-contrast($value)} if($enable-important-utilities, !important, null);
+      background-color:
+        light-dark(
+          #{to-opacity(color-contrast(get-sass-color($value)), var(--bg-opacity, 1))},
+          #{to-opacity(color-contrast(get-sass-color(map.get($context-colors-dark, $color), true)), var(--bg-opacity, 1))}
+        );
     }
   }
-}
+  // scss-docs-end contrast-helpers
+} // @layer utilities

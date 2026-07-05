@@ -1,61 +1,113 @@
-//stylelint-disable-next-line
-$utilities: map-merge(
-  $utilities,
-  (
-    // Sizing utilities
-    // scss-docs-start utils-sizing
-    "width": (
-      property: width,
-      class: w,
-      values: (
+@use "sass:map";
+@use "../maps" as *;
+
+//
+// Sizing Utilities
+//
+// Utility map for width, height, and max-size classes generated from the size
+// token map.
+//
+
+$utilities: (
+  // Sizing utilities
+  // scss-docs-start utils-sizing
+  "width": (
+    property: width,
+    class: w,
+    values: map.merge(
+      $sizes,
+      (
         25: 25%,
         50: 50%,
         75: 75%,
         100: 100%,
         auto: auto
       )
-    ),
-    "max-width": (
-      property: max-width,
-      class: mw,
-      values: (100: 100%)
-    ),
-    "viewport-width": (
-      property: width,
-      class: vw,
-      values: (100: 100vw)
-    ),
-    "min-viewport-width": (
-      property: min-width,
-      class: min-vw,
-      values: (100: 100vw)
-    ),
-    "height": (
-      property: height,
-      class: h,
-      values: (
-        25: 25%,
-        50: 50%,
-        75: 75%,
-        100: 100%,
-        auto: auto
-      )
-    ),
-    "max-height": (
-      property: max-height,
-      class: mh,
-      values: (100: 100%)
-    ),
-    "viewport-height": (
-      property: height,
-      class: vh,
-      values: (100: 100vh)
-    ),
-    "min-viewport-height": (
-      property: min-height,
-      class: min-vh,
-      values: (100: 100vh)
-    ),
-    // scss-docs-end utils-sizing
+    )
   ),
-);
+  "height": (
+    property: height,
+    class: h,
+    values: map.merge(
+      $sizes,
+      (
+        25: 25%,
+        50: 50%,
+        75: 75%,
+        100: 100%,
+        auto: auto
+      )
+    )
+  ),
+  "min-width": (
+    property: min-width,
+    class: min-w,
+    values: map.merge($sizes, (auto: auto, 100: 100%))
+  ),
+  "min-height": (
+    property: min-height,
+    class: min-h,
+    values: map.merge($sizes, (auto: auto, 100: 100%))
+  ),
+  "max-width": (
+    property: max-width,
+    class: max-w,
+    values: map.merge($sizes, (auto: auto, 100: 100%))
+  ),
+  "max-height": (
+    property: max-height,
+    class: max-h,
+    values: map.merge($sizes, (auto: auto, 100: 100%))
+  ),
+  "viewport-width": (
+    property: width,
+    class: vw,
+    values: (
+      25: 25vw,
+      50: 50vw,
+      75: 75vw,
+      100: 100vw
+    )
+  ),
+  "viewport-height": (
+    property: height,
+    class: vh,
+    values: (
+      25: 25vh,
+      50: 50vh,
+      75: 75vh,
+      100: 100vh
+    )
+  ),
+  "min-viewport-width": (
+    property: min-width,
+    class: min-vw,
+    values: (
+      25: 25vw,
+      50: 50vw,
+      75: 75vw,
+      100: 100vw
+    )
+  ),
+  "min-viewport-height": (
+    property: min-height,
+    class: min-vh,
+    values: (
+      25: 25vh,
+      50: 50vh,
+      75: 75vh,
+      100: 100vh
+    )
+  ),
+  "dynamic-viewport-height": (
+    property: height,
+    class: dvh,
+    values: (
+      25: 25dvh,
+      50: 50dvh,
+      75: 75dvh,
+      100: 100dvh
+    )
+  ),
+  // scss-docs-end utils-sizing
+) !default;

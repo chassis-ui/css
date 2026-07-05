@@ -1,120 +1,131 @@
+@use "./config" as *;
+@use "./mixins" as *;
+@use "./placeholders" as *;
+@use "./functions" as *;
+
 //
 // Button Component
 //
-// This file implements the core button component using Chassis CSS's placeholder pattern.
-// It defines the base `.button` class and its style variants through SCSS extensions.
+// Core interactive button element with contextual color variants, style
+// modifiers (solid, outline, smooth, link), and size variants (small, large).
+// Extends shared button and component placeholders for consistent styling.
 //
-// Implementation Features:
-// - Uses placeholder extensions (%button, %button-medium, %solid-button, %component)
-// - Implements contextual variant support through color modifiers
-// - Provides style variants (.outline, .smooth, .link) through placeholder extensions
-// - Implements responsive sizing (.small, .large) with separate placeholder sets
-// - Includes icon positioning logic for icon+text combinations
-// - Supports all interactive states (hover, focus, active, disabled)
-//
-// This modular implementation allows for maximal code reuse through placeholders
-// while maintaining clean, consistent styling patterns across different button variants.
 
-.button {
-  // Inherit core button behaviors from placeholders
-  // - %button: Core button styles with state handling (hover, focus, active, disabled)
-  // - %button-medium: Default size configuration (padding, font, border-radius)
-  // - %solid-button: Applies contextual solid background style variants
-  // - %component: Base component styling (typography, colors, borders)
-  @extend %button, %button-medium, %solid-button, %component;
-  // scss-docs-start button-css-vars
-  --#{$prefix}border-width: var(--#{$prefix}button-border-width, #{$button-border-width});
-  --#{$prefix}box-shadow: var(--#{$prefix}button-box-shadow, #{$button-box-shadow});
-  --#{$prefix}focus-box-shadow: var(--#{$prefix}button-focus-box-shadow, #{$button-focus-box-shadow});
-  --#{$prefix}transition: var(--#{$prefix}button-transition, $button-transition);
-  // scss-docs-end button-css-vars
+@layer components {
+  .button {
+    // Inherit core button behaviors from placeholders
+    // - %button: Core button styles with state handling (hover, focus, active, disabled)
+    // - %button-medium: Default size configuration (padding, font, border-radius)
+    // - %solid-button: Applies contextual solid background style variants
+    // - %component: Base component styling (typography, colors, borders)
+    @extend %button, %button-medium, %solid-button, %component;
+    // scss-docs-start button-css-vars
+    --border-width: var(--button-border-width, #{$button-border-width});
+    --transition: var(--button-transition, #{$button-transition});
+    --caret-icon: var(--button-caret-icon, #{svg-icon($button-caret-icon)});
+    --caret-spacing: var(--nudge) calc(-1 * var(--nudge));
+    // scss-docs-end button-css-vars
 
-  display: inline-flex;
-  gap: var(--#{$prefix}gap);
-  align-items: center;
-  justify-content: center;
-  min-width: var(--#{$prefix}min-size);
-  min-height: var(--#{$prefix}min-size);
-  @include exclude-strokes(button);
-  text-align: center;
-  text-decoration: if($link-decoration == none, null, none);
-  white-space: $button-white-space;
-  vertical-align: middle;
-  cursor: if($enable-button-pointers, pointer, null);
-  user-select: none;
-
-  @include gradient-bg(var(--#{$prefix}bg-color));
-  @include box-shadow(var(--#{$prefix}box-shadow));
-  @include transition(var(--#{$prefix}transition));
-
-  &.outline {
-    @extend %outline-button;
-  }
-
-  &.smooth {
-    @extend %smooth-button;
-  }
-
-  &.large {
-    @extend %button-large;
-  }
-
-  &.small {
-    @extend %button-small;
-  }
-
-  > .icon {
-    line-height: 0;
-    vertical-align: top;
-  }
-
-  > .icon:first-child:not(:only-child) {
-    margin-right: var(--#{$prefix}nudge);
-    margin-left: #{calc(-1 * var(--#{$prefix}nudge))};
-  }
-  > .icon:last-child:not(:only-child) {
-    margin-right: #{calc(-1 * var(--#{$prefix}nudge))};
-    margin-left: var(--#{$prefix}nudge);
-  }
-  &:has(.icon:only-child) {
-    --#{$prefix}padding-x: var(--#{$prefix}padding-y);
-  }
-
-  //
-  // Link buttons
-  //
-
-  // Make a button look and behave like a link
-  &.link {
-    --#{$prefix}button-font-weight: #{$font-weight-normal};
-    --#{$prefix}button-idle-fg-color: #{$button-link-color};
-    --#{$prefix}button-idle-bg-color: transparent;
-    --#{$prefix}button-idle-border-color: transparent;
-    --#{$prefix}button-hover-fg-color: #{$button-hover-color};
-    --#{$prefix}button-hover-bg-color: transparent;
-    --#{$prefix}button-hover-border-color: transparent;
-    --#{$prefix}button-press-fg-color: #{$button-hover-color};
-    --#{$prefix}button-press-bg-color: transparent;
-    --#{$prefix}button-press-border-color: transparent;
-    --#{$prefix}button-disabled-fg-color: #{$fg-subtle};
-    --#{$prefix}button-disabled-bg-color: transparent;
-    --#{$prefix}button-disabled-border-color: transparent;
-    --#{$prefix}box-shadow: 0 0 0 #000; // Can't use `none` as keyword negates all values when used with multiple shadows
-
-    text-decoration: $link-decoration;
-    @if $enable-component-gradients {
-      background-image: none;
+    display: inline-flex;
+    gap: var(--gap);
+    align-items: center;
+    justify-content: center;
+    min-width: var(--min-size);
+    min-height: var(--min-size);
+    text-align: center;
+    text-decoration: none;
+    white-space: $button-white-space;
+    vertical-align: middle;
+    user-select: none;
+    @include exclude-strokes(button);
+    @if $enable-button-pointers {
+      cursor: pointer;
     }
 
-    &:hover,
-    &:focus-visible {
-      text-decoration: $link-hover-decoration;
+    @include gradient();
+    @include box-shadow(var(--box-shadow));
+    @include transition(var(--transition));
+
+    &.outline {
+      @extend %context, %outline-button;
     }
 
-    &:focus-visible {
-      color: var(--#{$prefix}fg-color);
+    &.smooth {
+      @extend %context, %smooth-button;
     }
 
+    &.large {
+      @extend %button-large;
+    }
+
+    &.small {
+      @extend %button-small;
+    }
+
+    &.icon-only {
+      --padding-x: var(--padding-y);
+    }
+
+    > .icon {
+      line-height: 0;
+      vertical-align: top;
+    }
+
+    &:not(.icon-only) {
+      > .icon:first-child:not(:only-child) {
+        margin-inline-start: calc(-1 * var(--nudge));
+        margin-inline-end: var(--nudge);
+      }
+      > .icon:last-child:not(:only-child) {
+        margin-inline-start: var(--nudge);
+        margin-inline-end: calc(-1 * var(--nudge));
+      }
+    }
+
+    //
+    // Link buttons
+    //
+
+    // Make a button look and behave like a link
+    &.link {
+      @extend %context;
+      // --font-weight: #{$font-weight-normal};
+      // --fg-idle: #{$button-link-color};
+      // --fg-hover: #{$button-hover-color};
+      // --fg-press: #{$button-hover-color};
+      // --fg-disabled: #{$fg-subtle};
+      --box-shadow: 0 0 0 #000; // Can't use `none` as keyword negates all values when used with multiple shadows
+      font-weight: var(--button-link-font-weight, $button-link-font-weight);
+      color: var(--link-main);
+      text-decoration: var(--button-link-text-decoration, $button-link-text-decoration);
+
+      background-color: transparent;
+      border-color: transparent;
+      @if $enable-background-gradients {
+        background-image: none;
+      }
+
+      &:hover,
+      &:focus-visible {
+        color: var(--link-hover);
+        text-decoration: var(--button-link-hover-decoration, $button-link-hover-decoration);
+        background-color: var(--button-link-bg-hover, $button-link-bg-hover);
+      }
+
+      &:disabled,
+      &.disabled {
+        color: var(--button-link-fg-disabled, $button-link-fg-disabled);
+      }
+
+      // &:focus-visible {
+      //   color: var(--link-focus);
+      // }
+
+    }
+
+    // Split menu-toggle spacing
+    &:has(.visually-hidden:only-child) {
+      --caret-spacing: calc(-1 * var(--nudge));
+    }
   }
-
-}
+} // @layer components

@@ -1,65 +1,72 @@
 ---
 title: JavaScript
-description: How Chassis JS plugins work — data attributes, the programmatic API, events, and the full list of plugins shipped in the package.
+description: How Chassis CSS plugins work — ESM-only, data attributes, the programmatic API, events, and the full list of plugins shipped in the package.
 toc: true
 ---
 
-Chassis CSS ships a small set of JavaScript plugins that bring interactive behaviour to a handful of components: dropdowns, modals, accordions, and so on. The plugins are vanilla JavaScript, framework-agnostic, and configured primarily through HTML data attributes — JavaScript is only required when you need programmatic control.
+Chassis CSS ships a set of JavaScript plugins that bring interactive behaviour to components: dialogs, menus, accordions, carousels, and more. The plugins are vanilla JavaScript, ESM-only, and framework-agnostic. Most components can be wired up entirely through HTML data attributes — programmatic instantiation is only needed for method calls, event listening, or dynamic configuration.
 
 ## What ships
 
-Chassis JS is published with the `@chassis-ui/css` package and built in three flavours:
+Chassis CSS ships two JavaScript builds with the `@chassis-ui/css` package:
 
-- **`dist/js/chassis.js`** — UMD bundle, no Popper.
-- **`dist/js/chassis.bundle.js`** — UMD bundle with Popper included. Use this if you want one script tag and you use dropdowns, popovers, or tooltips.
-- **`dist/js/chassis.esm.js`** — ES module. Use this with bundlers (Webpack, Parcel, Vite) or with `<script type="module">`.
+- **`dist/js/chassis.js`** — standalone ESM file. `@floating-ui/dom` and `vanilla-calendar-pro` are external peer dependencies; include them separately when using menus, popovers, tooltips, or the datepicker.
+- **`dist/js/chassis.bundle.js`** — ESM bundle with both peer dependencies included. Use this when you want a single file with no external dependencies.
 
-Each is also published in minified form (`*.min.js`).
+Both also ship in minified form (`*.min.js`).
 
 ## Plugins
 
-The shipped plugins, exported from `@chassis-ui/css`:
+The full list of plugins exported from `@chassis-ui/css`:
 
-`Accordion` · `Button` · `Carousel` · `Chip` · `Collapse` · `Dropdown` · `Modal` · `Notification` · `Offcanvas` · `Popover` · `ScrollSpy` · `Tab` · `Toast` · `Tooltip`
+`Accordion` · `Button` · `Carousel` · `Chip` · `ChipInput` · `Collapse` · `Combobox` · `Datepicker` · `Dialog` · `Drawer` · `Menu` · `NavOverflow` · `Notification` · `OtpInput` · `Popover` · `ScrollSpy` · `Strength` · `Tab` · `Toast` · `Toggler` · `Tooltip`
 
-`Dropdown`, `Popover`, and `Tooltip` depend on [Popper](https://popper.js.org/) for positioning. Either include `@popperjs/core` in your bundle or use the `chassis.bundle.*` build that includes Popper for you.
+`Menu`, `Popover`, and `Tooltip` depend on [Floating UI](https://floating-ui.com) for positioning. `Datepicker` depends on [Vanilla Calendar Pro](https://vanilla-calendar.pro). Both are included in `chassis.bundle.js`.
 
-## Including the JavaScript
+## Loading
 
-Use a bundler when you can; it lets you tree-shake to only the plugins you use. The script-tag approach is fine for prototypes and the [Quick Start]([[docsref:/getting-started/quick-start]]) flow.
+Two loading paths are available depending on whether a bundler is part of your build.
 
-**With a bundler** (recommended):
+### Bundler
+
+With a bundler (Webpack, Parcel, Vite), import from the package entry point. The bundler tree-shakes to only the plugins actually used:
 
 ```js
+// Named imports — recommended
+import { Dialog, Menu, Tooltip } from '@chassis-ui/css'
+
 // All plugins
 import * as chassis from '@chassis-ui/css'
-
-// Or just the plugins you use
-import { Modal, Tooltip } from '@chassis-ui/css'
-
-// Or load a single plugin from its source path
-import Modal from '@chassis-ui/css/js/src/modal.js'
 ```
 
-**With a script tag**:
+When using `Menu`, `Popover`, `Tooltip`, or `Datepicker`, install the respective peer dependencies and let the bundler resolve them:
+
+```bash
+pnpm add @floating-ui/dom vanilla-calendar-pro
+```
+
+### Browser
+
+For browser usage without a bundler, use `chassis.bundle.min.js`. Both peer dependencies are bundled in, so no additional script is needed:
 
 ```html
-<!-- Includes Popper -->
-<script src="node_modules/@chassis-ui/css/dist/js/chassis.bundle.min.js"></script>
+<script type="module">
+  import { Dialog, Menu } from './node_modules/@chassis-ui/css/dist/js/chassis.bundle.min.js'
 
-<!-- Or load Popper separately if you don't use dropdowns/popovers/tooltips -->
-<script src="node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
-<script src="node_modules/@chassis-ui/css/dist/js/chassis.min.js"></script>
+  new Dialog(document.querySelector('#myDialog'))
+</script>
 ```
+
+To use `chassis.min.js` in a browser without a bundler, provide an import map that resolves `@floating-ui/dom` and `vanilla-calendar-pro` to their ESM browser builds. Refer to each library's documentation for the correct browser entry point path.
 
 ## Data attributes
 
-The simplest way to wire up a Chassis plugin is through HTML data attributes — no JavaScript required on your part. Every plugin observes a small set of `data-cx-*` attributes that act as configuration, with `data-cx-toggle="<plugin>"` as the trigger.
+The simplest way to wire up a Chassis plugin is through HTML data attributes — no JavaScript required on your part. Every plugin observes `data-cx-*` attributes for configuration, with `data-cx-toggle="<plugin>"` as the trigger:
 
 ```html
-<!-- Toggle a modal -->
-<button class="button primary" data-cx-toggle="modal" data-cx-target="#myModal">
-  Open modal
+<!-- Toggle a dialog -->
+<button class="button primary" data-cx-toggle="dialog" data-cx-target="#myDialog">
+  Open dialog
 </button>
 
 <!-- Toggle a tooltip -->
@@ -68,153 +75,160 @@ The simplest way to wire up a Chassis plugin is through HTML data attributes —
 </button>
 ```
 
-**Use one set of data attributes per element.** A single button can't trigger both a modal and a tooltip — the attributes would collide.
+Only one set of data attributes per element — a single button cannot trigger both a dialog and a tooltip simultaneously.
 
 <JsDataAttributes />
 
-## Programmatic API
+## Selectors
 
-Every plugin is a class. Instantiate it with a DOM element (or a CSS selector that resolves to one) and an optional options object:
+DOM lookups use native `querySelector` and `querySelectorAll`, so strings passed to `data-cx-target` and plugin constructors must be [valid CSS selectors](https://www.w3.org/TR/CSS21/syndata.html#value-def-identifier). Special characters in IDs need escaping — for example, an ID containing a colon requires `\\` in a JavaScript string to produce the single backslash the CSS selector needs:
 
 ```js
-const modalEl = document.querySelector('#myModal')
-const modal = new chassis.Modal(modalEl)
-
-// With options
-const noKeyboard = new chassis.Modal(modalEl, { keyboard: false })
-
-// Selector strings work too
-const dropdown = new chassis.Dropdown('[data-cx-toggle="dropdown"]')
+document.querySelector('my\\:id') // \\: escapes the colon in a JS string literal
 ```
 
-To retrieve an existing instance for an element, use `getInstance`:
+## Programmatic API
+
+Every plugin is a class. Pass a DOM element or a valid CSS selector string, with an optional options object:
 
 ```js
-chassis.Modal.getInstance(modalEl)        // → instance, or null if uninitialized
-chassis.Modal.getOrCreateInstance(modalEl) // → instance, creates one if needed
-chassis.Modal.getOrCreateInstance(modalEl, { keyboard: false })
+const dialogEl = document.querySelector('#myDialog')
+
+const dialog = new Dialog(dialogEl)
+const dialog = new Dialog(dialogEl, { keyboard: false })
+const menu = new Menu('[data-cx-toggle="menu"]')
+```
+
+### Methods
+
+Every plugin class exposes three universal instance and static methods:
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `dispose()` | Destroys the instance and removes stored data from the element. |
+| `getInstance(element)` | Static. Returns the instance associated with the element, or `null` if not yet initialized. |
+| `getOrCreateInstance(element, config)` | Static. Returns the existing instance, or creates and returns a new one. |
+</CxTable>
+
+```js
+Dialog.getInstance(dialogEl)         // → instance, or null if not yet initialized
+Dialog.getOrCreateInstance(dialogEl) // → instance, creates one if needed
+Dialog.getOrCreateInstance(dialogEl, { keyboard: false })
 ```
 
 ### Static properties
 
-Every plugin exposes a few static properties:
+Every plugin class also exposes three static properties for inspection and global configuration:
 
+<CxTable>
 | Property | Description |
 | --- | --- |
-| `NAME` | The plugin's registered name — e.g. `chassis.Tooltip.NAME === 'tooltip'`. |
-| `VERSION` | The plugin's version. |
-| `Default` | The plugin's default options object. Mutate it to change defaults globally. |
+| `NAME` | The plugin's registered name — e.g. `Dialog.NAME === 'dialog'`. |
+| `VERSION` | The plugin's version string. |
+| `Default` | The plugin's default options object. Mutate it to change defaults for all subsequently created instances. |
+</CxTable>
 
 ```js
-// Change the default for all subsequently created Modal instances
-chassis.Modal.Default.keyboard = false
+// Disable keyboard dismissal for all subsequently created Dialog instances
+Dialog.Default.keyboard = false
 ```
 
 ## Events
 
-Every plugin emits custom events for its lifecycle actions, in two forms:
+Every plugin emits namespaced custom events for lifecycle actions, in two forms:
 
-- **Infinitive** (`show`, `hide`) — fires *before* the action; `preventDefault()` cancels it.
-- **Past participle** (`shown`, `hidden`) — fires *after* the action completes.
+- **Infinitive** (`show`, `hide`) — fires before the action; call `event.preventDefault()` to cancel it.
+- **Past participle** (`shown`, `hidden`) — fires after the action completes.
 
-Event names are namespaced by plugin — `show.cx.modal`, `hidden.cx.modal`, `shown.cx.toast`, and so on.
+Event names follow the pattern `<action>.cx.<plugin>` — for example `show.cx.dialog`, `hidden.cx.dialog`, `shown.cx.toast`:
 
 ```js
-const modalEl = document.querySelector('#myModal')
+const dialogEl = document.querySelector('#myDialog')
 
-// Listen for show, but cancel it under some condition
-modalEl.addEventListener('show.cx.modal', event => {
+dialogEl.addEventListener('show.cx.dialog', event => {
   if (someCondition) {
-    event.preventDefault()
+    event.preventDefault() // cancels the show
   }
 })
 
-// Listen for the action's completion
-modalEl.addEventListener('shown.cx.modal', () => {
-  console.log('Modal is fully visible')
+dialogEl.addEventListener('shown.cx.dialog', () => {
+  // runs after the dialog is fully visible
 })
 ```
 
-### Asynchronous transitions
+### Async transitions
 
-All plugin methods are asynchronous. They return as soon as the transition starts — *before* it completes. To run code after the transition, listen for the past-participle event:
+All plugin methods are asynchronous — they return as soon as the transition starts, before it completes. To run code after a transition, listen for the past-participle event:
 
 ```js
 const collapseEl = document.querySelector('#myCollapse')
 
 collapseEl.addEventListener('shown.cx.collapse', () => {
-  // Runs only after the expand animation finishes
+  // runs only after the expand animation finishes
 })
 ```
 
-A method call on a transitioning component is **ignored**. To chain transitions, listen for the previous one's completion event:
+A method call on a component that is still transitioning is ignored. To chain transitions, wait for the completion event:
 
 ```js
 const carouselEl = document.querySelector('#myCarousel')
-const carousel = chassis.Carousel.getInstance(carouselEl)
+const carousel = Carousel.getInstance(carouselEl)
 
 carouselEl.addEventListener('slid.cx.carousel', () => {
-  carousel.to('2') // Slides to slide 2 once slide 1 finishes
+  carousel.to('2') // begins only after slide 1 finishes
 })
 
 carousel.to('1')
 ```
 
-### `dispose()` after transitions
+### Dispose and transitions
 
-Calling `dispose()` immediately after `hide()` (or any other transition) leads to incorrect state because the transition is still in flight. Wait for the completion event first:
+Calling `dispose()` immediately after `hide()` — or any other transitioning method — produces incorrect state because the transition is still in flight. Wait for the completion event first:
 
 ```js
-modalEl.addEventListener('hidden.cx.modal', () => {
-  modal.dispose()
+dialogEl.addEventListener('hidden.cx.dialog', () => {
+  dialog.dispose()
 })
 
-modal.hide()
+dialog.hide()
 ```
 
 ## Sanitizer
 
-`Tooltip` and `Popover` accept HTML content. To prevent XSS, Chassis sanitizes that content with a built-in allow-list before injecting it into the DOM.
-
-The default allow-list:
+`Tooltip` and `Popover` accept HTML content. To prevent XSS, Chassis sanitizes that content against a built-in allow-list before injecting it into the DOM. The default allow-list:
 
 <JsDocs name="allow-list" file="js/src/util/sanitizer.js" removeIndentation={false} />
 
-To extend it for your own use:
+To extend the allow-list for custom content needs:
 
 ```js
-const allowList = chassis.Tooltip.Default.allowList
+const allowList = Tooltip.Default.allowList
 
-// Allow <table>
-allowList.table = []
-
-// Allow <td> with a custom data attribute
-allowList.td = ['data-cx-option']
-
-// Allow custom data-* attributes globally
-allowList['*'].push(/^data-my-app-[\w-]+/)
+allowList.table = []                          // allow <table>
+allowList.td = ['data-cx-option']             // allow <td> with a custom attribute
+allowList['*'].push(/^data-my-app-[\w-]+/)   // allow custom data-* attributes globally
 ```
 
-To replace the sanitizer with a different library (for example [DOMPurify](https://www.npmjs.com/package/dompurify)):
+To replace the sanitizer entirely, pass a `sanitizeFn` option:
 
 ```js
-new chassis.Tooltip(el, {
+import DOMPurify from 'dompurify'
+
+new Tooltip(el, {
   sanitizeFn: content => DOMPurify.sanitize(content)
 })
 ```
 
-## Use with JavaScript frameworks
+## Framework compatibility
 
-Chassis JS mutates the DOM directly. Frameworks like React, Vue, and Angular also assume control of the DOM, which means using Chassis JS *and* the framework on the same components causes conflicts — components getting stuck in inconsistent states, event listeners not firing, virtual-DOM diffing breaking visible behaviour.
+The Chassis CSS plugins mutate the DOM directly. Frameworks like React, Vue, and Angular also control the DOM, which causes conflicts when both operate on the same elements — components stuck in inconsistent states, event listeners not firing, virtual-DOM diffing breaking visible behaviour.
 
-The recommended approach in those frameworks is to use the Chassis CSS but reimplement the interactive behaviour in framework-idiomatic components. The CSS contracts (class names, ARIA attributes, CSS variables) are framework-agnostic and stable; the JS behaviour is straightforward to reproduce. Some teams maintain framework-specific reimplementations as private packages — there is no official Chassis equivalent of those.
+The recommended approach in component-based frameworks is to use the Chassis CSS (class names, ARIA attributes, CSS custom properties) and reimplement the interactive behaviour in framework-idiomatic components. The CSS contracts are stable and framework-agnostic.
 
-For static parts of an application — pages where you have full control of the DOM and the framework isn't mounted — Chassis JS works as documented.
+For static parts of an application where the framework is not mounted — server-rendered pages, static HTML sections — the plugins work as documented.
 
-## No JavaScript? No problem (mostly)
+## Disabled JavaScript
 
-Components that depend on JS for behaviour (modals, dropdowns, accordions, etc.) won't function without it. Components that are purely presentational (buttons, badges, cards, layout) work the same with or without JS. If you ship a page that requires JS, use [`<noscript>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript) to explain the situation and provide a fallback when possible.
+Components that depend on JS for behaviour (dialogs, menus, accordions) will not function without it. Purely presentational components (buttons, badges, cards, layout) work the same regardless. Use [`<noscript>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript) to communicate the requirement to users and provide a fallback when possible.
 
-## Selectors
-
-Chassis JS uses native `querySelector` / `querySelectorAll` for DOM lookups, so the strings you pass to constructors must be [valid CSS selectors](https://www.w3.org/TR/CSS21/syndata.html#value-def-identifier). Special characters in IDs need escaping — for example, an ID containing a colon (`my:id`) must be queried as `my\\:id`.

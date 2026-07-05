@@ -1,48 +1,39 @@
 ---
 title: Typography
-description: Comprehensive documentation and examples for Chassis CSS typography, including global settings, headings, body text, lists, and more.
+description: Global typography settings, heading styles, font size and weight utilities, inline text elements, blockquotes, and lists for Chassis CSS.
 toc: true
+tokens:
+  scopes:
+    - typography
 ---
 
-## Global Settings
+HTML elements receive typographic styles automatically; class-based utilities cover sizes, weights, families, and context-specific presets. For text alignment, transformation, decoration, and truncation utilities, see the [text utilities]([[docsref:/utilities/text]]) page.
 
-Typography settings in Chassis CSS are highly customizable, giving designers full control through the use of design tokens. These styles are primarily defined in `_reboot.scss` and `_type.scss`, with global variables located in `_variables.scss`. For additional control, explore the [textual utility classes]([[docsref:/utilities/text]]).
+## Global settings
 
-### Key Features:
-
-- **Native Font Stack**: Leverages a [native font stack]([[docsref:/content/reboot#native-font-stack]]) to select the optimal `font-family` for each operating system and device.
-- **Root Font Size**: Use the `$font-size-root` variable to define the `rem` size. By default, this is set to `null`.
-- **Base Typography**: Customize the typographic base applied to the `<body>` element using `$font-family-base`, `$font-size-base`, and `$line-height-base` variables.
-
-For more details on design tokens, visit the [Design Tokens]([[docsref:/core-concepts/design-tokens]]) page.
+Body text defaults to the text font family at the medium size and medium line-height. Headings use the heading font family with size and line-height scaled per level from `h1` down to `h6`. All of these defaults are driven by design tokens and can be overridden via CSS custom properties or Sass variables — see the [Design Tokens]([[docsref:/core-concepts/design-tokens]]) page for details.
 
 ## Headings
 
-Chassis CSS supports all standard HTML headings, from `<h1>` to `<h6>`. These headings are styled to ensure consistency and readability across your project.
+All six HTML heading elements are styled by default with size and line-height pairs sourced from typography design tokens.
 
-<CxTable>
-| Heading | Example |
-| --- | --- |
-| `<h1></h1>` | <span class="h1">h1. Chassis CSS</span> |
-| `<h2></h2>` | <span class="h2">h2. Chassis CSS</span> |
-| `<h3></h3>` | <span class="h3">h3. Chassis CSS</span> |
-| `<h4></h4>` | <span class="h4">h4. Chassis CSS</span> |
-| `<h5></h5>` | <span class="h5">h5. Chassis CSS</span> |
-| `<h6></h6>` | <span class="h6">h6. Chassis CSS</span> |
-</CxTable>
+<Example code={`<p class="h1">h1. Chassis CSS</p>
+  <p class="h2">h2. Chassis CSS</p>
+  <p class="h3">h3. Chassis CSS</p>
+  <p class="h4">h4. Chassis CSS</p>
+  <p class="h5">h5. Chassis CSS</p>
+  <p class="h6">h6. Chassis CSS</p>`}
+  customMarkup={`<h1>h1. Chassis CSS</h1>
+  <h2>h2. Chassis CSS</h2>
+  <h3>h3. Chassis CSS</h3>
+  <h4>h4. Chassis CSS</h4>
+  <h5>h5. Chassis CSS</h5>
+  <h6>h6. Chassis CSS</h6>`} />
 
-```html
-<h1>h1. Chassis CSS</h1>
-<h2>h2. Chassis CSS</h2>
-<h3>h3. Chassis CSS</h3>
-<h4>h4. Chassis CSS</h4>
-<h5>h5. Chassis CSS</h5>
-<h6>h6. Chassis CSS</h6>
-```
 
-### Heading Classes
+### Heading classes
 
-For scenarios where you need the styling of a heading but cannot use the corresponding HTML element, Chassis CSS provides `.h1` through `.h6` classes.
+Apply `.h1` through `.h6` to any element to match the visual style of the corresponding heading without changing the document outline.
 
 <Example code={`<p class="h1">h1. Chassis CSS</p>
 <p class="h2">h2. Chassis CSS</p>
@@ -51,35 +42,20 @@ For scenarios where you need the styling of a heading but cannot use the corresp
 <p class="h5">h5. Chassis CSS</p>
 <p class="h6">h6. Chassis CSS</p>`} />
 
-### Utility Segments
+### Heading with subtext
 
-Enhance headings with [utility classes]([[docsref:utilities/text]]) to apply partial formatting. For example:
+Nest a `<small>` element with `.fg-subtle` inside a heading to render a secondary label at reduced prominence.
 
 <Example code={`<h3>
     An example heading
     <small class="fg-subtle">With faded secondary text</small>
   </h3>`} />
 
-### Display Headings
+## Font size
 
-Display headings are designed for impactful, large-scale typography. Use the `font-display` class along with heading tags to create standout text.
+Font size utilities set both `font-size` and a paired `line-height` in a single class. The 10-step scale maps directly to Figma text style names, keeping class names consistent with what designers specify in handoff.
 
-<Example code={`<h1 class="font-display h1">Display 1</h1>
-<h1 class="font-display h2">Display 2</h1>
-<h1 class="font-display h3">Display 3</h1>
-<h1 class="font-display h4">Display 4</h1>
-<h1 class="font-display h5">Display 5</h1>
-<h1 class="font-display h6">Display 6</h1>`} />
-
-These headings are customizable via the `$display-font-sizes` Sass map and variables like `$display-font-weight`, `$display-line-height`, `$display-font-family`, and `$display-font-style`.
-
-## Font Size
-
-Font size utilities in Chassis CSS allow you to quickly adjust the size of text elements while maintaining consistent line heights. These utilities are based on design tokens, ensuring scalability and uniformity across your project. Each utility class applies both `font-size` and the corresponding `line-height` for optimal readability.
-
-### Available Classes
-
-The following classes can be used to adjust font sizes:
+### Available sizes
 
 <Example code={`<p class="font-5xlarge">.font-5xlarge</p>
 <p class="font-4xlarge">.font-4xlarge</p>
@@ -92,36 +68,40 @@ The following classes can be used to adjust font sizes:
 <p class="font-xsmall">.font-xsmall</p>
 <p class="font-2xsmall">.font-2xsmall</p>`} />
 
-### Key Features
+- **Figma alignment**: class names match the Figma text style names for the size scale, removing the translation step between design and code.
+- **Design token sync**: each size references a design token, so a token change propagates to every use automatically.
+- **Paired line height**: each class sets a matching `line-height` alongside `font-size`, removing the need for a separate line-height override when changing size.
 
-- **Scalability**: Font sizes are defined using design tokens, ensuring they scale consistently across different screen sizes and devices.
-- **Line Height Integration**: Each font size class automatically applies a matching line height, eliminating the need for manual adjustments.
-- **Ease of Use**: Simply add the desired class to your HTML element to apply the corresponding font size.
+### Fluid sizes
 
-For responsive font sizes, refer to the [Responsive Font Sizes](#responsive-font-sizes) section, which explains how text scales dynamically based on the viewport size.
+Font size classes use `clamp()` for fluid scaling by default — each value transitions smoothly between a minimum and maximum as the viewport width changes, with no extra class required. See [Fluid sizing]([[docsref:/core-concepts/fluid-sizing]]) for the toggle, configuration variables, and the Sass mixin API.
 
-### Responsive Utilities
+### Responsive sizes
 
-Chassis CSS provides responsive font size utilities that adapt to different breakpoints. Enable this feature through the `$enable-adaptive-font-sizes` variable, allowing you to control typography across device sizes for optimal readability and design consistency.
+Responsive classes are a separate mechanism for cases where continuous fluid scaling doesn't satisfy the design — for example, when a layout requires a specific size locked to a specific breakpoint rather than a smooth transition between them. Enable responsive classes with `$enable-responsive-font-sizes` (off by default).
 
-These utilities follow a mobile-first approach, allowing you to stack classes for progressive scaling. Classes use the format `font-{size}` for the base size (applying from `xsmall` and up) and `{breakpoint}:font-{size}` for breakpoint-specific sizes (`small`, `medium`, `large`, `xlarge`, and `2xlarge`). Each breakpoint class overrides the previous font size at that breakpoint and larger viewports.
+These classes follow a mobile-first approach: `font-{size}` sets the base (applied at all widths) and `{breakpoint}:font-{size}` overrides at a specific breakpoint and wider. Available breakpoints are `small`, `medium`, `large`, `xlarge`, and `2xlarge`. Classes can be stacked for progressive scaling.
 
-<Example code={`<p class="font-small font-medium-large large:font-2xlarge xlarge:font-4xlarge">
+<Example code={`<p class="font-small medium:font-large large:font-2xlarge xlarge:font-4xlarge">
   Progressively larger text
 </p>`} />
 
-## Font Weight
+## Font weight
 
-Quickly change the `font-weight` between 4 values defined by tokens.
+Four weight utilities map to token-defined values, with names that match the Figma text style weight names.
 
 <Example code={`<p class="font-mass">Mass text.</p>
 <p class="font-strong">Strong text.</p>
 <p class="font-normal">Normal text.</p>
 <p class="font-elegant">Elegant text.</p>`} />
 
-## Inline Text Elements
+<Callout type="info">
+Chassis uses semantic weight names (`mass`, `strong`, `normal`, `elegant`) rather than conventional names like `light`, `regular`, or `bold`. Conventional names map inconsistently across font families and brand tokens. With semantic naming, `strong` may map to `600` for one brand or font and `700` for another.
+</Callout>
 
-Chassis CSS provides styling for common inline HTML5 elements, ensuring semantic and visual consistency.
+## Inline text elements
+
+Common inline HTML5 elements receive default styles for semantic markup.
 
 <Example code={`<p>You can use the mark tag to <mark>highlight</mark> text.</p>
 <p>This <del>example text</del> is meant to be treated as deleted.</p>
@@ -132,30 +112,34 @@ Chassis CSS provides styling for common inline HTML5 elements, ensuring semantic
 <p>This <strong>example text</strong> rendered as bold text.</p>
 <p>This <em>example text</em> rendered as italic text.</p>`} />
 
-### Semantic Usage
+### Semantic usage
 
-- `<mark>`: Highlights text for reference or notation purposes.
-- `<small>`: Represents side-comments or fine print, such as legal text.
-- `<s>`: Indicates text that is no longer relevant or accurate.
-- `<u>`: Denotes text with a non-textual annotation.
+Elements and their intended roles:
 
-For purely stylistic purposes, use the following classes:
+- `<mark>`: highlights text for reference or notation purposes.
+- `<small>`: represents side-comments or fine print, such as legal text.
+- `<del>`: marks text that has been removed from the document.
+- `<ins>`: marks text that has been added to the document.
+- `<s>`: indicates text that is no longer relevant or accurate.
+- `<u>`: denotes text with a non-textual annotation.
 
-- `.text-mark`: Applies the same styles as `<mark>`.
-- `.text-small`: Mimics `<small>` styling.
-- `.text-decoration-underline`: Matches `<u>` styling.
-- `.text-decoration-line-through`: Matches `<s>` styling.
+For purely stylistic purposes, the following classes apply the same visual treatment without the semantic element:
+
+- `.text-mark`: applies highlight styles matching `<mark>`.
+- `.text-small`: applies the reduced font size matching `<small>`.
+- `.text-decoration-underline`: matches `<u>` styling.
+- `.text-decoration-line-through`: matches `<s>` styling.
 
 ## Abbreviations
 
-Use the `<abbr>` element to provide expanded versions of abbreviations and acronyms on hover. Add `.text-initials` for a smaller font size.
+The `<abbr>` element exposes the expanded form on hover via its `title` attribute. Add `.font-initials` to render uppercase initials at a reduced font size.
 
 <Example code={`<p><abbr title="attribute">attr</abbr></p>
-<p><abbr title="HyperText Markup Language" class="text-initials">html</abbr></p>`} />
+<p><abbr title="HyperText Markup Language" class="font-initials">html</abbr></p>`} />
 
 ## Blockquotes
 
-Blockquotes are ideal for quoting content from other sources. Wrap the content in `<blockquote class="blockquote">`.
+Wrap quoted content in `<blockquote class="blockquote">` to apply the blockquote typographic treatment.
 
 <Example code={`<blockquote class="blockquote">
     <p>A well-known quote, contained in a blockquote element.</p>
@@ -163,7 +147,7 @@ Blockquotes are ideal for quoting content from other sources. Wrap the content i
 
 ### Attribution
 
-For attribution, wrap the `<blockquote>` in a `<figure>` and use `<figcaption>` or a block-level element with the `.attribution` class. Example:
+Wrap the `<blockquote>` in a `<figure>` and use `<figcaption class="attribution">` to attribute the source. The `.attribution` class prepends an em dash automatically.
 
 <Example code={`<figure>
     <blockquote class="blockquote">
@@ -176,7 +160,7 @@ For attribution, wrap the `<blockquote>` in a `<figure>` and use `<figcaption>` 
 
 ### Alignment
 
-Use text utilities to align blockquotes as needed:
+Apply text alignment utilities to the wrapping `<figure>` to reposition the blockquote and its attribution together.
 
 <Example code={`<figure class="text-center">
     <blockquote class="blockquote">
@@ -198,14 +182,16 @@ Use text utilities to align blockquotes as needed:
 
 ## Lists
 
-### Bulletless Lists
+Chassis adds two list modifier classes for common layout needs; nested lists are unaffected.
 
-Remove default `list-style` and left margin by adding the `.bulletless` class. Note: This applies only to immediate child elements.
+### Bulletless
+
+Remove default markers and left margin by adding `.bulletless`. The class applies only to immediate children, so nested lists retain their default appearance.
 
 <Example code={`<ul class="bulletless">
     <li>This is a list.</li>
     <li>It appears completely unstyled.</li>
-    <li>Structurally, it’s still a list.</li>
+    <li>Structurally, it's still a list.</li>
     <li>However, this style only applies to immediate child elements.</li>
     <li>Nested lists:
       <ul>
@@ -217,19 +203,19 @@ Remove default `list-style` and left margin by adding the `.bulletless` class. N
     <li>This may still come in handy in some situations.</li>
   </ul>`} />
 
-### Inline Lists
+### Inline
 
-Display list items inline by adding the `.inline` class.
+Display list items inline by adding `.inline`.
 
 <Example code={`<ul class="inline">
     <li>This is a list item.</li>
     <li>And another one.</li>
-    <li>But they’re displayed inline.</li>
+    <li>But they're displayed inline.</li>
   </ul>`} />
 
-### Description List Alignment
+### Description lists
 
-Align terms and descriptions horizontally using grid classes or semantic mixins. Add `.text-truncate` to truncate long terms with ellipses.
+Align terms and descriptions horizontally using grid column classes. Add `.text-truncate` to truncate long terms with an ellipsis.
 
 <Example code={`<dl class="row">
     <dt class="small:col-3">Description lists</dt>
@@ -256,25 +242,68 @@ Align terms and descriptions horizontally using grid classes or semantic mixins.
     </dd>
   </dl>`} />
 
-## Context Fonts
+## Font families
 
-Chassis CSS provides context-specific font styles for various use cases.
+Chassis ships three font family classes — text, display, and code — each setting `font-family` on the element. The text family is the body default; the others opt specific elements into a different typeface.
+
+### Text font
+
+`.font-text` is the body default and rarely needs to be applied explicitly. Use it to restore the text family on a child element when an ancestor has switched to a different family.
+
+<Example code={`<p class="font-text">.font-text</p>`} />
+
+### Display font
+
+Add `.font-display` to any element to switch to the display font family. All font size and weight utilities compose with it.
+
+<Example code={`<p class="h1 font-display">Display h1</p>
+<p class="font-display h2">Display h2</p>
+<p class="font-display font-xlarge">Display font-xlarge</p>
+<p class="font-display font-xlarge font-mass">Display font-mass</p>
+`} />
+
+Display font sizes and weights use dedicated tokens, separate from the text font scale. A display font's `large` or `strong` may map to a different numeric value than their `.font-text` equivalents, and line heights often differ to support the readability of display text.
+
+### Code font
+
+Add `.font-code` to apply the branded monospace font family, suitable for code snippets and technical text. The code font has 3 sizes and 2 weights defined by dedicated design tokens, separate from the text font scale. Combine `.font-code` with `font-{size}` and `font-{weight}` utilities to set size and weight.
+
+<Example code={`<p class="font-code font-large">Large code font.</p>
+<p class="font-code">Medium code font.</p>
+<p class="font-code font-small">Small code font.</p>
+<p class="font-code font-strong">Strong code font.</p>`} />
+
+Code font sizes and weights use dedicated tokens, separate from the text font scale. A code font's `large` or `strong` may map to a different numeric value than their `.font-text` equivalents, and line heights often differ to support the readability of code snippets.
+
+<Callout type="info">
+When only the font family needs to change and sizes should inherit from surrounding text, use `.font-monospace` instead. It switches `font-family` to the code font without applying any code-specific size, weight, or line-height tokens. Pairing it with weight utilities like `font-strong` may produce unexpected results if the code font does not have that weight registered.
+</Callout>
+
+## Context font styles
+
+Context font classes bundle font family, size, weight, line height, letter spacing, and text transforms into a single class. They map to specific Figma text style names via design tokens, making design-to-code handoff direct.
 
 ### Jumbo
+
+`.font-jumbo` targets large-scale headlines where maximum visual impact is needed.
 
 <Example code={`<p class="font-jumbo">This is jumbo text, which can be used for headlines.</p>`} />
 
 ### Hero
 
+`.font-hero` targets hero sections and prominent introductory text.
+
 <Example code={`<p class="font-hero">This is a hero text, which can be used in hero slides.</p>`} />
 
 ### Heading
+
+`.font-heading` applies the heading context style independent of the HTML heading level.
 
 <Example code={`<p class="font-heading">A special heading class.</p>`} />
 
 ### Lead
 
-Highlight paragraphs by adding `.font-lead`.
+`.font-lead` increases the visual weight of an introductory paragraph to draw the reader's eye.
 
 <Example code={`<p class="font-lead">
     This is a lead paragraph. It stands out from regular paragraphs.
@@ -282,11 +311,15 @@ Highlight paragraphs by adding `.font-lead`.
 
 ### Title
 
+Title styles come in three sizes for use in card headers, section labels, and similar UI elements.
+
 <Example code={`<p class="font-title-large">A special title in large size.</p>
 <p class="font-title">A special title in medium size.</p>
 <p class="font-title-small">A special title in small size.</p>`} />
 
 ### Body
+
+Body styles in three sizes provide typographic control for article and long-form content.
 
 <Example code={`<p class="font-body-large">A large text class suitable for various contexts, such as articles, blogs, and more. It features custom styling to enhance readability and design.</p>
 <p class="font-body">A medium text class suitable for various contexts, such as articles, blogs, and more. It features custom styling to enhance readability and design.</p>
@@ -294,34 +327,26 @@ Highlight paragraphs by adding `.font-lead`.
 
 ### Label
 
+Label styles in three sizes suit metadata, tags, and supporting information where compact text is needed.
+
 <Example code={`<p class="font-label-large">A large label class for metadata, tags, and supporting information.</p>
 <p class="font-label">A medium label class for metadata, tags, and supporting information.</p>
 <p class="font-label-small">A small label class for metadata, tags, and supporting information.</p>`} />
-
-## Text Utilities
-
-Modify text alignment, transformation, style, weight, line-height, decoration, and color using [text utilities]([[docsref:/utilities/text]]) and [color utilities]([[docsref:/utilities/colors]]).
-
-## Responsive Font Sizes
-
-Chassis CSS 5 introduces responsive font sizes by default, allowing text to scale naturally across devices and viewports. Learn more on the [RFS page]([[docsref:/getting-started/rfs]]).
 
 ## CSS
 
 <DocsCSS />
 
-### Variables
+### Custom properties
 
 <DocsCSSVars />
 
-### Sass Variables
+### Sass variables
 
 Typography variables are defined with token references as CSS variables.
 
-<ScssDocs name="type-variables" file="scss/_variables.scss" />
+<ScssDocs name="type-variables" file="scss/config/_defaults.scss" />
 
-Additional typography elements, including those in [Reboot]([[docsref:/content/reboot]]), have dedicated variables. Refer to the [text utilities]([[docsref:/utilities/text]]) page for base font-related variables.
-
-### Typography Tokens
+### Design tokens
 
 <ScssDocs name="typography-tokens" file="scss/tokens/_fonts.scss" />

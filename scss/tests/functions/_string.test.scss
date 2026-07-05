@@ -1,0 +1,57 @@
+@use "../../functions" as *;
+
+@include describe("str-replace function") {
+  @include it("replaces a substring") {
+    @include assert-equal("hello_world", str-replace("hello-world", "-", "_"));
+  }
+
+  @include it("replaces all occurrences") {
+    @include assert-equal("a_b_c", str-replace("a-b-c", "-", "_"));
+  }
+
+  @include it("removes substring when replace is omitted") {
+    @include assert-equal("helloworld", str-replace("hello-world", "-"));
+  }
+
+  @include it("returns original when search is not found") {
+    @include assert-equal("test", str-replace("test", "x", "y"));
+  }
+
+  @include it("handles empty input string") {
+    @include assert-equal("", str-replace("", "x", "y"));
+  }
+}
+
+@include describe("str-to-number function") {
+  @include it("returns a number directly") {
+    @include assert-equal(5, str-to-number(5));
+  }
+
+  @include it("converts integer strings") {
+    @include assert-equal(25, str-to-number("25"));
+  }
+
+  @include it("converts decimal strings with leading digit") {
+    @include assert-equal(.65, str-to-number("0.65"));
+  }
+
+  @include it("converts decimal strings without leading digit") {
+    @include assert-equal(.5, str-to-number(".5"));
+  }
+
+  @include it("converts negative integers") {
+    @include assert-equal(-10, str-to-number("-10"));
+  }
+
+  @include it("converts negative decimals") {
+    @include assert-equal(-10.2, str-to-number("-10.2"));
+  }
+
+  @include it("converts negative decimals without leading digit") {
+    @include assert-equal(-.125, str-to-number("-.125"));
+  }
+
+  @include it("handles multi-digit decimals") {
+    @include assert-equal(123.456, str-to-number("123.456"));
+  }
+}

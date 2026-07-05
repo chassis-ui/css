@@ -1,0 +1,21 @@
+//
+// RTL Mixins
+//
+// Outputs both LTR and RTL values for directional CSS properties.
+//
+
+@mixin rtl-value($prop, $value, $rtl-value) {
+  #{$prop}: $value;
+  [dir="rtl"] & {
+    #{$prop}: $rtl-value;
+  }
+}
+
+@mixin rtl-prop($ltr-prop, $rtl-prop, $value) {
+  #{$ltr-prop}: $value;
+
+  [dir="rtl"] & {
+    #{$ltr-prop}: 0; // Or 'unset' / 'auto' depending on your reset needs
+    #{$rtl-prop}: $value;
+  }
+}

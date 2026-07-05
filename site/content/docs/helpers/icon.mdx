@@ -1,0 +1,240 @@
+---
+title: Icon
+description: Style SVG and font icons with size, color, and opacity — applied directly to an icon element or cascaded from any parent.
+toc: true
+tokens: context
+css_layer: helpers
+---
+
+import { getData } from '@libs/data'
+
+[api]: [[docsref:/utilities/api]]
+
+Apply `.icon` to an SVG or an empty `<span>` element to render icons with controlled color, size, and alignment. Color and size modifier classes can also be applied to any ancestor element to set those values for all descendant `.icon` elements at once — each icon can still override the inherited value with its own modifier class.
+
+<Callout type="info">
+Decorative icons placed alongside visible text should carry `aria-hidden="true"`. Standalone icons that convey meaning need `role="img"` and an `aria-label`.
+</Callout>
+
+<Example
+  code={`<Icon name="info-circle-solid" />
+<Icon name="info-circle-solid" font />`} />
+
+## Colors
+
+Color modifier classes set `--cx-icon-color` on the target. Apply them directly to an `.icon` element, or to any ancestor element to paint all descendant icons without touching each one individually.
+
+<Example code={getData('context-colors').map((contextColor) => `<Icon name="info-circle-solid" class="icon-${contextColor.name}" />`)} />
+<Example code={getData('context-colors').map((contextColor) => `<Icon name="info-circle-solid" font class="icon-${contextColor.name}" />`)} />
+
+### Context colors
+
+Context color classes — `.icon-main`, `.icon-subtle`, `.icon-slight` — follow the same naming convention as other Chassis context utilities and adapt to the active color scheme.
+
+<Example code={`<Icon name="info-circle-solid" class="icon-main" />
+<Icon name="info-circle-solid" class="icon-subtle" />
+<Icon name="info-circle-solid" class="icon-slight" />
+<Icon name="info-circle-solid" class="secondary-icon-main" />
+<Icon name="info-circle-solid" class="secondary-icon-subtle" />
+<Icon name="info-circle-solid" class="secondary-icon-slight" />
+
+<span class="vr mx-medium"></span>
+
+<Icon name="info-circle-solid" font class="icon-main" />
+<Icon name="info-circle-solid" font class="icon-subtle" />
+<Icon name="info-circle-solid" font class="icon-slight" />
+<Icon name="info-circle-solid" font class="secondary-icon-main" />
+<Icon name="info-circle-solid" font class="secondary-icon-subtle" />
+<Icon name="info-circle-solid" font class="secondary-icon-slight" />`} />
+
+### Reset color
+
+`.icon-reset` overrides the icon context color and paints the icon with `--cx-fg-color` instead — useful inside context containers where the icon should match the surrounding text color rather than the icon context token.
+
+<Example code={`<div class="info-fg-subtle">
+    <Icon name="info-circle-solid" />
+    <Icon name="info-circle-solid" class="icon-reset" />
+  </div>`} />
+
+### Parent cascade
+
+A color class on a parent element sets `--cx-icon-color` for all descendant `.icon` elements. Individual icons can override the inherited color with their own modifier.
+
+<Example code={`<div class="icon-secondary">
+    <Icon name="info-circle-solid" />
+    <Icon name="info-circle-solid" />
+    <Icon name="info-circle-solid" class="icon-primary" />
+  </div>`} />
+
+## Sizes
+
+Size modifier classes set `--cx-icon-size` on the target. Like color classes, they can be applied to any ancestor element to uniformly size all descendant icons.
+
+<Example code={`<Icon name="info-circle-solid" class="icon-2xsmall" />
+<Icon name="info-circle-solid" class="icon-xsmall" />
+<Icon name="info-circle-solid" class="icon-small" />
+<Icon name="info-circle-solid" class="icon-medium" />
+<Icon name="info-circle-solid" class="icon-large" />
+<Icon name="info-circle-solid" class="icon-xlarge" />
+<Icon name="info-circle-solid" class="icon-2xlarge" />
+<Icon name="info-circle-solid" class="icon-3xlarge" />
+<Icon name="info-circle-solid" class="icon-4xlarge" />`} />
+
+<Example code={`<Icon name="info-circle-solid" font class="icon-2xsmall" />
+<Icon name="info-circle-solid" font class="icon-xsmall" />
+<Icon name="info-circle-solid" font class="icon-small" />
+<Icon name="info-circle-solid" font class="icon-medium" />
+<Icon name="info-circle-solid" font class="icon-large" />
+<Icon name="info-circle-solid" font class="icon-xlarge" />
+<Icon name="info-circle-solid" font class="icon-2xlarge" />
+<Icon name="info-circle-solid" font class="icon-3xlarge" />
+<Icon name="info-circle-solid" font class="icon-4xlarge" />`} />
+
+### Responsive sizes
+
+Responsive size classes follow the format `{breakpoint}:icon-{size}` and require the `$enable-responsive-font-sizes` variable to be enabled. Classes stack using a mobile-first approach — each breakpoint class overrides the previous size at that breakpoint and wider.
+
+<Example code={`<Icon name="info-circle-solid" class="icon-small medium:icon-large xlarge:icon-4xlarge" />
+<Icon name="info-circle-solid" font class="icon-small medium:icon-large xlarge:icon-4xlarge" />`} />
+
+### Parent cascade
+
+A size class on a parent element sizes all descendant icons uniformly. Individual icons can still override with their own size modifier.
+
+<Example code={`<div class="icon-large">
+    <Icon name="info-circle-solid" />
+    <Icon name="info-circle-solid" />
+    <Icon name="info-circle-solid" class="icon-small" />
+  </div>`} />
+
+## With text
+
+Icons sized with an explicit `.icon-{size}` class align properly alongside text at the matching `.font-{size}` scale. `.icon-adaptive` scales the icon relative to its parent's `font-size` — `1.125em` for SVG icons, `1.25em` for font icons — so no manual size class is needed when the icon sits inline with text.
+
+<Example code={`<div class="font-small">
+    <Icon name="info-circle-solid" class="icon-small" />
+    Text with a leading SVG icon.
+  </div>
+  <div class="font-small">
+    <Icon name="info-circle-solid" font class="icon-small" />
+    Text with a leading font icon.
+  </div>
+  <div class="font-2xlarge">
+    <Icon name="info-circle-solid" class="icon-2xlarge" />
+    Text with a leading SVG icon.
+  </div>
+  <div class="font-2xlarge">
+    <Icon name="info-circle-solid" font class="icon-2xlarge" />
+    Text with a leading font icon.
+  </div>
+  <div class="font-4xlarge">
+    <Icon name="info-circle-solid" class="icon-4xlarge" />
+    Text with a leading SVG icon.
+  </div>
+  <div class="font-4xlarge">
+    <Icon name="info-circle-solid" font class="icon-4xlarge" />
+    Text with a leading font icon.
+  </div>`} />
+
+<Example code={`<div class="font-small">
+    <Icon name="info-circle-solid" class="icon-adaptive" />
+    Text with a leading SVG icon.
+  </div>
+  <div class="font-small">
+    <Icon name="info-circle-solid" font class="icon-adaptive" />
+    Text with a leading font icon.
+  </div>
+  <div class="font-2xlarge">
+    <Icon name="info-circle-solid" class="icon-adaptive" />
+    Text with a leading SVG icon.
+  </div>
+  <div class="font-2xlarge">
+    <Icon name="info-circle-solid" font class="icon-adaptive" />
+    Text with a leading font icon.
+  </div>`} />
+
+## Opacity
+
+Opacity modifier classes set `--cx-icon-opacity` on the icon element, applying alpha transparency to the current color without changing the color token itself.
+
+### How it works
+
+`.icon-{color}` classes derive the icon color with CSS relative color syntax, threading `--icon-opacity` in as the alpha channel:
+
+```css
+.icon {
+  color: var(--cx-icon-color);
+  fill: var(--cx-icon-color);
+}
+.icon-primary {
+  --cx-icon-color: oklch(from var(--cx-primary) l c h / var(--cx-icon-opacity, 1));
+}
+.icon-opacity-50 {
+  --cx-icon-opacity: var(--cx-opacity-50);
+}
+```
+
+`--cx-icon-opacity` defaults to `1`, so a color class alone produces full opacity. An opacity class overrides only the alpha channel, leaving the color token unchanged.
+
+### Opacity scale
+
+Override `--cx-icon-opacity` with an inline style or choose from the `.icon-opacity-*` scale:
+
+<Example code={[`<Icon name="info-circle-solid" class="icon-secondary" />
+<Icon name="info-circle-solid" style="--cx-icon-opacity: .6;" class="icon-secondary" />
+
+<span class="vr mx-medium"></span>
+`].concat(getData('basic-opacities').map((opacity) => `<Icon name="info-circle-solid" class="icon-secondary icon-opacity-${opacity.name}" />`))} />
+
+### Context opacity
+
+Context opacity classes — `.icon-opacity-subtle` and `.icon-opacity-slight` — use the same alpha values as `icon-*` color classes, keeping icon transparency consistent.
+
+<Example code={`<Icon name="info-circle-solid" class="icon-secondary" />
+<Icon name="info-circle-solid" class="icon-secondary icon-opacity-subtle" />
+<Icon name="info-circle-solid" class="icon-secondary icon-opacity-slight" />
+
+<span class="vr mx-medium"></span>
+
+<Icon name="info-circle-solid" font class="icon-secondary" />
+<Icon name="info-circle-solid" font class="icon-secondary icon-opacity-subtle" />
+<Icon name="info-circle-solid" font class="icon-secondary icon-opacity-slight" />`} />
+
+## CSS
+
+`.icon` and `.icon-adaptive` are declared in `@layer helpers`. Color and size modifier classes are generated by the [utilities API][api] and placed in `@layer utilities`, so they reliably override the base class in the cascade regardless of source order.
+
+### Custom properties
+
+`.icon` reads `--cx-icon-color` and `--cx-icon-size` from the cascade; both have `:root` defaults. `--cx-icon-opacity` has no root default — it falls back to `1` within the color expression and is only meaningful when an `.icon-{color}` class is also applied.
+
+```css
+--cx-icon-color: var(--cx-context-icon-main, var(--cx-icon-main));
+--cx-icon-size: var(--cx-icon-medium);
+```
+
+### Sass variables
+
+<DocsSASSVars name="Icon" />
+
+### Design tokens
+
+Icon sizes are defined as design tokens consumed by both the icon utilities and the [Spinner]([[docsref:/components/spinner]]) size scale.
+
+<ScssDocs name="icon-size-tokens" file="scss/tokens/_icon.scss" />
+<ScssDocs name="icon-opacity-tokens" file="scss/tokens/_opacity.scss" />
+
+### Sass maps
+
+Color, size, and opacity utility classes are generated from Sass maps via the [utilities API][api].
+
+<ScssDocs name="icon-sizes-map" file="scss/maps/_sizing.scss" />
+<ScssDocs name="icon-opacities-map" file="scss/maps/_opacities.scss" />
+
+See the [opacity utilities]([[docsref:/utilities/opacity#sass-maps]]) page for the full opacities map.
+
+### Utilities API
+
+Color, size, and opacity classes are all declared in a single utilities map.
+
+<ScssDocs name="utils-icons" file="scss/utilities/_icon.scss" />

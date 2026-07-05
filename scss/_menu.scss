@@ -1,0 +1,369 @@
+@use "./config" as *;
+@use "./mixins" as *;
+@use "./functions" as *;
+@use "./placeholders" as *;
+
+//
+// Menu Component
+//
+// Toggleable contextual overlay for displaying lists of links and actions.
+// Supports directional variants (start, end) and animated
+// enter/leave transitions. Toggle behavior is driven by menu.js.
+//
+
+@layer components {
+  // The dropdown menu
+  .menu {
+    // scss-docs-start menu-properties
+    --zindex: var(--menu-zindex, #{$zindex-menu});
+    --min-width: var(--menu-min-width, #{$menu-min-width});
+    --max-height: var(--menu-max-height, #{$menu-max-height});
+    --overflow-y: var(--menu-overflow-y, #{$menu-overflow-y});
+    --padding-y: var(--menu-padding-y, #{$menu-padding-y});
+    --padding-x: var(--menu-padding-x, #{$menu-padding-x});
+    --gap: var(--menu-gap, #{$menu-gap});
+    --fg-color: var(--menu-fg-color, #{$menu-fg-color});
+    --bg-color: var(--menu-bg-color, #{$menu-bg-color});
+    --border-color: var(--menu-border-color, #{$menu-border-color});
+    --border-radius: var(--menu-border-radius, #{$menu-border-radius});
+    --border-width: var(--menu-border-width, #{$menu-border-width});
+    @include map-font($menu-font);
+    --box-shadow: var(--menu-box-shadow, #{$menu-box-shadow});
+    --transition-duration: var(--menu-transition-duration, #{$menu-transition-duration});
+    --transition-timing: var(--menu-transition-timing, #{$menu-transition-timing});
+    // menu item properties
+    --item-padding-y: var(--menu-item-padding-y, #{$menu-item-padding-y});
+    --item-padding-x: var(--menu-item-padding-x, #{$menu-item-padding-x});
+    --item-gap: var(--menu-item-gap, #{$menu-item-gap});
+    --item-border-radius: var(--menu-item-border-radius, #{$menu-item-border-radius});
+    --item-idle-fg-color: var(--menu-item-idle-fg-color, #{$menu-item-idle-fg-color});
+    --item-idle-bg-color: var(--menu-item-idle-bg-color, #{$menu-item-idle-bg-color});
+    --item-idle-icon-color: var(--menu-item-idle-icon-color, #{$menu-item-idle-icon-color});
+    --item-hover-fg-color: var(--menu-item-hover-fg-color, #{$menu-item-hover-fg-color});
+    --item-hover-bg-color: var(--menu-item-hover-bg-color, #{$menu-item-hover-bg-color});
+    --item-hover-icon-color: var(--menu-item-hover-icon-color, #{$menu-item-hover-icon-color});
+    --item-active-fg-color: var(--menu-item-active-fg-color, #{$menu-item-active-fg-color});
+    --item-active-bg-color: var(--menu-item-active-bg-color, #{$menu-item-active-bg-color});
+    --item-active-icon-color: var(--menu-item-active-icon-color, #{$menu-item-active-icon-color});
+    --item-disabled-fg-color: var(--menu-item-disabled-fg-color, #{$menu-item-disabled-fg-color});
+    --item-disabled-bg-color: var(--menu-item-disabled-bg-color, #{$menu-item-disabled-bg-color});
+    --item-disabled-icon-color: var(--menu-item-disabled-icon-color, #{$menu-item-disabled-icon-color});
+    // menu header properties
+    --header-padding-y: var(--menu-header-padding-y, #{$menu-header-padding-y});
+    --header-padding-x: var(--menu-header-padding-x, #{$menu-header-padding-x});
+    --header-fg-color: var(--menu-header-fg-color, #{$menu-header-fg-color});
+    --header-bg-color: var(--menu-header-bg-color, #{$menu-header-bg-color});
+    @include map-font($menu-header-font, menu, header);
+    // rich menu item properties
+    --description-fg-color: var(--menu-description-fg-color, #{$menu-description-fg-color});
+    --description-font-size: var(--menu-description-font-size, #{$menu-description-font-size});
+    --icon-size: var(--menu-icon-size, #{$menu-icon-size});
+    --caret-icon: var(--menu-caret-icon, #{svg-icon($menu-caret-icon)});
+    --image-size: var(--menu-image-size, #{$menu-image-size});
+    --avatar-size: var(--menu-avatar-size, #{$menu-avatar-size});
+    --check-color: var(--menu-check-color, #{$menu-check-color});
+    --caret-size: var(--menu-caret-size, #{$menu-caret-size});
+    --caret-spacing: var(--menu-caret-spacing, #{$menu-caret-spacing});
+    --divider-color: var(--menu-divider-color, #{$menu-divider-color});
+    --divider-margin: var(--menu-divider-margin, #{$menu-divider-margin});
+    // scss-docs-end menu-properties
+
+    @extend %component;
+
+    position: absolute;
+    z-index: var(--zindex);
+    display: none;
+    flex-direction: column;
+    gap: var(--gap);
+    min-width: var(--min-width);
+    max-height: var(--max-height);
+    @include exclude-strokes(menu);
+    margin: 0;
+    overflow-y: var(--overflow-y);
+    overscroll-behavior: contain;
+    @include font();
+    // color: var(--fg-color);
+    text-align: start;
+    list-style: none;
+    // background-color: var(--bg-color);
+    background-clip: padding-box;
+    // border: var(--border-width) solid var(--border-color);
+    // @include border-radius(var(--border-radius));
+    // @include box-shadow(var(--box-shadow));
+    @include box-shadow(var(--box-shadow));
+    opacity: 0;
+    transform: scale(.95);
+    transform-origin: top var(--logical-position-start, left);
+
+    @include transition(
+      opacity var(--transition-duration) var(--transition-timing),
+      transform var(--transition-duration) var(--transition-timing),
+      display var(--transition-duration) allow-discrete
+    );
+
+    &.translucent {
+      background-color: transparent;
+      &::before {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        content: "";
+        @include border-radius(var(--border-radius));
+        @include translucent();
+      }
+    }
+
+    &.show {
+      display: flex;
+      opacity: 1;
+      transform: none;
+    }
+
+    &[data-cx-placement^="top"] {
+      transform-origin: bottom var(--logical-position-start, left);
+    }
+
+    &[data-cx-placement="bottom-end"] {
+      transform-origin: top var(--logical-position-end, right);
+    }
+
+    &[data-cx-placement="top-end"] {
+      transform-origin: bottom var(--logical-position-end, right);
+    }
+
+    &[data-cx-placement^="start"] {
+      transform-origin: top var(--logical-position-end, right);
+    }
+
+    &.scrollable {
+      --max-height: 80dvh;
+      --overflow-y: auto;
+    }
+
+  }
+
+  @starting-style {
+    .menu.show {
+      opacity: 0;
+      transform: scale(.95);
+    }
+  }
+
+  .menu-divider {
+    height: 0;
+    margin: var(--divider-margin);
+    overflow: hidden;
+    border-block-start: 1px solid var(--divider-color);
+    opacity: 1;
+  }
+
+  .menu-item {
+    // --caret-size: var(--item-caret-size);
+    --icon-color: var(--item-idle-icon-color);
+    --item-fg-color: var(--item-idle-fg-color);
+    --item-bg-color: var(--item-idle-bg-color);
+    display: flex;
+    gap: var(--item-gap);
+    align-items: center;
+    width: 100%;
+    color: var(--item-fg-color);
+    text-align: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    background-color: var(--item-bg-color);
+    border: 0;
+    outline: 0;
+    @include padding(item);
+    @include border-radius(var(--item-border-radius));
+
+    &:hover,
+    &:focus {
+      --icon-color: var(--item-hover-icon-color);
+      --item-fg-color: var(--item-hover-fg-color);
+      --item-bg-color: var(--item-hover-bg-color);
+      // @include gradient(var(--theme-bg-subtle, var(--item-bg-hover)));
+    }
+
+    &.active,
+    &:active {
+      --icon-color: var(--item-active-icon-color);
+      --check-color: var(--item-active-icon-color);
+      --item-fg-color: var(--item-active-fg-color);
+      --item-bg-color: var(--item-active-bg-color);
+      // @include gradient(var(--item-bg-active));
+    }
+
+    &.selected {
+      font-weight: $menu-selected-font-weight;
+    }
+
+    &.disabled,
+    &:disabled {
+      --icon-color: var(--item-disabled-icon-color);
+      --check-color: var(--item-disabled-icon-color);
+      --item-fg-color: var(--item-disabled-fg-color);
+      --item-bg-color: var(--item-disabled-bg-color);
+      --description-fg-color: var(--item-disabled-fg-color);
+      pointer-events: none;
+      background-color: transparent;
+      // background-image: if($enable-background-gradients, none, null);
+    }
+
+  }
+
+  .menu.context,
+  .menu-item.context {
+    // --menu-item-bg-color: transparent);
+    --fg-color: #{$menu-fg-context};
+    --bg-color: #{$menu-bg-context};
+    --border-color: #{$menu-border-context};
+    --header-fg-color: #{$menu-header-fg-context};
+    --divider-color: #{$menu-divider-context};
+    --item-idle-fg-color: #{$menu-item-idle-fg-context};
+    --item-idle-bg-color: #{$menu-item-idle-bg-context};
+    --item-idle-icon-color: #{$menu-item-idle-icon-context};
+    --item-hover-fg-color: #{$menu-item-hover-fg-context};
+    --item-hover-bg-color: #{$menu-item-hover-bg-context};
+    --item-hover-icon-color: #{$menu-item-hover-icon-context};
+    --item-active-fg-color: #{$menu-item-active-fg-context};
+    --item-active-bg-color: #{$menu-item-active-bg-context};
+    --item-active-icon-color: #{$menu-item-active-icon-context};
+    --item-disabled-fg-color: #{$menu-item-disabled-fg-context};
+    --item-disabled-bg-color: #{$menu-item-disabled-bg-context};
+    --item-disabled-icon-color: #{$menu-item-disabled-icon-context};
+  }
+
+  .menu-image {
+    width: var(--image-size);
+    height: var(--image-size);
+    object-fit: cover;
+    @include border();
+    @include border-radius(var(--border-radius-medium));
+  }
+
+  .menu-item-icon {
+    flex-shrink: 0;
+    align-self: flex-start;
+    width: var(--icon-size);
+    height: auto;
+    margin-block-start: .125rem;
+  }
+
+  .menu-item-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: fit-content;
+  }
+
+  .menu-item-description {
+    @include font-size(var(--description-font-size));
+    color: var(--description-fg-color);
+  }
+
+  .menu-item-check {
+    --icon-color: var(--check-color);
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-block-start: .125rem;
+    margin-inline-start: auto;
+    // color: var(--check-color);
+    visibility: hidden;
+    .selected > & {
+      visibility: visible;
+    }
+  }
+
+  .menu-header {
+    display: block;
+    margin-block-end: 0;
+    color: var(--header-fg-color);
+    white-space: nowrap;
+    background-color: var(--header-bg-color);
+    @include padding(header);
+    @include font(header);
+  }
+
+  .menu-text {
+    display: block;
+    @include padding(header);
+  }
+
+  // scss-docs-start submenu
+  .submenu {
+    position: relative;
+
+    > .menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      @include caret(end, $color: var(--item-fg-color));
+    }
+
+    > .menu {
+      top: 0;
+      margin-block-start: calc(-1 * var(--padding-y));
+    }
+
+    &:hover > .menu-item,
+    &:focus-within > .menu-item,
+    &.show > .menu-item {
+      // set caret color
+      --icon-color: var(--item-hover-icon-color);
+      --item-fg-color: var(--item-hover-fg-color);
+      --item-bg-color: var(--item-hover-bg-color);
+    }
+
+  }
+
+  .submenu-back {
+    display: none;
+  }
+
+  @include media-breakpoint-down(small) {
+    .menu:has(.submenu-stacked.show) > :not(.submenu-stacked.show):not(:has(.submenu-stacked.show)),
+    .submenu:has(.submenu-stacked.show) > :not(.submenu-stacked.show):not(:has(.submenu-stacked.show)) {
+      display: none;
+    }
+
+    .submenu-stacked {
+      // stylelint-disable declaration-no-important
+      position: static !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      background: none !important;
+      backdrop-filter: none !important;
+      border: 0;
+      box-shadow: none;
+      transform: none !important;
+      // stylelint-enable declaration-no-important
+      @include transition(none);
+      @include border-radius(0);
+      &.translucent::before {
+        background: none;
+        backdrop-filter: none;
+      }
+
+    }
+
+    .submenu-back {
+      display: flex;
+      gap: var(--item-gap);
+      align-items: center;
+      padding: var(--item-padding-y) var(--item-padding-x);
+      font-weight: var(--font-weight-strong, 600);
+      border: 0;
+      outline: 0;
+      @include caret(start, $position: before, $spacing: 0, $color: var(--item-fg-color));
+    }
+  }
+  // scss-docs-end submenu
+
+  @if $enable-caret {
+    [data-cx-toggle="menu"] {
+      @include caret();
+    }
+  }
+
+} // @layer components

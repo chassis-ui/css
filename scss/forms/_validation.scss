@@ -1,268 +1,398 @@
+@use "../config" as *;
+@use "../mixins" as *;
+@use "../placeholders" as *;
+
 //
 // Form Validation
 //
-// Provides styling for form validation states (valid and invalid) including
-// feedback messages, tooltips, and visual indicators. Supports dark mode.
-//
-// The validation system works with:
-// - Native form validation (:valid, :invalid pseudo-classes)
-// - Class-based validation (.is-valid, .is-invalid classes)
-// - Supports validation icons when $enable-validation-icons is true
+// Styling for valid and invalid form states. Supports native pseudo-class
+// validation (:user-valid, :user-invalid) and class-based validation
+// (.is-valid, .is-invalid), with optional inline icon indicators.
 //
 
-// Validation feedback messages
-// Text-based feedback that appears below form inputs
+$-validation-states: (
+  valid: $form-valid-class,
+  invalid: $form-invalid-class,
+) !default;
 
-.form-help:not(.always-show) {
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}:valid:has(~ .valid-feedback) ~ &,
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}:invalid:has(~ .invalid-feedback) ~ &,
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}.input-group:has(:valid):has(~ .valid-feedback) ~ &,
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}.input-group:has(:invalid):has(~ .invalid-feedback) ~ &,
-  .input-group:has(.#{$form-valid-class}):has(~ .valid-feedback) ~ &,
-  .input-group:has(.#{$form-invalid-class}):has(~ .invalid-feedback) ~ &,
-  .#{$form-valid-class} ~ &:has(~ .valid-feedback),
-  .#{$form-invalid-class} ~ &:has(~ .invalid-feedback) {
+@layer components {
+  //
+  // Form Validation
+  //
+  // Provides styling for form validation states (valid and invalid) including
+  // feedback messages, tooltips, and visual indicators. Supports dark mode.
+  //
+  // The validation system works with:
+  // - Native form validation (:user-valid, :user-invalid pseudo-classes)
+  // - Class-based validation (.is-valid, .is-invalid classes)
+  // - Wrapper-level validation icons opt-in via the `.validation-icons` class
+  //   (only emitted when $enable-validation-icons is true)
+  //
+
+  @mixin form-valid() {
+    --fg-color: var(--form-valid-fg-active);
+    --bg-color: var(--form-valid-bg-regular);
+    --border-color: var(--form-valid-border-color);
+    --focus-ring-color: var(--form-valid-focus-ring-color);
+
+    @if $enable-validation-icons {
+      // Source variable. `--feedback-icon` is the one consumed by background-image
+      // rules (in %form-caret and the `$-text-input` rule); it stays unset until
+      // the `.validation-icons` opt-in maps this source onto it below.
+      --validation-icon: var(--form-icon-valid);
+    }
+  }
+
+  @mixin form-invalid() {
+    --fg-color: var(--form-invalid-fg-active);
+    --bg-color: var(--form-invalid-bg-regular);
+    --border-color: var(--form-invalid-border-color);
+    --focus-ring-color: var(--form-invalid-focus-ring-color);
+
+    @if $enable-validation-icons {
+      --validation-icon: var(--form-icon-invalid);
+    }
+  }
+
+  %form-valid{
+    @include form-valid();
+  }
+
+  %form-invalid{
+    @include form-invalid();
+  }
+
+  // Emit the two "in validation state" triggers for a control: the native
+  // (`[data-cx-validate] :user-*`) and the class-based (`.is-*`) gate. Used by
+  // the per-control blocks below so the trigger logic lives in one place.
+  @mixin in-validation-state($state, $class) {
+    [data-cx-validate] &:user-#{$state},
+    &.#{$class} {
+      @content;
+    }
+  }
+
+  .valid-feedback,
+  .invalid-feedback {
     display: none;
+    width: 100%;
   }
-}
 
-.valid-feedback,
-.invalid-feedback {
-  display: none;
-  width: 100%;
-}
-
-.valid-feedback {
-  color: var(--#{$prefix}form-valid-help-color);
-}
-.invalid-feedback {
-  color: var(--#{$prefix}form-invalid-help-color);
-}
-
-// Validation tooltips
-// Absolute positioned tooltips for providing validation feedback
-.valid-tooltip,
-.invalid-tooltip {
-  position: absolute;
-  top: 100%;
-  z-index: 5;
-  display: none;
-  max-width: 100%; // Contain to parent when possible
-  padding: $form-feedback-tooltip-padding-y $form-feedback-tooltip-padding-x;
-  margin-top: .1rem;
-  @include font-size($form-feedback-tooltip-font-size);
-  @include line-height($form-feedback-tooltip-line-height);
-  @include border-radius($form-feedback-tooltip-border-radius);
-}
-
-.valid-tooltip {
-  color: $form-valid-tooltip-fg-color;
-  background-color: $form-valid-tooltip-bg-color;
-}
-
-.invalid-tooltip {
-  color: $form-invalid-tooltip-fg-color;
-  background-color: $form-invalid-tooltip-bg-color;
-}
-
-// Display logic for validation feedback
-// Shows feedback only when form elements have the appropriate validation state
-.valid-feedback,
-.valid-tooltip {
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}:valid ~ &,
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}.input-group:has(:valid) ~ &,
-  .input-group:has(.#{$form-valid-class}) ~ &,
-  .#{$form-valid-class} ~ & {
-    display: block;
+  .valid-feedback {
+    color: var(--form-valid-help-color);
   }
-}
-.invalid-feedback,
-.invalid-tooltip {
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}:invalid ~ &,
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}.input-group:has(:invalid) ~ &,
-  .input-group:has(.#{$form-invalid-class}) ~ &,
-  .#{$form-invalid-class} ~ & {
-    display: block;
+  .invalid-feedback {
+    color: var(--form-invalid-help-color);
   }
-}
 
-// Base validation styles for form inputs
-// Applied to elements that use the %form-input placeholder
-%form-input {
-  // Valid state styling
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:valid,
-  &.#{$form-valid-class} {
-    --#{$prefix}fg-color: var(--#{$prefix}form-valid-fg-active);
-    --#{$prefix}bg-color: var(--#{$prefix}form-valid-bg-regular);
-    --#{$prefix}border-color: var(--#{$prefix}form-valid-border-color);
-    --#{$prefix}box-shadow: #{$form-valid-box-shadow};
+  // Validation tooltips
+  // Absolute positioned tooltips for providing validation feedback
+  .valid-tooltip,
+  .invalid-tooltip {
+    position: absolute;
+    top: 100%;
+    z-index: 5;
+    display: none;
+    max-width: 100%; // Contain to parent when possible
+    padding: $form-feedback-tooltip-padding-y $form-feedback-tooltip-padding-x;
+    margin-block-start: .1rem;
+    @include font-size($form-feedback-tooltip-font-size);
+    @include line-height($form-feedback-tooltip-line-height);
+    @include border-radius($form-feedback-tooltip-border-radius);
+  }
 
-    @if $enable-validation-icons {
-      --#{$prefix}feedback-icon: #{svg-color($form-feedback-valid-icon, $form-valid-help-color)};
-      @if $enable-dark-mode {
-        @include form-validation-dark("valid");
+  .valid-tooltip {
+    color: $form-valid-tooltip-fg-color;
+    background-color: $form-valid-tooltip-bg-color;
+  }
+
+  .invalid-tooltip {
+    color: $form-invalid-tooltip-fg-color;
+    background-color: $form-invalid-tooltip-bg-color;
+  }
+
+  // Display logic for validation feedback
+  // Shows feedback and hides .form-help when an input is in the matching
+  // validation state. `$match` folds the native (`[data-cx-validate] :user-*`)
+  // and class-based (`.is-*`) gates into one compound.
+  @each $state, $class in $-validation-states {
+    $match: ":is(.#{$class}, [data-cx-validate] :user-#{$state})";
+    $feedback: ".#{$state}-feedback";
+
+    .#{$state}-feedback,
+    .#{$state}-tooltip {
+      #{$match} ~ &,
+      :where(.form-field, .form-check):has(#{$match}) > &,
+      :where(.form-input, .input-group):has(#{$match}) ~ & {
+        display: block;
+      }
+    }
+
+    .form-help:not(.always-show) {
+      // input ~ help ~ feedback (siblings)
+      #{$match}:has(~ #{$feedback}) ~ &,
+      // wrapper > {input, help, feedback}
+      :has(#{$match}):has(> #{$feedback}) > &,
+      // form-check > {input, help}; feedback is sibling of form-check
+      .form-check:has(#{$match}):has(~ #{$feedback}) > &,
+      // form-input/group contains input; help + feedback are siblings of it
+      :where(.form-input, .input-group):has(#{$match}):has(~ #{$feedback}) ~ & {
+        display: none;
       }
     }
   }
 
-  // Invalid state styling
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:invalid,
-  &.#{$form-invalid-class} {
-    --#{$prefix}fg-color: var(--#{$prefix}form-invalid-fg-active);
-    --#{$prefix}bg-color: var(--#{$prefix}form-invalid-bg-regular);
-    --#{$prefix}border-color: var(--#{$prefix}form-invalid-border-color);
-    --#{$prefix}box-shadow: #{$form-invalid-box-shadow};
-
-    @if $enable-validation-icons {
-      --#{$prefix}feedback-icon: #{svg-color($form-feedback-invalid-icon, $form-invalid-help-color)};
-      @if $enable-dark-mode {
-        @include form-validation-dark("invalid");
-      }
-    }
-  }
-}
-
-// Floating label validation styles
-// Changes label color based on validation state
-.form-floating > %form-input {
-  // Valid state label styling
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:valid,
-  &.#{$form-valid-class} {
-    ~ label {
-      color: var(--#{$prefix}form-valid-help-color);
-    }
-  }
-
-  // Invalid state label styling
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:invalid,
-  &.#{$form-invalid-class} {
-    ~ label {
-      color: var(--#{$prefix}form-invalid-help-color);
-    }
-  }
-}
-
-// Checkbox/radio validation styles
-// Applied to .check-input (checkboxes and radio buttons)
-.check-input {
-  // Valid state styling
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:valid,
-  &.#{$form-valid-class} {
-    --#{$prefix}bg-color: var(--#{$prefix}form-valid-bg-regular);
-    --#{$prefix}border-color: var(--#{$prefix}form-valid-border-color);
-    --#{$prefix}box-shadow: #{$form-valid-box-shadow};
-
-    // Checked & indeterminate states gets special coloring
-    &:checked,
-    &[type="checkbox"]:indeterminate {
-      --#{$prefix}bg-color: var(--#{$prefix}form-valid-help-color);
-      --#{$prefix}border-color: var(--#{$prefix}form-valid-border-color);
-    }
-
-    // Maintain disabled appearance regardless of validation state
-    &:disabled,
-    &[type="checkbox"]:indeterminate:disabled {
-      --#{$prefix}bg-color: var(--#{$prefix}form-disabled-bg-regular);
-    }
-
-    // Label styling for validated checkboxes/radios
-    ~ .check-label {
-      --#{$prefix}fg-color: var(--#{$prefix}form-valid-help-color);
-    }
-  }
-
-  // Invalid state styling
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:invalid,
-  &.#{$form-invalid-class} {
-    --#{$prefix}bg-color: var(--#{$prefix}form-invalid-bg-regular);
-    --#{$prefix}border-color: var(--#{$prefix}form-invalid-border-color);
-    --#{$prefix}box-shadow: #{$form-invalid-box-shadow};
-
-    // Checked & indeterminate states gets special coloring
-    &:checked,
-    &[type="checkbox"]:indeterminate {
-      --#{$prefix}bg-color: var(--#{$prefix}form-invalid-help-color);
-      --#{$prefix}border-color: var(--#{$prefix}form-invalid-border-color);
-    }
-
-    // Maintain disabled appearance regardless of validation state
-    &:disabled,
-    &[type="checkbox"]:indeterminate:disabled {
-      --#{$prefix}bg-color: var(--#{$prefix}form-disabled-bg-regular);
-    }
-
-    // Label styling for validated checkboxes/radios
-    ~ .check-label {
-      --#{$prefix}fg-color: var(--#{$prefix}form-invalid-help-color);
-    }
-  }
-}
-
-// Labels having valid/invalid inputs
-// Changes label color based on validation state
-.check-label{
-  // Valid state label styling
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:has(.check-input:valid),
-  &:has(.check-input.#{$form-valid-class}) {
-    --#{$prefix}fg-color: var(--#{$prefix}form-valid-help-color);
-  }
-  // Invalid state label styling
-  #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:has(.check-input:invalid),
-  &:has(.check-input.#{$form-invalid-class}) {
-    --#{$prefix}fg-color: var(--#{$prefix}form-invalid-help-color);
-  }
-}
-
-// Validation icons styling
-// Only applied when $enable-validation-icons is true
-@if $enable-validation-icons {
-  // Standard form input validation icons
-  @include form-validation-icons-selector(".form-input") {
-    padding-right: $form-feedback-icon-input-padding-e;
-    background-image: var(--#{$prefix}feedback-icon);
-    background-repeat: no-repeat;
-    background-position: $form-feedback-icon-input-position;
-    background-size: $form-feedback-icon-size;
-
-    // Special positioning for textareas
-    &:is(textarea) {
-      background-position: $form-feedback-icon-textarea-position;
-    }
-  }
-
-  // Select element validation icons
-  @include form-validation-icons-selector(".form-select") {
-    // Only apply to standard single-select dropdowns
-    &:not([multiple]):not([size]),
-    &:not([multiple])[size="1"] {
-      padding-right: $form-feedback-icon-select-padding-e;
-      background-position: $form-select-caret-position, $form-feedback-icon-select-position;
-      background-size: $form-feedback-icon-size;
-    }
-  }
-
-  // Ensure color inputs have adequate width for validation icons
-  @include form-validation-icons-selector(".color-input") {
-    width: #{calc(var(--#{$prefix}input-color-width, var(--#{$prefix}min-height)) + $form-feedback-icon-size + var(--#{$prefix}padding-y) * 2)};
-  }
-
-}
-
-// Input group validation z-index handling
-// Ensures that validation states correctly layer in input groups
-.input-group {
-  > .form-input:not(:focus),
-  > .form-select:not(:focus),
-  > .form-floating:not(:focus-within) {
-    // Valid state gets lower z-index
-    #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:valid,
+  // Base validation styles for form inputs
+  // Extends validation placeholders to set element colors
+  .form-input {
+    // Valid state styling
+    &:has(.ghost-input.#{$form-valid-class}),
+    [data-cx-validate] &:user-valid,
+    [data-cx-validate] &:has(.ghost-input:user-valid),
     &.#{$form-valid-class} {
-      z-index: 3;
+      @extend %form-valid;
     }
-    // Invalid state gets higher z-index to appear above valid elements
-    #{if($form-validated-class, ".#{$form-validated-class} ", "")}&:invalid,
+
+    // Invalid state styling
+    &:has(.ghost-input.#{$form-invalid-class}),
+    [data-cx-validate] &:user-invalid,
+    [data-cx-validate] &:has(.ghost-input:user-invalid),
     &.#{$form-invalid-class} {
-      z-index: 4;
+      @extend %form-invalid;
     }
   }
-}
+
+  // Floating label validation styles
+  // Changes label color based on validation state
+  .form-input:is(.form-floating > .form-input) {
+    @each $state, $class in $-validation-states {
+      @include in-validation-state($state, $class) {
+        --bg-color: var(--form-#{$state}-bg-floating);
+        label:has(~ &) {
+          --label-fg-color: var(--form-#{$state}-help-color);
+          --label-bg-color: var(--form-#{$state}-bg-floating);
+        }
+      }
+    }
+  }
+
+  %check-input-validation {
+    @each $state, $class in $-validation-states {
+      @include in-validation-state($state, $class) {
+        --bg-color: var(--form-#{$state}-bg-regular);
+        --border-color: var(--form-#{$state}-border-color);
+        --focus-ring-color: var(--form-#{$state}-focus-ring-color);
+        ~ label,
+        .form-check:has(&) {
+          --fg-color: var(--form-#{$state}-help-color);
+          --focus-ring-color: var(--form-#{$state}-focus-ring-color);
+        }
+      }
+    }
+  }
+
+  // Checkbox/radio validation styles
+  // Applied to .check-input (both legacy input and modern container's input).
+  // Checked/indeterminate get colored fill; disabled drops validation tint.
+  .check-input:is(input),
+  .check-input:not(input) > input {
+    @extend %check-input-validation;
+    @each $state, $class in $-validation-states {
+      @include in-validation-state($state, $class) {
+        &:is([type]:checked, [type="checkbox"]:indeterminate) {
+          --bg-color: var(--form-#{$state}-help-color);
+          --border-color: var(--form-#{$state}-border-color);
+        }
+        &:disabled,
+        &:is([type]:checked, [type="checkbox"]:indeterminate):disabled {
+          --bg-color: var(--form-disabled-bg-regular);
+        }
+      }
+    }
+  }
+
+  // Labels having valid/invalid inputs
+  // Changes label color based on validation state
+  .form-check {
+    @each $state, $class in $-validation-states {
+      [data-cx-validate] &:has(.check-input:user-#{$state}),
+      &:has(.check-input.#{$class}) {
+        --fg-color: var(--form-#{$state}-help-color);
+      }
+    }
+  }
+
+  // Input group validation z-index handling
+  // Ensures that validation states correctly layer in input groups
+  .input-group {
+    > .form-input:not(:focus) > .form-floating:not(:focus-within) {
+      // Valid state gets lower z-index
+      [data-cx-validate] &:user-valid,
+      &.#{$form-valid-class} {
+        z-index: 3;
+      }
+      // Invalid state gets higher z-index to appear above valid elements
+      [data-cx-validate] &:user-invalid,
+      &.#{$form-invalid-class} {
+        z-index: 4;
+      }
+    }
+  }
+
+  // Range — .form-range IS the <input>; both vendor thumb pseudos read shared
+  // vars (--thumb-bg-color / --thumb-box-shadow) defined on the host, so we
+  // only need to swap the vars per state.
+  .form-range {
+    @each $state, $class in $-validation-states {
+      @include in-validation-state($state, $class) {
+        --form-range-thumb-color: var(--form-#{$state}-border-color);
+        --form-range-thumb-active: var(--form-#{$state}-border-color);
+        &:focus-visible {
+          --focus-ring-color: var(--form-#{$state}-focus-ring-color);
+        }
+      }
+    }
+  }
+
+  // A combobox holds its validation state either on the toggle itself (button
+  // trigger: `.combobox.is-*`) or on the inner `.combobox-value` (input/span
+  // trigger) — matched here so the colour matches the icon layout in both cases.
+  .combobox {
+    &.#{$form-valid-class},
+    &:has(.combobox-value.#{$form-valid-class}),
+    [data-cx-validate] &:user-valid,
+    [data-cx-validate] &:has(.combobox-value:user-valid) {
+      @extend %form-valid;
+    }
+    &.#{$form-invalid-class},
+    &:has(.combobox-value.#{$form-invalid-class}),
+    [data-cx-validate] &:user-invalid,
+    [data-cx-validate] &:has(.combobox-value:user-invalid) {
+      @extend %form-invalid;
+    }
+  }
+
+
+  // OTP Validation
+  .form-otp {
+    @each $state, $class in $-validation-states {
+      @include in-validation-state($state, $class) {
+        .form-input {
+          @extend %form-#{$state};
+        }
+      }
+    }
+  }
+
+  // Validation icons opt-in
+  //
+  // Add `.validation-icons` to any wrapper (e.g. `<form>`, `.form-field`,
+  // `.input-group`, or an individual `.form-input`) and every supported
+  // descendant input picks up the success/error icon when it enters a
+  // validation state (`.is-valid` / `.is-invalid`, or `:user-valid` /
+  // `:user-invalid`). Without an ancestor with this class, inputs still
+  // pick up validation colors, border, and shadow — only the icon is
+  // omitted. These rules are compiled out entirely when
+  // `$enable-validation-icons` is `false`.
+  @if $enable-validation-icons {
+    // Disabled controls never paint the validation icon — it reads as clutter on
+    // a field that can't be interacted with, and native `:user-*` never matches a
+    // disabled control anyway. The feedback message and the (disabled-grey) border
+    // are left untouched; only the icon is withheld.
+    $-icon-enabled: ":not(:disabled, [disabled], .disabled)";
+
+    // Map each validated input's `--validation-icon` source onto the
+    // `--feedback-icon` consumed by background-image rules — but only inside
+    // a `.validation-icons` ancestor, and not on disabled controls (this is the
+    // lever that withholds the icon from selects/comboboxes, which paint it
+    // through `%form-caret`). Only the elements that actually paint a feedback
+    // icon are listed: `.form-input`/`.ghost-input` (via `$-text-input`) and
+    // `.combobox` (via `%form-caret`). The `.combobox-value` child inherits the
+    // value from its `.combobox` parent.
+    .validation-icons :is(.form-input, .ghost-input, .combobox)#{$-icon-enabled} {
+      --feedback-icon: var(--validation-icon, none);
+    }
+
+    // "In validation state" gate: class-based (.is-*) or user-interaction-based
+    // (:user-*). The latter naturally only matches after the user interacts,
+    // so no separate [data-cx-validate] scope is needed here. Disabled controls
+    // are excluded so the icon layout (and its reserved padding) is withheld too.
+    $-state: ":is(.#{$form-valid-class}#{$-icon-enabled}, .#{$form-invalid-class}#{$-icon-enabled}, :user-valid, :user-invalid)";
+    // `.combobox` is excluded alongside select/textarea/.form-caret: it carries a
+    // caret, so it must use the caret-aware layout, never the single-layer text
+    // layout — even a button-trigger combobox that holds the state on itself.
+    $-text-input: ".validation-icons :is(.form-input):not(select, textarea, .form-caret, .combobox)#{$-state}, .validation-icons .ghost-input:not(.form-caret)#{$-state}";
+    // Bare auto-caret controls — those that draw a caret only via $enable-caret.
+    // `.form-caret` is excluded here because it always carries a caret and is
+    // laid out by the caret-aware rule below regardless of the setting.
+    $-select-input: ".validation-icons select.form-input:not(.form-caret)#{$-state}:is(:not([multiple], [size]), [size='1'])";
+    // A combobox carries its validation state either on the toggle itself
+    // (button trigger: `.combobox.is-invalid`) or on the inner `.combobox-value`
+    // (input/span trigger). Match both so the caret-aware layout always applies.
+    $-combobox: ".validation-icons .combobox:not(.form-caret):is(#{$-state}, :has(.combobox-value#{$-state}))";
+    // Explicit-caret controls. `.form-caret` always paints a caret, independent
+    // of $enable-caret, so it always needs the caret-aware layout. The combobox
+    // variant carries its validation state on the inner `.combobox-value`.
+    $-form-caret: ".validation-icons .form-caret#{$-state}, .validation-icons .combobox.form-caret:has(.combobox-value#{$-state})";
+
+    // Text-like inputs + ghost-input
+    #{$-text-input} {
+      padding-inline-end: $form-feedback-icon-input-padding-e;
+      background-image: var(--feedback-icon);
+      background-repeat: no-repeat;
+      background-position: $form-feedback-icon-input-position;
+      background-size: $form-feedback-icon-size;
+
+      &:is(.ghost-input) {
+        padding-inline-end: calc($form-feedback-icon-input-padding-e - var(--padding-x));
+        background-position: center var(--logical-position-end, right);
+      }
+    }
+
+    // Caret-aware layout: feedback icon sits beside the caret as a second
+    // background layer (caret slot, then feedback slot). `.form-caret` controls
+    // always use it because they always carry a caret; bare selects and combobox
+    // toggles use it only while their automatic caret is enabled.
+    $-caret-layout: $-form-caret;
+    @if $enable-caret {
+      $-caret-layout: "#{$-select-input}, #{$-combobox}, #{$-form-caret}";
+    }
+    #{$-caret-layout} {
+      padding-inline-end: $form-feedback-icon-select-padding-e;
+      background-position: $form-select-caret-position, $form-feedback-icon-select-position;
+      // Per-layer sizes: the caret keeps `--caret-size`, the feedback icon uses
+      // its own size. A single value here would resize the caret to the feedback
+      // size during validation when the two tokens are configured differently.
+      background-size: var(--caret-size), $form-feedback-icon-size;
+    }
+
+    // Caret disabled: bare selects and comboboxes have no caret, so their
+    // feedback icon lays out like a text input — single layer, flush to the
+    // inline-end. (`.form-caret` controls still carry a caret and are handled
+    // by the caret-aware rule above; they are excluded from these selectors.)
+    @if not $enable-caret {
+      #{$-select-input},
+      #{$-combobox} {
+        padding-inline-end: $form-feedback-icon-input-padding-e;
+        background-position: $form-feedback-icon-input-position;
+        background-size: $form-feedback-icon-size;
+      }
+    }
+
+    // Hide native autofill affordances on inputs we paint icons on, so the
+    // browser's button doesn't collide with our background icon.
+    #{$-text-input},
+    .validation-icons select.form-input#{$-state} {
+      &::-webkit-contacts-auto-fill-button,
+      &::-webkit-credentials-auto-fill-button {
+        visibility: hidden;
+      }
+    }
+
+    // Color input needs extra width so the icon doesn't crop the swatch.
+    .validation-icons .form-input[type='color']#{$-state} {
+      width: calc(var(--input-color-width, var(--min-height)) + $form-feedback-icon-size + var(--padding-y) * 2);
+    }
+  }
+
+} // @layer components

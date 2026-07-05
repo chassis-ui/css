@@ -1,39 +1,40 @@
 ---
 title: Images
-description: Documentation and examples for opting images into responsive behavior (so they never become wider than their parent) and add lightweight styles to them—all via classes.
+description: Opt-in modifier classes for responsive images, thumbnail borders, and alignment — applied directly to `<img>` elements via `.image`.
 toc: true
+css_layer: content
 ---
+
+The `.image` class activates a set of modifiers that control how an image scales and appears. Apply `.image` directly to an `<img>` element and combine it with the modifiers below.
 
 ## Responsive images
 
-Images in Chassis CSS are made responsive with `.image.fluid`. This applies `max-width: 100%;` and `height: auto;` to the image so that it scales with the parent width.
+Adding `.fluid` makes an image scale with its container by applying `max-width: 100%` and `height: auto`, so it never exceeds its natural width.
 
 <Example code={`<Placeholder width="100%" height="250" class="cxd-placeholder-image-large image fluid" text="Responsive image" />`} />
 
-## Image thumbnails
+## Thumbnails
 
-In addition to our [border-radius utilities]([[docsref:/utilities/borders]]), you can use `.image.thumbnail` to give an image a rounded 1px border appearance.
+Adding `.thumbnail` frames an image with a border, padding, border-radius, and a box shadow — all controlled by the thumbnail Sass variables. [Border-radius utilities]([[docsref:/utilities/borders]]) can further adjust the rounding. The modifier also makes the image fluid.
 
 <Example code={`<Placeholder width="200" height="200" class="image thumbnail" title="A generic square placeholder image with a white border around it, making it resemble a photograph taken with an old instant camera" />`} />
 
 ## Aligning images
 
-Align images with the [helper float classes]([[docsref:/utilities/float]]) or [text alignment classes]([[docsref:/utilities/text#text-alignment]]). `block`-level images can be centered using [the `.mx-auto` margin utility class]([[docsref:/utilities/spacing#horizontal-centering]]).
+Align images with the [float utilities]([[docsref:/utilities/float]]) or [text alignment utilities]([[docsref:/utilities/text#text-alignment]]). Block-level images can be centered with the `.mx-auto` [margin utility]([[docsref:/utilities/margin#horizontal-centering]]).
 
 <Example code={`<Placeholder width="200" height="200" class="rounded float-start" />
 <Placeholder width="200" height="200" class="rounded float-end" />`} />
 
-
 <Example code={`<Placeholder width="200" height="200" class="rounded mx-auto d-block" />`} />
 
 <Example code={`<div class="text-center">
-    <Placeholder width="200" height="200" class="rounded" />
-  </div>`} />
+  <Placeholder width="200" height="200" class="rounded" />
+</div>`} />
 
+## Picture element
 
-## Picture
-
-If you are using the `<picture>` element to specify multiple `<source>` elements for a specific `<img>`, make sure to add the `.image.*` classes to the `<img>` and not to the `<picture>` tag.
+When using `<picture>` to specify multiple `<source>` alternatives, apply `.image` modifier classes to the inner `<img>`, not to the `<picture>` wrapper.
 
 ```html
 <picture>
@@ -44,8 +45,16 @@ If you are using the `<picture>` element to specify multiple `<source>` elements
 
 ## CSS
 
+<DocsCSS name="Image" />
+
+### Custom properties
+
+<DocsCSSVars name="Image" />
+
+<ScssDocs name="thumbnail-properties" file="scss/_image.scss" compile />
+
 ### Sass variables
 
-Variables are available for image thumbnails.
+<DocsSASSVars name="Image" />
 
-<ScssDocs name="thumbnail-variables" file="scss/_variables.scss" />
+<ScssDocs name="thumbnail-variables" file="scss/config/_defaults.scss" />

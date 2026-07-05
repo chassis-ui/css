@@ -1,42 +1,75 @@
-import os from 'os'
+import { fileURLToPath } from 'node:url'
+import path from 'node:path'
 import { defineConfig } from 'astro/config'
 import { chassis } from './src/libs/astro'
 import { getConfig } from './src/libs/config'
-import { getSiteUrl } from '@chassis-ui/docs'
-import { algoliaPlugin } from './src/plugins/algolia-plugin'
+import { remarkCxConfig, remarkCxDocsref } from './src/libs/remark'
+import { chassisAutoImportPlugin } from './src/libs/shortcode'
+import { getSiteUrl, getDocsMarkdownConfig } from '@chassis-ui/docs'
 import { stackblitzPlugin } from './src/plugins/stackblitz-plugin'
-
 const site = getSiteUrl(getConfig())
 
 // https://astro.build/config
 export default defineConfig({
-  outDir: '../_site',
-  integrations: [chassis()],
-  markdown: {
-    smartypants: false,
-    syntaxHighlight: 'prism'
-  },
   site,
+  outDir: '../_site',
+  build: {
+    assets: `static/astro`
+  },
+  integrations: [chassis()],
+  markdown: getDocsMarkdownConfig({
+    anchors: getConfig().anchors,
+    remarkPlugins: [chassisAutoImportPlugin(), remarkCxConfig, remarkCxDocsref]
+  }),
   vite: {
-    css: {
-      preprocessorOptions: {
-        scss: {
-          silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'if-function']
+    plugins: [stackblitzPlugin()],
+    environments: {
+      client: {
+        build: {
+          rolldownOptions: {
+            external: ['@chassis-ui/css'],
+            output: {
+              paths: { '@chassis-ui/css': '/static/js/chassis.bundle.min.js' },
+              entryFileNames: `static/astro/docs.[hash].js`,
+              chunkFileNames: 'static/astro/docs.[hash].js'
+              // assetFileNames: 'static/astro/docs.[hash][extname]'
+            }
+          }
         }
       }
     },
-    plugins: [algoliaPlugin(), stackblitzPlugin()],
+    // Required for CSS files
     build: {
-      rollupOptions: {
+      rolldownOptions: {
         output: {
-          entryFileNames: `static/js/docs.[hash].js`,
-          // chunkFileNames: 'static/js/chunk/docs.[hash].js',
-          assetFileNames: (assetInfo) => {
-            if (assetInfo.name?.endsWith('.css')) {
-              return 'static/css/docs.[hash].css'
+          assetFileNames: 'static/astro/docs.[hash][extname]'
+        }
+      }
+    },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          loadPaths: [
+            // Include the `scss` directory for resolving imports in the docs styles.
+            path.resolve(fileURLToPath(import.meta.url), '../../scss'),
+            // Framework fallback `_chassis-tokens.scss` if no override above.
+            path.resolve(fileURLToPath(import.meta.url), '../../scss/vendor')
+            // Include the root `node_modules` for resolving packages like `@chassis-ui/tokens`.
+            // path.resolve(fileURLToPath(import.meta.url), '../../../node_modules')
+          ],
+          // Resolve `@chassis-ui/css/...` imports to the local `scss/` source tree.
+          // `@chassis-ui/docs` uses fully-qualified package paths (e.g. `@chassis-ui/css/scss/mixins`)
+          // but this repo IS `@chassis-ui/css` and won't install itself in node_modules.
+          importers: [
+            {
+              findFileUrl(url: string) {
+                if (!url.startsWith('@chassis-ui/css/')) return null
+                const subPath = url.slice('@chassis-ui/css/'.length)
+                const rootDir = path.resolve(fileURLToPath(import.meta.url), '../..')
+                return new URL('file://' + rootDir + '/' + subPath)
+              }
             }
-            return 'static/[name].[hash][extname]'
-          }
+          ]
         }
       }
     }

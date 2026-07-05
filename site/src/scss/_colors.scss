@@ -1,61 +1,30 @@
-@each $name, $value in $base-palette {
-  .cxd-#{$name} {
-    color: color-contrast($value);
-    background-color: $value;
-  }
+@use "sass:map";
+@use "sass:string";
+@use "../../../scss/maps" as *;
+@use "../../../scss/functions" as *;
+@use "../../../scss/config/defaults" as *;
+@use "../../../scss/mixins" as *;
 
-  ;
-}
-
-@each $name, $value in map-merge($context-border-colors, $context-border-colors) {
-  .cxd-#{$name} {
-    color: color-contrast($value);
-    background-color: $value;
-  }
-
-  ;
-}
-
-@each $color, $value in map-merge($context-base-colors, ("gray-500": $neutral-50)) {
-  .swatch-#{str-replace($color, "-base-color")} {
-    color: color-contrast($value);
-    background-color: #{$value};
-
-    &::after {
-      $contrast-ratio: "#{contrast-ratio($value, color-contrast($value))}";
-      $against-white: "#{contrast-ratio($value, $white)}";
-      $against-black: "#{contrast-ratio($value, $black)}";
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      padding-left: 1rem;
-      @include font-size(.75rem);
-      line-height: 1.35;
-      white-space: pre;
-      content:
-        str-slice($contrast-ratio, 1, 4) "\A"
-        str-slice($against-white, 1, 4) "\A"
-        str-slice($against-black, 1, 4);
+@layer custom {
+  @each $name, $value in $base-palette {
+    .cxd-#{$name} {
+      color: color-contrast($value);
       background-color: $value;
-      background-image:
-        linear-gradient(
-          to bottom,
-          transparent .25rem,
-          color-contrast($value) .25rem .75rem,
-          transparent .75rem 1.25rem,
-          $white 1.25rem 1.75rem,
-          transparent 1.75rem 2.25rem,
-          $black 2.25rem 2.75rem,
-          transparent 2.75rem
-        );
-      background-repeat: no-repeat;
-      background-size: .5rem 100%;
     }
-  }
-}
 
-@include color-mode(dark) {
-  @each $color, $value in map-merge($context-base-colors-dark, ("gray-500": $neutral-50)) {
+  ;
+  }
+
+  @each $name, $value in map.merge($context-border-colors, $context-border-colors) {
+    .cxd-#{$name} {
+      color: color-contrast($value);
+      background-color: $value;
+    }
+
+  ;
+  }
+
+  @each $color, $value in map.merge($context-base-colors, ("gray-500": $neutral-50)) {
     .swatch-#{str-replace($color, "-base-color")} {
       color: color-contrast($value);
       background-color: #{$value};
@@ -64,10 +33,16 @@
         $contrast-ratio: "#{contrast-ratio($value, color-contrast($value))}";
         $against-white: "#{contrast-ratio($value, $white)}";
         $against-black: "#{contrast-ratio($value, $black)}";
+        position: absolute;
+        inset-block-start: 1rem;
+        inset-inline-end: 1rem;
+        padding-inline-start: 1rem;
+        line-height: 1.35;
+        white-space: pre;
         content:
-          str-slice($contrast-ratio, 1, 4) "\A"
-          str-slice($against-white, 1, 4) "\A"
-          str-slice($against-black, 1, 4);
+          string.slice($contrast-ratio, 1, 4) "\A"
+          string.slice($against-white, 1, 4) "\A"
+          string.slice($against-black, 1, 4);
         background-color: $value;
         background-image:
           linear-gradient(
@@ -82,6 +57,40 @@
           );
         background-repeat: no-repeat;
         background-size: .5rem 100%;
+        @include font-size(.75rem);
+      }
+    }
+  }
+
+  @include color-mode(dark) {
+    @each $color, $value in map.merge($context-base-colors-dark, ("gray-500": $neutral-50)) {
+      .swatch-#{str-replace($color, "-base-color")} {
+        color: color-contrast($value);
+        background-color: #{$value};
+
+        &::after {
+          $contrast-ratio: "#{contrast-ratio($value, color-contrast($value))}";
+          $against-white: "#{contrast-ratio($value, $white)}";
+          $against-black: "#{contrast-ratio($value, $black)}";
+          content:
+            string.slice($contrast-ratio, 1, 4) "\A"
+            string.slice($against-white, 1, 4) "\A"
+            string.slice($against-black, 1, 4);
+          background-color: $value;
+          background-image:
+            linear-gradient(
+              to bottom,
+              transparent .25rem,
+              color-contrast($value) .25rem .75rem,
+              transparent .75rem 1.25rem,
+              $white 1.25rem 1.75rem,
+              transparent 1.75rem 2.25rem,
+              $black 2.25rem 2.75rem,
+              transparent 2.75rem
+            );
+          background-repeat: no-repeat;
+          background-size: .5rem 100%;
+        }
       }
     }
   }

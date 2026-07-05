@@ -1,24 +1,25 @@
 ---
 title: Float
-description: Toggle floats on any element, across any breakpoint, using our responsive float utilities.
+description: Toggle floats on any element, across any breakpoint, using responsive float utilities.
 toc: true
+css_layer: utilities
 ---
 
 import { getData } from '@libs/data'
 
 ## Overview
 
-These utility classes float an element to the left or right, or disable floating, based on the current viewport size using the [CSS `float` property](https://developer.mozilla.org/en-US/docs/Web/CSS/float). `!important` is included to avoid specificity issues. These use the same viewport breakpoints as our grid system. Please be aware float utilities have no effect on flex items.
+Float utilities set the CSS [`float` property](https://developer.mozilla.org/en-US/docs/Web/CSS/float) — `start`, `end`, or `none` — based on the viewport size. `!important` is applied to prevent specificity conflicts. These utilities follow the same breakpoint scale as the grid. Note: float has no effect inside flex containers.
 
 <Example code={`<div class="float-start">Float start on all viewport sizes</div><br>
 <div class="float-end">Float end on all viewport sizes</div><br>
 <div class="float-none">Don’t float on all viewport sizes</div>`} />
 
-Use the [clearfix utility]([[docsref:/utilities/clearfix]]) on a parent element to clear floats.
+Use the [clearfix utility]([[docsref:/helpers/clearfix]]) on a parent element to clear floats.
 
 ## Responsive
 
-Responsive variations also exist for each `float` value.
+Responsive variants are available for all float values:
 
 <Example code={`<div class="small:float-end">Float end on viewports sized "<b>small</b>" or wider</div><br>
 <div class="medium:float-end">Float end on viewports sized "<b>medium</b>" or wider</div><br>
@@ -42,8 +43,16 @@ Here are all the support classes:
 
 ## CSS
 
-### Sass utilities API
+Float utilities are generated via the utilities API.
 
-Float utilities are declared in our utilities API in `scss/utilities/_positioning.scss`. [Learn how to use the utilities API.]([[docsref:/utilities/api#using-the-api]])
+### Reference
 
-<ScssDocs name="utils-float" file="scss/utilities/_positioning.scss" />
+The table lists all float utilities and their CSS properties.
+
+<UtilityReferenceTable utility="float-" />
+
+### Utilities API
+
+Float utilities are declared in `scss/utilities/_index.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
+
+<ScssDocs name="utils-float" file="scss/utilities/_index.scss" />

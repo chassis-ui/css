@@ -1,0 +1,18 @@
+@use "../maps" as *;
+@use "../functions" as *;
+
+//
+// Skeleton Utilities
+//
+// Utility map for skeleton loading placeholder color classes.
+//
+
+$utilities: (
+  // scss-docs-start utils-skeletons
+  "skeleton-color": (
+    property: --skeleton-color,
+    class: skeleton,
+    values: map-loop($context-colors, varify, "$key"),
+  ),
+  // scss-docs-end utils-skeletons
+) !default;

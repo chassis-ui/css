@@ -1,36 +1,33 @@
 ---
 title: Close button
-description: An accessible, customizable button component that provides a consistent way to dismiss or close interactive elements.
+description: An icon button for dismissing notifications, dialogs, chips, and similar interactive elements.
 toc: true
+tokens: context
+css_layer: components
 ---
 
 ## Introduction
 
-The close button component provides a consistent, accessible way to dismiss or close interactive elements such as modals, notifications, and alerts. Designed to be immediately recognizable, the close button maintains a consistent appearance across your interface while supporting various sizes and contextual styling.
+`.close-button` is a minimal icon button that signals dismissal. The close icon renders automatically through CSS — no child elements are required. The icon color adapts to the nearest [context class]([[docsref:/core-concepts/context-class]]).
 
-## Basic usage
+## Basic structure
 
-Add the `.close-button` class to any `<button>` element to create a close button with the default X icon.
+Apply `.close-button` to a `<button>` element.
 
 <Example code={`<button type="button" class="close-button" aria-label="Close"></button>`} />
 
 <Callout type="warning">
-  Always include an <code>aria-label</code> attribute for screen readers, as the X icon is visually meaningful but not accessible without a text label.
+  Always include an `aria-label` attribute — without it the button has no accessible label.
 </Callout>
 
-## Custom icon
+For environments where CSS may not load, it is possible to include `×` (`&times;`) as fallback text content. The close icon still renders normally when CSS is available — the text is visually hidden — but `×` provides a visible label without it. The `aria-label` attribute remains necessary because the text is hidden under normal conditions.
 
-By default, the close button displays the X icon automatically through CSS. You can override this by including your own SVG icon:
-
-<Example code={`<button type="button" class="close-button" aria-label="Close">
-    <svg class="icon"><use xlink:href="#xmark-large-solid"/></svg>
-  </button>`} />
-
-To customize the default icon globally, modify the `$close-button-icon` Sass variable in your theme.
+<Example code={`<button type="button" class="close-button" aria-label="Close">×</button>
+<button type="button" class="close-button" aria-label="Close">Close</button>`} />
 
 ## Sizes
 
-Apply `.small` or `.large` classes to adjust close buttons to match component sizes. Use the <code>--cx-close-button-size</code> CSS variable to set custom dimensions when the predefined sizes don't meet your needs.
+Apply `.small` or `.large` to match surrounding component sizes. The `--cx-close-button-size` custom property accepts any length value for one-off custom dimensions.
 
 <Example class="d-flex align-items-center" code={`<button type="button" class="close-button small" aria-label="Close"></button>
 <button type="button" class="close-button" aria-label="Close"></button>
@@ -40,50 +37,66 @@ Apply `.small` or `.large` classes to adjust close buttons to match component si
 
 ## Disabled state
 
-Add the `disabled` attribute to visually indicate that the close action is unavailable. Disabled close buttons have reduced opacity and cannot be interacted with.
+Add the `disabled` attribute to prevent interaction. Disabled close buttons render at reduced opacity with `pointer-events: none` and `user-select: none` applied.
 
 <Example code={`<button type="button" class="close-button" disabled aria-label="Close"></button>`} />
 
-The disabled state applies `pointer-events: none` and `user-select: none` to prevent hover and active states from triggering.
-
 ## Contextual colors
 
-Close buttons automatically adapt to their parent's context color, ensuring proper contrast in different color schemes.
+The close button inherits its icon color from the nearest context class. Both default and solid context variants are supported.
 
-<Example code={`<div class="context secondary">
+<Example class="hstack gap-medium" code={`<div class="context info p-xsmall d-flex align-items-center">
+    <button type="button" class="close-button" aria-label="Close"></button>
+    <button type="button" class="close-button" disabled aria-label="Close"></button>
+  </div>
+  <div class="context info solid p-xsmall d-flex align-items-center">
+    <button type="button" class="close-button" aria-label="Close"></button>
+    <button type="button" class="close-button" disabled aria-label="Close"></button>
+  </div>
+  <div class="context warning p-xsmall d-flex align-items-center">
+    <button type="button" class="close-button" aria-label="Close"></button>
+    <button type="button" class="close-button" disabled aria-label="Close"></button>
+  </div>
+  <div class="context warning solid p-xsmall d-flex align-items-center">
     <button type="button" class="close-button" aria-label="Close"></button>
     <button type="button" class="close-button" disabled aria-label="Close"></button>
   </div>`} />
 
-You can override colors using the component's CSS variables:
-- `--cx-close-button-color`: Sets the normal state color
-- `--cx-close-button-hover-color`: Sets the hover state color
+## Custom icon
+
+The button supports a child `<svg>` element when the CSS-managed icon needs to be replaced. Place the SVG directly inside the button — the default CSS icon is suppressed automatically when a child element is present.
+
+<Example code={`<button type="button" class="close-button large" aria-label="Close">
+    <Icon name="xmark-circle-solid" />
+  </button>`} />
+
+<Callout type="info">To change the default icon globally, modify the `$close-button-icon` Sass variable in the theme.</Callout>
 
 ## Positioning
 
-When integrated into components like modals or notifications, close buttons are typically positioned automatically. For custom layouts, use position utilities to place the close button:
+When used inside a component like a notification or dialog, the close button is positioned by that component's layout. For standalone placement in a custom container, CSS position utilities control where the button appears.
 
-<Example code={`<div class="notification success">
-    <button type="button" class="close-button" data-cx-dismiss="notification" aria-label="Close"></button>
+<Example class="vstack gap-medium" code={`<div class="notification success">
     <p class="message">This is a notification!</p>
+    <button type="button" class="close-button" data-cx-dismiss="notification" aria-label="Close"></button>
   </div>
   <div class="context success border rounded px-medium py-small position-relative">
-    <button type="button" class="close-button position-absolute end-0 me-xsmall" data-cx-dismiss="context" aria-label="Close"></button>
     This is a contextual div.
+    <button type="button" class="close-button position-absolute end-0 me-medium" aria-label="Close"></button>
   </div>`} />
 
 ## CSS
 
-<DocsCSS />
+<DocsCSS name="Close button" />
 
 ### Custom properties
 
-<DocsCSSVars />
+<DocsCSSVars name="Close button" />
 
 <ScssDocs name="close-button-css-vars" file="scss/_close-button.scss" />
 
 ### Sass variables
 
-<DocsSASSVars notExposed={true} />
+<DocsSASSVars name="Close button" />
 
-<ScssDocs name="close-button-variables" file="scss/_variables.scss" />
+<ScssDocs name="close-button-variables" file="scss/config/_defaults.scss" />

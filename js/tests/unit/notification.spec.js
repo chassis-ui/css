@@ -1,6 +1,6 @@
 import Notification from '../../src/notification.js'
 import { getTransitionDurationFromElement } from '../../src/util/index.js'
-import { clearFixture, getFixture, jQueryMock } from '../helpers/fixture.js'
+import { clearFixture, getFixture } from '../helpers/fixture.js'
 
 describe('Notification', () => {
   let fixtureEl
@@ -138,80 +138,6 @@ describe('Notification', () => {
       notification.dispose()
 
       expect(Notification.getInstance(notificationEl)).toBeNull()
-    })
-  })
-
-  describe('jQueryInterface', () => {
-    it('should handle config passed and toggle existing notification', () => {
-      fixtureEl.innerHTML = '<div class="notification"></div>'
-
-      const notificationEl = fixtureEl.querySelector('.notification')
-      const notification = new Notification(notificationEl)
-
-      const spy = spyOn(notification, 'close')
-
-      jQueryMock.fn.notification = Notification.jQueryInterface
-      jQueryMock.elements = [notificationEl]
-
-      jQueryMock.fn.notification.call(jQueryMock, 'close')
-
-      expect(spy).toHaveBeenCalled()
-    })
-
-    it('should create new notification instance and call close', () => {
-      fixtureEl.innerHTML = '<div class="notification"></div>'
-
-      const notificationEl = fixtureEl.querySelector('.notification')
-
-      jQueryMock.fn.notification = Notification.jQueryInterface
-      jQueryMock.elements = [notificationEl]
-
-      expect(Notification.getInstance(notificationEl)).toBeNull()
-      jQueryMock.fn.notification.call(jQueryMock, 'close')
-
-      expect(fixtureEl.querySelector('.notification')).toBeNull()
-    })
-
-    it('should just create an notification instance without calling close', () => {
-      fixtureEl.innerHTML = '<div class="notification"></div>'
-
-      const notificationEl = fixtureEl.querySelector('.notification')
-
-      jQueryMock.fn.notification = Notification.jQueryInterface
-      jQueryMock.elements = [notificationEl]
-
-      jQueryMock.fn.notification.call(jQueryMock)
-
-      expect(Notification.getInstance(notificationEl)).not.toBeNull()
-      expect(fixtureEl.querySelector('.notification')).not.toBeNull()
-    })
-
-    it('should throw an error on undefined method', () => {
-      fixtureEl.innerHTML = '<div></div>'
-
-      const div = fixtureEl.querySelector('div')
-      const action = 'undefinedMethod'
-
-      jQueryMock.fn.notification = Notification.jQueryInterface
-      jQueryMock.elements = [div]
-
-      expect(() => {
-        jQueryMock.fn.notification.call(jQueryMock, action)
-      }).toThrowError(TypeError, `No method named "${action}"`)
-    })
-
-    it('should throw an error on protected method', () => {
-      fixtureEl.innerHTML = '<div></div>'
-
-      const div = fixtureEl.querySelector('div')
-      const action = '_getConfig'
-
-      jQueryMock.fn.notification = Notification.jQueryInterface
-      jQueryMock.elements = [div]
-
-      expect(() => {
-        jQueryMock.fn.notification.call(jQueryMock, action)
-      }).toThrowError(TypeError, `No method named "${action}"`)
     })
   })
 

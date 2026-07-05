@@ -3,30 +3,57 @@ import { getConfig } from '@libs/config'
 
 interface Props {
   /**
-   * Set to true if the component's Sass variables are not exposed as CSS variables
+   * Name shown in the description, e.g. "Accordion". Omit for the
+   * generic fallback ("This component uses" / "These utilities use", etc.).
    */
-  notExposed?: boolean
+  name?: string
+  /**
+   * The kind of thing being documented.
+   * @default 'component'
+   */
+  type?: 'component' | 'helper' | 'utility'
+  /**
+   * Use plural phrasing — "Form components use" instead of "The Form component uses".
+   * @default false
+   */
+  plural?: boolean
+  /**
+   * When true, the Sass variables are also exposed as CSS custom properties.
+   * @default false
+   */
+  exposed?: boolean
 }
 
-const { notExposed = false } = Astro.props
+const { name, type = 'component', plural = false, exposed = false } = Astro.props
+
+const noun = plural ? (type === 'utility' ? 'utilities' : `${type}s`) : type
+
+const subject = !name
+  ? plural
+    ? `These ${noun}`
+    : `This ${noun}`
+  : plural
+    ? `${name} ${noun}`
+    : `The ${name} ${noun}`
+
+const opener = `${subject} use${plural ? '' : 's'}`
+const possessive = plural ? 'their' : 'its'
 ---
 
 {
-  notExposed ? (
+  exposed ? (
     <p>
-      These Sass variables control the component's appearance and can be modified in the project's
-      variables file before compilation.
+      {opener} Sass variables in <code>scss/config/_defaults.scss</code> to define {possessive}{' '}
+      defaults; they are also exposed as CSS custom properties using the <code>--cx-</code> prefix
+      for runtime override — <code>$variable-name</code> becomes <code>--cx-variable-name</code>.
+      See the{' '}
+      <a href={`${getConfig().docsPath}/core-concepts/component-anatomy`}>component anatomy</a>{' '}
+      page.
     </p>
   ) : (
     <p>
-      These Sass variables are also exposed as CSS custom properties using the <code>--cx-</code>{' '}
-      prefix. A Sass variable <code>$variable-name</code> becomes available as{' '}
-      <code>--cx-variable-name</code> in CSS, allowing for styles to be modified dynamically on the
-      page. See the{' '}
-      <a href={`/docs/${getConfig().docs_version}/introduction/context-components/#example-2`}>
-        context components
-      </a>{' '}
-      page for more details.
+      {opener} Sass variables in <code>scss/config/_defaults.scss</code> to define {possessive}{' '}
+      defaults.
     </p>
   )
 }

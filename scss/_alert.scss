@@ -1,111 +1,138 @@
+@use "./config" as *;
+@use "./mixins" as *;
+@use "./placeholders" as *;
+
 //
 // Alert Component
 //
-// Specialized modal dialog system for displaying critical messages requiring
-// immediate user attention or action. Provides focused, accessible interfaces
-// for confirmations, warnings, and important notifications.
-//
-// Unlike regular modals, alerts are specifically designed for:
-// - Critical confirmations (e.g., delete operations)
-// - Important notifications requiring acknowledgment
-// - Decision-forcing interfaces with limited options
+// Inline contextual status messages for displaying feedback, warnings, errors,
+// and informational notices. Extends context and component placeholders for
+// full contextual color and theming support.
 //
 
-.alert-window {
-  // Extends %component to inherit common component behaviors
-  @extend %component;
-  // scss-docs-start alert-css-vars
-  // Z-index and sizing variables
-  --#{$prefix}zindex: var(--#{$prefix}alert-zindex, #{$zindex-alert});
-  --#{$prefix}padding-y: var(--#{$prefix}alert-padding-y, #{$alert-padding-y});
-  --#{$prefix}padding-x: var(--#{$prefix}alert-padding-x, #{$alert-padding-x});
-  --#{$prefix}gap: var(--#{$prefix}alert-gap, #{$alert-gap});
+@layer components {
+  .alert {
+    @extend %component;
+    // scss-docs-start alert-css-vars
+    --zindex: var(--alert-zindex, #{$zindex-alert});
+    --width: var(--alert-width, #{$alert-width});
+    --padding-y: var(--alert-padding-y, #{$alert-large-padding-y});
+    --padding-x: var(--alert-padding-x, #{$alert-large-padding-x});
+    --gap: var(--alert-gap, #{$alert-large-main-gap});
+    --fg-color: var(--alert-fg-color, #{$alert-fg-color});
+    --bg-color: var(--alert-bg-color, #{$alert-bg-color});
+    --border-width: var(--alert-border-width, #{$alert-border-width});
+    --border-color: var(--alert-border-color, #{$alert-border-color});
+    --border-radius: var(--alert-border-radius, #{$alert-border-radius});
+    --box-shadow: var(--alert-box-shadow, #{$alert-box-shadow});
+    @include map-font($alert-large-font-body, alert-message);
+    @include map-font($alert-large-font-title, alert, title);
+    @include map-font($alert-code-font, alert, code);
+    --code-color: var(--alert-code-color, #{$alert-code-color});
+    --body-gap: var(--alert-body-gap, #{$alert-large-body-gap});
+    --footer-large-gap: var(--alert-footer-large-gap, #{$alert-footer-large-gap});
+    --footer-small-gap: var(--alert-footer-small-gap, #{$alert-footer-small-gap});
+    --close-button-size: var(--alert-close-button-size, #{$alert-close-button-size});
+    --close-button-inset: var(--alert-close-button-inset, #{$alert-close-button-inset});
+    // scss-docs-end alert-css-vars
 
-  // Color scheme variables
-  --#{$prefix}fg-color: var(--#{$prefix}alert-fg-color, #{$alert-fg-color});
-  --#{$prefix}bg-color: var(--#{$prefix}alert-bg-color, #{$alert-bg-color});
-  --#{$prefix}border-color: var(--#{$prefix}alert-border-color, #{$alert-border-color});
+    z-index: var(--zindex);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    width: var(--width);
+    background-clip: padding-box;
+    @include box-shadow(var(--box-shadow));
+    @include exclude-strokes(alert);
 
-  // Border and shape properties
-  --#{$prefix}border-width: var(--#{$prefix}alert-border-width, #{$alert-border-width});
-  --#{$prefix}border-radius: var(--#{$prefix}alert-border-radius, #{$alert-border-radius});
-  --#{$prefix}inner-border-radius: var(--#{$prefix}alert-inner-border-radius, #{$alert-inner-border-radius});
+    // Grid layout when icon is present.
+    // Center-align rows (icon + adjacent text on same row) above the small
+    // breakpoint. `align-items` is scoped to medium+ via media-breakpoint-up
+    // so it does not leak into the small-bp flex override below.
+    // Footer spans both columns so it always renders at full alert width.
+    &:has(> .alert-icon) {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--gap);
+      // Prevent rows from distributing extra block space (grid default).
+      // Without this, any height given by the top-layer dialog positioning
+      // would spread the rows apart leaving a large gap.
+      align-content: start;
 
-  // Icon and typography settings
-  --#{$prefix}icon-size: var(--#{$prefix}alert-icon-size, #{$alert-icon-size});
-  @include map-font($alert-message-font, alert-message);
-  @include map-font($alert-title-font, alert, title);
+      > .alert-icon {
+        // scss-docs-start alert-icon-css-vars
+        --icon-size: var(--alert-icon-size, #{$alert-icon-size-large});
+        // scss-docs-end alert-icon-css-vars
+      }
 
-  // Spacing and shadow properties
-  --#{$prefix}title-margin: var(--#{$prefix}alert-title-margin, #{$alert-title-margin});
-  --#{$prefix}footer-gap: var(--#{$prefix}alert-footer-gap, #{$alert-footer-gap});
-  --#{$prefix}box-shadow: var(--#{$prefix}alert-box-shadow, #{$alert-shadow});
-  // scss-docs-end alert-css-vars
+      > :not(.alert-icon) {
+        grid-column: 2;
+      }
 
-  position: relative;
-  z-index: var(--#{$prefix}zindex); // Ensure alert window is above everything else
-  display: flex;
-  flex-direction: column;
-  width: 100%; // Ensure `.modal-content` extends the full width of the parent `.modal-dialog`
-  @include exclude-strokes(alert);
-  pointer-events: auto;
-  background-clip: padding-box;
-  outline: 0;
-  box-shadow: var(--#{$prefix}box-shadow);
+      @include media-breakpoint-up(small) {
+        align-items: start;
+      }
+    }
 
-  // Title element styling
-  // Applies consistent typography based on title font variables
-  .alert-title {
-    @include font(title);
-    margin-bottom: var(--#{$prefix}title-margin);
-  }
+    > .close-button {
+      position: absolute;
+      inset-block-start: var(--close-button-inset);
+      inset-inline-end: var(--close-button-inset);
+    }
 
-  // Special layout handling for alerts with icons
-  // Adjusts the layout when an icon is present to position it properly
-  &:has(> .alert-icon) {
-    display: block;
-    padding-left: #{calc($alert-padding-x + $alert-icon-size + $alert-gap)};
+    // Small breakpoint: centered stacked layout.
+    // Switches icon+content back to flex column; `align-items: center` from
+    // the grid rule is not active here (it is inside media-breakpoint-up(small))
+    // so only the icon needs `align-self: center`.
+    @include media-breakpoint-down(small) {
+      --padding-y: var(--alert-small-padding-y, #{$alert-small-padding-y});
+      --padding-x: var(--alert-small-padding-x, #{$alert-small-padding-x});
+      --gap: var(--alert-small-gap, #{$alert-small-main-gap});
+      --body-gap: var(--alert-small-body-gap, #{$alert-small-body-gap});
+      @include map-font($alert-small-font-body, alert-message);
+      @include map-font($alert-small-font-title, alert, title);
+      text-align: center;
 
-    // Icon positioning and sizing
-    .alert-icon {
-      float: left;
-      width: $alert-icon-size;
-      margin-left: #{calc(($alert-icon-size + $alert-gap) * -1)};
+      &:has(> .alert-icon) {
+        display: flex; // override grid; flex-direction: column + gap from base
+
+        > .alert-icon {
+          align-self: center;
+          --icon-size: var(--alert-icon-size, #{$alert-icon-size-small});
+        }
+      }
     }
   }
 
-}
+  // Body (content area).
+  // Flex column with its own --body-gap for spacing between text blocks
+  // (e.g. title + message paragraphs), independent of the outer --gap
+  // which separates the major sections (icon, body group, footer).
+  .alert-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--body-gap);
 
-// Footer (for actions)
-// Container for alert action buttons with consistent spacing and alignment
-.alert-footer {
-  display: flex;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-  gap: var(--#{$prefix}footer-gap);
-  align-items: center; // vertically center
-  justify-content: flex-end; // Right align buttons with flex property because text-align doesn't work on flex items
-  @include border-bottom-radius(var(--#{$prefix}inner-border-radius));
-}
+    > .alert-title {
+      @include font(title);
+      margin-block-end: 0;
+    }
+    > .alert-code {
+      margin-block-start: calc(var(--body-gap) * -1);
+      margin-block-end: 0;
+      color: var(--code-color);
+      @include font(code);
+    }
 
-// Alert animation handling
-// Special animation behavior when alerts are used within modal containers
-.modal-container:has(> .alert-window) {
-  // Slide-down entrance animation
-  // Creates a distinctive entrance effect for alerts
-  .modal.fade & {
-    transform: $alert-fade-transform;
-    @include transition($alert-transition);
+    > p {
+      margin-block-end: 0;
+    }
   }
 
-  // Final position after entrance animation completes
-  .modal.show & {
-    transform: $alert-show-transform;
+  // Footer (for actions).
+  // Container for modal action buttons with a top border and spacing. Extends
+  // the dialog-footer placeholder which applies responsive gap and alignment.
+  .alert-footer {
+    @extend %dialog-footer;
   }
-
-  // Static alert handling (when user tries to dismiss but isn't allowed)
-  // Creates a visual feedback animation
-  .modal.modal-static & {
-    transform: $alert-scale-transform;
-  }
-}
+} // @layer components

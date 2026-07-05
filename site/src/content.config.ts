@@ -1,4 +1,5 @@
-import { z, defineCollection } from 'astro:content'
+import { z } from 'zod'
+import { defineCollection } from 'astro:content'
 import { glob } from 'astro/loaders'
 
 const docsSchema = z.object({
@@ -9,8 +10,18 @@ const docsSchema = z.object({
     })
     .optional(),
   aliases: z.string().or(z.string().array()).optional(),
+  css_layer: z
+    .enum(['reboot', 'layout', 'content', 'components', 'helpers', 'utilities'])
+    .optional(),
+  css_media: z.enum(['container', 'viewport']).optional(),
+  deps: z
+    .object({
+      title: z.string(),
+      url: z.string().optional()
+    })
+    .array()
+    .optional(),
   description: z.string(),
-  direction: z.literal('rtl').optional(),
   extra_js: z
     .object({
       async: z.boolean().optional(),
@@ -18,6 +29,8 @@ const docsSchema = z.object({
     })
     .array()
     .optional(),
+  js: z.enum(['required', 'optional']).optional(),
+  mdn: z.string().optional(),
   sections: z
     .object({
       description: z.string(),
@@ -27,7 +40,10 @@ const docsSchema = z.object({
     .optional(),
   thumbnail: z.string().optional(),
   title: z.string(),
-  toc: z.boolean().optional()
+  toc: z.boolean().optional(),
+  tokens: z
+    .union([z.enum(['component', 'context']), z.object({ scopes: z.string().array().optional() })])
+    .optional()
 })
 
 const docsCollection = defineCollection({

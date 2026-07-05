@@ -1,0 +1,111 @@
+@use "../config" as *;
+@use "../functions/map" as *;
+
+//
+// Body Colors Map
+//
+// Sass maps for foreground, background, and border color tokens derived
+// from the global design token set. Used for base page and surface colors.
+//
+
+// scss-docs-start body-fg-colors-map
+$body-fg-colors: (
+  "fg-main":            $fg-main,
+  "fg-subtle":          $fg-subtle,
+  "fg-slight":          $fg-slight,
+  "fg-active":          $fg-active,
+  "fg-inverse":         $fg-inverse,
+  "fg-solid":           $fg-solid,
+  "fg-highlight":       $fg-highlight,
+  "fg-idle":            $fg-idle,
+  "fg-disabled":        $fg-disabled,
+  "fg-hover":           $fg-hover,
+  "fg-press":           $fg-press,
+) !default;
+// scss-docs-end body-fg-colors-map
+
+// scss-docs-start body-bg-colors-map
+$body-bg-colors: (
+  "bg-main":            $bg-main,
+  "bg-even":            $bg-even,
+  "bg-evident":         $bg-evident,
+  "bg-active":          $bg-active,
+  "bg-inverse":         $bg-inverse,
+  "bg-solid":           $bg-solid,
+  "bg-highlight":       $bg-highlight,
+  "bg-idle":            $bg-idle,
+  "bg-disabled":        $bg-disabled,
+  "bg-hover":           $bg-hover,
+  "bg-press":           $bg-press,
+) !default;
+// scss-docs-end body-bg-colors-map
+
+// scss-docs-start body-border-colors-map
+$body-border-colors: (
+  "border-main":        $border-main,
+  "border-subtle":      $border-subtle,
+) !default;
+// scss-docs-end body-border-colors-map
+
+// scss-docs-start body-icon-colors-map
+$body-icon-colors: (
+  "icon-main":          $icon-main,
+  "icon-subtle":        $icon-subtle,
+  "icon-slight":        $icon-slight,
+) !default;
+// scss-docs-end body-icon-colors-map
+
+// scss-docs-start body-cue-colors-map
+$body-cue-colors: (
+  "cue-main":           $cue-main,
+  "cue-slight":         $cue-slight,
+) !default;
+// scss-docs-end body-cue-colors-map
+
+// scss-docs-start body-link-colors-map
+$body-link-colors: (
+  "link-main":          $link-main,
+  "link-hover":         $link-hover,
+  "link-active":        $link-active,
+  "link-visited":       $link-visited,
+) !default;
+// scss-docs-end body-link-colors-map
+
+// scss-docs-start body-dim-colors-map
+$body-dim-colors: (
+  "dim-main":           $dim-main,
+  "dim-subtle":         $dim-subtle,
+  "dim-slight":         $dim-slight,
+) !default;
+// scss-docs-end body-dim-colors-map
+
+// scss-docs-start body-button-colors-map
+$body-button-colors: (
+  "fg-idle":            $fg-idle,
+  "fg-hover":           $fg-hover,
+  "fg-press":           $fg-press,
+  "fg-disabled":        $fg-disabled,
+  "bg-idle":            $bg-idle,
+  "bg-hover":           $bg-hover,
+  "bg-press":           $bg-press,
+  "bg-disabled":        $bg-disabled,
+) !default;
+// scss-docs-end body-button-colors-map
+
+// scss-docs-start body-colors-map
+$body-colors: map-merge-multiple(
+  (
+    "base-color":         $base-color,
+    "contrast-color":     $contrast-color,
+    "transparent-color":  $transparent-color,
+  ),
+  $body-fg-colors,
+  $body-bg-colors,
+  $body-border-colors,
+  $body-icon-colors,
+  $body-cue-colors,
+  $body-dim-colors,
+  $body-link-colors,
+  $body-button-colors,
+) !default;
+// scss-docs-end body-colors-map

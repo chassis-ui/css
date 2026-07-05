@@ -1,0 +1,94 @@
+---
+title: Space
+description: Add spacing between the direct children of an element using margins, with responsive variants.
+toc: true
+css_layer: utilities
+mdn: https://developer.mozilla.org/en-US/docs/Web/CSS/margin
+---
+
+import { sassVars, sassSpaceValue } from '@libs/sass'
+import { getData } from '@libs/data'
+
+## Overview
+
+Space utilities control the spacing between direct children of an element by applying `margin-inline-end` or `margin-block-end` to all children except the last. Unlike [gap utilities]([[docsref:/utilities/gap]]) which require a flex or grid formatting context, space utilities work on any parent element.
+
+<Example class="" code={`<div class="space-x-medium p-medium bg-evident">
+    <div class="d-inline-block p-small bg-main">Item 1</div>
+    <div class="d-inline-block p-small bg-main">Item 2</div>
+    <div class="d-inline-block p-small bg-main">Item 3</div>
+  </div>`} />
+
+The selectors generated for space utilities are wrapped in `:where()` for zero specificity, making them easy to override with additional utilities or custom CSS.
+
+## Notation
+
+Space utilities that apply to all [breakpoints]([[docsref:/layout/breakpoints]]), from `xsmall` to `2xlarge`, have no breakpoint abbreviation in them. This is because those classes are applied from `min-width: 0` and up, and thus are not bound by a media query. The remaining breakpoints, however, do include a breakpoint abbreviation.
+
+The classes are named using the format `{property}-{size}` for `xsmall` and `.{breakpoint}:{property}-{size}` for `small`, `medium`, `large`, `xlarge`, and `2xlarge`.
+
+Where *property* is one of:
+
+- `space-x` — for classes that set horizontal spacing via `margin-inline-end`
+- `space-y` — for classes that set vertical spacing via `margin-block-end`
+
+Where *size* is one of:
+
+<ul>
+  <li>`zero` or `0` — for classes that eliminate spacing by setting it to `0`</li>
+{
+  Object.keys(sassVars('space')).map((key) => (
+  <li><code>{key}</code> - default token value is <Fragment set:html={sassSpaceValue(key)} />.</li>
+  ))}
+</ul>
+
+## Horizontal
+
+`space-x-*` utilities control the horizontal space between children by applying `margin-inline-end` to all children except the last.
+
+<Example code={`
+  <div class="space-x-medium p-medium bg-evident">
+    <div class="d-inline-block p-small bg-main">Item 1</div>
+    <div class="d-inline-block p-small bg-main">Item 2</div>
+    <div class="d-inline-block p-small bg-main">Item 3</div>
+  </div>`} />
+
+## Vertical
+
+`space-y-*` utilities control the vertical space between children by applying `margin-block-end` to all children except the last.
+
+<Example code={`
+  <div class="space-y-medium p-medium bg-evident">
+    <div class="p-small bg-main">Item 1</div>
+    <div class="p-small bg-main">Item 2</div>
+    <div class="p-small bg-main">Item 3</div>
+  </div>`} />
+
+## How it works
+
+Space utilities apply `margin-inline-end` or `margin-block-end` to every direct child except the last via a `:not(:last-child)` child selector. The selector is wrapped in `:where()` for zero specificity, so individual children can be overridden with standard margin utilities.
+
+```css
+:where(.space-x-medium > :not(:last-child)) {
+  margin-inline-end: 1rem;
+}
+:where(.space-y-medium > :not(:last-child)) {
+  margin-block-end: 1rem;
+}
+```
+
+## CSS
+
+Space utilities are generated via the utilities API.
+
+### Reference
+
+The table lists all space utilities and their CSS properties.
+
+<UtilityReferenceTable utility="space-" />
+
+### Utilities API
+
+Space utilities are declared in `scss/utilities/_index.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
+
+<ScssDocs name="utils-space" file="scss/utilities/_index.scss" />

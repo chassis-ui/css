@@ -2,6 +2,10 @@
 title: Button group
 description: Create cohesive sets of related actions through semantically grouped buttons that maintain your design system's visual language.
 toc: true
+tokens: context
+css_layer: components
+deps:
+  - title: Button
 ---
 
 ## Introduction
@@ -78,14 +82,20 @@ Chassis enables seamless integration of form elements within button groups, crea
 Create multi-selection controls using checkbox inputs combined with button styling:
 
 <Example code={`<div class="button-group" role="group" aria-label="Checkbox toggle button group">
-    <input type="checkbox" class="button-check" id="buttoncheck1" autocomplete="off">
-    <label class="button outline primary" for="buttoncheck1">Checkbox 1</label>
+    <label class="button button-check outline primary">
+      <input type="checkbox" autocomplete="off">
+      Checkbox 1
+    </label>
 
-    <input type="checkbox" class="button-check" id="buttoncheck2" autocomplete="off">
-    <label class="button outline primary" for="buttoncheck2">Checkbox 2</label>
+    <label class="button button-check outline primary">
+      <input type="checkbox" autocomplete="off">
+      Checkbox 2
+    </label>
 
-    <input type="checkbox" class="button-check" id="buttoncheck3" autocomplete="off">
-    <label class="button outline primary" for="buttoncheck3">Checkbox 3</label>
+    <label class="button button-check outline primary">
+      <input type="checkbox" autocomplete="off">
+      Checkbox 3
+    </label>
   </div>`} />
 
 ### Radio toggle buttons
@@ -93,14 +103,20 @@ Create multi-selection controls using checkbox inputs combined with button styli
 Create single-selection controls that maintain visual consistency with your button design tokens:
 
 <Example code={`<div class="button-group" role="group" aria-label="Radio toggle button group">
-    <input type="radio" class="button-check" name="buttonradio" id="buttonradio1" autocomplete="off" checked>
-    <label class="button outline primary" for="buttonradio1">Radio 1</label>
+    <label class="button button-check outline primary">
+      <input type="radio" name="buttonradio" autocomplete="off" checked>
+      Radio 1
+    </label>
 
-    <input type="radio" class="button-check" name="buttonradio" id="buttonradio2" autocomplete="off">
-    <label class="button outline primary" for="buttonradio2">Radio 2</label>
+    <label class="button button-check outline primary">
+      <input type="radio" name="buttonradio" autocomplete="off">
+      Radio 2
+    </label>
 
-    <input type="radio" class="button-check" name="buttonradio" id="buttonradio3" autocomplete="off">
-    <label class="button outline primary" for="buttonradio3">Radio 3</label>
+    <label class="button button-check outline primary">
+      <input type="radio" name="buttonradio" autocomplete="off">
+      Radio 3
+    </label>
   </div>`} />
 
 <Callout type="info">
@@ -196,12 +212,12 @@ Place a `.button-group` within another `.button-group` when you want dropdown me
     <button type="button" class="button primary">1</button>
     <button type="button" class="button primary">2</button>
     <div class="button-group" role="group">
-      <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+      <button type="button" class="button primary menu-toggle" data-cx-toggle="menu" aria-expanded="false">
         Dropdown
       </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#">Dropdown link</a></li>
-        <li><a class="dropdown-item" href="#">Dropdown link</a></li>
+      <ul class="menu">
+        <li><a class="menu-item" href="#">Dropdown link</a></li>
+        <li><a class="menu-item" href="#">Dropdown link</a></li>
       </ul>
     </div>
   </div>`} />
@@ -223,39 +239,39 @@ Vertical button groups support the same dropdown integration as horizontal group
     <button type="button" class="button primary">Button</button>
     <button type="button" class="button primary">Button</button>
     <div class="button-group" role="group">
-      <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+      <button type="button" class="button primary menu-toggle" data-cx-toggle="menu" aria-expanded="false">
         Dropdown
       </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#">Dropdown link</a></li>
-        <li><a class="dropdown-item" href="#">Dropdown link</a></li>
+      <ul class="menu">
+        <li><a class="menu-item" href="#">Dropdown link</a></li>
+        <li><a class="menu-item" href="#">Dropdown link</a></li>
       </ul>
     </div>
     <div class="button-group dropstart" role="group">
-      <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+      <button type="button" class="button primary menu-toggle" data-cx-toggle="menu" aria-expanded="false">
         Dropdown
       </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#">Dropdown link</a></li>
-        <li><a class="dropdown-item" href="#">Dropdown link</a></li>
+      <ul class="menu">
+        <li><a class="menu-item" href="#">Dropdown link</a></li>
+        <li><a class="menu-item" href="#">Dropdown link</a></li>
       </ul>
     </div>
     <div class="button-group dropend" role="group">
-      <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+      <button type="button" class="button primary menu-toggle" data-cx-toggle="menu" aria-expanded="false">
         Dropdown
       </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#">Dropdown link</a></li>
-        <li><a class="dropdown-item" href="#">Dropdown link</a></li>
+      <ul class="menu">
+        <li><a class="menu-item" href="#">Dropdown link</a></li>
+        <li><a class="menu-item" href="#">Dropdown link</a></li>
       </ul>
     </div>
     <div class="button-group dropup" role="group">
-      <button type="button" class="button primary dropdown-toggle" data-cx-toggle="dropdown" aria-expanded="false">
+      <button type="button" class="button primary menu-toggle" data-cx-toggle="menu" aria-expanded="false">
         Dropdown
       </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#">Dropdown link</a></li>
-        <li><a class="dropdown-item" href="#">Dropdown link</a></li>
+      <ul class="menu">
+        <li><a class="menu-item" href="#">Dropdown link</a></li>
+        <li><a class="menu-item" href="#">Dropdown link</a></li>
       </ul>
     </div>
   </div>`} />
@@ -263,10 +279,16 @@ Vertical button groups support the same dropdown integration as horizontal group
 Vertical button groups also support the same form controls integration as horizontal groups:
 
 <Example code={`<div class="button-group-vertical" role="group" aria-label="Vertical radio toggle button group">
-    <input type="radio" class="button-check" name="vbutton-radio" id="vbutton-radio1" autocomplete="off" checked>
-    <label class="button outline danger" for="vbutton-radio1">Radio 1</label>
-    <input type="radio" class="button-check" name="vbutton-radio" id="vbutton-radio2" autocomplete="off">
-    <label class="button outline danger" for="vbutton-radio2">Radio 2</label>
-    <input type="radio" class="button-check" name="vbutton-radio" id="vbutton-radio3" autocomplete="off">
-    <label class="button outline danger" for="vbutton-radio3">Radio 3</label>
+    <label class="button button-check outline danger">
+      <input type="radio" name="vbutton-radio" autocomplete="off" checked>
+      Radio 1
+    </label>
+    <label class="button button-check outline danger">
+      <input type="radio" name="vbutton-radio" autocomplete="off">
+      Radio 2
+    </label>
+    <label class="button button-check outline danger">
+      <input type="radio" name="vbutton-radio" autocomplete="off">
+      Radio 3
+    </label>
   </div>`} />

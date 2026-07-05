@@ -1,65 +1,64 @@
 ---
 title: Installation
-description: Install Chassis CSS and its tokens peer, set up the import order that matters, and produce a CSS build for your project.
+description: Install Chassis CSS and its tokens peer, import them in your stylesheet, and produce a CSS build for your project.
 toc: true
 aliases:
   - "[[docsref:/getting-started/download]]"
   - "[[docsref:/getting-started/contents]]"
 ---
 
-This page covers the project-as-dependency path: install `@chassis-ui/css` from npm, install the matching `@chassis-ui/tokens` build, and import them in the right order. If you intend to fork Chassis and own the framework yourself, read [Clone and Customize]([[docsref:/getting-started/clone-and-customize]]) instead.
+This page covers the project-as-dependency path: install `@chassis-ui/css` from npm, install the matching `@chassis-ui/tokens` build, and import them in the right order. If you intend to fork Chassis and own the framework yourself, read [Clone and Customize]([[docsref:/getting-started/clone-customize]]) instead.
 
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) 18 or later
-- A package manager: [pnpm](https://pnpm.io/) (recommended — Chassis itself is a pnpm workspace), [npm](https://www.npmjs.com/), or [yarn](https://yarnpkg.com/)
+- A package manager: [pnpm](https://pnpm.io/), [npm](https://www.npmjs.com/), or [yarn](https://yarnpkg.com/)
 - A Sass compiler in your build pipeline (Dart Sass) — Chassis ships as Sass source, not pre-compiled CSS for project use
 
 ## Install the packages
 
-Chassis CSS is published to npm as `@chassis-ui/css`. The framework consumes design tokens from a separate package, `@chassis-ui/tokens`, which you install alongside it. If you plan to use Chassis JS plugins that depend on Popper (dropdowns, popovers, tooltips), install `@popperjs/core` too.
+Chassis CSS is published to npm as `@chassis-ui/css`. The framework consumes design tokens from a separate package, `@chassis-ui/tokens`, which you install alongside it. Two optional peer dependencies cover specific component groups — install only what you use, or use `chassis.bundle.*` which includes both.
 
-```sh
-# pnpm (recommended)
+```bash
+# pnpm
 pnpm add @chassis-ui/css @chassis-ui/tokens
-pnpm add @popperjs/core         # optional — only for Popper-backed plugins
+pnpm add @floating-ui/dom      # menus, popovers, tooltips
+pnpm add vanilla-calendar-pro  # datepicker
 
 # npm
-npm install --save @chassis-ui/css @chassis-ui/tokens
-npm install --save @popperjs/core
+npm install @chassis-ui/css @chassis-ui/tokens
+npm install @floating-ui/dom vanilla-calendar-pro
 
 # yarn
 yarn add @chassis-ui/css @chassis-ui/tokens
-yarn add @popperjs/core
+yarn add @floating-ui/dom vanilla-calendar-pro
 ```
 
-`@chassis-ui/tokens` ships pre-built token files in `dist/web/{brand}/{app}/`. The default Chassis brand is included so the framework works out of the box; switching brand or app is a configuration change covered under [Clone and Customize]([[docsref:/getting-started/clone-and-customize#connect-your-tokens]]).
+`@chassis-ui/tokens` ships pre-built token files in `dist/web/{app}/{brand}/`. The default `docs/chassis` build is included so the framework works out of the box; switching to a different token set is a configuration change covered under [Customize → Sass]([[docsref:/customize/sass#token-sources]]).
 
 ## Import order
 
-Chassis CSS is one file (`scss/chassis.scss`) that pulls in everything else. The order that matters is the order *around* that import in your own stylesheet:
+Chassis ships on the Sass module system (`@use` / `@forward`). In your stylesheet, a single `@use` directive is all that's needed:
 
 ```scss
-// your-stylesheet.scss
-
-// 1. Token source first — tokens must resolve before chassis.scss reads them
-@import "@chassis-ui/tokens/dist/web/{brand}/{app}/main";
-
-// 2. Settings overrides — only the !default flags you want to change
-$enable-rfs:               false;
-$enable-component-shadows: true;
-$color-mode-type:          data;
-
-// 3. Chassis CSS itself
-@import "@chassis-ui/css/scss/chassis";
-
-// 4. Your own component CSS
-.my-component { … }
+// styles.scss
+@use "@chassis-ui/css/scss/chassis";
 ```
 
-The token import has to come first because Chassis's `scss/_vendor.scss` reads `$cx-*` Sass variables from the tokens package and maps them onto the framework's own variable names. If you import `chassis.scss` before the tokens, Sass throws "undefined variable" errors at compile time.
+Token resolution happens through your build tool's `loadPaths` configuration — no separate token import is needed in the stylesheet. See the bundler guides ([Vite]([[docsref:/getting-started/vite]]), [Webpack]([[docsref:/getting-started/webpack]]), [Parcel]([[docsref:/getting-started/parcel]])) for how `loadPaths` is set up.
 
-The settings overrides come second because every flag in `scss/_settings.scss` uses `!default` — Sass only assigns the default value if the variable hasn't been set yet. See [Options]([[docsref:/customize/options]]) for the full list of `$enable-*` flags and what they control.
+To override settings, configure the defaults module at the `@use` call site — the `with (…)` block must precede the chassis import:
+
+```scss
+// styles.scss
+@use "@chassis-ui/css/scss/config" with (
+  $enable-dark-mode: false,
+  $clamp-font-size-scale: .8,
+);
+@use "@chassis-ui/css/scss/chassis";
+```
+
+Every variable in `scss/config/_settings.scss` uses `!default`, so only the values listed in `with (…)` are overridden — the rest keep their defaults. See [Options]([[docsref:/customize/options]]) for the full list.
 
 ## What the package ships
 
@@ -69,48 +68,58 @@ After install, `node_modules/@chassis-ui/css/` contains the pre-built distributi
 @chassis-ui/css/
 ├── dist/
 │   ├── css/
-│   │   ├── chassis.css           ← compiled with default settings
+│   │   ├── chassis.css              ← full bundle, compiled with default settings
 │   │   ├── chassis.min.css
-│   │   ├── chassis.rtl.css       ← RTL build, see Getting Started > RTL
-│   │   └── chassis.rtl.min.css
+│   │   ├── chassis-grid.css         ← layout grid only
+│   │   ├── chassis-grid.min.css
+│   │   ├── chassis-reboot.css       ← CSS reset only
+│   │   ├── chassis-reboot.min.css
+│   │   ├── chassis-utilities.css    ← utility classes only
+│   │   └── chassis-utilities.min.css
 │   └── js/
-│       ├── chassis.js            ← UMD bundle (no Popper)
-│       ├── chassis.bundle.js     ← UMD bundle with Popper included
-│       ├── chassis.esm.js        ← ES module
-│       └── *.min.js              ← minified counterparts of each
+│       ├── chassis.js               ← ESM bundle; peer deps are external
+│       ├── chassis.min.js
+│       ├── chassis.bundle.js        ← ESM bundle with all peer deps included
+│       └── chassis.bundle.min.js
 ├── js/
-│   └── src/                      ← individual JS plugin sources
+│   ├── index.js                     ← ESM entry; re-exports all plugins
+│   ├── src/                         ← individual plugin sources
+│   └── dist/                        ← individual compiled plugins
 └── scss/
-    ├── chassis.scss              ← main entry; imports everything
-    ├── _settings.scss            ← $enable-* flags
-    ├── _vendor.scss              ← imports @chassis-ui/tokens
-    ├── mixins/                   ← reusable mixins
-    ├── placeholders/             ← Sass placeholders (%context, %component, …)
-    └── _*.scss                   ← per-component partials
+    ├── chassis.scss                 ← full bundle entry
+    ├── chassis-grid.scss            ← grid-only entry
+    ├── chassis-reboot.scss          ← reboot-only entry
+    ├── chassis-utilities.scss       ← utilities-only entry
+    ├── config/
+    │   ├── _settings.scss           ← $enable-* feature flags
+    │   └── _vendor.scss             ← forwards chassis-tokens
+    ├── mixins/
+    ├── placeholders/
+    └── _*.scss                      ← per-component partials
 ```
 
-The pre-compiled `dist/css/chassis.css` uses the default `chassis` brand and default settings. It's useful for prototypes and the [Quick Start]([[docsref:/getting-started/quick-start]]) flow, but for any real project you should compile from source so your token overrides and `$enable-*` settings actually apply.
+The pre-compiled `dist/css/chassis.css` uses the default `docs/chassis` token build and default settings. It's useful for prototypes and the [Quick Start]([[docsref:/getting-started/quick-start]]) flow, but for any real project compile from source so your token overrides and `$enable-*` settings apply.
 
 ## Compile your CSS
 
-If you don't already have a Sass build, install Dart Sass globally and compile your stylesheet on save:
+If you don't already have a Sass build, install Dart Sass and compile your stylesheet:
 
-```sh
-npm install -g sass
-sass --watch scss/your-stylesheet.scss:dist/your-stylesheet.css
+```bash
+npm install -D sass
+npx sass --watch --load-path node_modules/ scss/styles.scss dist/styles.css
 ```
 
 If you're using a bundler, follow the bundler-specific guide:
 
-- [Webpack]([[docsref:/getting-started/webpack]]) — Sass + PostCSS loaders, CSS extraction, SVG handling.
-- [Parcel]([[docsref:/getting-started/parcel]]) — Parcel auto-detects Sass; very little configuration needed.
 - [Vite]([[docsref:/getting-started/vite]]) — set up the Sass preprocessor and you're done.
+- [Webpack]([[docsref:/getting-started/webpack]]) — Sass + PostCSS loaders, CSS extraction.
+- [Parcel]([[docsref:/getting-started/parcel]]) — Parcel auto-detects Sass; very little configuration needed.
 
 ## Include the JavaScript
 
 Chassis JS is optional — only needed for components with interactive behaviour (dropdowns, modals, accordions, etc.). Two ways to include it depending on your setup:
 
-**As a module** (bundlers, modern apps):
+**As an ES module** (bundlers, modern apps):
 
 ```js
 // Everything
@@ -120,13 +129,13 @@ import * as chassis from '@chassis-ui/css'
 import { Modal, Tooltip } from '@chassis-ui/css'
 ```
 
-**As a script tag** (no bundler):
+**As a module script** (no bundler):
 
 ```html
-<script src="node_modules/@chassis-ui/css/dist/js/chassis.bundle.min.js"></script>
+<script type="module" src="node_modules/@chassis-ui/css/dist/js/chassis.bundle.min.js"></script>
 ```
 
-Use `chassis.bundle.*` to get Chassis JS with Popper bundled in (needed for dropdowns, popovers, and tooltips). Use the plain `chassis.*` files if you're loading Popper separately.
+Use `chassis.bundle.*` to get Chassis JS with `@floating-ui/dom` and `vanilla-calendar-pro` bundled in. Use the plain `chassis.*` files if you're loading those peers separately through your bundler.
 
 See [JavaScript]([[docsref:/getting-started/javascript]]) for data attributes, the programmatic API, events, and the full plugin list.
 
@@ -141,7 +150,7 @@ A minimal HTML page that pulls in your compiled CSS should look like this:
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chassis CSS</title>
-    <link rel="stylesheet" href="/dist/your-stylesheet.css">
+    <link rel="stylesheet" href="/dist/styles.css">
   </head>
   <body>
     <div class="container py-large">
@@ -155,7 +164,6 @@ If the button renders with the primary palette and rounded corners, your tokens,
 
 ## Next steps
 
-- [Quick Start]([[docsref:/getting-started/quick-start]]) — try Chassis with no build at all.
-- [Clone and Customize]([[docsref:/getting-started/clone-and-customize]]) — for teams who want to own the framework rather than depend on it.
+- [Clone and Customize]([[docsref:/getting-started/clone-customize]]) — for teams who want to own the framework rather than depend on it.
 - [Customize → Sass]([[docsref:/customize/sass]]) — variables, maps, and the optional partial imports.
 - [Customize → Options]([[docsref:/customize/options]]) — the full reference for `$enable-*` flags.

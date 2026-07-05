@@ -1,0 +1,26 @@
+---
+
+---
+
+<p>
+  Options are set via <code>data-cx-*</code> attributes or passed to the constructor as an object. Attribute
+  names use the kebab-case form of the option name — <code>data-cx-custom-class</code>, not <code
+    >data-cx-customClass</code
+  >. Attribute values are parsed to their native types:
+  <code>"true"</code> &rarr; <code>true</code>, <code>"0"</code> &rarr; <code>0</code>, and valid
+  JSON strings to objects.
+</p>
+
+<p>
+  Use <code>data-cx-config</code> to pass multiple options as a JSON string:
+  <code>data-cx-config='&#123;"delay":200&#125;'</code>. Individual <code>data-cx-*</code> attributes
+  take precedence over <code>data-cx-config</code>. You can also use JSON values in individual
+  attributes, such as <code>data-cx-delay='&#123;"show":100,"hide":200&#125;'</code>.
+</p>
+
+<p>
+  When initializing components, Chassis merges configurations from multiple sources in this priority
+  order: default settings, <code>data-cx-config</code> values, individual <code>data-cx-*</code>
+  attributes, and finally any JavaScript object options. Values defined later in this sequence override
+  earlier ones.
+</p>

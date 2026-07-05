@@ -1,0 +1,78 @@
+---
+title: Icon link
+description: A helper class that aligns icon and text inline using flexbox, with hover motion support.
+toc: true
+css_layer: helpers
+---
+
+`.icon-link` aligns an icon and link text inline using flexbox, with a configurable `gap` between them. The underline is offset and colored using CSS variables. Icons are automatically sized to `1em` to match the surrounding text.
+
+The helper is designed around [Chassis CSS Icons](https://icons.chassis-ui.com) but works with any inline SVG or icon font.
+
+<Callout>
+Decorative icons should have `aria-hidden="true"`. Icons that convey meaning require `role="img"` and an `aria-label` attribute on the SVG.
+</Callout>
+
+## Example
+
+Add `.icon-link` to an `<a>` element. The icon can be placed before or after the link text:
+
+<Example code={`<a class="icon-link" href="#">
+    <Icon name="info-circle-solid" />
+    Icon link
+  </a>`} />
+
+<Example code={`<a class="icon-link" href="#">
+    Icon link
+    <Icon name="arrow-right-solid" />
+  </a>`} />
+
+## Style on hover
+
+`.icon-link-hover` shifts the icon on `:hover` using a CSS transform, providing a directional motion cue.
+
+<Example code={`<a class="icon-link icon-link-hover" href="#">
+    Icon link
+    <Icon name="arrow-right-solid" />
+  </a>`} />
+
+## Customization
+
+Icon link appearance is controlled through CSS variables and utility classes.
+
+### CSS variables
+
+The `--cx-link-*` and `--cx-icon-link-*` CSS variables control default styling. `--cx-icon-link-transform` customizes the hover transform:
+
+<Example code={`<a class="icon-link icon-link-hover" style="--cx-icon-link-transform: translate3d(0, -.125rem, 0);" href="#">
+    <Icon name="info-circle-solid" />
+    Icon link
+  </a>`} />
+
+The link color is overridden via `--cx-hover-color-rgb`:
+
+<Example code={`<a class="icon-link icon-link-hover" style="--cx-hover-color-rgb: 25, 135, 84;" href="#">
+    Icon link
+    <Icon name="arrow-right-outline" />
+  </a>`} />
+
+### Utilities
+
+Icon links work with [link utilities]([[docsref:/utilities/link/]]) for underline color and offset customization:
+
+<Example code={`<a class="icon-link icon-link-hover link-success link-underline-success link-underline-opacity-25" href="#">
+    Icon link
+    <Icon name="arrow-right-outline" />
+  </a>`} />
+
+## CSS
+
+`.icon-link` uses flexbox for alignment; `.icon-link-hover` applies a CSS transform on interaction.
+
+<ScssDocs name="icon-link-helper" file="scss/helpers/_icon-link.scss" />
+
+### Sass variables
+
+Sass variables set the default gap, icon size, and hover transform for all icon links.
+
+<ScssDocs name="icon-link-variables" file="scss/config/_defaults.scss" />

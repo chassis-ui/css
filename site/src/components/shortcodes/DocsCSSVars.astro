@@ -3,26 +3,57 @@ import { getConfig } from '@libs/config'
 
 interface Props {
   /**
-   * Set to false if the component does not use cascading variable approach
+   * Name shown in the description, e.g. "Accordion". Omit for the
+   * generic fallback ("This component exposes" / "These utilities expose", etc.).
+   */
+  name?: string
+  /**
+   * The kind of thing being documented.
+   * @default 'component'
+   */
+  type?: 'component' | 'helper' | 'utility' | 'system'
+  /**
+   * Use plural phrasing — "Form components expose" instead of "The Form component exposes".
+   * @default false
+   */
+  plural?: boolean
+  /**
+   * Whether to include the cascading variables pattern in the description.
+   * Set to false for components that don't follow this pattern.
+   * @default false
    */
   cascading?: boolean
 }
 
-const { cascading = true } = Astro.props
+const { name, type = 'component', plural = false, cascading = false } = Astro.props
+
+const noun = plural ? (type === 'utility' ? 'utilities' : `${type}s`) : type
+
+const subject = !name
+  ? plural
+    ? `These ${noun}`
+    : `This ${noun}`
+  : plural
+    ? `${name} ${noun}`
+    : `The ${name} ${noun}`
+
+const opener = `${subject} expose${plural ? '' : 's'}`
+const possessive = plural ? 'their' : 'its'
 ---
 
 <p>
-  These CSS variables control the component's appearance and can be modified dynamically on the
-  page.
+  {opener} CSS custom properties to control {possessive} appearance at runtime.
   {
     cascading && (
       <>
-        Components use{' '}
-        <a href="https://www.w3.org/TR/css-variables-1/#example-c3e4e8d9">cascading variables</a>,
-        allowing seamless variations in size, color, and style without redundant style declarations
-        through component inheritance and the{' '}
-        <a href={`/docs/${getConfig().docs_version}/core-concepts/context-class`}>context class</a>{' '}
-        system.
+        {' '}
+        They follow the{' '}
+        <a href="https://www.w3.org/TR/css-variables-1/#example-c3e4e8d9">
+          cascading variables
+        </a>{' '}
+        pattern, inheriting values from a{' '}
+        <a href={`${getConfig().docsPath}/core-concepts/context-class`}>context class</a> or any
+        parent element.
       </>
     )
   }

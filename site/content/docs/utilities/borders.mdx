@@ -1,18 +1,19 @@
 ---
 title: Borders
-description: Use border utilities to quickly style the border and border-radius of an element. Great for images, buttons, or any other element.
+description: Border, border-radius, border-color, and border-width utilities with opacity support.
 toc: true
+css_layer: utilities
 ---
 
 import { getData } from '@libs/data'
 
 ## Border
 
-Use border utilities to add or remove an element’s borders. Choose from all borders or one at a time.
+Border utilities add or remove element borders using `border-{side}` class patterns.
 
 ### Additive
 
-Add borders to custom elements:
+These classes add borders to elements by side.
 
 <Example class="cxd-example-border-utils" code={`<span class="border"></span>
 <span class="border-top"></span>
@@ -22,7 +23,7 @@ Add borders to custom elements:
 
 ### Subtractive
 
-Or remove borders:
+Borders can be removed per-side on an element that already has a border applied.
 
 <Example class="cxd-example-border-utils" code={`<span class="border border-0"></span>
 <span class="border border-top-0"></span>
@@ -32,18 +33,18 @@ Or remove borders:
 
 ## Color
 
-<Callout>
-Border utilities like `.border-*` that generated from our original `$context-colors` Sass map don’t yet respond to color modes, however, any `.border-*-subtle` utility will. This will be resolved in v6.
-</Callout>
+Border color utilities map to the Chassis context color palette.
 
-Change the border color using utilities built on our theme colors.
+<Callout>
+Border color utilities generated from `$context-colors` do not yet respond to color mode changes. The `.border-*-subtle` variants do. This will be resolved in a future version.
+</Callout>
 
 <Example class="cxd-example-border-utils" code={[
   ...getData('context-colors').map((contextColor) => `<span class="border ${contextColor.name}-border-main"></span>
 <span class="border ${contextColor.name}-border-subtle"></span>`)
 ]} />
 
-Or modify the default `border-color` of a component:
+Border color utilities can also override the default border on existing components:
 
 <Example code={`<div class="mb-large">
     <label for="exampleFormControlInput1" class="form-label">Email address</label>
@@ -60,11 +61,9 @@ Or modify the default `border-color` of a component:
 
 ## Opacity
 
-Chassis CSS `border-{color}` utilities are generated with Sass using CSS variables. This allows for real-time color changes without compilation and dynamic alpha transparency changes.
-
 ### How it works
 
-Consider our `.border-primary` utility.
+Border color utilities use CSS relative color syntax, enabling alpha opacity control through the `--cx-border-opacity` variable. The variable defaults to `1`.
 
 ```css
 .border-primary {
@@ -75,28 +74,24 @@ Consider our `.border-primary` utility.
 }
 ```
 
-We use the `--cx-primary` CSS variable directly with CSS relative color syntax, and attach a second CSS variable, `--cx-border-opacity`, for the alpha transparency (with a default value `1`). The `oklch(from ...)` expression derives the color from the variable and applies the opacity channel. Then, the opacity class overrides the default opacity by setting `--cx-border-opacity` on the element.
-
-### Example
-
-To change that opacity, override `--cx-border-opacity` via custom styles or inline styles.
+### Opacity override
 
 <Example code={`<div class="border border-primary p-2xsmall mb-small">This is default primary border</div>
 <div class="border border-primary p-2xsmall" style="--cx-border-opacity: .5;">This is 50% opacity primary border</div>`} />
 
 Or, choose from any of the `.border-opacity` utilities:
 
-<Example code={getData('basic-opacities').map((opacity) => `<p class="border border-primary border-opacity-${opacity.name} p-2xsmall">This is -opacity-${opacity.name}- primary border</p>`)} />
+<Example code={getData('token-opacities').map((opacity) => `<p class="border border-primary border-opacity-${opacity.name} p-2xsmall">This is -opacity-${opacity.name}- primary border</p>`)} />
 
-### Context Border
-
-You can directly apply a **context opacity** utility to match `obj-*` colors:
+### Context border opacity
 
 <Example code={`<div class="border border-primary p-2xsmall mb-small">This is <code>base-color</code> primary border</div>
 <div class="border border-primary border-opacity-main p-2xsmall mb-small">This is <code>cx-border-main</code> opacity primary border</div>
 <div class="border border-primary border-opacity-subtle p-2xsmall mb-small">This is <code>cx-border-subtle</code> opacity primary border</div>`} />
 
 ## Width
+
+Border width utilities set `border-width` using the design token scale.
 
 <Example class="cxd-example-border-utils" code={`<span class="border border-small"></span>
 <span class="border border-medium"></span>
@@ -106,19 +101,15 @@ You can directly apply a **context opacity** utility to match `obj-*` colors:
 
 ## Radius
 
-Add classes to an element to easily round its corners.
-
 <Example class="cxd-example-rounded-utils" code={`<Placeholder width="75" height="75" class="rounded" title="Example rounded image" />
 <Placeholder width="75" height="75" class="rounded-top" title="Example top rounded image" />
 <Placeholder width="75" height="75" class="rounded-end" title="Example right rounded image" />
 <Placeholder width="75" height="75" class="rounded-bottom" title="Example bottom rounded image" />
-<Placeholder width="75" height="75" class="rounded-start" title="Example left rounded image" />
-<Placeholder width="75" height="75" class="rounded-circle" title="Completely round image" />
-<Placeholder width="150" height="75" class="rounded-pill" title="Example pill image" />`} />
+<Placeholder width="75" height="75" class="rounded-start" title="Example left rounded image" />`} />
 
 ### Sizes
 
-Use the scaling classes for larger or smaller rounded corners. Sizes range from `0` to `5` including `circle` and `pill`, and can be configured by modifying the utilities API.
+Border-radius utilities apply rounded corners using the design token scale. Values range from `zero` (no rounding) through `2xlarge` and `3xlarge`, plus `circle` and `pill`.
 
 <Example class="cxd-example-rounded-utils" code={`<Placeholder width="75" height="75" class="rounded-zero" title="Example non-rounded image" />
 <Placeholder width="75" height="75" class="rounded-xsmall" title="Example extra small rounded image" />
@@ -128,8 +119,8 @@ Use the scaling classes for larger or smaller rounded corners. Sizes range from 
 <Placeholder width="75" height="75" class="rounded-xlarge" title="Example larger rounded image" />
 <Placeholder width="75" height="75" class="rounded-2xlarge" title="Example extra large rounded image" />
 <Placeholder width="75" height="75" class="rounded-3xlarge" title="Example extra extra large rounded image" />
-<Placeholder width="75" height="75" class="rounded-circle" title="Completely round image" />
-<Placeholder width="150" height="75" class="rounded-pill" title="Rounded pill image" />`} />
+<Placeholder width="75" height="75" class="rounded-full" title="Completely round image" />
+<Placeholder width="150" height="75" class="rounded-full" title="Rounded pill image" />`} />
 
 <Example class="cxd-example-rounded-utils" code={`<Placeholder width="75" height="75" class="rounded-bottom-xsmall" title="Example small rounded image" />
 <Placeholder width="75" height="75" class="rounded-start-medium" title="Example default left rounded image" />
@@ -139,36 +130,57 @@ Use the scaling classes for larger or smaller rounded corners. Sizes range from 
 
 ## CSS
 
-<DocsCSS />
+Border utilities are generated from Sass maps built on design token values via the utilities API.
 
-### Variables
+### Reference
 
-<DocsCSSVars />
+The table lists all border utilities and their CSS properties.
 
-<ScssDocs name="root-border-var" file="scss/_root.scss" />
+<UtilityReferenceTable utility={["border", "rounded", ...getData('context-colors').map((contextColor) => `${contextColor.name }-border`)]} />
+
+### Custom properties
+
+`.border` and `.rounded` utilities read their values at runtime from `:root` custom properties.
+
+<ScssDocs name="root-border-var" file="scss/_root.scss" compile />
 
 ### Sass variables
 
-<DocsSASSVars />
+`.border` and `.rounded` utilities compile their defaults from the Sass variables in `scss/config/_defaults.scss`.
 
-<ScssDocs name="border-variables" file="scss/_variables.scss" />
-<ScssDocs name="border-width-tokens" file="scss/tokens/_index.scss" />
-<ScssDocs name="border-radius-tokens" file="scss/tokens/_index.scss" />
+<ScssDocs name="border-variables" file="scss/config/_defaults.scss" />
+
+### Design tokens
+
+<DocsDesignTokens name="Border" type="utility" plural />
+
+<ScssDocs name="border-width-tokens" file="scss/tokens/_border.scss" />
+<ScssDocs name="border-radius-tokens" file="scss/tokens/_border.scss" />
+
+Color tokens are part of the color system in `scss/tokens` and not listed here.
 
 ### Sass maps
 
-<ScssDocs name="border-widths-map" file="scss/maps/_index.scss" />
-<ScssDocs name="border-radiuses-map" file="scss/maps/_index.scss" />
+Border color maps are part of the [color system]([[docsref:/core-concepts/color-system]]) in `scss/maps/` and not listed here.
 
-Color mode adaptive border colors are also available as a Sass map:
+Border width and radius utilities are generated from Sass maps in `scss/maps/_borders.scss`.
 
-### Sass mixins
+<ScssDocs name="border-widths-map" file="scss/maps/_borders.scss" />
+<ScssDocs name="border-radii-map" file="scss/maps/_borders.scss" />
 
-<ScssDocs name="border-radius-mixins" file="scss/mixins/_border-radius.scss" />
+Border opacity utilities are generated from two Sass maps in `scss/maps/_opacities.scss`.
 
-### Sass utilities API
+`$opacities` defines the full token-named opacity scale for `.border-opacity-{level}` utilities.
 
-Border utilities are declared in our utilities API in `scss/_utilities.scss`. [Learn how to use the utilities API.]([[docsref:/utilities/api#using-the-api]])
+<ScssDocs name="opacity-levels-map" file="scss/maps/_opacities.scss" />
+
+`$border-opacities` defines two semantic border opacity levels.
+
+<ScssDocs name="border-opacities-map" file="scss/maps/_opacities.scss" />
+
+### Utilities API
+
+Border utilities are declared in `scss/utilities/_border.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
 
 <ScssDocs name="utils-borders" file="scss/utilities/_border.scss" />
 

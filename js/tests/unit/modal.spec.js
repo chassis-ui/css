@@ -1,11 +1,10 @@
-import EventHandler from '../../src/dom/event-handler.js'
-import Modal from '../../src/modal.js'
-import ScrollBarHelper from '../../src/util/scrollbar.js'
-import {
-  clearBodyAndDocument, clearFixture, createEvent, getFixture, jQueryMock
-} from '../helpers/fixture.js'
+import Dialog from '../../src/dialog.js'
+import { clearBodyAndDocument, clearFixture, getFixture } from '../helpers/fixture.js'
 
-describe('Modal', () => {
+// Modals use the Dialog plugin with <dialog class="modal dialog"> markup.
+// Structure: .modal-header (with optional .close-button) + .modal-body + .modal-footer.
+
+describe('Modal (Dialog plugin)', () => {
   let fixtureEl
 
   beforeAll(() => {
@@ -15,10 +14,10 @@ describe('Modal', () => {
   afterEach(() => {
     clearFixture()
     clearBodyAndDocument()
-    document.body.classList.remove('modal-open')
+    document.body.classList.remove('dialog-open')
 
-    for (const backdrop of document.querySelectorAll('.modal-backdrop')) {
-      backdrop.remove()
+    for (const dialog of document.querySelectorAll('dialog[open]')) {
+      dialog.close()
     }
   })
 
@@ -26,334 +25,29 @@ describe('Modal', () => {
     clearBodyAndDocument()
   })
 
-  describe('VERSION', () => {
-    it('should return plugin version', () => {
-      expect(Modal.VERSION).toEqual(jasmine.any(String))
-    })
-  })
-
-  describe('Default', () => {
-    it('should return plugin default config', () => {
-      expect(Modal.Default).toEqual(jasmine.any(Object))
-    })
-  })
-
-  describe('DATA_KEY', () => {
-    it('should return plugin data key', () => {
-      expect(Modal.DATA_KEY).toEqual('cx.modal')
-    })
-  })
-
-  describe('constructor', () => {
-    it('should take care of element either passed as a CSS selector or DOM element', () => {
-      fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-      const modalEl = fixtureEl.querySelector('.modal')
-      const modalBySelector = new Modal('.modal')
-      const modalByElement = new Modal(modalEl)
-
-      expect(modalBySelector._element).toEqual(modalEl)
-      expect(modalByElement._element).toEqual(modalEl)
-    })
-  })
-
-  describe('toggle', () => {
-    it('should call ScrollBarHelper to handle scrollBar on body', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-        const spyHide = spyOn(ScrollBarHelper.prototype, 'hide').and.callThrough()
-        const spyReset = spyOn(ScrollBarHelper.prototype, 'reset').and.callThrough()
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          expect(spyHide).toHaveBeenCalled()
-          modal.toggle()
-        })
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          expect(spyReset).toHaveBeenCalled()
-          resolve()
-        })
-
-        modal.toggle()
-      })
-    })
-  })
-
   describe('show', () => {
-    it('should show a modal', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
-
-        modalEl.addEventListener('show.cx.modal', event => {
-          expect(event).toBeDefined()
-        })
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          expect(modalEl.getAttribute('aria-modal')).toEqual('true')
-          expect(modalEl.getAttribute('role')).toEqual('dialog')
-          expect(modalEl.getAttribute('aria-hidden')).toBeNull()
-          expect(modalEl.style.display).toEqual('block')
-          expect(document.querySelector('.modal-backdrop')).not.toBeNull()
-          resolve()
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should show a modal without backdrop', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl, {
-          backdrop: false
-        })
-
-        modalEl.addEventListener('show.cx.modal', event => {
-          expect(event).toBeDefined()
-        })
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          expect(modalEl.getAttribute('aria-modal')).toEqual('true')
-          expect(modalEl.getAttribute('role')).toEqual('dialog')
-          expect(modalEl.getAttribute('aria-hidden')).toBeNull()
-          expect(modalEl.style.display).toEqual('block')
-          expect(document.querySelector('.modal-backdrop')).toBeNull()
-          resolve()
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should show a modal and append the element', () => {
-      return new Promise(resolve => {
-        const modalEl = document.createElement('div')
-        const id = 'dynamicModal'
-
-        modalEl.setAttribute('id', id)
-        modalEl.classList.add('modal')
-        modalEl.innerHTML = '<div class="modal-container"></div>'
-
-        const modal = new Modal(modalEl)
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          const dynamicModal = document.getElementById(id)
-          expect(dynamicModal).not.toBeNull()
-          dynamicModal.remove()
-          resolve()
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should do nothing if a modal is shown', () => {
-      fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-      const modalEl = fixtureEl.querySelector('.modal')
-      const modal = new Modal(modalEl)
-
-      const spy = spyOn(EventHandler, 'trigger')
-      modal._isShown = true
-
-      modal.show()
-
-      expect(spy).not.toHaveBeenCalled()
-    })
-
-    it('should do nothing if a modal is transitioning', () => {
-      fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-      const modalEl = fixtureEl.querySelector('.modal')
-      const modal = new Modal(modalEl)
-
-      const spy = spyOn(EventHandler, 'trigger')
-      modal._isTransitioning = true
-
-      modal.show()
-
-      expect(spy).not.toHaveBeenCalled()
-    })
-
-    it('should not fire shown event when show is prevented', () => {
-      return new Promise((resolve, reject) => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
-
-        modalEl.addEventListener('show.cx.modal', event => {
-          event.preventDefault()
-
-          const expectedDone = () => {
-            expect().nothing()
-            resolve()
-          }
-
-          setTimeout(expectedDone, 10)
-        })
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          reject(new Error('shown event triggered'))
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should be shown after the first call to show() has been prevented while fading is enabled ', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal fade"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
-
-        let prevented = false
-        modalEl.addEventListener('show.cx.modal', event => {
-          if (!prevented) {
-            event.preventDefault()
-            prevented = true
-
-            setTimeout(() => {
-              modal.show()
-            })
-          }
-        })
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          expect(prevented).toBeTrue()
-          expect(modal._isAnimated()).toBeTrue()
-          resolve()
-        })
-
-        modal.show()
-      })
-    })
-    it('should set is transitioning if fade class is present', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal fade"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
-
-        modalEl.addEventListener('show.cx.modal', () => {
-          setTimeout(() => {
-            expect(modal._isTransitioning).toBeTrue()
-          })
-        })
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          expect(modal._isTransitioning).toBeFalse()
-          resolve()
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should close modal when a click occurred on data-cx-dismiss="modal" inside modal', () => {
+    it('should show with full header/body/footer structure and add dialog-open to body', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
-          '<div class="modal fade">',
-          '  <div class="modal-container">',
-          '    <div class="modal-header">',
-          '      <button type="button" data-cx-dismiss="modal"></button>',
-          '    </div>',
+          '<dialog class="modal dialog" aria-labelledby="modalLabel">',
+          '  <div class="modal-header">',
+          '    <h1 class="modal-title" id="modalLabel">Modal title</h1>',
+          '    <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>',
           '  </div>',
-          '</div>'
-        ].join('')
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const btnClose = fixtureEl.querySelector('[data-cx-dismiss="modal"]')
-        const modal = new Modal(modalEl)
-
-        const spy = spyOn(modal, 'hide').and.callThrough()
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          btnClose.click()
-        })
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          expect(spy).toHaveBeenCalled()
-          resolve()
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should close modal when a click occurred on a data-cx-dismiss="modal" with "cx-target" outside of modal element', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = [
-          '<button type="button" data-cx-dismiss="modal" data-cx-target="#modal1"></button>',
-          '<div id="modal1" class="modal fade">',
-          '  <div class="modal-container"></div>',
-          '</div>'
-        ].join('')
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const btnClose = fixtureEl.querySelector('[data-cx-dismiss="modal"]')
-        const modal = new Modal(modalEl)
-
-        const spy = spyOn(modal, 'hide').and.callThrough()
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          btnClose.click()
-        })
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          expect(spy).toHaveBeenCalled()
-          resolve()
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should set .modal\'s scroll top to 0', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = [
-          '<div class="modal fade">',
-          '  <div class="modal-container"></div>',
-          '</div>'
-        ].join('')
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          expect(modalEl.scrollTop).toEqual(0)
-          resolve()
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should set modal body scroll top to 0 if modal body do not exists', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = [
-          '<div class="modal fade">',
-          '  <div class="modal-container">',
-          '    <div class="modal-content"></div>',
+          '  <div class="modal-body"><p>Modal body text</p></div>',
+          '  <div class="modal-footer">',
+          '    <button type="button" class="button secondary" data-cx-dismiss="dialog">Close</button>',
+          '    <button type="button" class="button primary">Save changes</button>',
           '  </div>',
-          '</div>'
+          '</dialog>'
         ].join('')
 
         const modalEl = fixtureEl.querySelector('.modal')
-        const modalBody = modalEl.querySelector('.modal-content')
-        const modal = new Modal(modalEl)
+        const modal = new Dialog(modalEl)
 
-        modalEl.addEventListener('shown.cx.modal', () => {
-          expect(modalBody.scrollTop).toEqual(0)
+        modalEl.addEventListener('shown.cx.dialog', () => {
+          expect(modalEl.open).toBeTrue()
+          expect(document.body.classList.contains('dialog-open')).toBeTrue()
           resolve()
         })
 
@@ -361,316 +55,41 @@ describe('Modal', () => {
       })
     })
 
-    it('should not trap focus if focus equal to false', () => {
+    it('should set tabindex="-1" on the dialog when no autofocus element is present', () => {
       return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal fade"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl, {
-          focus: false
-        })
-
-        const spy = spyOn(modal._focustrap, 'activate').and.callThrough()
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          expect(spy).not.toHaveBeenCalled()
-          resolve()
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should add listener when escape touch is pressed', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
-
-        const spy = spyOn(modal, 'hide').and.callThrough()
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          const keydownEscape = createEvent('keydown')
-          keydownEscape.key = 'Escape'
-
-          modalEl.dispatchEvent(keydownEscape)
-        })
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          expect(spy).toHaveBeenCalled()
-          resolve()
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should do nothing when the pressed key is not escape', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
-
-        const spy = spyOn(modal, 'hide')
-
-        const expectDone = () => {
-          expect(spy).not.toHaveBeenCalled()
-
-          resolve()
-        }
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          const keydownTab = createEvent('keydown')
-          keydownTab.key = 'Tab'
-
-          modalEl.dispatchEvent(keydownTab)
-          setTimeout(expectDone, 30)
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should adjust dialog on resize', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
-
-        const spy = spyOn(modal, '_adjustDialog').and.callThrough()
-
-        const expectDone = () => {
-          expect(spy).toHaveBeenCalled()
-
-          resolve()
-        }
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          const resizeEvent = createEvent('resize')
-
-          window.dispatchEvent(resizeEvent)
-          setTimeout(expectDone, 10)
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should not close modal when clicking on modal-window', () => {
-      return new Promise((resolve, reject) => {
         fixtureEl.innerHTML = [
-          '<div class="modal">',
-          '  <div class="modal-container">',
-          '    <div class="modal-window"></div>',
-          '  </div>',
-          '</div>'
+          '<dialog class="modal dialog">',
+          '  <div class="modal-body"><p>Body</p></div>',
+          '</dialog>'
         ].join('')
 
         const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
+        const modal = new Dialog(modalEl)
 
-        const shownCallback = () => {
-          setTimeout(() => {
-            expect(modal._isShown).toEqual(true)
-            resolve()
-          }, 10)
-        }
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          fixtureEl.querySelector('.modal-container').click()
-          fixtureEl.querySelector('.modal-window').click()
-          shownCallback()
-        })
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          reject(new Error('Should not hide a modal'))
+        modalEl.addEventListener('shown.cx.dialog', () => {
+          expect(modalEl.getAttribute('tabindex')).toBe('-1')
+          resolve()
         })
 
         modal.show()
       })
     })
 
-    it('should not close modal when clicking outside of modal-window if backdrop = false', () => {
-      return new Promise((resolve, reject) => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl, {
-          backdrop: false
-        })
-
-        const shownCallback = () => {
-          setTimeout(() => {
-            expect(modal._isShown).toBeTrue()
-            resolve()
-          }, 10)
-        }
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          modalEl.click()
-          shownCallback()
-        })
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          reject(new Error('Should not hide a modal'))
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should not close modal when clicking outside of modal-window if backdrop = static', () => {
-      return new Promise((resolve, reject) => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl, {
-          backdrop: 'static'
-        })
-
-        const shownCallback = () => {
-          setTimeout(() => {
-            expect(modal._isShown).toBeTrue()
-            resolve()
-          }, 10)
-        }
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          modalEl.click()
-          shownCallback()
-        })
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          reject(new Error('Should not hide a modal'))
-        })
-
-        modal.show()
-      })
-    })
-    it('should close modal when escape key is pressed with keyboard = true and backdrop is static', () => {
+    it('should not set tabindex="-1" on the dialog when an autofocus element is present', () => {
       return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
+        fixtureEl.innerHTML = [
+          '<dialog class="modal dialog">',
+          '  <div class="modal-body">',
+          '    <input type="text" autofocus>',
+          '  </div>',
+          '</dialog>'
+        ].join('')
 
         const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl, {
-          backdrop: 'static',
-          keyboard: true
-        })
+        const modal = new Dialog(modalEl)
 
-        const shownCallback = () => {
-          setTimeout(() => {
-            expect(modal._isShown).toBeFalse()
-            resolve()
-          }, 10)
-        }
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          const keydownEscape = createEvent('keydown')
-          keydownEscape.key = 'Escape'
-
-          modalEl.dispatchEvent(keydownEscape)
-          shownCallback()
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should not close modal when escape key is pressed with keyboard = false', () => {
-      return new Promise((resolve, reject) => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl, {
-          keyboard: false
-        })
-
-        const shownCallback = () => {
-          setTimeout(() => {
-            expect(modal._isShown).toBeTrue()
-            resolve()
-          }, 10)
-        }
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          const keydownEscape = createEvent('keydown')
-          keydownEscape.key = 'Escape'
-
-          modalEl.dispatchEvent(keydownEscape)
-          shownCallback()
-        })
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          reject(new Error('Should not hide a modal'))
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should not overflow when clicking outside of modal-window if backdrop = static', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container" style="transition-duration: 20ms;"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl, {
-          backdrop: 'static'
-        })
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          modalEl.click()
-          setTimeout(() => {
-            expect(modalEl.clientHeight).toEqual(modalEl.scrollHeight)
-            resolve()
-          }, 20)
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should not queue multiple callbacks when clicking outside of modal-window and backdrop = static', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container" style="transition-duration: 50ms;"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl, {
-          backdrop: 'static'
-        })
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          const spy = spyOn(modal, '_queueCallback').and.callThrough()
-          const mouseDown = createEvent('mousedown')
-
-          modalEl.dispatchEvent(mouseDown)
-          modalEl.click()
-          modalEl.dispatchEvent(mouseDown)
-          modalEl.click()
-
-          setTimeout(() => {
-            expect(spy).toHaveBeenCalledTimes(1)
-            resolve()
-          }, 20)
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should trap focus', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
-
-        const spy = spyOn(modal._focustrap, 'activate').and.callThrough()
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          expect(spy).toHaveBeenCalled()
+        modalEl.addEventListener('shown.cx.dialog', () => {
+          expect(modalEl.hasAttribute('tabindex')).toBeFalse()
           resolve()
         })
 
@@ -680,650 +99,183 @@ describe('Modal', () => {
   })
 
   describe('hide', () => {
-    it('should hide a modal', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
-        const backdropSpy = spyOn(modal._backdrop, 'hide').and.callThrough()
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          modal.hide()
-        })
-
-        modalEl.addEventListener('hide.cx.modal', event => {
-          expect(event).toBeDefined()
-        })
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          expect(modalEl.getAttribute('aria-modal')).toBeNull()
-          expect(modalEl.getAttribute('role')).toBeNull()
-          expect(modalEl.getAttribute('aria-hidden')).toEqual('true')
-          expect(modalEl.style.display).toEqual('none')
-          expect(backdropSpy).toHaveBeenCalled()
-          resolve()
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should close modal when clicking outside of modal-window', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const dialogEl = modalEl.querySelector('.modal-container')
-        const modal = new Modal(modalEl)
-
-        const spy = spyOn(modal, 'hide')
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          const mouseDown = createEvent('mousedown')
-
-          dialogEl.dispatchEvent(mouseDown)
-          modalEl.click()
-          expect(spy).not.toHaveBeenCalled()
-
-          modalEl.dispatchEvent(mouseDown)
-          modalEl.click()
-          expect(spy).toHaveBeenCalled()
-          resolve()
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should not close modal when clicking on an element removed from modal content', () => {
+    it('should hide and remove dialog-open class from body', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
-          '<div class="modal">',
-          ' <div class="modal-container">',
-          '   <button class="btn">BTN</button>',
-          ' </div>',
-          '</div>'
+          '<dialog class="modal dialog">',
+          '  <div class="modal-body"><p>Body</p></div>',
+          '</dialog>'
         ].join('')
 
         const modalEl = fixtureEl.querySelector('.modal')
-        const buttonEl = modalEl.querySelector('.btn')
-        const modal = new Modal(modalEl)
+        const modal = new Dialog(modalEl)
 
-        const spy = spyOn(modal, 'hide')
-        buttonEl.addEventListener('click', () => {
-          buttonEl.remove()
+        modalEl.addEventListener('shown.cx.dialog', () => {
+          modal.hide()
         })
 
-        modalEl.addEventListener('shown.cx.modal', () => {
-          modalEl.dispatchEvent(createEvent('mousedown'))
-          buttonEl.click()
-          expect(spy).not.toHaveBeenCalled()
+        modalEl.addEventListener('hidden.cx.dialog', () => {
+          expect(modalEl.open).toBeFalse()
+          expect(document.body.classList.contains('dialog-open')).toBeFalse()
           resolve()
         })
 
         modal.show()
       })
     })
+  })
 
-    it('should do nothing is the modal is not shown', () => {
-      fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-      const modalEl = fixtureEl.querySelector('.modal')
-      const modal = new Modal(modalEl)
-
-      modal.hide()
-
-      expect().nothing()
-    })
-
-    it('should do nothing is the modal is transitioning', () => {
-      fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-      const modalEl = fixtureEl.querySelector('.modal')
-      const modal = new Modal(modalEl)
-
-      modal._isTransitioning = true
-      modal.hide()
-
-      expect().nothing()
-    })
-
-    it('should not hide a modal if hide is prevented', () => {
-      return new Promise((resolve, reject) => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          modal.hide()
-        })
-
-        const hideCallback = () => {
-          setTimeout(() => {
-            expect(modal._isShown).toBeTrue()
-            resolve()
-          }, 10)
-        }
-
-        modalEl.addEventListener('hide.cx.modal', event => {
-          event.preventDefault()
-          hideCallback()
-        })
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          reject(new Error('should not trigger hidden'))
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should release focus trap', () => {
+  describe('dismiss', () => {
+    it('should close when the header close button is clicked', () => {
       return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
+        fixtureEl.innerHTML = [
+          '<dialog class="modal dialog">',
+          '  <div class="modal-header">',
+          '    <h1 class="modal-title">Modal title</h1>',
+          '    <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>',
+          '  </div>',
+          '  <div class="modal-body"><p>Body</p></div>',
+          '</dialog>'
+        ].join('')
 
         const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
-        const spy = spyOn(modal._focustrap, 'deactivate').and.callThrough()
+        const modal = new Dialog(modalEl)
 
-        modalEl.addEventListener('shown.cx.modal', () => {
-          modal.hide()
+        modalEl.addEventListener('shown.cx.dialog', () => {
+          modalEl.querySelector('.close-button[data-cx-dismiss="dialog"]').click()
         })
 
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          expect(spy).toHaveBeenCalled()
+        modalEl.addEventListener('hidden.cx.dialog', () => {
+          expect(modalEl.open).toBeFalse()
           resolve()
         })
 
         modal.show()
       })
     })
-  })
 
-  describe('dispose', () => {
-    it('should dispose a modal', () => {
-      fixtureEl.innerHTML = '<div id="exampleModal" class="modal"><div class="modal-container"></div></div>'
+    it('should close when a footer button with data-cx-dismiss="dialog" is clicked', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = [
+          '<dialog class="modal dialog">',
+          '  <div class="modal-body"><p>Body</p></div>',
+          '  <div class="modal-footer">',
+          '    <button type="button" class="button secondary" data-cx-dismiss="dialog">Close</button>',
+          '    <button type="button" class="button primary">Save</button>',
+          '  </div>',
+          '</dialog>'
+        ].join('')
 
-      const modalEl = fixtureEl.querySelector('.modal')
-      const modal = new Modal(modalEl)
-      const focustrap = modal._focustrap
-      const spyDeactivate = spyOn(focustrap, 'deactivate').and.callThrough()
+        const modalEl = fixtureEl.querySelector('.modal')
+        const modal = new Dialog(modalEl)
 
-      expect(Modal.getInstance(modalEl)).toEqual(modal)
+        modalEl.addEventListener('shown.cx.dialog', () => {
+          modalEl.querySelector('[data-cx-dismiss="dialog"]').click()
+        })
 
-      const spyOff = spyOn(EventHandler, 'off')
+        modalEl.addEventListener('hidden.cx.dialog', () => {
+          expect(modalEl.open).toBeFalse()
+          resolve()
+        })
 
-      modal.dispose()
-
-      expect(Modal.getInstance(modalEl)).toBeNull()
-      expect(spyOff).toHaveBeenCalledTimes(3)
-      expect(spyDeactivate).toHaveBeenCalled()
-    })
-  })
-
-  describe('handleUpdate', () => {
-    it('should call adjust dialog', () => {
-      fixtureEl.innerHTML = '<div id="exampleModal" class="modal"><div class="modal-container"></div></div>'
-
-      const modalEl = fixtureEl.querySelector('.modal')
-      const modal = new Modal(modalEl)
-
-      const spy = spyOn(modal, '_adjustDialog')
-
-      modal.handleUpdate()
-
-      expect(spy).toHaveBeenCalled()
+        modal.show()
+      })
     })
   })
 
   describe('data-api', () => {
-    it('should toggle modal', () => {
+    it('should open modal via data-cx-toggle="dialog" trigger', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
-          '<button type="button" data-cx-toggle="modal" data-cx-target="#exampleModal"></button>',
-          '<div id="exampleModal" class="modal"><div class="modal-container"></div></div>'
+          '<button type="button" data-cx-toggle="dialog" data-cx-target="#myModal">Open modal</button>',
+          '<dialog class="modal dialog" id="myModal">',
+          '  <div class="modal-header">',
+          '    <h1 class="modal-title">Modal</h1>',
+          '    <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>',
+          '  </div>',
+          '  <div class="modal-body"><p>Body</p></div>',
+          '</dialog>'
         ].join('')
 
+        const triggerEl = fixtureEl.querySelector('[data-cx-toggle="dialog"]')
         const modalEl = fixtureEl.querySelector('.modal')
-        const trigger = fixtureEl.querySelector('[data-cx-toggle="modal"]')
 
-        modalEl.addEventListener('shown.cx.modal', () => {
-          expect(modalEl.getAttribute('aria-modal')).toEqual('true')
-          expect(modalEl.getAttribute('role')).toEqual('dialog')
-          expect(modalEl.getAttribute('aria-hidden')).toBeNull()
-          expect(modalEl.style.display).toEqual('block')
-          expect(document.querySelector('.modal-backdrop')).not.toBeNull()
-          setTimeout(() => trigger.click(), 10)
-        })
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          expect(modalEl.getAttribute('aria-modal')).toBeNull()
-          expect(modalEl.getAttribute('role')).toBeNull()
-          expect(modalEl.getAttribute('aria-hidden')).toEqual('true')
-          expect(modalEl.style.display).toEqual('none')
-          expect(document.querySelector('.modal-backdrop')).toBeNull()
+        modalEl.addEventListener('shown.cx.dialog', () => {
+          expect(modalEl.open).toBeTrue()
           resolve()
         })
 
-        trigger.click()
+        triggerEl.click()
       })
     })
 
-    it('should not recreate a new modal', () => {
+    it('should return focus to the trigger when modal closes', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
-          '<button type="button" data-cx-toggle="modal" data-cx-target="#exampleModal"></button>',
-          '<div id="exampleModal" class="modal"><div class="modal-container"></div></div>'
+          '<button type="button" id="trigger" data-cx-toggle="dialog" data-cx-target="#focusModal">Open</button>',
+          '<dialog class="modal dialog" id="focusModal">',
+          '  <div class="modal-footer">',
+          '    <button type="button" class="button secondary" data-cx-dismiss="dialog">Close</button>',
+          '  </div>',
+          '</dialog>'
         ].join('')
 
+        const triggerEl = fixtureEl.querySelector('#trigger')
         const modalEl = fixtureEl.querySelector('.modal')
-        const modal = new Modal(modalEl)
-        const trigger = fixtureEl.querySelector('[data-cx-toggle="modal"]')
 
-        const spy = spyOn(modal, 'show').and.callThrough()
+        const spy = spyOn(triggerEl, 'focus')
 
-        modalEl.addEventListener('shown.cx.modal', () => {
-          expect(spy).toHaveBeenCalled()
-          resolve()
+        modalEl.addEventListener('shown.cx.dialog', () => {
+          modalEl.querySelector('[data-cx-dismiss="dialog"]').click()
         })
 
-        trigger.click()
-      })
-    })
-
-    it('should prevent default when the trigger is <a> or <area>', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = [
-          '<a data-cx-toggle="modal" href="#" data-cx-target="#exampleModal"></a>',
-          '<div id="exampleModal" class="modal"><div class="modal-container"></div></div>'
-        ].join('')
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const trigger = fixtureEl.querySelector('[data-cx-toggle="modal"]')
-
-        const spy = spyOn(Event.prototype, 'preventDefault').and.callThrough()
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          expect(modalEl.getAttribute('aria-modal')).toEqual('true')
-          expect(modalEl.getAttribute('role')).toEqual('dialog')
-          expect(modalEl.getAttribute('aria-hidden')).toBeNull()
-          expect(modalEl.style.display).toEqual('block')
-          expect(document.querySelector('.modal-backdrop')).not.toBeNull()
-          expect(spy).toHaveBeenCalled()
-          resolve()
-        })
-
-        trigger.click()
-      })
-    })
-
-    it('should focus the trigger on hide', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = [
-          '<a data-cx-toggle="modal" href="#" data-cx-target="#exampleModal"></a>',
-          '<div id="exampleModal" class="modal"><div class="modal-container"></div></div>'
-        ].join('')
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const trigger = fixtureEl.querySelector('[data-cx-toggle="modal"]')
-
-        const spy = spyOn(trigger, 'focus')
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          const modal = Modal.getInstance(modalEl)
-
-          modal.hide()
-        })
-
-        const hideListener = () => {
+        modalEl.addEventListener('hidden.cx.dialog', () => {
           setTimeout(() => {
             expect(spy).toHaveBeenCalled()
             resolve()
           }, 20)
-        }
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          hideListener()
         })
 
-        trigger.click()
+        triggerEl.click()
       })
     })
+  })
 
-    it('should open modal, having special characters in its id', () => {
+  describe('stacked modals', () => {
+    it('should keep dialog-open on body when closing one of two open modals', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
-          '<button class="btn btn-primary" data-cx-toggle="modal" data-cx-target="#j_id22:exampleModal">',
-          '   Launch demo modal',
-          '</button>',
-          '<div class="modal fade" id="j_id22:exampleModal" aria-labelledby="exampleModalLabel" aria-hidden="true">',
-          '  <div class="modal-container">',
-          '    <div class="modal-window">',
-          '      <div class="modal-content">',
-          '        <p>modal body</p>',
-          '      </div>',
-          '    </div>',
-          '  </div>',
-          '</div>'
+          '<dialog id="modal1" class="modal dialog"><div class="modal-body"><p>First</p></div></dialog>',
+          '<dialog id="modal2" class="modal dialog"><div class="modal-body"><p>Second</p></div></dialog>'
         ].join('')
 
-        const modalEl = fixtureEl.querySelector('.modal')
-        const trigger = fixtureEl.querySelector('[data-cx-toggle="modal"]')
+        const modal1El = fixtureEl.querySelector('#modal1')
+        const modal2El = fixtureEl.querySelector('#modal2')
+        const modal1 = new Dialog(modal1El)
+        const modal2 = new Dialog(modal2El)
 
-        modalEl.addEventListener('shown.cx.modal', () => {
+        modal1El.addEventListener('shown.cx.dialog', () => {
+          modal2.show()
+        })
+
+        modal2El.addEventListener('shown.cx.dialog', () => {
+          expect(document.body.classList.contains('dialog-open')).toBeTrue()
+          modal1.hide()
+        })
+
+        modal1El.addEventListener('hidden.cx.dialog', () => {
+          expect(modal2El.open).toBeTrue()
+          expect(document.body.classList.contains('dialog-open')).toBeTrue()
+          modal2.hide()
+        })
+
+        modal2El.addEventListener('hidden.cx.dialog', () => {
+          expect(document.body.classList.contains('dialog-open')).toBeFalse()
           resolve()
         })
 
-        trigger.click()
-      })
-    })
-
-    it('should not prevent default when a click occurred on data-cx-dismiss="modal" where tagName is DIFFERENT than <a> or <area>', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = [
-          '<div class="modal">',
-          '  <div class="modal-container">',
-          '    <button type="button" data-cx-dismiss="modal"></button>',
-          '  </div>',
-          '</div>'
-        ].join('')
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const btnClose = fixtureEl.querySelector('button[data-cx-dismiss="modal"]')
-        const modal = new Modal(modalEl)
-
-        const spy = spyOn(Event.prototype, 'preventDefault').and.callThrough()
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          btnClose.click()
-        })
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          expect(spy).not.toHaveBeenCalled()
-          resolve()
-        })
-
-        modal.show()
-      })
-    })
-
-    it('should prevent default when a click occurred on data-cx-dismiss="modal" where tagName is <a> or <area>', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = [
-          '<div class="modal">',
-          '  <div class="modal-container">',
-          '    <a type="button" data-cx-dismiss="modal"></a>',
-          '  </div>',
-          '</div>'
-        ].join('')
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const btnClose = fixtureEl.querySelector('a[data-cx-dismiss="modal"]')
-        const modal = new Modal(modalEl)
-
-        const spy = spyOn(Event.prototype, 'preventDefault').and.callThrough()
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          btnClose.click()
-        })
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          expect(spy).toHaveBeenCalled()
-          resolve()
-        })
-
-        modal.show()
-      })
-    })
-    it('should not focus the trigger if the modal is not visible', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = [
-          '<a data-cx-toggle="modal" href="#" data-cx-target="#exampleModal" style="display: none;"></a>',
-          '<div id="exampleModal" class="modal" style="display: none;"><div class="modal-container"></div></div>'
-        ].join('')
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const trigger = fixtureEl.querySelector('[data-cx-toggle="modal"]')
-
-        const spy = spyOn(trigger, 'focus')
-
-        modalEl.addEventListener('shown.cx.modal', () => {
-          const modal = Modal.getInstance(modalEl)
-
-          modal.hide()
-        })
-
-        const hideListener = () => {
-          setTimeout(() => {
-            expect(spy).not.toHaveBeenCalled()
-            resolve()
-          }, 20)
-        }
-
-        modalEl.addEventListener('hidden.cx.modal', () => {
-          hideListener()
-        })
-
-        trigger.click()
-      })
-    })
-    it('should not focus the trigger if the modal is not shown', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = [
-          '<a data-cx-toggle="modal" href="#" data-cx-target="#exampleModal"></a>',
-          '<div id="exampleModal" class="modal"><div class="modal-container"></div></div>'
-        ].join('')
-
-        const modalEl = fixtureEl.querySelector('.modal')
-        const trigger = fixtureEl.querySelector('[data-cx-toggle="modal"]')
-
-        const spy = spyOn(trigger, 'focus')
-
-        const showListener = () => {
-          setTimeout(() => {
-            expect(spy).not.toHaveBeenCalled()
-            resolve()
-          }, 10)
-        }
-
-        modalEl.addEventListener('show.cx.modal', event => {
-          event.preventDefault()
-          showListener()
-        })
-
-        trigger.click()
-      })
-    })
-
-    it('should call hide first, if another modal is open', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = [
-          '<button data-cx-toggle="modal"  data-cx-target="#modal2"></button>',
-          '<div id="modal1" class="modal fade"><div class="modal-container"></div></div>',
-          '<div id="modal2" class="modal"><div class="modal-container"></div></div>'
-        ].join('')
-
-        const trigger2 = fixtureEl.querySelector('button')
-        const modalEl1 = document.querySelector('#modal1')
-        const modalEl2 = document.querySelector('#modal2')
-        const modal1 = new Modal(modalEl1)
-
-        modalEl1.addEventListener('shown.cx.modal', () => {
-          trigger2.click()
-        })
-        modalEl1.addEventListener('hidden.cx.modal', () => {
-          expect(Modal.getInstance(modalEl2)).not.toBeNull()
-          expect(modalEl2).toHaveClass('show')
-          resolve()
-        })
         modal1.show()
       })
-    })
-  })
-  describe('jQueryInterface', () => {
-    it('should create a modal', () => {
-      fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-      const div = fixtureEl.querySelector('div')
-
-      jQueryMock.fn.modal = Modal.jQueryInterface
-      jQueryMock.elements = [div]
-
-      jQueryMock.fn.modal.call(jQueryMock)
-
-      expect(Modal.getInstance(div)).not.toBeNull()
-    })
-
-    it('should create a modal with given config', () => {
-      fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-      const div = fixtureEl.querySelector('div')
-
-      jQueryMock.fn.modal = Modal.jQueryInterface
-      jQueryMock.elements = [div]
-
-      jQueryMock.fn.modal.call(jQueryMock, { keyboard: false })
-      const spy = spyOn(Modal.prototype, 'constructor')
-      expect(spy).not.toHaveBeenCalledWith(div, { keyboard: false })
-
-      const modal = Modal.getInstance(div)
-      expect(modal).not.toBeNull()
-      expect(modal._config.keyboard).toBeFalse()
-    })
-
-    it('should not re create a modal', () => {
-      fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-      const div = fixtureEl.querySelector('div')
-      const modal = new Modal(div)
-
-      jQueryMock.fn.modal = Modal.jQueryInterface
-      jQueryMock.elements = [div]
-
-      jQueryMock.fn.modal.call(jQueryMock)
-
-      expect(Modal.getInstance(div)).toEqual(modal)
-    })
-
-    it('should throw error on undefined method', () => {
-      fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-      const div = fixtureEl.querySelector('div')
-      const action = 'undefinedMethod'
-
-      jQueryMock.fn.modal = Modal.jQueryInterface
-      jQueryMock.elements = [div]
-
-      expect(() => {
-        jQueryMock.fn.modal.call(jQueryMock, action)
-      }).toThrowError(TypeError, `No method named "${action}"`)
-    })
-
-    it('should call show method', () => {
-      fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-      const div = fixtureEl.querySelector('div')
-      const modal = new Modal(div)
-
-      jQueryMock.fn.modal = Modal.jQueryInterface
-      jQueryMock.elements = [div]
-
-      const spy = spyOn(modal, 'show')
-
-      jQueryMock.fn.modal.call(jQueryMock, 'show')
-
-      expect(spy).toHaveBeenCalled()
-    })
-
-    it('should not call show method', () => {
-      fixtureEl.innerHTML = '<div class="modal" data-cx-show="false"><div class="modal-container"></div></div>'
-
-      const div = fixtureEl.querySelector('div')
-
-      jQueryMock.fn.modal = Modal.jQueryInterface
-      jQueryMock.elements = [div]
-
-      const spy = spyOn(Modal.prototype, 'show')
-
-      jQueryMock.fn.modal.call(jQueryMock)
-
-      expect(spy).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('getInstance', () => {
-    it('should return modal instance', () => {
-      fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-      const div = fixtureEl.querySelector('div')
-      const modal = new Modal(div)
-
-      expect(Modal.getInstance(div)).toEqual(modal)
-      expect(Modal.getInstance(div)).toBeInstanceOf(Modal)
-    })
-
-    it('should return null when there is no modal instance', () => {
-      fixtureEl.innerHTML = '<div class="modal"><div class="modal-container"></div></div>'
-
-      const div = fixtureEl.querySelector('div')
-
-      expect(Modal.getInstance(div)).toBeNull()
-    })
-  })
-
-  describe('getOrCreateInstance', () => {
-    it('should return modal instance', () => {
-      fixtureEl.innerHTML = '<div></div>'
-
-      const div = fixtureEl.querySelector('div')
-      const modal = new Modal(div)
-
-      expect(Modal.getOrCreateInstance(div)).toEqual(modal)
-      expect(Modal.getInstance(div)).toEqual(Modal.getOrCreateInstance(div, {}))
-      expect(Modal.getOrCreateInstance(div)).toBeInstanceOf(Modal)
-    })
-
-    it('should return new instance when there is no modal instance', () => {
-      fixtureEl.innerHTML = '<div></div>'
-
-      const div = fixtureEl.querySelector('div')
-
-      expect(Modal.getInstance(div)).toBeNull()
-      expect(Modal.getOrCreateInstance(div)).toBeInstanceOf(Modal)
-    })
-
-    it('should return new instance when there is no modal instance with given configuration', () => {
-      fixtureEl.innerHTML = '<div></div>'
-
-      const div = fixtureEl.querySelector('div')
-
-      expect(Modal.getInstance(div)).toBeNull()
-      const modal = Modal.getOrCreateInstance(div, {
-        backdrop: true
-      })
-      expect(modal).toBeInstanceOf(Modal)
-
-      expect(modal._config.backdrop).toBeTrue()
-    })
-
-    it('should return the instance when exists without given configuration', () => {
-      fixtureEl.innerHTML = '<div></div>'
-
-      const div = fixtureEl.querySelector('div')
-      const modal = new Modal(div, {
-        backdrop: true
-      })
-      expect(Modal.getInstance(div)).toEqual(modal)
-
-      const modal2 = Modal.getOrCreateInstance(div, {
-        backdrop: false
-      })
-      expect(modal).toBeInstanceOf(Modal)
-      expect(modal2).toEqual(modal)
-
-      expect(modal2._config.backdrop).toBeTrue()
     })
   })
 })

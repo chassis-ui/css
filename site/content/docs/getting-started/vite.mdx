@@ -1,12 +1,12 @@
 ---
 title: Vite
-description: Bundle Chassis CSS and JavaScript with Vite — Sass setup, Vite config, and the import order that loads tokens first.
+description: Bundle Chassis CSS and JavaScript with Vite — Sass setup, Vite config, and token resolution.
 toc: true
 ---
 
 [Vite](https://vite.dev/) is a fast, modern frontend build tool. This guide walks through a fresh project; if you already have Vite set up, jump to [Import Chassis](#import-chassis).
 
-If you've read [Installation]([[docsref:/getting-started/installation]]), the moving parts are familiar; this guide just shows how they fit into a Vite project.
+[Installation]([[docsref:/getting-started/installation]]) covers the moving parts — the only Vite-specific work here is configuring the Sass preprocessor options.
 
 ## Setup
 
@@ -14,34 +14,35 @@ This guide assumes Node.js is installed and you're comfortable in a terminal.
 
 1. **Create a project folder and initialize npm.**
 
-   ```sh
+   ```bash
    mkdir my-project && cd my-project
    pnpm init
    ```
 
 2. **Install Vite.**
 
-   ```sh
+   ```bash
    pnpm add -D vite
    ```
 
-3. **Install Chassis CSS, its tokens, and Popper.** Popper is needed by dropdowns, popovers, and tooltips; if you're not using those plugins you can omit it.
+3. **Install Chassis CSS and its tokens.** Add the optional peer dependencies for the components that need them, or omit both and use `chassis.bundle.*` which includes them.
 
-   ```sh
-   pnpm add @chassis-ui/css @chassis-ui/tokens @popperjs/core
+   ```bash
+   pnpm add @chassis-ui/css @chassis-ui/tokens
+   pnpm add @floating-ui/dom vanilla-calendar-pro   # optional
    ```
 
 4. **Install Sass.** Vite handles `.scss` files when Sass is present.
 
-   ```sh
+   ```bash
    pnpm add -D sass
    ```
 
 ## Project structure
 
-Create the source folders and the empty files you'll fill in below:
+Create the source folders and starter files:
 
-```sh
+```bash
 mkdir -p src/js src/scss
 touch src/index.html src/js/main.js src/scss/styles.scss vite.config.js
 ```
@@ -63,7 +64,9 @@ my-project/
 
 ## Configure Vite
 
-1. **Fill in `vite.config.js`.** This config tells Vite where the source lives, where to emit the build, and which port the dev server should use.
+The steps below fill in `vite.config.js`, the starter HTML, and the npm scripts needed to run and build the project.
+
+1. **Fill in `vite.config.js`.** This config tells Vite where the source lives, where to emit the build, and which port the dev server should use. The `loadPaths` entry lets Sass resolve token overrides placed in `src/scss`.
 
    ```js
    import { resolve } from 'path'
@@ -76,11 +79,10 @@ my-project/
      server: {
        port: 8080
      },
-     // Optional: silence Dart Sass deprecation warnings
      css: {
        preprocessorOptions: {
          scss: {
-           silenceDeprecations: ['import', 'mixed-decls', 'color-functions', 'global-builtin']
+           loadPaths: [resolve(__dirname, 'src/scss')]  // project token override
          }
        }
      }
@@ -107,61 +109,67 @@ my-project/
    </html>
    ```
 
-3. **Add the `start` script to `package.json`.**
+3. **Add the `start` and `build` scripts to `package.json`.**
 
    ```json
    {
      "scripts": {
-       "start": "vite"
+       "start": "vite",
+       "build": "vite build"
      }
    }
    ```
 
 4. **Start the dev server.**
 
-   ```sh
+   ```bash
    pnpm start
    ```
 
-   Vite opens a local server on `http://localhost:8080`. The page won't be styled yet — we still need to fill in the stylesheet and import it from the entry script.
+   Vite opens a local server on `http://localhost:8080`. The page won't be styled yet — the stylesheet and entry script still need to be filled in.
 
 ## Import Chassis
 
-The order matters: tokens must resolve before `chassis.scss` because the framework's `_vendor.scss` consumes `$cx-*` variables that the tokens package defines.
+Vite needs a Sass entry point that imports Chassis. The `loadPaths` entry in `vite.config.js` ensures Sass can resolve token overrides from `src/scss`.
 
-1. **Import tokens, then Chassis, in `src/scss/styles.scss`.**
+1. **Fill in `src/scss/styles.scss`.** The token source resolves through `_vendor.scss` before the rest of Chassis processes its variables, so a single `@use` directive is all that's needed.
 
    ```scss
-   // 1. Token source (must come before chassis.scss)
-   @import "@chassis-ui/tokens/dist/web/chassis/docs/main";
+   // Chassis CSS — token source resolves via the loadPaths entry in vite.config.js
+   @use "@chassis-ui/css/scss/chassis";
 
-   // 2. Optional: settings overrides
-   // $enable-rfs: false;
-   // $enable-component-shadows: true;
-
-   // 3. Chassis CSS
-   @import "@chassis-ui/css/scss/chassis";
+   // Optional: settings overrides use the `with (...)` syntax
+   // @use "@chassis-ui/css/scss/chassis" with (
+   //   $enable-fluid-font-sizes: false,
+   //   $enable-component-shadows: true,
+   // );
    ```
 
-   The token build path follows the pattern `dist/web/{brand}/{app}/main`. The default Chassis package ships with the `chassis/docs` build; for your own brand or app, switch the path accordingly.
+   The default token build (`chassis/docs`) is resolved automatically. To switch to a custom token set, place a `_chassis-tokens.scss` on an earlier `loadPaths` entry — see [Customize → Sass]([[docsref:/customize/sass#switching-to-a-different-token-set-recommended]]) for details.
 
-2. **Import the stylesheet and Chassis JS in `src/js/main.js`.** Popper is loaded automatically through Chassis when needed.
+2. **Import the stylesheet and Chassis JS in `src/js/main.js`.** Floating UI and vanilla-calendar-pro are resolved through the bundler when needed.
 
    ```js
    import '../scss/styles.scss'
    import * as chassis from '@chassis-ui/css'
    ```
 
-   For smaller bundles, import only the plugins you use:
+   For smaller bundles, import only the required plugins:
 
    ```js
    import { Modal, Tooltip } from '@chassis-ui/css'
    ```
 
-3. **Reload.** With both files filled in, Vite hot-reloads the page; you should now see the Chassis-styled heading and primary button.
+3. **Reload.** With both files filled in, Vite hot-reloads the page — the heading and button should now render with Chassis styling.
+
+## Build optimizations
+
+Unlike webpack's `style-loader`, Vite never injects CSS via a `<style>` tag — it always emits a separate `.css` file when running `vite build`. No additional plugin is needed for CSS extraction.
 
 ## Next steps
 
+These docs cover JavaScript integration, Sass customization, and bundle optimization for a Vite-based Chassis project.
+
 - [JavaScript]([[docsref:/getting-started/javascript]]) — using the JS plugins, the programmatic API, and event names.
-- [Customize → Sass]([[docsref:/customize/sass]]) — variable overrides and importing only the partials you need.
+- [Customize → Sass]([[docsref:/customize/sass]]) — variable overrides and importing only the required partials.
 - [Customize → Optimize]([[docsref:/customize/optimize]]) — keeping the Chassis output lean.

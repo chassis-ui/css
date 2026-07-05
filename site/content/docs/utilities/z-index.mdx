@@ -1,47 +1,50 @@
 ---
 title: Z-index
-description: Use our low-level `z-index` utilities to quickly change the stack level of an element or component.
+description: Low-level z-index utilities for controlling stack order of positioned elements.
 toc: true
-added:
-  version: "5.3"
+css_layer: utilities
 ---
 
 ## Example
 
-Use `z-index` utilities to stack elements on top of one another. Requires a `position` value other than `static`, which can be set with custom styles or using our [position utilities]([[docsref:/utilities/position/]]).
+`z-index` utilities set the CSS `z-index` property. A `position` value other than `static` is required for `z-index` to take effect — applied via [position utilities]([[docsref:/utilities/position/]]) or custom styles.
 
 <Callout>
-We call these “low-level” `z-index` utilities because of their default values of `-1` through `3`, which we use for the layout of overlapping components. High-level `z-index` values are used for overlay components like modals and tooltips.
+These are considered low-level utilities because they cover values `-1` through `3` — the range used to manage overlapping layout elements. Overlay components like modals and tooltips use higher `z-index` values defined separately.
 </Callout>
 
-<Example class="cxd-example-zindex-levels fg-main position-relative" code={`<div class="z-3 position-absolute p-xlarge rounded"><span>z-3</span></div>
-<div class="z-2 position-absolute p-xlarge rounded"><span>z-2</span></div>
-<div class="z-1 position-absolute p-xlarge rounded"><span>z-1</span></div>
-<div class="z-0 position-absolute p-xlarge rounded"><span>z-0</span></div>
-<div class="z-n1 position-absolute p-xlarge rounded"><span>z-n1</span></div>`} />
+<Example class="cxd-example-zindex-levels fg-main position-relative z-n1" code={`<div class="z-3 position-absolute p-4xlarge rounded"><span>z-3</span></div>
+<div class="z-2 position-absolute p-4xlarge rounded"><span>z-2</span></div>
+<div class="z-1 position-absolute p-4xlarge rounded"><span>z-1</span></div>
+<div class="z-0 position-absolute p-4xlarge rounded"><span>z-0</span></div>
+<div class="z-n1 position-absolute p-4xlarge rounded"><span>z-n1</span></div>`} />
 
 ## Overlays
 
-Chassis CSS overlay components—dropdown, modal, offcanvas, popover, toast, and tooltip—all have their own `z-index` values to ensure a usable experience with competing “layers” of an interface.
-
-Read about them in the [`z-index` layout page]([[docsref:/layout/z-index]]).
+Chassis overlay components — dropdowns, modals, drawers, popovers, toasts, and tooltips — each have their own `z-index` values. These are documented on the [`z-index` layout page]([[docsref:/layout/z-index]]).
 
 ## Component approach
 
-On some components, we use our low-level `z-index` values to manage repeating elements that overlap one another (like buttons in a button group or items in a list group).
-
-Learn about our [`z-index` extend]([[docsref:/about/extend#z-index-scales]]).
+Some components use low-level `z-index` utilities to manage stacking within repeating element groups, such as button groups. See the [`z-index` extend page]([[docsref:/about/extend#z-index-scales]]) for details.
 
 ## CSS
 
+Z-index utilities are generated from Sass maps via the utilities API.
+
+### Reference
+
+The table lists all z-index utilities and their CSS properties.
+
+<UtilityReferenceTable utility="z-" />
+
 ### Sass maps
 
-Customize this Sass map to change the available values and generated utilities.
+Z-index utilities are generated from Sass maps in `scss/config/_defaults.scss`.
 
-<ScssDocs name="zindex-levels-map" file="scss/_variables.scss" />
+<ScssDocs name="zindex-levels-map" file="scss/config/_defaults.scss" />
 
-### Sass utilities API
+### Utilities API
 
-Position utilities are declared in our utilities API in `scss/utilities/_index.scss`. [Learn how to use the utilities API.]([[docsref:/utilities/api#using-the-api]])
+Z-index utilities are declared in `scss/utilities/_index.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
 
 <ScssDocs name="utils-zindex" file="scss/utilities/_index.scss" />

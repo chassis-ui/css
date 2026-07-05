@@ -53,6 +53,12 @@ export default defineConfig([
     }
   },
   {
+    files: ['**/*.astro/*.js', '**/*.astro/*.ts'],
+    rules: {
+      'prettier/prettier': 'off'
+    }
+  },
+  {
     files: ['build/**'],
     languageOptions: {
       globals: { ...globals.node },
@@ -90,7 +96,7 @@ export default defineConfig([
     }
   },
   {
-    files: ['js/tests/*.js', 'js/tests/integration/rollup*.js', 'scss/tests/*.js'],
+    files: ['js/tests/*.js', 'js/tests/integration/rollup*.js', 'scss/tests/**/*.{js,cjs}'],
     languageOptions: {
       globals: { ...globals.node }
     }

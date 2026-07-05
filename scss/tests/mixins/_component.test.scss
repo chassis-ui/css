@@ -1,11 +1,6 @@
 // Import necessary files for the tests
-@import "../../settings";
-@import "../../vendor";
-@import "../../functions";
-@import "../../tokens";
-@import "../../variables";
-@import "../../maps";
-@import "../../mixins";
+@use "../../config" as *;
+@use "../../mixins" as *;
 
 // stylelint-disable property-disallowed-list
 
@@ -22,7 +17,7 @@
       }
       @include expect() {
         .test-exclude-strokes-true {
-          padding: calc(var(--cx-padding-y) - var(--cx-border-width)) calc(var(--cx-padding-x) - var(--cx-border-width));
+          padding: calc(var(--padding-y) - var(--border-width)) calc(var(--padding-x) - var(--border-width));
         }
       }
     }
@@ -40,7 +35,7 @@
       }
       @include expect() {
         .test-exclude-strokes-false {
-          padding: var(--cx-padding-y) var(--cx-padding-x);
+          padding: var(--padding-y) var(--padding-x);
         }
       }
     }
@@ -58,7 +53,7 @@
       }
       @include expect() {
         .test-exclude-strokes-list-included {
-          padding: calc(var(--cx-padding-y) - var(--cx-border-width)) calc(var(--cx-padding-x) - var(--cx-border-width));
+          padding: calc(var(--padding-y) - var(--border-width)) calc(var(--padding-x) - var(--border-width));
         }
       }
     }
@@ -76,7 +71,7 @@
       }
       @include expect() {
         .test-exclude-strokes-list-excluded {
-          padding: var(--cx-padding-y) var(--cx-padding-x);
+          padding: var(--padding-y) var(--padding-x);
         }
       }
     }
@@ -93,7 +88,7 @@
       }
       @include expect() {
         .test-padding-no-namespace {
-          padding: var(--cx-padding-y) var(--cx-padding-x);
+          padding: var(--padding-y) var(--padding-x);
         }
       }
     }
@@ -108,7 +103,7 @@
       }
       @include expect() {
         .test-padding-with-namespace {
-          padding: var(--cx-button-padding-y) var(--cx-button-padding-x);
+          padding: var(--button-padding-y) var(--button-padding-x);
         }
       }
     }
@@ -125,9 +120,8 @@
       }
       @include expect() {
         .test-colors-no-namespace {
-          color: var(--cx-fg-color);
-          background-color: var(--cx-bg-color);
-          border-color: var(--cx-border-color);
+          color: var(--fg-color);
+          background-color: var(--bg-color);
         }
       }
     }
@@ -142,9 +136,8 @@
       }
       @include expect() {
         .test-colors-with-namespace {
-          color: var(--cx-button-fg-color);
-          background-color: var(--cx-button-bg-color);
-          border-color: var(--cx-button-border-color);
+          color: var(--button-fg-color);
+          background-color: var(--button-bg-color);
         }
       }
     }
@@ -161,7 +154,7 @@
       }
       @include expect() {
         .test-border-no-namespace {
-          border: var(--cx-border-width, 0) var(--cx-border-style, solid) var(--cx-border-color, transparent);
+          border: var(--border-width) var(--border-style) var(--border-color);
         }
       }
     }
@@ -176,7 +169,7 @@
       }
       @include expect() {
         .test-border-with-namespace {
-          border: var(--cx-button-border-width, 0) var(--cx-button-border-style, solid) var(--cx-button-border-color, transparent);
+          border: var(--button-border-width) var(--button-border-style) var(--button-border-color);
         }
       }
     }

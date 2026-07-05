@@ -1,0 +1,31 @@
+//
+// Dialog Placeholders
+//
+// Shared behaviors for dialog and drawer sub-components.
+// Both use identical patterns with same token namespaces.
+//
+
+@use "../mixins/breakpoints" as *;
+
+@layer components {
+
+  %dialog-footer {
+    display: flex;
+    flex-shrink: 0;
+    flex-direction: row-reverse; // right-align by source order so it works with wrapping
+    flex-wrap: wrap;
+    gap: var(--footer-large-gap);
+    align-items: center;
+
+    @include media-breakpoint-down(small) {
+      gap: var(--footer-small-gap);
+      > * { flex: 1; }            // equal-width buttons
+      &.stacked {
+        flex-direction: column;
+        align-items: stretch; // full-width buttons
+        // > * { flex: none; }       // full-width stacked
+      }
+    }
+  }
+
+} // @layer components

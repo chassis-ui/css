@@ -1,50 +1,86 @@
+@use "sass:map";
+@use "../config" as *;
+@use "../functions/svg" as *;
+
+//
+// Caret Mixin
+//
+// Renders a directional caret icon via a CSS mask on a pseudo-element.
+// Used by dropdowns, selects, and accordions.
+//
+
 // scss-docs-start caret-mixin
 /// Render a directional caret icon using a CSS mask on a pseudo-element.
-/// The caret is drawn on `::after` for all directions except `start`, which uses `::before`.
+///
+/// Each parameter falls back to a CSS custom property (e.g. `--caret-size`),
+/// which in turn falls back to the corresponding Sass variable. Override the
+/// custom property on the parent to restyle without re-including the mixin.
+///
+/// The caret is always drawn on `::after` by default, regardless of direction.
+/// Pass `$position: before` for a leading caret (e.g. a `start` back-button).
 ///
 /// @param {String} $direction [down] - Caret direction: `down`, `up`, `end`, or `start`
-/// @param {String} $icon [var(--cx-caret-icon, $caret-icon)] - Mask image for the caret
-/// @param {Number|String} $size [var(--cx-caret-size, $caret-size)] - Width and height of the caret
-/// @param {Color|String} $color [var(--cx-caret-color, $caret-color)] - Background color applied through the mask
-/// @param {Number|String} $vertical-align [$caret-vertical-align] - Vertical alignment of the pseudo-element
+/// @param {String} $icon [null] - Mask image override; falls back to `var(--caret-icon, svg-icon($caret-icon))`
+/// @param {Number|String} $size [null] - Size override; falls back to `var(--caret-size, $caret-size)`
+/// @param {Color|String} $color [null] - Color override; falls back to `var(--caret-color, $caret-color)`
+/// @param {Number|String} $spacing [null] - `margin-inline` override; falls back to `var(--caret-spacing, …)`
+/// @param {String} $position [after] - Pseudo-element to draw on: `after` (default) or `before`
+/// @throw If `$direction` is not one of `down`, `up`, `start`, or `end`
+/// @throw If `$position` is not `after` or `before`
+/// @example scss - Trailing caret (default)
+///   .dropdown-toggle {
+///     @include caret();
+///   }
+/// @example scss - Leading caret (start direction, drawn on `::before`)
+///   .back-button {
+///     @include caret(start, $position: before);
+///   }
+/// @example scss - Custom icon at compile time
+///   .custom-toggle {
+///     @include caret($icon: svg-icon($my-custom-icon));
+///   }
 @mixin caret(
   $direction: down,
-  $icon: var(--#{$prefix}caret-icon, $caret-icon),
-  $size: var(--#{$prefix}caret-size, $caret-size),
-  $color: var(--#{$prefix}caret-color, $caret-color),
-  $vertical-align: $caret-vertical-align,
+  $icon: null,
+  $size: null,
+  $color: null,
+  $spacing: null,
+  $position: after
 ) {
-  &::after,
-  &::before {
-    display: none;
+  @if $direction != down and $direction != up and $direction != start and $direction != end {
+    @error "caret(): $direction must be `down`, `up`, `start`, or `end`, got `#{$direction}`.";
+  }
+
+  @if $position != after and $position != before {
+    @error "caret(): $position must be `after` or `before`, got `#{$position}`.";
+  }
+
+  $-size:     if(sass($size != null):     $size;      else: var(--caret-size, #{$caret-size}));
+  $-icon:     if(sass($icon != null):     $icon;      else: var(--caret-icon, #{svg-icon($caret-icon)}));
+  $-color:    if(sass($color != null):    $color;     else: var(--caret-color, #{$caret-color}));
+  $-spacing:  if(sass($spacing != null):  $spacing;   else: var(--caret-spacing, #{map.get($caret-spacing, $position)}));
+  $-angles:  (
+    down:   0deg,
+    up:     180deg,
+    start:  var(--logical-angle-90, 90deg),
+    end:    var(--logical-angle-270, 270deg),
+  );
+
+  &::#{$position} {
+    display: inline-block;
     flex-shrink: 0;
-    width: $size;
-    height: $size;
-    vertical-align: $vertical-align;
+    width: $-size;
+    height: $-size;
+    margin-block: auto;
+    margin-inline: $-spacing;
+    vertical-align: var(--caret-vertical-align, #{$caret-vertical-align});
     content: "";
-    background-color: $color;
-    mask-image: $icon;
+    background-color: $-color;
+    mask-image: $-icon;
     mask-repeat: no-repeat;
     mask-position: center;
-    mask-size: $size;
-  }
-  @if $direction != start {
-    &::after {
-      display: inline-block;
-      @if $direction == down {
-        transform: rotate(0deg);
-      } @else if $direction == up {
-        transform: rotate(180deg);
-      } @else if $direction == end {
-        transform: rotate(-90deg);
-      }
-    }
-  }
-  @if $direction == start {
-    &::before {
-      display: inline-block;
-      transform: rotate(90deg);
-    }
+    mask-size: $-size;
+    transform: rotate(map.get($-angles, $direction));
   }
 }
 // scss-docs-end caret-mixin

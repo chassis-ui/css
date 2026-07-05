@@ -1,0 +1,165 @@
+---
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+
+interface Props {
+  /**
+   * One or more CSS class prefixes to include in the table.
+   * Example: "d-" matches .d-block, .d-flex, .d-none, etc.
+   * Example: ["float-", "object-fit-"] for multiple groups.
+   */
+  utility: string | string[]
+  /**
+   * One or more CSS class prefixes to exclude from the table.
+   * Example: "bg-opacity-" excludes all .bg-opacity-* classes.
+   */
+  exclude?: string | string[]
+  /**
+   * When true, includes responsive breakpoint variants (small:, medium:, etc.).
+   * @default false
+   */
+  breakpoints?: boolean
+}
+
+const { utility, exclude, breakpoints = false } = Astro.props
+
+const prefixes = Array.isArray(utility) ? utility : [utility]
+const excludePrefixes = exclude ? (Array.isArray(exclude) ? exclude : [exclude]) : []
+
+const BREAKPOINT_PREFIXES = ['small', 'medium', 'large', 'xlarge', '2xlarge', 'print']
+const BREAKPOINT_REGEX = new RegExp(`^(${BREAKPOINT_PREFIXES.join('|')}):`)
+
+function parseUtilityCSS(
+  prefixes: string[],
+  excludePrefixes: string[],
+  includeBreakpoints: boolean
+): Array<{ className: string; declarations: string[] }> {
+  const cssPath = join(process.cwd(), 'dist/css/chassis-utilities.css')
+  const rawCss = readFileSync(cssPath, 'utf-8')
+
+  // Normalize \32 xlarge (CSS numeric escape for "2") so the regex can match it
+  const css = rawCss.replace(/\\32 /g, '2')
+
+  // Use a Map to preserve CSS source order while allowing single-selector rules
+  // to replace group-rule entries. A "group rule" is any rule whose selector
+  // contains a comma (e.g. `.bg-default, .bg-alternate, ... { }`); these are
+  // used to share a base declaration across many classes. Each class also has
+  // its own individual rule that sets the distinguishing custom property — that
+  // is what we want to show in the reference table.
+  //
+  // Regex captures:
+  //   Group 1: first class selector (.classname)
+  //   Group 2: comma + rest of selectors — present only for group rules
+  //   Group 3: declarations inside {}
+  //
+  // Compound selectors (.foo.bar) are excluded because [^\s{,.] stops at `.`.
+  // :where() and attribute selectors never start with `.`.
+  const ruleRegex = /^\s*(\.[^\s{,.]+)((?:,\s*[^{]+)?)\s*\{([^}]+)\}/gm
+
+  type Entry = { declarations: string[]; isGroup: boolean }
+  const entries = new Map<string, Entry>()
+
+  let match
+  while ((match = ruleRegex.exec(css)) !== null) {
+    const rawSelector = match[1].trim()
+    const isGroup = match[2].trim().startsWith(',')
+    const rawDeclarations = match[3]
+
+    // Unescape to get the real class name
+    // e.g. ".small\:d-block" → "small:d-block"
+    const className = rawSelector.slice(1).replace(/\\/g, '')
+
+    if (!includeBreakpoints && BREAKPOINT_REGEX.test(className)) continue
+    if (!prefixes.some((p) => className.startsWith(p))) continue
+    if (excludePrefixes.some((p) => className.startsWith(p))) continue
+
+    const declarations = rawDeclarations
+      .split(';')
+      .map((d) => d.trim())
+      .filter(Boolean)
+      .map((d) => `${d};`)
+
+    if (!entries.has(className)) {
+      entries.set(className, { declarations, isGroup })
+    } else if (entries.get(className)!.isGroup && !isGroup) {
+      // Individual rule found after a group rule — replace with the more
+      // specific individual declarations (keeps CSS source order position).
+      entries.get(className)!.declarations = declarations
+      entries.get(className)!.isGroup = false
+    }
+    // Single-selector rule already stored — skip any later duplicates.
+  }
+
+  // Handle :where(.class-name > ...) selectors used by divide and space utilities.
+  // These rules don't start with "." so the regex above skips them entirely.
+  // Capture the class name from :where(.class-name ...) then skip to the {.
+  // Using [^{]* instead of [^)]* to avoid breaking on nested parens like :not(...).
+  const whereRuleRegex = /^\s*:where\((\.[^\s)]+)[^{]*\{([^}]+)\}/gm
+  while ((match = whereRuleRegex.exec(css)) !== null) {
+    const rawSelector = match[1].trim()
+    const rawDeclarations = match[2]
+
+    const className = rawSelector.slice(1).replace(/\\/g, '')
+
+    if (!includeBreakpoints && BREAKPOINT_REGEX.test(className)) continue
+    if (!prefixes.some((p) => className.startsWith(p))) continue
+    if (excludePrefixes.some((p) => className.startsWith(p))) continue
+
+    const declarations = rawDeclarations
+      .split(';')
+      .map((d) => d.trim())
+      .filter(Boolean)
+      .map((d) => `${d};`)
+
+    if (!entries.has(className)) {
+      entries.set(className, { declarations, isGroup: false })
+    }
+  }
+
+  return Array.from(entries.entries()).map(([className, { declarations }]) => ({
+    className: `.${className}`,
+    declarations
+  }))
+}
+
+const rows = parseUtilityCSS(prefixes, excludePrefixes, breakpoints)
+
+if (rows.length === 0) {
+  throw new Error(
+    `<UtilityReferenceTable> found no classes for prefix(es): ${prefixes.map((p) => `"${p}"`).join(', ')}. ` +
+      `Check that the prefix matches class names in dist/css/chassis-utilities.css.`
+  )
+}
+---
+
+<div class="table-responsive cxd-reference-table">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Class</th>
+        <th scope="col">Properties</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr>
+            <td>
+              <code>{row.className}</code>
+            </td>
+            <td>
+              <code>
+                {row.declarations.map((decl, i) => (
+                  <>
+                    {decl}
+                    {i < row.declarations.length - 1 && <br />}
+                  </>
+                ))}
+              </code>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

@@ -6,7 +6,7 @@
  */
 
 import Tooltip from './tooltip.js'
-import { defineJQueryPlugin } from './util/index.js'
+import EventHandler from './dom/event-handler.js'
 
 /**
  * Constants
@@ -16,6 +16,11 @@ const NAME = 'popover'
 
 const SELECTOR_TITLE = '.popover-header'
 const SELECTOR_CONTENT = '.popover-body'
+const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="popover"]'
+
+const EVENT_CLICK = 'click'
+const EVENT_FOCUSIN = 'focusin'
+const EVENT_MOUSEENTER = 'mouseenter'
 
 const Default = {
   ...Tooltip.Default,
@@ -69,29 +74,33 @@ class Popover extends Tooltip {
   _getContent() {
     return this._resolvePossibleFunction(this._config.content)
   }
-
-  // Static
-  static jQueryInterface(config) {
-    return this.each(function () {
-      const data = Popover.getOrCreateInstance(this, config)
-
-      if (typeof config !== 'string') {
-        return
-      }
-
-      if (typeof data[config] === 'undefined') {
-        throw new TypeError(`No method named "${config}"`)
-      }
-
-      data[config]()
-    })
-  }
 }
 
 /**
- * jQuery
+ * Data API implementation - auto-initialize popovers
  */
 
-defineJQueryPlugin(Popover)
+const initPopover = event => {
+  const target = event.target.closest(SELECTOR_DATA_TOGGLE)
+  if (!target) {
+    return
+  }
+
+  // Prevent default for click events to avoid navigation (e.g. <a href="#">)
+  if (event.type === 'click') {
+    event.preventDefault()
+  }
+
+  // Lazily create the instance. The instance's own `_setListeners()` registers
+  // the appropriate listeners on the element for the configured triggers
+  // (click/focus/hover), so we don't toggle or call `_enter` here — doing so
+  // would duplicate handlers and leave stale state on `_activeTrigger`.
+  Popover.getOrCreateInstance(target)
+}
+
+// Auto-initialize popovers on first interaction for click, hover, and focus triggers
+EventHandler.on(document, EVENT_CLICK, SELECTOR_DATA_TOGGLE, initPopover)
+EventHandler.on(document, EVENT_FOCUSIN, SELECTOR_DATA_TOGGLE, initPopover)
+EventHandler.on(document, EVENT_MOUSEENTER, SELECTOR_DATA_TOGGLE, initPopover)
 
 export default Popover

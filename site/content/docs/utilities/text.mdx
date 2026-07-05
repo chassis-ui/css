@@ -1,12 +1,18 @@
 ---
 title: Text
-description: Comprehensive documentation and examples for common text utilities to control alignment, wrapping, weight, and more.
+description: Typography utilities for text alignment, wrapping, transformation, weight, decoration, and truncation.
 toc: true
+tokens:
+  scopes:
+    - typography
+css_layer: utilities
 ---
+import { getData } from '@libs/data'
+import { titleCase } from '@chassis-ui/docs'
 
-## Text Alignment
+## Text alignment
 
-Easily realign text within components using text alignment classes. These classes allow you to control the alignment of text for different viewport sizes. For start, end, and center alignment, responsive classes are available that use the same viewport width breakpoints as the grid system.
+Text alignment utilities set the CSS `text-align` property. Responsive variants apply at the specified breakpoint and above.
 
 <Example code={`<p class="text-start">Start aligned text on all viewport sizes.</p>
 <p class="text-center">Center aligned text on all viewport sizes.</p>
@@ -19,36 +25,36 @@ Easily realign text within components using text alignment classes. These classe
 <p class="2xlarge:text-end">End aligned text on viewports sized "<b>2xlarge</b>" or wider.</p>`} />
 
 <Callout>
-Note: We do not provide utility classes for justified text. While justified text might look more visually appealing, it can result in uneven word spacing, making it harder to read.
+Justified text utility classes are not provided. Justified text can result in uneven word spacing that reduces readability.
 </Callout>
 
-## Text Wrapping & Overflow
+## Text wrapping and overflow
 
-Wrap text within a container using the `.text-wrap` class. This ensures that text will break into multiple lines if it exceeds the container's width.
+`.text-wrap` allows text to break across multiple lines when it overflows its container.
 
 <Example code={`<div class="badge primary text-wrap" style="width: 6rem;">
     This text should wrap.
   </div>`} />
 
-Prevent text from wrapping by applying the `.text-nowrap` class. This is useful when you want text to remain on a single line, even if it overflows the container.
+`.text-nowrap` forces text onto a single line regardless of container width.
 
 <Example code={`<div class="text-nowrap bg-evident border" style="width: 8rem;">
     This text should overflow the parent.
   </div>`} />
 
-## Word Break
+## Word break
 
-Prevent long strings of text from breaking your layout by using the `.text-break` class. This class applies `word-wrap: break-word` and `word-break: break-word` to ensure long words or strings break appropriately. We use `word-wrap` for broader browser support and include the deprecated `word-break: break-word` to avoid issues with flex containers.
+`.text-break` prevents long unbroken strings from overflowing their container by applying `word-wrap: break-word` and `word-break: break-word`. `word-wrap` is included for broader browser support.
 
 <Example code={`<p class="text-break">mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm</p>`} />
 
 <Callout type="warning">
-Note that [Breaking words isn’t possible in Arabic](https://rtlstyling.com/posts/rtl-styling#3.-line-break), the most widely used RTL language. As a result, `.text-break` is removed from our RTL-compiled CSS.
+[Word breaking is not supported in Arabic](https://rtlstyling.com/posts/rtl-styling#3.-line-break), the most widely used RTL language. As a result, `.text-break` is excluded from the RTL-compiled stylesheet.
 </Callout>
 
-## Text Transform
+## Text transform
 
-Transform text within components using text capitalization classes: `text-lowercase`, `text-uppercase`, or `text-capitalize`.
+Text transform utilities set the CSS `text-transform` property.
 
 <Example code={`<p class="text-lowercase">Lowercased Text</p>
 <p class="text-uppercase">uppercased text</p>
@@ -57,18 +63,18 @@ Transform text within components using text capitalization classes: `text-lowerc
 <p class="text-lowercase" lang="tr">İSTANBUL</p>
 <p class="text-capitalize" lang="tr">istanbul</p>`} />
 
-Note that `.text-capitalize` only changes the first letter of each word, leaving the case of other letters unaffected. Unfortunately, `.text-capitalize` does not work for locales, even when the HTML `lang` attribute is specified.
+`.text-capitalize` does not account for locale, even when `lang` is specified on the element.
 
-## Font Size
+## Font size
 
-Quickly adjust the size of text using `.text-large` and `.text-small` classes. These classes allow you to scale text up or down for better emphasis or readability.
+`.text-large` and `.text-small` adjust the inherited font size up or down relative to the current context.
 
 <Example code={`<p class="font-large">Easily make text <span class="text-large">larger</span> or <span class="text-small">smaller</span> to suit your design needs.</p>
 <p class="font-small">Easily make text <span class="text-large">larger</span> or <span class="text-small">smaller</span> to suit your design needs.</p>`} />
 
-## Font Weight & Style
+## Font weight and style
 
-Beside token definitions, you can use standard font weights and styles by `.text-*` utilities.
+Standard CSS font weight and style values are available via the `.text-*` utility set.
 
 <Example code={`<p class="text-bold">Bold text.</p>
 <p class="text-bolder">Bolder weight text (relative to the parent element).</p>
@@ -82,65 +88,82 @@ Beside token definitions, you can use standard font weights and styles by `.text
 
 ## Line height
 
-Adjust the line height text using `.text-lh-*` utility classes.
+`.text-lh-*` utilities set the `line-height` property using values from the design token scale.
 
-<Example code={`<p class="text-lh-1">This is a long paragraph written to show how the line-height of an element is affected by our utilities. Classes are applied to the element itself or sometimes the parent element. These classes can be customized as needed with our utility API.</p>
-<p class="text-lh-small">This is a long paragraph written to show how the line-height of an element is affected by our utilities. Classes are applied to the element itself or sometimes the parent element. These classes can be customized as needed with our utility API.</p>
-<p class="text-lh-medium">This is a long paragraph written to show how the line-height of an element is affected by our utilities. Classes are applied to the element itself or sometimes the parent element. These classes can be customized as needed with our utility API.</p>
-<p class="text-lh-large">This is a long paragraph written to show how the line-height of an element is affected by our utilities. Classes are applied to the element itself or sometimes the parent element. These classes can be customized as needed with our utility API.</p>`} />
+<Example code={`<p class="text-lh-1">This is a long paragraph written to show how the line-height of an element is affected by the utilities. Classes are applied to the element itself or sometimes the parent element. These classes can be customized as needed with the utility API.</p>
+<p class="text-lh-small">This is a long paragraph written to show how the line-height of an element is affected by the utilities. Classes are applied to the element itself or sometimes the parent element. These classes can be customized as needed with the utility API.</p>
+<p class="text-lh-medium">This is a long paragraph written to show how the line-height of an element is affected by the utilities. Classes are applied to the element itself or sometimes the parent element. These classes can be customized as needed with the utility API.</p>
+<p class="text-lh-large">This is a long paragraph written to show how the line-height of an element is affected by the utilities. Classes are applied to the element itself or sometimes the parent element. These classes can be customized as needed with the utility API.</p>`} />
 
-## Monospace
+## Text decoration
 
-Apply the monospace font stack to text using the `.text-monospace` utility class.
+Text decoration utilities set or remove the CSS `text-decoration` property.
 
-<Example code={`<p class="text-monospace">This is in monospace</p>`} />
+<Example code={`<p class="text-underline">This text has a line underneath it.</p>
+<p class="text-line-through">This text has a line going through it.</p>
+<a class="text-decoration-none" href="#">This link has its text decoration removed</a>`} />
 
-## Text Decoration
+### Thickness
 
-Use `.text-decoration-*` classes to easily apply or remove text decorations.
+Add `.text-decoration-{n}` to set the `text-decoration-thickness` property.
 
-<Example code={`<p class="text-decoration-underline">This text has a line underneath it.</p>
-<p class="text-decoration-line-through">This text has a line going through it.</p>
-<a href="#" class="text-decoration-none">This link has its text decoration removed</a>`} />
+<Example code={`<p class="text-underline text-decoration-1">Decoration thickness 1</p>
+<p class="text-underline text-decoration-2">Decoration thickness 2</p>
+<p class="text-underline text-decoration-3">Decoration thickness 3</p>
+<p class="text-underline text-decoration-4">Decoration thickness 4</p>`} />
 
-## Text Truncation
+### Color
 
-For longer content, add a `.text-truncate` class to truncate the text with an ellipsis. **Requires `display: inline-block` or `display: block`.**
+The text decoration color can be set independently from the text color.
 
-<Example code={`<!-- Block level -->
-  <div class="row">
-    <div class="col-2 text-truncate">
-      This text is quite long, and will be truncated once displayed.
-    </div>
-  </div>
+<Example code={getData('context-colors').map((contextColor) => `<p class="text-underline text-decoration-${contextColor.name}">${titleCase(contextColor.title)} underline</p>`)} />
 
-  <!-- Inline level -->
-  <span class="d-inline-block text-truncate" style="max-width: 150px;">
-    This text is quite long, and will be truncated once displayed.
-  </span>`} />
+### Opacity
+
+`.text-decoration-opacity-{value}` adjusts the alpha channel of the decoration color. Apply it alongside `.text-decoration` or any `.text-decoration-{color}` class, which set the decoration color as an opacity-aware value.
+
+<Example code={[...getData('token-opacities').map((opacity) => `<p class="text-underline text-decoration text-decoration-opacity-${opacity.name}">Text decoration opacity ${opacity.name}</p>`)]} />
+
+### Underline offset
+
+Underline offset utilities set `text-underline-offset` in `em` units, scaling automatically with the element’s font size.
+
+<Example code={`<p class="text-underline">Standard underline</p>
+<p class="text-underline underline-offset-1">Offset 1 underline</p>
+<p class="text-underline underline-offset-2">Offset 2 underline</p>
+<p class="text-underline underline-offset-3">Offset 3 underline</p>`} />
 
 ## CSS
 
-<DocsCSS />
+Text utilities are generated using Sass maps via the utilities API.
+
+### Reference
+
+The table lists all text utilities and their CSS properties.
+
+<UtilityReferenceTable utility={["text-", "font-", "lh-", "underline-"]} exclude={["text-truncate"]} />
 
 ### Sass variables
 
 Base font related Sass variables, keeping token references as CSS variables.
 
-<ScssDocs name="font-variables" file="scss/_variables.scss" />
+<ScssDocs name="font-variables" file="scss/config/_defaults.scss" />
 
 ### Sass maps
 
-Most `font` utilities are generated from this maps, in combination utilities API.
+`.font` utilities are generated from Sass maps in `scss/maps/_fonts.scss`.
 
 <ScssDocs name="font-families-map" file="scss/maps/_fonts.scss" />
 <ScssDocs name="font-sizes-map" file="scss/maps/_fonts.scss" />
 <ScssDocs name="font-weights-map" file="scss/maps/_fonts.scss" />
 <ScssDocs name="line-heights-map" file="scss/maps/_fonts.scss" />
 
+### Design tokens
 
-### Sass utilities API
+<DocsDesignTokens name="Font" type="utility" plural />
 
-Font and text utilities are declared in our utilities API in `scss/utilities/_text.scss`. [Learn how to use the utilities API.]([[docsref:/utilities/api#using-the-api]])
+### Utilities API
+
+Font and text utilities are declared in `scss/utilities/_text.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
 
 <ScssDocs name="utils-text" file="scss/utilities/_text.scss" />

@@ -1,28 +1,62 @@
 ---
 title: Icons
-description: Guidance and suggestions for using external icon libraries with Chassis.
+description: Guidance on using Chassis Icons — the companion icon library — and alternative icon sets with Chassis CSS.
+toc: true
 ---
 
 import { getData } from '@libs/data'
 
-While Chassis CSS doesn’t include an icon set by default, we do have our own comprehensive icon library called Chassis CSS Icons. Feel free to use them or any other icon set in your project. We’ve included details for Chassis CSS Icons and other preferred icon sets below.
+Chassis CSS does not include an icon set by default. [Chassis Icons](https://chassis-ui.com/icons) is the companion icon library for Chassis-based projects, generating icon fonts, SVG sprites, and individual optimized SVG files from a set of SVG source glyphs. SVG implementations are preferred over icon fonts for vector fidelity and accessibility.
 
-While most icon sets include multiple file formats, we prefer SVG implementations for their improved accessibility and vector support.
+## Chassis Icons
 
-## Chassis CSS Icons
+Chassis Icons converts source SVG glyphs into distribution assets: an icon font (WOFF and WOFF2), an SVG sprite, individual optimized SVG files, and CSS and SCSS stylesheets. Install the package from npm to access all formats:
 
-Chassis CSS Icons is a growing library of SVG icons that are designed by [@mdo](https://github.com/mdo) and maintained by [the Chassis CSS Team](https://github.com/orgs/twbs/people). The beginnings of this icon set come from Chassis CSS’s very own components—our forms, carousels, and more. Chassis CSS has very few icon needs out of the box, so we didn’t need much. However, once we got going, we couldn’t stop making more.
+```bash
+npm install @chassis-ui/icons
+```
 
-Oh, and did we mention they’re completely open source? Licensed under MIT, just like Chassis, our icon set is available to everyone.
+The generated files in `node_modules/@chassis-ui/icons/icons/` should be copied or served via a bundler. The paths in the examples below assume assets have been placed in a public `assets/icons/` directory.
 
-[Learn more about Chassis - Icons, including how to install them and recommended usage.
+### Icon font
+
+The icon font renders icons via a CSS `::before` pseudo-element. Include `chassis-icons.css` and apply `.cx-{icon-name}` to an `<i>` or `<span>` element. Icon names follow a `{name}-{style}` convention where style is `outline` or `solid`.
+
+```html
+<link rel="stylesheet" href="/assets/icons/chassis-icons.css">
+
+<i class="cx-home-solid"></i>
+<i class="cx-arrow-right-outline"></i>
+```
+
+For icons that convey meaning rather than decoration, add `aria-label` to the element or provide accompanying visually-hidden text.
+
+### SVG sprite
+
+The SVG sprite packages all icons as `<symbol>` elements in a single `chassis-icons.svg` file. Reference icons with `<use>` and control dimensions via `width` and `height` attributes.
+
+```html
+<svg width="24" height="24">
+  <use href="/assets/icons/chassis-icons.svg#home-solid"></use>
+</svg>
+```
+
+The symbol ID matches the icon filename without its `.svg` extension. SVG sprites inherit the element's current CSS `color` as fill.
+
+### Individual SVGs
+
+Optimized individual SVG files ship in the `svgs/` directory of the package. Embed them as images when neither the icon font nor the sprite is practical.
+
+```html
+<img src="/assets/icons/svgs/bell-outline.svg" alt="Notifications" width="24" height="24">
+```
 
 ## Alternatives
 
-We’ve tested and used these icon sets ourselves as preferred alternatives to Chassis CSS Icons.
+These icon sets have been evaluated for use alongside Chassis CSS and all ship SVG formats.
 
 <ul>
-{getData('icons').preferred.map((icon) => {
+{getData('icons').preferred.filter(icon => icon.name !== 'Chassis Icons').map((icon) => {
   return (
     <li><a href={icon.website}>{icon.name}</a></li>
   )
@@ -31,7 +65,7 @@ We’ve tested and used these icon sets ourselves as preferred alternatives to C
 
 ## More options
 
-While we haven’t tried these out ourselves, they do look promising and provide multiple formats, including SVG.
+These icon sets have not been formally evaluated against Chassis CSS but all include SVG support.
 
 <ul>
 {getData('icons').more.map((icon) => {

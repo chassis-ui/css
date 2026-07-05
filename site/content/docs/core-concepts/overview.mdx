@@ -1,6 +1,6 @@
 ---
 title: Core Concepts
-description: The architectural ideas behind Chassis CSS — design tokens, the layered color system, the context class, component anatomy, and a few smaller rules that keep code and design pixel-perfect.
+description: The architectural ideas behind Chassis CSS — tokens, the color system, the context class, component anatomy, fluid sizing, RTL, and accessibility.
 toc: false
 aliases: "[[docsref:/core-concepts]]"
 sections:
@@ -16,6 +16,12 @@ sections:
     description: The global `border-box` reset plus stroke exclusion, the small padding adjustment that keeps Chassis components pixel-perfect against Figma regardless of border width.
   - title: Line Heights
     description: Per-size line-height tokens — set by designers, not derived from a ratio — so headings and body text both feel right and align with Figma.
+  - title: Fluid Sizing
+    description: How Chassis scales typography and spacing fluidly between a minimum and maximum viewport width, without breakpoints.
+  - title: RTL
+    description: Right-to-left support via CSS logical properties — set dir="rtl" on your HTML element and Chassis adapts automatically.
+  - title: Accessibility
+    description: How Chassis approaches accessibility — context palettes designed for contrast, reduced-motion support, and the `.visually-hidden` utilities.
 ---
 
 ## What's in this section
@@ -33,12 +39,15 @@ The pages have a natural reading order. Earlier pages set up vocabulary the late
 3. **[Context Class]([[docsref:/core-concepts/context-class]])** — how that color architecture surfaces in markup. `.context primary` re-aims the body variables and any nested component picks up the new palette automatically.
 4. **[Component Anatomy]([[docsref:/core-concepts/component-anatomy]])** — how all of the above composes inside a component. Walks through `.notification` and `.list-action` as worked examples and lists the placeholders and mixins available for your own work.
 5. **[Box Model]([[docsref:/core-concepts/box-model]])** and **[Line Heights]([[docsref:/core-concepts/line-heights]])** — smaller, cross-cutting concerns. Stroke exclusion keeps padding pixel-aligned with Figma; per-size line-height tokens keep type rhythm correct at every size. Both can be read independently of the rest.
+6. **[Fluid Sizing]([[docsref:/core-concepts/fluid-sizing]])** — how Chassis scales typography and spacing fluidly with the viewport.
+7. **[RTL]([[docsref:/core-concepts/rtl]])** — right-to-left support via CSS logical properties.
+8. **[Accessibility]([[docsref:/core-concepts/accessibility]])** — how Chassis approaches accessibility, including context palettes designed for contrast, reduced-motion support, and the `.visually-hidden` utilities.
 
-If you're customizing existing components, the first three are the most useful. If you're writing your own components, read all five in order.
+If you're customizing existing components, the first three are the most useful. If you're writing your own components, work through the first five in order. Fluid Sizing, RTL, and Accessibility are standalone reference pages — read them when the topic applies.
 
 ## How it fits together
 
-The five concepts compose into a single data flow:
+The core architecture composes into a single data flow:
 
 ```
 Chassis Tokens  →  CSS variables  →  Context palettes  →  Body variables  →  Components

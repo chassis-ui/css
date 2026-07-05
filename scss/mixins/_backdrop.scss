@@ -1,16 +1,25 @@
+//
+// Backdrop Mixin
+//
+// Generates a full-viewport fixed backdrop overlay shared by modals and drawers.
+//
+
 /// Generate a full-viewport fixed backdrop element shared by modals and offcanvases.
 ///
 /// @param {Number} $zindex - Z-index for the backdrop layer
 /// @param {Color} $backdrop-color - Background color of the backdrop
 /// @param {Number} $backdrop-opacity - Opacity when the backdrop has the `.show` class
-@mixin overlay-backdrop($zindex, $backdrop-color, $backdrop-opacity) {
+/// @param {Number} $backdrop-blur - Blur effect for the backdrop
+@mixin overlay-backdrop($zindex, $backdrop-color, $backdrop-opacity, $backdrop-blur) {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   z-index: $zindex;
   width: 100vw;
   height: 100vh;
   background-color: $backdrop-color;
+  @if $backdrop-blur {
+    backdrop-filter: blur($backdrop-blur);
+  }
 
   // Fade for backdrop
   &.fade { opacity: 0; }

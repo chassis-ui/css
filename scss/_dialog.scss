@@ -1,0 +1,169 @@
+@use "./config" as *;
+@use "./mixins" as *;
+@use "./placeholders" as *;
+//
+// Dialog Component
+//
+// Native <dialog>-based overlay for confirmation prompts, alerts, and other
+// critical messages requiring user action. Pairs with dialog.js for open/close
+// behavior and focus trapping.
+//
+
+@layer components {
+  .dialog-open {
+    overflow: hidden;
+  }
+
+
+  .dialog {
+    // scss-docs-start dialog-css-vars
+    --dialog-transition-transform: #{$dialog-transition-transform};
+    --dialog-transition-duration: #{$dialog-transition-duration};
+    --dialog-transition-timing: #{$dialog-transition-timing};
+    --dialog-backdrop-bg: #{$dialog-backdrop-bg};
+    --dialog-backdrop-blur: #{$dialog-backdrop-blur};
+    --dialog-margin: #{$dialog-margin};
+    // scss-docs-end dialog-css-vars
+
+    inset: 0;
+    max-width: calc(100% - var(--dialog-margin) * 2);
+    max-height: calc(100% - var(--dialog-margin) * 2);
+    margin: auto;
+    overflow: visible;
+    visibility: hidden;
+
+    @include media-breakpoint-down(small) {
+      --dialog-margin: #{$dialog-margin-small};
+    }
+
+    // Suppress the focus ring on the dialog container itself. Focus is moved
+    // here programmatically on open so no child element (e.g. the close button)
+    // appears focused — the dialog acts as a silent focus anchor.
+    &:focus {
+      outline: 0;
+    }
+
+    // Animated variant — backdrop only.
+    // Element-level animation (opacity, transforms) is handled by the consuming
+    // component class (e.g. .modal) so .dialog can be safely shared with .alert.
+    &:not(.instant) {
+      // Exit state: faded out
+      opacity: 0;
+      transform: var(--dialog-transition-transform);
+
+      // Open state: visible and faded in.
+      // Entry transition: visibility flips visible immediately (0s, no delay),
+      // then opacity and transform animate in.
+      // The :not(.hiding) qualifier lets the exit transition fall back to the
+      // base "exit" state above while [open] is still present (the JS keeps
+      // the dialog in the top layer during the exit so the ::backdrop and
+      // the browser's modal centering remain intact).
+      &[open]:not(.hiding) {
+        overflow: visible;
+        visibility: visible;
+        opacity: 1;
+        @include transition(
+          opacity var(--dialog-transition-duration) var(--dialog-transition-timing),
+          transform var(--dialog-transition-duration) var(--dialog-transition-timing),
+          visibility 0s
+        );
+        transform: none;
+      }
+
+      // Exit transition: opacity and transform animate out, then visibility
+      // flips hidden after the animation completes (via the delay).
+      @include transition(
+        opacity var(--dialog-transition-duration) var(--dialog-transition-timing),
+        transform var(--dialog-transition-duration) var(--dialog-transition-timing),
+        visibility 0s var(--dialog-transition-duration)
+      );
+
+      // Native backdrop styling with transitions
+      &::backdrop {
+        background-color: var(--dialog-backdrop-bg);
+        backdrop-filter: blur(var(--dialog-backdrop-blur));
+        @include backdrop-transitions(var(--dialog-transition-duration), var(--dialog-transition-timing));
+      }
+
+      // Exit: fade the native backdrop out alongside the dialog.
+      &.hiding::backdrop {
+        background-color: transparent;
+        backdrop-filter: blur(0);
+      }
+    }
+
+    // Instant variant — no transitions, just snap visibility
+    &.instant {
+      &::backdrop {
+        background-color: var(--dialog-backdrop-bg);
+        backdrop-filter: blur(var(--dialog-backdrop-blur));
+      }
+    }
+
+    // Open state base — restores visibility and overflow.
+    // opacity/transform are intentionally omitted here so component classes
+    // (e.g. .modal) can own the animation without being overridden.
+    &[open]:not(.hiding) {
+      overflow: visible;
+      visibility: visible;
+    }
+
+    // Non-modal dialog positioning
+    // show() doesn't use the top layer, so we need explicit positioning and z-index
+    &.nonmodal {
+      position: fixed;
+      inset-block-start: 50%;
+      inset-inline-start: 50%;
+      z-index: $zindex-modal;
+      margin-inline: 0;
+      transform: translate(-50%, -50%);
+    }
+
+    // Scrollable dialog body (header/footer stay fixed)
+    &.scrollable[open] {
+      max-height: calc(100% - var(--dialog-margin) * 2);
+    }
+
+    // Static backdrop "bounce" animation (modal dialogs only). Qualified
+    // with [open] (to outrank the open-state `transform: none` selector
+    // which now also includes `:not(.hiding)`) and `:not(.hiding)` (so
+    // a backdrop click while the dialog is mid-exit doesn't fight the
+    // slide-out transform).
+    &[open].dialog-static:not(.hiding) {
+      transform: scale(1.02);
+    }
+
+    &.translucent {
+      @extend %translucent;
+    }
+  }
+
+
+  // Entry animation for ::backdrop via @starting-style. The backdrop only
+  // exists while the dialog is in the top layer, so its starting state can't
+  // be expressed on the base selector.
+  // Default dialog (fade only) and the slide variants do NOT need
+  // @starting-style — the base opacity: 0 (and base transform for slides)
+  // serves as the entry-from state with the visibility trick.
+  @starting-style {
+    .dialog:not(.instant)::backdrop {
+      background-color: transparent;
+      backdrop-filter: blur(0);
+    }
+
+    // Swap entry: when this dialog is opened as the target of a swap, the
+    // outgoing dialog's ::backdrop is being removed synchronously in the same
+    // JS tick. To avoid any flicker (either a dip from a fade-in over nothing,
+    // or double-darkening from two stacked backdrops), start this backdrop
+    // already-opaque so it takes over from the outgoing one seamlessly.
+    .dialog.swap-in:not(.instant)::backdrop {
+      background-color: var(--dialog-backdrop-bg);
+      backdrop-filter: blur(var(--dialog-backdrop-blur));
+    }
+
+    .dialog:not(.instant)[open]:not(.hiding) {
+      opacity: 0;
+      transform: var(--dialog-transition-transform);
+    }
+  }
+} // @layer components

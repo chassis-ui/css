@@ -1,0 +1,85 @@
+@use "../config" as *;
+@use "../mixins" as *;
+@use "../placeholders" as *;
+
+//
+// Combobox
+//
+// Filterable dropdown combining a text input with a list of selectable options.
+// Pairs with combobox.js for filtering, keyboard navigation, and selection.
+//
+
+@layer components {
+  .combobox {
+    // Gated on $enable-caret: when disabled, the combobox toggle falls back to a
+    // feedback-only background layer (no caret) while the `.form-caret` helper
+    // remains available for opt-in use.
+    @if $enable-caret {
+      @extend %form-caret;
+    } @else {
+      // Exclude comboboxes that explicitly opted into a caret via `.form-caret`,
+      // so the caret-less fallback never out-specifies and suppresses the caret.
+      &:not(.form-caret) {
+        @extend %form-feedback-bg;
+      }
+    }
+    display: inline-flex;
+    width: 100%;
+  }
+
+  .combobox-value {
+    display: flex;
+    flex: 1;
+    // gap: .5rem;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    // When used as a ghost input inside the toggle
+    &:is(input) {
+      padding: 0;
+      font: inherit;
+      color: inherit;
+      text-overflow: ellipsis;
+      appearance: none;
+      // cursor: inherit;
+      background: transparent;
+      border: 0;
+      outline: 0;
+
+      &::placeholder {
+        color: var(--combobox-placeholder-color, #{$combobox-placeholder-color});
+      }
+    }
+  }
+
+  .combobox-placeholder {
+    color: var(--combobox-placeholder-color, #{$combobox-placeholder-color});
+  }
+
+  .combobox + .menu {
+    --menu-max-height: #{$combobox-menu-max-height};
+    --menu-overflow-y: #{$combobox-menu-overflow-y};
+  }
+
+  .combobox-search {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: var(--combobox-search-padding, #{$combobox-search-padding});
+    background-color: var(--combobox-search-bg-color, #{$combobox-search-bg-color});
+  }
+
+  .combobox-search-input {
+    width: 100%;
+  }
+
+  .combobox-no-results {
+    padding: 1rem;
+    @include font-size(var(--font-size-small));
+    color: var(--combobox-no-results-color, #{$combobox-no-results-color});
+    text-align: center;
+  }
+} // @layer components

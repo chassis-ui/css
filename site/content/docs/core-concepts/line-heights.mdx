@@ -13,24 +13,17 @@ This matters for two reasons:
 
 With per-size line-height tokens, designers control the exact value for each size, each font-family variant, and each platform — and the CSS reflects those decisions without any developer intervention.
 
-The example below shows the token-driven heading next to a heading forced to the typical `1.5em` ratio. Notice how the latter looks loose and breaks the visual rhythm:
+At heading sizes the difference is clear: the token-driven heading maintains designed rhythm while a fixed `1.5em` ratio looks loose and breaks alignment:
 
-<div class="cxd-example">
-  <div>
-    <p class="h2">This is a long heading text with a specific line-height value comes from design tokens.</p>
-    <p>The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
-  </div>
-</div>
-<div class="cxd-example">
-  <div>
-    <p class="h2" style="line-height: 1.5em">This is a long heading text with a standard 1.5em line-height of most design systems.</p>
-    <p>The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
-  </div>
-</div>
+<Example showMarkup={false} code={`<p class="h2">This is a long heading text with a specific line-height value comes from design tokens.</p>
+    <p>The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>`} />
+
+<Example showMarkup={false} code={`<p class="h2" style="line-height: 1.5em">This is a long heading text with a standard 1.5em line-height of most design systems.</p>
+    <p>The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>`} />
 
 ## Overriding with utilities
 
-Token-driven line heights are the right default, but you can still override them on a per-element basis with the [`lh-*` utilities]([[docsref:/utilities/text#line-height]]):
+Token-driven line heights are the right default; the `lh-*` [utilities]([[docsref:/utilities/text#line-height]]) override the token on a per-element basis:
 
 <Example code={`<p class="lh-1">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
 <p class="lh-small">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
@@ -38,6 +31,8 @@ Token-driven line heights are the right default, but you can still override them
 <p class="lh-large">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>`} />
 
 ## See also
+
+Line heights interact with the broader typography scale and the design token pipeline:
 
 - [Typography]([[docsref:/content/typography]]) — global settings, headings, body text, lists, and the full type scale.
 - [Design Tokens]([[docsref:/core-concepts/design-tokens]]) — how typography tokens are defined and exposed.

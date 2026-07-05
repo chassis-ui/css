@@ -1,51 +1,67 @@
+@use "./config" as *;
+@use "./mixins" as *;
+
 //
 // Grid
 //
 // Flexbox-based .row / column classes and a native CSS Grid (.grid) layout system.
 // Breakpoint custom properties are declared on :root. Flexbox columns are generated
 // via make-grid-columns(). The .grid variant uses display:grid with configurable
-// column/row counts and supports spanning via .g-col-* and .g-row-* classes.
+// column/row counts.
 //
 
-:root {
-  @each $name, $value in $grid-breakpoints {
-    --#{$prefix}breakpoint-#{$name}: #{$value};
-  }
-}
+@layer layout {
+  @if $enable-grid-classes {
+    .row {
+      @include make-row();
 
-@if $enable-grid-classes {
-  .row {
-    @include make-row();
-
-    > * {
-      @include make-col-ready();
+      > * {
+        @include make-col-ready();
+      }
     }
-  }
-}
 
-@if $enable-cssgrid {
-  .grid {
-    display: grid;
-    grid-template-rows: repeat(var(--#{$prefix}grid-rows, 1), 1fr);
-    grid-template-columns: repeat(var(--#{$prefix}grid-columns, #{$grid-columns}), 1fr);
-    gap: var(--#{$prefix}grid-gap, #{$grid-gutter-width});
+    @include make-grid-columns();
+  }
+
+  @if $enable-cssgrid {
+    .grid {
+      --columns: var(--grid-columns, #{$grid-columns});
+      --rows: var(--grid-rows, 1);
+      --gap: var(--grid-gap, #{$grid-gutter-x});
+
+      display: grid;
+      grid-template-rows: repeat(var(--rows), 1fr);
+      grid-template-columns: repeat(var(--columns), 1fr);
+      gap: var(--gap);
+
+    }
 
     @include make-cssgrid();
   }
 
-  @for $i from 1 through $grid-columns {
-    .g-row-#{$i} {
-      grid-row: auto / span $i;
-    }
+  .grid-cols-subgrid {
+    grid-template-columns: subgrid;
   }
 
-}
+  .grid-fill {
+    --gap: #{$grid-gutter-x};
 
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    grid-auto-flow: row;
+    gap: var(--gap);
+  }
 
-// Columns
-//
-// Common styles for small and large grid columns
+  // @if $enable-cssgrid {
+  //   .grid {
+  //     display: grid;
+  //     grid-template-rows: repeat(var(--grid-rows, 1), 1fr);
+  //     grid-template-columns: repeat(var(--grid-columns, #{$grid-columns}), 1fr);
+  //     gap: var(--grid-gap, #{$grid-gutter-x});
 
-@if $enable-grid-classes {
-  @include make-grid-columns();
-}
+  //     @include make-cssgrid();
+  //   }
+
+  // }
+
+} // @layer layout

@@ -1,5 +1,16 @@
 @use "sass:math";
 @use "sass:color";
+@use "sass:map";
+@use "sass:list";
+@use "../config/settings" as *;
+
+//
+// Color Functions
+//
+// Color manipulation utilities: contrast ratio calculation, OKLCH opacity
+// adjustment, CSS variable wrapping (varify), and color-to-RGB conversion.
+// Some functions are adapted from Bootstrap.
+//
 
 //
 // Color utility functions for Chassis CSS
@@ -20,7 +31,7 @@
 /// @example
 ///   to-rgb(#ff0000) => 255, 0, 0
 @function to-rgb($value) {
-  @return red($value), green($value), blue($value);
+  @return color.channel($value, "red", $space: rgb), color.channel($value, "green", $space: rgb), color.channel($value, "blue", $space: rgb);
 }
 
 // scss-docs-start opacity-var
@@ -28,14 +39,17 @@
 /// Uses CSS relative color syntax to derive an oklch color from a CSS custom property and apply
 /// a separate opacity CSS variable to it. Designed to work as a `map-loop` callback.
 ///
+/// The framework's `--cx-` prefix is added later by the PostCSS prefix step;
+/// the Sass output of this function uses unprefixed variable names.
+///
 /// @param {String} $identifier - Color CSS variable name without prefix (e.g., "primary", "fg-main")
 /// @param {String} $target - Opacity variable component name without prefix (e.g., "fg", "bg", "icon")
-/// @return {String} - Unquoted CSS relative color: oklch(from var(--cx-{identifier}) l c h / var(--cx-{target}-opacity, 1))
+/// @return {String} - Unquoted CSS relative color: oklch(from var(--{identifier}) l c h / var(--{target}-opacity, 1))
 /// @example
-///   opacity-var("primary", "bg")  => oklch(from var(--cx-primary) l c h / var(--cx-bg-opacity, 1))
-///   opacity-var("fg-main", "fg")  => oklch(from var(--cx-fg-main) l c h / var(--cx-fg-opacity, 1))
+///   opacity-var("primary", "bg")  => oklch(from var(--primary) l c h / var(--bg-opacity, 1))
+///   opacity-var("fg-main", "fg")  => oklch(from var(--fg-main) l c h / var(--fg-opacity, 1))
 @function opacity-var($identifier, $target) {
-  @return #{"oklch(from var(--#{$prefix}#{$identifier}) l c h / var(--#{$prefix}#{$target}-opacity, 1))"};
+  @return #{"oklch(from var(--#{$identifier}) l c h / var(--#{$target}-opacity, 1))"};
 }
 // scss-docs-end opacity-var
 
@@ -49,8 +63,12 @@
 ///   varify(("small", "large"), "space")  => var(--cx-space-small) var(--cx-space-large)
 @function varify($list, $comp: null) {
   $result: null;
+  $comp-prefix: "";
+  @if $comp {
+    $comp-prefix: "#{$comp}-";
+  }
   @each $entry in $list {
-    $result: append($result, var(--#{$prefix}#{if($comp, "#{$comp}-", "")}#{$entry}), space);
+    $result: list.append($result, var(--#{$comp-prefix}#{$entry}), space);
   }
   @return $result;
 }
@@ -121,7 +139,7 @@
 ///   color-contrast(#fff) => #000 (or $color-contrast-dark)
 ///   color-contrast(#000) => #fff (or $color-contrast-light)
 @function color-contrast($background, $color-contrast-dark: $color-contrast-dark, $color-contrast-light: $color-contrast-light, $min-contrast-ratio: $min-contrast-ratio) {
-  $foregrounds: $color-contrast-light, $color-contrast-dark, $white, $black;
+  $foregrounds: $color-contrast-light, $color-contrast-dark, #fff, #000;
   $max-ratio: 0;
   $max-ratio-color: null;
 
@@ -151,7 +169,11 @@
   $l1: luminance($background);
   $l2: luminance(opaque($background, $foreground));
 
-  @return if($l1 > $l2, divide($l1 + .05, $l2 + .05), divide($l2 + .05, $l1 + .05));
+  @if $l1 > $l2 {
+    @return math.div($l1 + .05, $l2 + .05);
+  } @else {
+    @return math.div($l2 + .05, $l1 + .05);
+  }
 }
 
 /// Calculate WCAG 2.1 relative luminance of a color
@@ -165,17 +187,21 @@
   // A list of pre-calculated numbers of pow(divide((divide($value, 255) + .055), 1.055), 2.4). (from 0 to 255)
   $luminance-list: .0008 .001 .0011 .0013 .0015 .0017 .002 .0022 .0025 .0027 .003 .0033 .0037 .004 .0044 .0048 .0052 .0056 .006 .0065 .007 .0075 .008 .0086 .0091 .0097 .0103 .011 .0116 .0123 .013 .0137 .0144 .0152 .016 .0168 .0176 .0185 .0194 .0203 .0212 .0222 .0232 .0242 .0252 .0262 .0273 .0284 .0296 .0307 .0319 .0331 .0343 .0356 .0369 .0382 .0395 .0409 .0423 .0437 .0452 .0467 .0482 .0497 .0513 .0529 .0545 .0561 .0578 .0595 .0612 .063 .0648 .0666 .0685 .0704 .0723 .0742 .0762 .0782 .0802 .0823 .0844 .0865 .0887 .0908 .0931 .0953 .0976 .0999 .1022 .1046 .107 .1095 .1119 .1144 .117 .1195 .1221 .1248 .1274 .1301 .1329 .1356 .1384 .1413 .1441 .147 .15 .1529 .1559 .159 .162 .1651 .1683 .1714 .1746 .1779 .1812 .1845 .1878 .1912 .1946 .1981 .2016 .2051 .2086 .2122 .2159 .2195 .2232 .227 .2307 .2346 .2384 .2423 .2462 .2502 .2542 .2582 .2623 .2664 .2705 .2747 .2789 .2831 .2874 .2918 .2961 .3005 .305 .3095 .314 .3185 .3231 .3278 .3325 .3372 .3419 .3467 .3515 .3564 .3613 .3663 .3712 .3763 .3813 .3864 .3916 .3968 .402 .4072 .4125 .4179 .4233 .4287 .4342 .4397 .4452 .4508 .4564 .4621 .4678 .4735 .4793 .4851 .491 .4969 .5029 .5089 .5149 .521 .5271 .5333 .5395 .5457 .552 .5583 .5647 .5711 .5776 .5841 .5906 .5972 .6038 .6105 .6172 .624 .6308 .6376 .6445 .6514 .6584 .6654 .6724 .6795 .6867 .6939 .7011 .7084 .7157 .7231 .7305 .7379 .7454 .7529 .7605 .7682 .7758 .7835 .7913 .7991 .807 .8148 .8228 .8308 .8388 .8469 .855 .8632 .8714 .8796 .8879 .8963 .9047 .9131 .9216 .9301 .9387 .9473 .956 .9647 .9734 .9823 .9911 1;
   $rgb: (
-    "r": red($color),
-    "g": green($color),
-    "b": blue($color)
+    "r": color.channel($color, "red", rgb),
+    "g": color.channel($color, "green", rgb),
+    "b": color.channel($color, "blue", rgb)
   );
 
   @each $name, $value in $rgb {
-    $value: if(divide($value, 255) < .04045, divide(divide($value, 255), 12.92), nth($luminance-list, $value + 1));
-    $rgb: map-merge($rgb, ($name: $value));
+    @if math.div($value, 255) < .04045 {
+      $value: math.div(math.div($value, 255), 12.92);
+    } @else {
+      $value: list.nth($luminance-list, $value + 1);
+    }
+    $rgb: map.merge($rgb, ($name: $value));
   }
 
-  @return (map-get($rgb, "r") * .2126) + (map-get($rgb, "g") * .7152) + (map-get($rgb, "b") * .0722);
+  @return (map.get($rgb, "r") * .2126) + (map.get($rgb, "g") * .7152) + (map.get($rgb, "b") * .0722);
 }
 
 /// Return an opaque version of a color when placed over a background
@@ -188,46 +214,8 @@
 /// @example
 ///   opaque(#fff, rgba(0, 0, 0, .5)) => #808080
 @function opaque($background, $foreground) {
-  @return mix(rgba($foreground, 1), $background, opacity($foreground) * 100%);
+  @return color.mix(rgba($foreground, 1), $background, color.opacity($foreground) * 100%);
 }
-
-// scss-docs-start color-functions
-/// Tint a color by mixing it with white
-///
-/// @param {Color} $color - Base color to tint
-/// @param {Number} $weight - Amount of white to mix in (0-100%)
-/// @return {Color} - Tinted color
-/// @example
-///   tint-color(#007bff, 10%) => #1a88ff
-@function tint-color($color, $weight) {
-  @return mix(white, $color, $weight);
-}
-
-/// Shade a color by mixing it with black
-///
-/// @param {Color} $color - Base color to shade
-/// @param {Number} $weight - Amount of black to mix in (0-100%)
-/// @return {Color} - Shaded color
-/// @example
-///   shade-color(#007bff, 10%) => #006fe6
-@function shade-color($color, $weight) {
-  @return mix(black, $color, $weight);
-}
-
-/// Shade or tint a color based on weight sign
-/// Positive weight = shade, negative weight = tint
-///
-/// @param {Color} $color - Base color to transform
-/// @param {Number} $weight - Signed percentage (-100% to 100%)
-/// @return {Color} - Transformed color
-/// @example
-///   shift-color(#007bff, 10%) => shade by 10%
-///   shift-color(#007bff, -10%) => tint by 10%
-@function shift-color($color, $weight) {
-  @return if($weight > 0, shade-color($color, $weight), tint-color($color, -$weight));
-}
-// scss-docs-end color-functions
-
 
 // scss-docs-start shadow-functions
 /// Generate a shadow with customizable color from a shadow token
@@ -239,10 +227,10 @@
 /// @example
 ///   make-color-shadow($box-shadow-sm) => shadow with customizable color
 @function make-color-shadow($token, $shadow: 2, $color: 5) {
-  $c: nth($token, $shadow);
-  $s: append($token, nth($token, $shadow));
-  $c: set-nth($c, $color, #{var(--#{$prefix}shadow-color, transparent)});
-  @return set-nth($s, $shadow, $c);
+  $c: list.nth($token, $shadow);
+  $s: list.append($token, list.nth($token, $shadow));
+  $c: list.set-nth($c, $color, #{var(--shadow-color, transparent)});
+  @return list.set-nth($s, $shadow, $c);
 }
 
 /// Generate a shadow color using CSS relative color syntax.
@@ -256,149 +244,9 @@
 ///   make-shadow-color("primary")        => oklch(from var(--cx-primary) l c h / 0.15)
 ///   make-shadow-color("danger", 0.25)   => oklch(from var(--cx-danger) l c h / 0.25)
 @function make-shadow-color($color, $opacity: $shadow-color-opacity) {
-  @return #{to-opacity(var(--#{$prefix}#{$color}), $opacity)};
+  @return #{to-opacity(var(--#{$color}), $opacity)};
 }
 // scss-docs-end shadow-functions
 
 
-// scss-docs-start color-variable-functions
-
-/// Get a color value from various input formats (CSS variable, color name, or direct color)
-/// This is a versatile function that handles multiple color input formats and converts them
-/// to Sass color objects. It's particularly useful for theme color processing and for handling
-/// CSS variable references in Sass.
-///
-/// @param {Color|String} $color-var - The color variable or name to process
-///   - Direct color value (e.g., #ff0000, rgb(255,0,0))
-///   - CSS variable format (e.g., var(--cx-primary))
-///   - RGBA CSS variable format (e.g., rgba(var(--cx-primary-rgb), 0.5))
-///   - Direct color name matching a key in the palette (e.g., "primary")
-/// @param {Boolean} $dark [false] - Whether to use the dark mode color palette
-/// @return {Color} The processed color value as a Sass color object
-/// @throws {Error} When the color variable cannot be found in the palette
-/// @example
-///   .element {
-///     // From direct color (returns as-is)
-///     color: get-sass-color(#ff0000);  // #ff0000
-///
-///     // From CSS variable (converts to actual color)
-///     background-color: get-sass-color(var(--cx-primary));  // e.g., #0d6efd
-///
-///     // From oklch relative color with alpha (new format)
-///     border-color: get-sass-color(oklch(from var(--cx-secondary) l c h / 0.5));  // rgba(108, 117, 125, 0.5)
-///
-///     // From color name (with dark mode option)
-///     box-shadow: 0 0 5px get-sass-color("primary", true);  // dark theme primary color
-///   }
-@function get-sass-color($color-var, $dark: false) {
-
-  // If it's already a color, just return it
-  @if type-of($color-var) == "color" {
-    @return $color-var;
-  }
-
-  // Setup context map based on light/dark mode
-  $palette: if($dark, $context-palette-dark, $context-palette);
-  $map: map-merge($palette, $base-palette);
-
-  // If it's an oklch relative color string with alpha, extract the variable name and alpha value
-  @if type-of($color-var) == "string" and str-index($color-var, "oklch(from var(--#{$prefix}") {
-    $var-string: str-replace($color-var, "oklch(from var(--#{$prefix}", "");
-    $parts: str-index($var-string, ") l c h / ");
-
-    @if $parts {
-      // Extract the base color name (before closing paren)
-      $var-name: str-slice($var-string, 1, $parts - 1);
-
-      // Extract and clean the alpha value (after ") l c h / " — 10 chars)
-      $alpha-part: str-slice($var-string, $parts + 10);
-      $alpha-val: clean-alpha-value(str-replace($alpha-part, ")", ""));
-
-      // Look up the base color in our map
-      $color: map-get($map, $var-name);
-
-      @if $color {
-        // Return the color with the specified alpha value
-        @return rgba($color, $alpha-val);
-      } @else {
-        @warn "Could not find color for variable #{$var-name} in the color palette.";
-        @return $color-var; // Return original if not found
-      }
-    }
-  }
-
-  // If it's a CSS variable string, extract the variable name
-  @if type-of($color-var) == "string" and str-index($color-var, "var(--#{$prefix}") {
-    $var-name: str-replace($color-var, "var(--#{$prefix}", "");
-    $var-name: str-replace($var-name, ")", "");
-
-    // Look up the variable name in our color map
-    $color: map-get($map, $var-name);
-
-    @if $color {
-      @return $color;
-    } @else {
-      @warn "Could not find color for variable #{$var-name} in the color palette.";
-      @return $color-var; // Return original if not found
-    }
-  }
-
-  // If it's a direct color name in our palette
-  @if type-of($color-var) == "string" {
-    $color: map-get($map, $color-var);
-
-    @if $color {
-      @return $color;
-    }
-  }
-
-  @error "Could not find color for variable '#{$color-var}' in the color palette.";
-  // If we get here, just return the original value
-  // @return $color-var;
-}
-
-/// Helper function to clean and convert alpha values to a valid number
-/// Processes different formats of alpha values and ensures they're valid
-/// numbers between 0 and 1. Handles leading commas, spaces, percentages,
-/// and different decimal notations.
-///
-/// @access private
-/// @param {String} $alpha-string - The alpha value string to process
-/// @return {Number} A numeric alpha value between 0 and 1
-/// @example
-///   clean-alpha-value("0.65")     // Returns 0.65
-///   clean-alpha-value(".65")      // Returns 0.65
-///   clean-alpha-value(" , 0.75")  // Returns 0.75
-///   clean-alpha-value("50%")      // Returns 0.5
-///   clean-alpha-value("")         // Returns 1 (default)
-@function clean-alpha-value($alpha-string) {
-  // Remove spaces
-  $alpha-val: str-replace($alpha-string, " ", "");
-
-  // Remove commas
-  @if str-index($alpha-val, ",") == 1 {
-    $alpha-val: str-slice($alpha-val, 2); // Remove leading comma
-  } @else {
-    $alpha-val: str-replace($alpha-val, ",", ""); // Remove any commas
-  }
-
-  // Set default
-  $alpha-numeric: 1;
-
-  // Convert to number if not empty
-  @if $alpha-val != "" {
-    // Handle percentage values
-    @if str-index($alpha-val, "%") {
-      $alpha-val: str-replace($alpha-val, "%", "");
-      $alpha-numeric: divide(str-to-number($alpha-val), 100);
-    } @else {
-      // Handle decimal values using our number function
-      $alpha-numeric: str-to-number($alpha-val);
-      // Ensure it's within valid range
-      $alpha-numeric: min(max(0, $alpha-numeric), 1);
-    }
-  }
-
-  @return $alpha-numeric;
-}
-
+// color-variable-functions (get-sass-color, remove-context, clean-alpha-value) are in _color-context.scss

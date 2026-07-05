@@ -1,117 +1,94 @@
 ---
 title: Sass
-description: Utilize our source Sass files to take advantage of variables, maps, mixins, and functions to help you build faster and customize your project.
+description: Utilize Chassis source Sass files to take advantage of variables, maps, mixins, and functions to customize and extend the framework.
 toc: true
 ---
 
-Utilize our source Sass files to take advantage of variables, maps, mixins, and more.
-
-<Callout type="warning">
-Sass deprecation warnings are shown when compiling source Sass files with the latest versions of Dart Sass. This does not prevent compilation or usage of Chassis. We’re [working on a long-term fix]([[config:repo]]/issues/40962), but in the meantime these deprecation notices can be ignored.
-</Callout>
+Chassis ships its source on the Sass module system (`@use` / `@forward`). Pull individual modules in, override their defaults with `@use … with (…)`, and compose your own bundle without touching framework source.
 
 ## File structure
 
-Whenever possible, avoid modifying Chassis CSS’s core files. For Sass, that means creating your own stylesheet that imports Chassis CSS so you can modify and extend it. Assuming you’re using a package manager like npm, you’ll have a file structure that looks like this:
+Whenever possible, avoid modifying Chassis source files. Create your own stylesheet that uses Chassis instead. With a package manager you'll have something like:
 
 ```text
 your-project/
 ├── scss/
 │   └── custom.scss
 └── node_modules/
-│   └── chassis-css/
-│       ├── js/
-│       └── scss/
+│   └── @chassis-ui/
+│       └── css/
+│           ├── js/
+│           └── scss/
 └── index.html
 ```
 
-If you’ve downloaded our source files and aren’t using a package manager, you’ll want to manually create something similar to that structure, keeping Chassis CSS’s source files separate from your own.
-
-```text
-your-project/
-├── scss/
-│   └── custom.scss
-├── chassis-css/
-│   ├── js/
-│   └── scss/
-└── index.html
-```
+If you downloaded the source files manually, mirror that layout — keep Chassis's source separate from your own.
 
 ## Importing
 
-In your `custom.scss`, you’ll import Chassis CSS’s source Sass files. You have two options: include all of Chassis, or pick the parts you need. We encourage the latter, though be aware there are some requirements and dependencies across our components. You also will need to include some JavaScript for our plugins.
+In your `custom.scss`, pull Chassis in with `@use`. Two options are available: load all of Chassis, or pick the parts you need. Prefer the latter, though be aware components have dependencies across the framework.
 
 ```scss
-// Custom.scss
-// Option A: Include all of Chassis CSS
+// custom.scss
+// Option A: Load all of Chassis CSS
+@use "@chassis-ui/css/scss/chassis";
 
-// Include any default variable overrides here (though functions won’t be available)
-
-@import "../node_modules/chassis-css/scss/chassis";
-
-// Then add additional custom code here
+// Then add custom code here
 ```
 
 ```scss
-// Custom.scss
-// Option B: Include parts of Chassis CSS
+// custom.scss
+// Option B: Load parts of Chassis CSS
 
-// 1. Include functions first (so you can manipulate colors, SVGs, calc, etc)
-@import "../node_modules/chassis-css/scss/functions";
+// 1. Functions first (so you can manipulate colors, SVGs, calc, etc)
+@use "@chassis-ui/css/scss/functions" as *;
 
-// 2. Include any default variable overrides here
+// 2. Variables — configure here with `@use ... with (...)` if needed
+@use "@chassis-ui/css/scss/config/defaults" as *;
 
-// 3. Include remainder of required Chassis CSS stylesheets (including any separate color mode stylesheets)
-@import "../node_modules/chassis-css/scss/variables";
+// 3. Maps and mixins
+@use "@chassis-ui/css/scss/maps" as *;
+@use "@chassis-ui/css/scss/mixins" as *;
 
-// 4. Include any default map overrides here
+// 4. CSS custom property layer
+@use "@chassis-ui/css/scss/root";
 
-// 5. Include remainder of required parts
-@import "../node_modules/chassis-css/scss/maps";
-@import "../node_modules/chassis-css/scss/mixins";
-@import "../node_modules/chassis-css/scss/root";
+// 5. Optional parts; see chassis.scss for the full list
+@use "@chassis-ui/css/scss/reboot";
+@use "@chassis-ui/css/scss/type";
+@use "@chassis-ui/css/scss/grid";
+@use "@chassis-ui/css/scss/utilities";
+@use "@chassis-ui/css/scss/helpers";
 
-// 6. Include any other optional stylesheet partials as desired; list below is not inclusive of all available stylesheets
-@import "../node_modules/chassis-css/scss/utilities";
-@import "../node_modules/chassis-css/scss/reboot";
-@import "../node_modules/chassis-css/scss/type";
-@import "../node_modules/chassis-css/scss/images";
-@import "../node_modules/chassis-css/scss/containers";
-@import "../node_modules/chassis-css/scss/grid";
-@import "../node_modules/chassis-css/scss/helpers";
-// ...
-
-// 7. Optionally include utilities API last to generate classes based on the Sass map in `_utilities.scss`
-@import "../node_modules/chassis-css/scss/utilities-api";
-
-// 8. Add additional custom code here
+// 6. Utilities API last — generates classes from the `$utilities` map
+@use "@chassis-ui/css/scss/utilities-api";
 ```
 
-With that setup in place, you can begin to modify any of the Sass variables and maps in your `custom.scss`. You can also start to add parts of Chassis CSS under the `// Optional` section as needed. We suggest using the full import stack from our `chassis.scss` file as your starting point.
+With that setup in place, you can override variables (see below) and add Chassis modules as needed. Use the `@use` stack in [`chassis.scss`](https://github.com/chassis-ui/css/blob/main/scss/chassis.scss) as a starting reference.
+
+<Callout type="warning">
+Importing Chassis with bare specifiers (`@chassis-ui/css/scss/…`) requires your Sass setup to resolve `node_modules`. Vite, Webpack, and Astro do this automatically. For the Sass CLI, add `--load-path node_modules/`.
+</Callout>
 
 ## Compiling
 
-In order to use your custom Sass code as CSS in the browser, you need a Sass compiler. Sass ships as a CLI package, but you can also compile it with other build tools like [Gulp](https://gulpjs.com/) or [Webpack](https://webpack.js.org/), or with GUI applications. Some IDEs also have Sass compilers built in or as downloadable extensions.
-
-We like to use the CLI to compile our Sass, but you can use whichever method you prefer. From the command line, run the following:
+You need a Sass compiler. Sass ships as a CLI package, but you can also compile with Vite, Webpack, Parcel, Gulp, or any other build tool.
 
 ```sh
-# Install Sass globally
-npm install -g sass
+# Install Sass
+npm install -D sass
 
 # Watch your custom Sass for changes and compile it to CSS
-sass --watch ./scss/custom.scss ./css/custom.css
+npx sass --watch --load-path node_modules/ ./scss/custom.scss ./css/custom.css
 ```
 
-Learn more about your options at [sass-lang.com/install](https://sass-lang.com/install/) and [compiling with VS Code](https://code.visualstudio.com/docs/languages/css#_transpiling-sass-and-less-into-css).
-
 <Callout>
-**Using Chassis CSS with another build tool?** Consider reading our guides for compiling with [Webpack]([[docsref:/getting-started/webpack]]), [Parcel]([[docsref:/getting-started/parcel]]), or [Vite]([[docsref:/getting-started/vite]]). We also have production-ready demos in [our examples repository on GitHub](https://github.com/twbs/examples).
+**Using Chassis CSS with another build tool?** See the bundler guides for [Webpack]([[docsref:/getting-started/webpack]]), [Parcel]([[docsref:/getting-started/parcel]]), or [Vite]([[docsref:/getting-started/vite]]).
 </Callout>
 
 ## Including
 
-Once your CSS is compiled, you can include it in your HTML files. Inside your `index.html` you’ll want to include your compiled CSS file. Be sure to update the path to your compiled CSS file if you’ve changed it.
+Once your CSS is compiled, include it in your HTML:
 
 ```html
 <!doctype html>
@@ -130,129 +107,111 @@ Once your CSS is compiled, you can include it in your HTML files. Inside your `i
 
 ## Variable defaults
 
-Every Sass variable in Chassis CSS includes the `!default` flag allowing you to override the variable’s default value in your own Sass without modifying Chassis CSS’s source code. Copy and paste variables as needed, modify their values, and remove the `!default` flag. If a variable has already been assigned, then it won’t be re-assigned by the default values in Chassis.
-
-You will find the complete list of Chassis CSS’s variables in `scss/_variables.scss`. Some variables are set to `null`, these variables don’t output the property unless they are overridden in your configuration.
-
-Variable overrides must come after our functions are imported, but before the rest of the imports.
-
-Here’s an example that changes the `background-color` and `color` for the `<body>` when importing and compiling Chassis CSS via npm:
+Every Chassis Sass variable is declared with `!default`. Under the module system, you configure module defaults at the `@use` call site:
 
 ```scss
-// Required
-@import "../node_modules/chassis-css/scss/functions";
-
-// Default variable overrides
-$bg-color: #000;
-$fg-color: #111;
-
-// Required
-@import "../node_modules/chassis-css/scss/variables";
-@import "../node_modules/chassis-css/scss/variables-dark";
-@import "../node_modules/chassis-css/scss/maps";
-@import "../node_modules/chassis-css/scss/mixins";
-@import "../node_modules/chassis-css/scss/root";
-
-// Optional Chassis CSS components here
-@import "../node_modules/chassis-css/scss/reboot";
-@import "../node_modules/chassis-css/scss/type";
-// etc
+@use "@chassis-ui/css/scss/config/defaults" with (
+  $bg-color: #000,
+  $fg-color: #111,
+);
+@use "@chassis-ui/css/scss/chassis";  // picks up your configured defaults
 ```
 
-Repeat as necessary for any variable in Chassis, including the global options below.
+You can also override a variable from a more specific module — components, maps, etc.:
+
+```scss
+@use "@chassis-ui/css/scss/config/defaults" with (
+  $primary: #0074d9,
+  $danger: #ff4136,
+);
+```
+
+Sass loads each module exactly once, so the configured instance is shared by every downstream module that imports it. The `with (…)` call must appear before any module that transitively uses the target.
+
+Some variables default to `null`. Those don't emit the property unless you override them.
+
+The complete list lives in `scss/config/_defaults.scss`.
 
 <Callout name="info-npm-starter" />
 
 ## Maps and loops
 
-Chassis CSS includes a handful of Sass maps, key value pairs that make it easier to generate families of related CSS. We use Sass maps for our colors, grid breakpoints, and more. Just like Sass variables, all Sass maps include the `!default` flag and can be overridden and extended.
+Chassis ships several Sass maps — key/value pairs that power families of related CSS (colors, breakpoints, etc.). Every map is `!default`, so you can override or extend them through `@use ... with (...)`.
 
-Some of our Sass maps are merged into empty ones by default. This is done to allow easy expansion of a given Sass map, but comes at the cost of making _removing_ items from a map slightly more difficult.
+### Modify a map
 
-### Modify map
-
-All variables in the `$context-colors` map are defined as standalone variables. To modify an existing color in our `$context-colors` map, add the following to your custom Sass file:
+Most map entries are exposed as standalone variables (`$primary`, `$danger`, etc.). Configure those variables and the maps that reference them update automatically:
 
 ```scss
-$primary: #0074d9;
-$danger: #ff4136;
-```
-
-Later on, these variables are set in Chassis CSS’s `$context-colors` map:
-
-```scss
-$context-colors: (
-  "primary": $primary,
-  "danger": $danger
+@use "@chassis-ui/css/scss/config/defaults" with (
+  $primary: #0074d9,
+  $danger: #ff4136,
 );
 ```
 
-### Add to map
+### Add to a map
 
-Add new colors to `$context-colors`, or any other map, by creating a new Sass map with your custom values and merging it with the original map. In this case, we'll create a new `$custom-colors` map and merge it with `$context-colors`.
+To extend a map (rather than replacing it), configure the map itself:
 
 ```scss
-// Create your own map
-$custom-colors: (
-  "custom-color": #900
+@use "sass:map";
+@use "@chassis-ui/css/scss/maps" as chassis-maps;
+@use "@chassis-ui/css/scss/maps" with (
+  $context-colors: map.merge(
+    chassis-maps.$context-colors,
+    ("custom": #900),
+  )
 );
-
-// Merge the maps
-$context-colors: map-merge($context-colors, $custom-colors);
 ```
 
-### Remove from map
-
-To remove colors from `$context-colors`, or any other map, use `map-remove`. Be aware you must insert `$context-colors` between our requirements just after its definition in `variables` and before its usage in `maps`:
+Or merge in your own code after `@use`:
 
 ```scss
-// Required
-@import "../node_modules/chassis-css/scss/functions";
-@import "../node_modules/chassis-css/scss/variables";
-@import "../node_modules/chassis-css/scss/variables-dark";
+@use "sass:map";
+@use "@chassis-ui/css/scss/maps" as maps;
 
-$context-colors: map-remove($context-colors, "info", "light", "dark");
+$context-colors: map.merge(maps.$context-colors, ("custom": #900));
+```
 
-@import "../node_modules/chassis-css/scss/maps";
-@import "../node_modules/chassis-css/scss/mixins";
-@import "../node_modules/chassis-css/scss/root";
+### Remove from a map
 
-// Optional
-@import "../node_modules/chassis-css/scss/reboot";
-@import "../node_modules/chassis-css/scss/type";
-// etc
+Use `map.remove()` in the `with (…)` configuration:
+
+```scss
+@use "sass:map";
+@use "@chassis-ui/css/scss/maps" as chassis-maps;
+@use "@chassis-ui/css/scss/maps" with (
+  $context-colors: map.remove(chassis-maps.$context-colors, "info", "light", "dark")
+);
 ```
 
 ## Required keys
 
-Chassis CSS assumes the presence of some specific keys within Sass maps as we used and extend these ourselves. As you customize the included maps, you may encounter errors where a specific Sass map’s key is being used.
-
-For example, we use the `primary`, `success`, and `danger` keys from `$context-colors` for links, buttons, and form states. Replacing the values of these keys should present no issues, but removing them may cause Sass compilation issues. In these instances, you’ll need to modify the Sass code that makes use of those values.
+Chassis assumes certain keys exist in some maps. For example, the framework consumes `primary`, `success`, and `danger` from `$context-colors` for links, buttons, and form states. Changing their values is safe; removing them may cause Sass compilation errors that you'll have to address in your own overrides.
 
 ## Functions
 
 ### Colors
 
-Chassis uses **oklch** as its default color space. For a full overview of how the color system works — including design tokens, CSS custom properties, and palette maps — see [Color System]([[docsref:/core-concepts/color-system]]) and [Design Tokens]([[docsref:/core-concepts/design-tokens]]).
+Chassis uses **oklch** as its default color space. For the full picture, see [Color System]([[docsref:/core-concepts/color-system]]) and [Design Tokens]([[docsref:/core-concepts/design-tokens]]).
 
-The following functions in `scss/functions/_color.scss` are the primary tools for working with colors in Sass.
+The following functions in `scss/functions/_color.scss` are the primary tools for working with colors.
 
 #### `to-color()`
 
-Converts any Sass-compatible color value to a rounded `oklch()` string. This is used internally to normalize colors into the oklch space before they are written to CSS custom properties.
+Converts any Sass-compatible color to a rounded `oklch()` string. The framework uses it internally to normalize tokens before writing them to CSS custom properties.
 
 <ScssDocs name="to-color" file="scss/functions/_color.scss" />
 
 ```scss
-// Input: any Sass color
 $converted: to-color(#0d6efd);
-// Output: oklch(0.55 0.215 262.88)
+// => oklch(0.55 0.215 262.88)
 
 $with-alpha: to-color(rgba(#0d6efd, 0.5));
-// Output: oklch(0.55 0.215 262.88 / 0.5)
+// => oklch(0.55 0.215 262.88 / 0.5)
 ```
 
-Because `to-color()` outputs a plain string using the oklch color space, it works in any browser that supports oklch. If you want to use a different color space as your system default, replace calls to `to-color()` with a function that outputs your preferred space (e.g. `color(display-p3 ...)` or `lch(...)`).
+Because `to-color()` outputs a string in the oklch space, it works in any browser with oklch support. To use a different color space as your default, swap calls to `to-color()` for a function that emits your preferred space (`color(display-p3 …)`, `lch(…)`, etc.).
 
 #### `to-opacity()`
 
@@ -261,97 +220,137 @@ Wraps a color or CSS variable in a CSS [relative color](https://developer.mozill
 <ScssDocs name="to-opacity" file="scss/functions/_color.scss" />
 
 ```scss
-// Static alpha on a CSS variable
 to-opacity(var(--cx-primary), 0.5)
 // => oklch(from var(--cx-primary) l c h / 0.5)
 
-// Static alpha on a Sass color
 to-opacity($white, .15)
 // => oklch(from #fff l c h / 0.15)
 
-// Dynamic alpha via another CSS variable
 to-opacity(var(--cx-fg-main), var(--cx-fg-opacity, 1))
 // => oklch(from var(--cx-fg-main) l c h / var(--cx-fg-opacity, 1))
 ```
 
-The `from` keyword and channel names (`l c h`) are specific to oklch. If you change the default color space, update the channel names accordingly — for example, `lch(from ... l c h)` stays the same, but `color(display-p3 from ... r g b)` would differ.
+The `from` keyword and channel names (`l c h`) are specific to oklch. If you change the default color space, update the channel names accordingly.
 
 #### `opacity-var()`
 
-A shorthand variant of `to-opacity()` designed to work as a `map-loop` callback. It takes a color token identifier and an opacity variable name and returns a relative color expression using the `--cx-` prefix convention.
+A shorthand variant of `to-opacity()` designed to work as a `map-loop` callback. It takes an unprefixed color identifier and an opacity component name and returns a relative color expression. The framework's `--cx-` prefix is added later by the PostCSS prefix step — the Sass output uses unprefixed variable names.
 
 <ScssDocs name="opacity-var" file="scss/functions/_color.scss" />
 
 ```scss
 opacity-var("primary", "bg")
-// => oklch(from var(--cx-primary) l c h / var(--cx-bg-opacity, 1))
+// => oklch(from var(--primary) l c h / var(--bg-opacity, 1))
 
 opacity-var("fg-main", "fg")
-// => oklch(from var(--cx-fg-main) l c h / var(--cx-fg-opacity, 1))
+// => oklch(from var(--fg-main) l c h / var(--fg-opacity, 1))
 ```
 
 This function is used when generating utility classes and component styles that need to respect a runtime opacity variable.
 
 ### Escape SVG
 
-We use the `escape-svg` function to escape the `<`, `>` and `#` characters for SVG background images. When using the `escape-svg` function, data URIs must be quoted.
+The `escape-svg()` function escapes `<`, `>`, and `#` for SVG background images. Data URIs passed to it must be quoted.
 
-### Add and Subtract functions
+### Add and Subtract
 
-We use the `add` and `subtract` functions to wrap the CSS `calc` function. The primary purpose of these functions is to avoid errors when a “unitless” `0` value is passed into a `calc` expression. Expressions like `calc(10px - 0)` will return an error in all browsers, despite being mathematically correct.
-
-Example where the calc is valid:
-
-```scss
-$border-radius: .25rem;
-$border-width: 1px;
-
-.element {
-  // Output calc(.25rem - 1px) is valid
-  border-radius: calc($border-radius - $border-width);
-}
-
-.element {
-  // Output the same calc(.25rem - 1px) as above
-  border-radius: subtract($border-radius, $border-width);
-}
-```
-
-Example where the calc is invalid:
+`add()` and `subtract()` wrap CSS `calc()` to dodge an annoying browser quirk: expressions like `calc(10px - 0)` are invalid in every browser even though they're mathematically fine. Use these wrappers when one operand might be a unitless `0`.
 
 ```scss
 $border-radius: .25rem;
 $border-width: 0;
 
 .element {
-  // Output calc(.25rem - 0) is invalid
-  border-radius: calc($border-radius - $border-width);
+  border-radius: calc($border-radius - $border-width); // invalid in browsers
 }
 
 .element {
-  // Output .25rem
-  border-radius: subtract($border-radius, $border-width);
+  border-radius: subtract($border-radius, $border-width); // outputs .25rem
 }
 ```
 
 ## Mixins
 
-Our `scss/mixins/` directory has a ton of mixins that power parts of Chassis CSS and can also be used across your own project.
+The `scss/mixins/` directory contains the mixins that power Chassis components; they're also useful in your own code.
 
 ### Color schemes
 
-A shorthand mixin for the `prefers-color-scheme` media query is available with support for `light` and `dark` color schemes. See [the color modes documentation]([[docsref:/customize/color-modes]]) for information on our color mode mixin.
+A shorthand for the `prefers-color-scheme` media query with `light` and `dark` support. See [the color modes documentation]([[docsref:/customize/color-modes]]) for the broader color-mode mixin.
 
 <ScssDocs name="mixin-color-scheme" file="scss/mixins/_color-scheme.scss" />
 
 ```scss
 .custom-element {
   @include color-scheme(light) {
-    // Insert light mode styles here
+    // light mode styles
   }
 
   @include color-scheme(dark) {
-    // Insert dark mode styles here
+    // dark mode styles
   }
 }
 ```
+
+## Token sources
+
+Chassis loads its design tokens through a single override point — `scss/config/_token-source.scss`. The framework's `scss/config/_vendor.scss` re-exports from it, so swapping the entire token feed is a one-line change in a file you control.
+
+By default `_token-source.scss` forwards from `@chassis-ui/tokens/dist/web/docs/chassis/main`. Sass loads each module exactly once, so every downstream module — variables, maps, components — picks up whatever your override produces.
+
+### Switching token source
+
+Create a `_token-source.scss` file in your project that forwards your preferred token set:
+
+```scss
+// my-project/sass-overrides/_token-source.scss
+@forward "@chassis-ui/tokens/dist/web/docs/example/main";
+```
+
+Then configure your build tool to search your override directory before the Chassis defaults. Because `_token-source.scss` sits at the root of the token dependency tree, all downstream modules pick up your token values automatically.
+
+```js
+// vite.config.ts (or astro.config.ts)
+import path from 'node:path'
+
+export default {
+  css: {
+    preprocessorOptions: {
+      scss: {
+        loadPaths: [
+          path.resolve('./sass-overrides/'),                            // your _token-source.scss first
+          path.resolve('./node_modules/@chassis-ui/css/scss/config'), // framework fallback
+          path.resolve('./node_modules'),                               // bare package specifiers (@chassis-ui/tokens/…)
+        ],
+      },
+    },
+  },
+}
+```
+
+### Configuring variables
+
+For partial overrides — adjusting a handful of token values — use `@use ... with (…)` against `vendor`. Sass loads the configured instance once and shares it with every downstream module:
+
+```scss
+// custom-entry.scss
+@use "@chassis-ui/css/scss/config/vendor" with (
+  $cx-color-base-palette-light-primary-50: #ff385c,
+  $cx-color-base-palette-light-primary-40: #ff6a85,
+);
+// All subsequent chassis modules use the configured vendor instance
+@use "@chassis-ui/css/scss/chassis";
+```
+
+This is practical for a handful of targeted adjustments. For a full theme swap (~1,200 variable differences between token sets), the `_token-source.scss` override above is far more maintainable.
+
+### Overriding properties
+
+To adjust visual output _after_ the Sass compilation step, override the generated CSS custom properties:
+
+```css
+:root {
+  --cx-primary: oklch(0.61 0.23 11.3);
+}
+```
+
+CSS custom property values are written by `scss/_root.scss` during compilation. Computed values — color maps, palette entries used inside component selectors — reflect the compiled token set and can't be changed post-compile. CSS custom property overrides are best suited for targeted, runtime adjustments.

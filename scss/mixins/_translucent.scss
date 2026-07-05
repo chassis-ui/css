@@ -1,0 +1,45 @@
+@use "../config" as *;
+@use "../functions" as *;
+
+//
+// Translucent Mixin
+//
+// Applies a frosted-glass effect using background-color opacity and
+// backdrop-filter. Gated by $enable-translucency. Automatically strips
+// the effect inside a `@media (prefers-reduced-transparency: reduce)` query.
+//
+
+/// Apply a translucent frosted-glass effect when `$enable-transparency` is `true`.
+/// Outputs a semi-transparent `background-color`, clears `background-image`,
+/// and applies a `backdrop-filter`. Automatically adds a reset rule inside
+/// `@media (prefers-reduced-transparency: reduce)`.
+///
+/// @param {Color|String} $bg-color [var(--bg-color)] - Base background color to apply opacity to
+/// @param {Number|String} $opacity [var(--translucent-opacity)] - Opacity applied to `$bg-color`
+/// @param {Number|String} $blur [var(--translucent-blur)] - Blur radius for `backdrop-filter`
+/// @param {Number|String} $saturation [var(--translucent-saturation)] - Saturation value for `backdrop-filter`
+/// @example scss
+///   .toast.translucent {
+///     @include translucent();
+///   }
+/// @example scss - Custom color
+///   .navbar.translucent {
+///     @include translucent($bg-color: var(--navbar-bg-color));
+///   }
+@mixin translucent(
+  $bg-color: var(--bg-color),
+  $opacity: var(--translucent-opacity),
+  $blur: var(--translucent-blur),
+  $saturation: var(--translucent-saturation)
+) {
+  @if $enable-translucency {
+    background-color: to-opacity($bg-color, $opacity);
+    // background-image: none;
+    backdrop-filter: blur($blur) saturate($saturation);
+
+    @media (prefers-reduced-transparency: reduce) {
+      background-color: $bg-color;
+      backdrop-filter: none;
+    }
+  }
+}

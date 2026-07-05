@@ -1,0 +1,295 @@
+---
+title: Stepper
+description: Visualize multi-step processes with steppers built on CSS Grid — suitable for timelines, wizards, sign-up flows, and step-by-step progress indicators.
+toc: true
+tokens: component
+css_layer: components
+css_media: container
+---
+
+## Introduction
+
+Steppers communicate progress through a sequence of discrete stages. The component is built with CSS Grid and an `<ol>` element so each step receives an automatic counter, while the `.active` class combined with the `:has()` relational selector drives the past, current, and next status colors without requiring per-item modifier classes.
+
+## Basic implementation
+
+Wrap an ordered list in the `.stepper` class and apply `.stepper-item` to each `<li>`. Steps stack vertically by default and are connected by a track that renders automatically between adjacent items. Mark the current step with the `.active` class — items positioned before any active step are styled as completed (past), items after the last active step are styled as upcoming (next), and active items themselves adopt the current colors.
+
+<Example code={`<ol class="stepper">
+    <li class="stepper-item">First Step</li>
+    <li class="stepper-item">Past Step</li>
+    <li class="stepper-item active" aria-current="step">Current Step</li>
+    <li class="stepper-item">Next Step</li>
+    <li class="stepper-item">Last Step</li>
+  </ol>`} />
+
+## Horizontal layout
+
+Apply the `.horizontal` modifier to display steps side-by-side. The layout switches to an inline grid with equal-width columns, and the connecting track rotates to run between status indicators horizontally.
+
+<Example code={`<ol class="stepper horizontal">
+    <li class="stepper-item">First Step</li>
+    <li class="stepper-item">Past Step</li>
+    <li class="stepper-item active" aria-current="step">Current Step</li>
+    <li class="stepper-item">Next Step</li>
+    <li class="stepper-item">Last Step</li>
+  </ol>`} />
+
+### Responsive variants
+
+Responsive `.{breakpoint}:horizontal` classes switch a vertical stepper into the horizontal layout at a given breakpoint. The stepper must be placed inside a container query context — typically a parent element carrying the `.contains-inline` utility — because the modifier relies on container queries rather than viewport media queries.
+
+<ResizableExample code={`<div class="contains-inline">
+    <ol class="stepper small:horizontal">
+      <li class="stepper-item">First Step</li>
+      <li class="stepper-item">Past Step</li>
+      <li class="stepper-item active" aria-current="step">Current Step</li>
+      <li class="stepper-item">Next Step</li>
+      <li class="stepper-item">Last Step</li>
+    </ol>
+  </div>`} />
+
+Hide labels on narrow viewports.
+
+<Example code={`<ol class="stepper horizontal">
+      <li class="stepper-item"><span class="d-none large:d-block">First Step</span></li>
+      <li class="stepper-item"><span class="d-none large:d-block">Past Step</span></li>
+      <li class="stepper-item active" aria-current="step"><span class="d-none large:d-block">Current Step</span></li>
+      <li class="stepper-item"><span class="d-none large:d-block">Next Step</span></li>
+      <li class="stepper-item"><span class="d-none large:d-block">Last Step</span></li>
+    </ol>`} />
+
+## Gap
+
+Spacing between steps is controlled by the `--cx-stepper-gap` custom property. Override it inline or through a custom stylesheet to compress or expand the layout without affecting the connecting track geometry.
+
+<Example code={`<ol class="stepper" style="--cx-stepper-gap: 3rem">
+    <li class="stepper-item">Past Step</li>
+    <li class="stepper-item active" aria-current="step">Current Step</li>
+    <li class="stepper-item">Next Step</li>
+    <li class="stepper-item">Last Step</li>
+  </ol>`} />
+
+## Context variants
+
+Context classes override the status color palette to communicate semantic meaning — success, danger, info, and other contextual states defined in the design token system. Apply them per item to mark the outcome of each step individually, or apply a single context class to the stepper itself to tint the entire sequence at once.
+
+### Per-item context
+
+Combine `.context.<name>` with `.active` on individual `.stepper-item` elements to attach a semantic color to each step. The active item receives the strongest tint of its context family, which is useful when timeline stages have distinct semantic meanings.
+
+<Example code={`<ol class="stepper horizontal">
+    <li class="stepper-item context success">First Step</li>
+    <li class="stepper-item context success active" aria-current="step">Past Step</li>
+    <li class="stepper-item active context info" aria-current="step">Current Step</li>
+    <li class="stepper-item context danger active" aria-current="step">Next Step</li>
+    <li class="stepper-item context danger">Last Step</li>
+  </ol>`} />
+
+### Whole-stepper context
+
+Applying `.context.<name>` to the `.stepper` element propagates the same color palette to every step. The active step automatically receives the strongest tint to remain visually distinct from past and upcoming steps.
+
+<Example code={`<ol class="stepper horizontal context secondary">
+    <li class="stepper-item">First Step</li>
+    <li class="stepper-item">Past Step</li>
+    <li class="stepper-item active" aria-current="step">Current Step</li>
+    <li class="stepper-item">Next Step</li>
+    <li class="stepper-item">Last Step</li>
+  </ol>`} />
+
+### Combining with utilities
+
+Context variants compose with foreground, background, padding, and border-radius utilities, allowing a fully themed stepper panel to be assembled without writing additional CSS.
+
+<Example code={`<ol class="stepper horizontal context secondary 
+      fg-main bg-main p-medium rounded">
+    <li class="stepper-item">First Step</li>
+    <li class="stepper-item">Past Step</li>
+    <li class="stepper-item active" aria-current="step">Current Step</li>
+    <li class="stepper-item">Next Step</li>
+    <li class="stepper-item">Last Step</li>
+  </ol>`} />
+
+## Overflow
+
+Wide horizontal steppers can outgrow their container when labels are long or steps are numerous. Wrapping the stepper in a `.stepper-overflow` element enables horizontal scrolling and switches the stepper's width to `max-content`, so every step keeps its natural size while the wrapper provides a scrolling viewport.
+
+<Callout type="info">
+  The wrapper uses `container-type: inline-size` instead of a viewport media query, so the overflow behavior responds to the actual width of the parent rather than the viewport size.
+</Callout>
+
+<Example code={`<div class="stepper-overflow">
+    <ol class="stepper horizontal">
+    <li class="stepper-item">First step label</li>
+    <li class="stepper-item">Past step label</li>
+    <li class="stepper-item active" aria-current="step">Steps have equal width</li>
+    <li class="stepper-item">Next step label</li>
+    <li class="stepper-item">Next step label</li>
+    <li class="stepper-item">Last step label</li>
+    </ol>
+  </div>`} />
+
+## Complex content
+
+Steps are not limited to a single line of text. Nesting additional markup inside each `.stepper-item` makes room for descriptions, helper messages, status indicators, or other decorative elements alongside the step label. The `.align-items-start` utility keeps multi-line content aligned with the top of the status indicator instead of its vertical center.
+
+<Example code={`<ol class="stepper">
+    <li class="stepper-item align-items-start">
+      <div>
+        <div class="font-strong">First Step</div>
+        <div class="fg-subtle">Some step description.</div>
+      </div>
+    </li>
+    <li class="stepper-item align-items-start active" aria-current="step">
+      <div>
+        <div class="font-strong">Current Step</div>
+        <div class="fg-subtle">Vertical stepper items <br /> are not in equal height.</div>
+      </div>
+    </li>
+    <li class="stepper-item align-items-start">
+      <div>
+        <div class="font-strong">Next Step</div>
+        <div class="fg-subtle">Some step description.</div>
+      </div>
+    </li>
+    <li class="stepper-item align-items-start">
+      <div>
+        <div class="font-strong">Last Step</div>
+        <div class="fg-subtle">Some step description.</div>
+      </div>
+    </li>
+  </ol>`} />
+
+### Mixed components
+
+Steps can host other Chassis components — such as badges, chips, or icons — to enrich the visual language of each stage. The example below pairs per-item context classes with badge components to convey both color semantics and explicit status labels.
+
+<Example code={`<ol class="stepper horizontal">
+    <li class="stepper-item context success">
+      <div>
+        <div>First Step</div>
+        <div class="badge smooth">Complete</div>
+      </div>
+    </li>
+    <li class="stepper-item context success">
+      <div>
+        <div>Past Step</div>
+        <div class="badge smooth">Complete</div>
+      </div>
+    </li>
+    <li class="stepper-item context info active" aria-current="step">
+      <div>
+        <div>Current Step</div>
+        <div class="badge smooth">In-progress</div>
+      </div>
+    </li>
+    <li class="stepper-item context neutral">
+      <div>
+        <div>Last Step</div>
+        <div class="badge smooth">Pending</div>
+      </div>
+    </li>
+  </ol>`} />
+
+## Alignment
+
+Because the horizontal stepper uses `display: inline-grid`, its overall width matches its content rather than the parent container. This makes [text alignment utilities]([[docsref:/utilities/text#text-alignment]]) on a parent element a natural way to position the stepper without disturbing the equal-width step columns or the connecting track geometry.
+
+<Example code={`<ol class="stepper horizontal">
+    <li class="stepper-item">Past Step</li>
+    <li class="stepper-item active" aria-current="step">Current Step</li>
+    <li class="stepper-item">Next Step</li>
+    <li class="stepper-item">Last Step</li>
+  </ol>`} />
+
+<Example code={`<div class="text-center">
+  <ol class="stepper horizontal">
+    <li class="stepper-item">Past Step</li>
+    <li class="stepper-item active" aria-current="step">Current Step</li>
+    <li class="stepper-item">Next Step</li>
+    <li class="stepper-item">Last Step</li>
+  </ol>
+</div>`} />
+
+<Example code={`<div class="text-end">
+  <ol class="stepper horizontal">
+    <li class="stepper-item">Past Step</li>
+    <li class="stepper-item active" aria-current="step">Current Step</li>
+    <li class="stepper-item">Next Step</li>
+    <li class="stepper-item">Last Step</li>
+  </ol>
+</div>`} />
+
+### Full width
+
+Apply `.w-100` to stretch the stepper to its container's full width. Step items expand evenly to fill the available space, which overrides any alignment applied to the parent.
+
+<Example code={`<ol class="stepper horizontal w-100">
+    <li class="stepper-item">Past Step</li>
+    <li class="stepper-item active" aria-current="step">Current Step</li>
+    <li class="stepper-item">Next Step</li>
+    <li class="stepper-item">Last Step</li>
+  </ol>`} />
+
+## Icon steppers
+
+Add `.icon-stepper` to the `.stepper` to replace the default counters with icons. The status icon for each step is controlled by the `--status-icon` custom property, which can be set inline or through a stylesheet. The example below uses Unicode code points from an icon font, but any valid CSS content value is supported — including emoji, SVGs, or inline images.
+
+<Example code={`<ol class="stepper horizontal icon-stepper">
+    <li class="stepper-item">Past Step</li>
+    <li class="stepper-item active" aria-current="step">Current Step</li>
+    <li class="stepper-item">Next Step</li>
+    <li class="stepper-item">Last Step</li>
+  </ol>`} />
+
+## Interactive steps
+
+Replace `<li>` elements with `<a>` or `<button>` elements when each step should navigate to another page or trigger an in-page action. Use anchors for cross-page navigation, and buttons — or anchors with `role="button"` — for transitions within the same document. The [link utilities]([[docsref:/utilities/link]]) provide quick color control for anchor-based steppers.
+
+<Example code={`<nav aria-label="Progress">
+    <div class="stepper link-body">
+      <a href="#" role="button" class="stepper-item">First Step</a>
+      <a href="#" role="button" class="stepper-item active" aria-current="step">
+        <span class="visually-hidden">Current step: </span>Current Step
+      </a>
+      <a href="#" role="button" class="stepper-item">Next Step</a>
+      <a href="#" role="button" class="stepper-item">Last Step</a>
+    </div>
+  </nav>`} />
+
+## Accessibility
+
+A stepper conveys progress through color, position, and an automatically generated counter rendered as a `::before` pseudo-element. Because color alone is not sufficient for assistive technology users, and pseudo-element content is announced inconsistently across screen readers, the active step should carry `aria-current="step"` and — for interactive steppers — be augmented with visually hidden status text so the current position is conveyed unambiguously.
+
+Wrap interactive steppers in a `<nav>` element with a descriptive `aria-label` (such as `"Progress"`) to expose the sequence as a landmark for screen reader navigation. Informational steppers built from `<ol>` and `<li>` elements already carry list semantics and do not require an additional landmark, but the `aria-current="step"` attribute on the active item remains recommended.
+
+See the [ARIA `aria-current` specification](https://www.w3.org/TR/wai-aria-1.2/#aria-current) and the [WAI-ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/) for further guidance.
+
+## CSS
+
+<DocsCSS />
+
+### Custom properties
+
+<DocsCSSVars />
+
+<ScssDocs name="stepper-properties" file="scss/_stepper.scss" />
+
+### Sass variables
+
+<DocsSASSVars />
+
+<ScssDocs name="stepper-variables" file="scss/config/_defaults.scss" />
+
+### Sass mixins
+
+The horizontal mixin encapsulates the grid, gap, and track positioning rules that switch a stepper from a vertical to a horizontal layout. It is invoked by the `.horizontal` class and by every responsive `.{breakpoint}:horizontal` variant.
+
+<ScssDocs name="stepper-horizontal-mixin" file="scss/_stepper.scss" />
+
+### Overflow wrapper
+
+The overflow wrapper exposes a container-query based scrolling region for steppers that exceed their parent's width.
+
+<ScssDocs name="stepper-overflow" file="scss/_stepper.scss" />

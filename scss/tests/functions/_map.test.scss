@@ -1,0 +1,107 @@
+@use "../../functions" as *;
+
+@include describe("defaults function") {
+  @include it("merges overrides on top of defaults") {
+    @include assert-equal((a: 1, b: 3, c: 4), defaults((a: 1, b: 2), (b: 3, c: 4)));
+  }
+
+  @include it("strips null entries from overrides") {
+    @include assert-equal((a: 1), defaults((a: 1, b: 2), (b: null)));
+  }
+
+  @include it("converts a list of keys to a true-valued map") {
+    @include assert-equal((a: true, b: true, c: true), defaults((a, b, c), ()));
+  }
+
+  @include it("list defaults merged with overrides") {
+    @include assert-equal((a: true, b: 2), defaults((a, b), (b: 2)));
+  }
+}
+
+@include describe("map-negativify function") {
+  @include it("negates all values and skips the 0 key") {
+    @include assert-equal(
+      (xs: -0.25rem, sm: -0.5rem),
+      map-negativify((0: 0, xs: 0.25rem, sm: 0.5rem))
+    );
+  }
+
+  @include it("returns empty map when only key is 0") {
+    @include assert-equal((), map-negativify((0: 0rem)));
+  }
+}
+
+@include describe("map-get-multiple function") {
+  @include it("extracts only the requested keys") {
+    @include assert-equal(
+      (a: 1, c: 3),
+      map-get-multiple((a: 1, b: 2, c: 3), (a, c))
+    );
+  }
+
+  @include it("returns empty map when no keys match") {
+    @include assert-equal((), map-get-multiple((a: 1, b: 2), (x, y)));
+  }
+}
+
+@include describe("map-get-nested function") {
+  @include it("extracts a nested property from each map item") {
+    @include assert-equal(
+      (xs: 12px, sm: 14px),
+      map-get-nested((xs: (size: 12px, weight: 400), sm: (size: 14px, weight: 400)), "size")
+    );
+  }
+
+  @include it("skips items that do not have the nested key") {
+    @include assert-equal(
+      (xs: 12px),
+      map-get-nested((xs: (size: 12px), sm: (weight: 400)), "size")
+    );
+  }
+
+  @include it("skips non-map values") {
+    @include assert-equal(
+      (),
+      map-get-nested((xs: 12px, sm: 14px), "size")
+    );
+  }
+}
+
+@include describe("map-rename-keys function") {
+  @include it("prepends a string to all keys") {
+    @include assert-equal(
+      (fg-primary: blue, fg-secondary: gray),
+      map-rename-keys((primary: blue, secondary: gray), "fg-", "start")
+    );
+  }
+
+  @include it("appends a string to all keys") {
+    @include assert-equal(
+      (small-size: 1rem, large-size: 2rem),
+      map-rename-keys((small: 1rem, large: 2rem), "-size", "end")
+    );
+  }
+}
+
+@include describe("map-merge-multiple function") {
+  @include it("merges multiple maps with later values winning") {
+    @include assert-equal(
+      (a: 3, b: 2, c: 4),
+      map-merge-multiple((a: 1, b: 2), (a: 3), (c: 4))
+    );
+  }
+}
+
+@include describe("map-loop function") {
+  @include it("applies a function to each value using the key placeholder") {
+    // opacity-var($key, $target) is in scope inside _map.scss via @use "./color"
+    $result: map-loop(("primary": null, "danger": null), "opacity-var", "$key", "bg");
+    @include assert-equal(
+      (
+        "primary": #{"oklch(from var(--primary) l c h / var(--bg-opacity, 1))"},
+        "danger":  #{"oklch(from var(--danger) l c h / var(--bg-opacity, 1))"}
+      ),
+      $result
+    );
+  }
+}

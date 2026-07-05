@@ -1,0 +1,99 @@
+---
+title: Gap
+description: Responsive utilities for controlling gap, row-gap, and column-gap on flex and grid containers using the Chassis spacing scale.
+toc: true
+tokens:
+  scopes:
+    - spacing
+css_layer: utilities
+mdn: https://developer.mozilla.org/en-US/docs/Web/CSS/gap
+---
+
+import { sassVars, sassSpaceValue } from '@libs/sass'
+
+## Overview
+
+Gap utilities apply the CSS `gap`, `row-gap`, and `column-gap` properties to flex and grid containers, distributing space between items without adding margin to individual children. All three utilities are responsive and share the same `$spaces` spacing scale used by [margin]([[docsref:/utilities/margin]]) and [padding]([[docsref:/utilities/padding]]).
+
+## Notation
+
+Gap classes that apply at all breakpoints have no breakpoint prefix — they start from `min-width: 0` and are not media-query-bound. Breakpoint-prefixed classes apply at that breakpoint and above.
+
+The classes are named using the format `{property}-{size}` for `xsmall` and `{breakpoint}:{property}-{size}` for `small`, `medium`, `large`, `xlarge`, and `2xlarge`.
+
+Where *property* is one of:
+
+- `gap` — sets `gap` (both row and column gap simultaneously)
+- `row-gap` — sets `row-gap`
+- `column-gap` — sets `column-gap`
+
+Where *size* is one of:
+
+<ul>
+  <li>`zero` or `0` — eliminates the gap by setting it to `0`</li>
+{
+  Object.keys(sassVars('space')).map((key) => (
+  <li><code>{key}</code> — default token value is <Fragment set:html={sassSpaceValue(key)} />.</li>
+  ))}
+</ul>
+
+There is no `.gap-auto` class — `auto` has no defined behavior for gap in the CSS specification.
+
+## gap
+
+`.gap-{size}` sets `gap` on a flex or grid container, controlling spacing between all items in both directions at once.
+
+<Example class="cxd-example-cssgrid" code={`<div class="grid gap-medium">
+    <div class="g-col-6 p-xsmall">Item 1</div>
+    <div class="g-col-6 p-xsmall">Item 2</div>
+    <div class="g-col-6 p-xsmall">Item 3</div>
+    <div class="g-col-6 p-xsmall">Item 4</div>
+  </div>`} />
+
+## row-gap
+
+`.row-gap-{size}` controls vertical spacing between rows in a grid or flex container without affecting column spacing.
+
+<Example class="cxd-example-cssgrid" code={`<div class="grid gap-0 row-gap-medium">
+    <div class="g-col-6 p-xsmall">Item 1</div>
+    <div class="g-col-6 p-xsmall">Item 2</div>
+    <div class="g-col-6 p-xsmall">Item 3</div>
+    <div class="g-col-6 p-xsmall">Item 4</div>
+  </div>`} />
+
+## column-gap
+
+`.column-gap-{size}` controls horizontal spacing between columns in a grid or flex container without affecting row spacing.
+
+<Example class="cxd-example-cssgrid" code={`<div class="grid gap-0 column-gap-medium">
+    <div class="g-col-6 p-xsmall">Item 1</div>
+    <div class="g-col-6 p-xsmall">Item 2</div>
+    <div class="g-col-6 p-xsmall">Item 3</div>
+    <div class="g-col-6 p-xsmall">Item 4</div>
+  </div>`} />
+
+## CSS
+
+Gap utilities are generated via the utilities API in `scss/utilities/_gap.scss`.
+
+### Reference
+
+Each class name, its CSS property, and the generated values appear in the reference table.
+
+<UtilityReferenceTable utility={["gap-", "row-gap-", "column-gap-"]} />
+
+### Sass maps
+
+Gap utilities are generated from Sass maps in `scss/maps/_spacing.scss`.
+
+<ScssDocs name="spaces-map" file="scss/maps/_spacing.scss" />
+
+`$-gap-values` is derived from `$spaces` in `scss/utilities/_gap.scss`, resolving each spacing key to its `:root` custom property via `var(--space-*)`, plus `0`.
+
+<ScssDocs name="utils-gap-values" file="scss/utilities/_gap.scss" />
+
+### Utilities API
+
+Gap utilities are declared in `scss/utilities/_gap.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
+
+<ScssDocs name="utils-gap" file="scss/utilities/_gap.scss" />

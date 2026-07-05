@@ -1,0 +1,65 @@
+@use "../../config" as *;
+@use "../../mixins" as *;
+
+@include describe("box-shadow mixin") {
+  @include it("emits a single shadow when shadows are enabled") {
+    $enable-component-shadows: true !global;
+    @include assert() {
+      @include output() {
+        .el { @include box-shadow(0 1px 3px rgba(0, 0, 0, .2)); }
+      }
+      @include expect() {
+        .el { box-shadow: 0 1px 3px rgba(0, 0, 0, .2); }
+      }
+    }
+  }
+
+  @include it("emits multiple comma-separated shadows") {
+    $enable-component-shadows: true !global;
+    @include assert() {
+      @include output() {
+        .el { @include box-shadow(0 1px 3px rgba(0, 0, 0, .2), 0 4px 8px rgba(0, 0, 0, .1)); }
+      }
+      @include expect() {
+        .el { box-shadow: 0 1px 3px rgba(0, 0, 0, .2), 0 4px 8px rgba(0, 0, 0, .1); }
+      }
+    }
+  }
+
+  @include it("emits nothing when shadows are disabled") {
+    $enable-component-shadows: false !global;
+    @include assert() {
+      @include output() {
+        .el { @include box-shadow(0 1px 3px rgba(0, 0, 0, .2)); }
+      }
+      @include expect() {
+        .el { }
+      }
+    }
+  }
+
+  @include it("emits a CSS keyword (none) as a sole value") {
+    $enable-component-shadows: true !global;
+    @include assert() {
+      @include output() {
+        .el { @include box-shadow(none); }
+      }
+      @include expect() {
+        .el { box-shadow: none; }
+      }
+    }
+  }
+
+  @include it("silently drops null values") {
+    $enable-component-shadows: true !global;
+    @include assert() {
+      @include output() {
+        .el { @include box-shadow(null, 0 1px 3px rgba(0, 0, 0, .2), null); }
+      }
+      @include expect() {
+        .el { box-shadow: 0 1px 3px rgba(0, 0, 0, .2); }
+      }
+    }
+  }
+
+}

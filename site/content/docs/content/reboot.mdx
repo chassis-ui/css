@@ -1,135 +1,100 @@
 ---
 title: Reboot
-description: Reboot, a collection of element-specific CSS changes in a single file, kickstart Chassis CSS to provide an elegant, consistent, and simple baseline to build upon.
-aliases: "[[docsref:content]]"
+description: Opinionated baseline styles applied to raw HTML elements in a dedicated CSS layer — Chassis's starting point before components and utilities build on top.
 toc: true
+css_layer: reboot
 ---
 
-## Approach
+## Overview
 
-Reboot builds upon Normalize, providing many HTML elements with somewhat opinionated styles using only element selectors. Additional styling is done only with classes. For example, we reboot some `<table>` styles for a simpler baseline and later provide `.table`, `.table-bordered`, and more.
+Reboot normalizes HTML elements with a minimal, opinionated set of styles applied through element selectors only — no classes. It is a maintained fork of Normalize.css with changes that align with Chassis's token-driven architecture and design principles. Additional styling beyond these baselines comes from higher-layer rules (`.table`, form components, utilities, and so on).
 
-Here are our guidelines and reasons for choosing what to override in Reboot:
+The principles behind Reboot's choices:
 
-- Update some browser default values to use `rem`s instead of `em`s for scalable component spacing.
-- Avoid `margin-top`. Vertical margins can collapse, yielding unexpected results. More importantly though, a single direction of `margin` is a simpler mental model.
-- For easier scaling across device sizes, block elements should use `rem`s for `margin`s.
-- Keep declarations of `font`-related properties to a minimum, using `inherit` whenever possible.
+- Avoid `margin-top`. Vertical margins can collapse in unexpected ways; a single direction of margin is a simpler mental model.
+- Block elements use token-based spacing rather than fixed `em` values, so spacing responds to the active token scale.
+- Typography on `<body>` — family, size, weight, line-height — reads from CSS custom properties, making it overridable at runtime without recompiling.
+- Colors for body text, background, and link states read from CSS custom properties tied to the Chassis color system, enabling light/dark mode switching without recompiling.
+- Font-related declarations on inherited elements use `inherit` wherever possible to keep the cascade simple.
 
-## CSS variables
+## CSS layer
 
-<AddedIn version="5.2.0"/>
+All Reboot rules are wrapped in `@layer reboot`. The full layer order, declared in `scss/_root.scss`, is:
 
-With v5.1.1, we standardized our required `@import`s across all our CSS bundles (including `chassis.css`, `chassis-reboot.css`, and `chassis-grid.css`) to include `_root.scss`. This adds `:root` level CSS variables to all bundles, regardless of how many of them are used in that bundle. Ultimately Chassis CSS 5 will continue to see more [CSS variables]([[docsref:/customize/css-variables]]) added over time, in order to provide more real-time customization without the need to always recompile Sass. Our approach is to take our source Sass variables and transform them into CSS variables. That way, even if you don’t use CSS variables, you still have all the power of Sass. **This is still in-progress and will take time to fully implement.**
+<ScssDocs name="layer-order" file="scss/_root.scss" />
 
-For example, consider these `:root` CSS variables for common `<body>` styles:
+This means any unlayered rule (or a rule in a later layer) automatically wins over Reboot without needing increased specificity. Overriding element baselines in a project stylesheet does not require targeting the same selectors or adding `!important`.
 
-<ScssDocs name="root-body-variables" file="scss/_root.scss" />
+## Page defaults
 
-In practice, those variables are then applied in Reboot like so:
+The `<html>` and `<body>` elements establish page-wide baselines.
 
-<ScssDocs name="reboot-body-rules" file="scss/_reboot.scss" />
+`box-sizing: border-box` is set on every element — including `*::before` and `*::after` — so declared widths are never exceeded by padding or border.
 
-Which allows you to make real-time customizations however you like:
+```scss
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+```
+
+The `<body>` element receives the following compiled rules:
+
+<ScssDocs name="reboot-body-rules" file="scss/_reboot.scss" compile />
+
+`margin: 0` removes the default browser margin. Font properties and colors are applied from CSS custom properties so they can be overridden at runtime:
 
 ```html
-<body style="--cx-fg-color: #333;">
+<body style="--cx-font-family: 'Georgia', serif;">
   <!-- ... -->
 </body>
 ```
 
-## Page defaults
+The body-level CSS custom properties are declared at `:root` alongside all other token-derived variables.
 
-The `<html>` and `<body>` elements are updated to provide better page-wide defaults. More specifically:
+## Typography
 
-- The `box-sizing` is globally set on every element—including `*::before` and `*::after`, to `border-box`. This ensures that the declared width of element is never exceeded due to padding or border.
-  - No base `font-size` is declared on the `<html>`, but `16px` is assumed (the browser default). `font-size: 1rem` is applied on the `<body>` for easy responsive type-scaling via media queries while respecting user preferences and ensuring a more accessible approach. This browser default can be overridden by modifying the `$font-size-root` variable.
-- The `<body>` also sets a global `font-family`, `font-weight`, `line-height`, and `color`. This is inherited later by some form elements to prevent font inconsistencies.
-- For safety, the `<body>` has a declared `background-color`, defaulting to `#fff`.
+Reboot establishes typographic baselines for heading elements, paragraph text, and semantic inline elements. All typographic sizing is driven by Chassis Tokens, so changes to the active token set propagate automatically without modifying Reboot's source.
 
-## Native font stack
+### Headings
 
-Chassis CSS utilizes a “native font stack” or “system font stack” for optimum text rendering on every device and OS. These system fonts have been designed specifically with today’s devices in mind, with improved rendering on screens, variable font support, and more. Read more about [native font stacks in this *Smashing Magazine* article](https://www.smashingmagazine.com/2015/11/using-system-ui-fonts-practical-guide/).
-
-```scss
-$font-family-sans-serif:
-  // Cross-platform generic font family (default user interface font)
-  system-ui,
-  // Safari for macOS and iOS (San Francisco)
-  -apple-system,
-  // Windows
-  "Segoe UI",
-  // Android
-  Roboto,
-  // older macOS and iOS
-  "Helvetica Neue",
-  // Linux
-  "Noto Sans",
-  "Liberation Sans",
-  // Basic web fallback
-  Arial,
-  // Sans serif fallback
-  sans-serif,
-  // Emoji fonts
-  "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
-```
-
-Note that because the font stack includes emoji fonts, many common symbol/dingbat Unicode characters will be rendered as multicolored pictographs. Their appearance will vary, depending on the style used in the browser/platform’s native emoji font, and they won’t be affected by any CSS `color` styles.
-
-This `font-family` is applied to the `<body>` and automatically inherited globally throughout Chassis. To switch the global `font-family`, update `$font-family-base` and recompile Chassis.
-
-## Headings
-
-All heading elements—`<h1>`—`<h6>` have their `margin-top` removed, `margin-bottom: .5rem` set, and `line-height` tightened. While headings inherit their `color` by default, you can also override it via optional CSS variable, `--cx-heading-color`.
+All `<h1>`–`<h6>` elements have `margin-top` removed and a consistent bottom margin applied. Font family and weight come from Chassis Typography Tokens. Font size and line-height scale responsively across viewport sizes. Headings inherit color from the surrounding document context.
 
 <CxTable>
 | Heading | Example |
 | --- | --- |
-| `<h1></h1>` | <span class="h1">h1. Chassis CSS heading</span> |
-| `<h2></h2>` | <span class="h2">h2. Chassis CSS heading</span> |
-| `<h3></h3>` | <span class="h3">h3. Chassis CSS heading</span> |
-| `<h4></h4>` | <span class="h4">h4. Chassis CSS heading</span> |
-| `<h5></h5>` | <span class="h5">h5. Chassis CSS heading</span> |
-| `<h6></h6>` | <span class="h6">h6. Chassis CSS heading</span> |
+| `<h1></h1>` | <span class="h1">h1. Chassis heading</span> |
+| `<h2></h2>` | <span class="h2">h2. Chassis heading</span> |
+| `<h3></h3>` | <span class="h3">h3. Chassis heading</span> |
+| `<h4></h4>` | <span class="h4">h4. Chassis heading</span> |
+| `<h5></h5>` | <span class="h5">h5. Chassis heading</span> |
+| `<h6></h6>` | <span class="h6">h6. Chassis heading</span> |
 </CxTable>
 
-## Paragraphs
+### Paragraphs
 
-All `<p>` elements have their `margin-top` removed and `margin-bottom: 1rem` set for easy spacing.
+All `<p>` elements have `margin-top` removed and `margin-bottom: 1rem` set for consistent vertical spacing.
 
 <Example code={`<p>This is an example paragraph.</p>`} />
 
-## Links
+### Links
 
-Links have a default `color` and underline applied. While links change on `:hover`, they don’t change based on whether someone `:visited` the link. They also receive no special `:focus` styles.
+Links receive `color` and `text-decoration` from the active Chassis color context. Default, hover, active, and visited states each use a distinct color. Visited link styling is enabled by default and is controlled by `$enable-visited-links`.
 
 <Example code={`<a href="#">This is an example link</a>`} />
 
-Link `color` supports easy opacity customization via the `--cx-link-opacity` CSS variable. Change the link color opacity with:
+Link color opacity is adjustable via `--cx-link-opacity`. All link states share the same opacity value, so a single assignment affects the full interaction spectrum:
 
 <Example code={`<a href="#" style="--cx-link-opacity: .5">This is an example link</a>`} />
 
-
-Placeholder links—those without an `href`—are targeted with a more specific selector and have their `color` and `text-decoration` reset to their default values.
+Placeholder links — `<a>` elements without an `href` attribute — are targeted by the more-specific `a:not([href]):not([class])` selector and have `color` and `text-decoration` reset to their inherited values.
 
 <Example code={`<a>This is a placeholder link</a>`} />
 
-## Horizontal rules
+### Lists
 
-The `<hr>` element has been simplified. Similar to browser defaults, `<hr>`s are styled via `border-top`, have a default `opacity: .25`, and automatically inherit their `border-color` via `color`, including when `color` is set via the parent. They can be modified with text, border, and opacity utilities.
-
-<Example code={`<hr>
-
-  <div class="text-success">
-    <hr>
-  </div>
-
-  <hr class="border border-danger border-2 opacity-50">
-  <hr class="border border-primary border-3 opacity-75">`} />
-
-## Lists
-
-All lists—`<ul>`, `<ol>`, and `<dl>`—have their `margin-top` removed and a `margin-bottom: 1rem`. Nested lists have no `margin-bottom`. We’ve also reset the `padding-left` on `<ul>` and `<ol>` elements.
+All lists — `<ul>`, `<ol>`, and `<dl>` — have `margin-top` removed and `margin-bottom: 1rem` set. Nested lists have `margin-bottom` set to zero so inner lists don't add extra spacing between items. `<ul>` and `<ol>` receive `padding-inline-start: 2rem` to establish indent on the logical inline-start axis.
 
 <div class="cxd-example">
 * All lists have their top margin removed
@@ -137,15 +102,15 @@ All lists—`<ul>`, `<ol>`, and `<dl>`—have their `margin-top` removed and a `
 * Nested lists have no bottom margin
   * This way they have a more even appearance
   * Particularly when followed by more list items
-* The left padding has also been reset
+* The inline-start padding is set to 2rem
 
-1. Here’s an ordered list
+1. Here's an ordered list
 2. With a few list items
 3. It has the same overall look
 4. As the previous unordered list
 </div>
 
-For simpler styling, clear hierarchy, and better spacing, description lists have updated `margin`s. `<dd>`s reset `margin-left` to `0` and add `margin-bottom: .5rem`. `<dt>`s are **bolded**.
+Description lists have updated margins for clear hierarchy. `<dd>` elements reset `margin-inline-start` to `0` and add `margin-bottom: .5rem`. `<dt>` elements are bolded.
 
 <div class="cxd-example">
   <dl>
@@ -159,42 +124,54 @@ For simpler styling, clear hierarchy, and better spacing, description lists have
   </dl>
 </div>
 
-## Inline code
+## Code elements
 
-Wrap inline snippets of code with `<code>`. Be sure to escape HTML angle brackets.
+Reboot applies consistent baselines to all four semantic code elements. `<pre>`, `<code>`, `<kbd>`, and `<samp>` share a monospace font from the Chassis code typography token, with size and line-height set from the same token source.
 
+### Inline code
+
+Wrap inline snippets of code with `<code>`. Escape HTML angle brackets when embedding literal markup.
+
+<div  style="--cxd-code-color: initial;">
 <Example code={`For example, <code>&lt;section&gt;</code> should be wrapped as inline.`} />
+</div>
 
-## Code blocks
+### Code blocks
 
-Use `<pre>`s for multiple lines of code. Once again, be sure to escape any angle brackets in the code for proper rendering. The `<pre>` element is reset to remove its `margin-top` and use `rem` units for its `margin-bottom`.
+Use `<pre>` for multi-line code. The element has `margin-top` removed and `margin-bottom: 1rem` applied. Nested `<code>` inside `<pre>` inherits the element's color and resets `word-break` to normal.
 
 <Example code={`<pre><code>&lt;p&gt;Sample text here...&lt;/p&gt;
 &lt;p&gt;And another line of sample text here...&lt;/p&gt;
 </code></pre>`} />
 
-## Variables
+### Variables
 
-For indicating variables use the `<var>` tag.
+Use `<var>` to indicate mathematical or programming variables.
 
 <Example code={`<var>y</var> = <var>m</var><var>x</var> + <var>b</var>`} />
 
-## User input
+### User input
 
-Use the `<kbd>` to indicate input that is typically entered via keyboard.
+Use `<kbd>` to indicate input typically entered via keyboard. Nested `<kbd>` elements (for key combinations) lose their padding so the combination reads as a single unit.
 
 <Example code={`To switch directories, type <kbd>cd</kbd> followed by the name of the directory.<br>
-To edit settings, press <kbd><kbd>Ctrl</kbd> + <kbd>,</kbd></kbd>`} />
+To edit settings, press <kbd>Ctrl</kbd> + <kbd>,</kbd>`} />
 
-## Sample output
+### Sample output
 
-For indicating sample output from a program use the `<samp>` tag.
+Use `<samp>` to indicate sample output from a program.
 
 <Example code={`<samp>This text is meant to be treated as sample output from a computer program.</samp>`} />
 
+## Horizontal rules
+
+The `<hr>` element receives consistent margin, border, and opacity values. The border is applied on the logical block axis via `border-block-start`, with `border: 0` clearing any inherited shorthand first. Color, width, margin, and opacity come from Chassis Tokens and are configurable before compiling:
+
+<Example code={`<hr>`} />
+
 ## Tables
 
-Tables are slightly adjusted to style `<caption>`s, collapse borders, and ensure consistent `text-align` throughout. Additional changes for borders, padding, and more come with [the `.table` class]([[docsref:/content/tables]]).
+Tables receive minimal resets to establish a clean baseline before the `.table` component applies its own styling. `caption-side: bottom` moves captions below the table. `border-spacing: 0` removes the default gap between cells. All table section and cell elements have `border-width: 0` and `border-color: inherit` set, making borders invisible by default while still responding to any color set by a parent. Additional borders, padding, and variants come from [the `.table` class]([[docsref:/content/tables]]).
 
 <Example code={`<table>
     <caption>
@@ -230,18 +207,17 @@ Tables are slightly adjusted to style `<caption>`s, collapse borders, and ensure
     </tbody>
   </table>`} />
 
-## Forms
+## Form elements
 
-Various form elements have been rebooted for simpler base styles. Here are some of the most notable changes:
+Form elements receive targeted resets for a simpler baseline. The most notable changes:
 
-- `<fieldset>`s have no borders, padding, or margin so they can be easily used as wrappers for individual inputs or groups of inputs.
-- `<legend>`s, like fieldsets, have also been restyled to be displayed as a heading of sorts.
-- `<label>`s are set to `display: inline-block` to allow `margin` to be applied.
-- `<input>`s, `<select>`s, `<textarea>`s, and `<button>`s are mostly addressed by Normalize, but Reboot removes their `margin` and sets `line-height: inherit`, too.
-- `<textarea>`s are modified to only be resizable vertically as horizontal resizing often “breaks” page layout.
-- `<button>`s and `<input>` button elements have `cursor: pointer` when `:not(:disabled)`.
-
-These changes, and more, are demonstrated below.
+- `<fieldset>` elements have `min-width`, padding, margin, and border all reset to `0` so they behave like standard block containers without the browser's default shrink-to-content sizing.
+- `<legend>` uses `float: left` so the fieldset border wraps around it correctly; a `+ *` clear rule clears the float for subsequent content.
+- `<label>` is set to `display: inline-block` to allow margin.
+- `<input>`, `<select>`, `<textarea>`, `<button>`, and `<optgroup>` have `margin` removed and `font-family`, `font-size`, and `line-height` set to `inherit`.
+- `<textarea>` is restricted to `resize: vertical` so horizontal resizing cannot break page layout.
+- `<button>` and `<input>` button types receive `cursor: pointer` when `:not(:disabled)`. This is controlled by `$enable-button-pointers`, which is `true` by default.
+- `<button>` has `border-radius: 0` to remove the macOS Chrome default rounding.
 
 <Callout name="warning-input-support" type="warning" />
 
@@ -309,7 +285,7 @@ These changes, and more, are demonstrated below.
       </label>
       <label>
         <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2"/>
-        Option two is something else that’s also super long to demonstrate the wrapping of these fancy form inputs.
+        Option two is something else that's also super long to demonstrate the wrapping of these fancy form inputs.
       </label>
       <label>
         <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3" disabled/>
@@ -330,7 +306,7 @@ These changes, and more, are demonstrated below.
     </p>
     <p>
       <label for="password">Example password</label>
-      <input type="password" id="password"/>
+      <input type="password" autocomplete="current-password" id="password"/>
     </p>
     <p>
       <label for="datetime-local">Example datetime-local</label>
@@ -369,15 +345,17 @@ These changes, and more, are demonstrated below.
 
 ### Pointers on buttons
 
-Reboot includes an enhancement for `role="button"` to change the default cursor to `pointer`. Add this attribute to elements to help indicate elements are interactive. This role isn’t necessary for `<button>` elements, which get their own `cursor` change.
+The `[role="button"]` selector sets `cursor: pointer` on non-button elements that act as interactive controls. This is separate from `$enable-button-pointers`, which applies only to actual `<button>` and `<input>` button elements.
 
 <Example code={`<span role="button" tabindex="0">Non-button element button</span>`} />
 
 ## Misc elements
 
+A handful of miscellaneous elements receive targeted resets that browsers often handle inconsistently.
+
 ### Address
 
-The `<address>` element is updated to reset the browser default `font-style` from `italic` to `normal`. `line-height` is also now inherited, and `margin-bottom: 1rem` has been added. `<address>`s are for presenting contact information for the nearest ancestor (or an entire body of work). Preserve formatting by ending lines with `<br>`.
+The `<address>` element resets `font-style` from the browser default `italic` to `normal`, inherits `line-height` from the parent, and adds `margin-block-end: 1rem`. End lines with `<br>` to preserve the formatting of postal or contact addresses.
 
 <Example showMarkup={false} code={`<address>
     <strong>ACME Corporation</strong><br/>
@@ -393,10 +371,10 @@ The `<address>` element is updated to reset the browser default `font-style` fro
 
 ### Blockquote
 
-The default `margin` on blockquotes is `1em 40px`, so we reset that to `0 0 1rem` for something more consistent with other elements.
+The bare `<blockquote>` element has its default margin (`1em 40px`) replaced with `0 0 1rem` to match the bottom-only margin pattern used across Reboot. The `.blockquote` class (defined in the Typography layer) adds font scaling and additional styling for designed quote contexts.
 
 <Example showMarkup={false} code={`<figure>
-    <blockquote class="blockquote">
+    <blockquote>
       <p>A well-known quote, contained in a blockquote element.</p>
     </blockquote>
     <figcaption>
@@ -404,9 +382,9 @@ The default `margin` on blockquotes is `1em 40px`, so we reset that to `0 0 1rem
     </figcaption>
   </figure>`} />
 
-### Inline elements
+### Abbreviations
 
-The `<abbr>` element receives basic styling to make it stand out amongst paragraph text.
+The `<abbr>` element receives `text-decoration: underline dotted` and `cursor: help` to signal that a title tooltip is available. `text-decoration-skip-ink: none` prevents ink skipping from breaking the dotted underline.
 
 <div class="cxd-example">
   The <abbr title="HyperText Markup Language">HTML</abbr> abbreviation element.
@@ -414,7 +392,7 @@ The `<abbr>` element receives basic styling to make it stand out amongst paragra
 
 ### Summary
 
-The default `cursor` on summary is `text`, so we reset that to `pointer` to convey that the element can be interacted with by clicking on it.
+The `<summary>` element receives `display: list-item` to preserve the disclosure triangle and `cursor: pointer` to indicate interactivity.
 
 <div class="cxd-example">
   <details>
@@ -428,16 +406,50 @@ The default `cursor` on summary is `text`, so we reset that to `pointer` to conv
   </details>
 </div>
 
-## HTML5 `[hidden]` attribute
+## Hidden attribute
 
-HTML5 adds [a new global attribute named `[hidden]`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/hidden), which is styled as `display: none` by default. Borrowing an idea from [PureCSS](https://purecss.io/), we improve upon this default by making `[hidden] { display: none !important; }` to help prevent its `display` from getting accidentally overridden.
+The `[hidden]` HTML attribute hides elements with `display: none`. Reboot strengthens this with `!important` to prevent accidental overrides from display utilities or component rules:
 
 ```html
 <input type="text" hidden>
 ```
 
-<Callout>
-Since `[hidden]` is not compatible with jQuery’s `$(...).hide()` and `$(...).show()` methods, we don’t specifically endorse `[hidden]` over other techniques for managing the `display` of elements.
-</Callout>
+To toggle visibility without removing an element from layout flow, use [the `.invisible` class]([[docsref:/utilities/visibility]]) instead — it sets `visibility: hidden` and leaves the element's space intact.
 
-To merely toggle the visibility of an element, meaning its `display` is not modified and the element can still affect the flow of the document, use [the `.invisible` class]([[docsref:/utilities/visibility]]) instead.
+## Feature flags
+
+Several Reboot behaviors are controlled by SCSS settings variables that can be overridden before compiling. All default to `true`.
+
+<CxTable>
+| Variable | Default | Effect |
+| --- | --- | --- |
+| `$enable-dark-mode` | `true` | Adds `color-scheme: light dark` to `:root` and wires up `data-cx-theme` attribute switching. |
+| `$enable-visited-links` | `true` | Applies visited-state color to `a:visited`. |
+| `$enable-smooth-scroll` | `true` | Applies `scroll-behavior: smooth` at `:root` when `prefers-reduced-motion: no-preference` is active. |
+| `$enable-button-pointers` | `true` | Applies `cursor: pointer` to `<button>` and `<input>` button types when `:not(:disabled)`. |
+</CxTable>
+
+## CSS
+
+Reboot source lives in `scss/_reboot.scss`. Body typography and color custom properties are declared in `scss/_root.scss`. The body rules and `:root` custom properties are shown in [Page defaults](#page-defaults).
+
+### Sass variables
+
+Reboot exposes compile-time Sass variables for code elements, keyboard input, and horizontal rules.
+
+`<code>` element defaults — font family reads from the code typography token, while size, line-height, and color inherit from the parent:
+
+<ScssDocs name="code-variables" file="scss/config/_defaults.scss" />
+
+`<pre>` has a single color variable, unset by default so the element inherits color from the surrounding context:
+
+<ScssDocs name="pre-variables" file="scss/config/_defaults.scss" />
+
+`<kbd>` variables control padding, font size, line-height, foreground and background colors, and the font weight of nested `<kbd>` elements:
+
+<ScssDocs name="kbd-variables" file="scss/config/_defaults.scss" />
+
+Horizontal rule variables set margin, border width, color, and opacity — all sourced from Chassis Tokens:
+
+<ScssDocs name="hr-variables" file="scss/config/_defaults.scss" />
+

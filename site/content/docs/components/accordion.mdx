@@ -4,6 +4,9 @@ description: Create accessible, responsive accordions using HTML5 native element
 aliases:
  - "/components"
  - "[[docsref:/components]]"
+tokens: component
+js: optional
+css_layer: components
 toc: true
 ---
 
@@ -53,40 +56,36 @@ Add the `open` attribute to any `<details>` element to render it expanded by def
 
 ### Headings
 
-<Callout type="warning">
-Note that this pattern optimizes screen reader accessibility but uses ARIA role combinations that don't comply with current W3C validation standards. Chassis chooses to prioritize functional accessibility over validation conformance in this case.
-</Callout>
-
-Because the `<summary>` element has a `button` role by default (which overrides the roles of its child elements), `heading` elements inside `<summary>` are not recognized by assistive technologies like screen readers.
-
-Fortunately, by swapping the ARIA roles of `<summary>` and `heading` elements and manually setting the `aria-expanded` attribute, you can create accessible accordions with headings using the `<details>` element.
+The HTML spec permits one heading element as a direct child of `<summary>` — no ARIA role overrides are needed. Use a heading element as `.accordion-title` when accordion headers need to participate in the document's visual and source-order hierarchy.
 
 <Example code={`<div class="accordion">
-    <details name="example-headings" open>
-      <summary role="heading" aria-level="3">
-        <h3 class="accordion-title" role="button" aria-expanded="true">Accordion Item #1</h3>
-      </summary>
-      <div class="accordion-body">
-        <p>This is the <b>first item's body</b>, shown by default. It will automatically close when another item is opened by clicking its summary element.</p>
-      </div>
-    </details>
-    <details name="example-headings">
-      <summary role="heading" aria-level="3">
-        <h3 class="accordion-title" role="button" aria-expanded="false">Accordion Item #2</h3>
-      </summary>
-      <div class="accordion-body">
-        <p>This is the <b>second item's body</b>. It is hidden by default and will open when its summary element is clicked.</p>
-      </div>
-    </details>
-    <details name="example-headings">
-      <summary role="heading" aria-level="3">
-        <h3 class="accordion-title" role="button" aria-expanded="false">Accordion Item #3</h3>
-      </summary>
-      <div class="accordion-body">
-        <p>This is the <b>third item's body</b>. It is hidden by default and will open when its summary element is clicked.</p>
-      </div>
-    </details>
-  </div>`} />
+  <details name="example-headings" open>
+    <summary>
+      <h3 class="accordion-title">Accordion Item #1</h3>
+    </summary>
+    <div class="accordion-body">
+      <p>This is the <b>first item's body</b>, shown by default. It will automatically close when another item is opened by clicking its summary element.</p>
+    </div>
+  </details>
+  <details name="example-headings">
+    <summary>
+      <h3 class="accordion-title">Accordion Item #2</h3>
+    </summary>
+    <div class="accordion-body">
+      <p>This is the <b>second item's body</b>. It is hidden by default and will open when its summary element is clicked.</p>
+    </div>
+  </details>
+  <details name="example-headings">
+    <summary>
+      <h3 class="accordion-title">Accordion Item #3</h3>
+    </summary>
+    <div class="accordion-body">
+      <p>This is the <b>third item's body</b>. It is hidden by default and will open when its summary element is clicked.</p>
+    </div>
+  </details>
+</div>`} />
+
+The heading level does not appear in assistive technology heading navigation — inside a disclosure button, heading semantics are absorbed into the button role. Accordion headers remain fully accessible via keyboard and button navigation. When heading-outline navigation is a strict requirement, use the [WAI-ARIA APG accordion pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) instead.
 
 ### Static Items
 
@@ -160,13 +159,13 @@ Add `.flush` to remove some borders and rounded corners to render accordions edg
   </div>
 ```
 
-### Indicator Position
+### Caret Position
 
-Add `.indicator-end` to the accordion container to move the indicator icon to the end of the summary element.
+Add `.caret-end` to the accordion container to move the caret icon to the end of the summary element.
 
 <div class="cxd-example">
 
-  <div class="accordion indicator-end">
+  <div class="accordion caret-end">
     <details name="example-end" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -196,7 +195,7 @@ Add `.indicator-end` to the accordion container to move the indicator icon to th
 </div>
 
 ```html
-  <div class="accordion indicator-end">
+  <div class="accordion caret-end">
     ...
   </div>
 ```
@@ -631,27 +630,12 @@ The accordion component leverages the native HTML5 `<details>` and `<summary>` e
 
 ### Using Headings
 
-<Callout type="warning">
-Note that this pattern optimizes screen reader accessibility but uses ARIA role combinations that don't comply with current W3C validation standards. Chassis chooses to prioritize functional accessibility over validation conformance in this case.
-</Callout>
+The HTML spec permits one heading element as a direct child of `<summary>`. No ARIA role overrides are needed — place the heading inside `<summary>` and the browser handles button semantics and `aria-expanded` state automatically.
 
-Because the `<summary>` element has a `button` role by default (which overrides the roles of its child elements), heading elements inside `<summary>` are not recognized by assistive technologies like screen readers.
-
-To create accessible accordions with proper heading hierarchy, swap the ARIA roles between the `<summary>` and heading elements:
-
-1. Add `role="heading"` and `aria-level` attributes to the `<summary>` element.
-2. Add `role="button"` and `aria-expanded` attributes to the heading element inside.
-
-This ensures screen readers correctly announce both the heading structure and the interactive button functionality.
-
-- The `aria-level` should match the appropriate heading level in the document hierarchy.
-- The `aria-expanded` attribute will be automatically managed by the accordion JavaScript.
-
-For example:
 ```html
 <details>
-  <summary role="heading" aria-level="3">
-    <h3 class="accordion-title" role="button" aria-expanded="false">Accordion Item #1</h3>
+  <summary>
+    <h3 class="accordion-title">Accordion Item #1</h3>
   </summary>
   <div class="accordion-body">
     <!-- Content -->
@@ -659,7 +643,11 @@ For example:
 </details>
 ```
 
-This approach preserves the document's heading structure while maintaining the interactive behavior expected from accordion components.
+Screen readers announce the header as a disclosure button using the heading text as its accessible name. The `<summary>` retains its native `role="button"` and the browser reflects the `open` attribute as `aria-expanded` without JavaScript.
+
+The heading level does not appear in assistive technology heading-outline navigation. Inside a disclosure button, heading semantics are absorbed into the button role — the heading element contributes its text as the button's accessible name, but its level is not exposed in the document outline. Accordion headers are discoverable via button and form-control navigation but not via heading shortcuts (h-key in NVDA, JAWS, or VoiceOver).
+
+When AT heading-outline navigation is a hard requirement, the [WAI-ARIA APG accordion pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) uses `<h3><button>` markup that participates in both heading and button navigation — at the cost of abandoning the native `<details>` element and requiring full JavaScript state management.
 
 ## CSS
 
@@ -675,7 +663,7 @@ This approach preserves the document's heading structure while maintaining the i
 
 <DocsSASSVars />
 
-<ScssDocs name="accordion-variables" file="scss/_variables.scss" />
+<ScssDocs name="accordion-variables" file="scss/config/_defaults.scss" />
 
 ### Design tokens
 

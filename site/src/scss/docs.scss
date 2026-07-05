@@ -1,21 +1,38 @@
-// Chassis CSS variables and mixins
-@import "../../../scss/settings";
-@import "../../../scss/vendor";
-@import "../../../scss/functions";
-@import "../../../scss/tokens";
-@import "../../../scss/variables";
-@import "../../../scss/rfs";
-@import "../../../scss/maps";
-@import "../../../scss/mixins";
-@import "../../../scss/placeholders";
-@import "../../../scss/grid";
-
 // Shared docs styles
-@import "@chassis-ui/docs/scss/main";
+@forward "@chassis-ui/docs/scss/main";
+
+// @forward "../../../scss/forms/check-legacy";
 
 // CSS docs styles
-@import "component-examples";
-@import "context-example";
-@import "color-palette";
-@import "colors";
-@import "placeholder";
+@forward "./examples";
+@forward "./context-example";
+@forward "./color-palette";
+@forward "./colors";
+
+@layer custom {
+
+  .cxd-page-meta {
+    margin-block-start: calc(var(--cx-space-medium) * -1);
+    margin-block-end: var(--cx-space-xlarge);
+    &:has(+ :where(h2, h3)) {
+      margin-block-end: calc(var(--cx-space-xlarge) * -1);
+    }
+  }
+
+  .cxd-content > .cxd-reference-table {
+    max-height: 480px;
+    margin-block-end: var(--cx-space-xlarge);
+    overflow-y: auto;
+
+    > .table {
+      margin-block-end: 0;
+      > thead {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+    }
+
+  }
+
+} // @layer custom

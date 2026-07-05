@@ -1,6 +1,34 @@
+@use "../config/vendor" as *;
+
+//
+// Color Tokens
+//
+// SCSS variables for the global context color palette, mapped from the vendor
+// token set. Defines the full set of named context and base colors.
+//
+
 // fusv-disable
+
+// scss-docs-start context-color-variables
+// `$black` and `$white` come first so they bind to the vendor tokens; the
+// named-CSS-color shortcuts further down are gated with `!default` and will
+// not shadow them.
+$default:       $cx-color-base-context-light-black-base-color !default;
+$alternate:     $cx-color-base-context-light-white-base-color !default;
+$primary:       $cx-color-base-context-light-primary-base-color !default;
+$secondary:     $cx-color-base-context-light-secondary-base-color !default;
+$neutral:       $cx-color-base-context-light-neutral-base-color !default;
+$danger:        $cx-color-base-context-light-danger-base-color !default;
+$success:       $cx-color-base-context-light-success-base-color !default;
+$warning:       $cx-color-base-context-light-warning-base-color !default;
+$info:          $cx-color-base-context-light-info-base-color !default;
+$black:         $cx-color-base-context-light-black-base-color !default;
+$white:         $cx-color-base-context-light-white-base-color !default;
+// scss-docs-end context-color-variables
+
+// Named CSS color shortcuts (kept for convenience; not used by the framework
+// outside this file).
 $aqua:       #0cc !default;
-$black:      #000 !default;
 $blue:       #00f !default;
 $cyan:       #0cf !default;
 $green:      #090 !default;
@@ -15,22 +43,7 @@ $pink:       #f39 !default;
 $purple:     #90f !default;
 $teal:       #099 !default;
 $violet:     #c3c !default;
-$white:      #fff !default;
 $yellow:     #fc0 !default;
-
-// scss-docs-start context-color-variables
-$default:       $cx-color-base-context-light-black-base-color !default;
-$alternate:     $cx-color-base-context-light-white-base-color !default;
-$primary:       $cx-color-base-context-light-primary-base-color !default;
-$secondary:     $cx-color-base-context-light-secondary-base-color !default;
-$neutral:       $cx-color-base-context-light-neutral-base-color !default;
-$danger:        $cx-color-base-context-light-danger-base-color !default;
-$success:       $cx-color-base-context-light-success-base-color !default;
-$warning:       $cx-color-base-context-light-warning-base-color !default;
-$info:          $cx-color-base-context-light-info-base-color !default;
-$black:         $cx-color-base-context-light-black-base-color !default;
-$white:         $cx-color-base-context-light-white-base-color !default;
-// scss-docs-end context-color-variables
 
 // scss-docs-start contrast-color-variables
 $default-contrast:       $cx-color-base-context-light-black-contrast-color !default;
@@ -60,141 +73,141 @@ $black-transparent:           $cx-color-base-context-light-black-transparent-col
 $white-transparent:           $cx-color-base-context-light-white-transparent-color !default;
 // scss-docs-end transparent-color-variables
 
-// scss-docs-start primitive-palette-variables
-// scss-docs-start black-palette-variables
-// $black-main:            $cx-color-base-palette-light-black-main !default;
-// $black-clear:           $cx-color-base-palette-light-black-clear !default;
-// $black-contrast:        $cx-color-base-palette-light-black-contrast !default;
-$black-t-05:            $cx-color-base-palette-light-black-t-05 !default;
-$black-t-10:            $cx-color-base-palette-light-black-t-10 !default;
-$black-t-20:            $cx-color-base-palette-light-black-t-20 !default;
-$black-t-30:            $cx-color-base-palette-light-black-t-30 !default;
-$black-t-40:            $cx-color-base-palette-light-black-t-40 !default;
-$black-t-50:            $cx-color-base-palette-light-black-t-50 !default;
-$black-t-60:            $cx-color-base-palette-light-black-t-60 !default;
-$black-t-70:            $cx-color-base-palette-light-black-t-70 !default;
-$black-t-80:            $cx-color-base-palette-light-black-t-80 !default;
-$black-t-90:            $cx-color-base-palette-light-black-t-90 !default;
-$black-t-95:            $cx-color-base-palette-light-black-t-95 !default;
-// scss-docs-end black-palette-variables
+// scss-docs-start primitive-primitive-variables
+// scss-docs-start black-primitive-variables
+// $black-main:            $cx-color-base-primitive-light-black-main !default;
+// $black-clear:           $cx-color-base-primitive-light-black-clear !default;
+// $black-contrast:        $cx-color-base-primitive-light-black-contrast !default;
+$black-t-05:            $cx-color-base-primitive-light-black-t-05 !default;
+$black-t-10:            $cx-color-base-primitive-light-black-t-10 !default;
+$black-t-20:            $cx-color-base-primitive-light-black-t-20 !default;
+$black-t-30:            $cx-color-base-primitive-light-black-t-30 !default;
+$black-t-40:            $cx-color-base-primitive-light-black-t-40 !default;
+$black-t-50:            $cx-color-base-primitive-light-black-t-50 !default;
+$black-t-60:            $cx-color-base-primitive-light-black-t-60 !default;
+$black-t-70:            $cx-color-base-primitive-light-black-t-70 !default;
+$black-t-80:            $cx-color-base-primitive-light-black-t-80 !default;
+$black-t-90:            $cx-color-base-primitive-light-black-t-90 !default;
+$black-t-95:            $cx-color-base-primitive-light-black-t-95 !default;
+// scss-docs-end black-primitive-variables
 
-// scss-docs-start vhite-palette-variables
-// $white-main:            $cx-color-base-palette-light-white-main !default;
-// $white-clear:           $cx-color-base-palette-light-white-clear !default;
-// $white-contrast:        $cx-color-base-palette-light-white-contrast !default;
-$white-t-05:            $cx-color-base-palette-light-white-t-05 !default;
-$white-t-10:            $cx-color-base-palette-light-white-t-10 !default;
-$white-t-20:            $cx-color-base-palette-light-white-t-20 !default;
-$white-t-30:            $cx-color-base-palette-light-white-t-30 !default;
-$white-t-40:            $cx-color-base-palette-light-white-t-40 !default;
-$white-t-50:            $cx-color-base-palette-light-white-t-50 !default;
-$white-t-60:            $cx-color-base-palette-light-white-t-60 !default;
-$white-t-70:            $cx-color-base-palette-light-white-t-70 !default;
-$white-t-80:            $cx-color-base-palette-light-white-t-80 !default;
-$white-t-90:            $cx-color-base-palette-light-white-t-90 !default;
-$white-t-95:            $cx-color-base-palette-light-white-t-95 !default;
-// scss-docs-end black-palette-variables
+// scss-docs-start white-primitive-variables
+// $white-main:            $cx-color-base-primitive-light-white-main !default;
+// $white-clear:           $cx-color-base-primitive-light-white-clear !default;
+// $white-contrast:        $cx-color-base-primitive-light-white-contrast !default;
+$white-t-05:            $cx-color-base-primitive-light-white-t-05 !default;
+$white-t-10:            $cx-color-base-primitive-light-white-t-10 !default;
+$white-t-20:            $cx-color-base-primitive-light-white-t-20 !default;
+$white-t-30:            $cx-color-base-primitive-light-white-t-30 !default;
+$white-t-40:            $cx-color-base-primitive-light-white-t-40 !default;
+$white-t-50:            $cx-color-base-primitive-light-white-t-50 !default;
+$white-t-60:            $cx-color-base-primitive-light-white-t-60 !default;
+$white-t-70:            $cx-color-base-primitive-light-white-t-70 !default;
+$white-t-80:            $cx-color-base-primitive-light-white-t-80 !default;
+$white-t-90:            $cx-color-base-primitive-light-white-t-90 !default;
+$white-t-95:            $cx-color-base-primitive-light-white-t-95 !default;
+// scss-docs-end white-primitive-variables
 
-// scss-docs-start primary-palette-variables
-$primary-05:            $cx-color-base-palette-light-primary-05 !default;
-$primary-10:            $cx-color-base-palette-light-primary-10 !default;
-$primary-20:            $cx-color-base-palette-light-primary-20 !default;
-$primary-30:            $cx-color-base-palette-light-primary-30 !default;
-$primary-40:            $cx-color-base-palette-light-primary-40 !default;
-$primary-50:            $cx-color-base-palette-light-primary-50 !default;
-$primary-60:            $cx-color-base-palette-light-primary-60 !default;
-$primary-70:            $cx-color-base-palette-light-primary-70 !default;
-$primary-80:            $cx-color-base-palette-light-primary-80 !default;
-$primary-90:            $cx-color-base-palette-light-primary-90 !default;
-$primary-95:            $cx-color-base-palette-light-primary-95 !default;
-// scss-docs-end primary-palette-variables
+// scss-docs-start primary-primitive-variables
+$primary-05:            $cx-color-base-primitive-light-primary-05 !default;
+$primary-10:            $cx-color-base-primitive-light-primary-10 !default;
+$primary-20:            $cx-color-base-primitive-light-primary-20 !default;
+$primary-30:            $cx-color-base-primitive-light-primary-30 !default;
+$primary-40:            $cx-color-base-primitive-light-primary-40 !default;
+$primary-50:            $cx-color-base-primitive-light-primary-50 !default;
+$primary-60:            $cx-color-base-primitive-light-primary-60 !default;
+$primary-70:            $cx-color-base-primitive-light-primary-70 !default;
+$primary-80:            $cx-color-base-primitive-light-primary-80 !default;
+$primary-90:            $cx-color-base-primitive-light-primary-90 !default;
+$primary-95:            $cx-color-base-primitive-light-primary-95 !default;
+// scss-docs-end primary-primitive-variables
 
-// scss-docs-start secondary-palette-variables
-$secondary-05:          $cx-color-base-palette-light-secondary-05 !default;
-$secondary-10:          $cx-color-base-palette-light-secondary-10 !default;
-$secondary-20:          $cx-color-base-palette-light-secondary-20 !default;
-$secondary-30:          $cx-color-base-palette-light-secondary-30 !default;
-$secondary-40:          $cx-color-base-palette-light-secondary-40 !default;
-$secondary-50:          $cx-color-base-palette-light-secondary-50 !default;
-$secondary-60:          $cx-color-base-palette-light-secondary-60 !default;
-$secondary-70:          $cx-color-base-palette-light-secondary-70 !default;
-$secondary-80:          $cx-color-base-palette-light-secondary-80 !default;
-$secondary-90:          $cx-color-base-palette-light-secondary-90 !default;
-$secondary-95:          $cx-color-base-palette-light-secondary-95 !default;
-// scss-docs-end secondnary-palette-variables
+// scss-docs-start secondary-primitive-variables
+$secondary-05:          $cx-color-base-primitive-light-secondary-05 !default;
+$secondary-10:          $cx-color-base-primitive-light-secondary-10 !default;
+$secondary-20:          $cx-color-base-primitive-light-secondary-20 !default;
+$secondary-30:          $cx-color-base-primitive-light-secondary-30 !default;
+$secondary-40:          $cx-color-base-primitive-light-secondary-40 !default;
+$secondary-50:          $cx-color-base-primitive-light-secondary-50 !default;
+$secondary-60:          $cx-color-base-primitive-light-secondary-60 !default;
+$secondary-70:          $cx-color-base-primitive-light-secondary-70 !default;
+$secondary-80:          $cx-color-base-primitive-light-secondary-80 !default;
+$secondary-90:          $cx-color-base-primitive-light-secondary-90 !default;
+$secondary-95:          $cx-color-base-primitive-light-secondary-95 !default;
+// scss-docs-end secondary-primitive-variables
 
-// scss-docs-start neutral-palette-variables
-$neutral-05:            $cx-color-base-palette-light-neutral-05 !default;
-$neutral-10:            $cx-color-base-palette-light-neutral-10 !default;
-$neutral-20:            $cx-color-base-palette-light-neutral-20 !default;
-$neutral-30:            $cx-color-base-palette-light-neutral-30 !default;
-$neutral-40:            $cx-color-base-palette-light-neutral-40 !default;
-$neutral-50:            $cx-color-base-palette-light-neutral-50 !default;
-$neutral-60:            $cx-color-base-palette-light-neutral-60 !default;
-$neutral-70:            $cx-color-base-palette-light-neutral-70 !default;
-$neutral-80:            $cx-color-base-palette-light-neutral-80 !default;
-$neutral-90:            $cx-color-base-palette-light-neutral-90 !default;
-$neutral-95:            $cx-color-base-palette-light-neutral-95 !default;
-// scss-docs-end primary-palette-variables
+// scss-docs-start neutral-primitive-variables
+$neutral-05:            $cx-color-base-primitive-light-neutral-05 !default;
+$neutral-10:            $cx-color-base-primitive-light-neutral-10 !default;
+$neutral-20:            $cx-color-base-primitive-light-neutral-20 !default;
+$neutral-30:            $cx-color-base-primitive-light-neutral-30 !default;
+$neutral-40:            $cx-color-base-primitive-light-neutral-40 !default;
+$neutral-50:            $cx-color-base-primitive-light-neutral-50 !default;
+$neutral-60:            $cx-color-base-primitive-light-neutral-60 !default;
+$neutral-70:            $cx-color-base-primitive-light-neutral-70 !default;
+$neutral-80:            $cx-color-base-primitive-light-neutral-80 !default;
+$neutral-90:            $cx-color-base-primitive-light-neutral-90 !default;
+$neutral-95:            $cx-color-base-primitive-light-neutral-95 !default;
+// scss-docs-end neutral-primitive-variables
 
-// scss-docs-start danger-palette-variables
-$danger-05:             $cx-color-base-palette-light-danger-05 !default;
-$danger-10:             $cx-color-base-palette-light-danger-10 !default;
-$danger-20:             $cx-color-base-palette-light-danger-20 !default;
-$danger-30:             $cx-color-base-palette-light-danger-30 !default;
-$danger-40:             $cx-color-base-palette-light-danger-40 !default;
-$danger-50:             $cx-color-base-palette-light-danger-50 !default;
-$danger-60:             $cx-color-base-palette-light-danger-60 !default;
-$danger-70:             $cx-color-base-palette-light-danger-70 !default;
-$danger-80:             $cx-color-base-palette-light-danger-80 !default;
-$danger-90:             $cx-color-base-palette-light-danger-90 !default;
-$danger-95:             $cx-color-base-palette-light-danger-95 !default;
-// scss-docs-end danger-palette-variables
+// scss-docs-start danger-primitive-variables
+$danger-05:             $cx-color-base-primitive-light-danger-05 !default;
+$danger-10:             $cx-color-base-primitive-light-danger-10 !default;
+$danger-20:             $cx-color-base-primitive-light-danger-20 !default;
+$danger-30:             $cx-color-base-primitive-light-danger-30 !default;
+$danger-40:             $cx-color-base-primitive-light-danger-40 !default;
+$danger-50:             $cx-color-base-primitive-light-danger-50 !default;
+$danger-60:             $cx-color-base-primitive-light-danger-60 !default;
+$danger-70:             $cx-color-base-primitive-light-danger-70 !default;
+$danger-80:             $cx-color-base-primitive-light-danger-80 !default;
+$danger-90:             $cx-color-base-primitive-light-danger-90 !default;
+$danger-95:             $cx-color-base-primitive-light-danger-95 !default;
+// scss-docs-end danger-primitive-variables
 
-// scss-docs-start success-palette-variables
-$success-05:            $cx-color-base-palette-light-success-05 !default;
-$success-10:            $cx-color-base-palette-light-success-10 !default;
-$success-20:            $cx-color-base-palette-light-success-20 !default;
-$success-30:            $cx-color-base-palette-light-success-30 !default;
-$success-40:            $cx-color-base-palette-light-success-40 !default;
-$success-50:            $cx-color-base-palette-light-success-50 !default;
-$success-60:            $cx-color-base-palette-light-success-60 !default;
-$success-70:            $cx-color-base-palette-light-success-70 !default;
-$success-80:            $cx-color-base-palette-light-success-80 !default;
-$success-90:            $cx-color-base-palette-light-success-90 !default;
-$success-95:            $cx-color-base-palette-light-success-95 !default;
-// scss-docs-end danger-palette-variables
+// scss-docs-start success-primitive-variables
+$success-05:            $cx-color-base-primitive-light-success-05 !default;
+$success-10:            $cx-color-base-primitive-light-success-10 !default;
+$success-20:            $cx-color-base-primitive-light-success-20 !default;
+$success-30:            $cx-color-base-primitive-light-success-30 !default;
+$success-40:            $cx-color-base-primitive-light-success-40 !default;
+$success-50:            $cx-color-base-primitive-light-success-50 !default;
+$success-60:            $cx-color-base-primitive-light-success-60 !default;
+$success-70:            $cx-color-base-primitive-light-success-70 !default;
+$success-80:            $cx-color-base-primitive-light-success-80 !default;
+$success-90:            $cx-color-base-primitive-light-success-90 !default;
+$success-95:            $cx-color-base-primitive-light-success-95 !default;
+// scss-docs-end success-primitive-variables
 
-// scss-docs-start warning-palette-variables
-$warning-05:            $cx-color-base-palette-light-warning-05 !default;
-$warning-10:            $cx-color-base-palette-light-warning-10 !default;
-$warning-20:            $cx-color-base-palette-light-warning-20 !default;
-$warning-30:            $cx-color-base-palette-light-warning-30 !default;
-$warning-40:            $cx-color-base-palette-light-warning-40 !default;
-$warning-50:            $cx-color-base-palette-light-warning-50 !default;
-$warning-60:            $cx-color-base-palette-light-warning-60 !default;
-$warning-70:            $cx-color-base-palette-light-warning-70 !default;
-$warning-80:            $cx-color-base-palette-light-warning-80 !default;
-$warning-90:            $cx-color-base-palette-light-warning-90 !default;
-$warning-95:            $cx-color-base-palette-light-warning-95 !default;
-// scss-docs-end warning-palette-variables
+// scss-docs-start warning-primitive-variables
+$warning-05:            $cx-color-base-primitive-light-warning-05 !default;
+$warning-10:            $cx-color-base-primitive-light-warning-10 !default;
+$warning-20:            $cx-color-base-primitive-light-warning-20 !default;
+$warning-30:            $cx-color-base-primitive-light-warning-30 !default;
+$warning-40:            $cx-color-base-primitive-light-warning-40 !default;
+$warning-50:            $cx-color-base-primitive-light-warning-50 !default;
+$warning-60:            $cx-color-base-primitive-light-warning-60 !default;
+$warning-70:            $cx-color-base-primitive-light-warning-70 !default;
+$warning-80:            $cx-color-base-primitive-light-warning-80 !default;
+$warning-90:            $cx-color-base-primitive-light-warning-90 !default;
+$warning-95:            $cx-color-base-primitive-light-warning-95 !default;
+// scss-docs-end warning-primitive-variables
 
-// scss-docs-start info-palette-variables
-$info-05:               $cx-color-base-palette-light-info-05 !default;
-$info-10:               $cx-color-base-palette-light-info-10 !default;
-$info-20:               $cx-color-base-palette-light-info-20 !default;
-$info-30:               $cx-color-base-palette-light-info-30 !default;
-$info-40:               $cx-color-base-palette-light-info-40 !default;
-$info-50:               $cx-color-base-palette-light-info-50 !default;
-$info-60:               $cx-color-base-palette-light-info-60 !default;
-$info-70:               $cx-color-base-palette-light-info-70 !default;
-$info-80:               $cx-color-base-palette-light-info-80 !default;
-$info-90:               $cx-color-base-palette-light-info-90 !default;
-$info-95:               $cx-color-base-palette-light-info-95 !default;
-// scss-docs-end info-palette-variables
-// scss-docs-end primitive-palette-variables
+// scss-docs-start info-primitive-variables
+$info-05:               $cx-color-base-primitive-light-info-05 !default;
+$info-10:               $cx-color-base-primitive-light-info-10 !default;
+$info-20:               $cx-color-base-primitive-light-info-20 !default;
+$info-30:               $cx-color-base-primitive-light-info-30 !default;
+$info-40:               $cx-color-base-primitive-light-info-40 !default;
+$info-50:               $cx-color-base-primitive-light-info-50 !default;
+$info-60:               $cx-color-base-primitive-light-info-60 !default;
+$info-70:               $cx-color-base-primitive-light-info-70 !default;
+$info-80:               $cx-color-base-primitive-light-info-80 !default;
+$info-90:               $cx-color-base-primitive-light-info-90 !default;
+$info-95:               $cx-color-base-primitive-light-info-95 !default;
+// scss-docs-end info-primitive-variables
+// scss-docs-end primitive-primitive-variables
 
-// scss-docs-start context-palette-variables
+// scss-docs-start context-primitive-variables
 // scss-docs-start default-context-variables
 $default-base-color:          $cx-color-base-context-light-default-base-color !default;
 $default-contrast-color:      $cx-color-base-context-light-default-contrast-color !default;
@@ -202,12 +215,14 @@ $default-transparent-color:   $cx-color-base-context-light-default-transparent-c
 $default-fg-main:             $cx-color-base-context-light-default-fg-main !default;
 $default-fg-subtle:           $cx-color-base-context-light-default-fg-subtle !default;
 $default-fg-slight:           $cx-color-base-context-light-default-fg-slight !default;
+$default-fg-active:           $cx-color-base-context-light-default-fg-active !default;
 $default-fg-inverse:          $cx-color-base-context-light-default-fg-inverse !default;
 $default-fg-solid:            $cx-color-base-context-light-default-fg-solid !default;
 $default-fg-highlight:        $cx-color-base-context-light-default-fg-highlight !default;
 $default-bg-main:             $cx-color-base-context-light-default-bg-main !default;
 $default-bg-even:             $cx-color-base-context-light-default-bg-even !default;
 $default-bg-evident:          $cx-color-base-context-light-default-bg-evident !default;
+$default-bg-active:           $cx-color-base-context-light-default-bg-active !default;
 $default-bg-inverse:          $cx-color-base-context-light-default-bg-inverse !default;
 $default-bg-solid:            $cx-color-base-context-light-default-bg-solid !default;
 $default-bg-highlight:        $cx-color-base-context-light-default-bg-highlight !default;
@@ -225,11 +240,11 @@ $default-link-main:           $cx-color-base-context-light-default-link-main !de
 $default-link-visited:        $cx-color-base-context-light-default-link-visited !default;
 $default-link-hover:          $cx-color-base-context-light-default-link-hover !default;
 $default-link-active:         $cx-color-base-context-light-default-link-active !default;
-$default-fg-idle:           $cx-color-base-context-light-default-fg-idle !default;
+$default-fg-idle:             $cx-color-base-context-light-default-fg-idle !default;
 $default-fg-disabled:         $cx-color-base-context-light-default-fg-disabled !default;
 $default-fg-hover:            $cx-color-base-context-light-default-fg-hover !default;
 $default-fg-press:            $cx-color-base-context-light-default-fg-press !default;
-$default-bg-idle:           $cx-color-base-context-light-default-bg-idle !default;
+$default-bg-idle:             $cx-color-base-context-light-default-bg-idle !default;
 $default-bg-disabled:         $cx-color-base-context-light-default-bg-disabled !default;
 $default-bg-hover:            $cx-color-base-context-light-default-bg-hover !default;
 $default-bg-press:            $cx-color-base-context-light-default-bg-press !default;
@@ -242,12 +257,14 @@ $alternate-transparent-color: $cx-color-base-context-light-alternate-transparent
 $alternate-fg-main:           $cx-color-base-context-light-alternate-fg-main !default;
 $alternate-fg-subtle:         $cx-color-base-context-light-alternate-fg-subtle !default;
 $alternate-fg-slight:         $cx-color-base-context-light-alternate-fg-slight !default;
+$alternate-fg-active:         $cx-color-base-context-light-alternate-fg-active !default;
 $alternate-fg-inverse:        $cx-color-base-context-light-alternate-fg-inverse !default;
 $alternate-fg-solid:          $cx-color-base-context-light-alternate-fg-solid !default;
 $alternate-fg-highlight:      $cx-color-base-context-light-alternate-fg-highlight !default;
 $alternate-bg-main:           $cx-color-base-context-light-alternate-bg-main !default;
 $alternate-bg-even:           $cx-color-base-context-light-alternate-bg-even !default;
 $alternate-bg-evident:        $cx-color-base-context-light-alternate-bg-evident !default;
+$alternate-bg-active:         $cx-color-base-context-light-alternate-bg-active !default;
 $alternate-bg-inverse:        $cx-color-base-context-light-alternate-bg-inverse !default;
 $alternate-bg-solid:          $cx-color-base-context-light-alternate-bg-solid !default;
 $alternate-bg-highlight:      $cx-color-base-context-light-alternate-bg-highlight !default;
@@ -265,11 +282,11 @@ $alternate-link-main:         $cx-color-base-context-light-alternate-link-main !
 $alternate-link-visited:      $cx-color-base-context-light-alternate-link-visited !default;
 $alternate-link-hover:        $cx-color-base-context-light-alternate-link-hover !default;
 $alternate-link-active:       $cx-color-base-context-light-alternate-link-active !default;
-$alternate-fg-idle:         $cx-color-base-context-light-alternate-fg-idle !default;
+$alternate-fg-idle:           $cx-color-base-context-light-alternate-fg-idle !default;
 $alternate-fg-disabled:       $cx-color-base-context-light-alternate-fg-disabled !default;
 $alternate-fg-hover:          $cx-color-base-context-light-alternate-fg-hover !default;
 $alternate-fg-press:          $cx-color-base-context-light-alternate-fg-press !default;
-$alternate-bg-idle:         $cx-color-base-context-light-alternate-bg-idle !default;
+$alternate-bg-idle:           $cx-color-base-context-light-alternate-bg-idle !default;
 $alternate-bg-disabled:       $cx-color-base-context-light-alternate-bg-disabled !default;
 $alternate-bg-hover:          $cx-color-base-context-light-alternate-bg-hover !default;
 $alternate-bg-press:          $cx-color-base-context-light-alternate-bg-press !default;
@@ -282,12 +299,14 @@ $primary-transparent-color:   $cx-color-base-context-light-primary-transparent-c
 $primary-fg-main:             $cx-color-base-context-light-primary-fg-main !default;
 $primary-fg-subtle:           $cx-color-base-context-light-primary-fg-subtle !default;
 $primary-fg-slight:           $cx-color-base-context-light-primary-fg-slight !default;
+$primary-fg-active:           $cx-color-base-context-light-primary-fg-active !default;
 $primary-fg-inverse:          $cx-color-base-context-light-primary-fg-inverse !default;
 $primary-fg-solid:            $cx-color-base-context-light-primary-fg-solid !default;
 $primary-fg-highlight:        $cx-color-base-context-light-primary-fg-highlight !default;
 $primary-bg-main:             $cx-color-base-context-light-primary-bg-main !default;
 $primary-bg-even:             $cx-color-base-context-light-primary-bg-even !default;
 $primary-bg-evident:          $cx-color-base-context-light-primary-bg-evident !default;
+$primary-bg-active:           $cx-color-base-context-light-primary-bg-active !default;
 $primary-bg-inverse:          $cx-color-base-context-light-primary-bg-inverse !default;
 $primary-bg-solid:            $cx-color-base-context-light-primary-bg-solid !default;
 $primary-bg-highlight:        $cx-color-base-context-light-primary-bg-highlight !default;
@@ -305,11 +324,11 @@ $primary-link-main:           $cx-color-base-context-light-primary-link-main !de
 $primary-link-visited:        $cx-color-base-context-light-primary-link-visited !default;
 $primary-link-hover:          $cx-color-base-context-light-primary-link-hover !default;
 $primary-link-active:         $cx-color-base-context-light-primary-link-active !default;
-$primary-fg-idle:           $cx-color-base-context-light-primary-fg-idle !default;
+$primary-fg-idle:             $cx-color-base-context-light-primary-fg-idle !default;
 $primary-fg-disabled:         $cx-color-base-context-light-primary-fg-disabled !default;
 $primary-fg-hover:            $cx-color-base-context-light-primary-fg-hover !default;
 $primary-fg-press:            $cx-color-base-context-light-primary-fg-press !default;
-$primary-bg-idle:           $cx-color-base-context-light-primary-bg-idle !default;
+$primary-bg-idle:             $cx-color-base-context-light-primary-bg-idle !default;
 $primary-bg-disabled:         $cx-color-base-context-light-primary-bg-disabled !default;
 $primary-bg-hover:            $cx-color-base-context-light-primary-bg-hover !default;
 $primary-bg-press:            $cx-color-base-context-light-primary-bg-press !default;
@@ -322,12 +341,14 @@ $secondary-transparent-color: $cx-color-base-context-light-secondary-transparent
 $secondary-fg-main:           $cx-color-base-context-light-secondary-fg-main !default;
 $secondary-fg-subtle:         $cx-color-base-context-light-secondary-fg-subtle !default;
 $secondary-fg-slight:         $cx-color-base-context-light-secondary-fg-slight !default;
+$secondary-fg-active:         $cx-color-base-context-light-secondary-fg-active !default;
 $secondary-fg-inverse:        $cx-color-base-context-light-secondary-fg-inverse !default;
 $secondary-fg-solid:          $cx-color-base-context-light-secondary-fg-solid !default;
 $secondary-fg-highlight:      $cx-color-base-context-light-secondary-fg-highlight !default;
 $secondary-bg-main:           $cx-color-base-context-light-secondary-bg-main !default;
 $secondary-bg-even:           $cx-color-base-context-light-secondary-bg-even !default;
 $secondary-bg-evident:        $cx-color-base-context-light-secondary-bg-evident !default;
+$secondary-bg-active:         $cx-color-base-context-light-secondary-bg-active !default;
 $secondary-bg-inverse:        $cx-color-base-context-light-secondary-bg-inverse !default;
 $secondary-bg-solid:          $cx-color-base-context-light-secondary-bg-solid !default;
 $secondary-bg-highlight:      $cx-color-base-context-light-secondary-bg-highlight !default;
@@ -345,11 +366,11 @@ $secondary-link-main:         $cx-color-base-context-light-secondary-link-main !
 $secondary-link-visited:      $cx-color-base-context-light-secondary-link-visited !default;
 $secondary-link-hover:        $cx-color-base-context-light-secondary-link-hover !default;
 $secondary-link-active:       $cx-color-base-context-light-secondary-link-active !default;
-$secondary-fg-idle:         $cx-color-base-context-light-secondary-fg-idle !default;
+$secondary-fg-idle:           $cx-color-base-context-light-secondary-fg-idle !default;
 $secondary-fg-disabled:       $cx-color-base-context-light-secondary-fg-disabled !default;
 $secondary-fg-hover:          $cx-color-base-context-light-secondary-fg-hover !default;
 $secondary-fg-press:          $cx-color-base-context-light-secondary-fg-press !default;
-$secondary-bg-idle:         $cx-color-base-context-light-secondary-bg-idle !default;
+$secondary-bg-idle:           $cx-color-base-context-light-secondary-bg-idle !default;
 $secondary-bg-disabled:       $cx-color-base-context-light-secondary-bg-disabled !default;
 $secondary-bg-hover:          $cx-color-base-context-light-secondary-bg-hover !default;
 $secondary-bg-press:          $cx-color-base-context-light-secondary-bg-press !default;
@@ -362,12 +383,14 @@ $neutral-transparent-color:   $cx-color-base-context-light-neutral-transparent-c
 $neutral-fg-main:             $cx-color-base-context-light-neutral-fg-main !default;
 $neutral-fg-subtle:           $cx-color-base-context-light-neutral-fg-subtle !default;
 $neutral-fg-slight:           $cx-color-base-context-light-neutral-fg-slight !default;
+$neutral-fg-active:           $cx-color-base-context-light-neutral-fg-active !default;
 $neutral-fg-inverse:          $cx-color-base-context-light-neutral-fg-inverse !default;
 $neutral-fg-solid:            $cx-color-base-context-light-neutral-fg-solid !default;
 $neutral-fg-highlight:        $cx-color-base-context-light-neutral-fg-highlight !default;
 $neutral-bg-main:             $cx-color-base-context-light-neutral-bg-main !default;
 $neutral-bg-even:             $cx-color-base-context-light-neutral-bg-even !default;
 $neutral-bg-evident:          $cx-color-base-context-light-neutral-bg-evident !default;
+$neutral-bg-active:           $cx-color-base-context-light-neutral-bg-active !default;
 $neutral-bg-inverse:          $cx-color-base-context-light-neutral-bg-inverse !default;
 $neutral-bg-solid:            $cx-color-base-context-light-neutral-bg-solid !default;
 $neutral-bg-highlight:        $cx-color-base-context-light-neutral-bg-highlight !default;
@@ -385,11 +408,11 @@ $neutral-link-main:           $cx-color-base-context-light-neutral-link-main !de
 $neutral-link-visited:        $cx-color-base-context-light-neutral-link-visited !default;
 $neutral-link-hover:          $cx-color-base-context-light-neutral-link-hover !default;
 $neutral-link-active:         $cx-color-base-context-light-neutral-link-active !default;
-$neutral-fg-idle:           $cx-color-base-context-light-neutral-fg-idle !default;
+$neutral-fg-idle:             $cx-color-base-context-light-neutral-fg-idle !default;
 $neutral-fg-disabled:         $cx-color-base-context-light-neutral-fg-disabled !default;
 $neutral-fg-hover:            $cx-color-base-context-light-neutral-fg-hover !default;
 $neutral-fg-press:            $cx-color-base-context-light-neutral-fg-press !default;
-$neutral-bg-idle:           $cx-color-base-context-light-neutral-bg-idle !default;
+$neutral-bg-idle:             $cx-color-base-context-light-neutral-bg-idle !default;
 $neutral-bg-disabled:         $cx-color-base-context-light-neutral-bg-disabled !default;
 $neutral-bg-hover:            $cx-color-base-context-light-neutral-bg-hover !default;
 $neutral-bg-press:            $cx-color-base-context-light-neutral-bg-press !default;
@@ -402,12 +425,14 @@ $danger-transparent-color:    $cx-color-base-context-light-danger-transparent-co
 $danger-fg-main:              $cx-color-base-context-light-danger-fg-main !default;
 $danger-fg-subtle:            $cx-color-base-context-light-danger-fg-subtle !default;
 $danger-fg-slight:            $cx-color-base-context-light-danger-fg-slight !default;
+$danger-fg-active:            $cx-color-base-context-light-danger-fg-active !default;
 $danger-fg-inverse:           $cx-color-base-context-light-danger-fg-inverse !default;
 $danger-fg-solid:             $cx-color-base-context-light-danger-fg-solid !default;
 $danger-fg-highlight:         $cx-color-base-context-light-danger-fg-highlight !default;
 $danger-bg-main:              $cx-color-base-context-light-danger-bg-main !default;
 $danger-bg-even:              $cx-color-base-context-light-danger-bg-even !default;
 $danger-bg-evident:           $cx-color-base-context-light-danger-bg-evident !default;
+$danger-bg-active:            $cx-color-base-context-light-danger-bg-active !default;
 $danger-bg-inverse:           $cx-color-base-context-light-danger-bg-inverse !default;
 $danger-bg-solid:             $cx-color-base-context-light-danger-bg-solid !default;
 $danger-bg-highlight:         $cx-color-base-context-light-danger-bg-highlight !default;
@@ -425,11 +450,11 @@ $danger-link-main:            $cx-color-base-context-light-danger-link-main !def
 $danger-link-visited:         $cx-color-base-context-light-danger-link-visited !default;
 $danger-link-hover:           $cx-color-base-context-light-danger-link-hover !default;
 $danger-link-active:          $cx-color-base-context-light-danger-link-active !default;
-$danger-fg-idle:            $cx-color-base-context-light-danger-fg-idle !default;
+$danger-fg-idle:              $cx-color-base-context-light-danger-fg-idle !default;
 $danger-fg-disabled:          $cx-color-base-context-light-danger-fg-disabled !default;
 $danger-fg-hover:             $cx-color-base-context-light-danger-fg-hover !default;
 $danger-fg-press:             $cx-color-base-context-light-danger-fg-press !default;
-$danger-bg-idle:            $cx-color-base-context-light-danger-bg-idle !default;
+$danger-bg-idle:              $cx-color-base-context-light-danger-bg-idle !default;
 $danger-bg-disabled:          $cx-color-base-context-light-danger-bg-disabled !default;
 $danger-bg-hover:             $cx-color-base-context-light-danger-bg-hover !default;
 $danger-bg-press:             $cx-color-base-context-light-danger-bg-press !default;
@@ -442,12 +467,14 @@ $success-transparent-color:   $cx-color-base-context-light-success-transparent-c
 $success-fg-main:             $cx-color-base-context-light-success-fg-main !default;
 $success-fg-subtle:           $cx-color-base-context-light-success-fg-subtle !default;
 $success-fg-slight:           $cx-color-base-context-light-success-fg-slight !default;
+$success-fg-active:           $cx-color-base-context-light-success-fg-active !default;
 $success-fg-inverse:          $cx-color-base-context-light-success-fg-inverse !default;
 $success-fg-solid:            $cx-color-base-context-light-success-fg-solid !default;
 $success-fg-highlight:        $cx-color-base-context-light-success-fg-highlight !default;
 $success-bg-main:             $cx-color-base-context-light-success-bg-main !default;
 $success-bg-even:             $cx-color-base-context-light-success-bg-even !default;
 $success-bg-evident:          $cx-color-base-context-light-success-bg-evident !default;
+$success-bg-active:           $cx-color-base-context-light-success-bg-active !default;
 $success-bg-inverse:          $cx-color-base-context-light-success-bg-inverse !default;
 $success-bg-solid:            $cx-color-base-context-light-success-bg-solid !default;
 $success-bg-highlight:        $cx-color-base-context-light-success-bg-highlight !default;
@@ -465,11 +492,11 @@ $success-link-main:           $cx-color-base-context-light-success-link-main !de
 $success-link-visited:        $cx-color-base-context-light-success-link-visited !default;
 $success-link-hover:          $cx-color-base-context-light-success-link-hover !default;
 $success-link-active:         $cx-color-base-context-light-success-link-active !default;
-$success-fg-idle:           $cx-color-base-context-light-success-fg-idle !default;
+$success-fg-idle:             $cx-color-base-context-light-success-fg-idle !default;
 $success-fg-disabled:         $cx-color-base-context-light-success-fg-disabled !default;
 $success-fg-hover:            $cx-color-base-context-light-success-fg-hover !default;
 $success-fg-press:            $cx-color-base-context-light-success-fg-press !default;
-$success-bg-idle:           $cx-color-base-context-light-success-bg-idle !default;
+$success-bg-idle:             $cx-color-base-context-light-success-bg-idle !default;
 $success-bg-disabled:         $cx-color-base-context-light-success-bg-disabled !default;
 $success-bg-hover:            $cx-color-base-context-light-success-bg-hover !default;
 $success-bg-press:            $cx-color-base-context-light-success-bg-press !default;
@@ -482,12 +509,14 @@ $warning-transparent-color:   $cx-color-base-context-light-warning-transparent-c
 $warning-fg-main:             $cx-color-base-context-light-warning-fg-main !default;
 $warning-fg-subtle:           $cx-color-base-context-light-warning-fg-subtle !default;
 $warning-fg-slight:           $cx-color-base-context-light-warning-fg-slight !default;
+$warning-fg-active:           $cx-color-base-context-light-warning-fg-active !default;
 $warning-fg-inverse:          $cx-color-base-context-light-warning-fg-inverse !default;
 $warning-fg-solid:            $cx-color-base-context-light-warning-fg-solid !default;
 $warning-fg-highlight:        $cx-color-base-context-light-warning-fg-highlight !default;
 $warning-bg-main:             $cx-color-base-context-light-warning-bg-main !default;
 $warning-bg-even:             $cx-color-base-context-light-warning-bg-even !default;
 $warning-bg-evident:          $cx-color-base-context-light-warning-bg-evident !default;
+$warning-bg-active:           $cx-color-base-context-light-warning-bg-active !default;
 $warning-bg-inverse:          $cx-color-base-context-light-warning-bg-inverse !default;
 $warning-bg-solid:            $cx-color-base-context-light-warning-bg-solid !default;
 $warning-bg-highlight:        $cx-color-base-context-light-warning-bg-highlight !default;
@@ -505,11 +534,11 @@ $warning-link-main:           $cx-color-base-context-light-warning-link-main !de
 $warning-link-visited:        $cx-color-base-context-light-warning-link-visited !default;
 $warning-link-hover:          $cx-color-base-context-light-warning-link-hover !default;
 $warning-link-active:         $cx-color-base-context-light-warning-link-active !default;
-$warning-fg-idle:           $cx-color-base-context-light-warning-fg-idle !default;
+$warning-fg-idle:             $cx-color-base-context-light-warning-fg-idle !default;
 $warning-fg-disabled:         $cx-color-base-context-light-warning-fg-disabled !default;
 $warning-fg-hover:            $cx-color-base-context-light-warning-fg-hover !default;
 $warning-fg-press:            $cx-color-base-context-light-warning-fg-press !default;
-$warning-bg-idle:           $cx-color-base-context-light-warning-bg-idle !default;
+$warning-bg-idle:             $cx-color-base-context-light-warning-bg-idle !default;
 $warning-bg-disabled:         $cx-color-base-context-light-warning-bg-disabled !default;
 $warning-bg-hover:            $cx-color-base-context-light-warning-bg-hover !default;
 $warning-bg-press:            $cx-color-base-context-light-warning-bg-press !default;
@@ -522,12 +551,14 @@ $info-transparent-color:      $cx-color-base-context-light-info-transparent-colo
 $info-fg-main:                $cx-color-base-context-light-info-fg-main !default;
 $info-fg-subtle:              $cx-color-base-context-light-info-fg-subtle !default;
 $info-fg-slight:              $cx-color-base-context-light-info-fg-slight !default;
+$info-fg-active:              $cx-color-base-context-light-info-fg-active !default;
 $info-fg-inverse:             $cx-color-base-context-light-info-fg-inverse !default;
 $info-fg-solid:               $cx-color-base-context-light-info-fg-solid !default;
 $info-fg-highlight:           $cx-color-base-context-light-info-fg-highlight !default;
 $info-bg-main:                $cx-color-base-context-light-info-bg-main !default;
 $info-bg-even:                $cx-color-base-context-light-info-bg-even !default;
 $info-bg-evident:             $cx-color-base-context-light-info-bg-evident !default;
+$info-bg-active:              $cx-color-base-context-light-info-bg-active !default;
 $info-bg-inverse:             $cx-color-base-context-light-info-bg-inverse !default;
 $info-bg-solid:               $cx-color-base-context-light-info-bg-solid !default;
 $info-bg-highlight:           $cx-color-base-context-light-info-bg-highlight !default;
@@ -545,11 +576,11 @@ $info-link-main:              $cx-color-base-context-light-info-link-main !defau
 $info-link-visited:           $cx-color-base-context-light-info-link-visited !default;
 $info-link-hover:             $cx-color-base-context-light-info-link-hover !default;
 $info-link-active:            $cx-color-base-context-light-info-link-active !default;
-$info-fg-idle:              $cx-color-base-context-light-info-fg-idle !default;
+$info-fg-idle:                $cx-color-base-context-light-info-fg-idle !default;
 $info-fg-disabled:            $cx-color-base-context-light-info-fg-disabled !default;
 $info-fg-hover:               $cx-color-base-context-light-info-fg-hover !default;
 $info-fg-press:               $cx-color-base-context-light-info-fg-press !default;
-$info-bg-idle:              $cx-color-base-context-light-info-bg-idle !default;
+$info-bg-idle:                $cx-color-base-context-light-info-bg-idle !default;
 $info-bg-disabled:            $cx-color-base-context-light-info-bg-disabled !default;
 $info-bg-hover:               $cx-color-base-context-light-info-bg-hover !default;
 $info-bg-press:               $cx-color-base-context-light-info-bg-press !default;
@@ -562,12 +593,14 @@ $black-transparent-color:     $cx-color-base-context-light-black-transparent-col
 $black-fg-main:               $cx-color-base-context-light-black-fg-main !default;
 $black-fg-subtle:             $cx-color-base-context-light-black-fg-subtle !default;
 $black-fg-slight:             $cx-color-base-context-light-black-fg-slight !default;
+$black-fg-active:             $cx-color-base-context-light-black-fg-active !default;
 $black-fg-inverse:            $cx-color-base-context-light-black-fg-inverse !default;
 $black-fg-solid:              $cx-color-base-context-light-black-fg-solid !default;
 $black-fg-highlight:          $cx-color-base-context-light-black-fg-highlight !default;
 $black-bg-main:               $cx-color-base-context-light-black-bg-main !default;
 $black-bg-even:               $cx-color-base-context-light-black-bg-even !default;
 $black-bg-evident:            $cx-color-base-context-light-black-bg-evident !default;
+$black-bg-active:             $cx-color-base-context-light-black-bg-active !default;
 $black-bg-inverse:            $cx-color-base-context-light-black-bg-inverse !default;
 $black-bg-solid:              $cx-color-base-context-light-black-bg-solid !default;
 $black-bg-highlight:          $cx-color-base-context-light-black-bg-highlight !default;
@@ -585,11 +618,11 @@ $black-link-main:             $cx-color-base-context-light-black-link-main !defa
 $black-link-visited:          $cx-color-base-context-light-black-link-visited !default;
 $black-link-hover:            $cx-color-base-context-light-black-link-hover !default;
 $black-link-active:           $cx-color-base-context-light-black-link-active !default;
-$black-fg-idle:             $cx-color-base-context-light-black-fg-idle !default;
+$black-fg-idle:               $cx-color-base-context-light-black-fg-idle !default;
 $black-fg-disabled:           $cx-color-base-context-light-black-fg-disabled !default;
 $black-fg-hover:              $cx-color-base-context-light-black-fg-hover !default;
 $black-fg-press:              $cx-color-base-context-light-black-fg-press !default;
-$black-bg-idle:             $cx-color-base-context-light-black-bg-idle !default;
+$black-bg-idle:               $cx-color-base-context-light-black-bg-idle !default;
 $black-bg-disabled:           $cx-color-base-context-light-black-bg-disabled !default;
 $black-bg-hover:              $cx-color-base-context-light-black-bg-hover !default;
 $black-bg-press:              $cx-color-base-context-light-black-bg-press !default;
@@ -602,12 +635,14 @@ $white-transparent-color:     $cx-color-base-context-light-white-transparent-col
 $white-fg-main:               $cx-color-base-context-light-white-fg-main !default;
 $white-fg-subtle:             $cx-color-base-context-light-white-fg-subtle !default;
 $white-fg-slight:             $cx-color-base-context-light-white-fg-slight !default;
+$white-fg-active:             $cx-color-base-context-light-white-fg-active !default;
 $white-fg-inverse:            $cx-color-base-context-light-white-fg-inverse !default;
 $white-fg-solid:              $cx-color-base-context-light-white-fg-solid !default;
 $white-fg-highlight:          $cx-color-base-context-light-white-fg-highlight !default;
 $white-bg-main:               $cx-color-base-context-light-white-bg-main !default;
 $white-bg-even:               $cx-color-base-context-light-white-bg-even !default;
 $white-bg-evident:            $cx-color-base-context-light-white-bg-evident !default;
+$white-bg-active:             $cx-color-base-context-light-white-bg-active !default;
 $white-bg-inverse:            $cx-color-base-context-light-white-bg-inverse !default;
 $white-bg-solid:              $cx-color-base-context-light-white-bg-solid !default;
 $white-bg-highlight:          $cx-color-base-context-light-white-bg-highlight !default;
@@ -625,13 +660,13 @@ $white-link-main:             $cx-color-base-context-light-white-link-main !defa
 $white-link-visited:          $cx-color-base-context-light-white-link-visited !default;
 $white-link-hover:            $cx-color-base-context-light-white-link-hover !default;
 $white-link-active:           $cx-color-base-context-light-white-link-active !default;
-$white-fg-idle:             $cx-color-base-context-light-white-fg-idle !default;
+$white-fg-idle:               $cx-color-base-context-light-white-fg-idle !default;
 $white-fg-disabled:           $cx-color-base-context-light-white-fg-disabled !default;
 $white-fg-hover:              $cx-color-base-context-light-white-fg-hover !default;
 $white-fg-press:              $cx-color-base-context-light-white-fg-press !default;
-$white-bg-idle:             $cx-color-base-context-light-white-bg-idle !default;
+$white-bg-idle:               $cx-color-base-context-light-white-bg-idle !default;
 $white-bg-disabled:           $cx-color-base-context-light-white-bg-disabled !default;
 $white-bg-hover:              $cx-color-base-context-light-white-bg-hover !default;
 $white-bg-press:              $cx-color-base-context-light-white-bg-press !default;
 // scss-docs-end white-context-variables
-// scss-docs-end context-palette-variables
+// scss-docs-end context-primitive-variables

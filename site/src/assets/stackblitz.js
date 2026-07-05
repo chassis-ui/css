@@ -11,8 +11,6 @@
  * For details, see https://creativecommons.org/licenses/by/3.0/.
  */
 
-import sdk from '@stackblitz/sdk'
-
 import snippetsContent from './snippets.js?raw'
 
 // These values will be replaced by Astro's Vite plugin
@@ -21,23 +19,24 @@ const CONFIG = {
   jsBundleCdn: '__JS_BUNDLE_CDN__'
 }
 
-// Open in StackBlitz logic
-document.querySelectorAll('.button-edit').forEach(button => {
-  button.addEventListener('click', event => {
-    const codeSnippet = event.target.closest('.cxd-code-snippet')
-    const exampleEl = codeSnippet.querySelector('.cxd-example')
+export default () => {
+  document.querySelectorAll('.button-edit').forEach(button => {
+    button.addEventListener('click', async event => {
+      const codeSnippet = event.target.closest('.cxd-code-snippet')
+      const exampleEl = codeSnippet.querySelector('.cxd-example')
 
-    const htmlSnippet = exampleEl.innerHTML
-    const jsSnippet = codeSnippet.querySelector('.button-edit').getAttribute('data-sb-js-snippet')
-    // Get extra classes for this example
-    const classes = Array.from(exampleEl.classList).join(' ')
+      const htmlSnippet = exampleEl.innerHTML
+      const jsSnippet = codeSnippet.querySelector('.button-edit').getAttribute('data-sb-js-snippet')
+      const classes = Array.from(exampleEl.classList).join(' ')
 
-    openChassisSnippet(htmlSnippet, jsSnippet, classes)
+      await openChassisSnippet(htmlSnippet, jsSnippet, classes)
+    })
   })
-})
+}
 
-const openChassisSnippet = (htmlSnippet, jsSnippet, classes) => {
-  const indexHtml = `<!doctype html>
+const openChassisSnippet = async (htmlSnippet, jsSnippet, classes) => {
+  const { default: sdk } = await import('@stackblitz/sdk')
+  const indexHtml = `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -53,10 +52,27 @@ ${htmlSnippet.trimStart().replace(/^/gm, '    ').replace(/^ {4}$/gm, '').trimEnd
   </body>
 </html>`
 
+  // Modify snippets content to replace the export default with a variable and invoke it
+  let modifiedSnippetsContent = ''
+
+  if (jsSnippet) {
+    modifiedSnippetsContent = snippetsContent.replace(
+      'export default () => {',
+      'const snippets_default = () => {'
+    )
+
+    modifiedSnippetsContent = `(() => {
+  ${modifiedSnippetsContent}
+
+  // <stdin>
+  snippets_default();
+})();`
+  }
+
   const project = {
     files: {
       'index.html': indexHtml,
-      ...(jsSnippet && { 'index.js': snippetsContent })
+      ...(jsSnippet && { 'index.js': modifiedSnippetsContent })
     },
     title: 'Chassis Example',
     description: `Official example from ${window.location.href}`,

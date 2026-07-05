@@ -1,0 +1,81 @@
+//
+// Framework Settings
+//
+// Feature flags and global configuration switches for enabling or disabling
+// optional framework behaviors. All variables use !default so they can be
+// overridden before importing Chassis CSS.
+//
+
+// The `--cx-` prefix is applied by the PostCSS step in
+// `build/postcss.config.js`, not in Sass. There is intentionally no Sass-level
+// `$prefix` knob — change the PostCSS `prefix` option to rename the namespace.
+
+$enable-accordion-sizes:        true !default;
+$enable-accordion-contexts:     true !default;
+$enable-button-pointers:        true !default;
+$enable-background-gradients:   true !default;
+$enable-caret:                  true !default;
+$enable-component-shadows:      true !default;
+$enable-container-classes:      true !default;
+$enable-cssgrid:                true !default;
+$enable-dark-mode:              true !default;
+$enable-deprecation-messages:   true !default;
+$enable-elevation-shadows:      true !default;
+$enable-exclude-strokes:        true !default; // true (always), false (never), or list of components that exclude border width from padding
+$enable-grid-classes:           true !default;
+$enable-important-utilities:    true !default;
+$enable-negative-margins:       true !default;
+$enable-property-opacities:     true !default;
+$enable-reduced-motion:         true !default;
+$enable-fluid-font-sizes:       true !default; // fluid typography using clamp() for font sizes
+$enable-responsive-font-sizes:  true !default; // breakpoint-based responsive utilities for icon and font sizes
+$enable-rounded-borders:        true !default;
+$enable-smooth-scroll:          true !default;
+$enable-table-active-border:    true !default;
+$enable-table-border-radius:    true !default;
+$enable-table-font-tokens:      true !default;
+$enable-transitions:            true !default;
+$enable-translucency:           true !default;
+$enable-validation-icons:       true !default;
+$enable-visited-links:          true !default;
+
+// The strategy for applying color mode styles.
+// `data` adds a `[data-color-mode="dark"]` attribute selector
+// `media-query` uses the `(prefers-color-scheme: dark)` media query.
+$color-mode-type:               media-query !default; // `data` or `media-query`
+
+// Customize the light and dark text colors for use in color contrast function.
+$color-contrast-dark:           #000 !default;
+$color-contrast-light:          #fff !default;
+// The contrast ratio to reach against white, to determine if color changes from "light" to "dark". Acceptable values for WCAG 2.0 are 3, 4.5 and 7.
+// See https://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast
+$min-contrast-ratio:            4.5 !default;
+// Opacity value used when generating shadow colors from theme colors. Should be a number between 0 and 1.
+$shadow-color-opacity:      .2 !default;
+
+// Characters which are escaped by the escape-svg function
+$svg-escaped-characters: (
+  ("<", "%3c"),
+  (">", "%3e"),
+  ("#", "%23"),
+  // ("(", "%28"),
+  // (")", "%29"),
+) !default;
+
+// Used for some special adjustments like visually hiding etc.
+$utility-pixel-1:               .0625rem !default; // 1px !default;
+$utility-pixel-999:             64rem !default; // 999px !default;
+
+// RFS (Responsive Font Sizes) Clamp Variables
+$clamp-min-font-size: 1.25rem !default;
+$clamp-min-breakpoint: 22.5rem !default; // 360px
+$clamp-max-breakpoint: 80rem !default; // 1280px
+$clamp-font-size-scale: .825 !default; // 82.5% of max: 44px → 36px, 26px → 21.5px
+$clamp-hero-jumbo-scale: .6 !default; //  60% of max: 64px → 38.4px, 96px → 57.6px
+
+
+//
+// Icons
+//
+$icon-url-prefix:                "/static/icons/svgs/" !default;
+$icon-url-suffix:                ".svg" !default;

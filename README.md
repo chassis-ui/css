@@ -3,7 +3,7 @@
 > A tokenized CSS framework bridging Figma designs to seamless code implementation.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-blue.svg)](https://github.com/chassis-ui/css)
+[![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-blue.svg)](https://github.com/chassis-ui/css)
 
 ## Overview
 
@@ -196,7 +196,11 @@ Chassis introduces an advanced approach to UI colors that goes beyond traditiona
 
 ## Origin & Attribution
 
-Chassis CSS started as an evolution of Bootstrap, building upon its grid system and component architecture while completely reimagining the approach to design tokens, colors, and Figma integration. We're grateful to the Bootstrap team for their foundational work that helped inspire Chassis.
+Chassis CSS is derived from [Bootstrap](https://getbootstrap.com/) and has been heavily modified to meet Chassis design system needs. This includes the Sass architecture, JavaScript component system, and documentation site, all of which originate from Bootstrap and have been substantially reworked.
+
+Bootstrap is copyright (c) 2011–2025 the Bootstrap Authors and Twitter, Inc., released under the [MIT License](https://github.com/twbs/bootstrap/blob/main/LICENSE).
+
+The Bootstrap documentation is released under [Creative Commons Attribution 3.0 Unported (CC BY 3.0)](https://creativecommons.org/licenses/by/3.0/).
 
 ## Contributing
 

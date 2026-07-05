@@ -1,0 +1,37 @@
+@use "../mixins/caret" as *;
+@use "../placeholders/form" as *;
+
+//
+// Caret Helper
+//
+// Opt-in caret styles for dropdowns, selects, and collapsibles.
+//
+
+@layer helpers {
+  // scss-docs-start caret-helper
+  .caret {
+    white-space: nowrap;
+    @include caret();
+  }
+  .caret-before {
+    white-space: nowrap;
+    @include caret($position: before);
+  }
+  .caret-up::after,
+  .caret-up::before {
+    transform: rotate(180deg);
+  }
+  .caret-start::after,
+  .caret-start::before {
+    transform: rotate(var(--logical-angle-90, 90deg));
+  }
+  .caret-end::after,
+  .caret-end::before {
+    transform: rotate(var(--logical-angle-270, 270deg));
+  }
+  // scss-docs-end caret-helper
+
+  .form-caret {
+    @extend %form-caret;
+  }
+} // @layer helpers

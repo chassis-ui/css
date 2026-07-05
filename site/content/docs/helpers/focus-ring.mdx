@@ -1,0 +1,65 @@
+---
+title: Focus ring
+description: Opt-in keyboard focus indicator that replaces the browser default with a styled outline built from CSS custom properties for width, color, and offset.
+toc: true
+tokens: context
+css_layer: helpers
+---
+
+import { getData } from '@libs/data'
+
+`.focus-ring` applies an `outline` on `:focus-visible`, replacing the browser's unstyled default indicator. The ring reads its width, color, and offset from CSS custom properties set at `:root`, so overriding those properties on any ancestor element scopes the change to that subtree. Because the selector targets `:focus-visible`, the ring appears during keyboard navigation and stays hidden on pointer focus.
+
+<Example code={`<a href="#" class="d-inline-flex focus-ring py-2xsmall px-xsmall text-decoration-none border rounded">
+    Custom focus ring
+  </a>`} />
+
+## Context variants
+
+`.focus-ring` derives its color from `--focus-ring-color`, which reads `--cue-color` from the cascade. Placing `.focus-ring` inside a context class automatically shifts the ring to that context's cue color.
+
+<Example code={getData('context-colors').map((contextColor) => `<p><a href="#" class="focus-ring context ${contextColor.name} py-2xsmall px-xsmall text-decoration-none border rounded">${contextColor.title} focus</a></p>`)} />
+
+## Customization
+
+Override `--focus-ring-*` properties inline or on a parent element to adjust the ring for a specific component without changing the global defaults.
+
+<Example code={`<a href="#" class="d-inline-flex focus-ring py-2xsmall px-xsmall text-decoration-none border rounded" style="
+      --cx-focus-ring-color: color-mix(in oklch, var(--cx-primary) 50%, var(--cx-secondary));
+      --cx-focus-ring-width: .25rem;
+      --cx-focus-ring-offset: .125rem;
+      ">
+    Custom focus ring
+  </a>`} />
+
+## CSS
+
+`.focus-ring` calls the `focus-ring()` mixin on `:focus-visible`, emitting an `outline` plus `outline-offset` from the ring custom properties.
+
+<ScssDocs name="focus-ring-helper" file="scss/helpers/_focus-ring.scss" />
+
+### Custom properties
+
+Five custom properties on `:root` govern the ring. `--focus-ring-color` reads `--cue-color` from the cascade, so the ring adapts automatically inside context classes. `--focus-ring-light-opacity` and `--focus-ring-dark-opacity` control the transparency of the cue color in each color scheme.
+
+<ScssDocs name="root-focus-variables" file="scss/_root.scss" />
+
+### Sass variables
+
+Sass variables compile the initial values for the `:root` custom properties above.
+
+<ScssDocs name="focus-ring-variables" file="scss/config/_defaults.scss" />
+
+### Sass mixin
+
+`focus-ring()` emits the `outline` declaration for use in custom selectors. Pass `true` as the first argument to include `outline-offset`; pass a color string as the second to hard-code a ring color instead of reading `--focus-ring-color`.
+
+```scss
+.custom-selector {
+  &:focus-visible {
+    @include focus-ring(true);
+  }
+}
+```
+
+<ScssDocs name="focus-ring-mixin" file="scss/mixins/_focus-ring.scss" />

@@ -1,3 +1,8 @@
+@use "sass:map";
+@use "./config" as *;
+@use "./mixins" as *;
+@use "./placeholders" as *;
+
 //
 // List Group Component
 //
@@ -6,187 +11,191 @@
 // Works with <ul>, <ol>, or <div> as the base element.
 //
 
-.list-group {
-  // scss-docs-start list-item-css-vars
-  --#{$prefix}padding-y: var(--#{$prefix}list-padding-y, #{$list-padding-y});
-  --#{$prefix}padding-x: var(--#{$prefix}list-padding-x, #{$list-padding-x});
-  --#{$prefix}fg-color: var(--#{$prefix}list-fg-color, #{$list-fg-color});
-  --#{$prefix}bg-color: var(--#{$prefix}list-bg-color, #{$list-bg-color});
-  --#{$prefix}fg-active: var(--#{$prefix}list-fg-active, #{$list-active-fg-color});
-  --#{$prefix}bg-active: var(--#{$prefix}list-bg-active, #{$list-active-bg-color});
-  --#{$prefix}fg-disabled: var(--#{$prefix}list-fg-disabled, #{$list-disabled-fg-color});
-  --#{$prefix}bg-disabled: var(--#{$prefix}list-bg-disabled, #{$list-disabled-bg-color});
-  --#{$prefix}border-active: var(--#{$prefix}list-border-active, #{$list-active-border-color});
-  --#{$prefix}border-color: var(--#{$prefix}list-border-color, #{$list-border-color});
-  --#{$prefix}border-width: var(--#{$prefix}list-border-width, #{$list-border-width});
-  --#{$prefix}border-radius: var(--#{$prefix}list-border-radius, #{$list-border-radius});
-  // scss-docs-end list-item-css-vars
+@layer components {
+  .list {
+    // scss-docs-start list-item-css-vars
+    --padding-y: var(--list-padding-y, #{$list-padding-y});
+    --padding-x: var(--list-padding-x, #{$list-padding-x});
+    --fg-color: var(--list-fg-color, #{$list-fg-color});
+    --bg-color: var(--list-bg-color, #{$list-bg-color});
+    --border-color: var(--list-border-color, #{$list-border-color});
+    --border-width: var(--list-border-width, #{$list-border-width});
+    --border-radius: var(--list-border-radius, #{$list-border-radius});
+    --item-fg-disabled: var(--list-fg-disabled, #{$list-disabled-fg-color});
+    --item-bg-disabled: var(--list-bg-disabled, #{$list-disabled-bg-color});
+    --item-fg-active: var(--list-fg-active, #{$list-active-fg-color});
+    --item-bg-active: var(--list-bg-active, #{$list-active-bg-color});
+    --item-border-active: var(--list-active-border-color, #{$list-active-border-color});
+    // scss-docs-end list-item-css-vars
 
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 
-  // No need to set list-style: none; since .list-item is block level
-  padding-left: 0; // reset padding because ul and ol
-  margin-bottom: 0;
-  @include border-radius(var(--#{$prefix}border-radius));
+    // No need to set list-style: none; since .list-item is block level
+    padding-inline-start: 0; // reset padding because ul and ol
+    margin-block-end: 0;
+    @include border-radius(var(--border-radius));
 
-  &.outline {
-    border: 0;
-  }
-
-  &.numbered {
-    list-style-type: none;
-    counter-reset: section;
-
-    > .list-item::before {
-      // Increments only this instance of the section counter
-      content: counters(section, ".") ". ";
-      counter-increment: section;
+    // Required when combined with `.context.outline` — `%outline-context`
+    // calls `@include border()` which paints a border on the host element.
+    // Without this reset, the list container would gain a border on top of
+    // each item's border.
+    &.outline {
+      border: 0;
     }
 
-  }
+    &.numbered {
+      list-style-type: none;
+      counter-reset: section;
 
-  // Flush & Plain lists
-  //
-  // Remove borders and border-radius to keep list group items edge-to-edge. Most
-  // useful within other components (e.g., cards).
-
-  &.flush,
-  &.plain {
-    border: 0;
-    @include border-radius(0);
-
-    > .list-item {
-      // --#{$prefix}padding-factor: .5;
-      border-width: 0 0 var(--#{$prefix}border-width);
-
-      // &:first-child {
-      //   --#{$prefix}padding-factor: .5;
-      //   border-top-width: 0;
-      // }
-      &:last-child {
-        // --#{$prefix}padding-factor: .25;
-        border-bottom-width: 0;
+      > .list-item::before {
+        // Increments only this instance of the section counter
+        content: counters(section, ".") ". ";
+        counter-increment: section;
       }
+
     }
-  }
 
-  // Remove horizontal padding for plain lists. Most useful for lists
-  // that are the main contents of a page (e.g., search results).
-  &.plain {
-    > .list-item {
-      padding-right: 0;
-      padding-left: 0;
-    }
-  }
-}
+    // Flush & Plain lists
+    //
+    // Remove borders and border-radius to keep list group items edge-to-edge. Most
+    // useful within other components (e.g., cards).
 
-// Individual list items
-//
-// Use on `li`s or `div`s within the `.list-group` parent.
-
-.list-item {
-  position: relative;
-  display: block;
-  color: var(--#{$prefix}fg-color);
-  text-decoration: if($link-decoration == none, null, none);
-  background-color: var(--#{$prefix}bg-color);
-  border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
-
-  // We apply a special exclude-strokes mixin to make all heights equal, since the border is on the bottom only unless it is :first-child
-  @if $enable-exclude-strokes == true or index($enable-exclude-strokes, list) {
-    $border-width: var(--#{$prefix}border-width);
-    $padding-modifier: #{calc(var(--#{$prefix}border-width) * var(--#{$prefix}padding-factor, 1))};
-    $padding-y: #{calc(var(--#{$prefix}padding-y) - #{$padding-modifier})};
-    $padding-x: #{calc(var(--#{$prefix}padding-x) - #{$border-width})};
-    padding: $padding-y $padding-x;
-  } @else {
-    @include padding();
-  }
-
-  &:first-child {
-    @include border-top-radius(inherit);
-  }
-
-  &:last-child {
-    @include border-bottom-radius(inherit);
-    // border: 0;
-  }
-
-  &.disabled,
-  &:disabled {
-    --#{$prefix}fg-color: var(--#{$prefix}list-fg-disabled);
-    --#{$prefix}bg-color: var(--#{$prefix}list-bg-disabled);
-    pointer-events: none;
-  }
-
-  &.active,
-  &.active:hover {
-    --#{$prefix}fg-color: var(--#{$prefix}fg-active);
-    --#{$prefix}bg-color: var(--#{$prefix}bg-active);
-    --#{$prefix}border-color: var(--#{$prefix}border-active);
-    z-index: 2; // Place active items above their siblings for proper border styling
-  }
-
-  + .list-item {
-    --#{$prefix}padding-factor: .5;
-    // border-top-color: transparent; // Remove the color only so padding calculations work;
-    border-top-width: 0;
-  }
-
-}
-
-// Interactive list items
-//
-// Use anchor or button elements instead of `li`s or `div`s to create interactive
-// list items. Includes an extra `.active` modifier class for selected items.
-
-.list-group.list-action > .list-item,
-.list-group > .list-item.list-action {
-  @extend %interactive;
-  &.active,
-  &.active:hover {
-    @extend %context, %solid-context;
-    --#{$prefix}fg-color: var(--#{$prefix}fg-active);
-    --#{$prefix}bg-color: var(--#{$prefix}bg-active);
-    z-index: 2; // Place active items above their siblings for proper border styling
-  }
-
-}
-
-// Horizontal
-//
-// Change the layout of list group items from vertical (default) to horizontal.
-
-@each $breakpoint in map-keys($grid-breakpoints) {
-  @include media-breakpoint-up($breakpoint) {
-    $infix: breakpoint-prefix($breakpoint, $grid-breakpoints);
-
-    .list-group.#{$infix}horizontal {
-      flex-direction: row;
+    &.flush,
+    &.plain {
+      border: 0;
+      @include border-radius(0);
 
       > .list-item {
-        // border-top-width: var(--#{$prefix}border-width);
-        // @include padding(); // restore vertical padding since horizontal list items have no bottom border
-        // border: 0;
-        // &:not(:last-child) {
-        //   border-right: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
-        // }
-        &:first-child:not(:last-child) {
-          @include border-bottom-start-radius(var(--#{$prefix}border-radius));
-          @include border-top-end-radius(0);
-        }
+        border-block-width: 0 var(--border-width);
+        border-inline-width: 0;
 
-        &:last-child:not(:first-child) {
-          @include border-top-end-radius(var(--#{$prefix}border-radius));
-          @include border-bottom-start-radius(0);
+        &:last-child {
+          border-block-end-width: 0;
         }
-        + .list-item {
-          --#{$prefix}padding-factor: 1;
-          border-top-width: var(--#{$prefix}border-width);
-          border-left-width: 0;
+      }
+    }
+
+    // Remove horizontal padding for plain lists. Most useful for lists
+    // that are the main contents of a page (e.g., search results).
+    &.plain {
+      > .list-item {
+        padding-inline: 0;
+      }
+    }
+  }
+
+  // Individual list items
+  //
+  // Use on `li`s or `div`s within the `.list` parent.
+
+  .list-item {
+    --padding-factor-y: .5;
+    --padding-factor-x: 1;
+
+    position: relative;
+    display: block;
+    color: var(--fg-color);
+    text-decoration: none;
+    background-color: var(--bg-color);
+    border: var(--border-width) solid var(--border-color);
+
+    @if $enable-exclude-strokes == true or index($enable-exclude-strokes, list) {
+      $pad-y: calc(var(--padding-y) - var(--border-width) * var(--padding-factor-y));
+      $pad-x: calc(var(--padding-x) - var(--border-width) * var(--padding-factor-x));
+      padding: $pad-y $pad-x;
+    } @else {
+      @include padding();
+    }
+
+    &:first-child {
+      @include border-top-radius(inherit);
+    }
+
+    &:last-child {
+      @include border-bottom-radius(inherit);
+    }
+
+    &.disabled,
+    &:disabled {
+      --fg-color: var(--item-fg-disabled);
+      --bg-color: var(--item-bg-disabled);
+      pointer-events: none;
+    }
+
+    // Active state keeps the item's `--border-width` intact and only swaps
+    // `--border-color` to transparent. Setting width to 0 would shrink the
+    // item by one border-width and cause adjacent items to jump up — the
+    // transparent border preserves layout space while still hiding the line.
+    &.active,
+    &.active:hover {
+      --fg-color: var(--item-fg-active);
+      --bg-color: var(--item-bg-active);
+      --border-color: var(--item-border-active);
+      z-index: 2; // Place active items above their siblings for proper border styling
+    }
+
+    + .list-item {
+      border-block-start-width: 0;
+    }
+
+  }
+
+  // Interactive list items
+  //
+  // Use anchor or button elements instead of `li`s or `div`s to create interactive
+  // list items. Includes an extra `.active` modifier class for selected items.
+
+  .list.list-action > .list-item,
+  .list > .list-item.list-action {
+    @extend %interactive;
+    --link-color: var(--fg-color);
+    // `--item-fg-active` / `--item-bg-active` already cascade from `.list`,
+    // and their default chain reads the surrounding context's `--fg-active`
+    // / `--bg-active` — so this single assignment covers default and
+    // contextual themes without needing a `%solid-context` extend.
+    &.active,
+    &.active:hover {
+      --fg-color: var(--item-fg-active);
+      --bg-color: var(--item-bg-active);
+      z-index: 2; // Place active items above their siblings for proper border styling
+    }
+
+  }
+
+  // Horizontal
+  //
+  // Change the layout of list group items from vertical (default) to horizontal.
+
+  @each $breakpoint in map.keys($breakpoints) {
+    $prefix: breakpoint-prefix($breakpoint, $breakpoints);
+    .list.#{$prefix}horizontal {
+      @include container-breakpoint-up($breakpoint) {
+
+        flex-direction: row;
+
+        > .list-item {
+          // Swap factor roles for horizontal stacking — see vertical default
+          // above for the rationale. Every horizontal item has top + bottom
+          // borders, so factor-y can go full (1) without breaking uniformity.
+          --padding-factor-x: .5;
+          --padding-factor-y: 1;
+
+          &:first-child:not(:last-child) {
+            @include border-bottom-start-radius(var(--border-radius));
+            @include border-top-end-radius(0);
+          }
+
+          &:last-child:not(:first-child) {
+            @include border-top-end-radius(var(--border-radius));
+            @include border-bottom-start-radius(0);
+          }
+          + .list-item {
+            border-block-start-width: var(--border-width);
+            border-inline-start-width: 0;
+          }
         }
       }
     }
   }
-}
+} // @layer components

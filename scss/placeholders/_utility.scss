@@ -1,3 +1,6 @@
+@use "../config" as *;
+@use "../functions" as *;
+
 //
 // Utility Placeholders
 //
@@ -7,32 +10,65 @@
 // property declarations across multiple selectors.
 //
 
-%font {
-  font: var(--#{$prefix}font-weight) var(--#{$prefix}font-size) / var(--#{$prefix}line-height) var(--#{$prefix}font-family) if($enable-important-utilities, !important, null);
-}
+//stylelint-disable property-disallowed-list, declaration-no-important
+@layer helpers {
+  %font {
+    @if $enable-important-utilities {
+      font: var(--font-weight) var(--font-size) / var(--line-height) var(--font-family) !important;
+    } @else {
+      font: var(--font-weight) var(--font-size) / var(--line-height) var(--font-family);
+    }
+  }
 
-%font-size {
-  //stylelint-disable-next-line property-disallowed-list
-  font-size: var(--#{$prefix}font-size) if($enable-important-utilities, !important, null);
-  line-height: var(--#{$prefix}line-height) if($enable-important-utilities, !important, null);
-}
+  %font-size {
+    @if $enable-important-utilities {
+      font-size: var(--font-size) !important;
+      line-height: var(--line-height) !important;
+    } @else {
+      font-size: var(--font-size);
+      line-height: var(--line-height);
+    }
+  }
 
-%fg-color {
-  color: var(--#{$prefix}fg-color) if($enable-important-utilities, !important, null);
-}
+  %fg-color {
+    @if $enable-important-utilities {
+      color: var(--fg-color) !important;
+    } @else {
+      color: var(--fg-color);
+    }
+  }
 
-%bg-color {
-  background-color: var(--#{$prefix}bg-color) if($enable-important-utilities, !important, null);
-}
+  %bg-color {
+    @if $enable-important-utilities {
+      background-color: var(--bg-color) !important;
+    } @else {
+      background-color: var(--bg-color);
+    }
+  }
 
-%border-color {
-  border-color: var(--#{$prefix}border-color) if($enable-important-utilities, !important, null);
-}
+  %border-color {
+    @if $enable-important-utilities {
+      border-color: var(--border-color) !important;
+    } @else {
+      border-color: var(--border-color);
+    }
+  }
 
-%icon-color {
-  color: var(--#{$prefix}icon-color) if($enable-important-utilities, !important, null);
-  fill: var(--#{$prefix}icon-color) if($enable-important-utilities, !important, null);
-}
-%link-color {
-  color: to-opacity(var(--#{$prefix}link-main-color), var(--#{$prefix}link-opacity, 1)) if($enable-important-utilities, !important, null);
-}
+  %icon-color {
+    @if $enable-important-utilities {
+      color: var(--icon-color) !important;
+      fill: var(--icon-color) !important;
+    } @else {
+      color: var(--icon-color);
+      fill: var(--icon-color);
+    }
+  }
+  %link-color {
+    @if $enable-important-utilities {
+      color: to-opacity(var(--link-main-color), var(--link-opacity, 1)) !important;
+    } @else {
+      color: to-opacity(var(--link-main-color), var(--link-opacity, 1));
+    }
+  }
+  //stylelint-enable property-disallowed-list, declaration-no-important
+} // @layer helpers

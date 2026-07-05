@@ -2,15 +2,18 @@
 title: Tables
 description: Flexible table styles with opt-in classes for responsive, accessible, and customizable data presentation in Chassis CSS.
 toc: true
+tokens: component
+css_layer: content
 ---
 
 import { getData } from '@libs/data'
+import { getTableHtml } from '@libs/table'
 
 ## Overview
 
 Tables in Chassis CSS use an opt-in approach with the `.table` base class. This design choice respects the widespread use of native `<table>` elements in third-party plugins like calendars and datepickers. Add the base class to any `<table>`, then enhance with modifiers for borders, striping, hover states, and context variations. Table styles aren't inherited by nested tables, allowing for independent styling within complex layouts.
 
-<Table class="table" simplified={false} />
+<TableExample class="table" simplified={false} />
 
 ## Accented tables
 
@@ -20,25 +23,25 @@ Enhance your tables with visual accents to improve readability and create visual
 
 Add `.striped` to create alternating background colors for rows within the `<tbody>`, making it easier to scan across wide tables.
 
-<Table class="table striped" />
+<TableExample class="table striped" />
 
 ### Striped columns
 
 Use `.striped-columns` to apply zebra-striping to columns instead of rows, which can be useful for data-dense tables where vertical scanning is important.
 
-<Table class="table striped-columns" />
+<TableExample class="table striped-columns" />
 
 ## Hoverable rows
 
 Add `.hoverable` to enable a hover state on table rows within a `<tbody>`.
 
-<Table class="table hoverable striped" />
+<TableExample class="table hoverable striped" />
 
 ## Active tables
 
 Highlight a table row or cell by adding a `.active` class.
 
-<TableDeep class="table hoverable striped" active />
+<TableExample class="table hoverable striped" active />
 
 ## Table borders
 
@@ -48,39 +51,36 @@ Control the visual boundaries of your tables using border modifiers. These class
 
 Add `.bordered` to apply distinct borders to the entire table, including cell boundaries, creating clear visual separation between data points.
 
-<Table class="table bordered" />
+<TableExample class="table bordered" />
 
 [Border color utilities]([[docsref:/utilities/borders#border-color]]) can be added to change colors:
 
-<Table class="table bordered border-primary" />
+<TableExample class="table bordered border-primary" />
 
 ### Borderless tables
 
 Apply `.borderless` to remove all borders from your table for a cleaner, more minimalist appearance.
 
-<Table class="table borderless" />
+<TableExample class="table borderless" />
 
 ### Border Radius
 
 Customize the corners of bordered tables using CSS variables to override the default border-radius design tokens.
 
-<Table class="table bordered" style="--cx-border-radius: 0" />
+<TableExample class="table bordered" style="--cx-border-radius: 0" />
 
 Or use it in a wrapper with table scoping.
 
-<div class="cxd-example">
-  <div style="--cx-table-border-radius: 1rem">
-    <TableDeep code="false" class="table bordered" />
-  </div>
-</div>
-
-```html
-<div style="--cx-table-border-radius: 1rem">
-  <table class="table bordered">
-    ...
-  </table>
-</div>
-```
+<Example
+  code={`<div style="--cx-table-border-radius: 1rem">
+    ${getTableHtml({ class: 'table bordered' })}
+  </div>`}
+    customMarkup={`<div style="--cx-table-border-radius: 1rem">
+    <table class="table bordered">
+      ...
+    </table>
+  </div>`}
+/>
 
 <Callout type="warning">
  Border radius overriding needs `$enable-table-border-radius` to be set to `true` in `_settings.scss`.
@@ -96,7 +96,7 @@ Use `.context` with a color name (like `.primary`) to apply a specific color sch
 
 Add `.context` followed by a color name (e.g., `.context.primary`, `.context.success`) to apply that color scheme to tables, rows, or individual cells.
 
-<Example showMarkup={false} code={`<table class="table">
+<Example code={`<table class="table">
     <thead>
       <tr>
         <th scope="col">Class</th>
@@ -120,9 +120,8 @@ Add `.context` followed by a color name (e.g., `.context.primary`, `.context.suc
         `)
       }).join('')}
     </tbody>
-  </table>`} />
-
-<Code code={[
+  </table>`}
+  customMarkup={[
   `<!-- On tables -->`,
   ...getData('context-colors').map((contextColor) => `<table class="table context ${contextColor.name}">...</table>`),
   `
@@ -145,23 +144,19 @@ Add `.context` followed by a color name (e.g., `.context.primary`, `.context.suc
   <td class="context primary">
     ...
   </td>`
-]} lang="html" />
+]} />
 
 <Callout name="warning-color-assistive-technologies" />
 
-<TableDeep showMarkup={false} class="table striped hoverable context primary" active />
-
-<Code lang="html" code={`<table class="table striped hoverable context primary">
-  ...
-  </table>`} />
+<TableExample class="table striped hoverable context primary" />
 
 ### Context styles
 
 Add `.solid` or `.smooth` alongside `.context` and a color to modify how the context color appears. The `.solid` style creates a more prominent color effect, while `.smooth` provides a softer appearance.
 
-<Table class="table context primary solid" />
+<TableExample class="table striped context primary solid" />
 
-<Table class="table context primary smooth" />
+<TableExample class="table striped context primary smooth" />
 
 ## Color Modes
 
@@ -169,11 +164,11 @@ Apply different color themes to tables using the `data-cx-theme` attribute. This
 
 Add `data-cx-theme="light"` or `data-cx-theme="dark"` to any table element:
 
-<Table class="table" theme="dark" />
+<TableExample class="table" theme="dark" />
 
 Context variants work seamlessly with explicit theme settings:
 
-<Table class="table context primary" theme="dark" />
+<TableExample class="table context primary" theme="dark" />
 
 ## Table Sizing
 
@@ -183,37 +178,34 @@ Customize table dimensions and text sizes using CSS variables to override design
 
 Adjust cell padding and font sizes directly on the table:
 
-<Table class="table" style="--cx-td-font-size: 1rem; --cx-cell-padding-y: 1rem" />
+<TableExample class="table" style="--cx-td-font-size: 1rem; --cx-cell-padding-y: 1rem" />
 
 ### Targeted elements
 
 Target specific table components by setting styles for `<thead>` & `<tbody>` elements or use a wrapper with scoping:
 
-<div class="cxd-example">
-  <div style="--cx-table-cell-padding-y: 1rem; --cx-table-th-font-size: 1rem;">
-    <TableDeep example="false" class="table" headStyle="--cx-cell-padding-y: .25rem" bodyStyle="--cx-td-font-size: 1rem" />
-  </div>
-</div>
-
-```html
-<div style="--cx-table-cell-padding-y: 1rem; --cx-table-th-font-size: 1rem;">
-  <table class="table">
-    <thead style="--cx-cell-padding-y: .25rem">
-      ...
-    </thead>
-    <tbody style="--cx-td-font-size: 1rem">
-      ...
-    </tbody>
-  </table>
-</div>
-```
+<Example
+  code={`<div style="--cx-table-cell-padding-y: 1rem; --cx-table-th-font-size: 1rem;">
+    ${getTableHtml({ class: 'table', headStyle: '--cx-cell-padding-y: .25rem', bodyStyle: '--cx-td-font-size: 1rem' })}
+  </div>`}
+    customMarkup={`<div style="--cx-table-cell-padding-y: 1rem; --cx-table-th-font-size: 1rem;">
+    <table class="table">
+      <thead style="--cx-cell-padding-y: .25rem">
+        ...
+      </thead>
+      <tbody style="--cx-td-font-size: 1rem">
+        ...
+      </tbody>
+    </table>
+  </div>`}
+/>
 
 ## Nesting
 
 Border styles and context variants are not inherited by nested tables.
 
-<div class="cxd-example">
-<table class="table striped bordered">
+<Example
+  code={`<table class="table striped bordered">
   <thead>
     <tr>
       <th class="w-25" scope="col">Column 1</th>
@@ -229,7 +221,7 @@ Border styles and context variants are not inherited by nested tables.
     </tr>
     <tr>
       <td colspan="3" class="p-medium">
-      <TableDeep class="table mb-0" example={false} />
+        ${getTableHtml({ class: 'table mb-0' })}
       </td>
     </tr>
     <tr>
@@ -238,11 +230,8 @@ Border styles and context variants are not inherited by nested tables.
       <td>Third</td>
     </tr>
   </tbody>
-</table>
-</div>
-
-```html
-<table class="table striped bordered">
+</table>`}
+  customMarkup={`<table class="table striped bordered">
   ...
   <tr>
     <td colspan="3" class="p-medium">
@@ -252,15 +241,15 @@ Border styles and context variants are not inherited by nested tables.
     </td>
   </tr>
   ...
-</table>
-```
+</table>`}
+/>
 
 ### Inherit context
 
 Apply the `context` class without a variant to enable the nested table to inherit the parent table's context.
 
-<div class="cxd-example">
-<table class="table striped bordered context primary">
+<Example
+  code={`<table class="table striped bordered context primary">
   <thead>
     <tr>
       <th class="w-25" scope="col">Column 1</th>
@@ -276,7 +265,7 @@ Apply the `context` class without a variant to enable the nested table to inheri
     </tr>
     <tr>
       <td colspan="3" class="p-medium">
-      <TableDeep class="table context mb-0" example={false} />
+        ${getTableHtml({ class: 'table context mb-0' })}
       </td>
     </tr>
     <tr>
@@ -285,11 +274,8 @@ Apply the `context` class without a variant to enable the nested table to inheri
       <td>Third</td>
     </tr>
   </tbody>
-</table>
-</div>
-
-```html
-<table class="table striped bordered context primary">
+</table>`}
+  customMarkup={`<table class="table striped bordered context primary">
   ...
   <tr>
     <td colspan="3" class="p-medium">
@@ -299,8 +285,8 @@ Apply the `context` class without a variant to enable the nested table to inheri
     </td>
   </tr>
   ...
-</table>
-```
+</table>`}
+/>
 
 ## Anatomy
 
@@ -310,33 +296,33 @@ Customize the structural elements of tables to create effective hierarchies and 
 
 Add emphasis and visual hierarchy using custom styling for the `<thead>` element. Apply context classes to `<thead>` or utility classes to `<tr>` elements for custom appearances.
 
-<TableDeep class="table" headClass="context alternate" />
+<TableExample class="table" headClass="context alternate" />
 
-<TableDeep class="table" headRowClass="bg-main fg-primary" />
+<TableExample class="table" headRowClass="bg-main fg-primary" />
 
 ### Table foot
 
 Include a `<tfoot>` element to display summary information, totals, or notes at the bottom of the table. Apply context classes to `<tfoot>` or utility classes to `<tr>` elements for custom appearances.
 
-<TableDeep class="table" foot footClass="context neutral" />
+<TableExample class="table" foot footClass="context neutral" />
 
 ### Captions
 
 Improve accessibility and provide context by including a `<caption>` that briefly describes the table's content and purpose. Screen readers announce captions first, helping users decide if they want to explore the table.
 
-<Table class="table" caption="List of users" />
+<TableExample class="table" caption="List of users" />
 
 You can also position the caption at the top of the table with `.caption-top` for greater visibility.
 
-<Table class="table caption-top" caption="List of users" />
+<TableExample class="table caption-top" caption="List of users" />
 
 ## Group dividers
 
 Create visual separation between table sections with enhanced borders using the `.table-divider` class.
 
-<TableDeep class="table" bodyClass="table-divider" foot={true} footClass="table-divider" />
+<TableExample class="table" bodyClass="table-divider" foot={true} footClass="table-divider" />
 
-<TableDeep class="table context primary" bodyClass="table-divider" foot={true} footClass="table-divider" />
+<TableExample class="table context primary" bodyClass="table-divider" foot={true} footClass="table-divider" />
 
 ## Vertical alignment
 
@@ -344,8 +330,7 @@ Control the vertical positioning of content within table cells to handle varying
 
 Use the [vertical align]([[docsref:/utilities/vertical-align]]) utility classes (`.align-top`, `.align-middle`, or `.align-bottom`) on tables, rows, or individual cells to customize alignment:
 
-<div class="cxd-example">
-  <div class="table-responsive">
+<Example code={`<div class="table-responsive">
     <table class="table align-middle">
       <thead>
         <tr>
@@ -376,42 +361,37 @@ Use the [vertical align]([[docsref:/utilities/vertical-align]]) utility classes 
         </tr>
       </tbody>
     </table>
-  </div>
-</div>
-
-```html
-<div class="table-responsive">
-  <table class="table align-middle">
-    <thead>
-      <tr>
-        ...
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        ...
-      </tr>
-      <tr class="align-bottom">
-        ...
-      </tr>
-      <tr>
-        <td>...</td>
-        <td class="align-top">This cell is aligned to the top.</td>
-        <td class="align-bottom">This cell is aligned to the bottom.</td>
-        <td>...</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-```
+  </div>`}
+  customMarkup={`<div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          ...
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          ...
+        </tr>
+        <tr class="align-bottom">
+          ...
+        </tr>
+        <tr>
+          <td>...</td>
+          <td class="align-top">This cell is aligned to the top.</td>
+          <td class="align-bottom">This cell is aligned to the bottom.</td>
+          <td>...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>`} />
 
 ## Responsive tables
 
-Responsive tables allow tables to be scrolled horizontally with ease. Make any table responsive across all viewports by wrapping a `.table` with `.table-responsive`. Or, pick a maximum breakpoint with which to have a responsive table up to by using `.table-responsive{-small|-medium|-large|-xlarge|-2xlarge}`.
+Responsive tables allow tables to be scrolled horizontally with ease. Make any table responsive across all viewports by wrapping a `.table` with `.table-responsive`. Or, pick a maximum breakpoint with which to have a responsive table up to by using `.max-{breakpoint}:table-responsive`.
 
 <Callout type="warning">
-##### Vertical clipping/truncation
-
+**Vertical clipping/truncation**  
 Responsive tables make use of `overflow-y: hidden`, which clips off any content that goes beyond the bottom or top edges of the table. In particular, this can clip off dropdown menus and other third-party widgets.
 </Callout>
 
@@ -419,8 +399,7 @@ Responsive tables make use of `overflow-y: hidden`, which clips off any content 
 
 Across every breakpoint, use `.table-responsive` for horizontally scrolling tables.
 
-<div class="cxd-example">
-  <div class="table-responsive">
+<Example code={`<div class="table-responsive">
     <table class="table">
       <thead>
         <tr>
@@ -471,27 +450,24 @@ Across every breakpoint, use `.table-responsive` for horizontally scrolling tabl
         </tr>
       </tbody>
     </table>
-</div>
-</div>
+  </div>`}
+  customMarkup={`<div class="table-responsive">
+    <table class="table">
+      ...
+    </table>
+  </div>`} />
 
-```html
-<div class="table-responsive">
-  <table class="table">
-    ...
-  </table>
-</div>
-```
 
 ### Breakpoint specific
 
-Use `.{breakpoint}:table-responsive` as needed to create responsive tables up to a particular breakpoint. From that breakpoint and up, the table will behave normally and not scroll horizontally.
+Use `.max-{breakpoint}:table-responsive` as needed to create responsive tables up to a particular breakpoint. From that breakpoint and up, the table will behave normally and not scroll horizontally.
 
 **These tables may appear broken until their responsive styles apply at specific viewport widths.**
 
 {getData('breakpoints').map((breakpoint) => {
   return (
-    <div class="cxd-example">
-      <div class={`${breakpoint.abbr}table-responsive`}>
+    <Example code={`<div class="cxd-example">
+      <div class="max-${breakpoint.abbr}table-responsive">
         <table class="table">
           <thead>
             <tr>
@@ -543,16 +519,85 @@ Use `.{breakpoint}:table-responsive` as needed to create responsive tables up to
           </tbody>
         </table>
       </div>
-    </div>
+    </div>`} customMarkup={`<div class="max-${breakpoint.abbr}table-responsive"><table class="table">
+      ...
+    </table>
+</div>`} />
   )
 })}
 
-<Code code={getData('breakpoints').map((breakpoint) => `<div class="${breakpoint.abbr}table-responsive">
-    <table class="table">
-      ...
-    </table>
+## Stacked tables
+
+Add `.stacked` to convert a table’s rows into stacked blocks when space is limited. Each row becomes a vertical block with the first cell acting as a bold title and the remaining cells displayed as label–value pairs. Labels are generated from `data-cell` attributes on each `<td>`.
+
+Both `.stacked` and `.table-responsive` use container queries, so the `.table-responsive` wrapper is required as the query container. Use `.max-medium:stacked`, `.max-large:stacked`, etc. to only stack until up to a specific container width. The default `.stacked` always stacks.
+
+<ResizableExample code={`
+<div class="table-responsive">
+  <table class="table max-medium:stacked">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Type</th>
+        <th scope="col">Default</th>
+        <th scope="col">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-cell="Name">animation</td>
+        <td data-cell="Type">boolean</td>
+        <td data-cell="Default">true</td>
+        <td data-cell="Description">Applies a CSS fade transition on show and hide.</td>
+      </tr>
+      <tr>
+        <td data-cell="Name">autohide</td>
+        <td data-cell="Type">boolean</td>
+        <td data-cell="Default">true</td>
+        <td data-cell="Description">Hides the toast automatically after delay milliseconds. The timer pauses while the pointer is over the toast or focus is within it.</td>
+      </tr>
+      <tr>
+        <td data-cell="Name">delay</td>
+        <td data-cell="Type">number</td>
+        <td data-cell="Default">5000</td>
+        <td data-cell="Description">Milliseconds to wait before hiding. Only applies when autohide is true.</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
-`)} lang="html" />
+`} customMarkup={`
+<div class="table-responsive">
+  <table class="table max:medium:stacked">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Type</th>
+        ...
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-cell="Name">animation</td>
+        <td data-cell="Type">boolean</td>
+        ...
+      </tr>
+      ...
+    </tbody>
+  </table>
+</div>
+`} />
+
+```html
+<!-- Always stacked -->
+<div class="table-responsive">
+  <table class="table table-stacked">...</table>
+</div>
+
+<!-- Stacked below medium container width -->
+<div class="table-responsive">
+  <table class="table max-medium:table-stacked">...</table>
+</div>
+```
 
 ## CSS
 
@@ -568,7 +613,7 @@ Use `.{breakpoint}:table-responsive` as needed to create responsive tables up to
 
 <DocsSASSVars />
 
-<ScssDocs name="table-variables" file="scss/_variables.scss" />
+<ScssDocs name="table-variables" file="scss/config/_defaults.scss" />
 
 ### Design tokens
 

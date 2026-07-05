@@ -1,0 +1,48 @@
+@use "../config/" as *;
+
+//
+// Icon Helpers
+//
+// Styles for inline SVG icons and icon-font glyphs. Controls size, color, and
+// vertical alignment using CSS custom properties that inherit from the parent context.
+//
+
+@layer helpers {
+  .icon {
+    color: var(--icon-color);
+    fill: var(--icon-color);
+
+    &:not(:empty) {
+      flex-shrink: 0;
+      width: var(--icon-size);
+      height: var(--icon-size);
+      font-family: var(--font-family-icon);
+      font-size: var(--icon-size); // stylelint-disable-line property-disallowed-list
+      vertical-align: $icon-vertical-align;
+    }
+
+    &:empty::before {
+      display: inline-block;
+      font-family: var(--font-family-icon) !important; // stylelint-disable-line declaration-no-important
+      font-size: var(--icon-size); // stylelint-disable-line property-disallowed-list
+      font-style: normal;
+      font-weight: 400 !important; // stylelint-disable-line declaration-no-important
+      font-variant: normal;
+      line-height: 1;
+      text-transform: none;
+      vertical-align: $icon-vertical-align;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+  }
+
+  .icon-adaptive {
+    &:not(:empty) {
+      --icon-size: 1.125em;
+    }
+    &:empty::before {
+      --icon-size: 1.25em;
+    }
+  }
+} // @layer helpers

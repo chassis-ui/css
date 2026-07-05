@@ -1,7 +1,15 @@
+@use "../mixins" as *;
+
 //
-// Text truncation
+// Text Truncation Helper
+//
+// Truncates overflowing text with an ellipsis via the .text-truncate class.
 //
 
-.text-truncate {
-  @include text-truncate();
-}
+@layer helpers {
+  // scss-docs-start text-truncation-helper
+  .text-truncate {
+    @include text-truncate();
+  }
+  // scss-docs-end text-truncation-helper
+} // @layer helpers

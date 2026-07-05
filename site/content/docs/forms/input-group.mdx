@@ -2,6 +2,10 @@
 title: Input Groups
 description: Create powerful, flexible input combinations with Chassis CSS's advanced input group system that seamlessly pairs form controls with text, icons, buttons, and more.
 toc: true
+tokens: context
+css_layer: components
+deps:
+  - title: Form Input
 ---
 
 ## Overview
@@ -55,26 +59,26 @@ The `.input-addon` class creates text-based addons with appropriate spacing, bor
   </div>
 
   <div class="input-group">
-    <span class="input-addon">Description</span>
-    <textarea class="form-input" aria-label="Product description"></textarea>
+    <label class="input-addon" for="productDescription">Description</label>
+    <textarea class="form-input" id="productDescription"></textarea>
   </div>`} />
 
 Text addons automatically share borders with adjacent form controls to create a unified appearance, while maintaining appropriate spacing and visual hierarchy.
 
 ### Icon addons
 
-Combine the `.icon-addon` and `.input-addon` classes together to create borderless icon elements that appear to be integrated directly into the input field. Chassis CSS handles positioning and spacing automatically.
+Combine the `.input-addon` class with an `<svg>` element to create borderless icon elements that appear to be integrated directly into the input field. Chassis CSS handles positioning and spacing automatically.
 
 <Example code={`<div class="input-group mb-medium">
-    <span class="input-addon icon-addon"><svg class="icon"><use xlink:href="#lock-solid"/></svg></span>
-    <input type="password" class="form-input" placeholder="Password" aria-label="Password">
-    <button class="icon-addon input-addon" type="button" aria-label="Show password">
-      <svg class="icon"><use xlink:href="#eye-solid"/></svg>
+    <span class="input-addon"><Icon name="lock-solid" /></span>
+    <input type="password" autocomplete="current-password" class="form-input" placeholder="Password" aria-label="Password">
+    <button class="input-addon" type="button" aria-label="Show password">
+      <Icon name="eye-solid" />
     </button>
   </div>
 
   <div class="input-group">
-    <span class="input-addon icon-addon"><svg class="icon"><use xlink:href="#search-solid"/></svg></span>
+    <span class="input-addon"><Icon name="search-solid" /></span>
     <input type="search" class="form-input" placeholder="Search" aria-label="Search" disabled>
   </div>`} />
 
@@ -100,18 +104,18 @@ Buttons within input groups are given a higher z-index than inputs to ensure pro
 
 Checks and radios can be incorporated into input groups by nesting them within `.input-addon` elements. This creates compact, multi-purpose controls while maintaining accessibility.
 
-<Example code={`<div class="input-group mb-medium">
+<Example code={`<div class="input-group mb-medium" role="group" aria-label="Newsletter subscription">
     <div class="input-addon">
       <input class="check-input mt-0" type="checkbox" value="" aria-label="Subscribe to newsletter">
     </div>
     <input type="email" class="form-input" placeholder="Email address" aria-label="Email for newsletter">
   </div>
 
-  <div class="input-group">
+  <div class="input-group" role="group" aria-label="Task with priority">
     <div class="input-addon">
       <input class="check-input mt-0" type="radio" name="priority" value="high" aria-label="High priority">
     </div>
-    <input type="text" class="form-input" placeholder="Task description" aria-label="High priority task">
+    <input type="text" class="form-input" placeholder="Task description" aria-label="Task description">
   </div>`} />
 
 When using form controls within addons, add the `.mt-0` class to the `.check-input` to ensure proper vertical alignment within the container.
@@ -142,13 +146,13 @@ Multiple addons work together through Chassis CSS's advanced border radius manag
 
 Create multi-field forms with space efficiency by combining multiple inputs in a single input group. This approach works well for related fields like first/last name or city/state/zip.
 
-<Example code={`<div class="input-group mb-medium">
-    <span class="input-addon">Name</span>
-    <input type="text" class="form-input" placeholder="First" aria-label="First name">
+<Example code={`<div class="input-group mb-medium" role="group" aria-labelledby="nameAddon">
+    <label class="input-addon" id="nameAddon" for="multiInputFirstName">Name</label>
+    <input type="text" class="form-input" id="multiInputFirstName" placeholder="First" aria-label="First name">
     <input type="text" class="form-input" placeholder="Last" aria-label="Last name">
   </div>
 
-  <div class="input-group">
+  <div class="input-group" role="group" aria-label="Email address">
     <input type="text" class="form-input" placeholder="Username" aria-label="Username">
     <span class="input-addon">@</span>
     <input type="text" class="form-input" placeholder="Domain" aria-label="Domain">
@@ -187,7 +191,7 @@ Combine input groups with select menus to create unified selection interfaces wi
 
 <Example code={`<div class="input-group mb-medium">
     <label class="input-addon" for="inputGroupSelect01">Category</label>
-    <select class="form-select" id="inputGroupSelect01">
+    <select class="form-input" id="inputGroupSelect01">
       <option selected>Choose...</option>
       <option value="1">Products</option>
       <option value="2">Services</option>
@@ -195,8 +199,8 @@ Combine input groups with select menus to create unified selection interfaces wi
     </select>
   </div>
 
-  <div class="input-group">
-    <select class="form-select" id="inputGroupSelect02" aria-label="Currency selection">
+  <div class="input-group" role="group" aria-label="Price with currency">
+    <select class="form-input" id="inputGroupSelect02" aria-label="Currency selection">
       <option value="usd" selected>USD</option>
       <option value="eur">EUR</option>
       <option value="gbp">GBP</option>
@@ -227,28 +231,64 @@ File inputs with addons create clear upload interfaces while maintaining browser
 Create rich, contextual inputs by combining input groups with Chassis CSS's dropdown component for additional options or actions.
 
 <Example code={`<div class="input-group">
-    <button class="button outline secondary dropdown-toggle" type="button" data-cx-toggle="dropdown" aria-expanded="false">Options</button>
-    <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href="#">Action</a></li>
-      <li><a class="dropdown-item" href="#">Another action</a></li>
-      <li><a class="dropdown-item" href="#">Something else</a></li>
+    <button class="button outline secondary menu-toggle" type="button" data-cx-toggle="menu" aria-expanded="false">Options</button>
+    <ul class="menu">
+      <li><a class="menu-item" href="#">Action</a></li>
+      <li><a class="menu-item" href="#">Another action</a></li>
+      <li><a class="menu-item" href="#">Something else</a></li>
     </ul>
     <input type="text" class="form-input" aria-label="Text input with dropdown">
   </div>`} />
 
 Dropdowns within input groups maintain proper z-indexing to ensure menus appear above other form elements. The border radius is automatically managed to create a seamless visual connection.
 
-## Accessibility considerations
+## Vertical groups
 
-Creating accessible input groups requires attention to proper structure, labeling, and keyboard interaction. Follow these best practices:
+Stack multiple inputs and addons vertically to create multi-line forms with a compact footprint. This is ideal for address forms, multi-part data entry, or grouped settings.
 
-- Always place `<label>` elements outside the input group
-- Include appropriate `aria-label` or `aria-labelledby` attributes on inputs without visible labels
-- Use `aria-describedby` to associate help text with form controls
-- Ensure all interactive elements (like buttons) have accessible names
-- Test keyboard navigation through complex input groups
-- Maintain sufficient color contrast between text, backgrounds, and borders
-- Order elements logically in the DOM to support screen reader navigation
+<Example code={`<div class="input-group vertical" role="group" aria-label="Sign-in credentials">
+    <input type="text" class="form-input" placeholder="Username" aria-label="Username">
+    <input type="password" autocomplete="current-password" class="form-input" placeholder="Password" aria-label="Password">
+  </div>`} />
+
+
+### Nested groups
+
+Create complex, multi-field forms by nesting input groups within vertical groups. This allows you to maintain consistent styling and spacing while organizing related fields together.
+
+<Example code={`<div class="input-group vertical" role="group" aria-labelledby="addressAddon">
+    <label class="input-addon" for="inputAddressLine" id="addressAddon">Address</label>
+    <input type="text" class="form-input" id="inputAddressLine" placeholder="123 Main St" aria-label="Street address">
+    <div class="input-group" role="group" aria-label="City, state, and zip">
+      <input type="text" class="form-input" placeholder="City" aria-label="City">
+      <select class="form-input" aria-label="State">
+        <option value="" selected>State</option>
+        <option>State option</option>
+      </select>
+      <input type="text" class="form-input" placeholder="Zip" aria-label="Zip code">
+    </div>
+  </div>`} />
+
+
+## Accessibility
+
+Input groups combine multiple elements visually, so explicit labeling is essential for assistive technology users.
+
+### Single-input groups
+
+Use a `<label>` with a `for` attribute pointing to the input's `id`. The label can be a standalone `.form-label` before the group, or a `.input-addon` element inside it. If no visible label is needed, add `aria-label` directly to the input.
+
+### Multi-input groups
+
+When a group contains more than one input, add `role="group"` to the `.input-group` element so the inputs are announced as a related set. Provide a group name with either `aria-labelledby` referencing the `id` of an addon that serves as the visible group label, or `aria-label` when no addon is suitable. Each individual input still needs its own `aria-label`.
+
+### Help text and validation
+
+Place help text and validation feedback as siblings after `.input-group`, not inside it. Use `aria-describedby` on the associated input to link the two.
+
+### Interactive addons
+
+All button addons must have an accessible name. Use visible text or `aria-label` for icon-only buttons.
 
 ## Technical implementation
 
@@ -264,19 +304,23 @@ Input groups utilize several key techniques:
 
 ### CSS
 
-Chassis CSS uses a powerful combination of Sass and CSS variables to create a flexible form system that adapts to themes and design requirements.
-
-<DocsCSS />
+<DocsCSS name="Input group" exposed />
 
 ### Custom properties
+
+<DocsCSSVars name="Input group" />
+
+<ScssDocs name="input-addon-color-properties" file="scss/placeholders/_form.scss" />
 
 Check the [overview]([[docsref:forms/overview#custom-properties]]) page to see the CSS variables shared by all form elements.
 
 ### Sass variables
 
-<DocsSASSVars notExposed={true} />
+<DocsSASSVars name="Input group" />
 
-<ScssDocs name="input-group-variables" file="scss/_variables.scss" />
+<ScssDocs name="input-group-variables" file="scss/config/_defaults.scss" />
+
+Check the [overview]([[docsref:forms/overview#sass-variables]]) page to see the Sass variables shared by all form elements.
 
 ### Design tokens
 

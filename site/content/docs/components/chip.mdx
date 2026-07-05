@@ -1,7 +1,10 @@
 ---
-title: Chips
+title: Chip
 description: Interactive, compact components for tags, filters and selections with support for avatars, icons, and removal actions.
 toc: true
+tokens: component
+css_layer: components
+js: optional
 ---
 
 import { getData } from '@libs/data'
@@ -31,7 +34,7 @@ While chips are typically rendered as `<span>` elements, the `.chip` class works
 <Example class="button-examples" code={`<span class="chip primary">Span</span>
 <div class="chip primary">Div</div>
 <button class="chip primary" type="button">Button</button>
-<a class="chip primary" href="#" role="button">Link</a>`} />
+<a class="chip primary" href="#">Link</a>`} />
 
 ## Color variants
 
@@ -62,20 +65,20 @@ The `.smooth` modifier applies a subdued background to chips, creating a softer 
 Enhance chips with icons to provide additional visual meaning or action affordances. Both SVG icons and icon fonts can be used within chips.
 
 <Example class="button-examples" code={`<span class="chip default">
-    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <Icon name="info-circle-solid" role="img" />
     <span>Default</span>
   </span>
   <span class="chip primary">
-    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <Icon name="info-circle-solid" role="img" />
     <span>Primary</span>
   </span>
   <span class="chip default">
     <span>Default</span>
-    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+    <Icon name="info-circle-solid" font />
   </span>
   <span class="chip primary">
     <span>Primary</span>
-    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+    <Icon name="info-circle-solid" font />
   </span>`} />
 
 <Callout type="warning">
@@ -104,21 +107,21 @@ Chassis provides three size variants for chips: default (medium), large, and sma
     Medium
   </span>
   <span class="chip default">
-    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <Icon name="info-circle-solid" role="img" />
     <span>Medium</span>
   </span>
   <span class="chip default large">
     Large
   </span>
   <span class="chip default large">
-    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <Icon name="info-circle-solid" role="img" />
     <span>Large</span>
   </span>
   <span class="chip default small">
     Small
   </span>
   <span class="chip default small">
-    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <Icon name="info-circle-solid" role="img" />
     <span>Small</span>
   </span>`} />
 
@@ -128,21 +131,21 @@ Enhance chips with user avatars by incorporating the `.avatar` component. The av
 
 <Example class="button-examples" code={`<span class="chip default">
     <span class="avatar">
-      <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+      <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture" />
     </span>
     Medium
     <button type="button" class="close-button" aria-label="Remove"></button>
   </span>
   <span class="chip large default">
     <span class="avatar">
-      <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+      <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture" />
     </span>
     Large
     <button type="button" class="close-button" aria-label="Remove"></button>
   </span>
   <span class="chip small default">
     <span class="avatar">
-      <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+      <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture" />
     </span>
     Small
     <button type="button" class="close-button" aria-label="Remove"></button>
@@ -154,21 +157,21 @@ Make chips appear inactive by adding the `disabled` attribute to `<button>` elem
 
 <Example class="button-examples" code={`<span class="chip default disabled">
     <span class="avatar">
-      <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+      <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture" />
     </span>
     Medium
     <button type="button" class="close-button" aria-label="Remove"></button>
   </span>
   <span class="chip large default disabled">
     <span class="avatar">
-      <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+      <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture" />
     </span>
     Large
     <button type="button" class="close-button" aria-label="Remove"></button>
   </span>
   <span class="chip small default disabled">
     <span class="avatar">
-      <span class="avatar-image"><img src="https://i.pravatar.cc/256" alt="Profile picture" /></span>
+      <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture" />
     </span>
     Small
     <button type="button" class="close-button" aria-label="Remove"></button>
@@ -176,7 +179,7 @@ Make chips appear inactive by adding the `disabled` attribute to `<button>` elem
 
 ## Toggle functionality
 
-Chips support toggle functionality similar to buttons, enabling them to function as selection controls. Add the `data-cx-toggle="chip"` attribute to enable automatic state management. For pre-toggled chips, include both the `.active` class and `aria-pressed="true"` attribute to ensure proper visual styling and accessibility states.
+Chips support toggle functionality similar to buttons, enabling them to function as selection controls. Add the `data-cx-toggle="chip"` attribute to enable automatic state management. The JavaScript manages `aria-pressed` automatically on each toggle. For pre-toggled chips, include both the `.active` class and `aria-pressed="true"` attribute to ensure proper visual styling and accessibility states.
 
 <Example class="button-examples" code={`<!-- Buttons -->
   <p class="d-inline-flex gap-xsmall">
@@ -204,7 +207,7 @@ Chips support toggle functionality similar to buttons, enabling them to function
 <ScssDocs name="chip-css-vars" file="scss/_chip.scss" />
 
 <Callout type="info">
-  Chip variants leverage the same mixins and color map system as buttons. See [buttons]([[docsref:components/buttons#sass-mixins]]) documentation for the underlying mixins and maps.
+  Chip variants leverage the same mixins and color map system as buttons. See [buttons]([[docsref:components/button#sass-mixins]]) documentation for the underlying mixins and maps.
 </Callout>
 
 ### Design tokens
@@ -291,8 +294,7 @@ const myChip = document.getElementById('myChip')
 
 // Handle toggle events
 myChip.addEventListener('toggle.cx.chip', event => {
-  const isActive = event.target.classList.contains('active')
-  console.log(`Chip toggled to ${isActive ? 'active' : 'inactive'} state`)
+  console.log(`Chip toggled to ${event.active ? 'active' : 'inactive'} state`)
 })
 
 // Handle dismissal events

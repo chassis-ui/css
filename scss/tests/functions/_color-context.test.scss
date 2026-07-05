@@ -1,0 +1,191 @@
+@use "sass:color";
+@use "sass:map";
+@use "../../functions" as *;
+@use "../../maps" as *;
+
+$test-color-primary: #0d6efd;
+$test-color-secondary: #6c757d;
+$test-color-transparent: rgba(0, 0, 0, 0);
+
+$test-map: (
+  "test-primary": $test-color-primary,
+  "test-secondary": $test-color-secondary,
+  "test-transparent": $test-color-transparent
+);
+
+$test-dark-primary: color.mix(#000, $test-color-primary, 10%);
+$test-dark-secondary: color.mix(#000, $test-color-secondary, 10%);
+
+$test-map-dark: (
+  "test-primary": $test-dark-primary,
+  "test-secondary": $test-dark-secondary
+);
+
+@include describe("get-sass-color function") {
+  $context-palette: map.merge($context-palette, $test-map) !global;
+  $context-palette-dark: map.merge($context-palette-dark, $test-map-dark) !global;
+
+  @include it("returns a direct color without modification") {
+    @include assert() {
+      @include output() {
+        $result: get-sass-color(#f00);
+        color: $result;
+      }
+      @include expect() {
+        color: #f00;
+      }
+    }
+  }
+
+  @include it("extracts a color from a CSS variable") {
+    @include assert() {
+      @include output() {
+        $result: get-sass-color(var(--test-primary));
+        color: $result;
+      }
+      @include expect() {
+        color: $test-color-primary;
+      }
+    }
+  }
+
+  @include it("extracts a color from a direct color name") {
+    @include assert() {
+      @include output() {
+        $result: get-sass-color("test-primary");
+        color: $result;
+      }
+      @include expect() {
+        color: $test-color-primary;
+      }
+    }
+  }
+
+  @include it("extracts a color from the dark palette") {
+    @include assert() {
+      @include output() {
+        $result: get-sass-color("test-primary", true);
+        color: $result;
+      }
+      @include expect() {
+        color: $test-dark-primary;
+      }
+    }
+  }
+
+  @include it("extracts a color from an oklch relative color string with alpha") {
+    @include assert() {
+      @include output() {
+        $oklch-string: to-opacity(var(--test-primary), 0.5);
+        $result: get-sass-color($oklch-string);
+        color: $result;
+      }
+      @include expect() {
+        color: rgba($test-color-primary, 0.5);
+      }
+    }
+  }
+
+  @include it("extracts a color from an oklch relative color string with low alpha") {
+    @include assert() {
+      @include output() {
+        $oklch-string: to-opacity(var(--test-primary), 0.15);
+        $result: get-sass-color($oklch-string);
+        color: $result;
+      }
+      @include expect() {
+        color: rgba($test-color-primary, 0.15);
+      }
+    }
+  }
+
+  @include it("extracts an opaque color from an oklch relative color string with alpha 1") {
+    @include assert() {
+      @include output() {
+        $oklch-string: to-opacity(var(--test-primary), 1);
+        $result: get-sass-color($oklch-string);
+        color: $result;
+      }
+      @include expect() {
+        color: $test-color-primary;
+      }
+    }
+  }
+
+  @include it("extracts a color from a quoted oklch string") {
+    @include assert() {
+      @include output() {
+        $result: get-sass-color("oklch(from var(--test-primary) l c h / 0.5)");
+        color: $result;
+      }
+      @include expect() {
+        color: rgba($test-color-primary, 0.5);
+      }
+    }
+  }
+
+  @include it("extracts a dark palette color from an oklch relative color string") {
+    @include assert() {
+      @include output() {
+        $oklch-string: to-opacity(var(--test-primary), 0.5);
+        $result: get-sass-color($oklch-string, true);
+        color: $result;
+      }
+      @include expect() {
+        color: rgba($test-dark-primary, 0.5);
+      }
+    }
+  }
+}
+
+@include describe("clean-alpha-value function") {
+  @include it("handles standard notation (0.5)") {
+    @include assert-equal(.5, clean-alpha-value("0.5"));
+  }
+
+  @include it("handles dot notation (.65)") {
+    @include assert-equal(.65, clean-alpha-value(".65"));
+  }
+
+  @include it("handles 0 value") {
+    @include assert-equal(0, clean-alpha-value("0"));
+  }
+
+  @include it("handles 1 value") {
+    @include assert-equal(1, clean-alpha-value("1"));
+  }
+
+  @include it("handles whitespace and commas") {
+    @include assert-equal(.75, clean-alpha-value(" , .75"));
+  }
+
+  @include it("defaults to 1 for empty strings") {
+    @include assert-equal(1, clean-alpha-value(""));
+  }
+
+  @include it("handles arbitrary decimal values") {
+    @include assert-equal(.42, clean-alpha-value(".42"));
+  }
+}
+
+@include describe("remove-context function") {
+  @include it("strips a matching context prefix from a CSS variable") {
+    @include assert-equal(var(--fg-main), remove-context(var(--default-fg-main)));
+  }
+
+  @include it("strips a named context prefix when explicitly specified") {
+    @include assert-equal(var(--bg-subtle), remove-context(var(--primary-bg-subtle), "primary"));
+  }
+
+  @include it("returns the original when the explicit context does not match") {
+    @include assert-equal(var(--primary-bg-subtle), remove-context(var(--primary-bg-subtle), "default"));
+  }
+
+  @include it("returns unchanged when no context prefix is present") {
+    @include assert-equal(var(--fg-main), remove-context(var(--fg-main)));
+  }
+
+  @include it("passes non-string values through unchanged") {
+    @include assert-equal(#ff0000, remove-context(#ff0000));
+  }
+}

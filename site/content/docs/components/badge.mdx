@@ -1,7 +1,9 @@
 ---
-title: Badges
+title: Badge
 description: Compact labeling elements for counters, indicators, and status markers with multiple styles and sizes.
 toc: true
+tokens: component
+css_layer: components
 ---
 
 import { getData } from '@libs/data'
@@ -77,29 +79,29 @@ Chassis provides three badge sizes to accommodate different design needs. Use th
 Enhance badges with icons to provide additional visual meaning. Both SVG icons and icon fonts can be used within badges.
 
 <Example code={`<span class="badge default small">
-    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <Icon name="info-circle-solid" role="img" />
     <span>Small</span>
   </span>
   <span class="badge default">
-    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <Icon name="info-circle-solid" role="img" />
     <span>Medium</span>
   </span>
   <span class="badge default large">
-    <svg class="icon" aria-hidden="true" role="img"><use xlink:href="#info-circle-solid"/></svg>
+    <Icon name="info-circle-solid" role="img" />
     <span>Large</span>
   </span>
 
   <span class="badge primary small">
     <span>Small</span>
-    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+    <Icon name="info-circle-solid" font />
   </span>
   <span class="badge primary">
     <span>Medium</span>
-    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+    <Icon name="info-circle-solid" font />
   </span>
   <span class="badge primary large">
     <span>Large</span>
-    <span class="icon icon-info-circle-solid" aria-hidden="true"></span>
+    <Icon name="info-circle-solid" font />
   </span>`} />
 
 <Callout type="warning">
@@ -141,7 +143,7 @@ For a more minimal approach, create a simple indicator dot without a count:
 
 <Example code={`<button type="button" class="button primary position-relative">
     Profile
-    <span class="badge secondary p-xsmall rounded-circle
+    <span class="badge secondary p-xsmall rounded-full
       position-absolute top-0 start-100 translate-middle">
       <span class="visually-hidden">New alerts</span>
     </span>
@@ -154,7 +156,7 @@ Beyond the default rounded appearance and the `.circle` modifier, you can use bo
 <Example code={`<span class="badge primary rounded-zero">Sharp</span>
 <span class="badge primary rounded-small">Blunt</span>
 <span class="badge primary rounded-medium">Soft</span>
-<span class="badge primary rounded-circle">Pill</span>`} />
+<span class="badge primary rounded-full">Pill</span>`} />
 
 This approach gives you precise control over the visual style while maintaining consistent spacing and typography.
 
@@ -181,6 +183,14 @@ Notice how the `.badge-adaptive` class makes badges properly scale with text siz
 The `.badge-adaptive` class can be used on wrappers to make all badges use adaptive sizing.
 
 <Example code={`<div class="badge-adaptive">
+    <p class="h1">Example heading <span class="badge primary">New</span></p>
+    <p class="h2">Example heading <span class="badge primary">New</span></p>
+    <p class="h3">Example heading <span class="badge primary">New</span></p>
+    <p class="h4">Example heading <span class="badge primary">New</span></p>
+    <p class="h5">Example heading <span class="badge primary">New</span></p>
+    <p class="h6">Example heading <span class="badge primary">New</span></p>
+  </div>`}
+  customMarkup={`<div class="badge-adaptive">
     <h1>Example heading <span class="badge primary">New</span></h1>
     <h2>Example heading <span class="badge primary">New</span></h2>
     <h3>Example heading <span class="badge primary">New</span></h3>

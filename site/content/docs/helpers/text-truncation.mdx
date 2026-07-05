@@ -1,0 +1,32 @@
+---
+title: Text truncation
+description: Truncate long strings of text with an ellipsis.
+toc: true
+css_layer: helpers
+---
+
+`.text-truncate` truncates overflowing text with an ellipsis. The class requires `display: inline-block` or `display: block`.
+
+<Example code={`<!-- Block level -->
+  <div class="row">
+    <div class="col-2 text-truncate">
+      This text is quite long, and will be truncated once displayed.
+    </div>
+  </div>
+
+  <!-- Inline level -->
+  <span class="d-inline-block text-truncate" style="max-width: 150px;">
+    This text is quite long, and will be truncated once displayed.
+  </span>`} />
+
+## CSS
+
+`.text-truncate` delegates to the `text-truncate()` mixin, which applies the three truncation declarations.
+
+<ScssDocs name="text-truncation-helper" file="scss/helpers/_text-truncation.scss" />
+
+### Sass mixin
+
+The `text-truncate()` mixin emits the three truncation declarations directly into any custom selector.
+
+<ScssDocs name="text-truncate-mixin" file="scss/mixins/_text-truncate.scss" />

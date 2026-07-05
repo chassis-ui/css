@@ -1,3 +1,7 @@
+@use "sass:list";
+@use "./config" as *;
+@use "./functions" as *;
+
 // RFS Mixins
 //
 // Mixins used by RFS to handle responsive font sizes, paddings, margins, etc.
@@ -25,12 +29,12 @@
 
 // Mixin to output all collected rules in a single media query
 @mixin rfs-collected-rules() {
-  $selector-count: length($rfs-rules-map);
+  $selector-count: list.length($rfs-rules-map);
   $property-count: 0;
 
   // Count total properties for debugging
   @each $selector, $properties in $rfs-rules-map {
-    $property-count: $property-count + length($properties);
+    $property-count: $property-count + list.length($properties);
   }
 
   // If disable-rfs is enabled and we're in min-media-query mode,
@@ -93,7 +97,10 @@
     }
     @else {
       // Initial value depends on mode and whether this is a disable-rfs selector
-      $base-value: if($rfs-mode == max-media-query, $fixed-val, $fluid-val);
+      $base-value: $fluid-val;
+      @if $rfs-mode == max-media-query {
+        $base-value: $fixed-val;
+      }
       @if $variable != null {
         // If a variable is provided, set it as a CSS variable fallback
         #{$property}: var(#{$variable}, $base-value);
@@ -104,7 +111,10 @@
 
       // Instead of creating a media query for each rule, collect them
       // For disable-rfs rules, use fixed value in the media query
-      $media-query-value: if($rfs-mode == max-media-query, $fluid-val, $fixed-val);
+      $media-query-value: $fixed-val;
+      @if $rfs-mode == max-media-query {
+        $media-query-value: $fluid-val;
+      }
 
       // Get the current selector context
       $current-selector: &;
@@ -138,19 +148,19 @@
 }
 
 @mixin rfs-padding-top($value, $variable: null) {
-  @include rfs($value, padding-top, $variable);
+  @include rfs($value, padding-block-start, $variable);
 }
 
 @mixin rfs-padding-right($value, $variable: null) {
-  @include rfs($value, padding-right, $variable);
+  @include rfs($value, padding-inline-end, $variable);
 }
 
 @mixin rfs-padding-bottom($value, $variable: null) {
-  @include rfs($value, padding-bottom, $variable);
+  @include rfs($value, padding-block-end, $variable);
 }
 
 @mixin rfs-padding-left($value, $variable: null) {
-  @include rfs($value, padding-left, $variable);
+  @include rfs($value, padding-inline-start, $variable);
 }
 
 // Margin shorthands
@@ -159,17 +169,17 @@
 }
 
 @mixin rfs-margin-top($value, $variable: null) {
-  @include rfs($value, margin-top, $variable);
+  @include rfs($value, margin-block-start, $variable);
 }
 
 @mixin rfs-margin-right($value, $variable: null) {
-  @include rfs($value, margin-right, $variable);
+  @include rfs($value, margin-inline-end, $variable);
 }
 
 @mixin rfs-margin-bottom($value, $variable: null) {
-  @include rfs($value, margin-bottom, $variable);
+  @include rfs($value, margin-block-end, $variable);
 }
 
 @mixin rfs-margin-left($value, $variable: null) {
-  @include rfs($value, margin-left, $variable);
+  @include rfs($value, margin-inline-start, $variable);
 }

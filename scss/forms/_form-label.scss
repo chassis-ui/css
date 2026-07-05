@@ -1,0 +1,74 @@
+@use "sass:map";
+@use "../config" as *;
+@use "../mixins" as *;
+@use "../placeholders" as *;
+
+//
+// Form Labels
+//
+// Text labels for form inputs in stacked and horizontal layouts.
+// Supports small, medium, and large size variants aligned to matching
+// input sizes.
+//
+
+//
+// Standard Form Label
+//
+// The basic label style for form inputs in vertically stacked layouts.
+// Provides proper spacing, font styling, and color.
+//
+@layer components {
+  .form-label,
+  .col-form-label {
+    --fg-color: #{$form-label-color}; // Set color via CSS variable for theming support
+    @include map-font($form-label-font);
+    @include font(); // Apply standard font styling
+    color: var(--fg-color); // Consistent label color
+  }
+  // :where(.form-label, .col-form-label):is(legend) {
+  //   // stylelint-disable-next-line property-disallowed-list, declaration-no-important
+  //   font-size: var(--font-size) !important; // Override the `<legend>` default
+  // }
+
+  .form-label {
+    margin-block-end: $form-label-margin-bottom; // Space between label and its form input
+  }
+
+  //
+  // Column Form Label
+  //
+  // For use with horizontal and inline forms, when you need the label (or legend)
+  // text to visually align with the form inputs. This provides proper vertical
+  // alignment by matching the height of medium-sized form inputs.
+  //
+  // Can be used with both <label> and <legend> elements, with appropriate
+  // overrides to ensure consistent styling.
+  //
+  .col-form-label {
+    @include map-font($form-label-font);
+
+    // Match the height of the default (medium) form input
+    padding-block-start: calc(#{$form-medium-padding-y} + #{$form-regular-border-width});
+    padding-block-end: calc(#{$form-medium-padding-y} + #{$form-regular-border-width});
+    margin-block-end: 0; // Override the `<legend>` default
+
+    &.large {
+      // Match the height of large form inputs
+      padding-block-start: calc(#{$form-large-padding-y} + #{$form-regular-border-width});
+      padding-block-end: calc(#{$form-large-padding-y} + #{$form-regular-border-width});
+      // Use the same typography as large form inputs
+      @include font-size(map.get($form-large-text-font, "font-size"));
+      @include line-height(map.get($form-large-text-font, "line-height"));
+    }
+
+    &.small {
+      // Match the height of small form inputs
+      padding-block-start: calc(#{$form-small-padding-y} + #{$form-regular-border-width});
+      padding-block-end: calc(#{$form-small-padding-y} + #{$form-regular-border-width});
+      // Use the same typography as small form inputs
+      @include font-size(map.get($form-small-text-font, "font-size"));
+      @include line-height(map.get($form-small-text-font, "line-height"));
+    }
+  }
+
+} // @layer components

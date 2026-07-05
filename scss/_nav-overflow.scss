@@ -1,0 +1,39 @@
+// Nav Overflow (Priority+ Pattern)
+//
+// A responsive navigation pattern that automatically moves items
+// to an overflow menu when space is limited.
+
+@layer components {
+  .nav-overflow {
+    flex-wrap: nowrap;
+    min-width: 0; // Allow flex child to shrink below content width
+  }
+
+  // Pills use inline-flex by default; override so the nav fills its container
+  // and the ResizeObserver can detect width changes.
+  .nav-pills.nav-overflow {
+    display: flex;
+  }
+
+  // Inside a navbar the nav is a flex child that sizes to content by default;
+  // grow it so it fills remaining space and shrinks with the container.
+  .navbar-nav.nav-overflow {
+    flex: 1 1 0;
+  }
+
+  // Container item for overflow
+  .nav-overflow-item {
+    flex-shrink: 0;
+    margin-inline-start: auto;
+  }
+
+  // Hide items that have been moved to overflow
+  .nav-overflow [data-cx-nav-overflow="true"] {
+    display: none;
+  }
+
+  // Preserve items that should never overflow
+  .nav-overflow-keep {
+    flex-shrink: 0;
+  }
+} // @layer components

@@ -1,0 +1,81 @@
+---
+title: Divide
+description: Place a divider between the direct children of an element using a border — horizontal or vertical, with responsive variants.
+toc: true
+css_layer: utilities
+mdn: https://developer.mozilla.org/en-US/docs/Web/CSS/border
+---
+
+import { getData } from '@libs/data'
+
+## Overview
+
+Divide content by adding a border between the direct children of an element. Apply `.divide-x` or `.divide-y` on the parent instead of placing border classes on each child individually.
+
+<Example code={`
+  <div class="divide-x d-flex">
+    <div class="px-medium py-small">Item 1</div>
+    <div class="px-medium py-small">Item 2</div>
+    <div class="px-medium py-small">Item 3</div>
+  </div>`} />
+
+## Horizontal
+
+`.divide-x` adds a vertical border (`border-inline-start`) between horizontally arranged children.
+
+<Example code={`
+  <div class="divide-x d-inline-flex border rounded-medium">
+    <div class="px-medium py-small">One</div>
+    <div class="px-medium py-small">Two</div>
+    <div class="px-medium py-small">Three</div>
+  </div>`} />
+
+## Vertical
+
+`.divide-y` adds a horizontal border (`border-block-start`) between vertically stacked children.
+
+<Example code={`
+  <div class="divide-y d-inline-block border rounded-medium">
+    <div class="px-medium py-small">One</div>
+    <div class="px-medium py-small">Two</div>
+    <div class="px-medium py-small">Three</div>
+  </div>`} />
+
+## Removing dividers
+
+`.divide-x-0` and `.divide-y-0` set the border to `0`, which is useful for removing a divider at a specific breakpoint:
+
+```html
+<div class="divide-y medium:divide-y-0 medium:divide-x">
+  ...
+</div>
+```
+
+## How it works
+
+Divide utilities apply `border-inline-start` (`.divide-x`) or `border-block-start` (`.divide-y`) to every direct child except the first, via a `:not(:first-child)` child selector. The selector is wrapped in `:where()` for zero specificity, making overrides straightforward. Border appearance is controlled by `--cx-border-width`, `--cx-border-style`, and `--cx-border-color`.
+
+```css
+:where(.divide-x > :not(:first-child)) {
+  border-inline-start: var(--cx-border-width) var(--cx-border-style) var(--cx-border-color);
+}
+:where(.divide-y > :not(:first-child)) {
+  border-block-start: var(--cx-border-width) var(--cx-border-style) var(--cx-border-color);
+}
+```
+
+## CSS
+
+Divide utilities are generated via the utilities API.
+
+### Reference
+
+The table lists all divide utilities and their CSS properties.
+
+<UtilityReferenceTable utility="divide-" />
+
+### Utilities API
+
+Divide utilities are declared in `scss/utilities/_index.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
+
+<ScssDocs name="utils-divide" file="scss/utilities/_index.scss" />

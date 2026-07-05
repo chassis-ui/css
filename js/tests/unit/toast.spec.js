@@ -1,6 +1,6 @@
 import Toast from '../../src/toast.js'
 import {
-  clearFixture, createEvent, getFixture, jQueryMock
+  clearFixture, createEvent, getFixture
 } from '../helpers/fixture.js'
 
 describe('Toast', () => {
@@ -66,7 +66,7 @@ describe('Toast', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
           '<div class="toast" data-cx-delay="1" data-cx-autohide="false" data-cx-animation="false">',
-          '  <button type="button" class="ms-2 mb-1 btn-close" data-cx-dismiss="toast" aria-label="Close"></button>',
+          '  <button type="button" class="ms-small mb-2xsmall close-button" data-cx-dismiss="toast" aria-label="Close"></button>',
           '</div>'
         ].join('')
 
@@ -76,7 +76,7 @@ describe('Toast', () => {
         toastEl.addEventListener('shown.cx.toast', () => {
           expect(toastEl).toHaveClass('show')
 
-          const button = toastEl.querySelector('.btn-close')
+          const button = toastEl.querySelector('.close-button')
 
           button.click()
         })
@@ -99,7 +99,7 @@ describe('Toast', () => {
 
       fixtureEl.innerHTML = [
         '<div class="toast" data-cx-autohide="false" data-cx-animation="false">',
-        '  <button type="button" class="ms-2 mb-1 btn-close" data-cx-dismiss="toast" aria-label="Close"></button>',
+        '  <button type="button" class="ms-small mb-2xsmall close-button" data-cx-dismiss="toast" aria-label="Close"></button>',
         '</div>'
       ].join('')
 
@@ -410,6 +410,52 @@ describe('Toast', () => {
     })
   })
 
+  describe('toggle', () => {
+    it('should show toast if not shown', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = [
+          '<div class="toast" data-cx-animation="false" data-cx-autohide="false">',
+          '  <div class="toast-body">a simple toast</div>',
+          '</div>'
+        ].join('')
+
+        const toastEl = fixtureEl.querySelector('.toast')
+        const toast = new Toast(toastEl)
+
+        toastEl.addEventListener('shown.cx.toast', () => {
+          expect(toastEl).toHaveClass('show')
+          resolve()
+        })
+
+        toast.toggle()
+      })
+    })
+
+    it('should hide toast if shown', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = [
+          '<div class="toast" data-cx-animation="false" data-cx-autohide="false">',
+          '  <div class="toast-body">a simple toast</div>',
+          '</div>'
+        ].join('')
+
+        const toastEl = fixtureEl.querySelector('.toast')
+        const toast = new Toast(toastEl)
+
+        toastEl.addEventListener('shown.cx.toast', () => {
+          toast.toggle()
+        })
+
+        toastEl.addEventListener('hidden.cx.toast', () => {
+          expect(toastEl).not.toHaveClass('show')
+          resolve()
+        })
+
+        toast.show()
+      })
+    })
+  })
+
   describe('hide', () => {
     it('should allow to hide toast manually', () => {
       return new Promise(resolve => {
@@ -431,6 +477,36 @@ describe('Toast', () => {
         toastEl.addEventListener('hidden.cx.toast', () => {
           expect(toastEl).not.toHaveClass('show')
           resolve()
+        })
+
+        toast.show()
+      })
+    })
+
+    it('should clear pending autohide timeout when hide is called manually', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = [
+          '<div class="toast" data-cx-animation="false">',
+          '  <div class="toast-body">a simple toast</div>',
+          '</div>'
+        ].join('')
+
+        const toastEl = fixtureEl.querySelector('.toast')
+        const toast = new Toast(toastEl)
+        const spy = spyOn(toast, '_clearTimeout').and.callThrough()
+
+        toastEl.addEventListener('shown.cx.toast', () => {
+          // _maybeScheduleHide() runs after EVENT_SHOWN fires, so defer one tick
+          setTimeout(() => {
+            expect(toast._timeout).not.toBeNull()
+            spy.calls.reset()
+
+            toast.hide()
+
+            expect(spy).toHaveBeenCalledTimes(1)
+            expect(toast._timeout).toBeNull()
+            resolve()
+          }, 0)
         })
 
         toast.show()
@@ -533,66 +609,6 @@ describe('Toast', () => {
 
         toast.show()
       })
-    })
-  })
-
-  describe('jQueryInterface', () => {
-    it('should create a toast', () => {
-      fixtureEl.innerHTML = '<div></div>'
-
-      const div = fixtureEl.querySelector('div')
-
-      jQueryMock.fn.toast = Toast.jQueryInterface
-      jQueryMock.elements = [div]
-
-      jQueryMock.fn.toast.call(jQueryMock)
-
-      expect(Toast.getInstance(div)).not.toBeNull()
-    })
-
-    it('should not re create a toast', () => {
-      fixtureEl.innerHTML = '<div></div>'
-
-      const div = fixtureEl.querySelector('div')
-      const toast = new Toast(div)
-
-      jQueryMock.fn.toast = Toast.jQueryInterface
-      jQueryMock.elements = [div]
-
-      jQueryMock.fn.toast.call(jQueryMock)
-
-      expect(Toast.getInstance(div)).toEqual(toast)
-    })
-
-    it('should call a toast method', () => {
-      fixtureEl.innerHTML = '<div></div>'
-
-      const div = fixtureEl.querySelector('div')
-      const toast = new Toast(div)
-
-      const spy = spyOn(toast, 'show')
-
-      jQueryMock.fn.toast = Toast.jQueryInterface
-      jQueryMock.elements = [div]
-
-      jQueryMock.fn.toast.call(jQueryMock, 'show')
-
-      expect(Toast.getInstance(div)).toEqual(toast)
-      expect(spy).toHaveBeenCalled()
-    })
-
-    it('should throw error on undefined method', () => {
-      fixtureEl.innerHTML = '<div></div>'
-
-      const div = fixtureEl.querySelector('div')
-      const action = 'undefinedMethod'
-
-      jQueryMock.fn.toast = Toast.jQueryInterface
-      jQueryMock.elements = [div]
-
-      expect(() => {
-        jQueryMock.fn.toast.call(jQueryMock, action)
-      }).toThrowError(TypeError, `No method named "${action}"`)
     })
   })
 

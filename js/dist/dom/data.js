@@ -1,63 +1,53 @@
 /*!
-  * Chassis data.js v0.2.3 (https://chassis-ui.com)
+  * Chassis data.js v0.3.0 (https://chassis-ui.com)
   * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
   * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
   */
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Data = factory());
-})(this, (function () { 'use strict';
+/**
+ * --------------------------------------------------------------------------
+ * Chassis CSS dom/data.js
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
 
-  /**
-   * --------------------------------------------------------------------------
-   * Chassis CSS dom/data.js
-   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
-   * --------------------------------------------------------------------------
-   */
+/**
+ * Constants
+ */
 
-  /**
-   * Constants
-   */
-
-  const elementMap = new Map();
-  const data = {
-    set(element, key, instance) {
-      if (!elementMap.has(element)) {
-        elementMap.set(element, new Map());
-      }
-      const instanceMap = elementMap.get(element);
-
-      // make it clear we only want one instance per element
-      // can be removed later when multiple key/instances are fine to be used
-      if (!instanceMap.has(key) && instanceMap.size !== 0) {
-        // eslint-disable-next-line no-console
-        console.error(`Chassis doesn't allow more than one instance per element. Bound instance: ${Array.from(instanceMap.keys())[0]}.`);
-        return;
-      }
-      instanceMap.set(key, instance);
-    },
-    get(element, key) {
-      if (elementMap.has(element)) {
-        return elementMap.get(element).get(key) || null;
-      }
-      return null;
-    },
-    remove(element, key) {
-      if (!elementMap.has(element)) {
-        return;
-      }
-      const instanceMap = elementMap.get(element);
-      instanceMap.delete(key);
-
-      // free up element references if there are no instances left for an element
-      if (instanceMap.size === 0) {
-        elementMap.delete(element);
-      }
+const elementMap = new Map();
+const data = {
+  set(element, key, instance) {
+    if (!elementMap.has(element)) {
+      elementMap.set(element, new Map());
     }
-  };
+    const instanceMap = elementMap.get(element);
+    instanceMap.set(key, instance);
+  },
+  get(element, key) {
+    if (elementMap.has(element)) {
+      return elementMap.get(element).get(key) || null;
+    }
+    return null;
+  },
+  getAny(element) {
+    if (elementMap.has(element)) {
+      return elementMap.get(element).values().next().value || null;
+    }
+    return null;
+  },
+  remove(element, key) {
+    if (!elementMap.has(element)) {
+      return;
+    }
+    const instanceMap = elementMap.get(element);
+    instanceMap.delete(key);
 
-  return data;
+    // free up element references if there are no instances left for an element
+    if (instanceMap.size === 0) {
+      elementMap.delete(element);
+    }
+  }
+};
 
-}));
+export { data as default };
 //# sourceMappingURL=data.js.map
