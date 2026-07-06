@@ -1,80 +1,205 @@
-//stylelint-disable-next-line
-$utilities: map-merge(
-  $utilities,
-  (
-    // Text
-    // scss-docs-start utils-text
-    "font-family": (
-      property: font-family,
-      class: font,
-      values: $font-families
-    ),
-    "cx-font-weight": (
-      property: font-weight,
-      class: font,
-      values: $font-weights
-    ),
-    "font-style": (
-      property: font-style,
-      class: text,
-      values: italic normal
-    ),
-    "font-weight": (
-      property: font-weight,
-      class: text,
-      values: (
-        lighter: $font-weight-lighter,
-        light: $font-weight-light,
-        regular: $font-weight-regular,
-        medium: $font-weight-medium,
-        semibold: $font-weight-semibold,
-        bold: $font-weight-bold,
-        bolder: $font-weight-bolder
-      )
-    ),
-    "line-height": (
-      property: line-height,
-      class: lh,
-      values: (
-        1: 1,
-        small: $small-line-height,
-        medium: $medium-line-height,
-        large: $large-line-height,
-      )
-    ),
-    "text-align": (
-      responsive: true,
-      property: text-align,
-      class: text,
-      values: (
-        start: left,
-        end: right,
-        center: center,
-      )
-    ),
-    "text-decoration": (
-      property: text-decoration,
-      values: none underline line-through
-    ),
-    "text-transform": (
-      property: text-transform,
-      class: text,
-      values: lowercase uppercase capitalize
-    ),
-    "white-space": (
-      property: white-space,
-      class: text,
-      values: (
-        wrap: normal,
-        nowrap: nowrap,
-      )
-    ),
-    "word-wrap": (
-      property: word-wrap word-break,
-      class: text,
-      values: (break: break-word),
-      rtl: false
-    ),
-    // scss-docs-end utils-text
+@use "sass:map";
+@use "../config" as *;
+@use "../maps" as *;
+@use "../functions" as *;
+
+//
+// Text Utilities
+//
+// Utility map for text alignment, weight, size, decoration, and transform
+// classes.
+//
+
+// Build font-size + line-height values map from $font-sizes.
+// Each key maps to a nested map so the utility generator can assign
+// a different CSS variable to each property.
+$-font-size-values: () !default;
+@each $name, $value in $font-sizes {
+  $-font-size-values: map.merge(
+    $-font-size-values,
+    ($name: ("font-size": var(--font-size-#{$name}), "line-height": var(--line-height-#{$name})))
+  );
+}
+
+// Build font-size + line-height values map from $display-font-sizes.
+$-display-font-size-values: () !default;
+@each $name, $value in $display-font-sizes {
+  $-display-font-size-values: map.merge(
+    $-display-font-size-values,
+    ($name: ("font-size": var(--font-size-display-#{$name}), "line-height": var(--line-height-display-#{$name})))
+  );
+}
+
+// Build font-size + line-height values map from $code-font-sizes.
+$-code-font-size-values: () !default;
+@each $name, $value in $code-font-sizes {
+  $-code-font-size-values: map.merge(
+    $-code-font-size-values,
+    ($name: ("font-size": var(--font-size-code-#{$name}), "line-height": var(--line-height-code-#{$name})))
+  );
+}
+
+$utilities: (
+  // Text
+  // scss-docs-start utils-text
+  "font-family": (
+    property: font-family,
+    class: font,
+    values: map-loop($font-families, varify, "$key", "font-family")
   ),
-);
+  "cx-font-weight": (
+    property: font-weight,
+    class: font,
+    values: $font-weights
+  ),
+  // scss-docs-start utils-font-size
+  "font-size": (
+    property: (
+      "font-size": null,
+      "line-height": null
+    ),
+    class: font,
+    responsive: $enable-responsive-font-sizes,
+    values: $-font-size-values
+  ),
+  // scss-docs-end utils-font-size
+  // scss-docs-start utils-font-display
+  "font-display-size": (
+    property: (
+      "font-size": null,
+      "line-height": null
+    ),
+    class: "font-display.font",
+    values: $-display-font-size-values
+  ),
+  "font-display-weight": (
+    property: font-weight,
+    class: "font-display.font",
+    values: map-loop($display-font-weights, varify, "$key", "font-weight-display")
+  ),
+  "font-code-size": (
+    property: (
+      "font-size": null,
+      "line-height": null
+    ),
+    class: "font-code.font",
+    values: $-code-font-size-values
+  ),
+  "font-code-weight": (
+    property: font-weight,
+    class: "font-code.font",
+    values: map-loop($code-font-weights, varify, "$key", "font-weight-code")
+  ),
+  // scss-docs-end utils-font-display
+  "font-style": (
+    property: font-style,
+    class: text,
+    values: italic normal
+  ),
+  "font-weight": (
+    property: font-weight,
+    class: text,
+    values: (
+      lighter: $font-weight-lighter,
+      light: $font-weight-light,
+      regular: $font-weight-regular,
+      medium: $font-weight-medium,
+      semibold: $font-weight-semibold,
+      bold: $font-weight-bold,
+      bolder: $font-weight-bolder
+    )
+  ),
+  "text-size": (
+    property: font-size,
+    class: text,
+    values: (
+      small: $small-font-size,
+      large: $large-font-size,
+    )
+  ),
+  "line-height": (
+    property: line-height,
+    class: text-lh,
+    values: (
+      1: 1,
+      small: $small-line-height,
+      medium: $medium-line-height,
+      large: $large-line-height,
+    )
+  ),
+  "text-align": (
+    responsive: true,
+    property: text-align,
+    class: text,
+    values: (
+      start: start,
+      end: end,
+      center: center,
+    )
+  ),
+  "white-space": (
+    property: white-space,
+    class: text,
+    values: (
+      wrap: normal,
+      nowrap: nowrap,
+    )
+  ),
+  "word-wrap": (
+    property: word-wrap word-break,
+    class: text,
+    values: (break: break-word)
+  ),
+  "text-transform": (
+    property: text-transform,
+    class: text,
+    values: lowercase uppercase capitalize
+  ),
+  "text-decoration": (
+    property: text-decoration,
+    class: text,
+    values: (
+      decoration-none: none,
+      underline: underline,
+      line-through: line-through
+    )
+  ),
+  "text-decoration-color": (
+    property: text-decoration-color,
+    class: text-decoration,
+    values: map.merge(
+      map-loop($context-colors, opacity-var, "$key", "decoration"),
+      (
+        null: #{to-opacity(var(--fg-color), var(--decoration-opacity, 1))},
+      )
+    )
+  ),
+  "text-decoration-thickness": (
+    property: text-decoration-thickness,
+    class: text-decoration,
+    values: (
+      1: .0625rem,
+      2: .125rem,
+      3: .185rem,
+      4: .25rem,
+    )
+  ),
+  "underline-offset": (
+    property: text-underline-offset,
+    class: underline-offset,
+    values: (
+      0: 0,
+      1: .125em,
+      2: .25em,
+      3: .375em,
+    )
+  ),
+  "underline-opacity": (
+    property: --decoration-opacity,
+    class: text-decoration-opacity,
+    enabled: $enable-property-opacities,
+    state: hover,
+    values: $text-decoration-opacities
+  ),
+  // scss-docs-end utils-text
+) !default;

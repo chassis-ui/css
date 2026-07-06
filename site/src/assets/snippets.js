@@ -11,16 +11,16 @@
  * For details, see https://creativecommons.org/licenses/by/3.0/.
  */
 
-/* global chassis: false */
+import { Tooltip, Popover, Toast, Carousel, Dialog } from '@chassis-ui/css'
 
-(() => {
+export default () => {
   // --------
   // Tooltips
   // --------
   // Instantiate all tooltips in a docs or StackBlitz
   document.querySelectorAll('[data-cx-toggle="tooltip"]')
     .forEach(tooltip => {
-      new chassis.Tooltip(tooltip)
+      new Tooltip(tooltip)
     })
 
   // --------
@@ -29,7 +29,7 @@
   // Instantiate all popovers in docs or StackBlitz
   document.querySelectorAll('[data-cx-toggle="popover"]')
     .forEach(popover => {
-      new chassis.Popover(popover)
+      new Popover(popover)
     })
 
   // -------------------------------
@@ -50,7 +50,11 @@
   // Instantiate all toasts in docs pages only
   document.querySelectorAll('.cxd-example .toast')
     .forEach(toastNode => {
-      const toast = new chassis.Toast(toastNode, {
+      if (toastNode.closest('dialog')) {
+        return
+      }
+
+      const toast = new Toast(toastNode, {
         autohide: false
       })
 
@@ -63,12 +67,21 @@
   const toastLiveExample = document.getElementById('liveToast')
 
   if (toastTrigger) {
-    const toastChassis = chassis.Toast.getOrCreateInstance(toastLiveExample)
+    const toastChassis = Toast.getOrCreateInstance(toastLiveExample)
     toastTrigger.addEventListener('click', () => {
       toastChassis.show()
     })
   }
   // js-docs-end live-toast
+  const dialogToastTrigger = document.getElementById('dialogToastButton')
+  const dialogToastEl = document.getElementById('dialogToast')
+
+  if (dialogToastTrigger) {
+    const dialogToast = Toast.getOrCreateInstance(dialogToastEl)
+    dialogToastTrigger.addEventListener('click', () => {
+      dialogToast.show()
+    })
+  }
 
   // -------------------------------
   // Notifications
@@ -76,23 +89,23 @@
   // Used in 'Show live notification' example in docs or StackBlitz
 
   // js-docs-start live-notification
-  const notificationPlaceholder = document.getElementById('notificationPlaceholder')
-  const appendNotification = (message, type) => {
-    const wrapper = document.createElement('div')
-    wrapper.innerHTML = [
-      `<div class="notification ${type} dismissible fade show" role="alert">`,
-      `   <div>${message}</div>`,
-      '   <button type="button" class="close-button" data-cx-dismiss="notification" aria-label="Close"></button>',
-      '</div>'
-    ].join('')
+  const notificationTrigger = document.getElementById('notificationButton')
+  const notificationStack = document.getElementById('notificationStack')
 
-    notificationPlaceholder.append(wrapper)
+  const showNotification = (message, context, role) => {
+    const wrapper = document.createElement('div')
+    wrapper.innerHTML = `
+      <div class="notification ${context}" role="${role}">
+        <p>${message}</p>
+      </div>
+    `.trim()
+
+    notificationStack.prepend(wrapper.firstElementChild)
   }
 
-  const notificationTrigger = document.getElementById('notificationButton')
-  if (notificationTrigger) {
+  if (notificationTrigger && notificationStack) {
     notificationTrigger.addEventListener('click', () => {
-      appendNotification('Nice, you triggered this notification message!', 'success')
+      showNotification('An example notification — prepended to the stack.', 'primary', 'status')
     })
   }
   // js-docs-end live-notification
@@ -103,7 +116,7 @@
   // Instantiate all non-autoplaying carousels in docs or StackBlitz
   document.querySelectorAll('.carousel:not([data-cx-ride="carousel"])')
     .forEach(carousel => {
-      chassis.Carousel.getOrCreateInstance(carousel)
+      Carousel.getOrCreateInstance(carousel)
     })
 
   // -------------------------------
@@ -136,17 +149,15 @@
   // JavaScript to handle dynamic content in the modal
   const dynamicModal = document.getElementById('dynamicModal')
   if (dynamicModal) {
-    dynamicModal.addEventListener('show.cx.modal', event => {
+    dynamicModal.addEventListener('show.cx.dialog', event => {
       // Button that triggered the modal
       const button = event.relatedTarget
-
       // Extract data from data-cx-* attributes
       const recipient = button.getAttribute('data-cx-whatever')
-
-      // Update the modal's content.
+      // Get the modal elements that need to be updated
       const modalTitle = dynamicModal.querySelector('.modal-title')
       const recipientInput = dynamicModal.querySelector('#recipient-name')
-
+      // Update the modal's content.
       modalTitle.textContent = `New message to ${recipient}`
       recipientInput.value = recipient
     })
@@ -159,22 +170,21 @@
   const showStackedModal = document.getElementById('showStackedModal')
   if (showStackedModal) {
     showStackedModal.addEventListener('click', () => {
-      chassis.Modal.getOrCreateInstance('#stackedModal').show()
+      Dialog.getOrCreateInstance('#stackedModal').show()
     })
   }
   // js-docs-end stacked-modal
 
   // -------------------------------
-  // Offcanvas
+  // Drawer
   // -------------------------------
-  // 'Offcanvas components' example in docs only
-  const myOffcanvas = document.querySelectorAll('.cxd-example-offcanvas .offcanvas')
-  if (myOffcanvas) {
-    myOffcanvas.forEach(offcanvas => {
-      offcanvas.addEventListener('show.cx.offcanvas', event => {
+  // 'Drawer components' example in docs only
+  const myDrawer = document.querySelectorAll('.cxd-example-drawer dialog.drawer')
+  if (myDrawer) {
+    myDrawer.forEach(drawer => {
+      drawer.addEventListener('show.cx.drawer', event => {
         event.preventDefault()
       }, false)
     })
   }
 }
-)()

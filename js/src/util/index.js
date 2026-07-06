@@ -23,6 +23,7 @@ const parseSelector = selector => {
   return selector
 }
 
+// Shout-out Angus Croll (https://goo.gl/pxwQGp)
 const toType = object => {
   if (object === null || object === undefined) {
     return `${object}`
@@ -75,17 +76,12 @@ const isElement = object => {
     return false
   }
 
-  if (typeof object.jquery !== 'undefined') {
-    object = object[0]
-  }
-
   return typeof object.nodeType !== 'undefined'
 }
 
 const getElement = object => {
-  // it's a jQuery object or a node element
   if (isElement(object)) {
-    return object.jquery ? object[0] : object
+    return object
   }
 
   if (typeof object === 'string' && object.length > 0) {
@@ -167,19 +163,12 @@ const noop = () => {}
  * Trick to restart an element's animation
  *
  * @param {HTMLElement} element
+ * @return void
  *
  * @see https://www.harrytheo.com/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
  */
 const reflow = element => {
   element.offsetHeight // eslint-disable-line no-unused-expressions
-}
-
-const getjQuery = () => {
-  if (window.jQuery && !document.body.hasAttribute('data-cx-no-jquery')) {
-    return window.jQuery
-  }
-
-  return null
 }
 
 const DOMContentLoadedCallbacks = []
@@ -202,23 +191,6 @@ const onDOMContentLoaded = callback => {
 }
 
 const isRTL = () => document.documentElement.dir === 'rtl'
-
-const defineJQueryPlugin = plugin => {
-  onDOMContentLoaded(() => {
-    const $ = getjQuery()
-    /* istanbul ignore if */
-    if ($) {
-      const name = plugin.NAME
-      const JQUERY_NO_CONFLICT = $.fn[name]
-      $.fn[name] = plugin.jQueryInterface
-      $.fn[name].Constructor = plugin
-      $.fn[name].noConflict = () => {
-        $.fn[name] = JQUERY_NO_CONFLICT
-        return plugin.jQueryInterface
-      }
-    }
-  })
-}
 
 const execute = (possibleCallback, args = [], defaultValue = possibleCallback) => {
   return typeof possibleCallback === 'function' ? possibleCallback.call(...args) : defaultValue
@@ -256,11 +228,11 @@ const executeAfterTransition = (callback, transitionElement, waitForTransition =
 /**
  * Return the previous/next element of a list.
  *
- * @param {array} list               The list of elements
- * @param {Element} activeElement     The active element
- * @param {boolean} shouldGetNext     Whether to get the next or previous element
- * @param {boolean} isCycleAllowed    Whether to cycle from end to start and vice versa
- * @returns {Element} The previous or next element
+ * @param {array} list    The list of elements
+ * @param activeElement   The active element
+ * @param shouldGetNext   Choose to get next or previous element
+ * @param isCycleAllowed
+ * @return {Element|elem} The proper element
  */
 const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed) => {
   const listLength = list.length
@@ -282,12 +254,10 @@ const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed
 }
 
 export {
-  defineJQueryPlugin,
   execute,
   executeAfterTransition,
   findShadowRoot,
   getElement,
-  getjQuery,
   getNextActiveElement,
   getTransitionDurationFromElement,
   getUID,

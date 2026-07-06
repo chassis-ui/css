@@ -1,0 +1,75 @@
+---
+import Example from '@chassis-ui/docs/shortcodes/Example.astro'
+import { getTableHtml, getTableCode } from '@libs/table'
+
+interface Props {
+  class?: string
+  style?: string
+  theme?: string
+  caption?: string
+  headClass?: string
+  headStyle?: string
+  bodyClass?: string
+  bodyStyle?: string
+  headRowClass?: string
+  active?: boolean
+  foot?: boolean
+  footClass?: string
+  /**
+   * Render bare HTML with no Example wrapper — for embedding inside other examples.
+   * @default false
+   */
+  nested?: boolean
+  /**
+   * Show a simplified version in the code snippet, collapsing unchanged sections to `...`.
+   * @default true
+   */
+  simplified?: boolean
+  showMarkup?: boolean
+  customMarkup?: string
+}
+
+const {
+  class: className,
+  style,
+  theme,
+  caption,
+  headClass,
+  headStyle,
+  bodyClass,
+  bodyStyle,
+  headRowClass,
+  active,
+  foot,
+  footClass,
+  nested = false,
+  simplified = true,
+  showMarkup = true,
+  customMarkup
+} = Astro.props
+
+const tableProps = {
+  class: className,
+  style,
+  theme,
+  caption,
+  headClass,
+  headStyle,
+  bodyClass,
+  bodyStyle,
+  headRowClass,
+  active,
+  foot,
+  footClass
+}
+const tableHtml = getTableHtml(tableProps)
+const tableCode = customMarkup ?? getTableCode({ ...tableProps, simplified })
+---
+
+{
+  nested ? (
+    <Fragment set:html={tableHtml} />
+  ) : (
+    <Example showMarkup={showMarkup} code={tableHtml} customMarkup={tableCode} />
+  )
+}

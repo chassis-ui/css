@@ -10,7 +10,6 @@ import EventHandler from './dom/event-handler.js'
 import Manipulator from './dom/manipulator.js'
 import SelectorEngine from './dom/selector-engine.js'
 import {
-  defineJQueryPlugin,
   getNextActiveElement,
   isRTL,
   isVisible,
@@ -77,7 +76,7 @@ const Default = {
 }
 
 const DefaultType = {
-  interval: '(number|boolean)',
+  interval: 'number',
   keyboard: 'boolean',
   pause: '(string|boolean)',
   ride: '(boolean|string)',
@@ -128,7 +127,7 @@ class Carousel extends BaseComponent {
   nextWhenVisible() {
     // Don't call next when the page isn't visible
     // or the carousel or its parent isn't visible
-    if (!document.hidden && isVisible(this._element)) {
+    if (document.visibilityState === 'visible' && isVisible(this._element)) {
       this.next()
     }
   }
@@ -401,26 +400,6 @@ class Carousel extends BaseComponent {
 
     return order === ORDER_PREV ? DIRECTION_RIGHT : DIRECTION_LEFT
   }
-
-  // Static
-  static jQueryInterface(config) {
-    return this.each(function () {
-      const data = Carousel.getOrCreateInstance(this, config)
-
-      if (typeof config === 'number') {
-        data.to(config)
-        return
-      }
-
-      if (typeof config === 'string') {
-        if (data[config] === undefined || config.startsWith('_') || config === 'constructor') {
-          throw new TypeError(`No method named "${config}"`)
-        }
-
-        data[config]()
-      }
-    })
-  }
 }
 
 /**
@@ -462,11 +441,5 @@ EventHandler.on(window, EVENT_LOAD_DATA_API, () => {
     Carousel.getOrCreateInstance(carousel)
   }
 })
-
-/**
- * jQuery
- */
-
-defineJQueryPlugin(Carousel)
 
 export default Carousel

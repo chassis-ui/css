@@ -1,0 +1,19 @@
+//
+// Vendor Adapter
+//
+// Re-exports the design tokens from a `_chassis-tokens.scss` resolved via
+// `loadPaths`. This file is the stable entry point for downstream code:
+// every other Chassis module imports vendor tokens through `@use "./config/vendor"`.
+//
+// Sass resolves `@forward "chassis-tokens"` by searching `loadPaths` (the
+// adjacent directory does not contain a matching file). The framework ships
+// a default at `scss/vendor/_chassis-tokens.scss`; consumers swap to
+// a different token set by placing their own `_chassis-tokens.scss` on an
+// earlier `loadPaths` entry. See the "Token sources" section of the Sass
+// customization docs.
+//
+// Do NOT modify this file. `$prefix` is hidden so the vendor token package's
+// own `$prefix` does not leak through to consumers of `_vendor.scss`.
+//
+
+@forward "chassis-tokens" hide $prefix;

@@ -341,7 +341,7 @@ describe('ScrollBar', () => {
       it('should not adjust the inline body padding when it does not overflow, even on a scaled display', () => {
         const originalPadding = getPaddingX(document.body)
         const scrollBar = new ScrollBarHelper()
-        // Remove body margins as would be done by Bootstrap CSS
+        // Remove body margins as would be done by Chassis CSS
         document.body.style.margin = '0'
 
         // Hide scrollbars to prevent the body overflowing

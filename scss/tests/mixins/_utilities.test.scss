@@ -1,7 +1,9 @@
-@import "../../settings";
-$enable-important-utilities: false;
+@use "../../config" as * with (
+  $enable-important-utilities: false
+);
+@use "../../mixins/utilities-api" as *;
+
 // Important: Do not import rfs to check that the mixin just calls the appropriate functions from it
-@import "../../mixins/utilities-api";
 
 @mixin test-generate-utility($params...) {
   @include assert() {
@@ -33,13 +35,12 @@ $enable-important-utilities: false;
     }
   }
 
-  @include describe("global $enable-important-utilities: true") {
+  @include describe("important: true") {
     @include it("sets !important") {
-      $enable-important-utilities: true !global;
-
       @include test-generate-utility(
         (
           property: "padding",
+          important: true,
           values: (small: .5rem, large: 2rem)
         )
       ) {
@@ -51,8 +52,6 @@ $enable-important-utilities: false;
           padding: 2rem !important;
         }
       }
-
-      $enable-important-utilities: false !global;
     }
   }
 
@@ -116,7 +115,7 @@ $enable-important-utilities: false;
             values: 1rem
           )
         ) {
-          .padding-1rem {
+          .padding {
             padding: 1rem;
           }
         }
@@ -132,7 +131,7 @@ $enable-important-utilities: false;
             values: 1rem
           )
         ) {
-          .padding-x-1rem {
+          .padding-x {
             padding-inline-start: 1rem;
             padding-inline-end: 1rem;
           }
@@ -146,7 +145,7 @@ $enable-important-utilities: false;
             values: 1rem
           )
         ) {
-          .padding-inline-start-1rem {
+          .padding-inline-start {
             padding-inline-start: 1rem;
             padding-inline-end: 1rem;
           }
@@ -173,6 +172,29 @@ $enable-important-utilities: false;
           }
         }
       }
+
+      @include it("supports a null class with a property map") {
+        @include test-generate-utility(
+          (
+            property: ("--fg-color": null, "color": var(--fg-color)),
+            class: null,
+            values: (
+              primary: red,
+              danger: green,
+            )
+          )
+        ) {
+          .primary {
+            --fg-color: red;
+            color: var(--fg-color);
+          }
+
+          .danger {
+            --fg-color: green;
+            color: var(--fg-color);
+          }
+        }
+      }
     }
 
     @include describe("state") {
@@ -184,37 +206,32 @@ $enable-important-utilities: false;
             state: hover focus,
           )
         ) {
-          .padding-1rem {
-            padding: 1rem;
-          }
-
-          .padding-1rem-hover:hover {
-            padding: 1rem;
-          }
-
-          .padding-1rem-focus:focus {
+          .padding,
+          .hover\:padding:hover,
+          .focus\:padding:focus {
             padding: 1rem;
           }
         }
       }
     }
 
-    @include describe("css-var"){
-      @include it("sets a CSS variable instead of the property") {
+    @include describe("variables"){
+      @include it("sets a CSS variable alongside the property") {
         @include test-generate-utility(
           (
             property: padding,
-            css-variable-name: padding,
-            css-var: true,
+            variables: padding,
             values: 1rem 2rem
           )
         ) {
           .padding-1rem {
-            --cx-padding: 1rem;
+            --padding: 1rem;
+            padding: 1rem;
           }
 
           .padding-2rem {
-            --cx-padding: 2rem;
+            --padding: 2rem;
+            padding: 2rem;
           }
         }
       }
@@ -224,16 +241,18 @@ $enable-important-utilities: false;
           (
             property: padding,
             class: padding,
-            css-var: true,
+            variables: padding,
             values: 1rem 2rem
           )
         ) {
           .padding-1rem {
-            --cx-padding: 1rem;
+            --padding: 1rem;
+            padding: 1rem;
           }
 
           .padding-2rem {
-            --cx-padding: 2rem;
+            --padding: 2rem;
+            padding: 2rem;
           }
         }
       }
@@ -245,113 +264,162 @@ $enable-important-utilities: false;
           (
             property: color,
             class: desaturated-color,
-            local-vars: (
+            variables: (
               color-opacity: 1,
               color-saturation: .25
             ),
             values: (
-              blue: hsla(192deg, var(--cx-color-saturation), 0, var(--cx-color-opacity))
+              blue: hsla(192deg, var(--color-saturation), 0, var(--color-opacity))
             )
           )
         ) {
           .desaturated-color-blue {
-            --cx-color-opacity: 1;
+            --color-opacity: 1;
             // Sass compilation will put a leading zero so we want to keep that one
             // stylelint-disable-next-line @stylistic/number-leading-zero
-            --cx-color-saturation: 0.25;
-            color: hsla(192deg, var(--cx-color-saturation), 0, var(--cx-color-opacity));
+            --color-saturation: 0.25;
+            color: hsla(192deg, var(--color-saturation), 0, var(--color-opacity));
           }
         }
       }
     }
 
-    @include describe("css-var & state") {
-      @include it("Generates a rule with for each state with a CSS variable") {
+    @include describe("variables & state") {
+      @include it("generates a variable for each state") {
         @include test-generate-utility(
           (
             property: padding,
-            css-var: true,
-            css-variable-name: padding,
+            variables: padding,
             values: 1rem,
             state: hover focus,
           )
         ) {
-          .padding-1rem {
-            --cx-padding: 1rem;
-          }
-
-          .padding-1rem-hover:hover {
-            --cx-padding: 1rem;
-          }
-
-          .padding-1rem-focus:focus {
-            --cx-padding: 1rem;
-          }
-        }
-      }
-    }
-
-    @include describe("rtl") {
-      @include it("sets up RTLCSS for removal when false") {
-        @include test-generate-utility(
-          (
-            property: padding,
-            values: 1rem,
-            rtl: false
-          )
-        ) {
-          /* rtl:begin:remove */
-
-          .padding-1rem {
+          .padding,
+          .hover\:padding:hover,
+          .focus\:padding:focus {
+            --padding: 1rem;
             padding: 1rem;
           }
-
-          /* rtl:end:remove */
-
         }
       }
     }
 
-    @include describe("rfs") {
-      @include it("sets the fluid value when not inside media query") {
+    @include describe("group") {
+      @include it("emits static properties once in a combined selector rule") {
         @include test-generate-utility(
           (
-            property: padding,
-            values: 1rem,
-            rfs: true
+            property: ("--fg-color": null, "color": var(--fg-color)),
+            class: text,
+            group: true,
+            values: (primary: red, secondary: blue)
           )
         ) {
-          .padding-1rem {
-            padding: rfs-fluid-value(1rem);
+          .text-primary,
+          .text-secondary {
+            color: var(--fg-color);
+          }
+
+          .text-primary {
+            --fg-color: red;
+          }
+
+          .text-secondary {
+            --fg-color: blue;
           }
         }
       }
 
-      @include it("sets the value when inside the media query") {
+      @include it("includes state selectors in the combined rule and each per-value rule") {
         @include test-generate-utility(
           (
-            property: padding,
-            values: 1rem,
-            rfs: true
-          ),
-          $is-rfs-media-query: true
+            property: ("--fg-color": null, "color": var(--fg-color)),
+            class: text,
+            group: true,
+            state: hover,
+            values: (primary: red, secondary: blue)
+          )
         ) {
-          .padding-1rem {
-            padding: rfs-value(1rem);
+          .text-primary,
+          .hover\:text-primary:hover,
+          .text-secondary,
+          .hover\:text-secondary:hover {
+            color: var(--fg-color);
+          }
+
+          .text-primary,
+          .hover\:text-primary:hover {
+            --fg-color: red;
+          }
+
+          .text-secondary,
+          .hover\:text-secondary:hover {
+            --fg-color: blue;
+          }
+        }
+      }
+
+      @include it("applies child-selector wrapping to all selectors in the combined rule") {
+        @include test-generate-utility(
+          (
+            property: ("--gap": null, "gap": var(--gap)),
+            class: gap,
+            group: true,
+            child-selector: "> *",
+            values: (small: .5rem, large: 1rem)
+          )
+        ) {
+          :where(.gap-small > *),
+          :where(.gap-large > *) {
+            gap: var(--gap);
+          }
+
+          :where(.gap-small > *) {
+            // stylelint-disable-next-line @stylistic/number-leading-zero
+            --gap: 0.5rem;
+          }
+
+          :where(.gap-large > *) {
+            --gap: 1rem;
+          }
+        }
+      }
+
+      @include it("emits static map variables once in the combined rule") {
+        @include test-generate-utility(
+          (
+            property: ("--fg-color": null, "color": var(--fg-color)),
+            class: text,
+            group: true,
+            variables: (fg-opacity: 1),
+            values: (primary: red, secondary: blue)
+          )
+        ) {
+          .text-primary,
+          .text-secondary {
+            color: var(--fg-color);
+            --fg-opacity: 1;
+          }
+
+          .text-primary {
+            --fg-color: red;
+          }
+
+          .text-secondary {
+            --fg-color: blue;
           }
         }
       }
     }
   }
 
-  @include describe("$infix") {
-    @include it("inserts the given infix") {
+  @include describe("$prefix") {
+    @include it("inserts the given prefix") {
       @include test-generate-utility(
         (
           property: "padding",
           values: (null: 1rem, small: .5rem, large: 2rem)
         ),
-        $infix: 'small\\:'
+        $prefix: 'small\\:'
       ) {
         .small\:padding {
           padding: 1rem;

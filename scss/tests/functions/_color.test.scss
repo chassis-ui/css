@@ -1,0 +1,82 @@
+@use "../../functions" as *;
+@use "../../config" as *;
+
+@include describe("to-rgb function") {
+  @include it("returns red channel values for red") {
+    @include assert-equal((255, 0, 0), to-rgb(#ff0000));
+  }
+
+  @include it("returns green channel values for green") {
+    @include assert-equal((0, 255, 0), to-rgb(#00ff00));
+  }
+
+  @include it("returns blue channel values for blue") {
+    @include assert-equal((0, 0, 255), to-rgb(#0000ff));
+  }
+
+  @include it("returns 255 255 255 for white") {
+    @include assert-equal((255, 255, 255), to-rgb(#ffffff));
+  }
+
+  @include it("returns 0 0 0 for black") {
+    @include assert-equal((0, 0, 0), to-rgb(#000000));
+  }
+}
+
+@include describe("varify function") {
+  @include it("creates space-separated CSS variable references") {
+    @include assert() {
+      @include output() {
+        padding: varify(("top", "bottom"));
+      }
+      @include expect() {
+        padding: var(--top) var(--bottom);
+      }
+    }
+  }
+
+  @include it("adds a component prefix to each variable") {
+    @include assert() {
+      @include output() {
+        padding: varify(("y", "x"), "padding");
+      }
+      @include expect() {
+        padding: var(--padding-y) var(--padding-x);
+      }
+    }
+  }
+
+  @include it("returns null for an empty list") {
+    @include assert-equal(null, varify(()));
+  }
+}
+
+@include describe("luminance function") {
+  @include it("returns 0 for black") {
+    @include assert-equal(0, luminance(#000000));
+  }
+
+  @include it("returns 1 for white") {
+    @include assert-equal(1, luminance(#ffffff));
+  }
+}
+
+@include describe("contrast-ratio function") {
+  @include it("returns 21 for black on white (maximum contrast)") {
+    @include assert-equal(21, contrast-ratio(#ffffff, #000000));
+  }
+
+  @include it("returns 21 for white on black (maximum contrast)") {
+    @include assert-equal(21, contrast-ratio(#000000, #ffffff));
+  }
+}
+
+@include describe("color-contrast function") {
+  @include it("returns the dark contrast color for a light background") {
+    @include assert-equal($color-contrast-dark, color-contrast(#ffffff));
+  }
+
+  @include it("returns the light contrast color for a dark background") {
+    @include assert-equal($color-contrast-light, color-contrast(#000000));
+  }
+}

@@ -1,38 +1,45 @@
+@use "../mixins/focus-ring" as *;
+
 //
 // Interactive Placeholders
 //
 // Shared behavior for interactive list items, menu items, and navigation links.
-// %interactive handles hover, focus, active, and disabled state styling using
+// %interactive handles hover, focus-visible, active, and disabled state styling using
 // semantic CSS custom properties with consistent pointer-event management.
 //
 
-// scss-docs-start interactive-placeholder-selector
-%interactive {
+@layer components {
+  // scss-docs-start interactive-placeholder-selector
+  %interactive {
 
-  width: 100%; // For `<button>`s (anchors become 100% by default though)
-  text-align: inherit; // For `<button>`s (anchors inherit)
+    width: 100%; // For `<button>`s (anchors become 100% by default though)
+    text-align: inherit; // For `<button>`s (anchors inherit)
 
-  &:hover,
-  &:focus {
-    --#{$prefix}bg-color: var(--#{$prefix}bg-even);
-    z-index: 1; // Place hover/focus items above their siblings for proper border styling
-    color: var(--#{$prefix}fg-color);
-    text-decoration: none;
+    &:hover,
+    &:focus {
+      --bg-color: var(--bg-even);
+      z-index: 1; // Place hover/focus items above their siblings for proper border styling
+      text-decoration: none;
+    }
+
+    &:focus-visible {
+      @include focus-ring(true);
+    }
+
+    &:active {
+      --bg-color: var(--bg-evident);
+    }
+
+    &:disabled,
+    &.disabled {
+      --fg-color: var(--fg-slight);
+      pointer-events: none;
+    }
+
+    &:visited {
+      color: var(--fg-color);
+    }
+
   }
-
-  &:active {
-    --#{$prefix}bg-color: var(--#{$prefix}bg-evident);
-  }
-
-  &:disabled,
-  &.disabled {
-    --#{$prefix}fg-color: var(--#{$prefix}fg-slight);
-    pointer-events: none;
-  }
-
-  &:visited {
-    color: var(--#{$prefix}fg-color);
-  }
-
-}
-// scss-docs-end interactive-placeholder-selector
+  // scss-docs-end interactive-placeholder-selector
+} // @layer components

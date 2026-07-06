@@ -1,0 +1,64 @@
+@use "./config" as *;
+@use "./mixins" as *;
+
+//
+// Image Utilities
+//
+// Opt-in responsive image and thumbnail classes. The .image-fluid class makes
+// images scale to fit their containers without exceeding their intrinsic size.
+//
+
+@layer content {
+  .image {
+    &.fluid {
+      @include image-fluid();
+    }
+    // Image thumbnails
+    &.thumbnail {
+      // scss-docs-start thumbnail-properties
+      --thumbnail-padding: #{$thumbnail-padding};
+      --thumbnail-bg-color: #{$thumbnail-bg-color};
+      --thumbnail-border-width: #{$thumbnail-border-width};
+      --thumbnail-border-style: #{$thumbnail-border-style};
+      --thumbnail-border-color: #{$thumbnail-border-color};
+      --thumbnail-border-radius: #{$thumbnail-border-radius};
+      --thumbnail-box-shadow: #{$thumbnail-box-shadow};
+      // scss-docs-end thumbnail-properties
+      padding: var(--thumbnail-padding);
+      background-color: var(--thumbnail-bg-color);
+      @include border(thumbnail);
+      @include border-radius(var(--thumbnail-border-radius));
+      @include box-shadow(var(--thumbnail-box-shadow));
+
+      // Keep them at most 100% wide
+      @include image-fluid();
+    }
+  }
+
+  //
+  // Figures
+  //
+
+  .figure {
+    // scss-docs-start figure-properties
+    --gap: var(--figure-gap, #{$figure-gap});
+    --caption-font-size: var(--figure-caption-font-size, #{$figure-caption-font-size});
+    --caption-line-height: var(--figure-caption-line-height, #{$figure-caption-line-height});
+    --caption-fg-color: var(--figure-caption-fg-color, #{$figure-caption-fg-color});
+    // scss-docs-end figure-properties
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+  }
+
+  // .figure-image {
+  //   margin-block-end: var(--gap);
+  //   line-height: 1;
+  // }
+
+  .figure-caption {
+    @include font-size(var(--caption-font-size));
+    @include line-height(var(--caption-line-height));
+    color: var(--caption-fg-color);
+  }
+} // @layer components

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../../../dist/css/chassis.min.css" rel="stylesheet">
+    <title>Alert</title>
+  </head>
+  <body>
+    <div class="container mt-medium">
+      <h1>Alert <small>Chassis Visual Test</small></h1>
+
+      <!-- Basic confirm alert with icon -->
+      <dialog class="alert dialog" id="confirmAlert" role="alertdialog"
+        aria-labelledby="confirmAlertLabel" aria-describedby="confirmAlertDesc"
+        data-cx-backdrop="static" data-cx-keyboard="false">
+        <div class="alert-icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+        <div class="alert-body">
+          <h2 class="alert-title" id="confirmAlertLabel">Delete item</h2>
+          <p id="confirmAlertDesc">Are you sure you want to delete this item? This action cannot be undone.</p>
+        </div>
+        <div class="alert-footer">
+          <button type="button" class="button default" data-cx-dismiss="dialog">Cancel</button>
+          <button type="button" class="button danger">Delete</button>
+        </div>
+      </dialog>
+
+      <!-- Alert with error code -->
+      <dialog class="alert dialog" id="errorAlert" role="alertdialog"
+        aria-labelledby="errorAlertLabel" aria-describedby="errorAlertDesc"
+        data-cx-backdrop="static" data-cx-keyboard="false">
+        <div class="alert-body">
+          <h2 class="alert-title" id="errorAlertLabel">Connection failed</h2>
+          <p id="errorAlertDesc">Unable to reach the server. Check your network connection and try again.</p>
+          <code class="alert-code" id="errorAlertCode">ERR_CONNECTION_REFUSED</code>
+        </div>
+        <div class="alert-footer">
+          <button type="button" class="button default" data-cx-dismiss="dialog">Dismiss</button>
+          <button type="button" class="button primary">Retry</button>
+        </div>
+      </dialog>
+
+      <!-- Alert without icon — simple acknowledgement -->
+      <dialog class="alert dialog" id="infoAlert" role="alertdialog"
+        aria-labelledby="infoAlertLabel" aria-describedby="infoAlertDesc"
+        data-cx-backdrop="static" data-cx-keyboard="false">
+        <div class="alert-body">
+          <h2 class="alert-title" id="infoAlertLabel">Session expiring</h2>
+          <p id="infoAlertDesc">Your session will expire in 5 minutes. Save your work to avoid losing changes.</p>
+        </div>
+        <div class="alert-footer">
+          <button type="button" class="button default" data-cx-dismiss="dialog">Dismiss</button>
+          <button type="button" class="button primary">Extend session</button>
+        </div>
+      </dialog>
+
+      <!-- Alert with close button (optional pattern) -->
+      <dialog class="alert dialog" id="closeButtonAlert" role="alertdialog"
+        aria-labelledby="closeButtonAlertLabel">
+        <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>
+        <div class="alert-body">
+          <h2 class="alert-title" id="closeButtonAlertLabel">Update available</h2>
+          <p>A new version is ready to install. Restart the app to apply the update.</p>
+        </div>
+        <div class="alert-footer">
+          <button type="button" class="button default" data-cx-dismiss="dialog">Later</button>
+          <button type="button" class="button primary">Restart now</button>
+        </div>
+      </dialog>
+
+      <!-- Alert with keyboard: true (can be dismissed with Escape) -->
+      <dialog class="alert dialog" id="keyboardAlert" role="alertdialog"
+        aria-labelledby="keyboardAlertLabel">
+        <div class="alert-body">
+          <h2 class="alert-title" id="keyboardAlertLabel">Keyboard dismissible</h2>
+          <p>This alert has default config (<code>keyboard: true</code>). Press Escape to close it.</p>
+        </div>
+        <div class="alert-footer">
+          <button type="button" class="button default" data-cx-dismiss="dialog">OK</button>
+        </div>
+      </dialog>
+
+      <div class="d-flex flex-column gap-medium">
+        <div>
+          <button type="button" class="button danger large" data-cx-toggle="dialog" data-cx-target="#confirmAlert"
+            data-cx-backdrop="static" data-cx-keyboard="false">
+            Confirm alert (with icon)
+          </button>
+        </div>
+
+        <div>
+          <button type="button" class="button secondary large" data-cx-toggle="dialog" data-cx-target="#errorAlert"
+            data-cx-backdrop="static" data-cx-keyboard="false">
+            Error alert (with code)
+          </button>
+        </div>
+
+        <div>
+          <button type="button" class="button secondary large" data-cx-toggle="dialog" data-cx-target="#infoAlert"
+            data-cx-backdrop="static" data-cx-keyboard="false">
+            Info alert (no icon)
+          </button>
+        </div>
+
+        <div>
+          <button type="button" class="button secondary large" data-cx-toggle="dialog" data-cx-target="#closeButtonAlert">
+            Alert with close button
+          </button>
+        </div>
+
+        <div>
+          <button type="button" class="button secondary large" data-cx-toggle="dialog" data-cx-target="#keyboardAlert">
+            Keyboard dismissible alert
+          </button>
+        </div>
+
+        <div>
+          <button type="button" class="button info large" id="jsOpen">
+            Open confirm alert via JavaScript
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import * as chassis from '../../../dist/js/chassis.bundle.js'
+
+      document.getElementById('jsOpen').addEventListener('click', () => {
+        chassis.Dialog.getOrCreateInstance(document.getElementById('confirmAlert'), {
+          backdrop: 'static',
+          keyboard: false
+        }).show()
+      })
+
+      document.querySelectorAll('.alert').forEach(alertEl => {
+        alertEl.addEventListener('show.cx.dialog', () => console.log('show.cx.dialog', alertEl.id))
+        alertEl.addEventListener('shown.cx.dialog', () => console.log('shown.cx.dialog', alertEl.id))
+        alertEl.addEventListener('hide.cx.dialog', () => console.log('hide.cx.dialog', alertEl.id))
+        alertEl.addEventListener('hidden.cx.dialog', () => console.log('hidden.cx.dialog', alertEl.id))
+        alertEl.addEventListener('hidePrevented.cx.dialog', () => console.log('hidePrevented.cx.dialog', alertEl.id))
+      })
+    </script>
+  </body>
+</html>

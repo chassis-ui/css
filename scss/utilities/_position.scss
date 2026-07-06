@@ -1,0 +1,45 @@
+@use "../config" as *;
+
+//
+// Positioning Utilities
+//
+// Utility map for position, display, overflow, and inset classes.
+//
+
+$utilities: (
+  // scss-docs-start utils-position
+  "position": (
+    property: position,
+    values: static relative absolute fixed sticky
+  ),
+  "top": (
+    property: inset-block-start,
+    class: top,
+    values: $position-values
+  ),
+  "bottom": (
+    property: inset-block-end,
+    class: bottom,
+    values: $position-values
+  ),
+  "start": (
+    property: inset-inline-start,
+    class: start,
+    values: $position-values
+  ),
+  "end": (
+    property: inset-inline-end,
+    class: end,
+    values: $position-values
+  ),
+  "translate-middle": (
+    property: transform,
+    class: translate-middle,
+    values: (
+      null: translate(-50%, -50%),
+      x: translateX(-50%),
+      y: translateY(-50%),
+    )
+  ),
+  // scss-docs-end utils-position
+) !default;

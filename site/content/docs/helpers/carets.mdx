@@ -1,0 +1,120 @@
+---
+title: Carets
+description: Display directional carets on toggles and navigation, and the dropdown indicator on custom form controls.
+toc: true
+tokens: context
+css_layer: helpers
+---
+
+`.caret` draws a directional caret on an element using a CSS mask on a pseudo-element. Reach for it to mark dropdown toggles, collapsible triggers, and navigation items that expand. The caret takes the element's foreground color and trails the content by default.
+
+<Example class="hstack gap-large" code={`<span class="caret">Default caret</span>
+<span class="caret fg-primary">Primary caret</span>`} />
+
+<Callout type="info">
+When the `$enable-caret` setting is on — the default — menu toggles get a caret automatically: every `[data-cx-toggle="menu"]` element receives one without the `.caret` class.
+</Callout>
+
+## Placement
+
+The caret renders on a pseudo-element, and the class chooses which one. `.caret` draws it on `::after` so it trails the content; `.caret-before` draws it on `::before` so it leads. Both apply `white-space: nowrap` to keep the caret on the same line as the text.
+
+<Example class="hstack gap-large" code={`<span class="caret">Trailing caret</span>
+<span class="caret-before">Leading caret</span>`} />
+
+## Direction
+
+A caret points down by default. Three modifiers rotate it: `.caret-up`, `.caret-start`, and `.caret-end`. Each sets only the rotation, so pair it with `.caret` or `.caret-before`. `.caret-start` and `.caret-end` resolve against the writing direction and flip automatically under `dir="rtl"`.
+
+<Example class="hstack gap-large" code={`<span class="caret">Down</span>
+<span class="caret caret-up">Up</span>
+<span class="caret caret-start">Start</span>
+<span class="caret caret-end">End</span>`} />
+
+Combine a placement class with a direction modifier to point a leading caret inward — for example, a back control whose caret sits before the label and points to the inline-start.
+
+<Example class="hstack gap-large" code={`<span class="caret-before caret-start">Back</span>`} />
+
+## Customization
+
+Caret appearance is controlled through `--cx-caret-*` custom properties. None are set globally — each falls back to a Sass default baked into the class — so overriding one on an element or any ancestor restyles the carets inside that subtree without re-declaring the class.
+
+Each property maps to one aspect of the caret:
+
+<CxTable>
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--cx-caret-icon` | Default caret SVG | Mask image used for the caret glyph |
+| `--cx-caret-size` | `1.25em` | Width, height, and mask size |
+| `--cx-caret-color` | `var(--cx-fg-color)` | Fill color shown through the mask |
+| `--cx-caret-spacing` | `.5em 0` / `0 .5em` | `margin-inline` for trailing / leading carets |
+| `--cx-caret-angle` | `0deg` | Rotation; the direction modifiers set this |
+| `--cx-caret-vertical-align` | `-.225em` | Vertical alignment against the text |
+</CxTable>
+
+Override the properties inline or on a parent to resize or recolor the caret:
+
+<Example class="hstack gap-large" code={`<span class="caret" style="
+    --cx-caret-size: 2em; 
+    --cx-caret-color: var(--cx-primary);
+    --cx-caret-vertical-align: -.5em;
+  ">Large primary caret</span>`} />
+
+<Callout type="info">
+Some components set their own caret properties on the element — buttons and chips define `--cx-caret-spacing`, navs adjust it, and buttons and menus set `--cx-caret-size`. A value declared on the element wins over an inherited one, so an ancestor override reaches plain `.caret` instances but not these components, which carry their own caret values.
+</Callout>
+
+## Form caret
+
+`.form-caret` adds the caret that select inputs show to any control styled as `.form-input`. It sits at the inline-end, with trailing padding reserved so it never overlaps the value. Native `select.form-input` elements receive it automatically; apply `.form-caret` to custom controls — such as a [combobox]([[docsref:/forms/combobox]]) toggle or a ghost input — that should read as a select.
+
+<Example class="vstack gap-small" code={`<div class="form-input form-caret">Choose an option</div>
+<div class="form-input form-caret disabled">Choose an option</div>`} />
+
+The icon dims in the disabled state. Apply `disabled` (or a native `[disabled]` / `:disabled`) and the helper swaps to the muted `--cx-form-caret-disabled` icon, so a disabled control still signals that it is a dropdown.
+
+<Callout type="info">
+The `$enable-caret` setting gates only the *automatic* caret. Compiling with `$enable-caret: false` stops native selects and comboboxes from drawing it, and their validation feedback icons reposition flush to the inline-end. The `.form-caret` helper stays available either way — apply it to opt any control back into the dropdown caret.
+</Callout>
+
+<Callout type="warning">
+The form caret is a `background-image`, not a masked pseudo-element — a form input has no `::after` to mask — so it cannot be recolored at runtime the way `.caret` follows `--cx-caret-color`. Its color is baked into the SVG at build time from the `$cx-icon-form-input-select-caret` design token, in four copies (idle and disabled, each light and dark) exposed as `--cx-form-caret` and `--cx-form-caret-disabled`.
+</Callout>
+
+## CSS
+
+`.caret` and `.caret-before` include the `caret()` mixin to paint a masked caret on a pseudo-element, and the direction modifiers override its rotation through `--cx-caret-angle`.
+
+<ScssDocs name="caret-helper" file="scss/helpers/_caret.scss" />
+
+### Sass variables
+
+Sass variables supply the fallback values compiled into each `--cx-caret-*` custom property.
+
+<ScssDocs name="caret-variables" file="scss/config/_defaults.scss" />
+
+### Sass mixins
+
+The `caret()` mixin emits the pseudo-element rule, so any custom selector can carry a caret without adding the class to markup. Pass `$direction` for the rotation and `$position` for the pseudo-element:
+
+```scss
+.custom-toggle {
+  @include caret(start, $position: before);
+}
+```
+
+<ScssDocs name="caret-mixin" file="scss/mixins/_caret.scss" />
+
+### Sass placeholder
+
+`.form-caret` extends the `%form-caret` placeholder, which reserves the trailing padding and paints the select caret. Extend it directly to give a custom selector the dropdown caret without the helper class:
+
+```scss
+.custom-select {
+  @extend %form-caret;
+}
+```
+
+A companion `%form-feedback-bg` placeholder supplies the caret-less fallback that native selects and comboboxes extend when `$enable-caret` is off. It keeps the validation feedback background layer without reserving caret space, so feedback icons still render while the caret stays absent.
+
+<ScssDocs name="form-caret-placeholder" file="scss/placeholders/_form.scss" />

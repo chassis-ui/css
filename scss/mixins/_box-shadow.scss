@@ -1,23 +1,54 @@
+@use "../config" as *;
+@use "sass:list";
+
+//
+// Box Shadow Mixin
+//
+// Applies one or more box shadows when the $enable-component-shadows flag is
+// true. Guards against invalid multi-value usage of CSS-wide keywords such as
+// `none`, which are only valid when used alone in box-shadow.
+//
+
 /// Apply one or more box shadows when `$enable-component-shadows` is `true`.
-/// Multiple shadow values are joined as a comma-separated list. Passing `none`
-/// as part of a multi-value shadow list triggers a warning, since the `none`
-/// keyword is only valid when used alone.
+/// Multiple shadow values are joined as a comma-separated list.
 ///
-/// @param {List} $shadow... - One or more `box-shadow` values to apply
+/// CSS-wide keywords (`none`, `initial`, `inherit`, `unset`, `revert`,
+/// `revert-layer`) are only valid as the sole value of `box-shadow` — they
+/// cannot be combined with concrete shadows in a comma list. If a keyword is
+/// mixed with concrete values, a Sass warning is emitted and the keyword takes
+/// precedence. `null` values are silently ignored.
+///
+/// @param {ArgList} $shadow - One or more `box-shadow` values to apply
+/// @example scss
+///   @include box-shadow(0 1px 3px rgba(0,0,0,.2));
+///   // => box-shadow: 0 1px 3px rgba(0,0,0,.2)
+///
+///   @include box-shadow(0 1px 3px rgba(0,0,0,.2), 0 4px 8px rgba(0,0,0,.1));
+///   // => box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 4px 8px rgba(0,0,0,.1)
+///
+///   @include box-shadow(none);
+///   // => box-shadow: none
 @mixin box-shadow($shadow...) {
   @if $enable-component-shadows {
     $result: ();
+    $keyword: null;
 
     @each $value in $shadow {
       @if $value != null {
-        $result: append($result, $value, "comma");
-      }
-      @if $value == none and length($shadow) > 1 {
-        @warn "The keyword 'none' must be used as a single argument.";
+        @if $value == none or $value == initial or $value == inherit or $value == unset or $value == revert or $value == revert-layer {
+          $keyword: $value;
+        } @else {
+          $result: list.append($result, $value, comma);
+        }
       }
     }
 
-    @if (length($result) > 0) {
+    @if $keyword != null {
+      @if list.length($result) > 0 {
+        @warn "box-shadow(): `#{$keyword}` mixed with concrete values — `#{$keyword}` will be used and other values discarded.";
+      }
+      box-shadow: $keyword;
+    } @else if list.length($result) > 0 {
       box-shadow: $result;
     }
   }

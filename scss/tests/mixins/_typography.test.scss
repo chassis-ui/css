@@ -1,31 +1,13 @@
-// Reset rfs settings to default values before importing
-$enable-rfs: true;
-$rfs-base-value: 1.25rem;
-$rfs-unit: rem;
-$rfs-rem-value: 16;
-$rfs-breakpoint: 1200px;
-$rfs-breakpoint-unit: px;
-$rfs-factor: 10;
-$rfs-mode: min-media-query;
-$rfs-two-dimensional: false;
-$rfs-disable-class: false;
-
 // Import necessary files for the tests
-@import "../../settings";
-@import "../../vendor";
-@import "../../functions";
-@import "../../tokens";
-@import "../../variables";
-@import "../../maps";
-@import "../../rfs";
-@import "../../mixins";
+@use "../../rfs" as *;
+@use "../../mixins" as *;
 
 // Create a test font map for the mixin tests
 $test-font-map: (
-  "font-family": var(--#{$prefix}font-family-test),
-  "font-weight": var(--#{$prefix}font-weight-test),
-  "font-size": var(--#{$prefix}font-size-test),
-  "line-height": var(--#{$prefix}line-height-test),
+  "font-family": var(--font-family-test),
+  "font-weight": var(--font-weight-test),
+  "font-size": var(--font-size-test),
+  "line-height": var(--line-height-test),
   "font-style": normal,
   "letter-spacing": 0,
   "margin-bottom": 0rem,
@@ -45,10 +27,10 @@ $test-font-map: (
       }
       @include expect() {
         .test-map-font-component-and-element {
-          --#{$prefix}font-family: var(--#{$prefix}component-font-family, var(--#{$prefix}font-family-test));
-          --#{$prefix}font-size: var(--#{$prefix}component-font-size, var(--#{$prefix}font-size-test));
-          --#{$prefix}font-weight: var(--#{$prefix}component-font-weight, var(--#{$prefix}font-weight-test));
-          --#{$prefix}line-height: var(--#{$prefix}component-line-height, var(--#{$prefix}line-height-test));
+          --font-family: var(--component-font-family, var(--font-family-test));
+          --font-size: var(--component-font-size, var(--font-size-test));
+          --font-weight: var(--component-font-weight, var(--font-weight-test));
+          --line-height: var(--component-line-height, var(--line-height-test));
         }
       }
     }
@@ -62,10 +44,10 @@ $test-font-map: (
       }
       @include expect() {
         .test-map-font-component-and-element {
-          --#{$prefix}element-font-family: var(--#{$prefix}component-element-font-family, var(--#{$prefix}font-family-test));
-          --#{$prefix}element-font-size: var(--#{$prefix}component-element-font-size, var(--#{$prefix}font-size-test));
-          --#{$prefix}element-font-weight: var(--#{$prefix}component-element-font-weight, var(--#{$prefix}font-weight-test));
-          --#{$prefix}element-line-height: var(--#{$prefix}component-element-line-height, var(--#{$prefix}line-height-test));
+          --element-font-family: var(--component-element-font-family, var(--font-family-test));
+          --element-font-size: var(--component-element-font-size, var(--font-size-test));
+          --element-font-weight: var(--component-element-font-weight, var(--font-weight-test));
+          --element-line-height: var(--component-element-line-height, var(--line-height-test));
         }
       }
     }
@@ -79,10 +61,10 @@ $test-font-map: (
       }
       @include expect() {
         .test-map-font-component-and-element {
-          font-family: var(--#{$prefix}component-font-family, var(--#{$prefix}font-family-test));
-          font-size: var(--#{$prefix}component-font-size, var(--#{$prefix}font-size-test));
-          font-weight: var(--#{$prefix}component-font-weight, var(--#{$prefix}font-weight-test));
-          line-height: var(--#{$prefix}component-line-height, var(--#{$prefix}line-height-test));
+          font-family: var(--component-font-family, var(--font-family-test));
+          font-size: var(--component-font-size, var(--font-size-test));
+          font-weight: var(--component-font-weight, var(--font-weight-test));
+          line-height: var(--component-line-height, var(--line-height-test));
         }
       }
     }
@@ -96,10 +78,10 @@ $test-font-map: (
       }
       @include expect() {
         .test-map-font-component-and-element {
-          font-family: var(--#{$prefix}component-element-font-family, var(--#{$prefix}font-family-test));
-          font-size: var(--#{$prefix}component-element-font-size, var(--#{$prefix}font-size-test));
-          font-weight: var(--#{$prefix}component-element-font-weight, var(--#{$prefix}font-weight-test));
-          line-height: var(--#{$prefix}component-element-line-height, var(--#{$prefix}line-height-test));
+          font-family: var(--component-element-font-family, var(--font-family-test));
+          font-size: var(--component-element-font-size, var(--font-size-test));
+          font-weight: var(--component-element-font-weight, var(--font-weight-test));
+          line-height: var(--component-element-line-height, var(--line-height-test));
         }
       }
     }
@@ -119,10 +101,10 @@ $test-font-map: (
       }
       @include expect() {
         .test-default-font {
-          font: var(--#{$prefix}font-weight) var(--#{$prefix}font-size) / var(--#{$prefix}line-height) var(--#{$prefix}font-family);
+          font: var(--font-weight) var(--font-size) / var(--line-height) var(--font-family);
         }
         .test-component-font {
-          font: var(--#{$prefix}component-font-weight) var(--#{$prefix}component-font-size) / var(--#{$prefix}component-line-height) var(--#{$prefix}component-font-family);
+          font: var(--component-font-weight) var(--component-font-size) / var(--component-line-height) var(--component-font-family);
         }
       }
     }
@@ -139,16 +121,16 @@ $test-font-map: (
       }
       @include expect() {
         .test-default-font {
-          font-family: var(--#{$prefix}font-family);
-          font-size: var(--#{$prefix}font-size);
-          font-weight: var(--#{$prefix}font-weight);
-          line-height: var(--#{$prefix}line-height);
+          font-family: var(--font-family);
+          font-size: var(--font-size);
+          font-weight: var(--font-weight);
+          line-height: var(--line-height);
         }
         .test-component-font {
-          font-family: var(--#{$prefix}component-font-family);
-          font-size: var(--#{$prefix}component-font-size);
-          font-weight: var(--#{$prefix}component-font-weight);
-          line-height: var(--#{$prefix}component-line-height);
+          font-family: var(--component-font-family);
+          font-size: var(--component-font-size);
+          font-weight: var(--component-font-weight);
+          line-height: var(--component-line-height);
         }
       }
     }
@@ -174,21 +156,21 @@ $test-font-map: (
       }
       @include expect() {
         .test-default-font-size {
-          font-size: var(--#{$prefix}font-size);
+          font-size: var(--font-size);
         }
         .test-font-size-var {
-          font-size: var(--#{$prefix}component-font-size);
+          font-size: var(--component-font-size);
         }
         .test-default-line-height {
-          line-height: var(--#{$prefix}line-height);
+          line-height: var(--line-height);
         }
         .test-line-height-var {
-          line-height: var(--#{$prefix}component-line-height);
+          line-height: var(--component-line-height);
         }
       }
     }
   }
-  @include it("applies rfs to font size values") {
+  @include it("applies clamp to font size values") {
     @include assert() {
       @include output() {
         .test-font-size-px {
@@ -203,34 +185,19 @@ $test-font-map: (
         .test-line-height-rem {
           @include line-height(4rem);
         }
-        @include rfs-collected-rules();
       }
       @include expect() {
         .test-font-size-px {
-          font-size: #{rfs-fluid-value(64px)};
+          font-size: #{cx-clamp(64px)};
         }
         .test-font-size-rem {
-          font-size: #{rfs-fluid-value(4rem)};
+          font-size: #{cx-clamp(4rem)};
         }
         .test-line-height-px {
-          line-height: #{rfs-fluid-value(64px, "line-height")};
+          line-height: #{cx-clamp(64px)};
         }
         .test-line-height-rem {
-          line-height: #{rfs-fluid-value(4rem, "line-height")};
-        }
-        @media (min-width: 1200px) {
-          .test-font-size-px {
-            font-size: #{rfs-value(64px)};
-          }
-          .test-font-size-rem {
-            font-size: #{rfs-value(4rem)};
-          }
-          .test-line-height-px {
-            line-height: #{rfs-value(64px)};
-          }
-          .test-line-height-rem {
-            line-height: #{rfs-value(4rem)};
-          }
+          line-height: #{cx-clamp(4rem)};
         }
       }
     }

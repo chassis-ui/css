@@ -1,0 +1,18 @@
+//
+// Default Token Source
+//
+// Fallback target for `@forward "chassis-tokens"` in `scss/defaults/_vendor.scss`.
+// This file lives in `scss/vendor/` (not adjacent to `_variables.scss`) so
+// that a consumer-provided `_chassis-tokens.scss` on an earlier `loadPaths`
+// entry wins resolution.
+//
+// To use a different token set, place your own `_chassis-tokens.scss` on
+// `loadPaths` ahead of this directory. See the "Token sources" section of
+// the Sass customization docs.
+//
+// For partial overrides (a handful of token values), prefer the
+// `@use "@chassis-ui/css/scss/vendor" with (...)` pattern instead — no build
+// configuration required.
+//
+
+@forward "../../node_modules/@chassis-ui/tokens/dist/web/docs/chassis/main";

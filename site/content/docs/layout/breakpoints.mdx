@@ -1,67 +1,54 @@
 ---
 title: Breakpoints
-description: Breakpoints are customizable widths that determine how your responsive layout behaves across device or viewport sizes in Chassis.
+description: Customizable width thresholds that control how layouts, utilities, and components adapt across viewport sizes in Chassis CSS.
 aliases: "[[docsref:/layout]]"
 toc: true
+tokens:
+  scopes: 
+    - breakpoint
+css_layer: layout
+css_media: viewport
 ---
+import { sassBreakpointSize } from '@libs/sass'
 
-## Core concepts
-
-- **Breakpoints are the building blocks of responsive design.** Use them to control when your layout can be adapted at a particular viewport or device size.
-
-- **Use media queries to architect your CSS by breakpoint.** Media queries are a feature of CSS that allow you to conditionally apply styles based on a set of browser and operating system parameters. We most commonly use `min-width` in our media queries.
-
-- **Mobile first, responsive design is the goal.** Chassis CSS’s CSS aims to apply the bare minimum of styles to make a layout work at the smallest breakpoint, and then layers on styles to adjust that design for larger devices. This optimizes your CSS, improves rendering time, and provides a great experience for your visitors.
+Breakpoints are the minimum widths at which the layout system, responsive utilities, and component variants shift behavior. The framework ships six default breakpoints as a Sass map (`$breakpoints`); all values are overridable before importing Chassis.
 
 ## Available breakpoints
 
-Chassis CSS includes six default breakpoints, sometimes referred to as _grid tiers_, for building responsively. These breakpoints can be customized if you’re using our source Sass files.
+The six default breakpoints feed the grid system, responsive utilities, and all breakpoint mixins. Override `$breakpoints` to change all responsive thresholds at once — see [Sass variables](#sass-variables) for the source declaration.
 
 <CxTable>
 | Breakpoint | Class prefix | Dimensions |
 | --- | --- | --- |
-| Extra small | <em>None</em> |&lt;576px |
-| Small | `small` | &ge;576px |
-| Medium | `medium` | &ge;768px |
-| Large | `large` | &ge;992px |
-| Extra large | `xlarge` | &ge;1200px |
-| Extra extra large | `2xlarge` | &ge;1400px |
+| Extra small | <em>None</em> | &lt;{sassBreakpointSize('small')} |
+| Small | `small` | &ge;{sassBreakpointSize('small')} |
+| Medium | `medium` | &ge;{sassBreakpointSize('medium')} |
+| Large | `large` | &ge;{sassBreakpointSize('large')} |
+| Extra large | `xlarge` | &ge;{sassBreakpointSize('xlarge')} |
+| Extra extra large | `2xlarge` | &ge;{sassBreakpointSize('2xlarge')} |
 </CxTable>
 
-
-Each breakpoint was chosen to comfortably hold containers whose widths are multiples of 12. Breakpoints are also representative of a subset of common device sizes and viewport dimensions—they don’t specifically target every use case or device. Instead, the ranges provide a strong and consistent foundation to build on for nearly any device.
-
-These breakpoints are customizable via Sass—you’ll find them in a Sass map in our `_variables.scss` stylesheet.
-
-<ScssDocs name="grid-breakpoints" file="scss/_variables.scss" />
-
-For more information and examples on how to modify our Sass maps and variables, please refer to [the CSS section of the Grid documentation]([[docsref:/layout/grid#css]]).
-
-<Callout type="warning">
-**Note:** While it is generally recommended to avoid using arguments that start with digits (e.g., `2xlarge`), Sass supports them because they are treated as strings. The `2xlarge` naming convention is intentionally chosen to maintain consistency with other sizing definitions and potential usage in HTML and CSS classes, such as `class="container 2xlarge"` or `class="2xlarge:col-4"`. This ensures alignment across the codebase and does not cause any issues in Sass and CSS.
+<Callout type="info">
+`2xlarge` starts with a digit. Chassis CSS CSS-escapes the leading digit automatically when generating class names (e.g. `\32 xlarge\:`), producing a valid CSS identifier. The naming follows the same scale used across sizing tokens and utility classes throughout the framework.
 </Callout>
 
 ## Media queries
 
-Since Chassis CSS is developed to be mobile first, we use a handful of [media queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries) to create sensible breakpoints for our layouts and interfaces. These breakpoints are mostly based on minimum viewport widths and allow us to scale up elements as the viewport changes.
+All queries use [CSS range syntax](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries#syntax_improvements_in_level_4), driven by the values in `$breakpoints`. The system is mobile-first: `xsmall` has a value of `0`, so styles defined at that level apply at all widths and no wrapping query is emitted.
 
 ### Min-width
 
-Chassis CSS primarily uses the following media query ranges—or breakpoints—in our source Sass files for our layout, grid system, and components.
+`media-breakpoint-up()` applies styles from a given breakpoint and wider. Calling it with `xsmall` emits no wrapping query, since `xsmall` has a value of `0`.
 
 ```scss
-// Source mixins
-
-// No media query necessary for xs breakpoint as it’s effectively `@media (min-width: 0) { ... }`
+// No media query for `xsmall` — it targets all viewport widths (value 0)
 @include media-breakpoint-up(small) { ... }
 @include media-breakpoint-up(medium) { ... }
 @include media-breakpoint-up(large) { ... }
 @include media-breakpoint-up(xlarge) { ... }
 @include media-breakpoint-up(2xlarge) { ... }
 
-// Usage
-
-// Example: Hide starting at `min-width: 0`, and then show at the `sm` breakpoint
+// Hide at the smallest size, then reveal at `small` and wider
 .custom-class {
   display: none;
 }
@@ -72,42 +59,38 @@ Chassis CSS primarily uses the following media query ranges—or breakpoints—i
 }
 ```
 
-These Sass mixins translate in our compiled CSS using the values declared in our Sass variables. For example:
+These mixins compile to range queries using the values in `$breakpoints`:
 
-```scss
-// X-Small devices (portrait phones, less than 576px)
-// No media query for `xs` since this is the default in Chassis
+<Code lang="scss" code={`// No media query for \`xsmall\` — the default in Chassis
 
-// Small devices (landscape phones, 576px and up)
-@media (min-width: 576px) { ... }
+// Small devices (landscape phones, ${sassBreakpointSize('small')} and up)
+@media (width >= ${sassBreakpointSize('small')}) { ... }
 
-// Medium devices (tablets, 768px and up)
-@media (min-width: 768px) { ... }
+// Medium devices (tablets, ${sassBreakpointSize('medium')} and up)
+@media (width >= ${sassBreakpointSize('medium')}) { ... }
 
-// Large devices (desktops, 992px and up)
-@media (min-width: 992px) { ... }
+// Large devices (desktops, ${sassBreakpointSize('large')} and up)
+@media (width >= ${sassBreakpointSize('large')}) { ... }
 
-// X-Large devices (large desktops, 1200px and up)
-@media (min-width: 1200px) { ... }
+// X-Large devices (large desktops, ${sassBreakpointSize('xlarge')} and up)
+@media (width >= ${sassBreakpointSize('xlarge')}) { ... }
 
-// XX-Large devices (larger desktops, 1400px and up)
-@media (min-width: 1400px) { ... }
-```
+// 2X-Large devices (larger desktops, ${sassBreakpointSize('2xlarge')} and up)
+@media (width >= ${sassBreakpointSize('2xlarge')}) { ... }`} />
 
 ### Max-width
 
-We occasionally use media queries that go in the other direction (the given screen size _or smaller_):
+`media-breakpoint-down()` applies styles at a given breakpoint and narrower. Calling it with `xsmall` emits no wrapping query, since `breakpoint-max(xsmall)` returns `null` when the breakpoint's value is `0`.
 
 ```scss
-// No media query necessary for xsmall breakpoint as it’s effectively `@media (max-width: 0) { ... }`
+// No media query for `xsmall` since its breakpoint value is 0
 @include media-breakpoint-down(small) { ... }
 @include media-breakpoint-down(medium) { ... }
 @include media-breakpoint-down(large) { ... }
 @include media-breakpoint-down(xlarge) { ... }
 @include media-breakpoint-down(2xlarge) { ... }
-// Note that the `2xlarge` argument is treated as a string in Sass, which ensures it does not cause any issues.
 
-// Example: Style from medium breakpoint and down
+// Style from medium and narrower
 @include media-breakpoint-down(medium) {
   .custom-class {
     display: block;
@@ -115,33 +98,28 @@ We occasionally use media queries that go in the other direction (the given scre
 }
 ```
 
-These mixins take those declared breakpoints, subtract `.02px` from them, and use them as our `max-width` values. For example:
+These mixins compile to `width <` range queries using the raw breakpoint value as the exclusive upper bound:
 
-```scss
-// `xs` returns only a ruleset and no media query
-// ... { ... }
+<Code lang="scss" code={`// \`xsmall\` emits only a ruleset — no wrapping media query
 
-// `sm` applies to x-small devices (portrait phones, less than 576px)
-@media (max-width: 575.98px) { ... }
+// \`small\` — narrower than ${sassBreakpointSize('small')}
+@media (width < ${sassBreakpointSize('small')}) { ... }
 
-// `md` applies to small devices (landscape phones, less than 768px)
-@media (max-width: 767.98px) { ... }
+// \`medium\` — narrower than ${sassBreakpointSize('medium')}
+@media (width < ${sassBreakpointSize('medium')}) { ... }
 
-// `lg` applies to medium devices (tablets, less than 992px)
-@media (max-width: 991.98px) { ... }
+// \`large\` — narrower than ${sassBreakpointSize('large')}
+@media (width < ${sassBreakpointSize('large')}) { ... }
 
-// `xl` applies to large devices (desktops, less than 1200px)
-@media (max-width: 1199.98px) { ... }
+// \`xlarge\` — narrower than ${sassBreakpointSize('xlarge')}
+@media (width < ${sassBreakpointSize('xlarge')}) { ... }
 
-// `xxl` applies to x-large devices (large desktops, less than 1400px)
-@media (max-width: 1399.98px) { ... }
-```
-
-<Callout name="info-mediaqueries-breakpoints" type="warning" />
+// \`2xlarge\` — narrower than ${sassBreakpointSize('2xlarge')}
+@media (width < ${sassBreakpointSize('2xlarge')}) { ... }`} />
 
 ### Single breakpoint
 
-There are also media queries and mixins for targeting a single segment of screen sizes using the minimum and maximum breakpoint widths.
+`media-breakpoint-only()` applies styles within a single breakpoint range — from its own minimum width up to, but not including, the next breakpoint's minimum. For `xsmall`, there is no lower bound, so the mixin falls back to `media-breakpoint-down(small)`. For `2xlarge`, there is no upper bound, so the mixin falls back to `media-breakpoint-up(2xlarge)`.
 
 ```scss
 @include media-breakpoint-only(xsmall) { ... }
@@ -150,27 +128,110 @@ There are also media queries and mixins for targeting a single segment of screen
 @include media-breakpoint-only(large) { ... }
 @include media-breakpoint-only(xlarge) { ... }
 @include media-breakpoint-only(2xlarge) { ... }
-// Note that the `2xlarge` argument is treated as a string in Sass, which ensures it does not cause any issues.
 ```
 
-For example the `@include media-breakpoint-only(medium) { ... }` will result in :
+For example, `@include media-breakpoint-only(medium) { ... }` compiles to:
 
-```scss
-@media (min-width: 768px) and (max-width: 991.98px) { ... }
-```
+<Code lang="scss" code={`@media (width >= ${sassBreakpointSize('medium')}) and (width < ${sassBreakpointSize('large')}) { ... }`} />
 
 ### Between breakpoints
 
-Similarly, media queries may span multiple breakpoint widths:
+`media-breakpoint-between()` applies styles across a span of breakpoints — from the first argument's minimum up to, but not including, the second argument's minimum. When the lower bound is `xsmall` (value `0`), the mixin falls back to `media-breakpoint-down()` on the upper bound.
 
 ```scss
 @include media-breakpoint-between(medium, xlarge) { ... }
 ```
 
-Which results in:
+This compiles to:
+
+<Code lang="scss" code={`@media (width >= ${sassBreakpointSize('medium')}) and (width < ${sassBreakpointSize('xlarge')}) { ... }`} />
+
+## Container queries
+
+Container query mixins mirror the [media query mixins](#media-queries) and respond to the inline size of a containing element rather than the viewport. Every mixin accepts an optional `$container-name` argument to scope the query to a named container.
+
+### Setting a container
+
+`set-container()` establishes an element as a query container. The `$type` argument sets the `container-type` property; the optional `$name` argument produces the `container` shorthand.
 
 ```scss
-// Example
-// Apply styles starting from medium devices and up to extra large devices
-@media (min-width: 768px) and (max-width: 1199.98px) { ... }
+@include set-container()                      // => container-type: inline-size
+@include set-container(size)                  // => container-type: size
+@include set-container(inline-size, sidebar)  // => container: sidebar / inline-size
 ```
+
+### Container min-width
+
+`container-breakpoint-up()` applies styles when the container is at least as wide as the given breakpoint. No query is emitted for `xsmall`.
+
+<Code lang="scss" code={`@include container-breakpoint-up(medium) { ... }
+// => @container (width >= ${sassBreakpointSize('medium')}) { ... }`} />
+
+### Container max-width
+
+`container-breakpoint-down()` applies styles when the container is narrower than the given breakpoint. No query is emitted for `xsmall` (value `0`).
+
+<Code lang="scss" code={`@include container-breakpoint-down(medium) { ... }
+// => @container (width < ${sassBreakpointSize('medium')}) { ... }`} />
+
+### Container range
+
+`container-breakpoint-only()` and `container-breakpoint-between()` work identically to their media query counterparts, scoped to the container.
+
+<Code lang="scss" code={`@include container-breakpoint-only(medium) { ... }
+// => @container (width >= ${sassBreakpointSize('medium')}) and (width < ${sassBreakpointSize('large')}) { ... }
+
+@include container-breakpoint-between(small, large) { ... }
+// => @container (width >= ${sassBreakpointSize('small')}) and (width < ${sassBreakpointSize('large')}) { ... }`} />
+
+### Named containers
+
+Without a name, a container query always targets the nearest ancestor container. In a nested layout — where a `sidebar` sits inside an outer `main` region — a widget inside the sidebar can only respond to the sidebar by default, never to the outer main. Named containers solve this by letting a descendant target any specific ancestor, regardless of nesting depth.
+
+<Code lang="scss" code={`// Outer layout region — named "main"
+  .main {
+    @include set-container(inline-size, main);
+    // => container: main / inline-size
+  }
+
+  // Sidebar nested inside the main — named "sidebar"
+  .sidebar {
+    @include set-container(inline-size, sidebar);
+    // => container: sidebar / inline-size
+  }
+
+  // Widget is a descendant of both containers.
+  // The name passed to each mixin determines which container drives that query.
+  .sidebar-widget {
+    @include container-breakpoint-up(large, main) { ... }
+    // => @container main (width >= 992px) { ... }
+
+    @include container-breakpoint-down(small, sidebar) { ... }
+    // => @container sidebar (width < 576px) { ... }
+  }`} />
+
+The first rule fires when `main` reaches `large`; the second fires when `sidebar` drops below `small`. The same descendant responds to two independent containers simultaneously.
+
+## CSS
+
+<DocsCSS name="Breakpoint" type="system" />
+
+### Sass maps
+
+Override `$breakpoints` before importing Chassis CSS to change all responsive thresholds.
+
+<ScssDocs name="breakpoints" file="scss/config/_defaults.scss" />
+
+### Design tokens
+
+<DocsDesignTokens name="Breakpoint" type="system" />
+
+<ScssDocs name="breakpoint-tokens" file="scss/tokens/_grid.scss" />
+
+### Sass mixins
+
+The media query and container query mixins are both defined in `scss/mixins/_breakpoints.scss`.
+
+<ScssDocs name="media-query-mixins" file="scss/mixins/_breakpoints.scss" />
+
+<ScssDocs name="container-query-mixins" file="scss/mixins/_breakpoints.scss" />

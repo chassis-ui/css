@@ -1,0 +1,43 @@
+---
+title: Vertical rule
+description: A vertical divider element that mirrors the behavior of `<hr>`, scaling naturally in flex layouts.
+toc: true
+css_layer: helpers
+---
+
+`.vr` produces a vertical line styled after the `<hr>` element. The element is `1px` wide with a `min-height` of `1em`. Its color is controlled by the `$vr-color` and `$vr-opacity` Sass variables.
+
+## Example
+
+Apply `.vr` as a bare inline element:
+
+<Example code={`<div class="vr"></div>`} />
+
+Inside a flex container, `.vr` stretches to match the container's height:
+
+<Example code={`<div class="d-flex" style="height: 200px;">
+    <div class="vr"></div>
+  </div>`} />
+
+## With stacks
+
+`.vr` integrates naturally with [stacks]([[docsref:/helpers/stacks]]) as a visual separator:
+
+<Example class="cxd-example-flex" code={`<div class="hstack gap-medium">
+    <div class="p-xsmall">First item</div>
+    <div class="p-xsmall ms-auto">Second item</div>
+    <div class="vr"></div>
+    <div class="p-xsmall">Third item</div>
+  </div>`} />
+
+## CSS
+
+`.vr` has no CSS custom properties; width, color, and opacity are set at compile time via Sass variables.
+
+<ScssDocs name="vr" file="scss/helpers/_vr.scss" />
+
+### Sass variables
+
+Customize the vertical rule Sass variables to adjust its width, color, and opacity.
+
+<ScssDocs name="vr-variables" file="scss/config/_defaults.scss" />

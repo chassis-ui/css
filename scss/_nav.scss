@@ -1,3 +1,9 @@
+@use "sass:map";
+@use "./config" as *;
+@use "./mixins" as *;
+@use "./functions" as *;
+@use "./rfs" as *;
+
 //
 // Navigation Component
 //
@@ -6,250 +12,275 @@
 // layouts. Tab pane content visibility is managed here.
 //
 
-.nav {
-  // scss-docs-start nav-css-vars
-  --#{$prefix}link-padding-y: var(--#{$prefix}nav-link-padding-y, #{$nav-link-padding-y});
-  --#{$prefix}link-padding-x: var(--#{$prefix}nav-link-padding-x, #{$nav-link-padding-x});
-  --#{$prefix}link-main-color: var(--#{$prefix}nav-link-main-color, #{$nav-link-main-color});
-  --#{$prefix}link-hover-color: var(--#{$prefix}nav-link-hover-color, #{$nav-link-hover-color});
-  --#{$prefix}link-active-color: var(--#{$prefix}nav-link-active-color, #{$nav-link-active-color});
-  --#{$prefix}link-disabled-color: var(--#{$prefix}nav-link-disabled-color, #{$nav-link-disabled-color});
+@layer components {
+  .nav {
+    // scss-docs-start nav-css-vars
+    --link-padding-y: var(--nav-link-padding-y, #{$nav-link-padding-y});
+    --link-padding-x: var(--nav-link-padding-x, #{$nav-link-padding-x});
+    --link-border-radius: var(--nav-link-border-radius, #{$nav-link-border-radius});
+    --link-main-color: var(--nav-link-main-color, #{$nav-link-main-color});
+    --link-hover-color: var(--nav-link-hover-color, #{$nav-link-hover-color});
+    --link-hover-bg: var(--nav-link-hover-bg, #{$nav-link-hover-bg});
+    --link-active-color: var(--nav-link-active-color, #{$nav-link-active-color});
+    --link-active-bg: var(--nav-link-active-bg, #{$nav-link-active-bg});
+    --link-disabled-color: var(--nav-link-disabled-color, #{$nav-link-disabled-color});
+    --caret-spacing: var(--space-2xsmall) 0;
 
-  @if $nav-link-font {
-    --#{$prefix}link-font-family: var(--#{$prefix}nav-link-font-family, #{map-get($nav-link-font, font-family)});
-    --#{$prefix}link-font-weight: var(--#{$prefix}nav-link-font-weight, #{map-get($nav-link-font, font-weight)});
-    @include rfs(map-get($nav-link-font, font-size), --#{$prefix}link-font-size, --#{$prefix}nav-link-font-size);
-    @include rfs(map-get($nav-link-font, line-height), --#{$prefix}link-line-height, --#{$prefix}nav-link-line-height);
-    // @include map-font($nav-link-font, nav);
+    @if $nav-link-font {
+      --link-font-family: var(--nav-link-font-family, #{map.get($nav-link-font, font-family)});
+      --link-font-weight: var(--nav-link-font-weight, #{map.get($nav-link-font, font-weight)});
+      @include clamp(map.get($nav-link-font, font-size), --link-font-size, --nav-link-font-size);
+      @include clamp(map.get($nav-link-font, line-height), --link-line-height, --nav-link-line-height);
+    }
+    // scss-docs-end nav-css-vars
+
+    display: flex;
+    flex-wrap: wrap;
+    padding-inline-start: 0;
+    margin-block-end: 0;
+    list-style: none;
   }
-  // scss-docs-end nav-css-vars
-
-  display: flex;
-  flex-wrap: wrap;
-  padding-left: 0;
-  margin-bottom: 0;
-  list-style: none;
-
-}
-
-.nav-link {
-  // scss-docs-start nav-link-css-vars
-  // Define padding variables needed by .nav-tabs for the exclude-strokes mixin (which subtracts border width from padding)
-  --#{$prefix}padding-y: var(--#{$prefix}link-padding-y);
-  --#{$prefix}padding-x: var(--#{$prefix}link-padding-x);
-  // Define foreground color needed for dropdown caret and text color
-  --#{$prefix}fg-color: var(--#{$prefix}link-main-color);
-  // scss-docs-end nav-link-css-vars
-
-  display: block;
-  color: var(--#{$prefix}fg-color);
-  text-decoration: if($link-decoration == none, null, none);
-  white-space: nowrap;
-  background: none;
-  border: 0;
-  // align-items: center;
-  @include exclude-strokes(nav-link);
-  @include font(link);
-  @include transition($nav-link-transition);
-
-  &:hover,
-  &:focus {
-    --#{$prefix}fg-color: var(--#{$prefix}link-hover-color);
-    text-decoration: if($link-hover-decoration == underline, none, null);
-  }
-
-  &:focus-visible {
-    outline: 0;
-    box-shadow: $nav-link-focus-box-shadow;
-  }
-
-  &.active,
-  &:active {
-    --#{$prefix}link-main-color: var(--#{$prefix}link-active-color);
-  }
-
-  // Disabled state lightens text
-  &.disabled,
-  &:disabled {
-    --#{$prefix}link-main-color: var(--#{$prefix}link-disabled-color);
-    pointer-events: none;
-    cursor: default;
-  }
-}
-
-
-// Tabs
-// Styled navigation tabs with borders and active states
-
-.nav-tabs {
-  // scss-docs-start nav-tabs-css-vars
-  --#{$prefix}border-width: var(--#{$prefix}nav-tabs-border-width, #{$nav-tabs-border-width});
-  --#{$prefix}border-color: var(--#{$prefix}nav-tabs-border-color, #{$nav-tabs-border-color});
-  --#{$prefix}border-radius: var(--#{$prefix}nav-tabs-border-radius, #{$nav-tabs-border-radius});
-  --#{$prefix}hover-border-color: var(--#{$prefix}nav-tabs-hover-border-color, #{$nav-tabs-hover-border-color});
-  --#{$prefix}active-fg-color: var(--#{$prefix}nav-tabs-active-fg-color, #{$nav-tabs-active-fg-color});
-  --#{$prefix}active-bg-color: var(--#{$prefix}nav-tabs-active-bg-color, #{$nav-tabs-active-bg-color});
-  --#{$prefix}active-border-top-color: var(--#{$prefix}nav-tabs-active-border-top-color, #{$nav-tabs-active-border-top-color});
-  --#{$prefix}active-border-top-width: var(--#{$prefix}nav-tabs-active-border-top-width, #{$nav-tabs-active-border-top-width});
-  // scss-docs-end nav-tabs-css-vars
-  border-bottom: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
 
   .nav-link {
-    @include exclude-strokes(nav-link);
-    margin-bottom: #{calc(-1 * var(--#{$prefix}border-width))};
-    border: var(--#{$prefix}border-width) solid transparent;
-    @include border-top-radius(var(--#{$prefix}border-radius));
+    // scss-docs-start nav-link-css-vars
+    // Define padding variables needed by .nav-tabs for the exclude-strokes mixin (which subtracts border width from padding)
+    --padding-y: var(--link-padding-y);
+    --padding-x: var(--link-padding-x);
+    // Define foreground color needed for dropdown caret and text color
+    --fg-color: var(--link-main-color);
+    // scss-docs-end nav-link-css-vars
 
+    display: flex;
+    color: var(--fg-color);
+    text-decoration: none;
+    white-space: nowrap;
+    background: none;
+    border: 0;
+    // @include exclude-strokes(nav-link);
+    @include padding();
+    @include font(link);
+    @include border-radius(var(--link-border-radius));
+    @include transition($nav-link-transition);
 
+    // Hover and keyboard focus share the same color change; mouse focus
+    // (handled by :focus, not :focus-visible) deliberately doesn't flash the
+    // hover state after click.
     &:hover,
     &:focus {
-      // Prevents active .nav-link tab overlapping focus outline of previous/next .nav-link
-      isolation: isolate;
-      border-color: var(--#{$prefix}hover-border-color);
+      --link-main-color: var(--link-hover-color);
+      text-decoration: none;
+      background-color: var(--link-hover-bg);
+    }
+
+    &:focus-visible {
+      --focus-ring-color: var(--nav-link-focus-ring-color, #{$nav-link-focus-ring-color});
+      --focus-ring-offset: var(--nav-link-focus-ring-offset, #{$nav-link-focus-ring-offset});
+      @include focus-ring(true);
+    }
+
+    &.active,
+    &:active {
+      --link-main-color: var(--link-active-color);
+      background-color: var(--link-active-bg);
+    }
+
+    // Disabled state lightens text
+    &.disabled,
+    &:disabled {
+      --link-main-color: var(--link-disabled-color);
+      pointer-events: none;
+      cursor: default;
     }
   }
 
-  .nav-link.active,
-  .nav-item.show .nav-link {
-    padding-top: #{calc(var(--#{$prefix}padding-y) - var(--#{$prefix}active-border-top-width))};
-    color: var(--#{$prefix}active-fg-color);
-    background-color: var(--#{$prefix}active-bg-color);
-    border-color: var(--#{$prefix}active-bg-color) var(--#{$prefix}border-color);
-    border-top: var(--#{$prefix}active-border-top-width) solid var(--#{$prefix}active-border-top-color);
-  }
-}
 
+  // Tabs
+  // Styled navigation tabs with borders and active states
 
-// Pills
-// Pill-style navigation with rounded corners and active state background
+  .nav-tabs {
+    // scss-docs-start nav-tabs-css-vars
+    --border-width: var(--nav-tabs-border-width, #{$nav-tabs-border-width});
+    --border-color: var(--nav-tabs-border-color, #{$nav-tabs-border-color});
+    --link-border-radius: var(--nav-tabs-border-radius, #{$nav-tabs-border-radius});
+    --active-fg-color: var(--nav-tabs-active-fg-color, #{$nav-tabs-active-fg-color});
+    --active-bg-color: var(--nav-tabs-active-bg-color, #{$nav-tabs-active-bg-color});
+    --active-border-top-color: var(--nav-tabs-active-border-top-color, #{$nav-tabs-active-border-top-color});
+    --active-border-top-width: var(--nav-tabs-active-border-top-width, #{$nav-tabs-active-border-top-width});
+    // scss-docs-end nav-tabs-css-vars
+    border-block-end: var(--border-width) solid var(--border-color);
 
-.nav-pills {
-  // scss-docs-start nav-pills-css-vars
-  --#{$prefix}border-radius: var(--#{$prefix}nav-pills-border-radius, #{$nav-pills-border-radius});
-  --#{$prefix}active-fg-color: var(--#{$prefix}nav-pills-active-fg-color, #{$nav-pills-active-fg-color});
-  --#{$prefix}active-bg-color: var(--#{$prefix}nav-pills-active-bg-color, #{$nav-pills-active-bg-color});
-  // scss-docs-end nav-pills-css-vars
+    .nav-link {
+      padding: calc(var(--padding-y) - var(--border-width)) calc(var(--padding-x) - var(--border-width));
+      margin-block-end: calc(-1 * var(--border-width));
+      border: var(--border-width) solid transparent;
+      @include border-top-radius(var(--link-border-radius));
+      @include border-bottom-radius(0);
 
-  .nav-link {
-    @include border-radius(var(--#{$prefix}border-radius));
-    // justify-content: center;
-  }
+      &:hover,
+      &:focus-visible {
+        background-color: transparent;
+        // Prevents active .nav-link tab overlapping focus outline of previous/next .nav-link
+        isolation: isolate;
+      }
+    }
 
-  .nav-link.active,
-  .show > .nav-link {
-    color: var(--#{$prefix}active-fg-color);
-    @include gradient-bg(var(--#{$prefix}active-bg-color));
-  }
-}
-
-
-// Underline
-// Navigation with a bottom border/underline that highlights the active item
-
-.nav-underline {
-  // scss-docs-start nav-underline-css-vars
-  --#{$prefix}gap: var(--#{$prefix}nav-underline-gap, #{$nav-underline-gap});
-  --#{$prefix}border-width: var(--#{$prefix}nav-underline-border-width, #{$nav-underline-border-width});
-  --#{$prefix}border-color: var(--#{$prefix}nav-underline-border-color, #{$nav-underline-border-color});
-  --#{$prefix}active-fg-color: var(--#{$prefix}nav-underline-active-fg-color, #{$nav-underline-active-fg-color});
-  --#{$prefix}active-bg-color: var(--#{$prefix}nav-underline-active-bg-color, #{$nav-underline-active-bg-color});
-  --#{$prefix}active-border-width: var(--#{$prefix}nav-underline-active-border-width, #{$nav-underline-active-border-width});
-  --#{$prefix}active-border-color: var(--#{$prefix}nav-underline-active-border-color, #{$nav-underline-active-border-color});
-  // scss-docs-end nav-underline-css-vars
-
-  gap: var(--#{$prefix}gap);
-  border-bottom: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
-
-  .nav-link {
-    --#{$prefix}padding-x: 0;
-    --#{$prefix}border-color: transparent;
-    padding-bottom: #{calc(var(--#{$prefix}padding-y) - var(--#{$prefix}border-width))};
-    margin-bottom: #{calc(-1 * var(--#{$prefix}border-width))};
-    border-bottom: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
-
-    &:hover,
-    &:focus {
-      --#{$prefix}border-color: currentcolor;
-      --#{$prefix}border-width: var(--#{$prefix}active-border-width);
+    .nav-link.active,
+    .nav-item.show .nav-link {
+      --link-main-color: var(--active-fg-color);
+      padding-block-start: calc(var(--padding-y) - var(--active-border-top-width));
+      background-color: var(--active-bg-color);
+      border-color: var(--active-bg-color) var(--border-color);
+      border-block-start: var(--active-border-top-width) solid var(--active-border-top-color);
     }
   }
 
-  .nav-link.active,
-  .show > .nav-link {
-    --#{$prefix}border-color: var(--#{$prefix}active-border-color);
-    --#{$prefix}border-width: var(--#{$prefix}active-border-width);
-    color: var(--#{$prefix}active-fg-color);
-    background-color: var(--#{$prefix}active-bg-color);
+
+  // Pills
+  // Pill-style navigation with rounded corners and active state background
+
+  .nav-pills {
+    // scss-docs-start nav-pills-css-vars
+    --bg-color: var(--nav-pills-bg-color, #{$nav-pills-bg-color});
+    --padding: var(--nav-pills-padding, #{$nav-pills-padding});
+    --border-radius: var(--nav-pills-border-radius, #{$nav-pills-border-radius});
+    --link-border-radius: var(--nav-pills-link-border-radius, #{$nav-pills-link-border-radius});
+    --active-fg-color: var(--nav-pills-active-fg-color, #{$nav-pills-active-fg-color});
+    --active-bg-color: var(--nav-pills-active-bg-color, #{$nav-pills-active-bg-color});
+    --active-box-shadow: var(--nav-pills-active-box-shadow, #{$nav-pills-active-box-shadow});
+    // scss-docs-end nav-pills-css-vars
+    display: inline-flex;
+    padding: var(--padding);
+    background-color: var(--bg-color);
+    @include border-radius(var(--border-radius));
+
+    .nav-link {
+      background-color: transparent;
+      @include border-radius(var(--link-border-radius));
+    }
+
+    .nav-link.active,
+    .show > .nav-link {
+      --link-main-color: var(--active-fg-color);
+      background-color: var(--active-bg-color);
+      @include gradient();
+      @include box-shadow(var(--active-box-shadow));
+    }
   }
-}
 
 
-// Collapsible navigation
-// Navigation items that can be expanded/collapsed with indicator icons
+  // Underline
+  // Navigation with a bottom border/underline that highlights the active item
 
-.nav-item.collapsible > .nav-link {
-  // scss-docs-start nav-collapsible-css-vars
-  --#{$prefix}indicator-icon: var(--#{$prefix}nav-collapsible-indicator-icon, #{$nav-collapsible-indicator-icon});
-  --#{$prefix}indicator-transition: var(--#{$prefix}nav-collapsible-indicator-transition, #{$nav-collapsible-indicator-transition});
-  // scss-docs-end nav-collapsible-css-vars
+  .nav-underline {
+    // scss-docs-start nav-underline-css-vars
+    --gap: var(--nav-underline-gap, #{$nav-underline-gap});
+    --link-padding-x: var(--nav-underline-link-padding-x, #{$nav-underline-link-padding-x});
+    --border-width: var(--nav-underline-border-width, #{$nav-underline-border-width});
+    --border-color: var(--nav-underline-border-color, #{$nav-underline-border-color});
+    --active-fg-color: var(--nav-underline-active-fg-color, #{$nav-underline-active-fg-color});
+    --active-bg-color: var(--nav-underline-active-bg-color, #{$nav-underline-active-bg-color});
+    --active-border-width: var(--nav-underline-active-border-width, #{$nav-underline-active-border-width});
+    --active-border-color: var(--nav-underline-active-border-color, #{$nav-underline-active-border-color});
+    // scss-docs-end nav-underline-css-vars
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    gap: var(--gap);
+    border-block-end: var(--border-width) solid var(--border-color);
 
-  // Display upward caret icon when expanded (default state)
-  @include caret(up, $icon: var(--#{$prefix}indicator-icon));
+    .nav-link {
+      --border-color: transparent;
+      padding-block-end: calc(var(--padding-y) - var(--border-width));
+      margin-block-end: calc(-1 * var(--border-width));
+      background-color: transparent;
+      border-block-end: var(--border-width) solid var(--border-color);
+      @include border-radius(0);
 
-  // Change to downward caret icon when collapsed (.collapsed added by JavaScript)
-  &.collapsed {
-    @include caret(down, $icon: var(--#{$prefix}indicator-icon));
+      &:hover,
+      &:focus-visible {
+        --border-color: currentcolor;
+        --border-width: var(--active-border-width);
+      }
+    }
+
+    .nav-link.active,
+    .show > .nav-link {
+      --link-main-color: var(--active-fg-color);
+      --border-color: var(--active-border-color);
+      --border-width: var(--active-border-width);
+      background-color: var(--active-bg-color);
+    }
   }
-  // Apply transition effect to the caret icon for smooth animation
-  &::after {
-    @include transition(var(--#{$prefix}indicator-transition));
+
+
+  // Collapsible navigation
+  // Navigation items that can be expanded/collapsed with caret icons
+
+  .nav-item.collapsible > .nav-link {
+    // scss-docs-start nav-collapsible-css-vars
+    --caret-icon: var(--nav-collapsible-caret-icon, #{svg-icon($nav-collapsible-caret-icon)});
+    --caret-transition: var(--nav-collapsible-caret-transition, #{$nav-collapsible-caret-transition});
+    // scss-docs-end nav-collapsible-css-vars
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    // Show collapsed caret (down) by default
+    @include caret($nav-collapsible-caret-collapsed);
+
+    // Show expanded caret (up) when the collapse target sibling is open
+    &:has(+ .show) {
+      @include caret($nav-collapsible-caret-expanded);
+    }
+    // Apply transition effect to the caret icon for smooth animation
+    &::after {
+      @include transition(var(--caret-transition));
+    }
   }
-}
 
 
-// Justified variants
-// Navigation items with equal width (.nav-fill) or equal flexbox space distribution (.nav-justified)
+  // Justified variants
+  // Navigation items with equal width (.nav-fill) or equal flexbox space distribution (.nav-justified)
 
-.nav-fill {
-  > .nav-link,
-  .nav-item {
-    flex: 1 1 auto;  // flex-grow: 1, flex-shrink: 1, flex-basis: auto - items grow to fill available space
-    text-align: center;
+  .nav-fill {
+    > .nav-link,
+    .nav-item {
+      flex: 1 1 auto;
+      justify-content: center;  // flex containers (.nav-link): centers flex content
+      text-align: center;       // block elements (.nav-item): centers inline content
+    }
   }
-}
 
-.nav-justified {
-  > .nav-link,
-  .nav-item {
-    flex-grow: 1;     // Allow items to grow
-    flex-basis: 0;    // Start from zero width, creating equal-width items regardless of content
-    text-align: center;
+  .nav-justified {
+    > .nav-link,
+    .nav-item {
+      flex-grow: 1;
+      flex-basis: 0;
+      justify-content: center;
+      text-align: center;
+    }
   }
-}
 
-.nav-fill,
-.nav-justified {
-  .nav-item .nav-link {
-    width: 100%; // Ensure nested links expand to fill their container completely
+  .nav-fill,
+  .nav-justified {
+    .nav-item .nav-link {
+      justify-content: center;
+      width: 100%; // Ensure nested links expand to fill their container completely
+    }
   }
-}
 
 
-// Tab content panes
-// Content areas controlled by tab navigation components
-//
-// Hides all tab panes initially and displays only those with the `.active` class
-// Used in conjunction with JavaScript to show/hide content when tabs are clicked
+  // Tab content panes
+  // Content areas controlled by tab navigation components
+  //
+  // Hides all tab panes initially and displays only those with the `.active` class
+  // Used in conjunction with JavaScript to show/hide content when tabs are clicked
 
-.tab-content {
-  > .tab-pane {
-    display: none;
+  .tab-content {
+    > .tab-pane {
+      display: none;
+    }
+    > .active {
+      display: block;
+    }
   }
-  > .active {
-    display: block;
-  }
-}
+} // @layer components

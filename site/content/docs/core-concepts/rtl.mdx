@@ -1,0 +1,199 @@
+---
+title: RTL
+description: How right-to-left layout works in Chassis CSS — logical properties, the dir attribute, and writing RTL-aware custom components.
+toc: true
+---
+
+## How it works
+
+Chassis CSS uses **CSS logical properties** throughout the framework. Instead of physical directions like `left` and `right`, the compiled CSS uses directional concepts that adapt to the writing mode of the document:
+
+<CxTable>
+| Physical | Logical |
+| --- | --- |
+| `margin-left` | `margin-inline-start` |
+| `margin-right` | `margin-inline-end` |
+| `padding-left` | `padding-inline-start` |
+| `border-right` | `border-inline-end` |
+</CxTable>
+
+Adding `dir="rtl"` to the `<html>` element tells the browser to map `start` and `end` to match the right-to-left reading direction — no extra stylesheet needed, and no JavaScript.
+
+### Enabling RTL
+
+Add `dir="rtl"` and a matching `lang` attribute to the `<html>` element:
+
+```diff
+- <html lang="en">
++ <html lang="ar" dir="rtl">
+```
+
+That single change is enough for layouts, spacing, and most components to render correctly in RTL.
+
+### Live demo
+
+The toggle switches `dir` and `lang` on the `<html>` element, showing how logical properties adapt without any stylesheet change.
+
+<div class="cxd-example">
+
+  <div class="form-check">
+    <span class="check-input">
+      <input type="checkbox" value="" id="rtlSwitch" role="switch" />
+    </span>
+    <label for="rtlSwitch">Enable RTL mode</label>
+  </div>
+
+</div>
+
+<script>
+{`
+(function() {
+  const rtlSwitch = document.getElementById('rtlSwitch');
+  const htmlElement = document.documentElement;
+
+  if (htmlElement.getAttribute('dir') === 'rtl') {
+    rtlSwitch.checked = true;
+  }
+
+  rtlSwitch.addEventListener('change', function() {
+    if (this.checked) {
+      htmlElement.setAttribute('dir', 'rtl');
+      htmlElement.setAttribute('lang', 'ar');
+    } else {
+      htmlElement.setAttribute('dir', 'ltr');
+      htmlElement.setAttribute('lang', 'en');
+    }
+  });
+})();
+`}
+</script>
+
+## Explicit RTL overrides
+
+A small set of properties can't be expressed with CSS logical shorthands — either because the value itself must change, or because CSS has no logical equivalent for the property. Chassis handles these with two complementary patterns.
+
+### Direction tokens
+
+Some properties — `transform-origin`, gradient angles, `background-position` keywords — accept physical direction values with no CSS logical equivalent. Rather than scattering component-level `[dir="rtl"]` blocks throughout the codebase, Chassis defines four custom properties at the root level that flip automatically when `dir="rtl"` is set:
+
+```scss
+[dir="rtl"] {
+  --logical-position-start: right;
+  --logical-position-end: left;
+  --logical-angle-90: 270deg;
+  --logical-angle-270: 90deg;
+}
+```
+
+Components reference these with an LTR fallback, picking up the correct value without additional selectors:
+
+```scss
+transform-origin: top var(--logical-position-start, left);
+transform: rotate(var(--logical-angle-90, 90deg));
+```
+
+### Value overrides
+
+When the value itself carries directional meaning — icon masks, generated SVG content — a targeted `[dir="rtl"]` rule replaces the value directly.
+
+**Breadcrumb divider** — the divider character is replaced with an RTL-specific variant:
+
+```scss
+.breadcrumb-item + .breadcrumb-item::before {
+  content: var(--breadcrumb-divider, escape-svg($breadcrumb-divider));
+
+  [dir="rtl"] & {
+    content: var(--breadcrumb-divider-rtl, escape-svg($breadcrumb-divider-rtl));
+  }
+}
+```
+
+**Carousel controls** — prev and next icon masks are swapped so arrows point in the correct direction:
+
+```scss
+.carousel-control-prev-icon::before {
+  mask-image: var(--control-prev-icon);
+}
+[dir="rtl"] .carousel-control-prev-icon::before {
+  mask-image: var(--control-next-icon);
+}
+.carousel-control-next-icon::before {
+  mask-image: var(--control-next-icon);
+}
+[dir="rtl"] .carousel-control-next-icon::before {
+  mask-image: var(--control-prev-icon);
+}
+```
+
+For custom components, use the same `[dir="rtl"]` selector for any property whose value — not just its position — needs to change in RTL.
+
+## RTL-aware custom CSS
+
+Chassis ships two mixins in `scss/mixins/_rtl.scss` that emit both the LTR and RTL declarations in a single call.
+
+**`rtl-value()`** — use when a property keeps the same name but needs a different value in RTL:
+
+```scss
+@use "@chassis-ui/css/scss/mixins/rtl" as *;
+
+.my-component {
+  @include rtl-value(text-align, left, right);
+}
+```
+
+Compiles to:
+
+```css
+.my-component { text-align: left; }
+[dir="rtl"] .my-component { text-align: right; }
+```
+
+**`rtl-prop()`** — use when the property name itself flips, for physical properties without a logical equivalent:
+
+```scss
+.my-component {
+  @include rtl-prop(padding-left, padding-right, 1rem);
+}
+```
+
+Compiles to:
+
+```css
+.my-component { padding-left: 1rem; }
+[dir="rtl"] .my-component { padding-left: 0; padding-right: 1rem; }
+```
+
+For anything expressible as a logical property, prefer that over the mixins — logical properties are the default Chassis approach and require no mixin overhead.
+
+## Serving LTR and RTL
+
+Since RTL is handled by a single attribute on `<html>`, both directions share the same stylesheet. Detect the preferred language server-side and set `dir` accordingly:
+
+```html
+<!-- LTR -->
+<html lang="en">
+
+<!-- RTL -->
+<html lang="ar" dir="rtl">
+```
+
+For pages with mixed-direction content, scope `dir` to individual containers rather than `<html>`:
+
+```html
+<html lang="en">
+  <body>
+    <div dir="ltr" lang="en"><!-- LTR section --></div>
+    <div dir="rtl" lang="ar"><!-- RTL section --></div>
+  </body>
+</html>
+```
+
+Logical properties cascade correctly through nested `dir` attributes, so inner containers inherit the right direction automatically.
+
+## Additional resources
+
+These references cover the CSS specifications and RTL styling patterns Chassis builds on:
+
+- [MDN: CSS Logical Properties and Values](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Logical_Properties)
+- [CSS Logical Properties — web.dev](https://web.dev/learn/css/logical-properties/)
+- [RTL Styling 101](https://rtlstyling.com/posts/rtl-styling)

@@ -1,30 +1,48 @@
 ---
-import { getConfig } from '@libs/config'
-
 interface Props {
   /**
-   * Set to true if the component being documented is customized exclusively
-   * through Sass variables rather than CSS variables
+   * Name shown in the description, e.g. "Accordion". Omit for the
+   * generic fallback ("This component" / "These utilities", etc.).
    */
-  sassOnly?: boolean
+  name?: string
+  /**
+   * The kind of thing being documented.
+   * @default 'component'
+   */
+  type?: 'component' | 'helper' | 'utility' | 'system'
+  /**
+   * Use plural phrasing — "Form components" instead of "The Form component".
+   * @default false
+   */
+  plural?: boolean
+  /**
+   * When true, the component is also can be configured through exposed
+   * CSS custom properties at runtime.
+   * @default false
+   */
+  exposed?: boolean
 }
 
-const { sassOnly = false } = Astro.props
+const { name, type = 'component', plural = false, exposed = false } = Astro.props
+
+const noun = plural ? (type === 'utility' ? 'utilities' : `${type}s`) : type
+
+const subject = !name
+  ? plural
+    ? `These ${noun}`
+    : `This ${noun}`
+  : plural
+    ? `${name} ${noun}`
+    : `The ${name} ${noun}`
 ---
 
 {
-  sassOnly ? (
+  exposed ? (
     <p>
-      This component is customized exclusively through Sass variables during compilation rather than
-      exposed CSS custom properties.
+      {subject} can be customized at both runtime (via custom properties) and compile time (via Sass
+      variables).
     </p>
   ) : (
-    <p>
-      This component can be customized using CSS variables, allowing for styles to be modified
-      dynamically on the page. These CSS variables are part of Chassis CSS's design token system,
-      giving design teams control over component appearance. See the{' '}
-      <a href={`/docs/${getConfig().docs_version}/core-concepts/design-tokens`}>design tokens</a>{' '}
-      page for more details.
-    </p>
+    <p>{subject} can be customized through Sass variables at compile time.</p>
   )
 }

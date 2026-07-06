@@ -1,0 +1,1 @@
+Chassis CSS respects user accessibility preferences by automatically disabling translucency effects when the `prefers-reduced-transparency` media query is detected. Note that this media feature is currently only supported in Chromium-based browsers — Safari and Firefox do not yet implement it.

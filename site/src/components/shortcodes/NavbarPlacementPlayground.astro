@@ -1,0 +1,143 @@
+---
+import Example from '@chassis-ui/docs/shortcodes/Example.astro'
+import { highlightCode } from '@chassis-ui/docs'
+
+const placements = [
+  { value: '', label: 'Default' },
+  { value: 'fixed-top', label: 'Fixed top' },
+  { value: 'fixed-bottom', label: 'Fixed bottom' },
+  { value: 'sticky-top', label: 'Sticky top' },
+  { value: 'sticky-bottom', label: 'Sticky bottom' }
+]
+
+const variants = await Promise.all(
+  placements.map(async ({ value, label }) => {
+    const cls = value ? ` ${value}` : ''
+    const { html } = await highlightCode(
+      `<nav class="navbar${cls} bg-evident">
+  <div class="container fluid">
+    <a class="navbar-brand" href="#">${label}</a>
+  </div>
+</nav>`,
+      'html'
+    )
+    return { value, html }
+  })
+)
+---
+
+<div class="bg-even p-medium mb-medium font-small rounded-medium">
+  <div class="hstack gap-medium align-items-center">
+    <label class="form-label font-strong mb-0" for="navbar-placement-menu">Placement:</label>
+    <div>
+      <button
+        type="button"
+        class="button default menu-toggle"
+        id="navbar-placement-menu"
+        data-cx-toggle="menu"
+        aria-expanded="false"
+        data-placement=""
+      >
+        <span>Default (static)</span>
+      </button>
+      <div class="menu">
+        {
+          placements.map((p) => (
+            <button
+              type="button"
+              class:list={['menu-item', { active: p.value === '' }]}
+              data-placement={p.value}
+            >
+              {p.label}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<Example
+  code={`<nav class="navbar bg-evident">
+  <div class="container fluid">
+    <a class="navbar-brand" href="#">Default</a>
+  </div>
+</nav>`}
+  id="navbar-placement-preview"
+/>
+
+<div hidden>
+  {variants.map((v) => <div data-navbar-placement-code={v.value} set:html={v.html} />)}
+</div>
+
+<script>
+  const placementMenuButton = document.querySelector('#navbar-placement-menu') as HTMLButtonElement
+  const placementMenuItems = document.querySelectorAll('#navbar-placement-menu + .menu .menu-item')
+  const previewContainer = document.querySelector('#navbar-placement-preview') as HTMLElement
+  const previewNavbar = previewContainer?.querySelector('.navbar') as HTMLElement
+  const codeSnippet = previewContainer
+    ?.closest('.cxd-example-snippet')
+    ?.querySelector('.cxd-code') as HTMLElement
+
+  const placementClasses = ['fixed-top', 'fixed-bottom', 'sticky-top', 'sticky-bottom']
+
+  const placementLabels: Record<string, string> = {
+    '': 'Default',
+    'fixed-top': 'Fixed top',
+    'fixed-bottom': 'Fixed bottom',
+    'sticky-top': 'Sticky top',
+    'sticky-bottom': 'Sticky bottom'
+  }
+
+  function updatePlacement(placement: string) {
+    if (!previewNavbar || !placementMenuButton) return
+
+    const labelSpan = placementMenuButton.querySelector('span')
+    if (labelSpan) {
+      labelSpan.textContent = placementLabels[placement]
+        ? `${placementLabels[placement]}${placement ? '' : ' (static)'}`
+        : 'Default (static)'
+    }
+    placementMenuButton.dataset.placement = placement
+
+    placementMenuItems.forEach((item) => {
+      const itemPlacement = (item as HTMLElement).dataset.placement
+      item.classList.toggle('active', itemPlacement === placement)
+    })
+
+    placementClasses.forEach((cls) => {
+      previewNavbar.classList.remove(cls)
+    })
+
+    if (placement) {
+      previewNavbar.classList.add(placement)
+    }
+
+    const brand = previewNavbar.querySelector('.navbar-brand')
+    if (brand) {
+      brand.textContent = placementLabels[placement] || 'Default'
+    }
+
+    updateCodeSnippet(placement)
+  }
+
+  function updateCodeSnippet(placement: string) {
+    if (!codeSnippet) return
+    const variant = document.querySelector<HTMLElement>(
+      `[data-navbar-placement-code="${placement}"]`
+    )
+    if (variant) {
+      codeSnippet.innerHTML = variant.innerHTML
+    }
+  }
+
+  if (placementMenuButton) {
+    placementMenuItems.forEach((item) => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault()
+        const placement = (item as HTMLElement).dataset.placement || ''
+        updatePlacement(placement)
+      })
+    })
+  }
+</script>

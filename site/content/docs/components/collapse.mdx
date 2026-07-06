@@ -2,6 +2,9 @@
 title: Collapse
 description: Create smooth, accessible content toggles with Chassis CSS's collapse component, featuring height and width animations with comprehensive JavaScript controls.
 toc: true
+tokens: context
+css_layer: components
+js: required
 ---
 
 ## Introduction
@@ -33,7 +36,7 @@ The `.collapse` class hides content by default, `.collapsing` is applied during 
     </button>
   </p>
   <div class="collapse" id="collapseExample">
-    <div class="card card-content">
+    <div class="card card-body">
       Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
     </div>
   </div>`} />
@@ -55,7 +58,7 @@ The example below includes `min-height` styling to prevent layout shifts in docu
   </p>
   <div style="min-height: 120px;">
     <div class="collapse collapse-horizontal" id="collapseWidthExample">
-      <div class="card card-content" style="width: 300px;">
+      <div class="card card-body" style="width: 300px;">
         This is some placeholder content for a horizontal collapse. It's hidden by default and shown when triggered.
       </div>
     </div>
@@ -68,21 +71,21 @@ Demonstrate advanced collapse functionality with complex trigger-target relation
 Use CSS selectors in `data-cx-target` or `href` attributes to control multiple collapse elements simultaneously. Reference the same target element from multiple triggers using consistent `data-cx-target` or `href` values for flexible interface control.
 
 <Example code={`<p class="d-inline-flex gap-2xsmall">
-    <a class="button primary" data-cx-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle first element</a>
+    <button type="button" class="button primary" data-cx-toggle="collapse" data-cx-target="#multiCollapseExample1" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle first element</button>
     <button class="button primary" type="button" data-cx-toggle="collapse" data-cx-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Toggle second element</button>
     <button class="button primary" type="button" data-cx-toggle="collapse" data-cx-target=".multi-collapse" aria-expanded="false" aria-controls="multiCollapseExample1 multiCollapseExample2">Toggle both elements</button>
   </p>
   <div class="row">
     <div class="col">
       <div class="collapse multi-collapse" id="multiCollapseExample1">
-        <div class="card card-content">
+        <div class="card card-body">
           Some placeholder content for the first collapse component of this multi-collapse example. This panel is hidden by default but revealed when the user activates the relevant trigger.
         </div>
       </div>
     </div>
     <div class="col">
       <div class="collapse multi-collapse" id="multiCollapseExample2">
-        <div class="card card-content">
+        <div class="card card-body">
           Some placeholder content for the second collapse component of this multi-collapse example. This panel is hidden by default but revealed when the user activates the relevant trigger.
         </div>
       </div>
@@ -111,13 +114,13 @@ For advanced keyboard patterns (like accordion-style navigation), implement cust
 
 ## CSS
 
-<DocsCSS sassOnly={true} />
+<DocsCSS />
 
 ### Sass variables
 
-<DocsSASSVars notExposed={true} />
+<DocsSASSVars />
 
-<ScssDocs name="collapse-transition" file="scss/_variables.scss" />
+<ScssDocs name="collapse-transition" file="scss/config/_defaults.scss" />
 
 ### Classes
 

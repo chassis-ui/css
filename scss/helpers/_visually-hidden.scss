@@ -1,8 +1,17 @@
+@use "../mixins" as *;
+
 //
-// Visually hidden
+// Visually Hidden Helper
+//
+// Hides elements visually while keeping them accessible to screen readers.
+// .visually-hidden-focusable restores visibility on keyboard focus.
 //
 
-.visually-hidden,
-.visually-hidden-focusable:not(:focus):not(:focus-within) {
-  @include visually-hidden();
-}
+@layer helpers {
+  // scss-docs-start visually-hidden-helper
+  .visually-hidden,
+  .visually-hidden-focusable:not(:focus):not(:focus-within) {
+    @include visually-hidden();
+  }
+  // scss-docs-end visually-hidden-helper
+} // @layer helpers

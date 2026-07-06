@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -26,35 +26,35 @@
 
       <div class="row">
         <p>
-          <button type="button" class="btn btn-secondary" data-cx-toggle="tooltip" data-cx-placement="auto" title="Tooltip on auto">
+          <button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="auto" title="Tooltip on auto">
             Tooltip on auto
           </button>
-          <button type="button" class="btn btn-secondary" data-cx-toggle="tooltip" data-cx-placement="top" title="Tooltip on top">
+          <button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="top" title="Tooltip on top">
             Tooltip on top
           </button>
-          <button type="button" class="btn btn-secondary" data-cx-toggle="tooltip" data-cx-placement="right" title="Tooltip on right">
+          <button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="right" title="Tooltip on right">
             Tooltip on end
           </button>
-          <button type="button" class="btn btn-secondary" data-cx-toggle="tooltip" data-cx-placement="bottom" title="Tooltip on bottom">
+          <button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="bottom" title="Tooltip on bottom">
             Tooltip on bottom
           </button>
-          <button type="button" class="btn btn-secondary" data-cx-toggle="tooltip" data-cx-placement="left" title="Tooltip on left">
+          <button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="left" title="Tooltip on left">
             Tooltip on start
           </button>
         </p>
       </div>
       <div class="row">
         <p>
-          <button type="button" class="btn btn-secondary" data-cx-toggle="tooltip" data-cx-placement="left" title="Tooltip with container (selector)" data-cx-container="#customContainer">
+          <button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="left" title="Tooltip with container (selector)" data-cx-container="#customContainer">
             Tooltip with container (selector)
           </button>
-          <button id="tooltipElement" type="button" class="btn btn-secondary" data-cx-placement="left" title="Tooltip with container (element)">
+          <button id="tooltipElement" type="button" class="button secondary" data-cx-placement="left" title="Tooltip with container (element)">
             Tooltip with container (element)
           </button>
-          <button type="button" class="btn btn-secondary" data-cx-toggle="tooltip" data-cx-html="true" title="<em>Tooltip</em> <u>with</u> <b>HTML</b>">
+          <button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-html="true" title="<em>Tooltip</em> <u>with</u> <b>HTML</b>">
             Tooltip with HTML
           </button>
-          <button type="button" class="btn btn-secondary" data-cx-toggle="tooltip" data-cx-placement="left" title="Tooltip with XSS" data-cx-container="<img src=1 onerror=notification(123)>">
+          <button type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="left" title="Tooltip with XSS" data-cx-container="<img src=1 onerror=notification(123)>">
             Tooltip with XSS
           </button>
         </p>
@@ -63,37 +63,36 @@
         <div class="col-small-3">
           <div id="target" title="Test tooltip on transformed element"></div>
         </div>
-        <div id="shadow" class="pt-5"></div>
+        <div id="shadow" class="pt-xlarge"></div>
       </div>
       <div id="customContainer"></div>
 
-      <div class="row mt-4 border-top">
+      <div class="row mt-large border-top">
         <hr>
         <div class="h4">Test Selector triggered tooltips</div>
         <div id="wrapperTriggeredBySelector">
-          <div class="py-2 selectorButtonsBlock">
-            <button type="button" class="btn btn-secondary cx-dynamic-tooltip" title="random title">Using title</button>
-            <button type="button" class="btn btn-secondary cx-dynamic-tooltip" data-cx-title="random title">Using cx-title</button>
+          <div class="py-small selectorButtonsBlock">
+            <button type="button" class="button secondary cx-dynamic-tooltip" title="random title">Using title</button>
+            <button type="button" class="button secondary cx-dynamic-tooltip" data-cx-title="random title">Using cx-title</button>
           </div>
 
         </div>
-        <div class="mt-3">
-          <button type="button" class="btn btn-primary" onclick="duplicateButtons()">Duplicate above two buttons</button>
+        <div class="mt-medium">
+          <button type="button" class="button primary" onclick="duplicateButtons()">Duplicate above two buttons</button>
         </div>
       </div>
     </div>
 
-    <script src="../../../dist/js/chassis.bundle.js"></script>
-    <script>
-      /* global chassis: false */
+    <script type="module">
+      import * as chassis from '../../../dist/js/chassis.bundle.js'
 
       if (typeof document.body.attachShadow === 'function') {
         const shadowRoot = document.getElementById('shadow').attachShadow({ mode: 'open' })
         shadowRoot.innerHTML =
-          '<button id="firstShadowTooltip" type="button" class="btn btn-secondary" data-cx-toggle="tooltip" data-cx-placement="top" title="Tooltip on top in a shadow dom">' +
+          '<button id="firstShadowTooltip" type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="top" title="Tooltip on top in a shadow dom">' +
           '  Tooltip on top in a shadow dom' +
           '</button>' +
-          '<button id="secondShadowTooltip" type="button" class="btn btn-secondary" data-cx-toggle="tooltip" data-cx-placement="top" title="Tooltip on top in a shadow dom with container option">' +
+          '<button id="secondShadowTooltip" type="button" class="button secondary" data-cx-toggle="tooltip" data-cx-placement="top" title="Tooltip on top in a shadow dom with container option">' +
           '  Tooltip on top in a shadow dom' +
           '</button>'
 
@@ -114,24 +113,18 @@
       targetTooltip.show()
 
       document.querySelectorAll('[data-cx-toggle="tooltip"]').forEach(tooltipEl => new chassis.Tooltip(tooltipEl))
-    </script>
-
-    <script>
-      /* global chassis: false */
 
       new chassis.Tooltip('#wrapperTriggeredBySelector', {
         animation: false,
         selector: '.cx-dynamic-tooltip'
       })
 
-      /* eslint-disable no-unused-vars */
-      function duplicateButtons() {
-        const buttonsBlock = document.querySelector('.selectorButtonsBlock')// get first
+      window.duplicateButtons = function () {
+        const buttonsBlock = document.querySelector('.selectorButtonsBlock')
         const buttonsBlockClone = buttonsBlock.cloneNode(true)
         buttonsBlockClone.innerHTML += new Date().toLocaleString()
         document.querySelector('#wrapperTriggeredBySelector').append(buttonsBlockClone)
       }
-      /* eslint-enable no-unused-vars */
     </script>
 
   </body>

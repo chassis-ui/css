@@ -1,10 +1,40 @@
 ---
 import { getConfig } from '@libs/config'
+
+interface Props {
+  /**
+   * Name shown in the description, e.g. "Accordion". Omit for the
+   * generic fallback ("This component consumes" / "These utilities consume", etc.).
+   */
+  name?: string
+  /**
+   * The kind of thing being documented.
+   * @default 'component'
+   */
+  type?: 'component' | 'helper' | 'utility' | 'system'
+  /**
+   * Use plural phrasing — "Form components consume" instead of "The Form component consumes".
+   * @default false
+   */
+  plural?: boolean
+}
+
+const { name, type = 'component', plural = false } = Astro.props
+
+const noun = plural ? (type === 'utility' ? 'utilities' : `${type}s`) : type
+
+const subject = !name
+  ? plural
+    ? `These ${noun}`
+    : `This ${noun}`
+  : plural
+    ? `${name} ${noun}`
+    : `The ${name} ${noun}`
+
+const opener = `${subject} consume${plural ? '' : 's'}`
 ---
 
 <p>
-  These design tokens with <code>$cx</code> prefixes are managed by design teams in Figma using the Tokens
-  Studio plugin. See the <a href={`/docs/${getConfig().docs_version}/core-concepts/design-tokens`}
-    >design tokens</a
-  > page for more details.
+  {opener} design tokens from Chassis Tokens with the <code>$cx-</code> prefix. — See the
+  <a href={`${getConfig().docsPath}/core-concepts/design-tokens`}>design tokens</a> page.
 </p>

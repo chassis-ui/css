@@ -1,12 +1,13 @@
 ---
 title: Interactions
-description: Utility classes that change how users interact with contents of a website.
+description: Utilities for controlling text selection behavior and pointer event handling.
 toc: false
+css_layer: utilities
 ---
 
 ## Text selection
 
-Change the way in which the content is selected when the user interacts with it.
+User-select utilities set the CSS `user-select` property, controlling how text within an element responds to pointer selection.
 
 <Example code={`<p class="user-select-all">This paragraph will be entirely selected when clicked by the user.</p>
 <p class="user-select-auto">This paragraph has default select behavior.</p>
@@ -14,23 +15,31 @@ Change the way in which the content is selected when the user interacts with it.
 
 ## Pointer events
 
-Chassis CSS provides `.pointer-event-none` and `.pointer-event-auto` classes to prevent or add element interactions.
+Pointer event utilities set the CSS `pointer-events` property. `.pointer-event-none` disables mouse, stylus, and touch interactions. `.pointer-event-auto` restores the default behavior, or overrides an inherited disabled state.
 
 <Example code={`<p><a href="#" class="pointer-event-none" tabindex="-1" aria-disabled="true">This link</a> can not be clicked.</p>
 <p><a href="#" class="pointer-event-auto">This link</a> can be clicked (this is default behavior).</p>
 <p class="pointer-event-none"><a href="#" tabindex="-1" aria-disabled="true">This link</a> can not be clicked because the <code>pointer-events</code> property is inherited from its parent. However, <a href="#" class="pointer-event-auto">this link</a> has a <code>pointer-event-auto</code> class and can be clicked.</p>`} />
 
-The `.pointer-event-none` class (and the `pointer-events` CSS property it sets) only prevents interactions with a pointer (mouse, stylus, touch). Links and controls with `.pointer-event-none` are, by default, still focusable and actionable for keyboard users. To ensure that they are completely neutralized even for keyboard users, you may need to add further attributes such as `tabindex="-1"` (to prevent them from receiving keyboard focus) and `aria-disabled="true"` (to convey the fact they are effectively disabled to assistive technologies), and possibly use JavaScript to completely prevent them from being actionable.
+`.pointer-event-none` affects only pointer-based interactions. Elements with this class remain focusable and actionable via keyboard unless additional attributes are applied: `tabindex="-1"` prevents keyboard focus, and `aria-disabled="true"` communicates the disabled state to assistive technologies.
 
-If possible, the simpler solution is:
+Simpler alternatives for common cases:
 
 - For form inputs, add the `disabled` HTML attribute.
 - For links, remove the `href` attribute, making it a non-interactive anchor or placeholder link.
 
 ## CSS
 
-### Sass utilities API
+Interaction utilities are generated via the utilities API.
 
-Interaction utilities are declared in our utilities API in `scss/utilities/_index.scss`. [Learn how to use the utilities API.]([[docsref:/utilities/api#using-the-api]])
+### Reference
+
+The table lists all interaction utilities and their CSS properties.
+
+<UtilityReferenceTable utility={["user-select-", "pointer-event-"]} />
+
+### Utilities API
+
+Interaction utilities are declared in `scss/utilities/_index.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
 
 <ScssDocs name="utils-interaction" file="scss/utilities/_index.scss" />

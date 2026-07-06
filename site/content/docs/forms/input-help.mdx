@@ -1,0 +1,197 @@
+---
+title: Input Help
+description: Extend form inputs with leading or trailing icons, text, and action buttons using assistive elements positioned before or after the input.
+toc: true
+tokens: context
+css_layer: components
+deps:
+  - title: Form Input
+---
+
+## Overview
+
+The `.form-input` element acts as a flex container that positions `.input-help` elements before or after a `.ghost-input` input. The ghost input fills the available space while helps shrink to their content.
+
+See the [Form Input]([[docsref:/forms/form-input]]) documentation for more on the `.form-input` and `.ghost-input` classes.
+
+## Examples
+
+The position of `.input-help` within the wrapper controls whether it appears at the start or end of the field.
+
+### Leading
+
+Place `.input-help` as the first child of `.form-input` to position it at the leading edge.
+
+<Example code={`<div class="form-input">
+    <div class="input-help">
+      <Icon name="search-outline" />
+    </div>
+    <input type="text" class="ghost-input" aria-label="Search" placeholder="Search...">
+  </div>`} />
+
+### Trailing
+
+Place `.input-help` as the last child to position it at the trailing edge.
+
+<Example code={`<div class="form-input">
+    <input type="email" class="ghost-input" aria-label="Email address" placeholder="you@example.com">
+    <div class="input-help">
+      <Icon name="envelope-outline" />
+    </div>
+  </div>`} />
+
+## Text helps
+
+Use `.input-help` for currency symbols, units, domain suffixes, and other text-based decorations. When the help is essential to understanding what the field expects, include it in the input's accessible name via `aria-label`.
+
+<Example class="vstack gap-xsmall" code={`<div class="form-input">
+    <span class="input-help">$</span>
+    <input type="text" class="ghost-input" aria-label="Amount in dollars" placeholder="0.00">
+  </div>
+  <div class="form-input">
+    <input type="text" class="ghost-input" aria-label="Amount" placeholder="Amount">
+    <span class="input-help">USD</span>
+  </div>
+  <div class="form-input">
+    <span class="input-help">https://</span>
+    <input type="text" class="ghost-input" aria-label="Website URL" placeholder="example.com">
+  </div>
+  <div class="form-input">
+    <input type="text" class="ghost-input" aria-label="Username" placeholder="username">
+    <span class="input-help">@example.com</span>
+  </div>`} />
+
+### Combined
+
+Combine a leading and a trailing help for fields that need positional context on both edges.
+
+<Example code={`<div class="form-input">
+    <div class="input-help">
+      <Icon name="envelope-outline" />
+    </div>
+    <input type="text" class="ghost-input" aria-label="Username" placeholder="Username">
+    <span class="input-help">@example.com</span>
+  </div>`} />
+
+## Layout
+
+The `.form-input` wrapper's flex layout allows you to combine helps with other form controls and arrange them in various configurations.
+
+### Label & help
+
+Add a label outside the `.form-input` wrapper and associate help text with `aria-describedby` for complete form semantics:
+
+<Example code={`<label for="searchAssist" class="form-label">Search</label>
+  <div class="form-input">
+    <div class="input-help">
+      <Icon name="search-outline" />
+    </div>
+    <input type="text" class="ghost-input" id="searchAssist" aria-describedby="searchAssistHelp" placeholder="Search...">
+  </div>
+  <div class="form-help" id="searchAssistHelp">Search across all pages and posts.</div>`} />
+
+### In Form Field
+
+Wrap `.form-input` in `.form-field` to integrate with labels, help text, and validation feedback.
+
+<Example code={`<div class="form-field">
+    <label for="helpField" class="form-label">Search</label>
+    <div class="form-input">
+      <div class="input-help">
+        <Icon name="search-outline" />
+      </div>
+      <input type="text" class="ghost-input" id="helpField" aria-describedby="helpFieldHelp" placeholder="Search...">
+    </div>
+    <div class="form-help" id="helpFieldHelp">Search across all pages and posts.</div>
+  </div>`} />
+
+## Sizing
+
+Use `.small` or `.large` on the wrapper to adjust sizing.
+
+<Example class="vstack gap-xsmall" code={`<div class="form-input small">
+    <div class="input-help">
+      <Icon name="envelope-outline" />
+    </div>
+    <input type="text" class="ghost-input" aria-label="Username" placeholder="Username">
+    <span class="input-help">@example.com</span>
+  </div>
+  <div class="form-input">
+    <div class="input-help">
+      <Icon name="envelope-outline" />
+    </div>
+    <input type="text" class="ghost-input" aria-label="Username" placeholder="Username">
+    <span class="input-help">@example.com</span>
+  </div>
+  <div class="form-input large">
+    <div class="input-help">
+      <Icon name="envelope-outline" />
+    </div>
+    <input type="text" class="ghost-input" aria-label="Username" placeholder="Username">
+    <span class="input-help">@example.com</span>
+  </div>`} />
+
+## Actionable helps
+
+Use `.input-help` with a `<button>` element to create clickable helps for actions like showing/hiding passwords, clearing input, or triggering searches. Actionable helps receive interactive styles on hover and focus.
+
+<Example class="vstack gap-xsmall" code={`<div class="form-input">
+    <input type="password" autocomplete="current-password" class="ghost-input" aria-label="Password" placeholder="Password">
+    <button type="button" class="button icon-only input-help" aria-label="Show password">
+      <Icon name="eye-outline" />
+    </button>
+  </div>
+  <div class="form-input">
+    <input type="password" autocomplete="current-password" class="ghost-input" aria-label="Password" placeholder="Password">
+    <a href="#" class="input-help">Forgot password?</a>
+  </div>`} />
+
+## Accessibility
+
+Input Help introduces visual elements — icons, text, and buttons — that sit alongside the input but are separate from it in the DOM. Follow these practices to ensure assistive technologies can fully interpret the field.
+
+### Decorative icons
+
+Icon helps that provide a visual hint rather than essential information should have `aria-hidden="true"` on the `<svg>` element. The input's accessible name — provided by a `<label>` or `aria-label` — carries the full meaning independently.
+
+```html
+<label for="searchInput" class="form-label">Search</label>
+<div class="form-input">
+  <div class="input-help">
+    <svg class="icon" aria-hidden="true"><use href="#search-outline" /></svg>
+  </div>
+  <input type="text" class="ghost-input" id="searchInput" />
+</div>
+```
+
+### Text helps
+
+Text helps like `$`, `USD`, or `@example.com` are not announced by screen readers. When the help is essential to understanding what the field expects, include it in the input's accessible name via `aria-label`.
+
+```html
+<div class="form-input">
+  <span class="input-help">$</span>
+  <input type="text" class="ghost-input" aria-label="Amount in dollars" placeholder="0.00" />
+</div>
+```
+
+### Actionable helps
+
+Button helps that contain only an icon have no text for screen readers to announce. Always add `aria-label` describing the action.
+
+```html
+<div class="form-input">
+  <input type="password" autocomplete="current-password" class="ghost-input" aria-label="Password" placeholder="Password">
+  <button type="button" class="button icon-only input-help" aria-label="Show password">
+    <svg class="icon" aria-hidden="true"><use href="#eye-outline" /></svg>
+  </button>
+</div>
+```
+
+For more detailed accessibility guidance, see the [forms overview accessibility]([[docsref:/forms/overview/#accessibility]]) section.
+
+## CSS
+
+<DocsCSS name="Input Help" exposed />
+
+See the [overview]([[docsref:forms/overview#custom-properties]]) page for CSS and Sass variables shared by all form elements.

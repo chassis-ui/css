@@ -6,7 +6,7 @@ aliases:
   - "[[docsref:/getting-started/build-tools]]"
 ---
 
-This page is for contributors working on Chassis CSS itself. If you only want to use Chassis in your own project, [Installation]([[docsref:/getting-started/installation]]) and [Clone and Customize]([[docsref:/getting-started/clone-and-customize]]) cover what you need.
+This page is for contributors working on Chassis CSS itself. If you only want to use Chassis in your own project, [Installation]([[docsref:/getting-started/installation]]) and [Clone and Customize]([[docsref:/getting-started/clone-customize]]) cover what you need.
 
 ## Tooling setup
 
@@ -34,7 +34,7 @@ The full list of scripts lives in [`package.json`]([[config:repo]]/blob/main/pac
 | Command | What it does |
 | --- | --- |
 | `pnpm dev` | Compiles CSS and JS in watch mode and starts the docs site dev server. The fastest feedback loop for working on the framework or the docs. |
-| `pnpm dist` | Produces the full `dist/` output — compiled, prefixed, RTL-converted, and minified CSS and JS. |
+| `pnpm dist` | Produces the full `dist/` output — compiled, prefixed, and minified CSS and JS. |
 | `pnpm test` | Lints CSS and JS, builds the distribution, runs the Sass test suite, runs the JS test suite, builds the docs site, and lints the built docs. The full pre-merge check. |
 | `pnpm css:compile` | Compiles SCSS to CSS using Dart Sass with source maps. |
 | `pnpm css:test` | Runs the Sass test suite (`scss/tests/`). |
@@ -54,9 +54,9 @@ Chassis CSS uses [Dart Sass](https://sass-lang.com/dart-sass/). The Sass build r
 
 Compiled CSS is post-processed with [Autoprefixer](https://github.com/postcss/autoprefixer) using the targets defined in [`.browserslistrc`]([[config:repo]]/blob/main/.browserslistrc). The build invokes Autoprefixer automatically; if you compile Chassis from source in your own pipeline, run Autoprefixer on the output to match the support matrix in our distribution build.
 
-## RTLCSS
+## RTL
 
-The RTL builds (`dist/css/chassis.rtl.css` and friends) are produced by [RTLCSS](https://rtlcss.com/) running over the LTR output. Maintaining a single source for both directions cuts the maintenance cost and keeps them in sync. RTLCSS [control directives](https://rtlcss.com/learn/usage-guide/control-directives/) and [value directives](https://rtlcss.com/learn/usage-guide/value-directives/) are used in a few places where mechanical flipping isn't enough — see [RTL]([[docsref:/getting-started/rtl]]) for examples.
+Chassis CSS supports RTL through CSS logical properties used throughout the framework. Setting `dir="rtl"` on the `<html>` element is sufficient for most components. A small number of components — carousel controls, breadcrumb dividers, menu placement — use explicit `[dir="rtl"]` selector overrides where the CSS value itself needs to change, not just its direction. See [RTL]([[docsref:/core-concepts/rtl]]) for details.
 
 ## Documentation site
 

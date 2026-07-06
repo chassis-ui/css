@@ -1,34 +1,54 @@
 ---
 title: Figures
-description: Documentation and examples for displaying related images and text with the figure component in Chassis.
+description: Style `<figure>` and `<figcaption>` elements with `.figure` and `.figure-caption` for images paired with captions or attributions.
 toc: true
+css_layer: content
 ---
 
-Anytime you need to display a piece of content—like an image with an optional caption, consider using a `<figure>`.
-
-Use the included `.figure`, `.figure-image` and `.figure-caption` classes to provide some baseline styles for the HTML5 `<figure>` and `<figcaption>` elements. Images in figures have no explicit size, so be sure to add the `.image-fluid` class to your `<img>` to make it responsive.
+The `.figure` and `.figure-caption` classes add baseline styles to the HTML5 `<figure>` and `<figcaption>` elements. `.figure` lays out its children as a flex column with a configurable gap; `.figure-caption` applies a smaller, muted type style. Images in a figure have no implicit sizing — add `.image.fluid` to make the image scale with its container.
 
 <Example code={`<figure class="figure">
-    <Placeholder width="400" height="300" class="figure-image image-fluid rounded" />
-    <figcaption class="figure-caption">A caption for the above image.</figcaption>
-  </figure>`} />
+  <Placeholder width="400" height="300" class="image fluid rounded" />
+  <figcaption class="figure-caption">A caption for the above image.</figcaption>
+</figure>`} />
 
-Aligning the figure’s caption is easy with our [text utilities]([[docsref:/utilities/text#text-alignment]]).
+## Alignment
 
-<Example code={`<figure class="figure">
-    <Placeholder width="400" height="300" class="figure-image image-fluid rounded" />
-    <figcaption class="figure-caption text-end">A caption for the above image.</figcaption>
-  </figure>`} />
+Since `.figure` is a flex column, [flex utilities]([[docsref:/utilities/flex#align-items]]) control how the image and caption align on the horizontal axis.
 
-Or use `.attribution` class on `<figcaption>` to name a source.
+<Example code={`<figure class="figure align-items-end">
+  <Placeholder width="400" height="300" class="image fluid rounded" />
+  <figcaption class="figure-caption">A caption for the above image.</figcaption>
+</figure>`} />
 
-<Example code={`<figure class="figure">
-    <Placeholder width="400" height="300" class="figure-image image-fluid rounded" />
-    <figcaption class="attribution text-center">A <cite title="Great Work">Great Work</cite> of Famous Painter.</figcaption>
-  </figure>`} />
+Adding `.d-inline-flex` collapses the figure's width to its content, so the caption aligns relative to the image's edge rather than the parent container.
+
+<Example code={`<figure class="figure d-inline-flex align-items-end">
+  <Placeholder width="400" height="300" class="image fluid rounded" />
+  <figcaption class="figure-caption">A caption for the above image.</figcaption>
+</figure>`} />
+
+## Attribution
+
+Apply `.attribution` to `<figcaption>` to render the credit in cite-style type with an em dash prepended automatically. Wrap author or title names in `<cite>` for correct semantics.
+
+<Example code={`<figure class="figure align-items-center">
+  <Placeholder width="400" height="300" class="image fluid rounded" />
+  <figcaption class="attribution">A <cite title="Great Work">Great Work</cite> of Famous Painter.</figcaption>
+</figure>`} />
 
 ## CSS
 
+<DocsCSS name="Figure" />
+
+### Custom properties
+
+<DocsCSSVars name="Figure" />
+
+<ScssDocs name="figure-properties" file="scss/_image.scss" compile />
+
 ### Sass variables
 
-<ScssDocs name="figure-variables" file="scss/_variables.scss" />
+<DocsSASSVars name="Figure" />
+
+<ScssDocs name="figure-variables" file="scss/config/_defaults.scss" />

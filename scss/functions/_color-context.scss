@@ -1,0 +1,200 @@
+@use "sass:map";
+@use "sass:math";
+@use "sass:string";
+@use "sass:meta";
+@use "./string" as *;
+@use "../maps/colors-body" as *;
+@use "../maps/colors-light" as *;
+@use "../maps/colors-dark" as *;
+
+//
+// Color Context Functions
+//
+// Generates per-context CSS custom property declarations from the color maps.
+// Used by _root.scss to emit all context-scoped color variables for each
+// named palette in both light and dark modes.
+//
+
+// scss-docs-start color-variable-functions
+
+/// Get a color value from various input formats (CSS variable, color name, or direct color)
+/// This is a versatile function that handles multiple color input formats and converts them
+/// to Sass color objects. It's particularly useful for theme color processing and for handling
+/// CSS variable references in Sass.
+///
+/// @param {Color|String} $color-var - The color variable or name to process
+///   - Direct color value (e.g., #ff0000, rgb(255,0,0))
+///   - CSS variable format (e.g., var(--cx-primary))
+///   - RGBA CSS variable format (e.g., rgba(var(--cx-primary-rgb), 0.5))
+///   - Direct color name matching a key in the palette (e.g., "primary")
+/// @param {Boolean} $dark [false] - Whether to use the dark mode color palette
+/// @return {Color} The processed color value as a Sass color object
+/// @throws {Error} When the color variable cannot be found in the palette
+/// @example
+///   .element {
+///     // From direct color (returns as-is)
+///     color: get-sass-color(#ff0000);  // #ff0000
+///
+///     // From CSS variable (converts to actual color)
+///     background-color: get-sass-color(var(--cx-primary));  // e.g., #0d6efd
+///
+///     // From oklch relative color with alpha (new format)
+///     border-color: get-sass-color(oklch(from var(--cx-secondary) l c h / 0.5));  // rgba(108, 117, 125, 0.5)
+///
+///     // From color name (with dark mode option)
+///     box-shadow: 0 0 5px get-sass-color("primary", true);  // dark theme primary color
+///   }
+@function get-sass-color($color-var, $dark: false) {
+
+  // If it's already a color, just return it
+  @if meta.type-of($color-var) == "color" {
+    @return $color-var;
+  }
+
+  // Setup context map based on light/dark mode
+  $palette: $context-palette;
+  @if $dark {
+    $palette: $context-palette-dark;
+  }
+  $map: map.merge(map.merge($palette, $base-palette), $body-colors);
+
+  // If it's an oklch relative color string with alpha, extract the variable name and alpha value
+  @if meta.type-of($color-var) == "string" and string.index($color-var, "oklch(from var(--") {
+    $var-string: str-replace($color-var, "oklch(from var(--", "");
+    $parts: string.index($var-string, ") l c h / ");
+
+    @if $parts {
+      // Extract the base color name (before closing paren)
+      $var-name: string.slice($var-string, 1, $parts - 1);
+
+      // Extract and clean the alpha value (after ") l c h / " — 10 chars)
+      $alpha-part: string.slice($var-string, $parts + 10);
+      $alpha-val: clean-alpha-value(str-replace($alpha-part, ")", ""));
+
+      // Look up the base color in our map
+      $color: map.get($map, $var-name);
+
+      @if $color {
+        // Return the color with the specified alpha value
+        @return rgba($color, $alpha-val);
+      } @else {
+        @warn "Could not find color for variable #{$var-name} in the color palette.";
+        @return $color-var; // Return original if not found
+      }
+    }
+  }
+
+  // If it's a CSS variable string, extract the variable name
+  @if meta.type-of($color-var) == "string" and string.index($color-var, "var(--") {
+    $var-name: str-replace($color-var, "var(--", "");
+    $var-name: str-replace($var-name, ")", "");
+
+    // Look up the variable name in our color map
+    $color: map.get($map, $var-name);
+
+    @if $color {
+      @return $color;
+    } @else {
+      @warn "Could not find color for variable #{$var-name} in the color palette.";
+      @return $color-var; // Return original if not found
+    }
+  }
+
+  // If it's a direct color name in our palette
+  @if meta.type-of($color-var) == "string" {
+    $color: map.get($map, $color-var);
+
+    @if $color {
+      @return $color;
+    }
+  }
+
+  @error "Could not find color for variable '#{$color-var}' in the color palette.";
+  // If we get here, just return the original value
+  // @return $color-var;
+}
+
+/// Helper function to clean and convert alpha values to a valid number
+/// Processes different formats of alpha values and ensures they're valid
+/// numbers between 0 and 1. Handles leading commas, spaces, percentages,
+/// and different decimal notations.
+///
+/// @access private
+/// @param {String} $alpha-string - The alpha value string to process
+/// @return {Number} A numeric alpha value between 0 and 1
+/// @example
+///   clean-alpha-value("0.65")     // Returns 0.65
+///   clean-alpha-value(".65")      // Returns 0.65
+///   clean-alpha-value(" , 0.75")  // Returns 0.75
+///   clean-alpha-value("50%")      // Returns 0.5
+///   clean-alpha-value("")         // Returns 1 (default)
+@function clean-alpha-value($alpha-string) {
+  // Remove spaces
+  $alpha-val: str-replace($alpha-string, " ", "");
+
+  // Remove commas
+  @if string.index($alpha-val, ",") == 1 {
+    $alpha-val: string.slice($alpha-val, 2); // Remove leading comma
+  } @else {
+    $alpha-val: str-replace($alpha-val, ",", ""); // Remove any commas
+  }
+
+  // Set default
+  $alpha-numeric: 1;
+
+  // Convert to number if not empty
+  @if $alpha-val != "" {
+    // Handle percentage values
+    @if string.index($alpha-val, "%") {
+      $alpha-val: str-replace($alpha-val, "%", "");
+      $alpha-numeric: math.div(str-to-number($alpha-val), 100);
+    } @else {
+      // Handle decimal values using our number function
+      $alpha-numeric: str-to-number($alpha-val);
+      // Ensure it's within valid range
+      $alpha-numeric: math.min(math.max(0, $alpha-numeric), 1);
+    }
+  }
+
+  @return $alpha-numeric;
+}
+
+/// Strip a context prefix from a CSS custom property reference.
+/// When `$context` is given, only that prefix is removed. When omitted,
+/// all keys of `$context-colors` are checked and the first match is stripped.
+/// Non-`var()` values are always returned unchanged.
+///
+/// @param {String} $color   - A `var(--...)` string or any other value
+/// @param {String} $context [null] - A specific context name to remove (e.g., `"primary"`).
+///   When `null`, all `$context-colors` keys are tried.
+/// @return {String} - `var(--...)` with the context prefix removed, or the original value unchanged
+/// @example
+///   remove-context(var(--default-fg-main))            => var(--fg-main)
+///   remove-context(var(--primary-bg-subtle))          => var(--bg-subtle)
+///   remove-context(var(--primary-bg-subtle), primary) => var(--bg-subtle)
+///   remove-context(var(--primary-bg-subtle), default) => var(--primary-bg-subtle)
+///   remove-context(var(--fg-main))                    => var(--fg-main)
+///   remove-context(#ff0000)                           => #ff0000
+@function remove-context($color, $context: null) {
+  @if meta.type-of($color) == "string" and string.index($color, "var(--") {
+    $var-name: str-replace($color, "var(--", "");
+    $var-name: str-replace($var-name, ")", "");
+
+    $contexts: map.keys($context-colors);
+    @if $context {
+      $contexts: ($context,);
+    }
+
+    @each $ctx in $contexts {
+      $prefix: "#{$ctx}-";
+      @if string.index($var-name, $prefix) == 1 {
+        $var-name: string.slice($var-name, string.length($prefix) + 1);
+        @return var(--#{$var-name});
+      }
+    }
+
+    @return var(--#{$var-name});
+  }
+  @return $color;
+}
+// scss-docs-end color-variable-functions

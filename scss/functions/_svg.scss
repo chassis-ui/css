@@ -1,12 +1,14 @@
 //
-// SVG utility functions for Chassis CSS
+// SVG Functions
 //
-// This file contains functions for SVG processing and manipulation,
-// including URL encoding, icon generation, and color adjustment.
+// SVG data URI encoding, icon color substitution, and inline icon generation.
+// Encoding approach inspired by Bootstrap.
 //
-// SVG encoding approach inspired by Bootstrap.
-// Special thanks to the Bootstrap Authors and Twitter, Inc.
-//
+@use "sass:meta";
+@use "sass:string";
+@use "./color-context" as *;
+@use "./string" as *;
+@use "../config" as *;
 
 /// Encode SVG data for use in CSS background images
 /// Escapes special characters in SVG markup to make it safe for use in CSS.
@@ -18,11 +20,11 @@
 /// @example
 ///   escape-svg($svg-data-uri) => escaped SVG ready for use in CSS properties
 @function escape-svg($string) {
-  @if str-index($string, "data:image/svg+xml") {
-    @each $char, $encoded in $escaped-characters {
+  @if string.index($string, "data:image/svg+xml") {
+    @each $char, $encoded in $svg-escaped-characters {
       // Do not escape the url brackets
-      @if str-index($string, "url(") == 1 {
-        $string: url("#{str-replace(str-slice($string, 6, -3), $char, $encoded)}");
+      @if string.index($string, "url(") == 1 {
+        $string: url("#{str-replace(string.slice($string, 6, -3), $char, $encoded)}");
       } @else {
         $string: str-replace($string, $char, $encoded);
       }
@@ -35,16 +37,25 @@
 // scss-docs-start icon-functions
 /// Convert SVG content or reference into a usable CSS URL
 /// Processes SVG input for use in CSS properties like background-image.
-/// Handles both direct SVG markup and reference strings.
+/// Handles inline SVG markup, already-encoded data URIs, and file reference strings.
 ///
-/// @param {String} $icon - SVG content or reference ID
+/// @param {String} $icon - Inline SVG markup, an already-formed data URI, or a reference ID
 /// @return {String} - URL-formatted SVG for use in CSS
 /// @example
-///   svg-icon("<svg>...</svg>") => url("data:image/svg+xml,<svg>...</svg>")
-///   svg-icon("arrow-right") => url("path/to/arrow-right.svg")
+///   svg-icon("<svg>...</svg>")                           => url("data:image/svg+xml,<svg>...</svg>")
+///   svg-icon('url("data:image/svg+xml,<svg>...</svg>")') => url("data:image/svg+xml,<svg>...</svg>")
+///   svg-icon("data:image/svg+xml,<svg>...</svg>")        => url("data:image/svg+xml,<svg>...</svg>")
+///   svg-icon("arrow-right")                              => url("/icons/svgs/arrow-right.svg")
 @function svg-icon($icon) {
-  @if str-index($icon, "<svg") {
-    @return url("data:image/svg+xml,#{$icon}");
+  @if string.index($icon, "data:image/svg+xml") {
+    // Normalize bare data URI to url() before passing to escape-svg
+    @if string.index($icon, "url(") != 1 {
+      $icon: url("#{$icon}");
+    }
+    @return escape-svg($icon);
+  }
+  @if string.index($icon, "<svg") {
+    @return escape-svg(url("data:image/svg+xml,#{$icon}"));
   }
   @return url("#{$icon-url-prefix}#{$icon}#{$icon-url-suffix}");
 }
@@ -67,9 +78,9 @@
   $c: $color;
 
   // Color type-specific processing
-  @if type-of($color) == "color" {
+  @if meta.type-of($color) == "color" {
     // Use as-is, already set
-  } @else if type-of($color) == "string" and str-index($color, "var(--#{$prefix}") {
+  } @else if meta.type-of($color) == "string" and string.index($color, "var(--") {
     $c: get-sass-color($color, $dark);
   }
   // Process the SVG

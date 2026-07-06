@@ -1,125 +1,121 @@
+@use "./config" as *;
+@use "./mixins" as *;
+
 //
 // Tooltip Component
 //
 // Small informational overlay that appears on hover or focus. Supports four
-// directional placements and is positioned via the Popper.js engine.
+// directional placements and is positioned via Floating UI.
 //
 
-// Base class
-.tooltip {
-  // scss-docs-start tooltip-css-vars
-  --#{$prefix}zindex: var(--#{$prefix}tooltip-zindex, #{$zindex-tooltip});
-  --#{$prefix}max-width: var(--#{$prefix}tooltip-max-width, #{$tooltip-max-width});
-  --#{$prefix}padding-x: var(--#{$prefix}tooltip-padding-x, #{$tooltip-padding-x});
-  --#{$prefix}padding-y: var(--#{$prefix}tooltip-padding-y, #{$tooltip-padding-y});
-  --#{$prefix}margin: var(--#{$prefix}tooltip-margin, #{$tooltip-margin});
-  @include map-font($tooltip-font, tooltip);
-  --#{$prefix}fg-color: var(--#{$prefix}tooltip-fg-color, #{$tooltip-fg-color});
-  --#{$prefix}bg-color: var(--#{$prefix}tooltip-bg-color, #{$tooltip-bg-color});
-  --#{$prefix}border-radius: var(--#{$prefix}tooltip-border-radius, #{$tooltip-border-radius});
-  --#{$prefix}opacity: var(--#{$prefix}tooltip-opacity, #{$tooltip-opacity});
-  --#{$prefix}arrow-width: var(--#{$prefix}tooltip-arrow-width, #{$tooltip-arrow-width});
-  --#{$prefix}arrow-height: var(--#{$prefix}tooltip-arrow-height, #{$tooltip-arrow-height});
-  // scss-docs-end tooltip-css-vars
+@layer components {
+  .tooltip {
+    // scss-docs-start tooltip-properties
+    --zindex: var(--tooltip-zindex, #{$zindex-tooltip});
+    --max-width: var(--tooltip-max-width, #{$tooltip-max-width});
+    --padding-x: var(--tooltip-padding-x, #{$tooltip-padding-x});
+    --padding-y: var(--tooltip-padding-y, #{$tooltip-padding-y});
+    --margin: var(--tooltip-margin, #{$tooltip-margin});
+    @include map-font($tooltip-font, tooltip);
+    --fg-color: var(--tooltip-fg-color, #{$tooltip-fg-color});
+    --bg-color: var(--tooltip-bg-color, #{$tooltip-bg-color});
+    --border-radius: var(--tooltip-border-radius, #{$tooltip-border-radius});
+    --opacity: var(--tooltip-opacity, #{$tooltip-opacity});
+    --arrow-width: var(--tooltip-arrow-width, #{$tooltip-arrow-width});
+    --arrow-height: var(--tooltip-arrow-height, #{$tooltip-arrow-height});
+    // scss-docs-end tooltip-properties
 
-  z-index: var(--#{$prefix}zindex);
-  display: block;
-  margin: var(--#{$prefix}margin);
-  // Our parent element can be arbitrary since tooltips are by default inserted as a sibling of their target element.
-  // So reset our font and text properties to avoid inheriting weird values.
-  @include reset-text();
-  @include font();
-  // Allow breaking very long words so they don't overflow the tooltip's bounds
-  word-wrap: break-word;
-  opacity: 0;
-
-  &.show { opacity: var(--#{$prefix}opacity); }
-
-  .tooltip-arrow {
+    z-index: var(--zindex);
     display: block;
-    width: var(--#{$prefix}arrow-width);
-    height: var(--#{$prefix}arrow-height);
+    margin: var(--margin);
+    // The container is arbitrary (default: document.body), so reset inherited font and text properties.
+    @include reset-text();
+    @include font();
+    overflow-wrap: break-word;
+    opacity: 0;
 
-    &::before {
-      position: absolute;
-      content: "";
-      border-color: transparent;
-      border-style: solid;
+    &.show { opacity: var(--opacity); }
+
+    .tooltip-arrow {
+      display: block;
+      width: var(--arrow-width);
+      height: var(--arrow-height);
+
+      &::before {
+        position: absolute;
+        content: "";
+        border-color: transparent;
+        border-style: solid;
+      }
     }
   }
-}
 
-.cx-tooltip-top .tooltip-arrow {
-  bottom: calc(-1 * var(--#{$prefix}arrow-height)); // stylelint-disable-line function-disallowed-list
+  .cx-tooltip-top .tooltip-arrow {
+    bottom: calc(-1 * var(--arrow-height));
 
-  &::before {
-    top: -1 * $utility-pixel-1;
-    border-width: var(--#{$prefix}arrow-height) calc(var(--#{$prefix}arrow-width) * .5) 0; // stylelint-disable-line function-disallowed-list
-    border-top-color: var(--#{$prefix}bg-color);
+    &::before {
+      top: -1 * $utility-pixel-1;
+      border-width: var(--arrow-height) calc(var(--arrow-width) * .5) 0;
+      border-block-start-color: var(--bg-color);
+    }
   }
-}
 
-/* rtl:begin:ignore */
-.cx-tooltip-end .tooltip-arrow {
-  left: calc(-1 * var(--#{$prefix}arrow-height)); // stylelint-disable-line function-disallowed-list
-  width: var(--#{$prefix}arrow-height);
-  height: var(--#{$prefix}arrow-width);
+  .cx-tooltip-end .tooltip-arrow {
+    left: calc(-1 * var(--arrow-height));
+    width: var(--arrow-height);
+    height: var(--arrow-width);
 
-  &::before {
-    right: -1 * $utility-pixel-1;
-    border-width: calc(var(--#{$prefix}arrow-width) * .5) var(--#{$prefix}arrow-height) calc(var(--#{$prefix}arrow-width) * .5) 0; // stylelint-disable-line function-disallowed-list
-    border-right-color: var(--#{$prefix}bg-color);
+    &::before {
+      right: -1 * $utility-pixel-1;
+      border-width: calc(var(--arrow-width) * .5) var(--arrow-height) calc(var(--arrow-width) * .5) 0;
+      border-right-color: var(--bg-color);
+    }
   }
-}
 
-/* rtl:end:ignore */
+  .cx-tooltip-bottom .tooltip-arrow {
+    top: calc(-1 * var(--arrow-height));
 
-.cx-tooltip-bottom .tooltip-arrow {
-  top: calc(-1 * var(--#{$prefix}arrow-height)); // stylelint-disable-line function-disallowed-list
-
-  &::before {
-    bottom: -1 * $utility-pixel-1;
-    border-width: 0 calc(var(--#{$prefix}arrow-width) * .5) var(--#{$prefix}arrow-height); // stylelint-disable-line function-disallowed-list
-    border-bottom-color: var(--#{$prefix}bg-color);
+    &::before {
+      bottom: -1 * $utility-pixel-1;
+      border-width: 0 calc(var(--arrow-width) * .5) var(--arrow-height);
+      border-block-end-color: var(--bg-color);
+    }
   }
-}
 
-/* rtl:begin:ignore */
-.cx-tooltip-start .tooltip-arrow {
-  right: calc(-1 * var(--#{$prefix}arrow-height)); // stylelint-disable-line function-disallowed-list
-  width: var(--#{$prefix}arrow-height);
-  height: var(--#{$prefix}arrow-width);
+  .cx-tooltip-start .tooltip-arrow {
+    right: calc(-1 * var(--arrow-height));
+    width: var(--arrow-height);
+    height: var(--arrow-width);
 
-  &::before {
-    left: -1 * $utility-pixel-1;
-    border-width: calc(var(--#{$prefix}arrow-width) * .5) 0 calc(var(--#{$prefix}arrow-width) * .5) var(--#{$prefix}arrow-height); // stylelint-disable-line function-disallowed-list
-    border-left-color: var(--#{$prefix}bg-color);
+    &::before {
+      left: -1 * $utility-pixel-1;
+      border-width: calc(var(--arrow-width) * .5) 0 calc(var(--arrow-width) * .5) var(--arrow-height);
+      border-left-color: var(--bg-color);
+    }
   }
-}
 
-/* rtl:end:ignore */
+  .cx-tooltip-auto {
+    &[data-cx-placement^="top"] {
+      @extend .cx-tooltip-top;
+    }
+    &[data-cx-placement^="right"] {
+      @extend .cx-tooltip-end;
+    }
+    &[data-cx-placement^="bottom"] {
+      @extend .cx-tooltip-bottom;
+    }
+    &[data-cx-placement^="left"] {
+      @extend .cx-tooltip-start;
+    }
+  }
 
-.cx-tooltip-auto {
-  &[data-popper-placement^="top"] {
-    @extend .cx-tooltip-top;
+  .tooltip-inner {
+    max-width: var(--max-width);
+    padding: var(--padding-y) var(--padding-x);
+    color: var(--fg-color);
+    text-align: center;
+    background-color: var(--bg-color);
+    @include gradient();
+    @include border-radius(var(--border-radius));
   }
-  &[data-popper-placement^="right"] {
-    @extend .cx-tooltip-end;
-  }
-  &[data-popper-placement^="bottom"] {
-    @extend .cx-tooltip-bottom;
-  }
-  &[data-popper-placement^="left"] {
-    @extend .cx-tooltip-start;
-  }
-}
-
-// Wrapper for the tooltip content
-.tooltip-inner {
-  max-width: var(--#{$prefix}max-width);
-  padding: var(--#{$prefix}padding-y) var(--#{$prefix}padding-x);
-  color: var(--#{$prefix}fg-color);
-  text-align: center;
-  background-color: var(--#{$prefix}bg-color);
-  @include border-radius(var(--#{$prefix}border-radius));
-}
+} // @layer components

@@ -1,84 +1,83 @@
 /*!
-  * Chassis base-component.js v0.2.3 (https://chassis-ui.com)
+  * Chassis base-component.js v0.3.0 (https://chassis-ui.com)
   * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
   * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
   */
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('./dom/data.js'), require('./dom/event-handler.js'), require('./util/config.js'), require('./util/index.js')) :
-  typeof define === 'function' && define.amd ? define(['./dom/data', './dom/event-handler', './util/config', './util/index'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.BaseComponent = factory(global.Data, global.EventHandler, global.Config, global.Index));
-})(this, (function (Data, EventHandler, Config, index_js) { 'use strict';
+import Data from './dom/data.js';
+import EventHandler from './dom/event-handler.js';
+import Config from './util/config.js';
+import { getElement, executeAfterTransition } from './util/index.js';
 
-  /**
-   * --------------------------------------------------------------------------
-   * Chassis CSS base-component.js
-   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
-   * --------------------------------------------------------------------------
-   */
+/**
+ * --------------------------------------------------------------------------
+ * Chassis CSS base-component.js
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
 
 
-  /**
-   * Constants
-   */
+/**
+ * Constants
+ */
 
-  const VERSION = '0.2.3';
+const VERSION = '0.3.0';
 
-  /**
-   * Class definition
-   */
+/**
+ * Class definition
+ */
 
-  class BaseComponent extends Config {
-    constructor(element, config) {
-      super();
-      element = index_js.getElement(element);
-      if (!element) {
-        return;
-      }
-      this._element = element;
-      this._config = this._getConfig(config);
-      Data.set(this._element, this.constructor.DATA_KEY, this);
+class BaseComponent extends Config {
+  constructor(element, config) {
+    super();
+    element = getElement(element);
+    if (!element) {
+      return;
     }
+    this._element = element;
+    this._config = this._getConfig(config);
+    Data.set(this._element, this.constructor.DATA_KEY, this);
+  }
 
-    // Public
-    dispose() {
-      Data.remove(this._element, this.constructor.DATA_KEY);
-      EventHandler.off(this._element, this.constructor.EVENT_KEY);
-      for (const propertyName of Object.getOwnPropertyNames(this)) {
-        this[propertyName] = null;
-      }
-    }
-    _queueCallback(callback, element, isAnimated = true) {
-      index_js.executeAfterTransition(callback, element, isAnimated);
-    }
-    _getConfig(config) {
-      config = this._mergeConfigObj(config, this._element);
-      config = this._configAfterMerge(config);
-      this._typeCheckConfig(config);
-      return config;
-    }
-
-    // Static
-    static getInstance(element) {
-      return Data.get(index_js.getElement(element), this.DATA_KEY);
-    }
-    static getOrCreateInstance(element, config = {}) {
-      return this.getInstance(element) || new this(element, typeof config === 'object' ? config : null);
-    }
-    static get VERSION() {
-      return VERSION;
-    }
-    static get DATA_KEY() {
-      return `cx.${this.NAME}`;
-    }
-    static get EVENT_KEY() {
-      return `.${this.DATA_KEY}`;
-    }
-    static eventName(name) {
-      return `${name}${this.EVENT_KEY}`;
+  // Public
+  dispose() {
+    Data.remove(this._element, this.constructor.DATA_KEY);
+    EventHandler.off(this._element, this.constructor.EVENT_KEY);
+    for (const propertyName of Object.getOwnPropertyNames(this)) {
+      this[propertyName] = null;
     }
   }
 
-  return BaseComponent;
+  // Private
+  _queueCallback(callback, element, isAnimated = true) {
+    executeAfterTransition(callback, element, isAnimated);
+  }
+  _getConfig(config) {
+    config = this._mergeConfigObj(config, this._element);
+    config = this._configAfterMerge(config);
+    this._typeCheckConfig(config);
+    return config;
+  }
 
-}));
+  // Static
+  static getInstance(element) {
+    return Data.get(getElement(element), this.DATA_KEY);
+  }
+  static getOrCreateInstance(element, config = {}) {
+    return this.getInstance(element) || new this(element, typeof config === 'object' ? config : null);
+  }
+  static get VERSION() {
+    return VERSION;
+  }
+  static get DATA_KEY() {
+    return `cx.${this.NAME}`;
+  }
+  static get EVENT_KEY() {
+    return `.${this.DATA_KEY}`;
+  }
+  static eventName(name) {
+    return `${name}${this.EVENT_KEY}`;
+  }
+}
+
+export { BaseComponent as default };
 //# sourceMappingURL=base-component.js.map

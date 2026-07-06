@@ -1,0 +1,176 @@
+@use "sass:list";
+@use "sass:math";
+@use "sass:meta";
+@use "../config" as *;
+
+// Cx Clamp — Chassis CSS
+//
+// Generates native CSS clamp() values from a maximum size, deriving the minimum
+// automatically using a constant scale ratio. Works with font sizes and spacing.
+
+// Configuration variables (will move to scss/config/_defaults.scss)
+$clamp-min-font-size: 1.25rem !default;
+$clamp-min-breakpoint: 22.5rem !default; // 360px
+$clamp-max-breakpoint: 80rem !default; // 1280px
+$clamp-font-size-scale: .85 !default; // 85% of max: 44px → 37px, 26px → 22px
+
+// -------------------------------------------------------------------------
+// Function
+// -------------------------------------------------------------------------
+
+/// Generates a fluid clamp() value from a maximum size, deriving the minimum automatically.
+/// Accepts any value type: non-numeric and non-px/rem values are returned unchanged.
+/// px values are converted to rem. The minimum is derived as $max-size * $scale, then
+/// floored at $clamp-min-font-size. Values at or below the floor are returned unchanged.
+/// When $enable-fluid-font-sizes is false, all values are returned as-is without fluid scaling.
+/// @param {*}      $max-size       - The maximum size. Only rem and px values are made fluid.
+/// @param {Number} $min-breakpoint - Lower viewport bound (in rem). Default: $clamp-min-breakpoint.
+/// @param {Number} $max-breakpoint - Upper viewport bound (in rem). Default: $clamp-max-breakpoint.
+/// @param {Number} $scale          - Scale factor for the minimum (e.g. 0.85 → 44px max gives 37px min). Default: $clamp-font-size-scale.
+@function cx-clamp($max-size, $min-breakpoint: $clamp-min-breakpoint, $max-breakpoint: $clamp-max-breakpoint, $scale: $clamp-font-size-scale) {
+
+  // 1. If fluid clamp is disabled globally, return the value as-is
+  @if not $enable-fluid-font-sizes {
+    @return $max-size;
+  }
+
+  // 2. Determine unit — non-numbers and non-px/rem values pass through unchanged
+  $unit: false;
+  @if meta.type-of($max-size) == "number" {
+    $unit: math.unit($max-size);
+  }
+  @if not $unit or ($unit != "px" and $unit != "rem") {
+    @return $max-size;
+  }
+
+  // 3. Normalize px to rem
+  $max-rem: $max-size;
+  @if $unit == "px" {
+    $max-rem: math.div($max-size, 16px) * 1rem;
+  }
+
+  // 4. If at or below the floor, no scaling needed — return original value
+  @if $max-rem <= $clamp-min-font-size {
+    @return $max-size;
+  }
+
+  // 5. Derive min as a scaled fraction of max
+  $min-size: $max-rem * $scale;
+
+  // 6. Floor the derived min at the global minimum
+  @if $min-size < $clamp-min-font-size {
+    $min-size: $clamp-min-font-size;
+  }
+
+  // 7. Remove rem units for pure mathematical operations
+  $min-size-raw: math.div($min-size, 1rem);
+  $max-size-raw: math.div($max-rem, 1rem);
+  $min-bp-raw: math.div($min-breakpoint, 1rem);
+  $max-bp-raw: math.div($max-breakpoint, 1rem);
+
+  // 8. Calculate the linear slope
+  $slope: math.div($max-size-raw - $min-size-raw, $max-bp-raw - $min-bp-raw);
+
+  // 9. Find the Y-axis intersection point
+  $y-intercept: $min-size-raw - ($slope * $min-bp-raw);
+
+  // 10. Format values for CSS output (rounded to 3 decimal places)
+  $min-rem: math.div(math.round($min-size-raw * 1000) * 1rem, 1000);
+  $max-rem-out: math.div(math.round($max-size-raw * 1000) * 1rem, 1000);
+  $y-intercept-rem: math.div(math.round($y-intercept * 1000) * 1rem, 1000);
+  $slope-vw: math.div(math.round($slope * 100 * 1000) * 1vw, 1000);
+
+  // 11. Build preferred value; omit intercept term when it is exactly zero
+  $preferred-val: #{$y-intercept-rem} "+" #{$slope-vw};
+  @if $y-intercept == 0 {
+    $preferred-val: #{$slope-vw};
+  }
+
+  // 12. Return the final native CSS clamp()
+  @return clamp(#{$min-rem}, #{$preferred-val}, #{$max-rem-out});
+}
+
+// -------------------------------------------------------------------------
+// Mixins
+// -------------------------------------------------------------------------
+
+/// Core clamp mixin — applies cx-clamp() to each value and sets the property.
+/// Accepts single values or space-separated lists (e.g. padding shorthand).
+/// Non-px/rem values (inherit, CSS variables, unitless, etc.) pass through unchanged.
+/// @param {*}      $values   - One or more values (space-separated list for shorthands).
+/// @param {String} $property - CSS property to set. Default: font-size.
+/// @param {String} $variable - Optional CSS variable name used as a var() fallback.
+@mixin clamp($values, $property: font-size, $variable: null) {
+  @if $values != null {
+    @if meta.type-of($values) != list {
+      $values: ($values,);
+    }
+
+    $clamped: ();
+    @each $value in $values {
+      $clamped: list.append($clamped, cx-clamp($value), space);
+    }
+
+    @if $variable != null {
+      #{$property}: var(#{$variable}, #{$clamped});
+    } @else {
+      #{$property}: #{$clamped};
+    }
+  }
+}
+
+// Typography shorthands
+
+@mixin clamp-font-size($value, $variable: null) {
+  @include clamp($value, font-size, $variable);
+}
+
+@mixin clamp-line-height($value, $variable: null) {
+  @include clamp($value, line-height, $variable);
+}
+
+// Spacing shorthands
+
+@mixin clamp-gap($value, $variable: null) {
+  @include clamp($value, gap, $variable);
+}
+
+@mixin clamp-padding($value, $variable: null) {
+  @include clamp($value, padding, $variable);
+}
+
+@mixin clamp-padding-top($value, $variable: null) {
+  @include clamp($value, padding-block-start, $variable);
+}
+
+@mixin clamp-padding-right($value, $variable: null) {
+  @include clamp($value, padding-inline-end, $variable);
+}
+
+@mixin clamp-padding-bottom($value, $variable: null) {
+  @include clamp($value, padding-block-end, $variable);
+}
+
+@mixin clamp-padding-left($value, $variable: null) {
+  @include clamp($value, padding-inline-start, $variable);
+}
+
+@mixin clamp-margin($value, $variable: null) {
+  @include clamp($value, margin, $variable);
+}
+
+@mixin clamp-margin-top($value, $variable: null) {
+  @include clamp($value, margin-block-start, $variable);
+}
+
+@mixin clamp-margin-right($value, $variable: null) {
+  @include clamp($value, margin-inline-end, $variable);
+}
+
+@mixin clamp-margin-bottom($value, $variable: null) {
+  @include clamp($value, margin-block-end, $variable);
+}
+
+@mixin clamp-margin-left($value, $variable: null) {
+  @include clamp($value, margin-inline-start, $variable);
+}

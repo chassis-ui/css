@@ -1,0 +1,56 @@
+---
+title: Container type
+description: Utilities for setting the CSS `container-type` property, enabling container queries on descendant elements.
+toc: true
+css_layer: utilities
+---
+
+## Overview
+
+Container type utilities set the CSS [`container-type`](https://developer.mozilla.org/en-US/docs/Web/CSS/container-type) property, establishing an element as a [query container](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries). Two values are available:
+
+- `.contains-inline` — containment on the inline axis
+- `.contains-size` — containment on both the inline and block axes
+
+For SCSS-based containment on custom selectors, the `set-container()` mixin from [container queries]([[docsref:/layout/breakpoints#container-queries]]) provides the same behavior with an optional container name.
+
+## Inline-size containment
+
+`.contains-inline` sets `container-type: inline-size`, establishing the element as a query container scoped to its inline dimension (width in horizontal writing modes). Chassis components whose breakpoints are driven by container queries — including [Stacks]([[docsref:/helpers/stacks]]), [Card groups]([[docsref:/components/card#card-group]]), [Steppers]([[docsref:/components/stepper]]), and [Lists]([[docsref:/components/list]]) — require a `.contains-inline` ancestor to activate their responsive variants. Resize the example below to preview the transition.
+
+<ResizableExample code={`<div class="contains-inline">
+    <div class="vstack small:hstack gap-medium">
+      <button type="button" class="button primary">Confirm</button>
+      <button type="button" class="button outline">Cancel</button>
+    </div>
+  </div>`} />
+
+## Size containment
+
+`.contains-size` sets `container-type: size`, creating a containment context that covers both the inline and block axes. Descendants can respond to both the width and height of the container via `@container` queries.
+
+<Callout type="warning">
+Size containment removes the element's intrinsic block size — the browser cannot infer height from contained children. An explicit `height` or `block-size` value is required on any `.contains-size` element.
+</Callout>
+
+```html
+<div class="contains-size" style="width: 400px; height: 200px;">
+  <!-- Descendants can query both container width and height -->
+</div>
+```
+
+## CSS
+
+Container type utilities are generated via the utilities API.
+
+### Reference
+
+The table lists all container type utilities and their CSS properties.
+
+<UtilityReferenceTable utility="contains-" />
+
+### Utilities API
+
+Container type utilities are declared in `scss/utilities/_index.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
+
+<ScssDocs name="utils-container" file="scss/utilities/_index.scss" />

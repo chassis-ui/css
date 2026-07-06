@@ -1,19 +1,54 @@
-// Gradients
+@use "../config" as *;
+@use "../functions" as *;
+@use "sass:list";
+
+//
+// Gradient Mixins
+//
+// Provides gradient-bg for applying background images with an optional
+// var(--bg-gradient) overlay prepended when $enable-background-gradients is
+// true, plus utility mixins for directional and striped gradients.
+//
 
 // scss-docs-start gradient-bg-mixin
-/// Apply a background color and optionally overlay the component's CSS gradient image.
-/// The gradient is only applied when `$enable-component-gradients` is `true`.
+/// Apply zero or more background images. When `$enable-background-gradients` is
+/// `true`, the `var(--bg-gradient)` token is prepended to the image list.
 ///
-/// @param {Color|null} $color [null] - Background color to set; pass `null` to skip
-/// @content None
-/// @example
-///   @include gradient-bg($primary);
-///   // => background-color: $primary; background-image: var(--cx-bg-gradient);
-@mixin gradient-bg($color: null) {
-  background-color: $color;
+/// `null` values are silently ignored. All other values (including `none`) are
+/// valid `background-image` layer values and are passed through as-is.
+/// When called with no arguments and the flag is `false`, nothing is emitted.
+///
+/// @param {ArgList} $bg - Zero or more `background-image` values
+/// @example scss - With $enable-background-gradients: true (default)
+///   @include gradient();
+///   // => background-image: var(--bg-gradient)
+///
+///   @include gradient(url(icon.svg));
+///   // => background-image: var(--bg-gradient), url(icon.svg)
+///
+///   @include gradient(none);
+///   // => background-image: var(--bg-gradient), none
+/// @example scss - With $enable-background-gradients: false
+///   @include gradient(url(icon.svg));
+///   // => background-image: url(icon.svg)
+///
+///   @include gradient();
+///   // => (nothing emitted)
+@mixin gradient($bg...) {
+  $result: ();
 
-  @if $enable-component-gradients {
-    background-image: var(--#{$prefix}bg-gradient);
+  @each $value in $bg {
+    @if $value != null {
+      $result: list.append($result, $value, comma);
+    }
+  }
+
+  @if $enable-background-gradients {
+    $result: list.join((var(--bg-gradient),), $result, comma);
+  }
+
+  @if list.length($result) > 0 {
+    background-image: $result;
   }
 }
 // scss-docs-end gradient-bg-mixin
@@ -81,6 +116,6 @@
 /// @param {Color} $color [to-opacity($white, .15)] - Stripe color (semi-transparent white by default)
 /// @param {Angle} $angle [45deg] - Angle of the stripes
 @mixin gradient-striped($color: #{to-opacity($white, .15)}, $angle: 45deg) {
-  background-image: linear-gradient($angle, $color 25%, transparent 25%, transparent 50%, $color 50%, $color 75%, transparent 75%, transparent);
+  @include gradient(linear-gradient($angle, $color 25%, transparent 25%, transparent 50%, $color 50%, $color 75%, transparent 75%, transparent));
 }
 // scss-docs-end gradient-mixins

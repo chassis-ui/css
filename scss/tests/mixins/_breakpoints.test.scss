@@ -1,0 +1,302 @@
+@use "../../config" as *;
+@use "../../mixins/breakpoints" as *;
+
+// Minimal 3-breakpoint map used throughout — avoids coupling to global defaults.
+$bp: (xsmall: 0, medium: 768px, large: 992px);
+
+// ─── breakpoint-next ─────────────────────────────────────────────────────────
+
+@include describe("breakpoint-next") {
+  @include it("returns the next breakpoint name") {
+    @include assert-equal(breakpoint-next(xsmall, $bp), medium);
+    @include assert-equal(breakpoint-next(medium, $bp), large);
+  }
+
+  @include it("returns null for the last breakpoint") {
+    @include assert-equal(breakpoint-next(large, $bp), null);
+  }
+}
+
+// ─── breakpoint-min ──────────────────────────────────────────────────────────
+
+@include describe("breakpoint-min") {
+  @include it("returns null for the smallest breakpoint (value 0)") {
+    @include assert-equal(breakpoint-min(xsmall, $bp), null);
+  }
+
+  @include it("returns the breakpoint width for non-zero breakpoints") {
+    @include assert-equal(breakpoint-min(medium, $bp), 768px);
+    @include assert-equal(breakpoint-min(large, $bp), 992px);
+  }
+}
+
+// ─── breakpoint-max ──────────────────────────────────────────────────────────
+
+@include describe("breakpoint-max") {
+  @include it("returns null for null input") {
+    @include assert-equal(breakpoint-max(null, $bp), null);
+  }
+
+  @include it("returns null for the smallest breakpoint (value 0)") {
+    @include assert-equal(breakpoint-max(xsmall, $bp), null);
+  }
+
+  @include it("returns the raw breakpoint value without 0.02px subtraction") {
+    @include assert-equal(breakpoint-max(medium, $bp), 768px);
+    @include assert-equal(breakpoint-max(large, $bp), 992px);
+  }
+}
+
+// ─── css-escape-ident ────────────────────────────────────────────────────────
+
+@include describe("css-escape-ident") {
+  @include it("returns plain names unchanged") {
+    @include assert-equal(css-escape-ident(medium), "medium");
+  }
+
+  @include it("hex-escapes a leading digit") {
+    @include assert-equal(css-escape-ident(2xlarge), "\\32 xlarge");
+  }
+}
+
+// ─── breakpoint-prefix ───────────────────────────────────────────────────────
+
+@include describe("breakpoint-prefix") {
+  @include it("returns an empty string for the smallest breakpoint") {
+    @include assert-equal(breakpoint-prefix(xsmall, $bp), "");
+  }
+
+  @include it("returns a Tailwind-style colon prefix for other breakpoints") {
+    @include assert-equal(breakpoint-prefix(medium, $bp), "medium\\:");
+  }
+}
+
+// ─── media-breakpoint-up ─────────────────────────────────────────────────────
+
+@include describe("media-breakpoint-up") {
+  @include it("emits a width >= range query") {
+    @include assert() {
+      @include output() {
+        @include media-breakpoint-up(medium, $bp) {
+          .a { color: red; }
+        }
+      }
+      @include expect() {
+        @media (width >= 768px) {
+          .a { color: red; }
+        }
+      }
+    }
+  }
+
+  @include it("emits no query for the smallest breakpoint") {
+    @include assert() {
+      @include output() {
+        @include media-breakpoint-up(xsmall, $bp) {
+          .a { color: red; }
+        }
+      }
+      @include expect() {
+        .a { color: red; }
+      }
+    }
+  }
+}
+
+// ─── media-breakpoint-down ───────────────────────────────────────────────────
+
+@include describe("media-breakpoint-down") {
+  @include it("emits a width < range query") {
+    @include assert() {
+      @include output() {
+        @include media-breakpoint-down(medium, $bp) {
+          .a { color: red; }
+        }
+      }
+      @include expect() {
+        @media (width < 768px) {
+          .a { color: red; }
+        }
+      }
+    }
+  }
+
+  @include it("emits no query for the smallest breakpoint (xsmall/value 0)") {
+    @include assert() {
+      @include output() {
+        @include media-breakpoint-down(xsmall, $bp) {
+          .a { color: red; }
+        }
+      }
+      @include expect() {
+        .a { color: red; }
+      }
+    }
+  }
+}
+
+// ─── media-breakpoint-between ────────────────────────────────────────────────
+
+@include describe("media-breakpoint-between") {
+  @include it("emits a range query between two breakpoints") {
+    @include assert() {
+      @include output() {
+        @include media-breakpoint-between(medium, large, $bp) {
+          .a { color: red; }
+        }
+      }
+      @include expect() {
+        @media (width >= 768px) and (width < 992px) {
+          .a { color: red; }
+        }
+      }
+    }
+  }
+
+  @include it("falls back to up when upper bound has no max (last breakpoint)") {
+    @include assert() {
+      @include output() {
+        @include media-breakpoint-between(medium, large, $bp) {
+          .a { color: red; }
+        }
+      }
+      @include expect() {
+        @media (width >= 768px) and (width < 992px) {
+          .a { color: red; }
+        }
+      }
+    }
+  }
+
+  @include it("falls back to down when lower bound has no min (xsmall)") {
+    @include assert() {
+      @include output() {
+        @include media-breakpoint-between(xsmall, medium, $bp) {
+          .a { color: red; }
+        }
+      }
+      @include expect() {
+        @media (width < 768px) {
+          .a { color: red; }
+        }
+      }
+    }
+  }
+}
+
+// ─── media-breakpoint-only ───────────────────────────────────────────────────
+
+@include describe("media-breakpoint-only") {
+  @include it("emits a bounded range query for a middle breakpoint") {
+    @include assert() {
+      @include output() {
+        @include media-breakpoint-only(medium, $bp) {
+          .a { color: red; }
+        }
+      }
+      @include expect() {
+        @media (width >= 768px) and (width < 992px) {
+          .a { color: red; }
+        }
+      }
+    }
+  }
+
+  @include it("falls back to up for the largest breakpoint") {
+    @include assert() {
+      @include output() {
+        @include media-breakpoint-only(large, $bp) {
+          .a { color: red; }
+        }
+      }
+      @include expect() {
+        @media (width >= 992px) {
+          .a { color: red; }
+        }
+      }
+    }
+  }
+
+  @include it("falls back to down for the smallest breakpoint") {
+    @include assert() {
+      @include output() {
+        @include media-breakpoint-only(xsmall, $bp) {
+          .a { color: red; }
+        }
+      }
+      @include expect() {
+        @media (width < 768px) {
+          .a { color: red; }
+        }
+      }
+    }
+  }
+}
+
+// ─── container-breakpoint-up ─────────────────────────────────────────────────
+
+@include describe("container-breakpoint-up") {
+  @include it("emits an anonymous container width >= query") {
+    @include assert() {
+      @include output() {
+        @include container-breakpoint-up(medium, $breakpoints: $bp) {
+          .a { color: red; }
+        }
+      }
+      @include expect() {
+        @container (width >= 768px) {
+          .a { color: red; }
+        }
+      }
+    }
+  }
+
+  @include it("emits a named container query") {
+    @include assert() {
+      @include output() {
+        @include container-breakpoint-up(medium, sidebar, $bp) {
+          .a { color: red; }
+        }
+      }
+      @include expect() {
+        @container sidebar (width >= 768px) {
+          .a { color: red; }
+        }
+      }
+    }
+  }
+}
+
+// ─── container-breakpoint-down ───────────────────────────────────────────────
+
+@include describe("container-breakpoint-down") {
+  @include it("emits an anonymous container width < query") {
+    @include assert() {
+      @include output() {
+        @include container-breakpoint-down(medium, $breakpoints: $bp) {
+          .a { color: red; }
+        }
+      }
+      @include expect() {
+        @container (width < 768px) {
+          .a { color: red; }
+        }
+      }
+    }
+  }
+
+  @include it("emits a named container query") {
+    @include assert() {
+      @include output() {
+        @include container-breakpoint-down(medium, sidebar, $bp) {
+          .a { color: red; }
+        }
+      }
+      @include expect() {
+        @container sidebar (width < 768px) {
+          .a { color: red; }
+        }
+      }
+    }
+  }
+}

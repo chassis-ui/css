@@ -1,0 +1,263 @@
+---
+title: Notification
+description: Display dismissible feedback for user actions and system events — context variants, icon and title slots, and ARIA live-region patterns.
+toc: true
+tokens: component
+css_layer: components
+js: optional
+---
+
+import { getData } from '@libs/data'
+
+## Introduction
+
+A notification displays a short message — confirmation, status, or warning — without blocking interaction with the surrounding page. For modal, blocking confirmations, use [Alert]([[docsref:/components/alert]]) instead.
+
+<Example code={`<div class="notification primary" role="status">
+    <p>A simple notification.</p>
+  </div>`} />
+
+The base `.notification` class sets typography, padding, border, and default color tokens. Layer on a context class for color intent, `.notification-icon` or `.notification-title` for richer content, an ARIA role for live-region behavior (see [Accessibility](#accessibility)), and the dismissal pattern below to close on demand.
+
+## Context variants
+
+Chassis ships a notification variant for each context color in the design system. Apply a context class — `.primary`, `.success`, `.warning`, and so on — alongside `.notification` to swap foreground, background, and border tokens to match the message intent.
+
+<Example class="vstack gap-medium" code={getData('context-colors').map((contextColor) => `<div class="notification ${contextColor.name}" role="status">
+    <p>A ${contextColor.name} notification with an <a href="#">example link</a>.</p>
+  </div>`)} />
+
+<Callout name="warning-color-assistive-technologies" />
+
+See [ARIA roles](#aria-roles) for picking a live-region role that matches each variant's intent.
+
+### Solid style
+
+Add the `.solid` modifier alongside a context class for a filled, higher-emphasis treatment that swaps the soft background for the context's full color. Use the solid variant when the notification needs to stand out against a busy surrounding layout.
+
+<Example class="vstack gap-medium" code={getData('context-colors').map((contextColor) => `<div class="notification ${contextColor.name} solid" role="status">
+    <p>A ${contextColor.name} notification with an <a href="#">example link</a>.</p>
+  </div>`)} />
+
+## Live example
+
+Notifications are commonly created at runtime in response to user actions rather than written into the page's initial markup. The example below shows that pattern: a button injects a fresh `.notification` into a stacking region. The injected element carries `role="status"` from the moment it enters the DOM — a requirement for screen readers to announce it, covered in detail under [Dynamic notifications](#dynamic-notifications). To make injected notifications dismissible, see [Dismissing](#dismissing) below.
+
+<Example addStackblitzJs code={`<div id="notificationStack" role="region" aria-label="Notifications" class="vstack gap-small mb-medium"></div>
+<button type="button" class="button primary" id="notificationButton">Show notification</button>`} />
+
+<JsDocs name="live-notification" file="site/src/assets/snippets.js" />
+
+For apps that show multiple notifications concurrently, host them inside a stable container with `role="region"` and a descriptive `aria-label` (as shown above). The region gives screen-reader users a named landmark to navigate to, and each notification announces itself through its own `role="status"` or `role="alert"` once inserted. Insert new notifications at the top of the stack when the freshest message matters most — the typical toast pattern — and at the bottom for chronological transcripts. When `role="alert"` notifications stack, dismiss or expire older entries so urgent messages aren't drowned by a backlog.
+
+## Dismissing
+
+The Notification plugin closes a notification when a descendant control with `data-cx-dismiss="notification"` is clicked. A dismissible notification needs:
+
+- The Chassis JavaScript bundle (or the standalone Notification plugin) loaded on the page
+- A `.close-button` element carrying `data-cx-dismiss="notification"`
+
+Add `.fade` and `.show` to the notification element to opt into a fade-out transition before removal.
+
+<Example class="vstack gap-medium" code={`<div class="notification primary fade show" role="status">
+    <p>A dismissible notification with a fade transition.</p>
+    <button type="button" class="close-button" data-cx-dismiss="notification" aria-label="Close notification"></button>
+  </div>`} />
+
+<Callout type="info" title="Close-button spacing">
+  When `.close-button` sits as a direct child of `.notification`, a `:has()` rule extends the inline-end padding so the message text doesn't run under the button. Wrapping the button breaks the selector — reserve the space manually with a utility like `pe-medium`.
+</Callout>
+
+## Additional content
+
+A notification's body can hold more than a single line of text. The classes below add a leading icon, a titled heading, and structured layouts while preserving the component's spacing and alignment rules.
+
+### Notification icon
+
+Apply `.notification-icon` to an inline SVG inside a notification to size and color it from the component's design tokens. The presence of the icon — matched via `:has()` — switches the notification to a two-column grid: the icon takes the first column, the message takes the second. The grid centers its rows vertically; for multi-line messages, add `align-self-start` to the icon so it aligns with the first line of text.
+
+<Example class="vstack gap-medium" code={`<div class="notification info" role="status">
+    <Icon name="info-circle-solid" class="notification-icon" />
+    <p>An example notification with an icon and <a href="#">a link</a>.</p>
+  </div>
+
+  <div class="notification info solid" role="status">
+    <Icon name="info-circle-solid" class="notification-icon" />
+    <p>An example notification with an icon and <a href="#">a link</a>.</p>
+  </div>`} />
+
+### Notification title
+
+Wrap longer messages in a heading and one or more paragraphs to give them structure. Apply `.notification-title` to the heading element to pick up its typographic scale and color from the component's design tokens. The notification lays out its children on a grid — both the title and paragraphs have no margin; spacing between elements is controlled by `--notification-text-gap`.
+
+<Example class="vstack gap-medium" code={`<div class="notification success fade show" role="status">
+    <Icon name="check-solid" class="notification-icon align-self-start" />
+    <h4 class="notification-title">A notification with a title</h4>
+    <p>Body paragraphs have no margin — spacing between the title and paragraphs comes from the grid gap.</p>
+    <p>Adjust the gap with <code>--notification-text-gap</code>.</p>
+    <button type="button" class="close-button" data-cx-dismiss="notification" aria-label="Close notification"></button>
+  </div>`} />
+
+### Actions buttons
+
+When a notification carries action buttons, use flex utilities to compose them with the message and adapt across breakpoints. The example below stacks the message above the actions on narrow viewports and lays them side-by-side from `xlarge` upward.
+
+<Example class="vstack gap-medium" code={`<div class="notification danger fade show" role="status">
+    <Icon name="exclamation-triangle-solid" class="notification-icon align-self-start xlarge:align-self-center" />
+    <div class="d-flex flex-column xlarge:flex-row gap-medium">
+      <p class="m-0">A dismissible notification with inline actions — stacked on narrow viewports, side-by-side from xlarge up.</p>
+      <div class="hstack gap-small align-items-center justify-content-end">
+        <button type="button" class="button danger outline small" data-cx-dismiss="notification" aria-label="Close notification">Dismiss</button>
+        <button type="button" class="button danger small">Take Action</button>
+      </div>
+    </div>
+  </div>`} />
+
+## Accessibility
+
+Notifications are announced by assistive technology, and the right ARIA role depends on the **urgency of the message**, not on the visual color. Pick the role first, then choose the variant that matches.
+
+### ARIA roles
+
+Two ARIA roles cover most notification use cases. When a notification is static page content that isn't meant to be announced on appearance, omit the role entirely.
+
+- **`role="status"`** — for confirmation, progress, and informational updates: “Saved”, “Item added to cart”, “Upload complete”. Implicitly polite (`aria-live="polite"`), so it waits for a pause before announcing. This is the right choice for `success`, `info`, and most `primary`/`secondary` messages.
+- **`role="alert"`** — for messages that require **immediate** user attention: validation errors, failed operations, session timeouts, lost connection. Implicitly assertive (`aria-live="assertive"`), so it interrupts whatever the screen reader is currently saying. Reserve it for `danger` and `warning` messages that the user must act on.
+
+<CxTable>
+| Variant | Default heuristic |
+| --- | --- |
+| `success`, `info` | `status` |
+| `danger`, `warning` | `alert` |
+| `primary`, `secondary`, `default` | usually `status` — depends on the message |
+</CxTable>
+
+These are starting points, not rules. Override when the message intent diverges from the variant — a `danger` notification that only reports passive state ("Server returned 503 — retrying in 5s") can still be `status` if the user isn't expected to act on it, and an `info` notification announcing a session timeout that needs an immediate response should be `alert`.
+
+<Callout type="warning" title="Color isn’t a substitute for role">
+  A red notification with `role="status"` is announced politely, and a green one with `role="alert"` interrupts speech. Non-sighted users perceive urgency from the role, not the color — always choose it from the message intent.
+</Callout>
+
+### Dynamic notifications
+
+For notifications added to the DOM at runtime, the live-region role must already exist on the element **when it is inserted**. Screen readers monitor mutations inside existing live regions; inserting a new region after page load can miss the first announcement, and inserting an empty container that's then populated may not fire at all.
+
+Two reliable patterns — both used by the [live example](#live-example) above:
+
+- Pre-render an empty container with the role and populate its text content later.
+- Build the full notification element (with the role already set) and insert it in one operation.
+
+If a notification updates in place — for example, replacing “Uploading…” with “Upload complete” — add `aria-atomic="true"` so the entire message is announced on each change instead of only the diff.
+
+### Decorative icons
+
+Icons inside notifications duplicate the textual message visually; they shouldn’t be announced separately. Mark them with `aria-hidden="true"`:
+
+```html
+<svg class="icon notification-icon" aria-hidden="true"><use href="#info-circle-solid"/></svg>
+```
+
+### Close button placement
+
+Place the close button as the **last** child of the notification, even when visually positioned at the top-right corner. Because `status` and `alert` both carry implicit `aria-atomic="true"`, the entire region is announced as a single unit — close-last means screen readers read the message before the dismiss control. Tab order follows the same rule: dismiss is the terminal action, reached after any links or actions inside the message. Visual placement is independent — Chassis absolute-positions a direct-child `.close-button` at the top-right regardless of its position in the source.
+
+### Dismiss and focus
+
+Label the close button so its purpose is clear when read in isolation:
+
+```html
+<button type="button" class="close-button" data-cx-dismiss="notification" aria-label="Close notification"></button>
+```
+
+Dismissing a notification removes it from the DOM, which can leave keyboard focus orphaned at the document root. Listen for `closed.cx.notification` and move focus to a sensible target — the element that triggered the notification, the next notification in the stack, or the main content landmark:
+
+```js
+notification.addEventListener('closed.cx.notification', () => {
+  document.getElementById('notificationButton')?.focus()
+})
+```
+
+## JavaScript API
+
+The Notification plugin handles dismissal and exposes events for integrating with surrounding flows. Chassis JS ships as an ES module — import the `Notification` class:
+
+```js
+import { Notification } from '@chassis-ui/css'
+```
+
+### Triggers
+
+The data-attribute API wires up dismissal without writing any custom JavaScript:
+
+<JsDismiss name="notification" />
+
+### Initialization
+
+For programmatic access — closing notifications from code or listening to events — instantiate each element with the `Notification` class:
+
+```js
+const notificationList = document.querySelectorAll('.notification')
+const notifications = [...notificationList].map(element => new Notification(element))
+```
+
+Manual initialization is unnecessary when dismissal is the only requirement — the data-attribute API attaches the same click listener on the first use.
+
+### Methods
+
+The plugin exposes four instance methods for programmatic control:
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `close` | Closes the notification by removing it from the DOM. If `.fade` and `.show` are present, the notification fades out before removal. |
+| `dispose` | Destroys the notification instance and clears the stored data from the DOM element. |
+| `getInstance` | Static — returns the notification instance bound to a DOM element, or `null` if none exists. |
+| `getOrCreateInstance` | Static — returns the existing instance for a DOM element, or creates one if none exists. |
+</CxTable>
+
+```js
+const notification = Notification.getOrCreateInstance('#myNotification')
+notification.close()
+```
+
+### Events
+
+The plugin emits two events around the dismissal lifecycle — one when `close()` is invoked, one when removal has finished:
+
+<CxTable>
+| Event | Description |
+| --- | --- |
+| `close.cx.notification` | Fires immediately when the `close` instance method is called. |
+| `closed.cx.notification` | Fires after the notification has been closed and any CSS transitions have completed. |
+</CxTable>
+
+Listen for `closed.cx.notification` to move focus once the element is gone (see [Dismiss and focus](#dismiss-and-focus)):
+
+```js
+const myNotification = document.getElementById('myNotification')
+myNotification.addEventListener('closed.cx.notification', () => {
+  document.getElementById('notificationButton')?.focus()
+})
+```
+
+## CSS
+
+<DocsCSS name="Notification" exposed />
+
+### Custom properties
+
+<DocsCSSVars name="Notification" />
+
+<ScssDocs name="notification-css-vars" file="scss/_notification.scss" compile />
+
+### Sass variables
+
+<DocsSASSVars name="Notification" exposed/>
+
+<ScssDocs name="notification-variables" file="scss/config/_defaults.scss" />
+
+### Design tokens
+
+<DocsDesignTokens name="Notification" />
+
+<ScssDocs name="notification-tokens" file="scss/tokens/_notification.scss" />

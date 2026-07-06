@@ -8,7 +8,6 @@
 import BaseComponent from './base-component.js'
 import EventHandler from './dom/event-handler.js'
 import { enableDismissTrigger } from './util/component-functions.js'
-import { defineJQueryPlugin } from './util/index.js'
 
 /**
  * Constants
@@ -24,9 +23,7 @@ const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="chip"]'
 const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`
 
 const EVENT_CLOSE = `close${EVENT_KEY}`
-const EVENT_CLOSED = `closed${EVENT_KEY}`
-const CLASS_NAME_FADE = 'fade'
-const CLASS_NAME_SHOW = 'show'
+const EVENT_TOGGLE = `toggle${EVENT_KEY}`
 
 /**
  * Class definition
@@ -46,39 +43,14 @@ class Chip extends BaseComponent {
       return
     }
 
-    this._element.classList.remove(CLASS_NAME_SHOW)
-
-    const isAnimated = this._element.classList.contains(CLASS_NAME_FADE)
-    this._queueCallback(() => this._destroyElement(), this._element, isAnimated)
-  }
-
-  toggle() {
-    // Toggle class and sync the `aria-pressed` attribute with the return value of the `.toggle()` method
-    this._element.setAttribute('aria-pressed', this._element.classList.toggle(CLASS_NAME_ACTIVE))
-  }
-
-  // Private
-  _destroyElement() {
     this._element.remove()
-    EventHandler.trigger(this._element, EVENT_CLOSED)
     this.dispose()
   }
 
-  // Static
-  static jQueryInterface(config) {
-    return this.each(function () {
-      const data = Chip.getOrCreateInstance(this)
-
-      if (typeof config !== 'string') {
-        return
-      }
-
-      if (data[config] === undefined || config.startsWith('_') || config === 'constructor') {
-        throw new TypeError(`No method named "${config}"`)
-      }
-
-      data[config](this)
-    })
+  toggle() {
+    const isActive = this._element.classList.toggle(CLASS_NAME_ACTIVE)
+    this._element.setAttribute('aria-pressed', isActive)
+    EventHandler.trigger(this._element, EVENT_TOGGLE, { active: isActive })
   }
 }
 
@@ -96,11 +68,5 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, event => {
 })
 
 enableDismissTrigger(Chip, 'close')
-
-/**
- * jQuery
- */
-
-defineJQueryPlugin(Chip)
 
 export default Chip

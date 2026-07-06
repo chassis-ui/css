@@ -1,6 +1,6 @@
-import { Tooltip } from '../../../dist/js/chassis.esm.js'
+import { Tooltip } from '../../../dist/js/chassis.js'
 
 window.addEventListener('load', () => {
-  [].concat(...document.querySelectorAll('[data-cx-toggle="tooltip"]'))
+  [...document.querySelectorAll('[data-cx-toggle="tooltip"]')]
     .map(tooltipNode => new Tooltip(tooltipNode))
 })

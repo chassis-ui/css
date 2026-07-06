@@ -3,162 +3,227 @@
 //
 // Generates all :root-level CSS custom properties from the Chassis token system.
 // Includes color variables, semantic context tokens, and dark mode overrides.
-// Dark mode values are applied via the color-mode() mixin.
+// Light and dark color values are combined via light-dark() for automatic color scheme support.
 //
 
-@use "sass:color";
-:root,
-[data-cx-theme="light"] {
+@use "sass:meta";
+@use "./config" as *;
+@use "./maps" as *;
+@use "./mixins" as *;
+@use "./functions" as *;
+@use "./rfs" as *;
+@use "sass:map";
+
+// scss-docs-start layer-order
+@layer colors, theme, config, root, reboot, layout, content, components, custom, helpers, utilities;
+// scss-docs-end layer-order
+
+:root {
+  @if $enable-dark-mode {
+    color-scheme: light dark;
+  }
 
   // Generate color variables
-  @each $name, $value in $context-colors {
-    --#{$prefix}#{$name}: #{to-color($value)};
+  @each $name, $light in $context-colors {
+    @if $enable-dark-mode {
+      --#{$name}: light-dark(#{to-color($light)}, #{to-color(map.get($context-colors-dark, $name))});
+    } @else {
+      --#{$name}: #{to-color($light)};
+    }
   }
-  @each $name, $value in $contrast-colors {
-    --#{$prefix}#{$name}: #{to-color($value)};
+  @each $name, $light in $contrast-colors {
+    @if $enable-dark-mode {
+      --#{$name}: light-dark(#{to-color($light)}, #{to-color(map.get($contrast-colors-dark, $name))});
+    } @else {
+      --#{$name}: #{to-color($light)};
+    }
   }
-  @each $name, $value in $base-palette {
-    --#{$prefix}#{$name}: #{to-color($value)};
+  @each $name, $light in $base-palette {
+    @if $enable-dark-mode {
+      --#{$name}: light-dark(#{to-color($light)}, #{to-color(map.get($base-palette-dark, $name))});
+    } @else {
+      --#{$name}: #{to-color($light)};
+    }
   }
-  @each $name, $value in $context-palette {
-    --#{$prefix}#{$name}: #{to-color($value)};
+  @each $name, $light in $context-palette {
+    @if $enable-dark-mode {
+      --#{$name}: light-dark(#{to-color($light)}, #{to-color(map.get($context-palette-dark, $name))});
+    } @else {
+      --#{$name}: #{to-color($light)};
+    }
   }
 
   // Generate font variables
   @each $name, $value in $font-families {
-    --#{$prefix}font-family-#{$name}: #{$value};
-  }
-  @each $name, $value in $font-sizes {
-    --#{$prefix}font-size-#{$name}: #{$value};
-  }
-  @each $name, $value in $font-weights {
-    --#{$prefix}font-weight-#{$name}: #{$value};
-  }
-  @each $name, $value in $line-heights {
-    --#{$prefix}line-height-#{$name}: #{$value};
+    --font-family-#{$name}: #{$value};
   }
   @each $name, $value in $typography {
-    @include rfs($value, --#{$prefix}#{$name});
+    @include clamp($value, --#{$name});
+  }
+  @each $name, $value in $font-sizes {
+    --font-size-#{$name}: #{$value};
+  }
+  @each $name, $value in $font-weights {
+    --font-weight-#{$name}: #{$value};
+  }
+  @each $name, $value in $line-heights {
+    --line-height-#{$name}: #{$value};
+  }
+  // Generate breakpoint variables
+  // scss-docs-start root-breakpoint-variables
+  @each $name, $value in $breakpoints {
+    --breakpoint-#{$name}: #{$value};
+  }
+  // scss-docs-end root-breakpoint-variables
+  // Generate sizing variables
+  @each $name, $value in $sizes {
+    --size-#{$name}: #{$value};
   }
   // Generate spacers variables
-  @each $name, $value in $spacers {
-    --#{$prefix}space-#{$name}: #{$value};
+  @each $name, $value in $spaces {
+    --space-#{$name}: #{$value};
   }
   // Generate icon-sizes variables
   @each $name, $value in $icon-sizes {
-    --#{$prefix}icon-#{$name}: #{$value};
+    --icon-#{$name}: #{$value};
   }
   // Generate border-width variables
   @each $name, $value in $border-widths {
-    --#{$prefix}border-width-#{$name}: #{$value};
+    --border-width-#{$name}: #{$value};
   }
   // Generate border-radius variables
-  @each $name, $value in $border-radiuses {
-    --#{$prefix}border-radius-#{$name}: #{$value};
+  @each $name, $value in $border-radii {
+    --border-radius-#{$name}: #{$value};
   }
   // Generate opacity variables
-  @each $name, $value in map-merge($opacities, $context-opacities) {
-    --#{$prefix}opacity-#{$name}: #{$value};
+  // scss-docs-start root-opacity-variables
+  @each $name, $value in map.merge($opacities, $context-opacities) {
+    --opacity-#{$name}: #{$value};
   }
+  // scss-docs-end root-opacity-variables
 
   // Root and body
   // scss-docs-start root-body-variables
   @if $font-size-root != null {
-    --#{$prefix}root-font-size: #{$font-size-root};
+    --root-font-size: #{$font-size-root};
 
     @if $font-size-root-large != $font-size-root {
       @include media-breakpoint-up(large) {
-        --#{$prefix}root-font-size-large: #{$font-size-root-large};
+        --root-font-size-large: #{$font-size-root-large};
       }
     }
 
     @if $font-size-root-small != $font-size-root {
       @include media-breakpoint-down(small) {
-        --#{$prefix}root-font-size-small: #{$font-size-root-small};
+        --root-font-size-small: #{$font-size-root-small};
       }
     }
   }
 
-  --#{$prefix}font-family: #{inspect($font-family-base)};
-  @include rfs($font-size-base, --#{$prefix}font-size);
-  --#{$prefix}font-weight: #{$font-weight-base};
-  --#{$prefix}line-height: #{$line-height-base};
+  --font-family: #{meta.inspect($font-family-base)};
+  @include clamp($font-size-base, --font-size);
+  --font-weight: #{$font-weight-base};
+  --line-height: #{$line-height-base};
   @if $text-align != null {
-    --#{$prefix}text-align: #{$text-align};
+    --text-align: #{$text-align};
   }
-  --#{$prefix}separator-size: #{$separator-size};
-  --#{$prefix}indicator-size: #{$indicator-size};
+  --separator-size: #{$separator-size};
+  --indicator-size: #{$indicator-size};
   // scss-docs-start root-body-colors
-  // Generate opacity variables
   @each $name, $value in $body-colors {
-    --#{$prefix}#{$name}: #{$value};
+    --#{$name}: #{$value};
   }
-  // @include context($body-context);
   @include body-colors();
   // scss-docs-end root-body-colors
 
-  --#{$prefix}code-color: #{$code-color};
-  --#{$prefix}mark-fg-color: #{$mark-fg-color};
-  --#{$prefix}mark-bg-color: #{$mark-bg-color};
+  --code-color: #{$code-color};
+  --mark-fg-color: #{$mark-fg-color};
+  --mark-bg-color: #{$mark-bg-color};
   // scss-docs-end root-body-variables
 
-  --#{$prefix}icon-size: #{$icon-size};
+  --icon-size: #{$icon-size};
 
-  --#{$prefix}link-decoration: #{$link-decoration};
+  --link-decoration: #{$link-decoration};
   @if $link-hover-decoration != null {
-    --#{$prefix}link-hover-decoration: #{$link-hover-decoration};
+    --link-hover-decoration: #{$link-hover-decoration};
   }
   // scss-docs-end root-body-variables
 
   // scss-docs-start root-border-var
-  --#{$prefix}border-width: #{$border-width};
-  --#{$prefix}border-style: #{$border-style};
-  --#{$prefix}border-color: #{$border-color};
-  --#{$prefix}border-radius: #{$border-radius};
+  --border-width: #{$border-width};
+  --border-style: #{$border-style};
+  --border-color: #{$border-color};
+  --border-radius: #{$border-radius};
   // scss-docs-end root-border-var
 
-  --#{$prefix}box-shadow-small: #{$box-shadow-small};
-  --#{$prefix}box-shadow-medium: #{$box-shadow-medium};
-  --#{$prefix}box-shadow-large: #{$box-shadow-large};
-  --#{$prefix}box-shadow-inset: #{$box-shadow-inset};
+  // scss-docs-start root-shadow-variables
+  --box-shadow-small: #{$box-shadow-small};
+  --box-shadow-medium: #{$box-shadow-medium};
+  --box-shadow-large: #{$box-shadow-large};
+  --box-shadow-inset: #{$box-shadow-inset};
+  --box-shadow-emboss: #{$box-shadow-emboss};
+  // scss-docs-end root-shadow-variables
 
   // Focus styles
   // scss-docs-start root-focus-variables
-  --#{$prefix}focus-ring-width: #{$focus-ring-width};
-  --#{$prefix}focus-ring-opacity: #{$focus-ring-opacity};
-  --#{$prefix}focus-ring-color: #{$focus-ring-color};
+  --focus-ring-width: #{$focus-ring-width};
+  --focus-ring-light-opacity: #{$focus-ring-light-opacity};
+  --focus-ring-dark-opacity: #{$focus-ring-dark-opacity};
+  --focus-ring-color: #{$focus-ring-color};
+  --focus-ring-offset: #{$focus-ring-offset};
+  // --focus-ring: #{$focus-ring};
   // scss-docs-end root-focus-variables
 
-  --#{$prefix}bg-gradient: #{$bg-gradient};
+  // scss-docs-start root-translucent-variables
+  --translucent-opacity: #{$translucent-opacity};
+  --translucent-blur: #{$translucent-blur};
+  --translucent-saturation: #{$translucent-saturation};
+  // scss-docs-end root-translucent-variables
+
+  --bg-gradient: #{$bg-gradient};
 
   // Root and body
   @if $font-size-root != null {
-    --#{$prefix}root-font-size: #{$font-size-root};
+    --root-font-size: #{$font-size-root};
   }
   @if $text-align != null {
-    --#{$prefix}text-align: #{$text-align};
+    --text-align: #{$text-align};
   }
 
-  --#{$prefix}heading-color: var(--#{$prefix}fg-main);
+  --heading-color: var(--fg-main);
 
+  // Always reserve the viewport scrollbar gutter so layout doesn't shift
+  // when overflow: hidden is applied (e.g. when a dialog opens on Windows).
+  scrollbar-gutter: stable;
+
+  // Declare icon vars at :root if dark mode is disabled.
+  @if $enable-dark-mode == false {
+    @include form-icon-vars();
+  }
 }
 
+// Declare light-mode icon vars at :root and also reset them when a light sub-tree
+// is nested inside a dark context, so inherited dark values don't bleed through.
 @if $enable-dark-mode {
-  @include color-mode(dark, true) {
-    color-scheme: dark;
-
-    // scss-docs-start root-dark-mode-vars
-    @each $name, $value in $context-colors-dark {
-      --#{$prefix}#{$name}: #{to-color($value)};
-    }
-    @each $name, $value in $contrast-colors-dark {
-      --#{$prefix}#{$name}: #{to-color($value)};
-    }
-    @each $name, $value in $context-palette-dark {
-      --#{$prefix}#{$name}: #{to-color($value)};
-    }
-    @each $name, $value in $body-colors-dark {
-      --#{$prefix}#{$name}: #{to-color($value)};
-    }
+  :root,
+  [data-cx-theme="light"] {
+    @include form-icon-vars();
   }
+
+  [data-cx-theme="dark"] {
+    color-scheme: dark;
+    @include form-icon-vars(true);
+  }
+
+  [data-cx-theme="light"] {
+    color-scheme: light;
+  }
+}
+
+[dir="rtl"] {
+  // Logical properties for RTL support
+  --logical-position-start: right;
+  --logical-position-end: left;
+  --logical-angle-90: 270deg;
+  --logical-angle-270: 90deg;
 }

@@ -1,33 +1,20 @@
-@import "clearfix";
-@import "contrast";
-@import "links";
-@import "focus-ring";
-@import "context";
-@import "icon-link";
-@import "ratio";
-@import "position";
-@import "shadow";
-@import "stacks";
-@import "visually-hidden";
-@import "text-truncation";
-@import "vr";
+//
+// Helpers Index
+//
+// Forwards all Chassis CSS helper classes: clearfix, contrast, stretched link,
+// focus ring, icon link, position, stacks, and visually-hidden.
+//
 
-.last-mb-0 > p:last-child {
-  margin-bottom: 0;
-}
-
-.last-mb-reset > p:last-child {
-  margin-bottom: revert !important; // stylelint-disable-line declaration-no-important
-}
-
-@each $name, $value in map-merge($context-dim-colors, $body-dim-colors) {
-  .#{$name} {
-    background-color: var(--#{$prefix}#{$name});
-  }
-}
-
-@each $name, $value in $context-link-colors {
-  .#{$name} {
-    color: var(--#{$prefix}#{$name}, $value);
-  }
-}
+@forward "./caret";
+@forward "./clearfix";
+@forward "./contrast";
+@forward "./focus-ring";
+@forward "./icon";
+@forward "./icon-link";
+@forward "./last-mb";
+@forward "./position";
+@forward "./stacks";
+@forward "./stretched-link";
+@forward "./visually-hidden";
+@forward "./text-truncation";
+@forward "./vr";

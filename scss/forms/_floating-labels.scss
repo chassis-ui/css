@@ -1,182 +1,170 @@
+@use "../config" as *;
+@use "../mixins" as *;
+@use "../placeholders" as *;
+
 //
 // Floating Labels
 //
-// Floating labels provide an enhanced user experience by displaying input labels
-// that float above the input field when it contains text or receives focus.
-// This implementation provides consistent styling, transitions, and accessibility
-// support across different form input types.
-//
-// Key features:
-// - Support for text inputs, textareas, selects, and file inputs
-// - Automatic label transition on focus and when content is present
-// - State variations (idle, focus, disabled, validation states)
-// - Browser autofill compatibility
-// - Plaintext variant for read-only contexts
+// Label variant that transitions from a placeholder position inside the input
+// to a floating position above it on focus or when the field has a value.
+// Supports text inputs, textareas, selects, and file inputs.
 //
 
-.form-floating {
-  position: relative;
-  border-bottom-width: $form-floating-border-width;
+@layer components {
+  .form-floating {
+    // scss-docs-start form-floating-properties
+    --height: var(--form-floating-height, #{$form-floating-height});
+    --inactive-padding-y: var(--form-floating-inactive-padding-y, #{$form-floating-inactive-padding-y});
+    --active-padding-t: var(--form-floating-active-padding-t, #{$form-floating-active-padding-t});
+    --active-padding-b: var(--form-floating-active-padding-b, #{$form-floating-active-padding-b});
+    --input-padding-x: var(--form-floating-input-padding-x, #{$form-floating-input-padding-x});
+    --border-bottom-width: var(--form-floating-border-width, #{$form-floating-border-width});
+    --border-radius-t: var(--form-floating-border-radius-t, #{$form-floating-border-radius-t});
+    --border-radius-b: var(--form-floating-border-radius-b, #{$form-floating-border-radius-b});
+    --label-height: var(--form-floating-label-height, #{$form-floating-label-height});
+    --label-padding-y: var(--form-floating-label-padding-y, #{$form-floating-label-padding-y});
+    --label-transform: var(--form-floating-label-transform, #{$form-floating-label-transform});
+    --transition: var(--form-floating-transition, #{$form-floating-transition});
+    // scss-docs-end form-floating-properties
 
-  // Base styling for form inputs within floating label context
-  // Applies to standard inputs, plaintext inputs, and select elements
-  > .form-input,
-  > .form-input.plaintext,
-  > .form-select {
-    --#{$prefix}bg-color: var(--#{$prefix}form-idle-bg-floating);
-    --#{$prefix}border-width: 0;
-    height: $form-floating-min-height;
-    min-height: $form-floating-min-height;
-    line-height: $form-floating-line-height;
-    border-bottom-width: $form-floating-border-width;
-    @include border-top-radius($form-floating-border-radius-t);
-    @include border-bottom-radius($form-floating-border-radius-b);
+    position: relative;
+    // border-block-end-width: $form-floating-border-width;
 
-    &:focus {
-      --#{$prefix}bg-color: var(--#{$prefix}form-focus-bg-floating);
-    }
+    // Base styling for form inputs within floating label context
+    // Applies to standard inputs and plaintext inputs
+    > .form-input,
+    > .form-input.plaintext {
+      --bg-color: var(--form-idle-bg-floating);
+      --border-width: 0;
+      min-height: var(--height);
+      padding-block-start: var(--inactive-padding-y);
+      padding-block-end: calc(var(--inactive-padding-y) - var(--border-bottom-width));
+      padding-inline: var(--input-padding-x);
+      border-block-end-width: var(--border-bottom-width);
+      @include border-top-radius(var(--border-radius-t));
+      @include border-bottom-radius(var(--border-radius-b));
 
-    // Disabled state styling
-    &[disabled],
-    &:disabled {
-      --#{$prefix}bg-color: var(--#{$prefix}form-disabled-bg-floating);
-    }
+      // Hide placeholder when the label is shown
+      &::placeholder,
+      &:disabled::placeholder {
+        color: transparent;
+      }
 
-    // Valid state styling
-    &:valid {
-      --#{$prefix}bg-color: var(--#{$prefix}form-valid-bg-floating);
-    }
+      &:focus:not(.plaintext) {
+        --bg-color: var(--form-focus-bg-floating);
+      }
 
-    // Invalid state styling
-    &:invalid {
-      --#{$prefix}bg-color: var(--#{$prefix}form-invalid-bg-floating);
-    }
-  }
+      // Adjust padding when label is floating to ensure text doesn't overlap
+      &:focus,
+      &:not(:placeholder-shown) {
+        // padding-block-start: var(--active-padding-t);
+        padding-block-start: var(--active-padding-t);
+        padding-block-end: calc(var(--active-padding-b) - var(--border-bottom-width));
+      }
 
-  // Label styling and positioning
-  // The label element floats above the input when focused or filled
-  > label {
-    @extend %form-colors;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 2;
-    height: 100%; // Allow proper alignment with textareas
-    padding: $form-floating-inactive-padding-y $form-floating-padding-x;
-    overflow: hidden;
-    color: var(--#{$prefix}label-color, var(--#{$prefix}form-idle-fg-inactive));
-    text-align: start;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    pointer-events: none; // Prevent accidental clicks on the label
-    border: $form-regular-border-width solid transparent; // Required for aligning label's text with the input
-    transform-origin: 0 0;
-    @include transition($form-floating-transition);
-  }
+      // Disabled state styling
+      &:disabled:not(.plaintext) {
+        --bg-color: var(--form-disabled-bg-floating);
+      }
 
-  // Text input and plaintext input specific styling
-  > .form-input,
-  > .form-input.plaintext {
-    padding: $form-floating-inactive-padding-y $form-floating-padding-x;
-
-    // Hide placeholder when the label is shown
-    &::placeholder {
-      color: transparent;
-    }
-
-    // Increase bottom border width on focus for better visual indication
-    &:focus {
-      border-bottom-width: $form-floating-border-width;
-    }
-
-    // Adjust padding when label is floating to ensure text doesn't overlap
-    &:focus,
-    &:not(:placeholder-shown) {
-      padding-top: $form-floating-active-padding-t;
-      padding-bottom: $form-floating-active-padding-b;
-    }
-
-    // Handle browser autofill state
-    // Must be separate since :-webkit-autofill invalidates other selectors when grouped
-    &:-webkit-autofill {
-      padding-top: $form-floating-active-padding-t;
-      padding-bottom: $form-floating-active-padding-b;
-    }
-  }
-
-  // Focus state styling for the label
-  > %form-input {
-    &:focus ~ label {
-      color: $form-focus-help-color;
-    }
-  }
-
-  // Select elements are always treated as having content
-  > .form-select {
-    padding: $form-floating-inactive-padding-y $form-floating-padding-x;
-    padding-top: $form-floating-active-padding-t;
-    padding-bottom: $form-floating-active-padding-b;
-  }
-
-  // Float label when input has content or focus
-  // This covers all cases: focused inputs, filled inputs, plaintext, and selects
-  > .form-input:focus,
-  > .form-input:not(:placeholder-shown),
-  > .form-input.plaintext,
-  > .form-select {
-    ~ label {
-      transform: $form-floating-label-transform;
-
-      // Create a background for the label to improve readability
-      &::after {
-        position: absolute;
-        inset: $form-floating-inactive-padding-y (#{calc($form-floating-padding-x * .5)});
-        z-index: -1;
-        height: $form-floating-label-height;
-        content: "";
-        @include border-radius($form-medium-border-radius);
+      // Handle browser autofill state
+      // Must be separate since :-webkit-autofill invalidates other selectors when grouped
+      &:-webkit-autofill {
+        padding-block-start: var(--active-padding-t);
+        padding-block-end: calc(var(--active-padding-b) - var(--border-bottom-width));
       }
     }
-  }
 
-  // File input styling
-  // Customizes the file selector button to fit with the floating label design
-  > .form-input[type="file"] {
-    &::file-selector-button {
-      padding-top: 0;
-      padding-bottom: 0;
-      @include font-size(var(--#{$prefix}font-size-small));
-      @include line-height(var(--#{$prefix}line-height-small));
-      font-weight: var(--#{$prefix}font-weight-strong);
-      background: none;
-      border-right: var(--#{$prefix}border-width-medium) solid var(--#{$prefix}border-color);
-    }
-    &:hover::file-selector-button {
-      background-color: transparent;
-    }
-  }
+    // Label styling and positioning
+    // The label element floats above the input when focused or filled
+    > label {
+      @extend %form-colors;
+      --label-fg-color: var(--form-idle-fg-inactive);
+      --label-bg-color: var(--form-idle-bg-floating);
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      z-index: 2;
+      height: 100%; // Allow proper alignment with textareas
+      padding: var(--inactive-padding-y) var(--input-padding-x);
+      overflow: hidden;
+      color: var(--label-fg-color, var(--form-idle-fg-inactive));
+      text-align: start;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      pointer-events: none; // Prevent accidental clicks on the label
+      transform-origin: 0 0;
+      @include transition(var(--transition));
 
-  // Browser autofill handling for label positioning
-  // Must be separate since :-webkit-autofill invalidates other selectors when grouped
-  > .form-input:-webkit-autofill {
-    ~ label {
-      color: var(--#{$prefix}fg-main);
-      transform: $form-floating-label-transform;
+      // Float label when input has content or focus
+      // This covers all cases: focused inputs, filled inputs, plaintext, and selects
+      &:has(~ .form-input:focus, ~ .form-input:not(:placeholder-shown), ~ .form-input.plaintext) {
+        padding-block: var(--label-padding-y);
+        transform: var(--label-transform);
+
+        // Create a background for the label to improve readability
+        &::after {
+          position: absolute;
+          inset: var(--label-padding-y) (calc(var(--input-padding-x) * .5));
+          z-index: -1;
+          height: var(--label-height);
+          content: "";
+          @include border-radius(var(--border-radius));
+          background-color: var(--label-bg-color);
+        }
+      }
+
+      &:has(~ .form-input:focus:not(.plaintext)), {
+        --label-fg-color: var(--form-focus-help-color);
+        --label-bg-color: var(--form-focus-bg-floating);
+      }
+      &:has(~ .form-input:disabled:not(.plaintext)) {
+        --label-fg-color: var(--form-disabled-fg-inactive);
+        --label-bg-color: var(--form-disabled-bg-floating);
+      }
+      &:has(~ .form-input.plaintext) {
+        --label-fg-color: var(--form-idle-fg-inactive);
+        --label-bg-color: transparent;
+        border-width: var(--border-width) 0; // Required to properly position label text
+      }
+
+      // Browser autofill handling for label positioning
+      // Must be separate since :-webkit-autofill invalidates other selectors when grouped
+      &:has(~ .form-input:-webkit-autofill) {
+        color: var(--label-fg-color);
+        transform: var(--label-transform);
+      }
+
+    }
+
+    // Select elements are always treated as having content
+    // stylelint-disable-next-line selector-no-qualifying-type
+    > select.form-input {
+      padding-block-start: var(--active-padding-t);
+      padding-block-end: var(--active-padding-b);
+      padding-inline: var(--input-padding-x);
+    }
+
+    // File input styling
+    // Customizes the file selector button to fit with the floating label design
+    > .form-input[type="file"] {
+      &::file-selector-button {
+        padding-block: 0;
+        @include font-size(var(--font-size-small));
+        @include line-height(var(--line-height-small));
+        font-weight: var(--font-weight-strong);
+        background: none;
+        border-inline-end: var(--border-width-medium) solid var(--border-color);
+      }
+      &:hover::file-selector-button {
+        background-color: transparent;
+      }
+    }
+
+    // Plaintext input styling
+    // For read-only/display contexts where the input should appear as regular text
+    > .form-input.plaintext {
+      background-color: inherit;
     }
   }
-
-  // Plaintext input styling
-  // For read-only/display contexts where the input should appear as regular text
-  > .form-input.plaintext {
-    background-color: inherit;
-    ~ label {
-      border-width: $form-regular-border-width 0; // Required to properly position label text
-    }
-  }
-
-  // Disabled state styling for labels
-  > :disabled ~ label,
-  > .form-input:disabled ~ label { // Additional specificity required for form inputs
-    color: $form-floating-label-disabled-fg-color;
-  }
-}
+} // @layer components

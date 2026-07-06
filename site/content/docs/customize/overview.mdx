@@ -5,43 +5,43 @@ toc: false
 aliases: "[[docsref:/customize]]"
 sections:
   - title: Sass
-    description: Utilize our source Sass files to take advantage of variables, maps, mixins, and functions.
+    description: Utilize Chassis source Sass files to take advantage of variables, maps, mixins, and functions.
   - title: Options
     description: Customize Chassis CSS with built-in variables to easily toggle global CSS preferences.
   - title: Color modes
-    description: Explore our default light mode and the new dark mode, or create custom color modes yourself.
+    description: Explore the default light mode and dark mode, or create custom color modes.
   - title: CSS variables
-    description: Use Chassis CSS’s CSS custom properties for fast and forward-looking design and development.
+    description: Use Chassis CSS's CSS custom properties for fast and forward-looking design and development.
   - title: Optimize
     description: Keep your projects lean, responsive, and maintainable so you can deliver the best experience.
 ---
 
 ## Overview
 
-There are multiple ways to customize Chassis. Your best path can depend on your project, the complexity of your build tools, the version of Chassis CSS you’re using, browser support, and more.
+There are multiple ways to customize Chassis. Your best path can depend on your project, the complexity of your build tools, the version of Chassis CSS you're using, browser support, and more.
 
-Our two preferred methods are:
+Two paths are supported:
 
-1. Using Chassis CSS [via package manager]([[docsref:/getting-started/installation]]) so you can use and extend our source files.
-2. Using Chassis CSS's compiled distribution files for a quick prototype — see the [Quick Start]([[docsref:/getting-started/quick-start]]) — though you lose the ability to override settings or tokens at build time.
+1. Using Chassis CSS [via package manager]([[docsref:/getting-started/installation]]) to use and extend the framework source files.
+2. Using Chassis CSS's compiled distribution files for a quick prototype — see the [Quick Start]([[docsref:/getting-started/quick-start]]) — though this loses the ability to override settings or tokens at build time.
 
 For your own Sass compiler, see [using Chassis CSS with Sass]([[docsref:/customize/sass]]).
 
-For teams that will own the framework long-term, [Clone and Customize]([[docsref:/getting-started/clone-and-customize]]) covers replacing the token foundation with your own and shipping a build that's entirely yours.
+For teams that will own the framework long-term, [Clone and Customize]([[docsref:/getting-started/clone-customize]]) covers replacing the token foundation with your own and shipping a build that's entirely yours.
 
-As you familiarize yourself with Chassis, continue exploring this section for more details on how to utilize our global options, making use of and changing our color system, how we build our components, how to use our growing list of CSS custom properties, and how to optimize your code when building with Chassis.
+As you familiarize yourself with Chassis, continue exploring this section for more details on the global options, the color system, how Chassis builds components, the CSS custom properties, and how to optimize your build.
 
 ## CSPs and embedded SVGs
 
-Several Chassis CSS components include embedded SVGs in our CSS to style components consistently and easily across browsers and devices. **For organizations with more strict <abbr title="Content Security Policy">CSP</abbr> configurations**, we’ve documented all instances of our embedded SVGs (all of which are applied via `background-image`) so you can more thoroughly review your options.
+Several Chassis CSS components include embedded SVGs in the compiled CSS to style components consistently across browsers and devices. **For organizations with stricter <abbr title="Content Security Policy">CSP</abbr> configurations**, all instances of embedded SVGs (all applied via `background-image`) are documented below for review.
 
 - [Accordion]([[docsref:/components/accordion]])
 - [Carousel controls]([[docsref:/components/carousel#with-controls]])
 - [Close button]([[docsref:/components/close-button]]) (used in alerts and modals)
-- [Form checkboxes and radio buttons]([[docsref:/forms/checks-radios]])
-- [Form switches]([[docsref:/forms/checks-radios#switches]])
+- [Form checkboxes and radio buttons]([[docsref:/forms/checkbox-radio]])
+- [Form switches]([[docsref:/forms/checkbox-radio#switches]])
 - [Form validation icons]([[docsref:/forms/validation#server-side]])
 - [Navbar toggle buttons]([[docsref:/components/navbar#responsive-behaviors]])
-- [Select menus]([[docsref:/forms/select]])
+- [Select menus]([[docsref:/forms/form-input]])
 
-Based on [community conversation](https://github.com/twbs/chassis-css/issues/25394), some options for addressing this in your own codebase include [replacing the URLs with locally hosted assets]([[docsref:/getting-started/webpack#extracting-svg-files]]), removing the images and using inline images (not possible in all components), and modifying your CSP. Our recommendation is to carefully review your own security policies and decide on the best path forward, if necessary.
+Options for addressing this in your own codebase include [replacing the URLs with locally hosted assets]([[docsref:/getting-started/webpack#extract-embedded-svgs]]), removing the images and using inline images (not possible in all components), and modifying your CSP. Carefully review your own security policies to decide on the best path forward.

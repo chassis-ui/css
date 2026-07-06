@@ -1,0 +1,407 @@
+@use "./config" as *;
+@use "./mixins" as *;
+@use "./placeholders" as *;
+
+//
+// Datepicker Component
+//
+// Calendar-based date selection widget. Supports single date and date-range
+// selection modes with navigation between months and years.
+//
+
+@layer components {
+  [data-vc="calendar"] {
+    // scss-docs-start datepicker-tokens
+    --padding-x: var(--datepicker-padding-x, #{$datepicker-padding-x});
+    --padding-y: var(--datepicker-padding-y, #{$datepicker-padding-y});
+    --bg-color: var(--datepicker-bg-color, #{$datepicker-bg-main});
+    --fg-color: var(--datepicker-fg-color, #{$datepicker-fg-main});
+    --border-color: var(--datepicker-border-color, #{$datepicker-border-main});
+    --border-width: var(--datepicker-border-width, #{$datepicker-border-width-main});
+    --border-radius: var(--datepicker-border-radius, #{$datepicker-border-radius-main});
+    --day-border-radius: var(--datepicker-day-border-radius, #{$datepicker-border-radius-day});
+    --box-shadow: var(--datepicker-box-shadow, #{$datepicker-shadow-main});
+    @include map-font-size($datepicker-font-day, datepicker);
+    @include map-font-weight($datepicker-font-today, datepicker, today);
+    --min-width: var(--datepicker-min-width, #{$datepicker-menu-width});
+    --zindex: var(--datepicker-zindex, #{$zindex-menu});
+    @include map-font-size($datepicker-font-label, datepicker-header, header);
+    @include map-font-weight($datepicker-font-label, datepicker-header, header);
+    --weekday-fg-color: var(--datepicker-weekday-fg-color, #{$datepicker-fg-idle});
+    --day-hover-bg-color: var(--datepicker-day-hover-bg-color, #{$datepicker-bg-hover});
+    --day-selected-bg-color: var(--datepicker-day-selected-bg-color, #{$datepicker-bg-active});
+    --day-selected-fg-color: var(--datepicker-day-selected-fg-color, #{$datepicker-fg-active});
+    --day-range-bg-color: var(--datepicker-day-range-bg-color, #{$datepicker-bg-range});
+    --day-range-fg-color: var(--datepicker-day-range-fg-color, #{$datepicker-fg-range});
+    --day-today-bg-color: var(--datepicker-day-today-bg-color, #{$datepicker-bg-today});
+    --day-today-fg-color: var(--datepicker-day-today-fg-color, #{$datepicker-fg-today});
+    --day-weekend-bg-color: var(--datepicker-day-weekend-bg-color, #{$datepicker-bg-weekend});
+    --day-weekend-fg-color: var(--datepicker-day-weekend-fg-color, #{$datepicker-fg-weekend});
+    --day-disabled-fg-color: var(--datepicker-day-disabled-fg-color, #{$datepicker-fg-outside});
+    // scss-docs-end datepicker-tokens
+    @extend %component;
+    position: absolute;
+    z-index: var(--zindex);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-width: var(--min-width);
+    opacity: 1;
+    @include padding();
+    @include box-shadow(var(--box-shadow));
+
+    // Catch-all for focus styles
+    button:focus-visible {
+      position: relative;
+      z-index: 1;
+      @include focus-ring();
+    }
+  }
+
+  [data-vc-calendar-hidden] {
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  // Inline calendars
+  //
+  // Remove popover styling for more neutral styling
+  [data-vc="calendar"]:not([data-vc-input]) {
+    position: relative;
+    width: fit-content;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+  }
+
+  [data-vc-position="bottom"] {
+    margin-block-start: .25rem;
+  }
+
+  [data-vc-position="top"] {
+    margin-block-end: -.25rem;
+  }
+
+  [data-vc-arrow] {
+    position: relative;
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    color: var(--fg-color);
+    pointer-events: auto;
+    cursor: pointer;
+    background-color: transparent;
+    border: 0;
+    @include border-radius(var(--border-radius));
+
+    &::before {
+      position: absolute;
+      inset: .25rem;
+      content: "";
+      background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%236b7280' d='M12 16c-.3 0-.5-.1-.7-.3l-6-6c-.4-.4-.4-1 0-1.4s1-.4 1.4 0l5.3 5.3 5.3-5.3c.4-.4 1-.4 1.4 0s.4 1 0 1.4l-6 6c-.2.2-.4.3-.7.3'/></svg>");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    &:hover {
+      color: var(--day-hover-fg-color);
+      background-color: var(--day-hover-bg-color);
+    }
+  }
+
+  [data-vc-arrow="prev"]::before {
+    transform: rotate(90deg);
+  }
+
+  [data-vc-arrow="next"]::before {
+    transform: rotate(-90deg);
+  }
+
+  // Grid layout
+  [data-vc="controls"] {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block-start: var(--padding-y);
+    padding-inline: var(--padding-x);
+    pointer-events: none;
+  }
+
+  [data-vc="grid"] {
+    display: flex;
+    flex-grow: 1;
+    flex-wrap: wrap;
+    gap: 1.75rem;
+  }
+
+  [data-vc="column"] {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    min-width: var(--min-width);
+  }
+
+  //
+  // Header
+  //
+
+  [data-vc="header"] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-block-end: .75rem;
+  }
+
+  // Month and year
+  [data-vc-header="content"] {
+    display: inline-flex;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    white-space: pre-wrap;
+  }
+
+  [data-vc="month"],
+  [data-vc="year"] {
+    padding: .25rem .5rem;
+    margin-inline: -.125rem;
+    @include font-size(var(--header-font-size));
+    font-weight: var(--header-font-weight);
+    color: var(--header-fg-color);
+    // cursor: pointer;
+    background-color: transparent;
+    border: 0;
+    @include border-radius(var(--border-radius));
+
+    &:disabled {
+      color: var(--header-fg-color);
+      pointer-events: none;
+    }
+
+    &:hover:not(:disabled) {
+      color: var(--day-hover-fg-color);
+      background-color: var(--day-hover-bg-color);
+    }
+  }
+
+  [data-vc="content"] {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+  }
+
+  // Month/Year grids
+  [data-vc="months"],
+  [data-vc="years"] {
+    display: grid;
+    flex-grow: 1;
+    grid-template-columns: repeat(var(--vc-columns, 4), minmax(0, 1fr));
+    row-gap: 1rem;
+    column-gap: .25rem;
+    align-items: center;
+  }
+
+  [data-vc="years"] {
+    --vc-columns: 5;
+  }
+
+  [data-vc-months-month],
+  [data-vc-years-year] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+    padding: .25rem;
+    @include font-size(var(--day-font-size));
+    font-weight: 600;
+    line-height: 1rem;
+    color: var(--weekday-fg-color);
+    text-align: center;
+    word-break: break-all;
+    cursor: pointer;
+    background-color: transparent;
+    border: 0;
+    @include border-radius(var(--border-radius));
+
+    &:disabled {
+      color: var(--day-disabled-fg-color);
+      pointer-events: none;
+    }
+
+    &:hover:not(:disabled) {
+      color: var(--day-hover-fg-color);
+      background-color: var(--day-hover-bg-color);
+    }
+
+    &[data-vc-months-month-selected],
+    &[data-vc-years-year-selected] {
+      color: var(--day-selected-fg-color);
+      background-color: var(--day-selected-bg-color);
+
+      &:hover {
+        color: var(--day-selected-fg-color);
+        background-color: var(--day-selected-bg-color);
+      }
+    }
+  }
+
+  // Week days header
+  [data-vc="week"] {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    justify-items: center;
+    margin-block-end: .5rem;
+  }
+
+  [data-vc-week-day] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 1.875rem;
+    padding: 0;
+    margin: 0;
+    @include font-size(.75rem);
+    font-weight: 600;
+    line-height: 1rem;
+    color: var(--weekday-fg-color);
+    background-color: transparent;
+    border: 0;
+  }
+
+  // stylelint-disable-next-line selector-no-qualifying-type
+  button[data-vc-week-day] {
+    cursor: pointer;
+  }
+
+  // Dates grid
+  [data-vc="dates"] {
+    pointer-events: none;
+  }
+
+  [data-vc-dates="row"] {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    align-items: center;
+    justify-items: center;
+    width: 100%;
+  }
+
+  [data-vc-date] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding-block-start: .125rem;
+    padding-block-end: .125rem;
+    pointer-events: auto;
+
+    &:not(:has([data-vc-date-btn])),
+    &[data-vc-date-disabled],
+    &[data-vc-date-disabled] [data-vc-date-btn] { //stylelint-disable-line selector-max-attribute
+      pointer-events: none;
+    }
+  }
+  // Date button
+  [data-vc-date-btn] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 1.875rem;
+    height: 100%;
+    min-height: 1.875rem;
+    padding-block: 0;
+    @include font-size(var(--font-size));
+    font-weight: var(--font-weight);
+    line-height: 1rem;
+    color: var(--weekday-fg-color);
+    cursor: pointer;
+    background-color: transparent;
+    border: 0;
+    @include border-radius(var(--day-border-radius));
+
+    &:hover {
+      background-color: var(--day-hover-bg-color);
+    }
+  }
+
+  [data-vc-date-weekend] [data-vc-date-btn] {
+    color: var(--day-weekend-fg-color);
+    background-color: var(--day-weekend-bg-color);
+  }
+
+  // Today
+  [data-vc-date-today] [data-vc-date-btn] {
+    font-weight: var(--day-today-font-weight);
+    color: var(--day-today-fg-color);
+    background-color: var(--day-today-bg-color);
+  }
+
+  // Outside month
+  [data-vc-date-month="next"] [data-vc-date-btn],
+  [data-vc-date-month="prev"] [data-vc-date-btn] {
+    opacity: .5;
+  }
+
+  // Disabled
+  [data-vc-date-disabled] [data-vc-date-btn] {
+    color: var(--day-disabled-fg-color);
+  }
+
+  // Range selection styles
+  [data-vc-date-hover] [data-vc-date-btn] {
+    background-color: var(--day-hover-bg-color);
+    @include border-radius(0);
+  }
+
+  [data-vc-date-hover="first"] [data-vc-date-btn] {
+    @include border-top-start-radius(var(--day-border-radius));
+    @include border-bottom-start-radius(var(--day-border-radius));
+  }
+
+  [data-vc-date-hover="last"] [data-vc-date-btn] {
+    @include border-top-end-radius(var(--day-border-radius));
+    @include border-bottom-end-radius(var(--day-border-radius));
+  }
+
+  [data-vc-date-hover="first-and-last"] [data-vc-date-btn] {
+    @include border-radius(var(--day-border-radius));
+  }
+
+  [data-vc-date-selected="middle"] [data-vc-date-btn] {
+    @include border-radius(0);
+    color: var(--day-range-fg-color);
+    background-color: var(--day-range-bg-color);
+  }
+
+  // Selected
+  [data-vc-date-selected]:not([data-vc-date-selected="middle"]) [data-vc-date-btn] {
+    color: var(--day-selected-fg-color);
+    background-color: var(--day-selected-bg-color);
+
+  }
+
+  [data-vc-date-selected="first"] [data-vc-date-btn] {
+    @include border-top-start-radius(var(--day-border-radius));
+    @include border-top-end-radius(0);
+    @include border-bottom-end-radius(0);
+    @include border-bottom-start-radius(var(--day-border-radius));
+  }
+
+  [data-vc-date-selected="last"] [data-vc-date-btn] {
+    @include border-top-start-radius(0);
+    @include border-top-end-radius(var(--day-border-radius));
+    @include border-bottom-end-radius(var(--day-border-radius));
+    @include border-bottom-start-radius(0);
+  }
+
+  [data-vc-date-selected="first-and-last"] [data-vc-date-btn] {
+    @include border-radius(var(--day-border-radius));
+  }
+} // @layer components

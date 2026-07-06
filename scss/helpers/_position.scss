@@ -1,36 +1,45 @@
-// Shorthand
+@use "sass:map";
+@use "../config" as *;
+@use "../mixins" as *;
 
-.fixed-top {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: $zindex-fixed;
-}
+//
+// Position Helpers
+//
+// Shorthand classes for fixed and sticky positioning: .fixed-top,
+// .fixed-bottom, .sticky-top, .sticky-bottom.
+//
 
-.fixed-bottom {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: $zindex-fixed;
-}
+@layer helpers {
+  // scss-docs-start position-helpers
+  .fixed-top {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: $zindex-fixed;
+  }
 
-// Responsive sticky top and bottom
-@each $breakpoint in map-keys($grid-breakpoints) {
-  @include media-breakpoint-up($breakpoint) {
-    $infix: breakpoint-prefix($breakpoint, $grid-breakpoints);
+  .fixed-bottom {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: $zindex-fixed;
+  }
 
-    .#{$infix}sticky-top {
-      position: sticky;
-      top: 0;
-      z-index: $zindex-sticky;
-    }
+  // Responsive sticky top and bottom
+  @each $breakpoint in map.keys($breakpoints) {
+    @include media-breakpoint-up($breakpoint) {
+      $prefix: breakpoint-prefix($breakpoint, $breakpoints);
 
-    .#{$infix}sticky-bottom {
-      position: sticky;
-      bottom: 0;
-      z-index: $zindex-sticky;
+      .#{$prefix}sticky-top {
+        position: sticky;
+        inset-block-start: 0;
+        z-index: $zindex-sticky;
+      }
+
+      .#{$prefix}sticky-bottom {
+        position: sticky;
+        inset-block-end: 0;
+        z-index: $zindex-sticky;
+      }
     }
   }
-}
+  // scss-docs-end position-helpers
+} // @layer helpers

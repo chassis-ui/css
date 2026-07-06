@@ -1,0 +1,78 @@
+---
+title: Contrast
+description: Foreground and background color utilities for maintaining legibility on context-colored backgrounds.
+toc: true
+tokens: context
+css_layer: helpers
+---
+
+import { getData } from '@libs/data'
+
+Two families of helper classes pair foreground and background colors for legibility on context-palette backgrounds. The contrast family (`.fg-contrast`, `.bg-contrast`) reads token-defined values from CSS custom properties at runtime; the accessible family (`.fg-a11y`, `.bg-a11y`) embeds a WCAG 2.1–computed color at Sass build time. Both families use compound selectors — the context class and the helper class must appear on the same element.
+
+## Contrast colors
+
+Contrast colors come from the token system: each context exposes a `--{context}-contrast` CSS custom property at `:root`, and the contrast helpers read that property at runtime. Because the values are CSS custom properties, dark mode updates are handled automatically.
+
+### Contrast text
+
+`.fg-contrast` applies the token-defined contrast foreground color for the active background context. It requires a `.bg-{context}` class on the same element to match the compound selector.
+
+<Example code={[...getData('context-colors').map((color) => `<p class="bg-${color.name} fg-contrast p-xsmall">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} background with contrast color text.</p>`)]} />
+
+<Callout name="warning-color-assistive-technologies" />
+
+### Contrast background
+
+`.bg-contrast` applies the token-defined contrast background color for the active foreground context. It requires a `.fg-{context}` class on the same element.
+
+<Example code={[...getData('context-colors').map((color) => `<p class="fg-${color.name} bg-contrast p-xsmall">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} text with contrast color background.</p>`)]} />
+
+## Accessible colors
+
+The accessible family resolves a color at Sass build time using `color-contrast()`, which applies the WCAG 2.1 relative luminance formula to the context's base color. The result is always either white or black — whichever achieves a contrast ratio above 4.5:1 against the context background. Both light-mode and dark-mode values are computed from their respective context color maps and wrapped in `light-dark()`.
+
+<Callout type="warning">
+CSS-native `color-contrast()` is not yet supported in browsers. Chassis CSS computes accessible colors using a Sass function at build time, which means runtime overrides to context colors via CSS variables will not update these utility values automatically.
+</Callout>
+
+### Accessible text
+
+`.fg-a11y` applies the WCAG-computed foreground color (white or black) for the active background context. It requires a `.bg-{context}` class on the same element.
+
+<Example code={[...getData('context-colors').map((color) => `<p class="bg-${color.name} fg-a11y p-xsmall">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} background with accessible color text.</p>`)]} />
+
+### Accessible background
+
+`.bg-a11y` applies the WCAG-computed background color (white or black) for the active foreground context. It requires a `.fg-{context}` class on the same element.
+
+<Example code={[...getData('context-colors').map((color) => `<p class="fg-${color.name} bg-a11y p-xsmall">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} text with accessible color background.</p>`)]} />
+
+## With components
+
+Both families compose directly with component context classes. The examples below use [badges]([[docsref:/components/badge]]) and [cards]([[docsref:/components/card]]) with a context background class alongside `.fg-contrast` or `.fg-a11y`.
+
+<Example code={`<span class="badge primary">Context</span>
+<span class="badge fg-contrast bg-primary">Contrast</span>
+<span class="badge fg-a11y bg-primary">Accessible</span>`} />
+
+On [cards]([[docsref:/components/card#background-and-color]]):
+
+<Example class="d-flex flex-column large:flex-row gap-medium" code={`<div class="card bg-primary fg-contrast">
+    <div class="card-header">Contrast text</div>
+    <div class="card-body">
+      <p>Some quick example text to demonstrate the difference between contrast and accessible text.</p>
+    </div>
+  </div>
+  <div class="card bg-primary fg-a11y">
+    <div class="card-header">Accessible text</div>
+    <div class="card-body">
+      <p>Some quick example text to demonstrate the difference between contrast and accessible text.</p>
+    </div>
+  </div>`} />
+
+## CSS
+
+All four classes are generated via Sass loops over `$context-colors`. The contrast classes read `--{context}-contrast` CSS custom properties from `:root`, defined by the token system; the accessible classes embed computed color values directly — no runtime variable cascade occurs.
+
+<ScssDocs name="contrast-helpers" file="scss/helpers/_contrast.scss" />

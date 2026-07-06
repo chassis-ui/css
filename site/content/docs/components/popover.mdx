@@ -1,0 +1,367 @@
+---
+title: Popover
+description: Rich overlays with a title, body, and directional arrow, positioned by Floating UI.
+toc: true
+tokens: context
+css_layer: components
+js: required
+deps:
+  - title: Floating UI
+    url: https://floating-ui.com/
+  - title: Tooltip
+---
+
+## Introduction
+
+Popovers are overlays that display a `.popover-header` title, a `.popover-body` body, and a directional arrow. The Popover plugin extends [Tooltip]([[docsref:/components/tooltip]]) — it shares the same Floating UI positioning engine, placement logic, and lifecycle events, and adds a `content` slot and a default trigger of `click` instead of `hover focus`.
+
+Key behaviors:
+
+- Elements with `data-cx-toggle="popover"` initialize automatically on first click, focus, or hover — no JavaScript is required for the data API.
+- A popover with both title and content empty is never shown.
+- The default placement is `right`; the default trigger is `click`.
+- Calling `show` on a hidden element (inline `style.display: none`) throws an error.
+- Popovers on `disabled` elements must be attached to a wrapper element.
+- Hide a popover before removing its trigger element from the DOM.
+- Trigger elements inside a shadow DOM are supported.
+
+<Callout name="info-sanitizer" />
+
+<Callout name="info-prefersreducedmotion" />
+
+## Basic structure
+
+Add `data-cx-toggle="popover"` to a button or link, set `data-cx-title` for the header, `data-cx-content` for the body, or both. At least one must be non-empty for the popover to appear.
+
+<Example addStackblitzJs code={`<button type="button" class="button primary"
+    data-cx-toggle="popover"
+    data-cx-title="Popover title"
+    data-cx-content="Body content goes here.">
+  Toggle popover
+</button>`} />
+
+<Callout type="info">
+A native `title` attribute on the trigger is moved to `data-cx-original-title` on initialization — suppressing the browser's built-in tooltip — and used as the popover's header title when `data-cx-title` is not set.
+</Callout>
+
+The plugin generates the following markup and appends it to `document.body` (or the configured `container`):
+
+```html
+<div class="popover cx-popover-auto" role="tooltip">
+  <div class="popover-arrow"></div>
+  <h3 class="popover-header">Popover title</h3>
+  <div class="popover-body">Body content goes here.</div>
+</div>
+```
+
+The `cx-popover-auto` class reads the `data-cx-placement` attribute written by Floating UI after each position computation and applies the styles of the matching directional class (`cx-popover-top`, `cx-popover-end`, `cx-popover-bottom`, or `cx-popover-start`) to position the arrow. The trigger element receives `aria-describedby` pointing at the generated element's `id` while the popover is visible; the attribute is removed on hide.
+
+## Placement
+
+Set `data-cx-placement` on the trigger to control which side the popover appears on. The logical values `start` and `end` resolve to the inline-start and inline-end sides and adapt to the document's text direction. The physical values `left`, `right`, `top`, and `bottom` always place the popover on that side regardless of direction. The default is `right`.
+
+<Example addStackblitzJs code={`<button type="button" class="button secondary"
+    data-cx-toggle="popover"
+    data-cx-content="Top"
+    data-cx-placement="top">
+  top
+</button>
+<button type="button" class="button secondary"
+    data-cx-toggle="popover"
+    data-cx-content="Bottom"
+    data-cx-placement="bottom">
+  bottom
+</button>
+<button type="button" class="button secondary"
+    data-cx-toggle="popover"
+    data-cx-content="Start"
+    data-cx-placement="start">
+  start
+</button>
+<button type="button" class="button secondary"
+    data-cx-toggle="popover"
+    data-cx-content="End"
+    data-cx-placement="end">
+  end
+</button>
+<button type="button" class="button secondary"
+    data-cx-toggle="popover"
+    data-cx-content="Left"
+    data-cx-placement="left">
+  left
+</button>
+<button type="button" class="button secondary"
+    data-cx-toggle="popover"
+    data-cx-content="Right"
+    data-cx-placement="right">
+  right
+</button>`} />
+
+When the preferred placement would cause the popover to overflow its boundary, Floating UI's flip middleware selects a fallback from `['top', 'right', 'bottom', 'left']`. Override the fallback list with the `fallbackPlacements` option.
+
+### Responsive placement
+
+The placement value accepts breakpoint prefixes to change direction at different viewport widths. The syntax is the base placement followed by `breakpoint:placement` tokens, where breakpoints are `small`, `medium`, `large`, `xlarge`, and `2xlarge`. The plugin re-evaluates placement whenever the viewport crosses a registered breakpoint.
+
+<Example addStackblitzJs code={`<button type="button" class="button secondary"
+    data-cx-toggle="popover"
+    data-cx-content="Changes with viewport"
+    data-cx-placement="top medium:right large:bottom">
+  top → medium:right → large:bottom
+</button>`} />
+
+## Advanced features
+
+The popover plugin supports HTML content, focus-based dismissal, and a wrapper pattern for attaching popovers to disabled elements.
+
+### HTML content
+
+Set `data-cx-html="true"` to render HTML tags inside the title and body. Content passes through the built-in sanitizer unless a custom `sanitizeFn` is provided. Use plain text for any content derived from user input.
+
+<Example addStackblitzJs code={`<button type="button" class="button primary"
+    data-cx-toggle="popover"
+    data-cx-title="<em>Formatted</em> title"
+    data-cx-content="Body with <strong>bold</strong> text."
+    data-cx-html="true">
+  HTML content
+</button>`} />
+
+### Focus-based dismissal
+
+Set `data-cx-trigger="focus"` to dismiss the popover when the trigger loses focus — useful for contextual help that closes as soon as the user moves on.
+
+<Callout type="warning">
+Focus-based dismissal requires an `<a>` element with a `tabindex` attribute rather than a `<button>`. In some browsers, clicking a `<button>` does not transfer keyboard focus to it, which breaks the focus-out dismiss behavior.
+</Callout>
+
+<Example addStackblitzJs code={`<a tabindex="0" class="button primary" href="#"
+    data-cx-toggle="popover"
+    data-cx-trigger="focus"
+    data-cx-title="Dismissible popover"
+    data-cx-content="Loses focus to dismiss.">
+  Dismissible popover
+</a>`} />
+
+### Disabled elements
+
+Disabled elements do not receive click or focus events. Wrap a disabled element in a `<span>`, place the popover attributes on the wrapper, and add `tabindex="0"` to keep the wrapper reachable by keyboard.
+
+<Example addStackblitzJs code={`<span class="d-inline-block" tabindex="0"
+    data-cx-toggle="popover"
+    data-cx-trigger="hover focus"
+    data-cx-content="Attached to the wrapper.">
+  <button class="button primary" type="button" disabled>Disabled button</button>
+</span>`} />
+
+### Container
+
+When a parent's stacking context or overflow clips the popover, pass a `container` option to append the generated element to a different DOM node. Setting `container` to `document.body` is common for popovers inside complex layouts:
+
+```js
+import { Popover } from '@chassis-ui/css'
+
+new Popover(document.querySelector('.my-trigger'), { container: document.body })
+```
+
+For popovers inside a `<dialog>`, set `container` to the dialog element to keep stacking context and focus management correct:
+
+```js
+new Popover(document.querySelector('.dialog-trigger'), {
+  container: document.querySelector('dialog')
+})
+```
+
+## Theming
+
+Override popover appearance by assigning a custom class with `data-cx-custom-class` and redefining the component's [custom properties](#custom-properties) on that class.
+
+<ScssDocs name="custom-popovers" file="site/src/scss/_examples.scss" />
+
+<Example addStackblitzJs class="custom-popover-demo" code={`<button type="button" class="button secondary"
+    data-cx-toggle="popover"
+    data-cx-placement="right"
+    data-cx-custom-class="custom-popover"
+    data-cx-title="Custom popover"
+    data-cx-content="Themed via CSS custom properties.">
+  Custom popover
+</button>`} />
+
+## Accessibility
+
+The Popover plugin manages `aria-describedby` automatically: the trigger element receives an `aria-describedby` pointing at the generated popover's `id` while the popover is visible, and the attribute is removed on hide. The generated element carries `role="tooltip"`.
+
+If a trigger has a native `title` attribute, the plugin moves it to `data-cx-original-title` on initialization — suppressing the browser's built-in tooltip and using it as the popover's header when `data-cx-title` is not set.
+
+The default trigger is `click`. Pressing Enter or Space on a focusable trigger fires the click event, so keyboard users can open and close popovers without additional configuration. Apply popovers only to natively interactive elements — buttons and links — that already receive keyboard focus.
+
+<Callout type="warning">
+Avoid placing interactive content — links, inputs, or buttons — inside the popover body. The popover is appended to `document.body` by default, placing it outside the trigger's position in the tab order. Keyboard users reach interactive content inside the popover only after cycling through all remaining page content. If interactive content is necessary, set `container` to an element near the trigger to preserve a logical tab sequence.
+</Callout>
+
+## JavaScript API
+
+The Popover plugin extends [Tooltip]([[docsref:/components/tooltip#javascript-api]]) and inherits its full interface. Floating UI must be available, either via the bundled distribution or an [import map]([[docsref:/getting-started/javascript#using-chassis-as-a-module]]). Import the `Popover` class directly:
+
+```js
+import { Popover } from '@chassis-ui/css'
+```
+
+### Triggers
+
+The data-attribute API initializes and configures popovers without writing JavaScript. The plugin reads all `data-cx-*` attributes on the trigger element:
+
+<CxTable>
+| Attribute | Description |
+| --- | --- |
+| `data-cx-toggle="popover"` | Marks the element as a popover trigger. The plugin initializes on first click, focus, or hover. |
+| `data-cx-title` | Title text rendered in `.popover-header`. Optional when `data-cx-content` is set. A native `title` attribute is moved to `data-cx-original-title` on init. |
+| `data-cx-content` | Body text rendered in `.popover-body`. Optional when `data-cx-title` is set. |
+| `data-cx-placement` | Preferred placement. Logical: `start`, `end` (adapt to text direction). Physical: `top`, `bottom`, `left`, `right`. Default: `right`. Accepts responsive prefixes. |
+| `data-cx-trigger` | Events that show and hide the popover: `click`, `hover`, `focus`, `manual`. Default: `click`. |
+| `data-cx-container` | CSS selector or DOM element to append the generated popover to. Default resolves to `document.body`. |
+| `data-cx-custom-class` | Extra class names added to the popover element. |
+| `data-cx-html` | When `true`, renders HTML in title and body content. |
+</CxTable>
+
+<Callout type="warning">
+For security reasons, `sanitize`, `sanitizeFn`, and `allowList` cannot be set via `data-cx-*` attributes or `data-cx-config`. Use JavaScript constructor options instead.
+</Callout>
+
+### Initialization
+
+Instantiate a `Popover` explicitly when programmatic API access is needed before the first user interaction:
+
+```js
+import { Popover } from '@chassis-ui/css'
+
+const popover = new Popover(document.getElementById('myTrigger'), {
+  placement: 'top',
+  trigger: 'hover focus'
+})
+```
+
+<Callout type="info">
+Popovers reposition automatically when a parent has `overflow: auto` or `overflow: scroll`. To constrain the shift boundary, pass an HTMLElement to the `boundary` option:
+
+```js
+const popover = new Popover('#example', {
+  boundary: document.body
+})
+```
+</Callout>
+
+### Methods
+
+The following methods are available on each `Popover` instance:
+
+<Callout name="danger-async-methods" type="danger" />
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `disable` | Prevents the popover from appearing until re-enabled. |
+| `dispose` | Hides and destroys the instance, removing stored data from the trigger element. Popovers created with a `selector` option cannot be individually destroyed on descendant triggers. |
+| `enable` | Restores the popover after `disable`. Popovers are enabled by default. |
+| `getInstance` | *Static.* Returns the existing `Popover` instance bound to a DOM element, or `null`. |
+| `getOrCreateInstance` | *Static.* Returns the existing `Popover` instance, or creates and returns a new one. |
+| `hide` | Hides the popover. Returns before the `hidden.cx.popover` event fires. |
+| `setContent` | Updates the popover's title and body content after initialization. |
+| `show` | Shows the popover. Returns before the `shown.cx.popover` event fires. A popover with empty title and content is never shown. |
+| `toggle` | Toggles the popover. Returns before the show or hide event fires. |
+| `toggleEnabled` | Toggles between enabled and disabled states. |
+| `update` | Recalculates the popover's position. |
+</CxTable>
+
+`setContent` accepts an object keyed by selector within the popover template. Recognized keys are `.popover-header` and `.popover-body`. Each value may be a `string`, `Element`, `function`, or `null`:
+
+```js
+import { Popover } from '@chassis-ui/css'
+
+const popover = Popover.getInstance('#myTrigger')
+
+popover.setContent({
+  '.popover-header': 'Updated title',
+  '.popover-body': 'Updated content'
+})
+```
+
+### Options
+
+<JsDataAttributes />
+
+<CxTable>
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `allowList` | object | [Default value]([[docsref:/getting-started/javascript#sanitizer]]) | Allowed tags and attributes for HTML content. Tags and attributes absent from this list are stripped by [the content sanitizer]([[docsref:/getting-started/javascript#sanitizer]]). <Callout type="warning">**Exercise caution when extending this list.** See [OWASP's XSS Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html).</Callout> |
+| `animation` | boolean | `true` | Applies a CSS fade transition. |
+| `boundary` | string, element | `'clippingParents'` | Overflow constraint boundary for Floating UI's shift middleware. The default string `'clippingParents'` is translated to `'clippingAncestors'` internally. Pass an HTMLElement to constrain to a specific element. See [Floating UI shift docs](https://floating-ui.com/docs/shift#boundary). |
+| `container` | string, element, false | `false` | Element to append the popover to. The value `false` resolves to `document.body` at runtime. Set explicitly to keep the popover in a specific stacking context. |
+| `content` | string, element, function | `''` | Content for `.popover-body`. A function is called with the trigger element as its argument. |
+| `customClass` | string, function | `''` | Additional class names applied to the popover on show. Pass a space-separated string for multiple classes, or a function that returns a string. |
+| `delay` | number, object | `0` | Show and hide delay in milliseconds. A number applies to both; an object sets them independently: `{ "show": 500, "hide": 100 }`. |
+| `fallbackPlacements` | array | `['top', 'right', 'bottom', 'left']` | Ordered fallback placements for Floating UI's flip middleware. Must use physical values (`top`, `right`, `bottom`, `left`); `start` and `end` are not resolved here. See [Floating UI flip docs](https://floating-ui.com/docs/flip#fallbackplacements). |
+| `floatingConfig` | null, object, function | `null` | Overrides the default Floating UI `computePosition` configuration. A function receives the default config object and must return a new config. See [Floating UI computePosition docs](https://floating-ui.com/docs/computePosition). |
+| `html` | boolean | `false` | Renders HTML tags in title and body content. When `false`, content is inserted via `innerText`. Use `false` for user-generated content to prevent XSS. |
+| `offset` | array, string, function | `[0, 8]` | Distance between the popover and its trigger `[crossAxis, mainAxis]`. Pass a comma-separated string in data attributes: `data-cx-offset="10,20"`. A function receives placement and rects and must return a two-number array. See [Floating UI offset docs](https://floating-ui.com/docs/offset). |
+| `placement` | string, function | `'right'` | Preferred placement. Logical values `start` and `end` adapt to text direction. Physical values `top`, `bottom`, `left`, and `right` always place the popover on that side. Accepts responsive prefixes (`'top medium:right'`). A function receives the popover element and the trigger element and must return a placement string. |
+| `sanitize` | boolean | `true` | Enables [content sanitization]([[docsref:/getting-started/javascript#sanitizer]]) for `template`, `content`, and `title`. <Callout type="warning">**Disabling sanitization removes XSS protection.** See [OWASP's XSS Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html). Vulnerabilities arising solely from disabled sanitization are outside Chassis CSS's security scope.</Callout> |
+| `sanitizeFn` | null, function | `null` | Custom [sanitization function]([[docsref:/getting-started/javascript#sanitizer]]). Replaces the built-in sanitizer when provided. |
+| `selector` | string, false | `false` | CSS selector for event delegation. Enables attaching popovers to dynamically added descendants matching the selector. |
+| `template` | string | `'<div class="popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'` | Base HTML for the generated popover. The title is injected into `.popover-header`; content into `.popover-body`; the arrow element must carry `.popover-arrow`. The outermost element must carry `.popover` and `role="tooltip"`. |
+| `title` | string, element, function | `''` | Popover title for `.popover-header`. A function is called with the trigger element as its argument. |
+| `trigger` | string | `'click'` | Events that show and hide the popover: `click`, `hover`, `focus`, `manual`. Pass multiple values separated by spaces. `manual` cannot be combined with other triggers and requires calling `show`, `hide`, or `toggle` programmatically. |
+</CxTable>
+
+#### `floatingConfig` function
+
+When `floatingConfig` is a function, it receives the default Floating UI configuration object and must return a new config:
+
+```js
+import { Popover } from '@chassis-ui/css'
+
+const popover = new Popover(element, {
+  floatingConfig(defaultConfig) {
+    return { ...defaultConfig, strategy: 'fixed' }
+  }
+})
+```
+
+### Events
+
+Each lifecycle transition fires a namespaced event on the trigger element:
+
+```js
+import { Popover } from '@chassis-ui/css'
+
+const trigger = document.getElementById('myTrigger')
+
+trigger.addEventListener('hidden.cx.popover', () => {
+  Popover.getInstance(trigger).dispose()
+})
+```
+
+<CxTable>
+| Event | Description |
+| --- | --- |
+| `hide.cx.popover` | Fires immediately when `hide` is called. |
+| `hidden.cx.popover` | Fires after the popover is fully hidden, once CSS transitions complete. |
+| `inserted.cx.popover` | Fires after `show.cx.popover` when the popover element has been added to the DOM. |
+| `show.cx.popover` | Fires immediately when `show` is called. |
+| `shown.cx.popover` | Fires after the popover is fully visible, once CSS transitions complete. |
+</CxTable>
+
+## CSS
+
+<DocsCSS name="Popover" exposed />
+
+### Custom properties
+
+<DocsCSSVars name="Popover" />
+
+<ScssDocs name="popover-css-vars" file="scss/_popover.scss" />
+
+### Sass variables
+
+<DocsSASSVars name="Popover" />
+
+<ScssDocs name="popover-variables" file="scss/config/_defaults.scss" />

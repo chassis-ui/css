@@ -1,0 +1,54 @@
+@use "../config" as *;
+@use "../placeholders" as *;
+
+//
+// Chip Input
+//
+// Tag-entry control that displays selected values as removable chips inside
+// a text field. Used by the ChipInput JS component for multi-value inputs.
+//
+
+@layer components {
+  .chip-input {
+    // scss-docs-start chip-input-tokens
+    --padding-y: var(--chip-input-padding-y, #{$form-chip-input-padding-y});
+    --padding-x: var(--chip-input-padding-x, #{$form-chip-input-padding-x});
+    --gap: var(--chip-input-gap, #{$form-chip-input-gap});
+    --min-width: var(--chip-input-min-width, #{$form-chip-input-min-width});
+    --min-height: var(--chip-input-min-height, #{$form-chip-input-min-height});
+    // scss-docs-end chip-input-tokens
+
+    // Flexbox wrapping layout
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap);
+    align-items: center;
+
+    .form-floating > & {
+      // stylelint-disable-next-line declaration-no-important
+      padding-block-start: #{$form-floating-inactive-padding-y * 2} !important;
+      &:focus-within {
+        --bg-color: var(--form-focus-bg-floating);
+      }
+    }
+
+    // Ghost input fills remaining space
+    > .ghost-input {
+      flex: 1 1 0;
+      min-width: var(--min-width);
+      min-height: var(--min-height);
+      &:disabled::placeholder {
+        color: var(--form-disabled-fg-inactive);
+      }
+    }
+
+    // Disabled state
+    &.disabled,
+    &:has(.ghost-input:disabled) {
+      > .chip {
+        pointer-events: none;
+        opacity: var(--opacity-fg-slight);
+      }
+    }
+  }
+} // @layer components

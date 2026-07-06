@@ -1,9 +1,11 @@
+@use "sass:list";
+@use "../config" as *;
+
 //
 // Component Mixins
 //
-// A collection of utility mixins for consistent component styling across Chassis CSS.
-// These mixins help maintain consistent theming, spacing, and borders by using CSS
-// custom properties with optional component namespacing.
+// Utility mixins for applying color, spacing, and border properties to
+// components via CSS custom properties with optional component namespacing.
 //
 
 // scss-docs-start colors-mixin
@@ -12,10 +14,10 @@
 ///
 /// @param {String|null} $comp [null] - Component namespace (e.g., "button"); prepends `{comp}-` to variable names
 @mixin colors($comp: null) {
-  color: var(--#{$prefix}#{if($comp, "#{$comp}-", "")}fg-color);
-  background-color: var(--#{$prefix}#{if($comp, "#{$comp}-", "")}bg-color);
-  border-color: var(--#{$prefix}#{if($comp, "#{$comp}-", "")}border-color);
-  // fill: var(--#{$prefix}#{if($comp, "#{$comp}-", "")}icon-color);
+  $-prefix: "";
+  @if $comp { $-prefix: "#{$comp}-"; }
+  color: var(--#{$-prefix}fg-color);
+  background-color: var(--#{$-prefix}bg-color);
 }
 // scss-docs-end colors-mixin
 
@@ -25,7 +27,9 @@
 ///
 /// @param {String|null} $comp [null] - Component namespace; prepends `{comp}-` to variable names
 @mixin padding($comp: null) {
-  padding: var(--#{$prefix}#{if($comp, "#{$comp}-", "")}padding-y) var(--#{$prefix}#{if($comp, "#{$comp}-", "")}padding-x);
+  $-prefix: "";
+  @if $comp { $-prefix: "#{$comp}-"; }
+  padding: var(--#{$-prefix}padding-y) var(--#{$-prefix}padding-x);
 }
 // scss-docs-end padding-mixin
 
@@ -40,33 +44,37 @@
 ///
 /// @param {String} $comp - Component name to look up in `$enable-exclude-strokes`
 @mixin exclude-strokes($comp) {
-  @if $enable-exclude-strokes == true or index($enable-exclude-strokes, $comp) {
-    $border-width: var(--#{$prefix}border-width);
-    $padding-y: #{calc(var(--#{$prefix}padding-y) - #{$border-width})};
-    $padding-x: #{calc(var(--#{$prefix}padding-x) - #{$border-width})};
+  @if $enable-exclude-strokes == true or list.index($enable-exclude-strokes, $comp) {
+    $border-width: var(--border-width);
+    $padding-y: calc(var(--padding-y) - #{$border-width});
+    $padding-x: calc(var(--padding-x) - #{$border-width});
     padding: $padding-y $padding-x;
   } @else {
-    padding: var(--#{$prefix}padding-y) var(--#{$prefix}padding-x);
+    padding: var(--padding-y) var(--padding-x);
   }
 }
 // scss-docs-end exclude-strokes-mixin
 
 // scss-docs-start border-mixin
 /// Apply a full border shorthand using CSS custom properties.
-/// Falls back to `0 solid transparent` when the variables are not set.
+/// Optionally namespaces variables under a component prefix.
 ///
 /// @param {String|null} $comp [null] - Component namespace; prepends `{comp}-` to variable names
 @mixin border($comp: null) {
-  border: var(--#{$prefix}#{if($comp, "#{$comp}-", "")}border-width, 0) var(--#{$prefix}#{if($comp, "#{$comp}-", "")}border-style, solid) var(--#{$prefix}#{if($comp, "#{$comp}-", "")}border-color, transparent);
+  $-prefix: "";
+  @if $comp {
+    $-prefix: "#{$comp}-";
+  }
+  border: var(--#{$-prefix}border-width) var(--#{$-prefix}border-style) var(--#{$-prefix}border-color);
 }
 // scss-docs-end border-mixin
 
 // scss-docs-start last-mb-0-mixin
-/// Extend the `.last-mb-0` utility class to remove `margin-bottom` from the
-/// last `<p>` child of the element. Useful in card bodies, popovers, and
-/// other containers where trailing paragraph spacing would break layout.
+/// Remove the bottom margin of the last child paragraph within a component.
 @mixin last-mb-0 {
-  @extend .last-mb-0;
+  > p:last-child {
+    margin-block-end: 0;
+  }
 }
 // scss-docs-end last-mb-0-mixin
 

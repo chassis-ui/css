@@ -6,73 +6,122 @@ toc: true
 
 ## Lean Sass imports
 
-When using Sass in your asset pipeline, make sure you optimize Chassis CSS by only `@import`ing the components you need. Your largest optimizations will likely come from the `Layout & Components` section of our `chassis.scss`.
+When using Sass in your asset pipeline, optimize Chassis CSS by only `@use`-ing the components you need. Your largest optimizations will come from the Layout & Components section of `chassis.scss`.
 
 <ScssDocs name="import-stack" file="scss/chassis.scss" />
 
 
-If you’re not using a component, comment it out or delete it entirely. For example, if you’re not using the carousel, remove that import to save some file size in your compiled CSS. Keep in mind there are some dependencies across Sass imports that may make it more difficult to omit a file.
+If you're not using a component, comment it out or delete it entirely. For example, if you're not using the carousel, remove that import to save some file size in your compiled CSS. Keep in mind there are some dependencies across Sass imports that may make it more difficult to omit a file.
+
+### Trim unused breakpoints
+
+Chassis CSS generates responsive surfaces — utility prefixes (`small:d-flex`, `large:m-medium`), grid columns (`.col-large-6`), container query loops, and the `--breakpoint-*` CSS custom properties — from a single `$breakpoints` map. Projects that don't need every breakpoint can shrink the compiled CSS substantially by overriding the map before importing Chassis:
+
+```scss
+// custom.scss
+@use "@chassis-ui/css/scss/config/defaults" with (
+  $breakpoints: (
+    xsmall:   0,
+    small:    36rem,
+    medium:   48rem,
+    large:    62rem,
+  )
+);
+
+@use "@chassis-ui/css/scss/chassis";
+```
+
+Each breakpoint dropped from the map removes its prefixed utility classes (roughly **21 KB minified** off `chassis-utilities.css`), its grid column variants, its container query block, and its `--breakpoint-*` CSS variable.
+
+Two constraints apply:
+
+- The `xsmall` breakpoint must remain. It carries the unprefixed mobile-first base classes that every responsive utility builds on.
+- Several Chassis components hardcode `small`, `medium`, and `large` in their internal responsive logic. Removing any of those three breaks those components. The `xlarge` and `2xlarge` breakpoints are not hardcoded anywhere internal and are safe to remove.
 
 ## Lean JavaScript
 
-Chassis CSS’s JavaScript includes every component in our primary dist files (`chassis.js` and `chassis.min.js`), and even our primary dependency (Popper) with our bundle files (`chassis.bundle.js` and `chassis.bundle.min.js`). While you’re customizing via Sass, be sure to remove related JavaScript.
+Chassis JS includes every plugin in the primary dist files (`chassis.js` and `chassis.min.js`), and Floating UI in the bundle files (`chassis.bundle.js` and `chassis.bundle.min.js`). When customizing via Sass, remove the JavaScript for any components you've excluded.
 
-For instance, assuming you’re using your own JavaScript bundler like Webpack, Parcel, or Vite, you’d only import the JavaScript you plan on using. In the example below, we show how to just include our modal JavaScript:
+With a bundler you can import exactly the plugins you need. Two equivalent styles — pick the one that fits your project:
 
-```js
-// Import just what we need
-
-// import 'chassis-css/js/dist/alert';
-// import 'chassis-css/js/dist/button';
-// import 'chassis-css/js/dist/carousel';
-// import 'chassis-css/js/dist/collapse';
-// import 'chassis-css/js/dist/dropdown';
-import 'chassis-css/js/dist/modal';
-// import 'chassis-css/js/dist/offcanvas';
-// import 'chassis-css/js/dist/popover';
-// import 'chassis-css/js/dist/scrollspy';
-// import 'chassis-css/js/dist/tab';
-// import 'chassis-css/js/dist/toast';
-// import 'chassis-css/js/dist/tooltip';
-```
-
-This way, you’re not including any JavaScript you don’t intend to use for components like buttons, carousels, and tooltips. If you’re importing dropdowns, tooltips or popovers, be sure to list the Popper dependency in your `package.json` file.
-
-<Callout>
-**Heads up!** Files in `chassis-css/js/dist` use the **default export**. To use them, do the following:
+**Named imports** (tree-shaken by the bundler):
 
 ```js
-import Modal from 'chassis-css/js/dist/modal'
-const modal = new Modal(document.getElementById('myModal'))
+import { Accordion, Dialog, Notification } from '@chassis-ui/css'
 ```
-</Callout>
+
+**Individual file imports** (explicit, no bundler tree-shaking required):
+
+```js
+import '@chassis-ui/css/js/dist/accordion'
+import '@chassis-ui/css/js/dist/dialog'
+import '@chassis-ui/css/js/dist/notification'
+```
+
+`Menu`, `Popover`, and `Tooltip` depend on Floating UI — add `@floating-ui/dom` to your dependencies if you import any of them.
 
 ## Autoprefixer .browserslistrc
 
-Chassis CSS depends on Autoprefixer to automatically add browser prefixes to certain CSS properties. Prefixes are dictated by our `.browserslistrc` file, found in the root of the Chassis CSS repo. Customizing this list of browsers and recompiling the Sass will automatically remove some CSS from your compiled CSS, if there are vendor prefixes unique to that browser or version.
+Chassis CSS depends on Autoprefixer to automatically add browser prefixes to certain CSS properties. Prefixes are dictated by the `.browserslistrc` file in the root of the Chassis CSS repo. Customizing this list of browsers and recompiling the Sass will automatically remove some CSS from your compiled CSS, if there are vendor prefixes unique to that browser or version.
 
 ## Unused CSS
 
-_Help wanted with this section, please consider opening a PR. Thanks!_
+The Sass-level reductions above ([Lean Sass imports](#lean-sass-imports) and [Trim unused breakpoints](#trim-unused-breakpoints)) trim Chassis at compile time. To strip selectors that survived compilation but never appear in the application markup, a post-build purge step is the highest-leverage tool — a typical application uses well under 10% of the utility classes Chassis ships. [PurgeCSS](https://github.com/FullHuman/purgecss) scans HTML, JavaScript, and template files for class names and removes everything the scan didn't find.
 
-While we don’t have a prebuilt example for using [PurgeCSS](https://github.com/FullHuman/purgecss) with Chassis, there are some helpful articles and walkthroughs that the community has written. Here are some options:
+```js
+// postcss.config.js
+import purgecss from '@fullhuman/postcss-purgecss'
 
-- https://medium.com/dwarves-foundation/remove-unused-css-styles-from-chassis-using-purgecss-88395a2c5772
-- https://lukelowrey.com/automatically-removeunused-css-from-chassis-or-other-frameworks/
+export default {
+  plugins: [
+    purgecss({
+      content: [
+        './src/**/*.html',
+        './src/**/*.{js,jsx,ts,tsx,vue,astro,svelte}',
+      ],
+      defaultExtractor: (content) =>
+        content.match(/[\w/:-]+(?<!:)/g) || [],
+      safelist: {
+        standard: [
+          // State classes added by Chassis JS at runtime —
+          // they never appear in static markup.
+          'active', 'show', 'showing', 'hide', 'hiding',
+          'fade', 'slide', 'instant', 'collapsed', 'collapsing',
+          'selected', 'swap-in', 'd-none', 'disabled',
+          'dialog-open',
+          // Carousel sliding states
+          'carousel-item-start', 'carousel-item-end',
+          'carousel-item-next', 'carousel-item-prev',
+        ],
+        greedy: [
+          // Selectors that target Chassis behavioural attributes.
+          /\[data-cx-/,
+        ],
+      },
+    }),
+  ],
+}
+```
 
-Lastly, this [CSS Tricks article on unused CSS](https://css-tricks.com/how-do-you-remove-unused-css-from-a-site/) shows how to use PurgeCSS and other similar tools.
+Three Chassis-specific gotchas the default PurgeCSS config will miss:
+
+- **Responsive prefix classes (`small:d-flex`, `large:m-medium`) contain a colon.** The default extractor strips everything after a colon, treating these as pseudo-selectors. The custom `defaultExtractor` above (`[\w/:-]+(?<!:)`) preserves internal colons while still rejecting trailing ones, so responsive utilities survive the purge.
+- **JavaScript-toggled state classes never appear in source markup.** Classes such as `.active`, `.show`, `.fade`, `.collapsing`, `.hiding`, and `.dialog-open` are added by Chassis JS in response to user interaction. They must be safelisted explicitly or they get stripped.
+- **`:has()`, sibling, and attribute selectors reference classes the extractor never sees.** A rule like `.stepper-item:has(~ .stepper-item.active)` depends on `.active` being preserved on `.stepper-item`, even though no static markup carries it. When a component relies on such selectors, safelist the relevant modifier classes.
+
+For Vite, Astro, Next.js, or webpack, the same plugin runs through each tool's PostCSS integration with no additional setup — install `@fullhuman/postcss-purgecss` and add it to the PostCSS plugin chain.
 
 ## Minify and gzip
 
-Whenever possible, be sure to compress all the code you serve to your visitors. If you’re using Chassis CSS dist files, try to stick to the minified versions (indicated by the `.min.css` and `.min.js` extensions). If you’re building Chassis CSS from the source with your own build system, be sure to implement your own minifiers for HTML, CSS, and JS.
+Whenever possible, be sure to compress all the code you serve to your visitors. If you're using Chassis CSS dist files, try to stick to the minified versions (indicated by the `.min.css` and `.min.js` extensions). If you're building Chassis CSS from the source with your own build system, be sure to implement your own minifiers for HTML, CSS, and JS.
 
 ## Non-blocking files
 
 While minifying and using compression might seem like enough, making your files non-blocking ones is also a big step in making your site well-optimized and fast enough.
 
-If you are using a [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview/) plugin in Google Chrome, you may have stumbled over FCP. [The First Contentful Paint](https://web.dev/articles/fcp) metric measures the time from when the page starts loading to when any part of the page’s content is rendered on the screen.
+If you are using a [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview/) plugin in Google Chrome, you may have stumbled over FCP. [The First Contentful Paint](https://web.dev/articles/fcp) metric measures the time from when the page starts loading to when any part of the page's content is rendered on the screen.
 
-You can improve FCP by deferring non-critical JavaScript or CSS. What does that mean? Simply, JavaScript or stylesheets that don’t need to be present on the first paint of your page should be marked with `async` or `defer` attributes.
+You can improve FCP by deferring non-critical JavaScript or CSS. What does that mean? Simply, JavaScript or stylesheets that don't need to be present on the first paint of your page should be marked with `async` or `defer` attributes.
 
 This ensures that the less important resources are loaded later and not blocking the first paint. On the other hand, critical resources can be included as inline scripts or styles.
 
@@ -85,4 +134,4 @@ If you want to learn more about this, there are already a lot of great articles 
 
 Your website should only be available over HTTPS connections in production. HTTPS improves the security, privacy, and availability of all sites, and [there is no such thing as non-sensitive web traffic](https://https.cio.gov/everything/). The steps to configure your website to be served exclusively over HTTPS vary widely depending on your architecture and web hosting provider, and thus are beyond the scope of these docs.
 
-Sites served over HTTPS should also access all stylesheets, scripts, and other assets over HTTPS connections. Otherwise, you’ll be sending users [mixed active content](https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content), leading to potential vulnerabilities where a site can be compromised by altering a dependency. This can lead to security issues and in-browser warnings displayed to users. Whether you’re getting Chassis CSS from a CDN or serving it yourself, ensure that you only access it over HTTPS connections.
+Sites served over HTTPS should also access all stylesheets, scripts, and other assets over HTTPS connections. Otherwise, you'll be sending users [mixed active content](https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content), leading to potential vulnerabilities where a site can be compromised by altering a dependency. This can lead to security issues and in-browser warnings displayed to users. Whether you're getting Chassis CSS from a CDN or serving it yourself, ensure that you only access it over HTTPS connections.

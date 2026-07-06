@@ -1,627 +1,706 @@
 ---
 title: Navbar
-description: Powerful, flexible navigation components for creating headers, menus, and application navigation interfaces with Chassis CSS.
+description: Build responsive site and application navigation with branding, nav links, forms, and a drawer-based mobile menu — composable from Chassis sub-components.
 toc: true
+tokens: context
+css_layer: components
+css_media: container
+js: required
+deps:
+  - title: Drawer
+  - title: Nav
 ---
 
 import { getConfig } from '@libs/config'
 
 ## Overview
 
-Navbars are versatile navigation components that serve as the primary navigation interface for your website or application. With Chassis CSS, you can create responsive, accessible, and visually consistent navigation experiences.
+The navbar is the primary navigation surface for a site or application. It composes a branding area, a set of navigation links, optional forms or text, and a drawer-based mobile menu — all wrapped in a single `<nav>` element that is responsive by default.
 
 ### Key features
 
-Chassis CSS navbars offer a range of features to enhance your navigation experience:
-
-- Automatically collapses into a mobile-friendly menu at your chosen breakpoint
-- Supports branding, navigation links, forms, and more
-- Proper ARIA attributes and keyboard navigation support
-- Easily customize with Chassis CSS's theming system using `data-cx-theme`
-- Works seamlessly with dropdowns, offcanvas, and other Chassis components
+- Collapses into a slide-in drawer at a chosen breakpoint via the `.{breakpoint}:navbar-expand` modifier
+- Built-in sub-components for branding (`.navbar-brand`), navigation (`.navbar-nav`), forms, and inline text (`.navbar-text`)
+- Container-query based — the expand transition responds to the navbar's own width, not the viewport
+- Themed through standard Chassis context classes (`.context.<color>`) and `data-cx-theme="dark"`
+- Translucent variant for navbars positioned over content
+- Integrates with the Drawer, Collapse, and Menu JavaScript plugins
 
 ## Basic structure
 
-A complete navbar combines several key components to create a functional navigation system that automatically adapts to different screen sizes:
+A complete navbar combines five elements: the `.navbar` wrapper, an inner container (typically `.container.fluid`), a `.navbar-brand`, a `.navbar-toggler` button, and a `<dialog class="drawer">` that holds the navigation when collapsed. Below the chosen `.{breakpoint}:navbar-expand` breakpoint, the toggler reveals the drawer; above it, the drawer's contents flow inline and the toggler hides automatically.
 
-- A container (`.navbar` with `.navbar-expand-*` for responsive behavior)
-- Branding (`.navbar-brand`)
-- Navigation links (`.navbar-nav`)
-- Optional toggle button for smaller screens (`.navbar-toggler`)
-- Collapsible content (`.collapse.navbar-collapse`)
+Resize the example below to preview the transition between drawer and inline modes.
 
-Here's a basic navbar with these components:
-
-<Example code={`<nav class="navbar large:navbar-expand bg-evident">
+<ResizableExample code={`<nav class="navbar medium:navbar-expand bg-even" aria-label="Main navigation">
     <div class="container fluid">
-      <a class="navbar-brand" href="#">Brand</a>
-      <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarBasic" aria-controls="navbarBasic" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="icon icon-bars-solid icon-default"></span>
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarDrawer" aria-controls="navbarDrawer" aria-expanded="false" aria-label="Toggle navigation">
+        <Icon name="bars-outline" class="navbar-toggler-icon" />
       </button>
-      <div class="collapse navbar-collapse" id="navbarBasic">
-        <ul class="navbar-nav me-auto mb-xsmall large:mb-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-cx-toggle="dropdown" aria-expanded="false">Dropdown</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><hr class="dropdown-separator"></li>
-              <li><a class="dropdown-item" href="#">Something else</a></li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-          </li>
-        </ul>
-        <form class="d-flex" role="search">
-          <input class="form-input me-xsmall" type="search" placeholder="Search" aria-label="Search"/>
-          <button class="button outline primary" type="submit">Search</button>
-        </form>
-      </div>
-    </div>
-  </nav>`} />
+      <dialog class="drawer drawer-end" tabindex="-1" id="navbarDrawer" aria-labelledby="navbarDrawerLabel">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="navbarDrawerLabel">Menu</h2>
 
-This example uses [background]([[docsref:/utilities/background]]) (`bg-evident`) and [spacing]([[docsref:/utilities/spacing]]) utility classes for layout refinement.
-
-### Accessibility
-
-Ensuring your navbars are accessible to all users requires proper semantic markup, ARIA attributes, and keyboard navigation support.
-
-For proper accessibility:
-
-- Use a `<nav>` element with `role="navigation"` when using other elements like `<div>`
-- Add `aria-current="page"` to indicate the current page in the navigation
-- Include `aria-label="Toggle navigation"` on toggle buttons
-- Add `aria-expanded` attributes that correctly reflect the state of collapsible elements
-
-<Callout name="info-prefersreducedmotion" />
-
-## Content components
-
-Navbars support various content elements that can be combined to build complete navigation experiences for any type of site or application.
-
-### Branding
-
-The `.navbar-brand` class creates a visually distinct area for your logo or product name. It can be applied to links, headings, or other elements.
-
-#### Text branding
-
-Use `.navbar-brand` to create a text-based brand identifier:
-
-<Example code={`<!-- As a link -->
-  <nav class="navbar bg-evident">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Brand</a>
-    </div>
-  </nav>
-
-  <!-- As a heading -->
-  <nav class="navbar bg-evident">
-    <div class="container fluid">
-      <span class="navbar-brand mb-0 h1">Brand</span>
-    </div>
-  </nav>`} />
-
-#### Logo image
-
-Use an image within `.navbar-brand` for a logo.
-
-<Example code={`<nav class="navbar bg-evident">
-    <div class="container">
-      <a class="navbar-brand" href="#">
-        <img src="/static/images/site-logo.svg" alt="Chassis CSS Logo" height="24">
-      </a>
-    </div>
-  </nav>`} />
-
-#### Combined image and text
-
-Use both an image and text for a more complete branding element. Use the `d-inline-block` and `align-text-top` classes to align the image with the text.
-
-<Example code={`<nav class="navbar bg-evident">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">
-        <img src="/static/images/site-logo.svg" alt="Logo" height="24" class="d-inline-block align-text-top">
-        <span class="font-strong ms-xsmall">CSS</span>
-      </a>
-    </div>
-  </nav>`} />
-
-### Navigation links
-
-Navbar navigation links use the `.nav-link` class within a `.navbar-nav` container and support active states, disabled states, and dropdowns.
-
-<Example code={`<nav class="navbar large:navbar-expand bg-evident">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Navigation</a>
-      <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>`} />
-
-#### Alternative markup
-
-You can use a non-list structure for your navigation when preferred:
-
-<Example code={`<nav class="navbar large:navbar-expand bg-evident">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Navigation</a>
-      <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
-          <a class="nav-link" href="#">Link</a>
-          <a class="nav-link" href="#">About</a>
-          <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
         </div>
-      </div>
-    </div>
-  </nav>`} />
-
-#### With dropdowns
-
-Dropdowns in navbars need proper nesting to work correctly:
-
-<Example code={`<nav class="navbar large:navbar-expand bg-evident">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Navigation</a>
-      <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-cx-toggle="dropdown" aria-expanded="false">Dropdown</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><hr class="dropdown-separator"></li>
-              <li><a class="dropdown-item" href="#">Something else</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>`} />
-
-### Forms
-
-Navbars can include forms for search functionality or other input needs:
-
-<Example code={`<nav class="navbar bg-evident">
-    <div class="container fluid">
-      <form class="d-flex" role="search">
-        <input class="form-input me-xsmall" type="search" placeholder="Search" aria-label="Search"/>
-        <button class="button outline primary" type="submit">Search</button>
-      </form>
-    </div>
-  </nav>`} />
-
-You can combine forms with other navbar elements:
-
-<Example code={`<nav class="navbar bg-evident">
-    <div class="container fluid">
-      <a class="navbar-brand">Brand</a>
-      <form class="d-flex" role="search">
-        <input class="form-input me-xsmall" type="search" placeholder="Search" aria-label="Search"/>
-        <button class="button outline primary" type="submit">Search</button>
-      </form>
-    </div>
-  </nav>`} />
-
-Input groups are also supported:
-
-<Example code={`<nav class="navbar bg-evident">
-    <form class="container fluid">
-      <div class="input-group">
-        <span class="input-addon" id="basic-addon1">@</span>
-        <input type="text" class="form-input" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"/>
-      </div>
-    </form>
-  </nav>`} />
-
-### Text content
-
-For simple text elements, use `.navbar-text`:
-
-<Example code={`<nav class="navbar bg-evident">
-    <div class="container fluid">
-      <span class="navbar-text">
-        Simple navbar text content
-      </span>
-    </div>
-  </nav>`} />
-
-You can combine text with other navbar components:
-
-<Example code={`<nav class="navbar large:navbar-expand bg-evident">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Brand</a>
-      <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarText">
-        <ul class="navbar-nav me-auto mb-xsmall large:mb-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-        </ul>
-        <span class="navbar-text">
-          Navbar text element
-        </span>
-      </div>
-    </div>
-  </nav>`} />
-
-## Theming
-
-Customize the appearance of your navbars with Chassis CSS's powerful theming system, including dark mode and contextual color variants.
-
-### Dark mode
-
-Use `data-cx-theme="dark"` to apply dark mode styling to your navbar:
-
-<div class="cxd-example">
-  <nav class="navbar large:navbar-expand bg-main fg-main" data-cx-theme="dark">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Dark Theme</a>
-      <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarColor01">
-        <ul class="navbar-nav me-auto mb-xsmall large:mb-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
-          </li>
-        </ul>
-        <form class="d-flex" role="search">
-          <input class="form-input me-xsmall" type="search" placeholder="Search" aria-label="Search"/>
-          <button class="button default outline" type="submit">Search</button>
-        </form>
-      </div>
-    </div>
-  </nav>
-</div>
-
-```html
-<nav class="navbar large:navbar-expand bg-main fg-main" data-cx-theme="dark">
-  <!-- Navbar content -->
-</nav>
-```
-
-### Context variants
-
-Apply contextual colors to your navbar using the `context` class with color variants:
-
-<div class="cxd-example">
-  <nav class="navbar large:navbar-expand context primary solid" data-cx-theme="dark">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Primary Color</a>
-      <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarColor02">
-        <ul class="navbar-nav me-auto mb-xsmall large:mb-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
-          </li>
-        </ul>
-        <form class="d-flex" role="search">
-          <input class="form-input me-xsmall" type="search" placeholder="Search" aria-label="Search"/>
-          <button class="button default outline" type="submit">Search</button>
-        </form>
-      </div>
-    </div>
-  </nav>
-
-  <nav class="navbar large:navbar-expand context primary bg-even" data-cx-theme="light">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Light Theme</a>
-      <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarColor03">
-        <ul class="navbar-nav me-auto mb-xsmall large:mb-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
-          </li>
-        </ul>
-        <form class="d-flex" role="search">
-          <input class="form-input me-xsmall" type="search" placeholder="Search" aria-label="Search"/>
-          <button class="button primary outline" type="submit">Search</button>
-        </form>
-      </div>
-    </div>
-  </nav>
-</div>
-
-```html
-<nav class="navbar large:navbar-expand context primary solid" data-cx-theme="dark">
-  <!-- Navbar content -->
-</nav>
-
-<nav class="navbar large:navbar-expand context primary bg-even" data-cx-theme="light">
-  <!-- Navbar content -->
-</nav>
-```
-
-## Layout options
-
-Control how your navbar is positioned, sized, and contained within your page layout using flexible container and positioning options.
-
-### Containers
-
-Wrap your navbar in a container to control its width and positioning:
-
-<Example code={`<div class="container">
-    <nav class="navbar large:navbar-expand bg-evident">
-      <div class="container fluid">
-        <a class="navbar-brand" href="#">Contained Navbar</a>
-      </div>
-    </nav>
-  </div>`} />
-
-You can also use responsive containers within the navbar:
-
-<Example code={`<nav class="navbar large:navbar-expand bg-evident">
-    <div class="container medium">
-      <a class="navbar-brand" href="#">Medium Width</a>
-    </div>
-  </nav>`} />
-
-### Positioning
-
-Use Chassis position utilities to create fixed, sticky, or static navbars:
-
-<Example code={`<nav class="navbar bg-evident">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Default</a>
-    </div>
-  </nav>`} />
-
-<Example code={`<nav class="navbar fixed-top bg-evident">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Fixed Top</a>
-    </div>
-  </nav>`} />
-
-<Example code={`<nav class="navbar fixed-bottom bg-evident">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Fixed Bottom</a>
-    </div>
-  </nav>`} />
-
-<Example code={`<nav class="navbar sticky-top bg-evident">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Sticky Top</a>
-    </div>
-  </nav>`} />
-
-<Example code={`<nav class="navbar sticky-bottom bg-evident">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Sticky Bottom</a>
-    </div>
-  </nav>`} />
-
-## Advanced features
-
-Extend your navbar's functionality with scrollable navigation, external content control, offcanvas integration, and other specialized features.
-
-### Scrollable content
-
-For navbars with many items, add `.navbar-nav-scroll` to enable scrolling:
-
-<Example code={`<nav class="navbar large:navbar-expand bg-evident">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Scrollable Nav</a>
-      <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarScroll">
-        <ul class="navbar-nav me-auto my-xsmall large:my-0 navbar-nav-scroll" style="--cx-scroll-height: 100px;">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link 1</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-cx-toggle="dropdown" aria-expanded="false">Dropdown</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><hr class="dropdown-separator"></li>
-              <li><a class="dropdown-item" href="#">Something else</a></li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link 2</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link 3</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link 4</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-          </li>
-        </ul>
-        <form class="d-flex" role="search">
-          <input class="form-input me-xsmall" type="search" placeholder="Search" aria-label="Search"/>
-          <button class="button outline primary" type="submit">Search</button>
-        </form>
-      </div>
-    </div>
-  </nav>`} />
-
-### Responsive behavior
-
-Control when your navbar collapses with the `.{breakpoint}:navbar-expand` classes:
-
-- `.small:navbar-expand` - Collapses below the small breakpoint
-- `.medium:navbar-expand` - Collapses below the medium breakpoint
-- `.large:navbar-expand` - Collapses below the large breakpoint
-- `.xlarge:navbar-expand` - Collapses below the extra large breakpoint
-- `.2xlarge:navbar-expand` - Collapses below the 2x large breakpoint
-- `.navbar-expand` - Never collapses
-- No `.navbar-expand` class - Always collapsed
-
-### Toggle button placement
-
-The position of the toggle button depends on the order of elements in your markup:
-
-<Example code={`<nav class="navbar large:navbar-expand bg-evident">
-    <div class="container fluid">
-      <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarTogglePosition1" aria-controls="navbarTogglePosition1" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <a class="navbar-brand" href="#">Brand on Right</a>
-      <div class="collapse navbar-collapse" id="navbarTogglePosition1">
-        <ul class="navbar-nav me-auto mb-xsmall large:mb-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-          </li>
-        </ul>
-        <form class="d-flex" role="search">
-          <input class="form-input me-xsmall" type="search" placeholder="Search" aria-label="Search"/>
-          <button class="button outline primary" type="submit">Search</button>
-        </form>
-      </div>
-    </div>
-  </nav>`} />
-
-### External content control
-
-The navbar toggler can control content outside the navbar:
-
-<Example code={`<div class="collapse bg-evident" id="navbarToggleExternalContent">
-    <div class="p-large">
-      <h5 class="fg-main h4">External content panel</h5>
-      <span class="fg-subtle">This content is outside the navbar but controlled by it.</span>
-    </div>
-  </div>
-  <nav class="navbar bg-evident">
-    <div class="container fluid">
-      <button class="navbar-toggler" type="button" data-cx-toggle="collapse" data-cx-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-    </div>
-  </nav>`} />
-
-### Offcanvas integration
-
-Transform your navbar into an offcanvas drawer for a modern interface pattern:
-
-<Example code={`<nav class="navbar bg-evident fixed-top">
-    <div class="container fluid">
-      <a class="navbar-brand" href="#">Offcanvas Navbar</a>
-      <button class="navbar-toggler" type="button" data-cx-toggle="offcanvas" data-cx-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon icon-main"></span>
-      </button>
-      <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-        <div class="offcanvas-header">
-          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Navigation Menu</h5>
-          <button type="button" class="close-button" data-cx-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-          <ul class="navbar-nav justify-content-end flex-grow-1 pe-medium">
+        <div class="drawer-body mb-small medium:mb-0">
+          <ul class="navbar-nav me-auto">
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="#">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#">Link</a>
             </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-cx-toggle="dropdown" aria-expanded="false">Dropdown</a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li>
-                  <hr class="dropdown-separator">
-                </li>
-                <li><a class="dropdown-item" href="#">Something else</a></li>
-              </ul>
+            <li class="nav-item">
+              <button class="nav-link menu-toggle" type="button" data-cx-toggle="menu" aria-expanded="false">
+                Menu
+              </button>
+              <div class="menu">
+                <a class="menu-item" href="#">Action</a>
+                <a class="menu-item" href="#">Another action</a>
+                <hr class="menu-divider">
+                <a class="menu-item" href="#">Something else here</a>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" aria-disabled="true">Disabled</a>
             </li>
           </ul>
-          <form class="d-flex mt-medium" role="search">
-            <input class="form-input me-xsmall" type="search" placeholder="Search" aria-label="Search"/>
-            <button class="button outline primary" type="submit">Search</button>
+          <form class="hstack gap-small" role="search">
+            <input class="form-input" type="search" placeholder="Search" aria-label="Search"/>
+            <button class="button neutral smooth icon-only" type="submit" aria-label="Search">
+              <Icon name="search-solid" />
+            </button>
           </form>
         </div>
-      </div>
+      </dialog>
     </div>
   </nav>`} />
+
+## Content components
+
+The navbar exposes a small set of sub-components — brand, nav, forms, and inline text — that combine into a complete navigation surface. Each can appear independently or together inside the same `.navbar`.
+
+### Branding
+
+The `.navbar-brand` sets the project or product identity at the start of the navbar. It works on any element, but an anchor is the most common choice since the brand typically links to the home page.
+
+#### Text
+
+Wrap a text label in any element carrying `.navbar-brand`.
+
+<Example code={`<nav class="navbar bg-even" aria-label="Main navigation">
+    <div class="container fluid">
+      <a class="navbar-brand" href="#">Navbar</a>
+    </div>
+  </nav>`} />
+
+#### Image
+
+Replace the text with an `<img>` for an image-only brand.
+
+<Example code={`<nav class="navbar bg-even" aria-label="Main navigation">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <img src="/static/images/site-logo.svg" alt="Chassis CSS" height="24">
+      </a>
+    </div>
+  </nav>`} />
+
+#### Image and text
+
+Combine an image and text in the same brand element. The `.d-inline-block` and `.align-text-top` utilities keep the image aligned with the surrounding text baseline.
+
+<Example code={`<nav class="navbar bg-even" aria-label="Main navigation">
+    <div class="container fluid">
+      <a class="navbar-brand" href="#">
+        <img src="/static/images/site-logo.svg" alt="Logo" height="24" class="d-inline-block align-text-top">
+        <span class="ms-xsmall font-strong">CSS</span>
+      </a>
+    </div>
+  </nav>`} />
+
+### Navigation links
+
+Navbar navigation uses `.nav-link` inside a `.navbar-nav` container. The container holds the links inside the drawer below the expand breakpoint and lays them out inline above it, where they grow to occupy the available horizontal space.
+
+Mark the current link with `.active` and `aria-current="page"`.
+
+<ResizableExample code={`<nav class="navbar small:navbar-expand bg-even" aria-label="Main navigation">
+    <div class="container fluid">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <Icon name="bars-outline" class="navbar-toggler-icon" />
+      </button>
+      <dialog class="drawer drawer-end" tabindex="-1" id="navbarNav" aria-labelledby="navbarNavLabel">
+        <div class="drawer-header">
+          <h3 class="drawer-title" id="navbarNavLabel">Menu</h3>
+
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+            </li>
+          </ul>
+        </div>
+      </dialog>
+    </div>
+  </nav>`} />
+
+#### Alternative markup
+
+The `<ul>` / `<li>` structure is optional. A plain `<div class="navbar-nav">` containing direct `<a class="nav-link">` children produces the same result, and pairs naturally with `.nav-pills` or other nav variants.
+
+<ResizableExample code={`<nav class="navbar small:navbar-expand bg-even" aria-label="Main navigation">
+    <div class="container fluid">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <Icon name="bars-outline" class="navbar-toggler-icon" />
+      </button>
+      <dialog class="drawer drawer-end" tabindex="-1" id="navbarNavAltMarkup" aria-labelledby="navbarNavAltMarkupLabel">
+        <div class="drawer-header">
+          <h3 class="drawer-title" id="navbarNavAltMarkupLabel">Menu</h3>
+
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <div class="nav-pills navbar-nav">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+            <a class="nav-link" href="#">Link</a>
+            <a class="nav-link" href="#">About</a>
+            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+          </div>
+        </div>
+      </dialog>
+    </div>
+  </nav>`} />
+
+#### With menus
+
+The Menu plugin nests inside a `.nav-item`, with the trigger marked by `data-cx-toggle="menu"`. The wrapping `.nav-item` is required so the menu positions correctly relative to its trigger.
+
+<ResizableExample code={`<nav class="navbar medium:navbar-expand bg-even" aria-label="Main navigation">
+    <div class="container fluid">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarNavMenu" aria-controls="navbarNavMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <Icon name="bars-outline" class="navbar-toggler-icon" />
+      </button>
+      <dialog class="drawer drawer-end" tabindex="-1" id="navbarNavMenu" aria-labelledby="navbarNavMenuLabel">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="navbarNavMenuLabel">Menu</h2>
+
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" type="button" data-cx-toggle="menu" aria-expanded="false">
+                Menu
+              </button>
+              <div class="menu">
+                <a class="menu-item" href="#">Action</a>
+                <a class="menu-item" href="#">Another action</a>
+                <a class="menu-item" href="#">Something else here</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </dialog>
+    </div>
+  </nav>`} />
+
+### Forms
+
+Form controls placed inside a navbar use the standard form classes. The navbar's flex layout defaults to `justify-content: space-between`, so a brand on the left and a form on the right align automatically without additional utilities.
+
+A standalone search form:
+
+<Example code={`<nav class="navbar bg-even" aria-label="Main navigation">
+    <div class="container fluid">
+      <form class="d-flex" role="search">
+        <input class="form-input me-small" type="search" placeholder="Search" aria-label="Search"/>
+        <button class="button primary outline" type="submit">Search</button>
+      </form>
+    </div>
+  </nav>`} />
+
+The same form alongside a brand — the flex layout pushes the form to the opposite edge:
+
+<Example code={`<nav class="navbar bg-even" aria-label="Main navigation">
+    <div class="container fluid">
+      <a class="navbar-brand">Navbar</a>
+      <form class="d-flex" role="search">
+        <input class="form-input me-small" type="search" placeholder="Search" aria-label="Search"/>
+        <button class="button primary outline" type="submit">Search</button>
+      </form>
+    </div>
+  </nav>`} />
+
+Input groups work too. When the navbar is essentially a form, using the `<form>` element as the inner container saves a level of markup.
+
+<Example code={`<nav class="navbar bg-even" aria-label="Main navigation">
+    <form class="container fluid">
+      <div class="input-group">
+        <span class="input-addon" id="basic-addon1">@</span>
+        <input type="text" class="form-input" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"/>
+        <button type="submit" class="button primary">Submit</button>
+      </div>
+    </form>
+  </nav>`} />
+
+Mixed button sizes inside a navbar form align via the same flex layout, with vertical alignment utilities available for finer adjustment.
+
+<Example code={`<nav class="navbar bg-even" aria-label="Main navigation">
+    <form class="container fluid justify-content-start">
+      <button class="button primary outline me-small" type="button">Main button</button>
+      <button class="button small secondary outline" type="button">Smaller button</button>
+      <button type="submit" hidden>Submit</button>
+    </form>
+  </nav>`} />
+
+### Text content
+
+The `.navbar-text` class adjusts vertical alignment and horizontal spacing for inline strings of text inside the navbar.
+
+<Example code={`<nav class="navbar bg-even" aria-label="Main navigation">
+    <div class="container fluid">
+      <span class="navbar-text">
+        Navbar text with an inline element
+      </span>
+    </div>
+  </nav>`} />
+
+Text combines naturally with other navbar components inside the drawer body.
+
+<ResizableExample code={`<nav class="navbar medium:navbar-expand bg-even" aria-label="Main navigation">
+    <div class="container fluid">
+      <a class="navbar-brand" href="#">Navbar w/ text</a>
+      <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <Icon name="bars-outline" class="navbar-toggler-icon" />
+      </button>
+      <dialog class="drawer drawer-end" tabindex="-1" id="navbarText" aria-labelledby="navbarTextLabel">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="navbarTextLabel">Menu</h2>
+
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <ul class="navbar-nav me-auto mb-small medium:mb-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+          </ul>
+          <span class="navbar-text">
+            Navbar text with an inline element
+          </span>
+        </div>
+      </dialog>
+    </div>
+  </nav>`} />
+
+## Theming
+
+The navbar inherits Chassis's full theming system — dark mode toggles, context color variants, and a translucent variant for over-content navbars.
+
+### Dark mode
+
+Apply `data-cx-theme="dark"` directly to the `.navbar` element to opt a single navbar into the dark theme regardless of the page's color scheme.
+
+<ResizableExample code={`<nav class="navbar medium:navbar-expand bg-even" data-cx-theme="dark" aria-label="Main navigation">
+    <div class="container fluid">
+      <a class="navbar-brand" href="#">Dark navbar</a>
+      <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarDarkDrawer" aria-controls="navbarDarkDrawer" aria-expanded="false" aria-label="Toggle navigation">
+        <Icon name="bars-outline" class="navbar-toggler-icon" />
+      </button>
+      <dialog class="drawer drawer-end" tabindex="-1" id="navbarDarkDrawer" aria-labelledby="navbarDarkDrawerLabel">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="navbarDarkDrawerLabel">Menu</h2>
+
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body mb-small medium:mb-0">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" type="button" data-cx-toggle="menu" aria-expanded="false">
+                Menu
+              </button>
+              <div class="menu">
+                <a class="menu-item" href="#">Action</a>
+                <a class="menu-item" href="#">Another action</a>
+                <hr class="menu-divider">
+                <a class="menu-item" href="#">Something else here</a>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+            </li>
+          </ul>
+          <form class="hstack gap-small" role="search">
+            <input class="form-input" type="search" placeholder="Search" aria-label="Search"/>
+            <button class="button primary outline icon-only" type="submit" aria-label="Search">
+              <Icon name="search-solid" />
+            </button>
+          </form>
+        </div>
+      </dialog>
+    </div>
+  </nav>`} />
+
+### Context variants
+
+The `.context.<color>` modifier swaps the navbar's color palette to a semantic context. Combine with `.solid` for a saturated fill, with `bg-*` utilities for custom backgrounds, or with `data-cx-theme` to mix theme and context independently.
+
+<ResizableExample containerClass="d-flex flex-column gap-small" showMarkup={false} code={`
+<nav class="navbar medium:navbar-expand context primary solid" aria-label="Main navigation">
+  <div class="container fluid">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+      <Icon name="bars-outline" class="navbar-toggler-icon" />
+    </button>
+    <dialog class="drawer drawer-end" tabindex="-1" id="navbarColor01" aria-labelledby="navbarColor01Label">
+      <div class="drawer-header">
+        <h2 class="drawer-title" id="navbarColor01Label">Menu</h2>
+
+        <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+      </div>
+      <div class="drawer-body">
+        <ul class="navbar-nav me-auto mb-small medium:mb-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+        </ul>
+        <form class="d-flex" role="search">
+          <input class="form-control me-small" type="search" placeholder="Search" aria-label="Search"/>
+          <button class="button default" type="submit">Search</button>
+        </form>
+      </div>
+    </dialog>
+  </div>
+</nav>
+
+<nav class="navbar medium:navbar-expand context primary bg-even" data-cx-theme="dark" aria-label="Main navigation">
+  <div class="container fluid">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+      <Icon name="bars-outline" class="navbar-toggler-icon" />
+    </button>
+    <dialog class="drawer drawer-end" tabindex="-1" id="navbarColor02" aria-labelledby="navbarColor02Label">
+      <div class="drawer-header">
+        <h2 class="drawer-title" id="navbarColor02Label">Menu</h2>
+
+        <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+      </div>
+      <div class="drawer-body">
+        <ul class="navbar-nav me-auto mb-small medium:mb-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+        </ul>
+        <form class="d-flex" role="search">
+          <input class="form-control me-small" data-cx-theme="light" type="search" placeholder="Search" aria-label="Search"/>
+          <button class="button default" type="submit">Search</button>
+        </form>
+      </div>
+    </dialog>
+  </div>
+</nav>
+
+<nav class="navbar medium:navbar-expand context primary bg-even" data-cx-theme="light" aria-label="Main navigation">
+  <div class="container fluid">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+      <Icon name="bars-outline" class="navbar-toggler-icon" />
+    </button>
+    <dialog class="drawer drawer-end" tabindex="-1" id="navbarColor03" aria-labelledby="navbarColor03Label">
+      <div class="drawer-header">
+        <h2 class="drawer-title" id="navbarColor03Label">Menu</h2>
+
+        <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+      </div>
+      <div class="drawer-body">
+        <ul class="navbar-nav me-auto mb-small medium:mb-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+        </ul>
+        <form class="d-flex" role="search">
+          <input class="form-control me-small" type="search" placeholder="Search" aria-label="Search"/>
+          <button class="button outline primary" type="submit">Search</button>
+        </form>
+      </div>
+    </dialog>
+  </div>
+</nav>
+`} />
+
+```html
+<nav class="navbar context primary solid" aria-label="Main navigation">
+  <!-- Solid primary on default theme -->
+</nav>
+
+<nav class="navbar context primary bg-even" data-cx-theme="dark" aria-label="Main navigation">
+  <!-- Primary tint on a dark sub-tree -->
+</nav>
+
+<nav class="navbar context primary bg-even" data-cx-theme="light" aria-label="Main navigation">
+  <!-- Primary tint on a light sub-tree -->
+</nav>
+```
+
+### Translucent
+
+The `.translucent` modifier blurs and saturates whatever sits behind the navbar — useful when the navbar is positioned over a hero image, video, or scrollable content.
+
+<Example class="cxd-pattern-dots z-0 primary-bg-even" code={`<nav class="navbar translucent medium:navbar-expand" aria-label="Main navigation">
+    <div class="container fluid">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">About</a>
+        </li>
+      </ul>
+    </div>
+  </nav>`} />
+
+## Layout options
+
+The navbar can be wrapped in a container, hold its own container, sit fixed at the top or bottom of the viewport, or stick during scroll.
+
+### Containers
+
+A navbar wrapped in a `.container` is centered on the page; the inner container is still required for the navbar's own padding. Placing the inner container directly inside `.navbar` instead centers only the navbar's contents while keeping its background full-width.
+
+<Example code={`<div class="container">
+    <nav class="navbar large:navbar-expand bg-even" aria-label="Main navigation">
+      <div class="container fluid">
+        <a class="navbar-brand" href="#">Navbar</a>
+      </div>
+    </nav>
+  </div>`} />
+
+Any responsive container variant is available to control how wide the navbar's contents appear.
+
+<Example code={`<nav class="navbar large:navbar-expand bg-even" aria-label="Main navigation">
+    <div class="container medium">
+      <a class="navbar-brand" href="#">Navbar</a>
+    </div>
+  </nav>`} />
+
+### Placement
+
+The [position utilities]([[docsref:/utilities/position]]) — `.fixed-top`, `.fixed-bottom`, `.sticky-top`, `.sticky-bottom` — pull the navbar out of normal flow or pin it during scroll. Fixed navbars use `position: fixed` and may require a compensating offset on the body (e.g. `padding-top`) to prevent content overlap.
+
+<NavbarPlacementPlayground />
+
+## Advanced features
+
+Beyond the basic structure, the navbar exposes controls for tuning its responsive transition, the drawer's slide direction, the toggler's position, and integration with content that lives outside the `.navbar` element itself.
+
+### Responsive behavior
+
+The `.{breakpoint}:navbar-expand` modifier controls when the navbar transitions between drawer mode and inline mode:
+
+- `.small:navbar-expand` — drawer below the small breakpoint, inline at small and above
+- `.medium:navbar-expand` — drawer below medium, inline at medium and above
+- `.large:navbar-expand` — drawer below large, inline at large and above
+- `.xlarge:navbar-expand` — drawer below xlarge, inline at xlarge and above
+- `.2xlarge:navbar-expand` — drawer below 2xlarge, inline at 2xlarge and above
+- `.navbar-expand` — inline at all widths (toggler hidden, drawer markup renders flat inside the navbar)
+- No `.navbar-expand` class — drawer at all widths (toggler always visible, the drawer must be opened to access the nav)
+
+The breakpoint trigger is implemented with container queries, so the transition responds to the navbar's own width rather than the viewport width.
+
+### Drawer placement
+
+The drawer slides in from any side via the `.drawer-{position}` classes:
+
+- `.drawer-start` — left edge (or right in RTL)
+- `.drawer-end` — right edge (or left in RTL); used as the default in this doc's examples
+- `.drawer-top` — top edge
+- `.drawer-bottom` — bottom edge
+
+The examples below omit the `.{breakpoint}:navbar-expand` class so the drawer is always visible regardless of viewport width.
+
+<ResizableExample code={`<nav class="navbar medium:navbar-expand bg-even" aria-label="Main navigation">
+    <div class="container fluid">
+      <a class="navbar-brand" href="#">Left Drawer</a>
+      <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarLeftDrawer" aria-controls="navbarLeftDrawer" aria-expanded="false" aria-label="Toggle navigation">
+        <Icon name="bars-outline" class="navbar-toggler-icon" />
+      </button>
+      <dialog class="drawer drawer-start" tabindex="-1" id="navbarLeftDrawer" aria-labelledby="navbarLeftDrawerLabel">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="navbarLeftDrawerLabel">Menu</h2>
+
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <ul class="navbar-nav me-auto mb-small medium:mb-0">
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
+            <li class="nav-item"><a class="nav-link disabled" aria-disabled="true">Disabled</a></li>
+          </ul>
+        </div>
+      </dialog>
+    </div>
+  </nav>`} />
+
+<ResizableExample code={`<nav class="navbar medium:navbar-expand bg-even" aria-label="Main navigation">
+    <div class="container fluid">
+      <a class="navbar-brand" href="#">Top Drawer</a>
+      <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarTopDrawer" aria-controls="navbarTopDrawer" aria-expanded="false" aria-label="Toggle navigation">
+        <Icon name="bars-outline" class="navbar-toggler-icon" />
+      </button>
+      <dialog class="drawer drawer-top" tabindex="-1" id="navbarTopDrawer" aria-labelledby="navbarTopDrawerLabel">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="navbarTopDrawerLabel">Menu</h2>
+
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <ul class="navbar-nav me-auto mb-small medium:mb-0">
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
+            <li class="nav-item"><a class="nav-link disabled" aria-disabled="true">Disabled</a></li>
+          </ul>
+        </div>
+      </dialog>
+    </div>
+  </nav>`} />
+
+### Toggle button
+
+The `.navbar-toggler` has no fixed position — its location within the navbar is determined by its order in the markup relative to other flex siblings. Placing it before `.navbar-brand` renders it on the left; placing it after renders it on the right. The flex container distributes spacing between siblings automatically, so no positioning utility classes are required.
+
+With no `.navbar-brand` visible (the brand lives inside the drawer):
+
+<ResizableExample code={`<nav class="navbar medium:navbar-expand bg-even" aria-label="Main navigation">
+    <div class="container fluid">
+      <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+        <Icon name="bars-outline" class="navbar-toggler-icon" />
+      </button>
+      <dialog class="drawer drawer-end" tabindex="-1" id="navbarTogglerDemo01" aria-labelledby="navbarTogglerDemo01Label">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="navbarTogglerDemo01Label">Hidden brand</h2>
+
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <a class="navbar-brand" href="#">Hidden brand</a>
+          <ul class="navbar-nav me-auto mb-small medium:mb-0">
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
+            <li class="nav-item"><a class="nav-link disabled" aria-disabled="true">Disabled</a></li>
+          </ul>
+          <form class="d-flex" role="search">
+            <input class="form-control me-small" type="search" placeholder="Search" aria-label="Search"/>
+            <button class="button outline success" type="submit">Search</button>
+          </form>
+        </div>
+      </dialog>
+    </div>
+  </nav>`} />
+
+### External content
+
+The drawer trigger matches on `id` and `data-cx-target`, so the controlled drawer can live anywhere in the document — not necessarily inside the `.navbar`. Use this when the controlled content is structurally separate from the navigation surface.
+
+<ResizableExample code={`<dialog class="drawer drawer-top" tabindex="-1" id="navbarToggleExternalContent" data-cx-theme="dark" aria-labelledby="navbarToggleExternalContentLabel">
+    <div class="drawer-header">
+      <h2 class="drawer-title" id="navbarToggleExternalContentLabel">Collapsed content</h2>
+
+      <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+    </div>
+    <div class="drawer-body">
+      <span class="fg-main">Toggleable via the navbar toggler.</span>
+    </div>
+  </dialog>
+  <nav class="navbar bg-body" data-cx-theme="dark" aria-label="Main navigation">
+    <div class="container fluid">
+      <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+        <Icon name="bars-outline" class="navbar-toggler-icon" />
+      </button>
+    </div>
+  </nav>`} />
+
+<Callout type="warning">
+  When the controlled container precedes the toggler in document order, keyboard and assistive technology users may have trouble locating the newly revealed content. Move focus to the drawer programmatically on open, and keep the `aria-controls` attribute pointing at the controlled element so the toggler-to-content relationship is exposed.
+</Callout>
+
+## Accessibility
+
+An accessible navbar relies on semantic markup and ARIA attributes that assistive technologies can interpret. 
+
+- Use a `<nav>` element (or `role="navigation"` on a generic element) so the navbar is exposed as a landmark region. 
+- Mark the current page with `aria-current="page"` on the active `.nav-link`, or `aria-current="true"` for the current item in a non-page set. 
+- The `.navbar-toggler` must carry `aria-label`, `aria-controls` (pointing at the drawer's id), and `aria-expanded` (kept in sync by the Drawer plugin).
+
+<Callout name="info-prefersreducedmotion" />
 
 ## CSS
 
@@ -633,18 +712,20 @@ Transform your navbar into an offcanvas drawer for a modern interface pattern:
 
 <ScssDocs name="navbar-css-vars" file="scss/_navbar.scss" />
 
-Additional CSS variables for `.navbar-nav`:
-
-<ScssDocs name="navbar-nav-css-vars" file="scss/_navbar.scss" />
-
 ### Sass variables
 
 <DocsSASSVars />
 
-<ScssDocs name="navbar-variables" file="scss/_variables.scss" />
+<ScssDocs name="navbar-variables" file="scss/config/_defaults.scss" />
 
-### Responsive classes
+### Sass map
 
-Navbar expand/collapse classes are generated via these breakpoints:
+The global `$breakpoints` map is reassigned to `$navbar-breakpoints` in `scss/_navbar.scss` so the navbar's responsive expand/collapse classes can be configured independently of the framework's other breakpoint loops.
+
+<ScssDocs name="navbar-breakpoints" file="scss/config/_defaults.scss" />
+
+### Sass loops
+
+Responsive `.{breakpoint}:navbar-expand` classes are generated by looping over `$navbar-breakpoints`.
 
 <ScssDocs name="navbar-expand-loop" file="scss/_navbar.scss" />

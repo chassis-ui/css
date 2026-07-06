@@ -1,0 +1,50 @@
+@use "sass:map";
+@use "../maps" as *;
+@use "../functions" as *;
+
+//
+// Link Utilities
+//
+// Utility map for link classes.
+//
+
+// scss-docs-start link-colors-map
+$-link-colors: () !default;
+@each $name, $value in $context-colors {
+  $-link-colors: map.merge(
+    $-link-colors,
+    (
+      $name: (
+        "--link-main-color": var(--#{$name}-link-main),
+        "--link-hover-color": var(--#{$name}-link-hover),
+        "--link-active-color": var(--#{$name}-link-active),
+        "--link-visited-color": var(--#{$name}-link-visited)
+      )
+    )
+  );
+}
+// scss-docs-end link-colors-map
+
+$utilities: (
+  // scss-docs-start utils-links
+  "link-color": (
+    property: (
+      "--link-main-color": null,
+      "--link-hover-color": null,
+      "--link-active-color": null,
+      "--link-visited-color": null
+    ),
+    class: link,
+    values: $-link-colors
+  ),
+  "link-opacity": (
+    property: --link-opacity,
+    class: link-opacity,
+    state: hover,
+    values: map-merge-multiple(
+      map-loop($opacities, varify, "$key", "opacity"),
+      map-loop($link-opacities, varify, "$key", "opacity-link")
+    )
+  ),
+  // scss-docs-end utils-links
+) !default;

@@ -40,7 +40,7 @@ Here's a basic example demonstrating Chassis CSS form elements:
     </div>
     <div class="mb-medium">
       <label for="exampleInputPassword1" class="form-label">Password</label>
-      <input type="password" class="form-input" id="exampleInputPassword1">
+      <input type="password" autocomplete="current-password" class="form-input" id="exampleInputPassword1">
     </div>
     <div class="mb-medium form-check">
       <input type="checkbox" class="check-input" id="exampleCheck1">
@@ -70,7 +70,7 @@ For custom interactive elements like `<a class="button">` within a disabled fiel
       </div>
       <div class="mb-medium">
         <label for="disabledSelect" class="form-label">Disabled select menu</label>
-        <select id="disabledSelect" class="form-select">
+        <select id="disabledSelect" class="form-input">
           <option>Disabled select</option>
         </select>
       </div>
@@ -102,32 +102,40 @@ The example below demonstrates applying contrasting themes with individual contr
 <Example code={`<div class="row gap-xlarge">
     <form class="col context p-medium" data-cx-theme="light">
       <div class="mb-medium">
-        <label for="exampleInputEmailDark" class="form-label">Email address</label>
-        <input type="email" class="form-input" id="exampleInputEmailDark" aria-describedby="emailHelp" data-cx-theme="dark">
+        <label for="exampleSelectDark" class="form-label">Example Select</label>
+        <select class="form-input" id="exampleSelectDark" data-cx-theme="dark">
+          <option selected>Choose an option</option>
+          <option>Option 1</option>
+          <option>Option 2</option>
+        </select>
       </div>
       <div class="mb-medium">
-        <label for="exampleInputPasswordDark" class="form-label">Password</label>
-        <input type="password" class="form-input" id="exampleInputPasswordDark" data-cx-theme="dark">
+        <label for="exampleInputDark" class="form-label">Example Input</label>
+        <input type="text" class="form-input" id="exampleInputDark" data-cx-theme="dark" placeholder="Dark themed input">
       </div>
       <div class="mb-medium form-check">
         <input type="checkbox" class="check-input" id="exampleCheckDark" data-cx-theme="dark">
-        <label class="check-label" for="exampleCheckDark">Check me out</label>
+        <label class="check-label" for="exampleCheckDark">Example checkbox</label>
       </div>
       <button type="submit" class="button primary">Submit</button>
     </form>
 
     <form class="col context p-medium" data-cx-theme="dark">
       <div class="mb-medium">
-        <label for="exampleInputEmailLight" class="form-label">Email address</label>
-        <input type="email" class="form-input" id="exampleInputEmailLight" aria-describedby="emailHelp" data-cx-theme="light">
+        <label for="exampleSelectLight" class="form-label">Example Select</label>
+        <select class="form-input" id="exampleSelectLight" data-cx-theme="light">
+          <option selected>Choose an option</option>
+          <option>Option 1</option>
+          <option>Option 2</option>
+        </select>
       </div>
       <div class="mb-medium">
-        <label for="exampleInputPasswordLight" class="form-label">Password</label>
-        <input type="password" class="form-input" id="exampleInputPasswordLight" data-cx-theme="light">
+        <label for="exampleInputLight" class="form-label">Example Input</label>
+        <input type="text" class="form-input" id="exampleInputLight" data-cx-theme="light" placeholder="Light themed input">
       </div>
       <div class="mb-medium form-check">
         <input type="checkbox" class="check-input" id="exampleCheckLight" data-cx-theme="light">
-        <label class="check-label" for="exampleCheckLight">Check me out</label>
+        <label class="check-label" for="exampleCheckLight">Example checkbox</label>
       </div>
       <button type="submit" class="button primary">Submit</button>
     </form>
@@ -175,34 +183,52 @@ For detailed implementation guidance, refer to the accessibility section in each
 
 ## CSS
 
-Chassis CSS forms use a comprehensive system of CSS variables to enable consistent styling and easy theming. The framework applies a state-based approach where form elements adapt their appearance based on:
+<DocsCSS name="Form" plural />
 
-- Idle state (default appearance)
-- Focus state (when interacted with)
-- Disabled state (when not available)
-- Validation states (valid, invalid)
+Chassis CSS forms use a comprehensive system of CSS variables to enable consistent styling and easy theming. The framework applies a state-based approach where form elements adapt their appearance based on:
 
 These states are implemented through CSS custom properties (variables) with predictable naming patterns:
 
 ```css
-/* Example of state-based CSS variables */
---cx-idle-bg-regular: #fff;       /* Standard input background in idle state */
---cx-idle-bg-floating: #eee;      /* Floating label input background in idle state */
---cx-disabled-fg-active: #999;    /* Text color in disabled state */
---cx-disabled-fg-inactive: #ccc;  /* Placeholder color in disabled state */
---cx-focus-border-color: #00f;    /* Border color in focus state */
---cx-invalid-help-color: #f00;  /* Text & icon color for validation feedbacks */
+/* Example of state-management */
+.form-element {
+  --bg-color: var(--input-bg-color, var(--form-idle-bg-regular));
+  background-color: var(--bg-color);
+}
+.form-element:disabled {
+  --input-bg-color: var(--form-disabled-bg-regular);
+}
 ```
 
 ### Custom properties
 
-These CSS variables are part of Chassis CSS's design token system, giving design teams control over component appearance. See the [design tokens]([[docsref:"core-concepts/design-tokens]]) page for more details.
+<DocsCSSVars name="Form" plural />
 
-<ScssDocs name="form-color-variables" file="scss/placeholders/_form.scss" />
+<hr />
+
+Color properties for form elements that adapt to state changes:
+
+<ScssDocs name="form-input-color-properties" file="scss/placeholders/_form.scss" />
+
+Color properties control the visual appearance of all form elements across different states:
+
+<ScssDocs name="form-color-properties" file="scss/placeholders/_form.scss" />
+
+Sizing and spacing properties ensure consistent dimensions and proportions for form controls:
+
+<ScssDocs name="form-sizing-properties" file="scss/placeholders/_form.scss" />
+
+### Sass variables
+
+<DocsSASSVars />
+
+<hr />
+
+<ScssDocs name="form-input-variables" file="scss/config/_defaults.scss" />
 
 ### Design Tokens
 
-<DocsDesignTokens />
+<DocsDesignTokens name="Form" plural />
 
 <hr />
 

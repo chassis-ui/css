@@ -1,9 +1,19 @@
+@use "../config" as *;
+
+//
+// Shadows Map
+//
+// Sass map of named box-shadow values used by the elevation and component
+// shadow system. Keyed by size variant (null, small, large, inset, etc.).
+//
+
 // scss-docs-start base-shadows-map
 $base-shadows: (
-  null:         $box-shadow-medium,
-  "small":      $box-shadow-small,
-  "large":      $box-shadow-large,
-  "inset":      $box-shadow-inset,
+  null:         var(--box-shadow-medium),
+  "small":      var(--box-shadow-small),
+  "large":      var(--box-shadow-large),
+  "inset":      var(--box-shadow-inset),
+  "emboss":     var(--box-shadow-emboss),
   none:         none,
 ) !default;
 // scss-docs-end base-shadows-map

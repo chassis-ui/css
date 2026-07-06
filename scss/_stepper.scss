@@ -1,0 +1,213 @@
+@use "sass:meta";
+@use "./config" as *;
+@use "mixins" as *;
+@use "placeholders" as *;
+
+//
+// Stepper Component
+//
+// Step-by-step progress tracker for multi-stage workflows. Renders in
+// horizontal and vertical layouts with past, current, and upcoming step states.
+//
+
+// scss-docs-start stepper-horizontal-mixin
+@mixin stepper-horizontal() {
+  display: inline-grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+
+  .stepper-item {
+    grid-template-rows: var(--status-size) auto;
+    grid-template-columns: auto;
+    gap: var(--text-gap-y);
+    align-items: start;
+    justify-items: center;
+    text-align: center;
+
+    &::after {
+      inset-block-start: calc((var(--status-size) * .5) - (var(--track-size) * .5));
+      inset-block-end: auto;
+      inset-inline-start: calc(50% + var(--status-size) / 2 + var(--track-gap));
+      inset-inline-end: 100%;
+      width: calc(100% + var(--gap) - var(--status-size) - var(--track-gap) * 2);
+      height: var(--track-size);
+    }
+  }
+}
+// scss-docs-end stepper-horizontal-mixin
+
+@layer components {
+  .stepper {
+    // scss-docs-start stepper-properties
+    --gap: var(--stepper-gap, #{$stepper-gap});
+    --text-gap-x: var(--stepper-text-gap-x, #{$stepper-text-gap-x});
+    --text-gap-y: var(--stepper-text-gap-y, #{$stepper-text-gap-y});
+    --track-gap: var(--stepper-track-gap, #{$stepper-track-gap});
+    --track-size: var(--stepper-track-size, #{$stepper-track-size});
+    --track-border-radius: var(--stepper-track-border-radius, #{$stepper-track-border-radius});
+    --align-items: var(--stepper-align-items, #{$stepper-align-items});
+    --fg-color: var(--stepper-fg-color, #{$stepper-fg-color});
+    --bg-color: var(--stepper-bg-color, #{$stepper-bg-color});
+    --status-size: var(--stepper-status-size, #{$stepper-status-size});
+    --status-border-radius: var(--stepper-status-border-radius, #{$stepper-status-border-radius});
+    --status-font-weight: var(--stepper-status-font-weight, #{$stepper-status-font-weight});
+    --status-fg-past: var(--stepper-status-fg-past, #{$stepper-status-fg-past});
+    --status-bg-past: var(--stepper-status-bg-past, #{$stepper-status-bg-past});
+    --status-track-past: var(--stepper-status-track-past, #{$stepper-status-track-past});
+    --status-fg-current: var(--stepper-status-fg-current, #{$stepper-status-fg-current});
+    --status-bg-current: var(--stepper-status-bg-current, #{$stepper-status-bg-current});
+    --status-track-current: var(--stepper-status-track-current, #{$stepper-status-track-current});
+    --status-fg-next: var(--stepper-status-fg-next, #{$stepper-status-fg-next});
+    --status-bg-next: var(--stepper-status-bg-next, #{$stepper-status-bg-next});
+    --status-track-next: var(--stepper-status-track-next, #{$stepper-status-track-next});
+    --status-icon-past: var(--stepper-status-icon-past, #{meta.inspect($stepper-status-icon-past)});
+    --status-icon-current: var(--stepper-status-icon-current, #{meta.inspect($stepper-status-icon-current)});
+    --status-icon-next: var(--stepper-status-icon-next, #{meta.inspect($stepper-status-icon-next)});
+    // scss-docs-end stepper-properties
+
+    display: grid;
+    grid-auto-rows: auto;
+    grid-auto-flow: row;
+    gap: var(--gap);
+    padding-inline-start: 0;
+    list-style: none;
+    counter-reset: stepper;
+
+    &.horizontal {
+      @include stepper-horizontal();
+    }
+
+    @include loop-breakpoints-down() using ($breakpoint, $next, $prefix) {
+      @if $next {
+        &.#{$prefix}horizontal {
+          @include container-breakpoint-up($next) {
+            @include stepper-horizontal();
+          }
+        }
+      }
+    }
+
+  }
+
+  .stepper-item {
+    --fg-color: var(--stepper-fg-color, #{$stepper-fg-color});
+    --bg-color: var(--stepper-bg-color, #{$stepper-bg-color});
+    --status-fg-color: var(--status-fg-next);
+    --status-bg-color: var(--status-bg-next);
+    --status-track-color: var(--status-track-next);
+
+    position: relative;
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: var(--status-size) auto;
+    gap: var(--text-gap-x);
+    align-items: var(--align-items, center);
+    color: var(--fg-color);
+    text-decoration: none;
+    background-color: transparent;
+
+    // The counter
+    &::before {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: var(--status-size);
+      height: var(--status-size);
+      padding: .5rem;
+      font-weight: var(--status-font-weight);
+      line-height: 1;
+      color: var(--status-fg-color);
+      text-align: center;
+      content: counter(stepper);
+      counter-increment: stepper;
+      background-color: var(--status-bg-color);
+      border-radius: var(--status-border-radius); // stylelint-disable-line property-disallowed-list
+      @include gradient();
+    }
+    .icon-stepper > & {
+      &::before {
+        // stylelint-disable declaration-no-important
+        // padding: 0;
+        --status-fg-color: var(--status-fg-past);
+        // --status-bg-color: var(--status-bg-past);
+        font-family: var(--font-family-icon) !important;
+        font-size: 1.5em; //stylelint-disable-line property-disallowed-list
+        font-style: normal;
+        font-weight: 400 !important;
+        content: var(--status-icon, var(--status-icon-next));
+        // stylelint-enable declaration-no-important
+      }
+      &.active::before {
+        --status-fg-color: var(--status-fg-current);
+        --status-bg-color: var(--status-bg-current);
+      }
+    }
+
+    // Connecting lines
+    &::after {
+      position: absolute;
+      inset-block-start: calc(var(--status-size) + var(--track-gap));
+      inset-block-end: 100%;
+      inset-inline-start: calc((var(--status-size) * .5) - (var(--track-size) * .5));
+      width: var(--track-size);
+      height: calc(100% + var(--gap) - var(--status-size) - var(--track-gap) * 2);
+      content: "";
+      background-color: var(--status-track-color);
+      @include border-radius(var(--track-border-radius));
+    }
+
+    // Avoid sibling selector for easier CSS overrides
+    &:last-child::after {
+      display: none;
+    }
+
+    &.active {
+      --status-fg-color: var(--status-fg-current);
+      --status-bg-color: var(--status-bg-current);
+      --status-icon: var(--status-icon-current);
+      &:has(+ .stepper-item.active) {
+        --status-track-color: var(--status-track-current);
+      }
+    }
+
+  }
+
+  // Targets the last .active element from a sequence of active elements
+  .stepper-item:not(.active):has(~ .stepper-item.active) {
+    --status-fg-color: var(--status-fg-past);
+    --status-bg-color: var(--status-bg-past);
+    --status-track-color: var(--status-track-past);
+    --status-icon: var(--status-icon-past);
+  }
+
+  // scss-docs-start stepper-overflow
+  .stepper-overflow {
+    container-type: inline-size;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+
+    > .stepper {
+      width: max-content;
+      min-width: 100%;
+    }
+  }
+  // scss-docs-end stepper-overflow
+
+  .stepper.context > .stepper-item,
+  .stepper-item.context {
+    --status-fg-past: #{$stepper-status-fg-past-context};
+    --status-bg-past: #{$stepper-status-bg-past-context};
+    --status-track-past: #{$stepper-status-track-past-context};
+    --status-fg-current: #{$stepper-status-fg-current-context};
+    --status-bg-current: #{$stepper-status-bg-current-context};
+    --status-track-current: #{$stepper-status-track-current-context};
+    --status-fg-next: #{$stepper-status-fg-next-context};
+    --status-bg-next: #{$stepper-status-bg-next-context};
+    --status-track-next: #{$stepper-status-track-next-context};
+    color: inherit;
+  }
+} // @layer components

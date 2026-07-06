@@ -1,16 +1,26 @@
+@use "sass:map";
+@use "../config" as *;
+
+//
+// Opacities Map
+//
+// Sass maps for opacity levels used by context variants and utility classes.
+// Provides both a basic set and a combined map for utility generation.
+//
+
 // scss-docs-start opacities-map
 // scss-docs-start basic-opacities-map
-$basic-opacities: (
-  "100": 1,
-  "75": .75,
-  "50": .5,
-  "25": .25,
-  "10": .1,
-  "0": 0,
-) !default;
+// $basic-opacities: (
+//   "100": 1,
+//   "75": .75,
+//   "50": .5,
+//   "25": .25,
+//   "10": .1,
+//   "0": 0,
+// ) !default;
 // scss-docs-end basic-opacities-map
-// scss-docs-start token-opacities-map
-$token-opacities: (
+// scss-docs-start opacity-levels-map
+$opacities: (
   "solid":                $opacity-solid,
   "95":                   $opacity-95,
   "90":                   $opacity-90,
@@ -25,91 +35,76 @@ $token-opacities: (
   "05":                   $opacity-05,
   "zero":                 $opacity-zero,
 ) !default;
-$opacities: $token-opacities !default; // $base-opacities for lesser CSS generation.
-// scss-docs-end token-opacities-map
+// scss-docs-end opacity-levels-map
+// $opacities: map.merge($basic-opacities, $opacity-levels) !default;
 // scss-docs-end opacities-map
 
 // scss-docs-start context-opacities-map
 $context-opacities: (
-  "fg-subtle":                  $opacity-fg-subtle,
-  "fg-slight":                  $opacity-fg-slight,
-  "border-main":                $opacity-border-main,
-  "border-subtle":              $opacity-border-subtle,
-  "icon-subtle":                $opacity-icon-subtle,
-  "icon-slight":                $opacity-icon-slight,
-  "dim-main":                  $opacity-dim-main,
-  "dim-subtle":                 $opacity-dim-subtle,
-  "dim-slight":                $opacity-dim-slight,
-  "transparent-color":                $opacity-transparent-color,
+  "fg-subtle":            $opacity-fg-subtle,
+  "fg-slight":            $opacity-fg-slight,
+  "border-main":          $opacity-border-main,
+  "border-subtle":        $opacity-border-subtle,
+  "icon-subtle":          $opacity-icon-subtle,
+  "icon-slight":          $opacity-icon-slight,
+  "cue-slight":           $opacity-cue-slight,
+  "dim-main":             $opacity-dim-main,
+  "dim-subtle":           $opacity-dim-subtle,
+  "dim-slight":           $opacity-dim-slight,
 ) !default;
 // scss-docs-end context-opacities-map
 // scss-docs-start fg-opacities-map
-$fg-opacities: map-merge(
-  $basic-opacities,
-  (
-    "subtle": $opacity-fg-subtle,
-    "slight": $opacity-fg-slight,
-  )
+$fg-opacities: (
+  "subtle": $opacity-fg-subtle,
+  "slight": $opacity-fg-slight,
 ) !default;
 // scss-docs-end fg-opacities-map
 
-// scss-docs-start bg-opacities-map
-$bg-opacities: map-merge(
-  $opacities,
-  (
-    "dim": $opacity-dim-main,
-    "blur": $opacity-dim-subtle,
-    "shade": $opacity-dim-slight,
-    "clear": $opacity-transparent-color,
-  )
+// scss-docs-start dim-opacities-map
+$dim-opacities: (
+  "main":       $opacity-dim-main,
+  "subtle":     $opacity-dim-subtle,
+  "slight":     $opacity-dim-slight,
 ) !default;
-// scss-docs-end bg-opacities-map
+// scss-docs-end dim-opacities-map
 
 // scss-docs-start border-opacities-map
-$border-opacities: map-merge(
-  $basic-opacities,
-  (
-    "main": $opacity-border-main,
-    "subtle": $opacity-border-subtle,
-  )
+$border-opacities: (
+  "main": $opacity-border-main,
+  "subtle": $opacity-border-subtle,
 ) !default;
 // scss-docs-end border-opacities-map
 
 // scss-docs-start icon-opacities-map
-$icon-opacities: map-merge(
-  $basic-opacities,
-  (
-    "subtle": $opacity-icon-subtle,
-    "slight": $opacity-icon-slight,
-  )
+$icon-opacities: (
+  "subtle": $opacity-icon-subtle,
+  "slight": $opacity-icon-slight,
 ) !default;
 // scss-docs-end icon-opacities-map
 
-// scss-docs-start indicator-opacities-map
-$indicator-opacities: map-merge(
-  $basic-opacities,
-  (
-    "slight": $opacity-cue-slight,
-  )
+// scss-docs-start cue-opacities-map
+$cue-opacities: (
+  "slight": $opacity-cue-slight,
 ) !default;
-// scss-docs-end indicator-opacities-map
+// scss-docs-end cue-opacities-map
 
 // scss-docs-start link-opacities-map
-$link-opacities: map-merge(
-  $basic-opacities,
-  (
-    "subtle": $opacity-fg-subtle,
-    "slight": $opacity-fg-slight
-  )
+$link-opacities: (
+  "subtle": $opacity-fg-subtle,
+  "slight": $opacity-fg-slight,
 ) !default;
 // scss-docs-end link-opacities-map
 
-// scss-docs-start underline-opacities-map
-$underline-opacities: map-merge(
-  $basic-opacities,
+// scss-docs-start text-decoration-opacities-map
+$text-decoration-opacities: map.merge(
+  $opacities,
   (
     "subtle": $opacity-fg-subtle,
     "slight": $opacity-fg-slight
   )
 ) !default;
-// scss-docs-end underline-opacities-map
+// scss-docs-end text-decoration-opacities-map
+
+// scss-docs-start spinner-opacities-map
+$spinner-opacities:   $icon-opacities !default;
+// scss-docs-end spinner-opacities-map

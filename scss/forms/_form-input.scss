@@ -1,134 +1,206 @@
+@use "../config" as *;
+@use "../mixins" as *;
+@use "../placeholders" as *;
+
 //
-// Form Control
+// Form Input
 //
-// A themeable, accessible custom styling for form input elements.
-// Provides consistent appearance across browsers while maintaining accessibility.
-//
-// Extends the %form-input placeholder to share common styling with other form inputs
-// while adding input-specific features for different input types (file, date, color, etc.).
+// Themeable styling for <input> and <textarea> elements. Covers typography,
+// spacing, borders, focus rings, and type-specific overrides for file,
+// date, color, and search inputs.
 //
 
-.form-input {
-  // Uses %form-input placeholder to share common form styles with .form-select,
-  // avoiding duplicate property assignments across different form elements
-  // and ensuring consistent appearance between different input types.
-  @extend %form-input;
+@layer components {
+  .form-input {
+    // Uses %form-input placeholder to share common form styles with other input types,
+    // avoiding duplicate property assignments across different form elements
+    // and ensuring consistent appearance between different input types.
+    @extend %form-input;
 
-  &[type="file"] {
-    overflow: hidden; // prevent pseudo element button overlap
+    --form-input-plaintext-color: #{$form-input-plaintext-color};
 
-    &:not(:disabled):not([readonly]) {
-      cursor: pointer;
+    &[type="file"] {
+      overflow: hidden; // prevent pseudo element button overlap
+
+      &:not(:disabled):not([readonly]) {
+        cursor: pointer;
+      }
     }
-  }
 
-  // Date and time input value styling
-  // Fixes display issues with date/time inputs across browsers.
-  &::-webkit-date-and-time-value {
-    // Prevents inputs from becoming too narrow on Chrome and Safari
-    // when using width: 100% and appearance: none.
-    min-width: 5.5rem; // Minimum safe width for date/time values
+    // Date and time input value styling
+    // Fixes display issues with date/time inputs across browsers.
+    &::-webkit-date-and-time-value {
+      // Prevents inputs from becoming too narrow on Chrome and Safari
+      // when using width: 100% and appearance: none.
+      min-width: 5.5rem; // Minimum safe width for date/time values
+
+      // Prevents excessive date input height in Webkit
+      // https://github.com/twbs/bootstrap/issues/23307
+      height: var(--line-height);
+
+      // Prevents unwanted margins in Chrome's date picker
+      // that cause inconsistent heights.
+      margin: 0;
+
+    }
 
     // Prevents excessive date input height in Webkit
-    // https://github.com/twbs/bootstrap/issues/23307
-    height: var(--#{$prefix}line-height);
+    &::-webkit-datetime-edit {
+      display: block;
+      height: var(--line-height);
+      padding: 0;
+    }
 
-    // Prevents unwanted margins in Chrome's date picker
-    // that cause inconsistent heights.
-    margin: 0;
+    // Placeholder styling
+    // Ensures consistent color and opacity across browsers.
+    &::placeholder {
+      color: var(--form-idle-fg-inactive);
+      // Override Firefox's unusual default opacity; see https://github.com/twbs/bootstrap/pull/11526.
+      opacity: 1;
+    }
+
+    // File input button customization
+    // Applies consistent styling to the file upload button part of input[type="file"]
+    // while maintaining accessibility and usability across browsers.
+    &::file-selector-button {
+      @extend %component;
+
+      --fg-color: var(--file-button-fg-color);
+      --bg-color: var(--file-button-bg-color);
+
+      margin: calc(-1 * var(--padding-y)) calc(-1 * var(--padding-x));
+      margin-inline-end: var(--padding-x);
+      @include padding();
+      pointer-events: none;
+      border-inline-end-width: var(--border-width);
+      @include gradient(var(--file-button-bg-image));
+      @include border-radius(0);
+      @include transition($button-transition);
+    }
+    &:disabled::file-selector-button {
+      --fg-color: var(--form-disabled-fg-active);
+    }
+
+    &:hover:not(:disabled)::file-selector-button,
+    &:focus-visible::file-selector-button {
+      background-color: var(--file-button-bg-hover);
+    }
+
+    // Readonly controls as plain text
+    // Apply the `.plaintext` class to a readonly input to display it as regular text
+    // without borders, background colors, or focus indicators, while maintaining proper spacing.
+    // Useful for non-editable form values that need to align with other form inputs.
+    &.plaintext {
+      --padding-x: 0;
+      --fg-color: var(--form-input-plaintext-color);
+      --bg-color: transparent;
+      --border-width: 0;
+      --border-color: transparent;
+      --border-radius: 0;
+
+      display: block;
+      @include padding();
+      margin-block-end: 0; // match inputs if this class comes on inputs with default margins
+      box-shadow: none;
+
+      &:focus {
+        outline: 0;
+      }
+    }
+
+    // Color input control styling
+    // Provides appropriate sizing and interaction for color picker inputs
+    // while maintaining consistent border-radius with other form inputs.
+    &[type="color"] {
+      width: var(--input-color-width, var(--min-height));
+      height: var(--input-color-height, var(--min-height));
+      padding: var(--input-color-padding, var(--padding-y));
+
+      &:not(:disabled):not([readonly]) {
+        cursor: pointer;
+      }
+
+      &::-moz-color-swatch {
+        border: 0 !important; // stylelint-disable-line declaration-no-important
+        @include border-radius(var(--border-radius));
+      }
+
+      &::-webkit-color-swatch {
+        border: 0 !important; // stylelint-disable-line declaration-no-important
+        @include border-radius(var(--border-radius));
+      }
+    }
 
   }
 
-  // Prevents excessive date input height in Webkit
-  &::-webkit-datetime-edit {
+  // Select inputs get additional styling to accommodate the caret and validation icons.
+  // stylelint-disable selector-no-qualifying-type
+  select.form-input {
+    // Extends %form-caret to add the dropdown arrow to select inputs, which is
+    // a key visual indicator for their functionality. This ensures that all select
+    // elements have a consistent caret style that matches the overall form design.
+    // Gated on $enable-caret: when disabled, selects fall back to a feedback-only
+    // background layer (no caret) while the `.form-caret` helper remains available.
+    @if $enable-caret {
+      @extend %form-caret;
+    } @else {
+      // Exclude controls that explicitly opted into a caret via `.form-caret`,
+      // so the caret-less fallback never out-specifies (type + class beats the
+      // helper's single class) and suppresses their caret.
+      &:not(.form-caret) {
+        @extend %form-feedback-bg;
+      }
+    }
+
+    // Remove caret for multi-select or size-specific selects
+    // since these don't use the standard dropdown UI.
+    &[multiple],
+    &[size]:not([size="1"]) {
+      padding-inline-end: var(--padding-x);
+      background-image: none;
+    }
+
+    // Firefox-specific fix to prevent focus ring from appearing inside the select
+    // Uses text-shadow to maintain text color visibility while making the text itself transparent.
+    &:-moz-focusring {
+      color: transparent;
+      text-shadow: 0 0 0 var(--fg-color);
+    }
+
+  }
+
+  // Ensures proper minimum height for multiline text inputs.
+  textarea.form-input {
+    min-height: var(--min-height);
+  }
+  // stylelint-enable selector-no-qualifying-type
+
+  // Ghost input - removes all visual styling
+  // Used inside custom wrappers that handle their own styling
+  .ghost-input {
+    @extend %form-colors;
     display: block;
-    height: var(--#{$prefix}line-height);
+    width: 100%;
     padding: 0;
-  }
-
-  // Placeholder styling
-  // Ensures consistent color and opacity across browsers.
-  &::placeholder {
-    color: var(--#{$prefix}form-idle-fg-inactive);
-    // Override Firefox's unusual default opacity; see https://github.com/twbs/bootstrap/pull/11526.
-    opacity: 1;
-  }
-
-  // File input button customization
-  // Applies consistent styling to the file upload button part of input[type="file"]
-  // while maintaining accessibility and usability across browsers.
-  &::file-selector-button {
-    @extend %component;
-
-    --#{$prefix}fg-color: var(--#{$prefix}file-button-fg-color);
-    --#{$prefix}bg-color: var(--#{$prefix}file-button-bg-color);
-
-    margin: #{calc(-1 * var(--#{$prefix}padding-y))} #{calc(-1 * var(--#{$prefix}padding-x))};
-    margin-inline-end: var(--#{$prefix}padding-x);
-    @include padding();
-    @include gradient-bg(var(--#{$prefix}file-button-bg-color));
-    pointer-events: none;
-    background-image: var(--#{$prefix}file-button-bg-image);
-    border-inline-end-width: var(--#{$prefix}border-width);
-    @include border-radius(0);
-    @include transition($button-transition);
-  }
-
-  &:hover:not(:disabled):not([readonly])::file-selector-button {
-    background-color: var(--#{$prefix}file-button-bg-hover);
-  }
-
-  // Readonly controls as plain text
-  // Apply the `.plaintext` class to a readonly input to display it as regular text
-  // without borders, background colors, or focus indicators, while maintaining proper spacing.
-  // Useful for non-editable form values that need to align with other form inputs.
-  &.plaintext {
-    --#{$prefix}padding-x: 0;
-    --#{$prefix}fg-color: #{$form-input-plaintext-color};
-    --#{$prefix}bg-color: transparent;
-    --#{$prefix}border-width: 0;
-    --#{$prefix}border-color: transparent;
-    --#{$prefix}border-radius: 0;
-
-    display: block;
-    @include padding();
-    margin-bottom: 0; // match inputs if this class comes on inputs with default margins
-    box-shadow: none;
+    font: inherit;
+    color: inherit;
+    appearance: none;
+    background: transparent;
+    border: 0;
 
     &:focus {
       outline: 0;
     }
-  }
 
-  // Color input control styling
-  // Provides appropriate sizing and interaction for color picker inputs
-  // while maintaining consistent border-radius with other form inputs.
-  &.color-input {
-    width: var(--#{$prefix}input-color-width, var(--#{$prefix}min-height));
-    height: var(--#{$prefix}input-color-height, var(--#{$prefix}min-height));
-    padding: var(--#{$prefix}input-color-padding, var(--#{$prefix}padding-y));
-
-    &:not(:disabled):not([readonly]) {
-      cursor: pointer;
+    &::placeholder {
+      color: var(--form-idle-fg-inactive);
+      opacity: 1;
     }
 
-    &::-moz-color-swatch {
-      border: 0 !important; // stylelint-disable-line declaration-no-important
-      @include border-radius(var(--#{$prefix}border-radius));
-    }
-
-    &::-webkit-color-swatch {
-      border: 0 !important; // stylelint-disable-line declaration-no-important
-      @include border-radius(var(--#{$prefix}border-radius));
+    &:disabled {
+      color: var(--form-disabled-fg-active);
+      // cursor: not-allowed;
     }
   }
 
-}
-
-// Ensures proper minimum height for multiline text inputs.
-textarea {
-  // stylelint-disable-next-line selector-no-qualifying-type
-  &.form-input {
-    min-height: var(--#{$prefix}min-height);
-  }
-}
+} // @layer components

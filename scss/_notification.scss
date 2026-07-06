@@ -1,3 +1,7 @@
+@use "./config" as *;
+@use "./mixins" as *;
+@use "./placeholders" as *;
+
 //
 // Notification Component
 //
@@ -5,60 +9,77 @@
 // Extends context and component placeholders for full theming and contextual colors.
 //
 
-.notification {
-
-  @extend %context, %component;
-  // scss-docs-start notification-css-vars
-  --#{$prefix}bg-color: var(--#{$prefix}notification-bg-color, #{$notification-bg-color});
-  --#{$prefix}padding-y: var(--#{$prefix}notification-padding-y, #{$notification-padding-y});
-  --#{$prefix}padding-x: var(--#{$prefix}notification-padding-x, #{$notification-padding-x});
-  --#{$prefix}gap: var(--#{$prefix}notification-gap, #{$notification-gap});
-  --#{$prefix}border-width: var(--#{$prefix}notification-border-width, #{$notification-border-width});
-  --#{$prefix}border-radius: var(--#{$prefix}notification-border-radius, #{$notification-border-radius});
-  @include map-font($notification-message-font, notification);
-  @include map-font($notification-title-font, notification, title);
-  // scss-docs-end notification-css-vars
-
-  position: relative;
-  gap: var(--#{$prefix}gap);
-  margin-bottom: var(--#{$prefix}notification-margin-b, #{$notification-margin-b});
-  @include exclude-strokes(notification);
-
-  &.solid {
-    @extend %solid-context;
-  }
-
-  .close-button {
-    position: absolute;
-    top: $notification-padding-y;
-    right: #{calc($notification-padding-x * .5)};
-  }
-
-  @include last-mb-0();
-
-  a {
-    font-weight: var(--#{$prefix}font-weight-strong);
-  }
-
-  &:has(.close-button) {
-    padding-right: #{calc($notification-padding-x + $close-button-medium-size + $notification-gap)};
-  }
-
-  &:has(.notification-icon) {
+@layer components {
+  .notification {
+    @extend %context, %body-context, %component;
+    // scss-docs-start notification-css-vars
+    --fg-color: var(--notification-fg-color, #{$notification-fg-color});
+    --bg-color: var(--notification-bg-color, #{$notification-bg-color});
+    --padding-y: var(--notification-padding-y, #{$notification-padding-y});
+    --padding-x: var(--notification-padding-x, #{$notification-padding-x});
+    --gap: var(--notification-gap, #{$notification-gap});
+    --border-width: var(--notification-border-width, #{$notification-border-width});
+    --border-radius: var(--notification-border-radius, #{$notification-border-radius});
+    --close-button-size: var(--notification-close-button-size, #{$notification-close-button-size});
+    @include map-font($notification-message-font, notification);
+    --text-gap: var(--notification-text-gap, #{$notification-text-gap});
+    @include map-font($notification-title-font, notification, title);
+    --icon-color: var(--notification-icon-color, #{$notification-icon-color});
+    --icon-size: var(--notification-icon-size, #{$notification-icon-size});
+    // scss-docs-end notification-css-vars
+    @include exclude-strokes(notification);
+    position: relative;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: var(--text-gap) var(--gap);
+
+    &.solid {
+      @extend %solid-context;
+    }
+
+    &:has(> .notification-icon) {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      // Center-align by default to keep single-line and single-paragraph
+      // notifications (the common case) markup-free. For taller content
+      // where the icon should sit with the first line, opt into
+      // `align-self-start` on the icon.
+      align-items: center;
+      > .notification-icon {
+        grid-column: 1;
+      }
+
+      > :not(.notification-icon, .close-button) {
+        grid-column: 2;
+      }
+    }
+
+    // Direct paragraph children would otherwise add reboot's bottom margin
+    // on top of the grid/flex gap, producing double spacing. Zero it here so
+    // `--text-gap` is the sole driver of vertical rhythm between children.
+    > p {
+      margin-block-end: 0;
+    }
+
+    // Body links pick up emphasis. `.button` (and other component-class anchors)
+    // opt out so they keep their own typography.
+    a:not(.button, .close-button) {
+      font-weight: var(--font-weight-strong);
+    }
+
+    &:has(> .close-button) {
+      padding-inline-end: calc(var(--padding-x) + #{$close-button-medium-size} + var(--gap));
+    }
+
+    > .close-button {
+      position: absolute;
+      inset-block-start: var(--padding-y);
+      inset-inline-end: var(--padding-x);
+    }
+
+    .notification-title {
+      margin-block-end: 0;
+      @include font(title);
+    }
   }
-
-}
-
-.notification-title {
-  margin-bottom: var(--#{$prefix}notification-title-margin-b, #{$notification-title-margin-b});
-  @include font(title);
-}
-
-.notification-icon {
-  --#{$prefix}icon-color: var(--#{$prefix}notification-icon-color, #{$notification-icon-color});
-  --#{$prefix}icon-size: var(--#{$prefix}notification-icon-size, #{$notification-icon-size});
-  // top: var(--#{$prefix}padding-y);
-  align-self: flex-start;
-}
+} // @layer components

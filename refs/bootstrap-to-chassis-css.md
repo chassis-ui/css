@@ -306,11 +306,11 @@ Chassis CSS uses semantic naming instead of numeric scales:
 
 ```html
 <!-- Bootstrap -->
-<button class="btn btn-primary">Primary</button>
-<button class="btn btn-secondary">Secondary</button>
-<button class="btn btn-outline-primary">Outline Primary</button>
-<button class="btn btn-sm">Small Button</button>
-<button class="btn btn-lg">Large Button</button>
+<button class="button btn-primary">Primary</button>
+<button class="button btn-secondary">Secondary</button>
+<button class="button btn-outline-primary">Outline Primary</button>
+<button class="button btn-sm">Small Button</button>
+<button class="button btn-lg">Large Button</button>
 
 <!-- Chassis CSS -->
 <button class="button primary">Primary</button>
@@ -432,8 +432,8 @@ The grid system remains largely compatible, but breakpoint names use semantic na
 ### Example 1: Button Conversion
 ```html
 <!-- INPUT (Bootstrap) -->
-<button class="btn btn-primary btn-lg">Click me</button>
-<button class="btn btn-outline-secondary btn-sm">Cancel</button>
+<button class="button btn-primary btn-lg">Click me</button>
+<button class="button btn-outline-secondary btn-sm">Cancel</button>
 
 <!-- OUTPUT (Chassis CSS) -->
 <button class="button primary large">Click me</button>
@@ -460,7 +460,7 @@ The grid system remains largely compatible, but breakpoint names use semantic na
   <div class="card-body">
     <h5 class="card-title text-primary">Title</h5>
     <p class="card-text text-muted">Content</p>
-    <a href="#" class="btn btn-primary btn-sm">Action</a>
+    <a href="#" class="button btn-primary btn-sm">Action</a>
   </div>
 </div>
 
@@ -528,11 +528,11 @@ The grid system remains largely compatible, but breakpoint names use semantic na
       </div>
     </div>
     <div class="mt-3">
-      <a href="/browse" class="btn btn-outline-primary btn-sm me-2">
+      <a href="/browse" class="button btn-outline-primary btn-sm me-2">
         Browse All
         <span class="badge bg-primary ms-2">150</span>
       </a>
-      <a href="/download" class="btn btn-primary btn-sm">Download</a>
+      <a href="/download" class="button btn-primary btn-sm">Download</a>
     </div>
   </div>
 </div>

@@ -19,17 +19,17 @@ To override Chassis CSS's default settings:
 
 1. Create your own Sass file that modifies the variables you want to change
 2. Import this file **before** Chassis CSS's main Sass file
-3. Recompile your CSS with `npm run build`
+3. Recompile your CSS with `pnpm build`
 
 ```scss
 // Your custom.scss file
-$enable-dark-mode: false;      // Disable dark mode support
-$enable-cssgrid: true;         // Keep CSS Grid system
-$enable-component-shadows: true; // Maintain shadow effects
-$enable-validation-icons: false; // Remove form validation icons
+$enable-dark-mode: false;         // Disable dark mode support
+$enable-cssgrid: true;            // Keep CSS Grid system
+$enable-component-shadows: true;  // Enable shadow effects
+$enable-validation-icons: false;  // Remove form validation icons
 
 // Then import Chassis CSS
-@import "chassis-css/scss/chassis";
+@use "@chassis-ui/css/scss/chassis";
 ```
 
 All configuration options are defined in Chassis CSS's `scss/_settings.scss` file and use Sass's `!default` flag, meaning your custom values will always take precedence.
@@ -42,11 +42,11 @@ All configuration options are organized in a single alphabetical list for easier
 | Variable                          | Values                             | Description                                                                            |
 | --------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------------- |
 | `$enable-accordion-contexts`      | `true` (default) or `false`        | Enables contextual styling for accordion components (primary, secondary, etc.) to match your design system colors. |
-| `$enable-accordion-sizes`         | `true` (default) or `false`        | Generates size variations for accordions (sm, md, lg), allowing for different visual weights in layouts. |
+| `$enable-accordion-sizes`         | `true` (default) or `false`        | Generates size variations for accordions (small, medium, large), allowing for different visual weights in layouts. |
 | `$enable-button-pointers`         | `true` (default) or `false`        | Sets `cursor: pointer` on non-disabled buttons, providing visual feedback that elements are interactive. |
-| `$enable-caret`                   | `true` (default) or `false`        | Shows a directional indicator (caret) on `.dropdown-toggle` elements, improving affordance for interactive dropdown elements. |
-| `$enable-component-gradients`     | `true` or `false` (default)        | Applies subtle gradient backgrounds to various components via `background-image`. Disable for a flatter visual style or to reduce CSS size. |
-| `$enable-component-shadows`       | `true` or `false` (default)        | Enables decorative `box-shadow` styles on various components for depth. Does not affect focus state shadows used for accessibility. |
+| `$enable-caret`                   | `true` (default) or `false`        | Shows a directional indicator (caret) on `.menu-toggle` elements, improving affordance for interactive dropdown elements. |
+| `$enable-background-gradients`    | `true` (default) or `false`        | Applies subtle gradient backgrounds to various components via `background-image`. Disable for a flatter visual style or to reduce CSS size. |
+| `$enable-component-shadows`       | `true` (default) or `false`        | Enables predefined decorative `box-shadow` styles on various components for depth. |
 | `$enable-container-classes`       | `true` (default) or `false`        | Generates CSS classes for layout containers (`.container`, `.container.fluid`, etc.). Disable to reduce CSS size if you're using custom containers. |
 | `$enable-cssgrid`                 | `true` (default) or `false`        | Enables the modern CSS Grid system with classes like `.grid` and `.medium:g-col-1`. Provides two-dimensional layout capabilities. |
 | `$enable-dark-mode`               | `true` (default) or `false`        | Implements [dark mode support]([[docsref:/customize/color-modes#dark-mode]]) throughout the framework, with automatic detection and toggle capability. |
@@ -55,10 +55,10 @@ All configuration options are organized in a single alphabetical list for easier
 | `$enable-exclude-strokes`         | `true` (default), `false`, or list | Controls border width exclusion from padding for components. `true` applies to all components, `false` never applies, or provide a list like `button, badge, form-control, notification` for specific components. |
 | `$enable-grid-classes`            | `true` (default) or `false`        | Generates classes for the flexbox-based grid system (`.row`, `.medium:col-1`, etc.). Consider disabling if you only use CSS Grid. |
 | `$enable-important-utilities`     | `true` (default) or `false`        | Adds `!important` to utility classes to ensure they override component styles. Disable only if you have a carefully controlled CSS specificity strategy. |
-| `$enable-negative-margins`        | `true` (default) or `false`        | Generates [negative margin utilities]([[docsref:/utilities/spacing#negative-margin]]) like `.ms-n1`, `.mt-n2`. Useful for precise layout adjustments. |
-| `$enable-reduced-motion`          | `true` (default) or `false`        | Respects the [`prefers-reduced-motion` media query]([[docsref:/getting-started/accessibility#reduced-motion]]), reducing or eliminating animations for users who prefer minimal motion. Critical for vestibular disorders. |
-| `$enable-adaptive-font-sizes`     | `true` (default) or `false`        | Enables [Breakpoint Type Scale]([[docsref:/content/typography#breakpoint-type-scale]]) utility classes for adaptive typography based on breakpoints. |
-| `$enable-rfs`                     | `true` (default) or `false`        | Enables [Responsive Font Size]([[docsref:/getting-started/rfs]]) for automatic font size scaling based on viewport. Provides better typography across device sizes. |
+| `$enable-negative-margins`        | `true` (default) or `false`        | Generates [negative margin utilities]([[docsref:/utilities/margin#negative-margins]]) like `.-m-medium`, `-mt-small`. Useful for precise layout adjustments. |
+| `$enable-reduced-motion`          | `true` (default) or `false`        | Respects the [`prefers-reduced-motion` media query]([[docsref:/core-concepts/accessibility#reduced-motion]]), reducing or eliminating animations for users who prefer minimal motion. Critical for vestibular disorders. |
+| `$enable-responsive-font-sizes`     | `false` (default) or `true`        | Enables [responsive size]([[docsref:/content/typography#responsive-sizes]]) utility classes for locking font sizes to specific breakpoints. |
+| `$enable-fluid-font-sizes`          | `true` (default) or `false`        | Enables [fluid sizing]([[docsref:/content/typography#fluid-sizes]]) — font sizes scale smoothly between a minimum and maximum using `clamp()`. |
 | `$enable-rounded-borders`         | `true` (default) or `false`        | Applies `border-radius` styles to various components. Disabling will override all border-radius values, including those specified by design tokens. |
 | `$enable-smooth-scroll`           | `true` (default) or `false`        | Enables `scroll-behavior: smooth` for smoother page navigation, while respecting reduced motion preferences. |
 | `$enable-table-active-border`     | `true` (default) or `false`        | Adds a prominent colored border indicator to active table rows or cells, matching the visual treatment in your design system. Improves focus indication. |
@@ -89,8 +89,8 @@ $enable-accordion-sizes:        true !default;
 $enable-accordion-contexts:     true !default;
 $enable-button-pointers:        true !default;
 $enable-caret:                  true !default;
-$enable-component-gradients:    true !default;
-$enable-component-shadows:      true !default;
+$enable-background-gradients:    false !default;
+$enable-component-shadows:      false !default;
 $enable-container-classes:      true !default;
 $enable-cssgrid:                true !default;
 $enable-dark-mode:              true !default;
@@ -101,7 +101,8 @@ $enable-grid-classes:           true !default;
 $enable-important-utilities:    true !default;
 $enable-negative-margins:       true !default;
 $enable-reduced-motion:         true !default;
-$enable-rfs:                    false !default;
+$enable-responsive-font-sizes:    true !default;
+$enable-fluid-font-sizes:                    true !default;
 $enable-rounded-borders:        true !default;
 $enable-smooth-scroll:          true !default;
 $enable-table-active-border:    true !default;
@@ -109,7 +110,7 @@ $enable-table-border-radius:    true !default;
 $enable-table-font-tokens:      true !default;
 $enable-transitions:            true !default;
 $enable-validation-icons:       true !default;
-$enable-visited-links:          true !default;
+$enable-visited-links:          false !default;
 ```
 
 ## Performance Considerations
@@ -121,7 +122,7 @@ Strategic configuration can significantly improve both CSS bundle size and runti
 For smaller CSS files, consider disabling:
 
 - **Layout Systems**: Use only one grid system by setting either `$enable-cssgrid: false` or `$enable-grid-classes: false`
-- **Visual Enhancements**: Disable `$enable-component-gradients` and `$enable-component-shadows` for a more minimal style
+- **Visual Enhancements**: Disable `$enable-background-gradients` and `$enable-component-shadows` for a more minimal style
 - **Form Features**: Turn off `$enable-validation-icons` if you implement custom validation UI
 - **Transitions**: Set `$enable-transitions: false` for a more minimal build
 
@@ -130,8 +131,8 @@ For smaller CSS files, consider disabling:
 For better rendering performance, especially on lower-powered devices:
 
 - **Reduce Animations**: Set `$enable-transitions: false` to eliminate transition animations
-- **Simplify Rendering**: Disable `$enable-component-shadows` and `$enable-component-gradients` to reduce GPU/CPU load
-- **Optimize Typography**: Consider `$enable-rfs: false` if you don't need responsive font scaling
+- **Simplify Rendering**: Disable `$enable-component-shadows` and `$enable-background-gradients` to reduce GPU/CPU load
+- **Optimize Typography**: Consider `$enable-fluid-font-sizes: false` if you don't need responsive font scaling
 
 ### Production Optimizations
 

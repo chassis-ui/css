@@ -1,0 +1,101 @@
+---
+title: Padding
+description: Responsive utilities for applying padding on all sides, axes, or individual edges using the Chassis spacing scale.
+toc: true
+tokens:
+  scopes:
+    - spacing
+css_layer: utilities
+mdn: https://developer.mozilla.org/en-US/docs/Web/CSS/padding
+---
+
+import { sassVars, sassSpaceValue } from '@libs/sass'
+
+## Overview
+
+Padding utilities apply the CSS `padding` property and its logical shorthand variants. All classes are responsive by default and cover all four sides at once, an axis (`inline` or `block`), or a single edge.
+
+## Notation
+
+Padding classes that apply at all breakpoints have no breakpoint prefix — they start from `min-width: 0` and are not media-query-bound. Breakpoint-prefixed classes apply at that breakpoint and above.
+
+The classes are named using the format `p{sides}-{size}` for `xsmall` and `{breakpoint}:p{sides}-{size}` for `small`, `medium`, `large`, `xlarge`, and `2xlarge`.
+
+Where *sides* is one of:
+
+- `x` — `padding-inline` (both inline edges)
+- `y` — `padding-block` (both block edges)
+- `t` — `padding-block-start`
+- `b` — `padding-block-end`
+- `s` — `padding-inline-start`
+- `e` — `padding-inline-end`
+- (blank) — `padding` on all four sides
+
+Where *size* is one of:
+
+<ul>
+  <li>`zero` or `0` — eliminates padding by setting it to `0`</li>
+{
+  Object.keys(sassVars('space')).map((key) => (
+  <li><code>{key}</code> — default token value is <Fragment set:html={sassSpaceValue(key)} />.</li>
+  ))}
+</ul>
+
+Additional sizes can be added by adding entries to the `$spaces` Sass map.
+
+## All sides
+
+`.p-{size}` sets `padding` on all four sides of an element at once.
+
+<Example class="cxd-example-spacing vstack gap-medium" code={`<div class="p-xsmall">p-xsmall</div>
+  <div class="p-small">p-small</div>
+  <div class="p-medium">p-medium</div>
+  <div class="p-large">p-large</div>`} />
+
+## Axes
+
+Axis utilities apply padding to two opposite edges simultaneously. `.px-{size}` targets both inline edges; `.py-{size}` targets both block edges.
+
+<Example class="cxd-example-spacing vstack gap-medium" code={`<div class="px-large py-xsmall">px-large, py-xsmall</div>
+  <div class="px-xsmall py-large">px-xsmall, py-large</div>`} />
+
+## Individual edges
+
+Single-edge utilities set padding on one edge without affecting the others.
+
+<Example class="cxd-example-spacing vstack gap-medium" code={`<div class="pt-large">pt-large</div>
+  <div class="pb-large">pb-large</div>
+  <div class="ps-large">ps-large</div>
+  <div class="pe-large text-end">pe-large</div>`} />
+
+## Responsive padding
+
+Prefix any padding class with a breakpoint to apply it at that breakpoint and above. Unprefixed classes apply from `xsmall` up.
+
+<Example class="cxd-example-spacing vstack gap-medium" code={`<div class="p-xsmall medium:p-large">p-xsmall, then p-large from medium up</div>`} />
+
+## CSS
+
+Padding utilities are generated via the utilities API in `scss/utilities/_padding.scss`.
+
+### Reference
+
+The table lists all padding utilities and their CSS properties.
+
+<UtilityReferenceTable utility={["p-", "px-", "py-", "pt-", "pb-", "ps-", "pe-"]} />
+
+### Sass maps
+
+Padding utilities are generated from Sass maps in `scss/maps/_spacing.scss`.
+
+<ScssDocs name="spaces-map" file="scss/maps/_spacing.scss" />
+
+`$-padding-values` is derived from `$spaces` in `scss/utilities/_padding.scss`, resolving each spacing key to its `:root` custom property via `var(--space-*)`, plus `0`.
+
+<ScssDocs name="utils-padding-values" file="scss/utilities/_padding.scss" />
+
+### Utilities API
+
+Padding utilities are declared in `scss/utilities/_padding.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
+
+<ScssDocs name="utils-padding" file="scss/utilities/_padding.scss" />

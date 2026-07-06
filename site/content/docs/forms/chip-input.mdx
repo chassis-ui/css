@@ -1,0 +1,270 @@
+---
+title: Chip Input
+description: A multi-value text field that wraps typed entries into removable chips. Use it for tags, categories, email recipients, or any free-form list of values.
+toc: true
+tokens: component
+css_layer: components
+js: required
+deps:
+  - title: Form Input
+  - title: Chip
+---
+
+## Overview
+
+`.chip-input` is an unstyled multi-value input container. Add `.form-input` alongside it to give it the standard text field appearance. Add `data-cx-chips` to enable JavaScript behavior — type a value and press <kbd>Enter</kbd> or <kbd>,</kbd> to create a chip. Click the close button or press <kbd>Backspace</kbd> on a focused chip to remove it.
+
+The value of `data-cx-chips` sets the style classes applied to every chip created by this input — for example `data-cx-chips="primary smooth"` produces chips with the `primary` and `smooth` modifier classes. Omit a value or use `default` for the default chip appearance.
+
+<Example code={`<div class="form-input chip-input" data-cx-chips>
+    <span class="chip" data-cx-chip-value="JavaScript">JavaScript</span>
+    <span class="chip" data-cx-chip-value="TypeScript">TypeScript</span>
+    <input type="text" class="ghost-input" placeholder="Add skill…" />
+  </div>`} />
+
+## Chip styles
+
+Pass any combination of chip modifier classes as the `data-cx-chips` value to control the appearance of chips created by this input. Pre-existing chips in the markup should carry the same classes as they will be created with.
+
+<Example class="vstack gap-medium" code={`<div class="form-input chip-input" data-cx-chips="primary">
+    <span class="chip" data-cx-chip-value="Approved">Approved</span>
+    <span class="chip" data-cx-chip-value="Verified">Verified</span>
+    <input type="text" class="ghost-input" placeholder="Add status…" />
+  </div>
+  <div class="form-input chip-input" data-cx-chips="danger smooth">
+    <span class="chip" data-cx-chip-value="Bug">Bug</span>
+    <span class="chip" data-cx-chip-value="Critical">Critical</span>
+    <input type="text" class="ghost-input" placeholder="Add issue…" />
+  </div>
+  <div class="form-input chip-input" data-cx-chips="default outline">
+    <span class="chip" data-cx-chip-value="Draft">Draft</span>
+    <span class="chip" data-cx-chip-value="Review">Review</span>
+    <input type="text" class="ghost-input" placeholder="Add label…" />
+  </div>`} />
+
+## Mixed chip styles
+
+Pre-existing chips can carry individual style classes that differ from the `data-cx-chips` value. Only chips added at runtime will receive the classes set by `data-cx-chips`.
+
+<Example code={`<div class="form-input chip-input" data-cx-chips="primary smooth">
+    <span class="chip default" data-cx-chip-value="Low">Low</span>
+    <span class="chip warning smooth" data-cx-chip-value="Medium">Medium</span>
+    <span class="chip danger smooth" data-cx-chip-value="High">High</span>
+    <input type="text" class="ghost-input" placeholder="Add priority…" />
+  </div>`} />
+
+## Empty state
+
+Start with just the ghost input — chips are created as users type. Omit any pre-existing `.chip` elements.
+
+<Example code={`<div class="form-input chip-input" data-cx-chips="primary smooth">
+    <input type="text" class="ghost-input" placeholder="Type and press Enter…" />
+  </div>`} />
+
+## With form field
+
+Wrap the chip input in a [form field]([[docsref:/forms/form-field]]) to pair it with a label, help text, and validation feedback.
+
+<Example code={`<div class="form-field">
+    <label class="form-label" for="skillsInput">Skills</label>
+    <div class="form-input chip-input" data-cx-chips="primary smooth">
+      <span class="chip" data-cx-chip-value="React">React</span>
+      <span class="chip" data-cx-chip-value="CSS">CSS</span>
+      <input type="text" class="ghost-input" placeholder="Add skill…" id="skillsInput" />
+    </div>
+    <div class="form-help">Press <kbd>Enter</kbd> or <kbd>,</kbd> to add a skill.</div>
+  </div>`} />
+
+<Callout type="info">
+  Point the label's `for` attribute at the ghost input's `id`, not the container's `id`. The container does not need its own `id`.
+</Callout>
+
+## Disabled
+
+Apply the `disabled` attribute to the ghost input to prevent new chips from being added. Existing chips become non-interactive.
+
+<Example code={`<div class="form-input chip-input" data-cx-chips="primary smooth">
+    <span class="chip" data-cx-chip-value="React">React</span>
+    <span class="chip" data-cx-chip-value="CSS">CSS</span>
+    <input type="text" class="ghost-input" placeholder="Disabled…" disabled />
+  </div>`} />
+
+## Floating Labels
+
+The chip input can be used within a [floating label container]([[docsref:/forms/floating-labels]]) just like a regular text input.
+
+<Example code={`<div class="form-floating mb-medium">
+    <label for="floatingInput">Add chips</label>
+    <div class="chip-input form-input" data-cx-chips="primary smooth">
+      <span class="chip" data-cx-chip-value="A Chip">A Chip</span>
+      <span class="chip" data-cx-chip-value="Another Chip">Another Chip</span>
+      <input type="text" class="ghost-input" id="floatingInput" />
+    </div>
+  </div>`} />
+
+## Usage
+
+### Via data attributes
+
+Add `data-cx-chips` to a container element to automatically initialize chip input behavior. Pass chip style classes as the attribute value.
+
+```html
+<div class="form-input chip-input" data-cx-chips="primary smooth">
+  <input type="text" class="ghost-input" placeholder="Add tags…" />
+</div>
+```
+
+Use additional `data-cx-*` attributes to configure the component:
+
+<CxTable>
+| Attribute | Description |
+| --- | --- |
+| `data-cx-chips` | Initializes chip input. The value sets the chip style classes (`"primary smooth"`, `"default"`, etc.). |
+| `data-cx-separator` | Character that creates a new chip when typed. Default is `","`. Set to `null` to disable. |
+| `data-cx-allow-duplicates` | Set to `"true"` to allow the same value to be added more than once. |
+| `data-cx-max-chips` | Maximum number of chips allowed. Omit for no limit. |
+| `data-cx-create-on-blur` | Set to `"false"` to prevent chip creation when the input loses focus. |
+</CxTable>
+
+### Via JavaScript
+
+Initialize manually and pass options as a configuration object:
+
+```js
+const el = document.querySelector('.form-input.chip-input')
+const chipInput = new ChipInput(el, {
+  separator: ',',
+  maxChips: 5,
+  chipClass: 'primary smooth'
+})
+```
+
+### Options
+
+<CxTable>
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `separator` | string \| null | `','` | Character that triggers chip creation when typed. Set to `null` to disable. |
+| `allowDuplicates` | boolean | `false` | Allow duplicate chip values. |
+| `maxChips` | number \| null | `null` | Maximum number of chips allowed. `null` for no limit. |
+| `placeholder` | string | `''` | Placeholder text for a dynamically created ghost input. |
+| `dismissible` | boolean | `true` | Append a close button to each created chip. |
+| `dismissText` | string | `'×'` | Text for the close button. Defaults to `'×'`. |
+| `createOnBlur` | boolean | `true` | Create a chip from the current input value when focus leaves the field. |
+| `chipClass` | string | `'default'` | Space-separated chip modifier classes applied to every chip. Overridden by the `data-cx-chips` attribute value. |
+</CxTable>
+
+### Methods
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `add(value)` | Creates a chip with the given value. Returns the chip element, or `null` if the value was rejected (empty, duplicate, or max reached). |
+| `remove(chipOrValue)` | Removes a chip by element reference or value string. Returns `true` on success. |
+| `removeSelected()` | Removes all currently selected chips and returns focus to the input. |
+| `getValues()` | Returns an array of all current chip values in order. |
+| `getSelectedValues()` | Returns an array of selected chip values. |
+| `clear()` | Removes all chips. |
+| `clearSelection()` | Deselects all chips without removing them. |
+| `selectChip(chip, options)` | Selects a chip element. Accepts `{ addToSelection, rangeSelect }` options. |
+| `focus()` | Focuses the ghost input. |
+| `dispose()` | Destroys the component and removes all event listeners. |
+</CxTable>
+
+```js
+const el = document.querySelector('.form-input.chip-input')
+const chipInput = ChipInput.getOrCreateInstance(el)
+
+chipInput.add('JavaScript')
+chipInput.add('TypeScript')
+
+console.log(chipInput.getValues()) // ['JavaScript', 'TypeScript']
+
+chipInput.remove('JavaScript')
+chipInput.clear()
+```
+
+### Events
+
+<CxTable>
+| Event | Description |
+| --- | --- |
+| `add.cx.chip-input` | Fired before a chip is added. The event carries a `value` property. Call `event.preventDefault()` to cancel. |
+| `remove.cx.chip-input` | Fired before a chip is removed. The event carries `value` and `chip` properties. Call `event.preventDefault()` to cancel. |
+| `change.cx.chip-input` | Fired after any chip is added or removed. The event carries a `values` array with all current chip values. |
+| `select.cx.chip-input` | Fired when chip selection changes. The event carries a `selected` array of selected values. |
+</CxTable>
+
+```js
+const el = document.querySelector('.form-input.chip-input')
+
+el.addEventListener('add.cx.chip-input', event => {
+  if (event.value.length < 2) {
+    event.preventDefault() // reject values shorter than 2 characters
+  }
+})
+
+el.addEventListener('change.cx.chip-input', event => {
+  console.log('Current values:', event.values)
+})
+```
+
+## Keyboard interaction
+
+Chip input supports Mail.app-style keyboard navigation and multi-chip selection.
+
+### Input focused
+
+<CxTable>
+| Key | Action |
+| --- | --- |
+| <kbd>Enter</kbd> | Create a chip from the current input value. |
+| <kbd>,</kbd> (or separator) | Create a chip from the current input value. |
+| <kbd>Backspace</kbd> / <kbd>Delete</kbd> | When the input is empty, select and focus the last chip. |
+| <kbd>←</kbd> | When the cursor is at the start, move focus to the last chip. |
+| <kbd>Shift</kbd>+<kbd>←</kbd> | Select the last chip and extend the selection. |
+| <kbd>Escape</kbd> | Clear selection, clear the input value, and blur. |
+</CxTable>
+
+### Chip focused
+
+<CxTable>
+| Key | Action |
+| --- | --- |
+| <kbd>Backspace</kbd> / <kbd>Delete</kbd> | Remove all selected chips and focus the next closest chip or the input. |
+| <kbd>←</kbd> | Move to the previous chip. |
+| <kbd>→</kbd> | Move to the next chip, or to the input if already at the last chip. |
+| <kbd>Shift</kbd>+<kbd>←</kbd> / <kbd>Shift</kbd>+<kbd>→</kbd> | Extend the selection in that direction. |
+| <kbd>Home</kbd> | Move to the first chip. |
+| <kbd>End</kbd> | Move focus to the input. |
+| <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>A</kbd> | Select all chips. |
+| <kbd>Escape</kbd> | Clear selection and return focus to the input. |
+</CxTable>
+
+### Mouse and pointer
+
+<CxTable>
+| Action | Effect |
+| --- | --- |
+| Click chip | Select that chip (clears any previous selection). |
+| <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+click | Toggle the chip in or out of the current selection. |
+| <kbd>Shift</kbd>+click | Range-select from the anchor chip to the clicked chip. |
+| Click close button | Remove the chip immediately. |
+| Click container background | Clear selection and focus the input. |
+</CxTable>
+
+## CSS
+
+<DocsCSS name="Chip input" exposed/>
+
+### Custom properties
+
+<DocsCSSVars name="Chip input" exposed />
+
+<ScssDocs name="chip-input-tokens" file="scss/forms/_chip-input.scss" />
+
+### Sass variables
+
+<DocsSASSVars name="Chip input" exposed />
+
+<ScssDocs name="chip-tokens" file="scss/tokens/_chips.scss" />

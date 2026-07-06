@@ -5,7 +5,7 @@ toc: true
 aliases: "[[docsref:/core-concepts/box-sizing]]"
 ---
 
-Chassis CSS applies two rules to every element on the page. The first is the `border-box` reset every modern CSS framework uses. The second is unique to Chassis: a small padding adjustment that keeps rendered components pixel-perfect against your Figma designs no matter how thick their borders are.
+Chassis CSS applies two rules to every element on the page. The first is the `border-box` reset every modern CSS framework uses. The second is unique to Chassis: a small padding adjustment that keeps rendered components pixel-perfect against Figma designs no matter how thick their borders are.
 
 ## Border-box sizing
 
@@ -43,7 +43,7 @@ padding: calc(var(--cx-padding-y) - var(--cx-border-width))
 
 The result: a button with a `12px` padding token and a `2px` border renders with a `12px` gap between content and border — exactly what the designer specified.
 
-### Configuring stroke exclusion
+### Stroke exclusion scope
 
 The `$enable-exclude-strokes` setting in `_settings.scss` controls which components apply this compensation. It accepts three values:
 
@@ -60,9 +60,9 @@ $enable-exclude-strokes: button, badge, chip, notification;
 
 When set to a list, only the named components subtract their border width from padding; everything else uses the token value as-is. See [Options]([[docsref:/customize/options]]) for the full set of `$enable-*` flags.
 
-### Using the mixin in custom components
+### Custom component mixin
 
-If you're building a custom component that follows the same token pattern, call the `exclude-strokes` mixin directly:
+Custom components following the same token pattern can call the `exclude-strokes` mixin directly:
 
 ```scss
 .my-component {

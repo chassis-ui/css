@@ -1,0 +1,80 @@
+@use "../config" as *;
+@use "../mixins" as *;
+
+//
+// OTP Input
+//
+// One-time password entry layout displaying individual character slots in
+// a horizontal row. Sized to match typical 4–8 digit verification codes.
+//
+
+@layer components {
+  .form-otp {
+    // scss-docs-start form-otp-properties
+    --otp-gap: #{$form-otp-gap};
+    --otp-input-w: #{$form-otp-input-w};
+    --otp-input-h: #{$form-otp-input-h};
+    --otp-font-size: #{$form-otp-font-size};
+    --otp-font-weight: #{$form-otp-font-weight};
+    --otp-separator-color: #{$form-otp-separator-color};
+    // scss-docs-end form-otp-properties
+
+    display: inline-flex;
+    gap: var(--otp-gap);
+
+    .form-input {
+      width: var(--otp-input-w);
+      min-height: var(--otp-input-h);
+      padding: 0;
+      @include font-size(var(--otp-font-size));
+      font-weight: var(--otp-font-weight);
+      line-height: 1;
+      text-align: center;
+
+      // Remove default number spinners
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        margin: 0;
+        appearance: none;
+      }
+
+      &[type="number"] {
+        appearance: textfield;
+      }
+
+      &:focus,
+      &:focus-visible {
+        z-index: 1;
+      }
+    }
+  }
+
+  // When used with .input-group — either as the same element or as nested groups
+  .form-otp.input-group,
+  .form-otp > .input-group {
+    width: auto; // Override input-group's width: 100%
+
+    .form-input {
+      flex: 0 0 auto; // Don't grow or shrink, use fixed width
+      width: var(--otp-input-w); // Override input-group's width: 1%
+
+      &:disabled:not(:first-child) {
+        border-inline-end-width: 0;
+      }
+    }
+  }
+
+  // Remove the OTP gap when the OTP element itself is the input-group
+  .form-otp.input-group {
+    gap: 0;
+  }
+
+  .form-otp-separator {
+    display: flex;
+    align-items: center;
+    padding-inline: var(--otp-gap);
+    @include font-size(var(--otp-font-size));
+    color: var(--otp-separator-color);
+    user-select: none;
+  }
+} // @layer components

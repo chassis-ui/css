@@ -1,3 +1,15 @@
+@use "sass:meta";
+@use "sass:list";
+@use "sass:math";
+@use "../config" as *;
+
+//
+// Border Radius Mixins
+//
+// Mixins for applying border-radius values to components with support for
+// individual corner control and negative-value clamping.
+//
+
 // stylelint-disable property-disallowed-list
 // Single side border-radius
 
@@ -11,10 +23,10 @@
 @function valid-radius($radius) {
   $return: ();
   @each $value in $radius {
-    @if type-of($value) == number {
-      $return: append($return, max($value, 0));
+    @if meta.type-of($value) == number {
+      $return: list.append($return, math.max($value, 0));
     } @else {
-      $return: append($return, $value);
+      $return: list.append($return, $value);
     }
   }
   @return $return;
@@ -27,7 +39,7 @@
 ///
 /// @param {Number|String} $radius [var(--cx-border-radius)] - Radius value
 /// @param {Number|false} $fallback-border-radius [false] - Fallback radius when rounded borders are disabled
-@mixin border-radius($radius: var(--#{$prefix}border-radius), $fallback-border-radius: false) {
+@mixin border-radius($radius: var(--border-radius), $fallback-border-radius: false) {
   @if $enable-rounded-borders {
     border-radius: valid-radius($radius);
   }
@@ -51,8 +63,8 @@
 /// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-end-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
-    border-top-right-radius: valid-radius($radius);
-    border-bottom-right-radius: valid-radius($radius);
+    border-start-end-radius: valid-radius($radius);
+    border-end-end-radius: valid-radius($radius);
   }
 }
 
@@ -61,8 +73,8 @@
 /// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-bottom-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
-    border-bottom-right-radius: valid-radius($radius);
-    border-bottom-left-radius: valid-radius($radius);
+    border-end-start-radius: valid-radius($radius);
+    border-end-end-radius: valid-radius($radius);
   }
 }
 
@@ -71,8 +83,8 @@
 /// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-start-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
-    border-top-left-radius: valid-radius($radius);
-    border-bottom-left-radius: valid-radius($radius);
+    border-start-start-radius: valid-radius($radius);
+    border-end-start-radius: valid-radius($radius);
   }
 }
 
@@ -81,7 +93,7 @@
 /// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-top-start-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
-    border-top-left-radius: valid-radius($radius);
+    border-start-start-radius: valid-radius($radius);
   }
 }
 
@@ -90,7 +102,7 @@
 /// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-top-end-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
-    border-top-right-radius: valid-radius($radius);
+    border-start-end-radius: valid-radius($radius);
   }
 }
 
@@ -99,7 +111,7 @@
 /// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-bottom-end-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
-    border-bottom-right-radius: valid-radius($radius);
+    border-end-end-radius: valid-radius($radius);
   }
 }
 
@@ -108,7 +120,7 @@
 /// @param {Number|String} $radius [$border-radius] - Radius value
 @mixin border-bottom-start-radius($radius: $border-radius) {
   @if $enable-rounded-borders {
-    border-bottom-left-radius: valid-radius($radius);
+    border-end-start-radius: valid-radius($radius);
   }
 }
 // scss-docs-end border-radius-mixins

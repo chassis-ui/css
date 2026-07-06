@@ -1,23 +1,61 @@
 ---
-title: Utilities for layout
-description: For faster mobile-friendly and responsive development, Chassis CSS includes dozens of utility classes for showing, hiding, aligning, and spacing content.
+title: Layout utilities
+description: Utility classes for display type, sizing, spacing, positioning, and visibility — the building blocks used alongside the grid and CSS Grid layout systems.
 toc: true
 ---
 
-## Changing `display`
+## Display
 
-Use our [display utilities]([[docsref:/utilities/display]]) for responsively toggling common values of the `display` property. Mix it with our grid system, content, or components to show or hide them across specific viewports.
+[Display utilities]([[docsref:/utilities/display]]) toggle common CSS `display` values — including `flex`, `grid`, `none`, and their `print:` variants — across all six breakpoints. Use them to change an element's rendering mode responsively or to conditionally show and hide content at specific viewport widths.
 
-## Flexbox options
+## Flexbox
 
-Chassis CSS is built with flexbox, but not every element’s `display` has been changed to `display: flex` as this would add many unnecessary overrides and unexpectedly change key browser behaviors. Most of [our components]([[docsref:/components/notifications]]) are built with flexbox enabled.
+Chassis CSS uses flexbox for most components, but sets `display: flex` only where needed rather than globally — a global default would introduce unnecessary overrides and change default browser behaviors in unexpected ways. To apply flexbox to an arbitrary element, add `.d-flex` or a responsive variant (e.g. `.small:d-flex`). The full set of [flex utilities]([[docsref:/utilities/flex]]) — alignment, direction, wrapping, ordering, and sizing — only take effect on flex containers.
 
-Should you need to add `display: flex` to an element, do so with `.d-flex` or one of the responsive variants (e.g., `.small:d-flex`). You’ll need this class or `display` value to allow the use of our extra [flexbox utilities]([[docsref:/utilities/flex]]) for sizing, alignment, spacing, and more.
+## Grid
+
+[Grid utilities]([[docsref:/utilities/grid]]) control CSS Grid column counts and auto-placement behavior. They complement the [CSS Grid layout system]([[docsref:/layout/css-grid]]) when finer control over column distribution or item placement is needed beyond what `--cx-grid-columns` provides inline.
+
+## Float
+
+[Float utilities]([[docsref:/utilities/float]]) apply `float-start`, `float-end`, and `float-none` across all six breakpoints. Float-based layouts require a clearfix container; see [Clearfix]([[docsref:/helpers/clearfix]]) for the `.clearfix` helper.
+
+## Container type
+
+[Container type utilities]([[docsref:/utilities/container-type]]) set the CSS `container-type` property on an element, making it a container query context for its descendants. Components whose responsive classes are implemented with `@container` queries — such as [Navbar]([[docsref:/components/navbar]]) and [Stepper]([[docsref:/components/stepper]]) — require a container query ancestor.
+
+## Sizing
+
+[Sizing utilities]([[docsref:/utilities/sizing]]) set width and height as percentages of the parent element or as viewport-relative values. Use them to constrain or expand an element's dimensions without writing custom CSS.
 
 ## Margin and padding
 
-Use the `margin` and `padding` [spacing utilities]([[docsref:/utilities/spacing]]) to control how elements and components are spaced and sized. Chassis CSS includes a six-level scale for spacing utilities, based on a `1rem` value default `$spacer` variable. Choose values for all viewports (e.g., `.me-medium` for `margin-right: 1rem` in LTR), or pick responsive variants to target specific viewports (e.g., `.medium:me-3` for `margin-right: 1rem` —in LTR— starting at the `medium` breakpoint).
+[Margin]([[docsref:/utilities/margin]]) and [padding]([[docsref:/utilities/padding]]) utilities control element and component spacing. All classes are responsive and share the `$spaces` spacing scale. Apply a value at all breakpoints (e.g. `.me-medium` for `margin-inline-end: medium`) or prefix with a breakpoint to target specific viewports (e.g. `.medium:me-medium` from the `medium` breakpoint up).
 
-## Toggle `visibility`
+## Space
 
-When toggling `display` isn’t needed, you can toggle the `visibility` of an element with our [visibility utilities]([[docsref:/utilities/visibility]]). Invisible elements will still affect the layout of the page, but are visually hidden from visitors.
+[Space utilities]([[docsref:/utilities/space]]) add consistent spacing between the direct children of an element via `margin`, without requiring a flex or grid container. Use them when a simple margin-based rhythm is preferable to a full flex or grid layout.
+
+## Gap
+
+[Gap utilities]([[docsref:/utilities/gap]]) apply `gap`, `row-gap`, and `column-gap` to flex and grid containers, distributing space between items without adding margin to individual children. All three use the same `$spaces` spacing scale as margin and padding, and are responsive across all six breakpoints. For gutters in the flexbox grid specifically, see [Gutters]([[docsref:/layout/gutters]]).
+
+## Position
+
+[Position utilities]([[docsref:/utilities/position]]) set the CSS `position` property (`static`, `relative`, `absolute`, `fixed`, `sticky`) and provide edge-placement classes for `top`, `start`, `end`, and `bottom` values. A transform-based centering helper is also included for absolutely positioned elements.
+
+## Overflow
+
+[Overflow utilities]([[docsref:/utilities/overflow]]) configure how content overflows an element's box, covering `overflow`, `overflow-x`, and `overflow-y`. The `.overflow-hidden` class is commonly used to contain the negative margin bleed from [vertical gutters]([[docsref:/layout/gutters#vertical-gutters]]).
+
+## Z-index
+
+[Z-index utilities]([[docsref:/utilities/z-index]]) provide low-level classes for controlling stacking order on positioned elements. For the component-level z-index scale used by navbars, modals, and tooltips, see [Z-index]([[docsref:/layout/z-index]]).
+
+## Vertical alignment
+
+[Vertical alignment utilities]([[docsref:/utilities/vertical-align]]) set the CSS `vertical-align` property. They apply only to inline, inline-block, and table-cell elements. For vertically centering block content inside a flex or grid container, use the [flex alignment utilities]([[docsref:/utilities/flex#align-items]]) instead.
+
+## Visibility
+
+[Visibility utilities]([[docsref:/utilities/visibility]]) toggle the CSS `visibility` property without removing an element from the document flow. Invisible elements remain in place and continue to affect layout, but are hidden from view. To remove an element from layout entirely, use a `display` utility instead.

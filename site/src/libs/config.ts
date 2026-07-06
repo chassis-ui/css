@@ -1,15 +1,10 @@
 import fs from 'node:fs'
-import yaml from 'js-yaml'
+import { load } from 'js-yaml'
 import { z } from 'zod'
 import { zVersionSemver } from './validation'
 
 // The config schema used to validate the config file content and ensure all values required by the site are valid.
 const configSchema = z.object({
-  algolia: z.object({
-    api_key: z.string(),
-    app_id: z.string(),
-    index_name: z.string()
-  }),
   analytics: z.object({
     google_id: z.string()
   }),
@@ -18,31 +13,28 @@ const configSchema = z.object({
     max: z.number()
   }),
   authors: z.string(),
-  baseURL: z.string().url(),
-  blog: z.string().url(),
+  baseURL: z.url(),
+  blog: z.url(),
   cdn: z.object({
-    css: z.string().url(),
-    css_rtl: z.string().url(),
+    css: z.url(),
     css_hash: z.string(),
-    css_rtl_hash: z.string(),
-    js: z.string().url(),
+    js: z.url(),
     js_hash: z.string(),
-    js_bundle: z.string().url(),
+    js_bundle: z.url(),
     js_bundle_hash: z.string(),
-    popper: z.string().url(),
-    popper_esm: z.string().url(),
-    popper_hash: z.string()
+    floating_ui: z.url(),
+    vanilla_calendar_pro: z.url()
   }),
   current_version: zVersionSemver,
   description: z.string(),
   docsDir: z.string(),
   docsPath: z.string(),
   download: z.object({
-    dist: z.string().url(),
-    source: z.string().url()
+    dist: z.url(),
+    source: z.url()
   }),
-  github_org: z.string().url(),
-  repo: z.string().url(),
+  github_org: z.url(),
+  repo: z.url(),
   subtitle: z.string(),
   title: z.string(),
   toc: z.object({
@@ -64,7 +56,7 @@ export function getConfig(): Config {
 
   try {
     // Load the config from the `config.yml` file.
-    const rawConfig = yaml.load(fs.readFileSync('./site/config.yml', 'utf8'))
+    const rawConfig = load(fs.readFileSync('./site/config.yml', 'utf8'))
 
     // Parse the config using the config schema to validate its content and get back a fully typed config object.
     config = configSchema.parse(rawConfig)

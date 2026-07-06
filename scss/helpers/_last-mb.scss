@@ -1,0 +1,18 @@
+//
+// Last Child Margin Helper
+//
+// Remove the bottom margin of the last child paragraph within a component.
+// Useful in card bodies, popovers, and other containers where
+// trailing paragraph spacing would break layout.
+//
+
+@layer helpers {
+  .last-mb-0 > p:last-child {
+    margin-block-end: 0;
+  }
+
+  .last-mb-reset > p:last-child {
+    margin-block-end: revert !important; // stylelint-disable-line declaration-no-important
+  }
+
+} // @layer helpers

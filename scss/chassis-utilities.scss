@@ -1,30 +1,18 @@
-// Chassis SCSS entry point
 //
-// It imports settings and core to build the framework.
+// Chassis CSS — Utilities Bundle
+//
+// Standalone entry point forwarding root variables, helpers, and utility
+// classes only. Excludes components and layout.
+//
 
-@import "mixins/banner";
-@include cxBanner(Utilities);
+@use "./mixins/banner" with ($file: "Utilities");
 
-// fusv-disable
-@import "settings";
-@import "vendor";
-// fusv-enable
-
-// Configuration
-@import "functions";
-@import "tokens";
-@import "variables";
-@import "maps";
-@import "rfs";
-@import "mixins";
-@import "utilities";
-
-// Layout & components
-@import "root";
-@import "placeholders";
+// Root
+@forward "./root";
 
 // Helpers
-@import "helpers";
+@forward "./helpers";
 
 // Utilities
-@import "utilities-api";
+@forward "./utilities";
+@forward "./utilities-api";

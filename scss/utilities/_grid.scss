@@ -1,0 +1,37 @@
+//
+// Grid Utilities
+//
+// Utility map for grid layout, column counts, and auto-flow classes.
+//
+
+$utilities: (
+  // scss-docs-start utils-grid
+  "grid-column-counts": (
+    responsive: true,
+    // property: --columns,
+    property: grid-template-columns,
+    class: grid-cols,
+    values: (
+      "1": 1fr,
+      "2": repeat(2, 1fr),
+      "3": repeat(3, 1fr),
+      "4": repeat(4, 1fr),
+      "6": repeat(6, 1fr),
+    )
+  ),
+  "grid-columns": (
+    responsive: true,
+    property: grid-column,
+    class: grid-cols,
+    values: (
+      fill: #{"1 / -1"},
+    )
+  ),
+  "grid-auto-flow": (
+    responsive: true,
+    property: grid-auto-flow,
+    class: grid-auto-flow,
+    values: row column dense
+  ),
+  // scss-docs-end utils-grid
+) !default;

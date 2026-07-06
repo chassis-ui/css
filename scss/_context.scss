@@ -1,3 +1,5 @@
+@use "./placeholders" as *;
+
 //
 // Context Component
 //
@@ -7,22 +9,26 @@
 // for use inside other component files.
 //
 
-// scss-docs-start context-class
-.context {
-  @extend %context;
-  @include colors();
+@layer components {
+  // scss-docs-start context-class
+  .context {
+    @extend %context, %body-context;
+    color: var(--fg-color);
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
 
-  &.solid {
-    @extend %solid-context;
+    &.solid {
+      @extend %solid-context;
+    }
+
+    &.outline  {
+      @extend %outline-context;
+    }
+
+    &.smooth {
+      @extend %smooth-context;
+    }
+
   }
-
-  &.outline {
-    @extend %outline-context;
-  }
-
-  &.smooth {
-    @extend %smooth-context;
-  }
-
-}
-// scss-docs-end context-class
+  // scss-docs-end context-class
+} // @layer components

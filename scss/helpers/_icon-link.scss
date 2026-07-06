@@ -1,25 +1,40 @@
-.icon-link {
-  display: inline-flex;
-  gap: $icon-link-gap;
-  align-items: center;
-  text-decoration-color: to-opacity(var(--#{$prefix}link-main-color), var(--#{$prefix}link-opacity, .5));
-  text-underline-offset: $icon-text-underline-offset;
-  backface-visibility: hidden;
+@use "../config" as *;
+@use "../functions" as *;
+@use "../mixins" as *;
 
-  > .icon {
-    --#{$prefix}icon-color: currentcolor;
-    flex-shrink: 0;
-    width: $icon-link-icon-size;
-    height: $icon-link-icon-size;
-    @include transition($icon-link-icon-transition);
-  }
-}
+//
+// Icon Link Helper
+//
+// Flex-row layout for pairing an inline SVG icon with link text. Scales
+// the icon to match current font metrics.
+//
 
-.icon-link-hover {
-  &:hover,
-  &:focus-visible {
+@layer helpers {
+  // scss-docs-start icon-link-helper
+  .icon-link {
+    display: inline-flex;
+    gap: $icon-link-gap;
+    align-items: center;
+    text-decoration-color: to-opacity(var(--link-main-color), var(--link-opacity, .5));
+    text-underline-offset: $icon-text-underline-offset;
+    backface-visibility: hidden;
+
     > .icon {
-      transform: var(--#{$prefix}icon-link-transform, $icon-link-icon-transform);
+      --icon-color: currentcolor;
+      flex-shrink: 0;
+      width: $icon-link-icon-size;
+      height: $icon-link-icon-size;
+      @include transition($icon-link-icon-transition);
     }
   }
-}
+
+  .icon-link-hover {
+    &:hover,
+    &:focus-visible {
+      > .icon {
+        transform: var(--icon-link-transform, $icon-link-icon-transform);
+      }
+    }
+  }
+  // scss-docs-end icon-link-helper
+} // @layer helpers

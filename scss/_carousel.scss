@@ -1,18 +1,13 @@
+@use "./config" as *;
+@use "./mixins" as *;
+@use "./functions" as *;
+
 //
 // Carousel Component
 //
-// This file implements a content slideshow system with transition effects and navigation.
-// It provides a structured approach to cycling through elements with animation support.
-//
-// Implementation Features:
-// - Position-based transition system for slide animations
-// - Direct DOM manipulation support through class-based state management
-// - Touch event handling through pointer-event management
-// - Multiple transition types (slide and fade) with appropriate transforms
-// - Accessibility-first approach with ARIA attributes and keyboard navigation
-// - Responsive controls and indicators with appropriate positioning
-// - Caption system with z-index management and positioning options
-// - Dark mode support through custom properties
+// Content slideshow cycling through elements with slide and fade transition
+// effects. Includes navigation controls, position indicators, and touch-event
+// support for swipe gestures.
 //
 // The implementation carefully manages animation states to prevent conflicts
 // between concurrent transitions and provides clean entry/exit animations.
@@ -28,245 +23,275 @@
 // 5. .carousel-item-next.carousel-item-start and .carousel-item-prev.carousel-item-end
 //    are the upcoming slides during transition
 
-.carousel {
-  position: relative;
-}
+@layer components {
+  .carousel {
+    // scss-docs-start carousel-variables
+    --control-color: var(--carousel-control-color, #{$carousel-control-color});
+    --control-size: var(--carousel-control-size, #{$carousel-control-size});
+    --control-opacity: var(--carousel-control-opacity, #{$carousel-control-opacity});
+    --control-hover-opacity: var(--carousel-control-hover-opacity, #{$carousel-control-hover-opacity});
+    --control-transition: var(--carousel-control-transition, #{$carousel-control-transition});
+    --indicator-width: var(--carousel-indicator-width, #{$carousel-indicator-width});
+    --indicator-height: var(--carousel-indicator-height, #{$carousel-indicator-height});
+    --indicator-padding-y: var(--carousel-indicator-padding-y, #{$carousel-indicator-padding-y});
+    --indicator-padding-x: var(--carousel-indicator-padding-x, #{$carousel-indicator-padding-x});
+    --indicator-border-radius: var(--carousel-indicator-border-radius, #{$carousel-indicator-border-radius});
+    --indicator-margin: var(--carousel-indicator-margin, #{$carousel-indicator-margin});
+    --indicator-opacity: var(--carousel-indicator-opacity, #{$carousel-indicator-opacity});
+    --indicator-color: var(--carousel-indicator-color, #{$carousel-indicator-color});
+    --indicator-active-opacity: var(--carousel-indicator-active-opacity, #{$carousel-indicator-active-opacity});
+    --indicator-transition: var(--carousel-indicator-transition, #{$carousel-indicator-transition});
+    --caption-width: var(--carousel-caption-width, #{$carousel-caption-width});
+    --caption-color: var(--carousel-caption-color, #{$carousel-caption-color});
+    --caption-padding-y: var(--carousel-caption-padding-y, #{$carousel-caption-padding-y});
+    --caption-spacer: var(--carousel-caption-spacer, #{$carousel-caption-spacer});
+    --control-icon-size: var(--carousel-control-icon-size, #{$carousel-control-icon-size});
+    --control-prev-icon: var(--carousel-control-prev-icon, #{svg-icon($carousel-control-prev-icon)});
+    --control-next-icon: var(--carousel-control-next-icon, #{svg-icon($carousel-control-next-icon)});
+    --control-prev-bg: var(--carousel-control-prev-bg, #{$carousel-control-prev-bg});
+    --control-next-bg: var(--carousel-control-next-bg, #{$carousel-control-next-bg});
+    --transition-duration: var(--carousel-transition-duration, #{$carousel-transition-duration});
+    --transition: var(--carousel-transition, #{$carousel-transition});
+    // --dark-caption-color: var(--carousel-dark-caption-color, #{$carousel-dark-caption-color});
+    // --dark-control-icon-filter: var(--carousel-dark-control-icon-filter, #{$carousel-dark-control-icon-filter});
+    // scss-docs-end carousel-variables
+    position: relative;
+  }
 
-.carousel.pointer-event {
-  touch-action: pan-y;
-}
+  .carousel.pointer-event {
+    touch-action: pan-y;
+  }
 
-.carousel-inner {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  @include clearfix();
-}
+  .carousel-inner {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    @include clearfix();
+  }
 
-.carousel-item {
-  position: relative;
-  display: none;
-  float: left;
-  width: 100%;
-  margin-right: -100%;
-  backface-visibility: hidden;
-  @include transition($carousel-transition);
-}
-
-.carousel-item.active,
-.carousel-item-next,
-.carousel-item-prev {
-  display: block;
-}
-
-.carousel-item-next:not(.carousel-item-start),
-.active.carousel-item-end {
-  transform: translateX(100%);
-}
-
-.carousel-item-prev:not(.carousel-item-end),
-.active.carousel-item-start {
-  transform: translateX(-100%);
-}
-
-
-//
-// Alternate transitions
-//
-
-.carousel-fade {
   .carousel-item {
-    opacity: 0;
-    transition-property: opacity;
-    transform: none;
+    position: relative;
+    display: none;
+    float: inline-start;
+    width: 100%;
+    margin-inline-end: -100%;
+    backface-visibility: hidden;
+    @include transition(var(--transition));
   }
 
   .carousel-item.active,
-  .carousel-item-next.carousel-item-start,
-  .carousel-item-prev.carousel-item-end {
-    z-index: 1;
-    opacity: 1;
+  .carousel-item-next,
+  .carousel-item-prev {
+    display: block;
   }
 
-  .active.carousel-item-start,
+  .carousel-item-next:not(.carousel-item-start),
   .active.carousel-item-end {
-    z-index: 0;
-    opacity: 0;
-    @include transition(opacity 0s $carousel-transition-duration);
+    transform: translateX(100%);
   }
-}
 
-
-//
-// Left/right controls for nav
-//
-
-.carousel-control-prev,
-.carousel-control-next {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  z-index: 1;
-  // Use flex for alignment (1-3)
-  display: flex; // 1. allow flex styles
-  align-items: center; // 2. vertically center contents
-  justify-content: center; // 3. horizontally center contents
-  width: $carousel-control-size;
-  padding: 0;
-  color: $carousel-control-color;
-  text-align: center;
-  background: none;
-  border: 0;
-  opacity: $carousel-control-opacity;
-  @include transition($carousel-control-transition);
-
-  // Hover/focus state
-  &:hover,
-  &:focus {
-    color: $carousel-control-color;
-    text-decoration: none;
-    outline: 0;
-    opacity: $carousel-control-hover-opacity;
+  .carousel-item-prev:not(.carousel-item-end),
+  .active.carousel-item-start {
+    transform: translateX(-100%);
   }
-}
-.carousel-control-prev {
-  left: 0;
-  background-image: if($enable-component-gradients, linear-gradient(90deg, #{to-opacity($black, .25)}, #{to-opacity($black, .001)}), null);
-}
-.carousel-control-next {
-  right: 0;
-  background-image: if($enable-component-gradients, linear-gradient(270deg, #{to-opacity($black, .25)}, #{to-opacity($black, .001)}), null);
-}
 
-// Icons for within
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-  display: inline-block;
-  width: $carousel-control-icon-size;
-  height: $carousel-control-icon-size;
-  background-repeat: no-repeat;
-  background-position: 50%;
-  background-size: 100% 100%;
 
-  &::before {
+  //
+  // Alternate transitions
+  //
+
+  .carousel-fade {
+    .carousel-item {
+      opacity: 0;
+      transition-property: opacity;
+      transform: none;
+    }
+
+    .carousel-item.active,
+    .carousel-item-next.carousel-item-start,
+    .carousel-item-prev.carousel-item-end {
+      z-index: 1;
+      opacity: 1;
+    }
+
+    .active.carousel-item-start,
+    .active.carousel-item-end {
+      z-index: 0;
+      opacity: 0;
+      @include transition(opacity 0s var(--transition-duration));
+    }
+  }
+
+
+  //
+  // Left/right controls for nav
+  //
+
+  .carousel-control-prev,
+  .carousel-control-next {
     position: absolute;
-    width: $carousel-control-icon-size;
-    height: $carousel-control-icon-size;
-    margin-top: 0;
-    margin-left: divide($carousel-control-icon-size, -2);
-    content: " ";
-    background-color: $carousel-control-color;
-    mask-position: center;
-    mask-size: $carousel-control-icon-size $carousel-control-icon-size;
-  }
-}
-
-.carousel-control-prev-icon::before {
-  mask-image: escape-svg($carousel-control-prev-icon) #{"/*rtl:" + escape-svg($carousel-control-next-icon) + "*/"};
-  // background-image: escape-svg($carousel-control-prev-icon) #{"/*rtl:" + escape-svg($carousel-control-next-icon) + "*/"};
-}
-.carousel-control-next-icon::before {
-  mask-image: escape-svg($carousel-control-next-icon) #{"/*rtl:" + escape-svg($carousel-control-prev-icon) + "*/"};
-  //background-image: escape-svg($carousel-control-next-icon) #{"/*rtl:" + escape-svg($carousel-control-prev-icon) + "*/"};
-}
-
-// Optional indicator pips/controls
-//
-// Add a container (such as a list) with the following class and add an item (ideally a focusable control,
-// like a button) with data-cx-target for each slide your carousel holds.
-
-.carousel-indicators {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 2;
-  display: flex;
-  justify-content: center;
-  padding: 0;
-  // Use the .carousel-control's width as margin so we don't overlay those
-  margin-right: $carousel-control-size;
-  margin-bottom: 1rem;
-  margin-left: $carousel-control-size;
-
-  [data-cx-target] {
-    box-sizing: content-box;
-    flex: 0 1 auto;
-    width: $carousel-indicator-width;
-    height: $carousel-indicator-height;
-    padding: $carousel-indicator-padding-y $carousel-indicator-padding-x;
-    margin-right: $carousel-indicator-margin;
-    margin-left: $carousel-indicator-margin;
-    text-indent: -1 * $utility-pixel-999;
-    cursor: pointer;
-    background-color: transparent;
-    background-clip: padding-box;
-    // Use transparent borders to increase the hit area by 10px on top and bottom.
+    inset-block: 0;
+    z-index: 1;
+    // Use flex for alignment (1-3)
+    display: flex; // 1. allow flex styles
+    align-items: center; // 2. vertically center contents
+    justify-content: center; // 3. horizontally center contents
+    width: var(--control-size);
+    padding: 0;
+    color: var(--control-color);
+    text-align: center;
+    background: none;
     border: 0;
-    opacity: $carousel-indicator-opacity;
-    @include transition($carousel-indicator-transition);
+    opacity: var(--control-opacity);
+    @include transition(var(--control-transition));
+
+    // Hover/focus state
+    &:hover,
+    &:focus {
+      color: var(--control-color);
+      text-decoration: none;
+      outline: 0;
+      opacity: var(--control-hover-opacity);
+    }
+  }
+  .carousel-control-prev {
+    inset-inline-start: 0;
+    background-image: $carousel-control-prev-bg;
+  }
+  .carousel-control-next {
+    inset-inline-end: 0;
+    background-image: $carousel-control-next-bg;
+  }
+
+  // Icons for within
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    display: inline-block;
+    width: var(--control-icon-size);
+    height: var(--control-icon-size);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: 100% 100%;
 
     &::before {
       position: absolute;
-      display: block;
-      width: $carousel-indicator-width;
-      height: $carousel-indicator-height;
-      margin-top: divide($carousel-indicator-height, -2);
-      content: "";
-      background-color: $carousel-indicator-color;
-      border-radius: $carousel-indicator-border-radius; // stylelint-disable-line
+      // inset-inline: 0;
+      width: var(--control-icon-size);
+      height: var(--control-icon-size);
+      margin-inline-start: #{calc(var(--control-icon-size) * -.5)};
+      content: " ";
+      background-color: var(--control-color);
+      mask-position: center;
+      mask-size: var(--control-icon-size) var(--control-icon-size);
     }
   }
 
-  .active {
-    opacity: $carousel-indicator-active-opacity;
+  .carousel-control-prev-icon::before {
+    mask-image: var(--control-prev-icon);
   }
-}
-
-
-// Optional captions
-//
-//
-
-.carousel-caption {
-  position: absolute;
-  right: (100% - $carousel-caption-width) * .5;
-  bottom: $carousel-caption-spacer;
-  left: (100% - $carousel-caption-width) * .5;
-  padding-top: $carousel-caption-padding-y;
-  padding-bottom: $carousel-caption-padding-y;
-  color: $carousel-caption-color;
-  text-align: center;
-}
-
-// Dark mode carousel
-
-@mixin carousel-dark() {
-  .carousel-control-prev-icon,
-  .carousel-control-next-icon {
-    filter: $carousel-dark-control-icon-filter;
+  [dir="rtl"] .carousel-control-prev-icon::before {
+    mask-image: var(--control-next-icon);
   }
+  .carousel-control-next-icon::before {
+    mask-image: var(--control-next-icon);
+  }
+  [dir="rtl"] .carousel-control-next-icon::before {
+    mask-image: var(--control-prev-icon);
+  }
+
+  // Optional indicator pips/controls
+  //
+  // Add a container (such as a list) with the following class and add an item (ideally a focusable control,
+  // like a button) with data-cx-target for each slide your carousel holds.
+
+  .carousel-indicators {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    // Use the .carousel-control's width as margin so we don't overlay those
+    margin-block-end: 1rem;
+    margin-inline: var(--control-size);
+
+    [data-cx-target] {
+      box-sizing: content-box;
+      flex: 0 1 auto;
+      width: var(--indicator-width);
+      height: var(--indicator-height);
+      padding: var(--indicator-padding-y) var(--indicator-padding-x);
+      margin-inline: var(--indicator-margin);
+      text-indent: -1 * $utility-pixel-999;
+      cursor: pointer;
+      background-color: transparent;
+      background-clip: padding-box;
+      // Use transparent borders to increase the hit area by 10px on top and bottom.
+      border: 0;
+      opacity: var(--indicator-opacity);
+      @include transition(var(--indicator-transition));
+
+      &::before {
+        position: absolute;
+        display: block;
+        width: var(--indicator-width);
+        height: var(--indicator-height);
+        margin-block-start: calc(var(--indicator-height) * -.5);
+        content: "";
+        background-color: var(--indicator-color);
+      border-radius: var(--indicator-border-radius); // stylelint-disable-line
+      }
+    }
+
+    .active {
+      opacity: var(--indicator-active-opacity);
+    }
+  }
+
+
+  // Optional captions
+  //
+  //
 
   .carousel-caption {
-    color: $carousel-dark-caption-color;
+    position: absolute;
+    inset-block-end: var(--caption-spacer);
+    inset-inline: calc((100% - var(--caption-width)) * .5);
+    padding-block: var(--caption-padding-y);
+    color: var(--caption-color);
+    text-align: center;
   }
-}
 
-.carousel-dark {
-  @include carousel-dark();
-}
+  // Dark mode carousel
 
-@if $enable-dark-mode {
-  @include color-mode(dark) {
-    @if $color-mode-type == "media-query" {
-      .carousel {
-        @include carousel-dark();
-      }
-    } @else {
-      .carousel,
-      &.carousel {
-        @include carousel-dark();
-      }
-    }
-  }
-}
+  // @mixin carousel-dark() {
+  //   .carousel-control-prev-icon,
+  //   .carousel-control-next-icon {
+  //     filter: var(--dark-control-icon-filter);
+  //   }
+
+  //   .carousel-caption {
+  //     color: var(--dark-caption-color);
+  //   }
+  // }
+
+  // .carousel-dark {
+  //   @include carousel-dark();
+  // }
+
+  // @if $enable-dark-mode {
+  //   @include color-mode(dark) {
+  //     @if $color-mode-type == "media-query" {
+  //       .carousel {
+  //         @include carousel-dark();
+  //       }
+  //     } @else {
+  //       .carousel,
+  //       &.carousel {
+  //         @include carousel-dark();
+  //       }
+  //     }
+  //   }
+  // }
+} // @layer components

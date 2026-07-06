@@ -1,16 +1,17 @@
 ---
 title: Object fit
-description: Use the object fit utilities to modify how the content of a <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Replaced_element" target="_blank" rel="noopener noreferrer">replaced element</a>, such as an `<img>` or `<video>`, should be resized to fit its container.
+description: Responsive `object-fit` utilities for controlling how replaced element content fills its container.
 toc: true
-added:
-  version: "5.3"
+css_layer: utilities
 ---
 
-## How it works
+import { getData } from '@libs/data'
+export const bgColor = Object.fromEntries(getData('context-colors').map((c) => [c.name, c.hex])).neutral
+export const fgColor = "#fff"
 
-Change the value of the [`object-fit` property](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit) with our responsive `object-fit` utility classes. This property tells the content to fill the parent container in a variety of ways, such as preserving the aspect ratio or stretching to take up as much space as possible.
+## Overview
 
-Classes for the value of `object-fit` are named using the format `.object-fit-{value}`. Choose from the following values:
+`object-fit` utilities set the CSS `object-fit` property on replaced elements such as `<img>` and `<video>`, controlling how the content is scaled to fit the container. Available values:
 
 - `contain`
 - `cover`
@@ -20,27 +21,27 @@ Classes for the value of `object-fit` are named using the format `.object-fit-{v
 
 ## Examples
 
-Add the `object-fit-{value}` class to the [replaced element](https://developer.mozilla.org/en-US/docs/Web/CSS/Replaced_element):
+The `object-fit-{value}` class is applied directly to the replaced element:
 
-<Example class="d-flex overflow-auto" code={`<Placeholder width="140" height="120" class="object-fit-contain border rounded" text="Object fit contain" markup="img" />
-<Placeholder width="140" height="120" class="object-fit-cover border rounded" text="Object fit cover" markup="img" />
-<Placeholder width="140" height="120" class="object-fit-fill border rounded" text="Object fit fill" markup="img" />
-<Placeholder width="140" height="120" class="object-fit-scale border rounded" text="Object fit scale down" markup="img" />
-<Placeholder width="140" height="120" class="object-fit-none border rounded" text="Object fit none" markup="img" />`} />
+<Example class="d-flex overflow-auto" code={`<Placeholder width="140" height="120" class="object-fit-contain border rounded" text="Object fit contain" background="${bgColor}" color="${fgColor}" markup="img" />
+<Placeholder width="140" height="120" class="object-fit-cover border rounded" text="Object fit cover" background="${bgColor}" color="${fgColor}" markup="img" />
+<Placeholder width="140" height="120" class="object-fit-fill border rounded" text="Object fit fill" background="${bgColor}" color="${fgColor}" markup="img" />
+<Placeholder width="140" height="120" class="object-fit-scale border rounded" text="Object fit scale down" background="${bgColor}" color="${fgColor}" markup="img" />
+<Placeholder width="140" height="120" class="object-fit-none border rounded" text="Object fit none" background="${bgColor}" color="${fgColor}" markup="img" />`} />
 
 ## Responsive
 
-Responsive variations also exist for each `object-fit` value using the format `.object-fit-{breakpoint}-{value}`, for the following breakpoint abbreviations: `small`, `medium`, `large`, `xlarge`, and `2xlarge`. Classes can be combined for various effects as you need.
+Responsive variants follow the format `.{breakpoint}:object-fit-{value}` and activate at the specified breakpoint and above:
 
-<Example class="d-flex overflow-auto" code={`<Placeholder width="140" height="80" class="small:object-fit-contain border rounded" text="Contain on small" markup="img" />
-<Placeholder width="140" height="80" class="medium:object-fit-contain border rounded" text="Contain on medium" markup="img" />
-<Placeholder width="140" height="80" class="large:object-fit-contain border rounded" text="Contain on large" markup="img" />
-<Placeholder width="140" height="80" class="xlarge:object-fit-contain border rounded" text="Contain on xlarge" markup="img" />
-<Placeholder width="140" height="80" class="2xlarge:object-fit-contain border rounded" text="Contain on 2xlarge" markup="img" />`} />
+<Example class="d-flex overflow-auto" code={`<Placeholder width="140" height="80" class="small:object-fit-contain border rounded" text="Contain on small" background="${bgColor}" color="${fgColor}" markup="img" />
+<Placeholder width="140" height="80" class="medium:object-fit-contain border rounded" text="Contain on medium" background="${bgColor}" color="${fgColor}" markup="img" />
+<Placeholder width="140" height="80" class="large:object-fit-contain border rounded" text="Contain on large" background="${bgColor}" color="${fgColor}" markup="img" />
+<Placeholder width="140" height="80" class="xlarge:object-fit-contain border rounded" text="Contain on xlarge" background="${bgColor}" color="${fgColor}" markup="img" />
+<Placeholder width="140" height="80" class="2xlarge:object-fit-contain border rounded" text="Contain on 2xlarge" background="${bgColor}" color="${fgColor}" markup="img" />`} />
 
 ## Video
 
-The `.object-fit-{value}` and responsive `.object-fit-{breakpoint}-{value}` utilities also work on `<video>` elements.
+The same utilities apply to `<video>` elements:
 
 ```html
 <video src="..." class="object-fit-contain" autoplay></video>
@@ -52,8 +53,16 @@ The `.object-fit-{value}` and responsive `.object-fit-{breakpoint}-{value}` util
 
 ## CSS
 
-### Sass utilities API
+Object fit utilities are generated via the utilities API.
 
-Object fit utilities are declared in our utilities API in `scss/utilities/_positioning.scss`. [Learn how to use the utilities API.]([[docsref:/utilities/api#using-the-api]])
+### Reference
 
-<ScssDocs name="utils-object-fit" file="scss/utilities/_positioning.scss" />
+The table lists all object fit utilities and their CSS properties.
+
+<UtilityReferenceTable utility="object-fit-" />
+
+### Utilities API
+
+Object fit utilities are declared in `scss/utilities/_index.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
+
+<ScssDocs name="utils-object-fit" file="scss/utilities/_index.scss" />

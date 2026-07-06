@@ -1,0 +1,61 @@
+@use "../config" as *;
+@use "../placeholders" as *;
+
+//
+// Input Help
+//
+// Inline help icon anchored inside a form input. Positions a decorative or
+// interactive icon at the trailing edge of the input field.
+//
+
+@layer components {
+  .form-input:has(.input-help) {
+    // scss-docs-start input-help-properties
+    // --icon-color: var(--input-help-fg-color);
+    // scss-docs-end input-help-properties
+
+    display: flex;
+    gap: var(--gap);
+    // align-items: center;
+    // text-align: center;
+    white-space: nowrap;
+
+    // Prevent default `.form-input` focus
+
+    // Ghost input fills remaining space
+    > .ghost-input {
+      flex: 1;
+      min-width: 0; // Prevent text overflow
+    }
+  }
+
+  .input-help:is(button) {
+    --button-icon-size: var(--input-icon-size, #{$form-medium-icon-size});
+    min-width: auto;
+    min-height: auto;
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: 0;
+
+  }
+
+  .input-help,
+  .input-help.valid-feedback,
+  .input-help.invalid-feedback {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    // pointer-events: none;
+    user-select: none;
+    &:not(:has(.icon)) {
+      // padding: var(--padding-y) var(--padding-x);
+    }
+    // > svg {
+    //   width: var(--icon-size);
+    //   height: var(--icon-size);
+    // }
+  }
+
+} // @layer components

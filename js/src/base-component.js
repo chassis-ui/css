@@ -14,7 +14,7 @@ import { executeAfterTransition, getElement } from './util/index.js'
  * Constants
  */
 
-const VERSION = '0.2.3'
+const VERSION = '0.3.0'
 
 /**
  * Class definition
@@ -45,6 +45,7 @@ class BaseComponent extends Config {
     }
   }
 
+  // Private
   _queueCallback(callback, element, isAnimated = true) {
     executeAfterTransition(callback, element, isAnimated)
   }

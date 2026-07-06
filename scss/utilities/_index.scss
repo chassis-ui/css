@@ -1,111 +1,122 @@
-// Utilities
-$utilities: () !default;
-@import "positioning";
-@import "border";
-@import "sizing";
-@import "flex";
-@import "margin";
-@import "padding";
-@import "text";
-// stylelint-disable-next-line scss/dollar-variable-default
-$utilities: map-merge(
-  $utilities,
+@use "sass:map";
+@use "../config" as *;
+@use "../maps" as *;
+@use "../functions" as *;
+
+//
+// Utilities Index
+//
+// Merges all utility maps and forwards the combined $utilities map consumed
+// by the utilities API generator.
+//
+
+@use "./border";
+@use "./flex";
+@use "./gap";
+@use "./grid";
+@use "./icon";
+@use "./link";
+@use "./margin";
+@use "./padding";
+@use "./position";
+@use "./sizing";
+@use "./skeleton";
+@use "./spinner";
+@use "./text";
+
+// Aggregate utility map. Each partial contributes its own `$utilities` map; we
+// merge them and append the cross-cutting definitions below.
+$utilities: map-merge-multiple(
+  border.$utilities,
+  flex.$utilities,
+  gap.$utilities,
+  grid.$utilities,
+  icon.$utilities,
+  link.$utilities,
+  margin.$utilities,
+  padding.$utilities,
+  position.$utilities,
+  sizing.$utilities,
+  skeleton.$utilities,
+  spinner.$utilities,
+  text.$utilities,
   (
     // scss-docs-start utils-fg-color
     "fg-color": (
-      css-var: true,
-      css-variable-name: fg-color,
-      class: fg,
+      property: (
+        "color": var(--fg-color),
+        "--fg-color": null
+      ),
+      class: null,
+      group: true,
       values: map-merge-multiple(
-        map-loop($context-colors, opacity-var, #{"$key"}, #{"fg"}),
-        map-loop($contrast-colors, opacity-var, #{"$key"}, #{"fg"}),
-        ( "reset": inherit )
+        map-rename-keys(map-loop($context-colors, opacity-var, #{"$key"}, #{"fg"}), "fg-", "start"),
+        map-rename-keys(map-loop($contrast-colors, opacity-var, #{"$key"}, #{"fg"}), "fg-", "start"),
+        map-loop($context-fg-colors, varify, #{"$key"}),
+        map-loop($body-fg-colors, varify, #{"$key"}),
+        ( "fg-reset": inherit )
       )
     ),
     "fg-opacity": (
-      css-var: true,
-      css-variable-name: fg-opacity,
+      property: --fg-opacity,
       class: fg-opacity,
-      values: $fg-opacities
+      enabled: $enable-property-opacities,
+      values: map-merge-multiple(
+        map-loop($opacities, varify, "$key", "opacity"),
+        map-loop($fg-opacities, varify, "$key", "opacity-fg")
+      )
     ),
     // scss-docs-end utils-fg-color
     // scss-docs-start utils-bg-color
     "bg-color": (
-      css-var: true,
-      css-variable-name: bg-color,
-      class: bg,
-      values: map-merge(
-        map-loop($context-colors, opacity-var, #{"$key"}, #{"bg"}),
-        ( "transparent": transparent )
-      )
-    ),
-    "bg-opacity": (
-      css-var: true,
-      css-variable-name: bg-opacity,
-      class: bg-opacity,
-      values: $bg-opacities
-    ),
-    // scss-docs-end utils-bg-color
-    // scss-docs-start utils-indicators
-    "indicator-opacity": (
-      css-var: true,
-      css-variable-name: indicator-opacity,
-      class: indicator-opacity,
-      values: $indicator-opacities
-    ),
-    // scss-docs-end utils-indicators
-    // scss-docs-start utils-links
-    "link-opacity": (
-      css-var: true,
-      css-variable-name: link-opacity,
-      class: link-opacity,
-      state: hover,
-      values: $link-opacities
-    ),
-    "underline-offset": (
-      property: text-underline-offset,
-      class: underline-offset,
-      values: (
-        0: 0,
-        1: .125em,
-        2: .25em,
-        3: .375em,
-      )
-    ),
-    "link-underline": (
-      property: text-decoration-color,
-      class: link-underline,
-      values: map-merge(
-        map-loop($context-colors, opacity-var, "$key", "underline"),
+      property: (
+        "background-color": var(--bg-color),
+        "--bg-color": null
+      ),
+      class: null,
+      group: true,
+      values: map-merge-multiple(
+        map-rename-keys(map-loop($context-colors, opacity-var, #{"$key"}, #{"bg"}), "bg-", "start"),
+        map-rename-keys(map-loop($contrast-colors, opacity-var, #{"$key"}, #{"bg"}), "bg-", "start"),
+        map-loop($context-bg-colors, varify, #{"$key"}),
+        map-loop($context-dim-colors, varify, #{"$key"}),
+        map-loop($body-bg-colors, varify, #{"$key"}),
+        map-loop($body-dim-colors, varify, #{"$key"}),
         (
-          null: #{to-opacity(var(--#{$prefix}link-main-color), var(--#{$prefix}underline-opacity, 1))},
+          "bg-transparent": transparent,
+          "bg-reset": inherit
         )
       )
     ),
-    "underline-opacity": (
-      css-var: true,
-      css-variable-name: underline-opacity,
-      class: underline-opacity,
-      state: hover,
-      values: $underline-opacities
+    "bg-opacity": (
+      property: --bg-opacity,
+      class: bg-opacity,
+      enabled: $enable-property-opacities,
+      values: map-merge-multiple(
+        map-loop($opacities, varify, "$key", "opacity"),
+        map-loop($dim-opacities, varify, "$key", "opacity-dim")
+      )
     ),
-    // scss-docs-end utils-links
-    "gradient": (
+    "bg-gradient": (
       property: background-image,
       class: bg,
-      values: (gradient: var(--#{$prefix}bg-gradient))
+      values: (gradient: var(--bg-gradient))
     ),
-    // scss-docs-start utils-shadow
-    "base-shadow": (
-      property: box-shadow,
-      class: shadow,
-      values: $base-shadows
+    // scss-docs-end utils-bg-color
+    // scss-docs-start utils-cues
+    "cue-opacity": (
+      property: --cue-opacity,
+      class: cue-opacity,
+      enabled: $enable-property-opacities,
+      values: map-merge-multiple(
+        map-loop($opacities, varify, "$key", "opacity"),
+        map-loop($cue-opacities, varify, "$key", "opacity-cue")
+      )
     ),
-    // scss-docs-end utils-shadow
+    // scss-docs-end utils-cues
     // scss-docs-start utils-focus-ring
     "focus-ring": (
-      css-var: true,
-      css-variable-name: focus-ring-color,
+      property: --focus-ring-color,
       class: focus-ring,
       values: map-loop($context-colors, opacity-var, "$key", "focus-ring")
     ),
@@ -131,6 +142,58 @@ $utilities: map-merge(
       )
     ),
     // scss-docs-end utils-visibility
+    // scss-docs-start utils-space
+    "space-x": (
+      responsive: true,
+      property: margin-inline-end,
+      class: space-x,
+      child-selector: "> :not(:last-child)",
+      values: map.merge(map-loop($spaces, varify, "$key", "space"), (0: 0))
+    ),
+    "space-y": (
+      responsive: true,
+      property: margin-block-end,
+      class: space-y,
+      child-selector: "> :not(:last-child)",
+      values: map.merge(map-loop($spaces, varify, "$key", "space"), (0: 0))
+    ),
+    // scss-docs-end utils-space
+    // scss-docs-start utils-divide
+    "divide-x": (
+      responsive: true,
+      property: border-inline-start,
+      class: divide-x,
+      child-selector: "> :not(:first-child)",
+      values: (
+        null: var(--border-width) var(--border-style) var(--border-color),
+        0: 0,
+      )
+    ),
+    "divide-y": (
+      responsive: true,
+      property: border-block-start,
+      class: divide-y,
+      child-selector: "> :not(:first-child)",
+      values: (
+        null: var(--border-width) var(--border-style) var(--border-color),
+        0: 0,
+      )
+    ),
+    // scss-docs-end utils-divide
+    // scss-docs-start utils-aspect-ratio
+    "aspect-ratio-attr": (
+      selector: "attr-includes",
+      class: "ratio-",
+      property: aspect-ratio,
+      values: var(--aspect-ratio),
+    ),
+    "aspect-ratio": (
+      // property: aspect-ratio,
+      property: --aspect-ratio,
+      class: ratio,
+      values: $aspect-ratios
+    ),
+    // scss-docs-end utils-aspect-ratio
     // scss-docs-start utils-zindex
     "z-index": (
       property: z-index,
@@ -142,31 +205,96 @@ $utilities: map-merge(
     "opacity": (
       property: opacity,
       class: opacity,
-      values: $opacities
-    )
+      values: map-loop($opacities, varify, "$key", "opacity")
+    ),
     // scss-docs-end utils-opacity
-  )
-);
-
-@if $enable-elevation-shadows {
-  $utilities: map-merge(
-    $utilities,
-    (
-      // scss-docs-start utils-elevation-shadow
-      "elevation-shadow": (
-        property: box-shadow,
-        class: shadow,
-        state: hover,
-        values: map-loop($default-shadows, make-color-shadow, "$value")
-      ),
-      "shadow-color": (
-        css-var: true,
-        css-variable-name: shadow-color,
-        class: shadow,
-        state: hover,
-        values: map-loop($context-colors, make-shadow-color, "$key")
+    // scss-docs-start utils-display
+    "display": (
+      responsive: true,
+      print: true,
+      dark: true,
+      property: display,
+      class: d,
+      values: inline inline-block block grid inline-grid table table-row table-cell flex inline-flex none
+    ),
+    // scss-docs-end utils-display
+    // scss-docs-start utils-container
+    "container": (
+      property: container-type,
+      class: contains,
+      values: (
+        "inline": inline-size,
+        "size": size,
       )
-      // scss-docs-end utils-elevation-shadow
+    ),
+    // scss-docs-end utils-container
+    // scss-docs-start utils-float
+    "float": (
+      responsive: true,
+      property: float,
+      values: (
+        start: inline-start,
+        end: inline-end,
+        none: none,
+      )
+    ),
+    // scss-docs-end utils-float
+    // scss-docs-start utils-overflow
+    "overflow": (
+      property: overflow,
+      values: auto hidden visible scroll,
+    ),
+    "overflow-x": (
+      property: overflow-x,
+      values: auto hidden visible scroll,
+    ),
+    "overflow-y": (
+      property: overflow-y,
+      values: auto hidden visible scroll,
+    ),
+    // scss-docs-end utils-overflow
+    // scss-docs-start utils-vertical-align
+    "vertical-align": (
+      property: vertical-align,
+      class: align,
+      values: baseline top middle bottom text-bottom text-top
+    ),
+    // scss-docs-end utils-vertical-align
+    // scss-docs-start utils-object-fit
+    "object-fit": (
+      responsive: true,
+      property: object-fit,
+      values: (
+        contain: contain,
+        cover: cover,
+        fill: fill,
+        scale: scale-down,
+        none: none,
+      )
+    ),
+    // scss-docs-end utils-object-fit
+    // scss-docs-start utils-shadow
+    "base-shadow": (
+      property: box-shadow,
+      class: shadow,
+      values: $base-shadows
+    ),
+    // scss-docs-end utils-shadow
+    // scss-docs-start utils-elevation-shadow
+    "elevation-shadow": (
+      property: box-shadow,
+      class: shadow,
+      state: hover,
+      enabled: $enable-elevation-shadows,
+      values: map-loop($default-shadows, make-color-shadow, "$value")
+    ),
+    "shadow-color": (
+      property: --shadow-color,
+      class: shadow,
+      state: hover,
+      enabled: $enable-elevation-shadows,
+      values: map-loop($context-colors, make-shadow-color, "$key")
     )
-  );
-}
+    // scss-docs-end utils-elevation-shadow
+  )
+) !default;

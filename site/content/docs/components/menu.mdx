@@ -1,0 +1,751 @@
+---
+title: Menu
+description: Contextual overlay for links, buttons, and forms — with dynamic placement, keyboard navigation, and multi-level submenu support.
+toc: true
+tokens: component
+css_layer: components
+css_media: viewport
+js: required
+deps:
+  - title: Floating UI
+    url: https://floating-ui.com/
+---
+
+## Introduction
+
+A `.menu` is a toggleable contextual overlay for links, buttons, and inline forms. The Menu plugin positions it relative to a trigger element using [Floating UI](https://floating-ui.com/), manages show/hide transitions, and handles keyboard navigation. Menus open on click by default.
+
+<Example code={`<button class="button primary" type="button" data-cx-toggle="menu" aria-expanded="false">
+  Toggle menu
+</button>
+<div class="menu">
+  <a class="menu-item" href="#">Copy</a>
+  <a class="menu-item" href="#">Paste</a>
+  <a class="menu-item" href="#">Delete</a>
+</div>`} />
+
+The plugin adds `.show` to the `.menu` element, the toggle button, and the toggle button's parent element on open, and removes all three on close. `aria-expanded` on the toggle is kept in sync automatically.
+
+## Basic structure
+
+Use [button elements]([[docsref:/components/button]]) as toggle triggers wherever possible — they handle keyboard activation natively. When a link element is used as a trigger, add `role="button"` to communicate its purpose to assistive technology.
+
+<Example code={`<button type="button" class="button primary" data-cx-toggle="menu" aria-expanded="false">
+  Toggle menu
+</button>
+<div class="menu">
+  <a class="menu-item" href="#">Copy</a>
+  <a class="menu-item" href="#">Paste</a>
+  <a class="menu-item" href="#">Delete</a>
+</div>`} />
+
+Use [button groups]([[docsref:/components/button-group]]) to build split buttons where a secondary toggle opens the menu while the primary button carries its own action.
+
+<Example code={`<div class="button-group">
+  <button type="button" class="button secondary">Split</button>
+  <button type="button" class="button secondary" data-cx-toggle="menu" aria-expanded="false">
+    <span class="visually-hidden">Open actions menu</span>
+  </button>
+  <div class="menu">
+    <a class="menu-item" href="#">New file</a>
+    <a class="menu-item" href="#">Open file</a>
+    <hr class="menu-divider">
+    <a class="menu-item" href="#">Settings</a>
+  </div>
+</div>`} />
+
+<Callout type="info">
+When `$enable-caret` is `true` (the default), every `[data-cx-toggle="menu"]` element receives a trailing caret automatically. See [Carets]([[docsref:/helpers/carets]]) to customize or override the appearance.
+</Callout>
+
+## Menu items
+
+Both `<a>` and `<button>` elements work as `.menu-item` elements.
+
+<Example code={`<div class="menu show position-static">
+  <button class="menu-item" type="button">Copy</button>
+  <button class="menu-item" type="button">Cut</button>
+  <button class="menu-item" type="button">Paste</button>
+</div>`} />
+
+### Active
+
+Add `.active` to a `.menu-item` to mark it as the current selection. Pair with `aria-current="true"` (or `aria-current="page"` when the item links to the current page) to communicate the active state to assistive technology.
+
+<Example code={`<div class="menu show position-static">
+  <a class="menu-item" href="#">All files</a>
+  <a class="menu-item active" href="#" aria-current="true">Recent</a>
+  <a class="menu-item" href="#">Shared with me</a>
+</div>`} />
+
+### Disabled
+
+Add `.disabled` to a `.menu-item` to prevent interaction. For `<a>` elements, also add `aria-disabled="true"` and omit `href` so the element is not keyboard-reachable.
+
+<Example code={`<div class="menu show position-static">
+  <a class="menu-item" href="#">Copy</a>
+  <a class="menu-item disabled" aria-disabled="true">Paste</a>
+  <a class="menu-item" href="#">Delete</a>
+</div>`} />
+
+### Selected
+
+Add `.selected` to a `.menu-item` to indicate the current selection in a choice list. The item renders in a heavier font weight. Combine with `.menu-item-check` to show a checkmark that appears only on the selected item.
+
+<Example code={`<button class="button secondary" type="button" data-cx-toggle="menu" aria-expanded="false">Sort by</button>
+<div class="menu">
+  <button class="menu-item selected" type="button">
+    Name
+    <Icon name="check-solid" class="menu-item-check" />
+  </button>
+  <button class="menu-item" type="button">
+    Date modified
+    <Icon name="check-solid" class="menu-item-check" />
+  </button>
+  <button class="menu-item" type="button">
+    Size
+    <Icon name="check-solid" class="menu-item-check" />
+  </button>
+</div>`} />
+
+### Icons
+
+Add `.menu-item-icon` to an inline `<svg>` inside a `.menu-item` to size and color it from the component's design tokens. Use `aria-hidden="true"` on decorative icons.
+
+<Example code={`<div class="menu show position-static">
+  <button class="menu-item" type="button">
+    <Icon name="copy-solid" class="menu-item-icon" />
+    Copy
+  </button>
+  <button class="menu-item" type="button">
+    <Icon name="cut-solid" class="menu-item-icon" />
+    Cut
+  </button>
+  <hr class="menu-divider">
+  <button class="menu-item disabled" type="button">
+    <Icon name="trash-solid" class="menu-item-icon" />
+    Delete
+  </button>
+</div>`} />
+
+### Images and avatars
+
+Add `.menu-image` to an `<img>` to insert a fixed-size, cover-cropped image slot. For circular images, wrap the `<img>` in an [Avatar]([[docsref:/components/avatar]]) component.
+
+<Example code={`<div class="menu show position-static">
+  <button class="menu-item" type="button">
+    <span class="avatar">
+      <img class="avatar-image" src="https://i.pravatar.cc/256?img=3" alt="Profile picture" />
+    </span>
+    Avatar slot
+  </button>
+  <button class="menu-item" type="button">
+    <img class="menu-image" src="https://i.pravatar.cc/256?img=5" alt="" />
+    Image slot
+  </button>
+</div>`} />
+
+### Descriptions
+
+Wrap a label and secondary text in `.menu-item-content` for a flex column layout. Apply `.menu-item-description` to the secondary text element to pick up its typographic scale and color from the component's tokens.
+
+<Example code={`<div class="menu show position-static">
+  <button class="menu-item selected" type="button">
+    <span class="menu-item-content">
+      Publish now
+      <small class="menu-item-description">Make this page visible immediately</small>
+    </span>
+    <Icon name="check-solid" class="menu-item-check" />
+  </button>
+  <button class="menu-item" type="button">
+    <span class="menu-item-content">
+      Schedule
+      <small class="menu-item-description">Set a future publish date</small>
+    </span>
+  </button>
+</div>`} />
+
+## Menu content
+
+A `.menu` accepts headers, dividers, text labels, and inline forms alongside interactive items.
+
+### Headers
+
+Add `.menu-header` to a heading element to label a group of items. The header applies its own typographic scale and color tokens independently of `.menu-item`.
+
+<Example code={`<div class="menu show position-static">
+  <a class="menu-item" href="#">Copy</a>
+  <a class="menu-item" href="#">Paste</a>
+  <h4 class="menu-header">Danger zone</h4>
+  <a class="menu-item" href="#">Delete all</a>
+</div>`} />
+
+### Dividers
+
+Place an `<hr class="menu-divider">` between groups of related items. The element collapses to a hairline rule using the component's divider color token.
+
+<Example code={`<div class="menu show position-static">
+  <a class="menu-item" href="#">Copy</a>
+  <a class="menu-item" href="#">Cut</a>
+  <hr class="menu-divider">
+  <a class="menu-item" href="#">Paste</a>
+</div>`} />
+
+### Text
+
+`.menu-text` applies header padding to a non-interactive inline element, letting it sit flush with adjacent items and headers.
+
+<Example code={`<div class="menu show position-static">
+  <span class="menu-text">Clipboard</span>
+  <a class="menu-item" href="#">Copy</a>
+  <a class="menu-item" href="#">Cut</a>
+  <a class="menu-item" href="#">Paste</a>
+</div>`} />
+
+For longer free-form prose, place content directly in the `.menu` with a spacing utility on the container.
+
+<Example code={`<div class="menu show position-static p-medium">
+  <p>
+    Some example text that's free-flowing within the menu.
+  </p>
+  <p class="mb-0">
+    And this is more example text.
+  </p>
+</div>`} />
+
+### Forms
+
+A `.menu` can contain any HTML form content. Apply spacing utilities to set internal padding and separation between fields.
+
+<Example code={`<div class="menu show position-static"
+     style="--cx-menu-min-width: 300px;">
+  <form class="vstack gap-medium p-medium">
+    <div>
+      <label for="menuFormEmail" class="form-label">Email address</label>
+      <input type="email" class="form-input" id="menuFormEmail" placeholder="email@example.com">
+    </div>
+    <div>
+      <label for="menuFormPassword" class="form-label">Password</label>
+      <input type="password" autocomplete="current-password" class="form-input" id="menuFormPassword" placeholder="Password">
+    </div>
+    <div class="form-check">
+      <input type="checkbox" class="check-input" id="menuRemember" />
+      <label for="menuRemember" class="check-label">Remember me</label>
+    </div>
+    <div class="vstack gap-small">
+      <button type="submit" class="button primary">Sign in</button>
+    </div>
+  </form>
+</div>`} />
+
+## Placement
+
+Set `data-cx-placement` on the toggle element to control which side of the trigger the menu opens on. [Floating UI](https://floating-ui.com/) positions the menu and flips it automatically when viewport space is limited.
+
+Two placement families are supported:
+
+- **Physical placements:** `top`, `bottom`, `left`, `right` — fixed directions regardless of reading direction.
+- **Logical placements:** `start`, `end` — flip automatically in RTL contexts. In LTR, `start` maps to `left` and `end` maps to `right`.
+
+All placements accept `-start` and `-end` alignment modifiers (e.g. `bottom-start`, `end-end`).
+
+<MenuPlacementPlayground />
+
+### Responsive placement
+
+The placement attribute accepts breakpoint-prefixed values to change placement at specific viewport widths. The syntax is `breakpoint:placement`; multiple pairs are space-separated.
+
+For example, `data-cx-placement="bottom-start medium:bottom-end large:end-start"` applies `bottom-start` by default, switches to `bottom-end` at the `medium` breakpoint, and to `end-start` at `large`.
+
+<Example class="d-flex flex-column large:flex-row gap-small" code={`<button class="button secondary" type="button" data-cx-toggle="menu" data-cx-placement="bottom-start medium:bottom-end" aria-expanded="false">
+  bottom-start → medium:bottom-end
+</button>
+<div class="menu">
+  <a class="menu-item" href="#">Copy</a>
+  <a class="menu-item" href="#">Paste</a>
+</div>
+
+<button class="button secondary" type="button" data-cx-toggle="menu" data-cx-placement="bottom large:right" aria-expanded="false">
+  bottom → large:right
+</button>
+<div class="menu">
+  <a class="menu-item" href="#">Copy</a>
+  <a class="menu-item" href="#">Paste</a>
+</div>
+
+<button class="button secondary" type="button" data-cx-toggle="menu" data-cx-placement="top-end medium:right-start xlarge:bottom-start" aria-expanded="false">
+  Multi-breakpoint
+</button>
+<div class="menu">
+  <a class="menu-item" href="#">Copy</a>
+  <a class="menu-item" href="#">Paste</a>
+</div>`} />
+
+Resize the browser window to see placement change at each breakpoint.
+
+### Reference and offset
+
+Use `data-cx-offset` to shift the menu from its reference element. The value is two comma-separated pixel values representing skidding (cross-axis) and distance (main-axis). Use `data-cx-reference="parent"` to position the menu relative to the toggle button's parent rather than the toggle itself.
+
+<Example code={`<div class="d-flex">
+  <div class="me-2xsmall">
+    <button type="button" class="button secondary" data-cx-toggle="menu" aria-expanded="false" data-cx-offset="16,24">
+      Offset
+    </button>
+    <div class="menu">
+      <a class="menu-item" href="#">Copy</a>
+      <a class="menu-item" href="#">Paste</a>
+    </div>
+  </div>
+  <div class="button-group">
+    <button type="button" class="button secondary">Reference</button>
+    <button type="button" class="button secondary" aria-label="Toggle menu" data-cx-toggle="menu" aria-expanded="false" data-cx-reference="parent">
+    </button>
+    <div class="menu">
+      <a class="menu-item" href="#">Copy</a>
+      <a class="menu-item" href="#">Paste</a>
+      <hr class="menu-divider">
+      <a class="menu-item" href="#">Settings</a>
+    </div>
+  </div>
+</div>`} />
+
+## Advanced features
+
+Menus can scroll when content overflows, stack submenus into a slide-in panel on mobile, and tune their close behavior to match the interaction model of the surrounding UI.
+
+### Scrollable menus
+
+Add `.scrollable` alongside `.menu` to cap the panel height at `80dvh` and enable internal scrolling. Set `--cx-menu-max-height` directly on the element to use a fixed height instead.
+
+<Callout type="info">
+`.scrollable` sets `max-height: 80dvh`, so the panel only scrolls when its content exceeds the available viewport height. The example below uses an explicit `--cx-menu-max-height` to illustrate the scrolling appearance.
+</Callout>
+
+<Example code={`<div class="menu show position-static" style="--cx-menu-max-height: 145px; --cx-menu-overflow-y: auto;">
+  <button class="menu-item" type="button">New file</button>
+  <button class="menu-item" type="button">Open file</button>
+  <button class="menu-item" type="button">Save</button>
+  <button class="menu-item" type="button">Save as</button>
+  <button class="menu-item" type="button">Rename</button>
+  <button class="menu-item" type="button">Move to trash</button>
+</div>`} />
+
+### Submenus
+
+Wrap a `.menu-item` trigger and a nested `.menu` inside a `.submenu` element to create a flyout. Submenus are positioned by [Floating UI](https://floating-ui.com/) and flip direction when viewport space is limited. Sibling submenus close automatically when a new one opens.
+
+<Example code={`<button class="button secondary" type="button" data-cx-toggle="menu" aria-expanded="false">
+  Submenus
+</button>
+<div class="menu">
+  <div class="submenu">
+    <button class="menu-item" type="button" aria-expanded="false">File</button>
+    <div class="menu">
+      <a class="menu-item" href="#">New</a>
+      <a class="menu-item" href="#">Open</a>
+      <a class="menu-item" href="#">Save</a>
+    </div>
+  </div>
+  <div class="submenu">
+    <button class="menu-item" type="button" aria-expanded="false">Edit</button>
+    <div class="menu">
+      <a class="menu-item" href="#">Cut</a>
+      <a class="menu-item" href="#">Copy</a>
+      <a class="menu-item" href="#">Paste</a>
+    </div>
+  </div>
+  <div class="submenu">
+    <button class="menu-item" type="button" aria-expanded="false">View</button>
+    <div class="menu">
+      <a class="menu-item" href="#">Zoom in</a>
+      <a class="menu-item" href="#">Zoom out</a>
+    </div>
+  </div>
+  <hr class="menu-divider">
+  <a class="menu-item" href="#">Preferences</a>
+</div>`} />
+
+Submenu activation is controlled by the `submenuTrigger` option (`'both'` by default). On devices that match `(hover: hover)`, hovering the trigger opens the submenu after `submenuDelay` milliseconds; a safe-triangle algorithm keeps the submenu open while the pointer moves diagonally toward it. On touch devices, a tap opens the submenu.
+
+### Nested submenus
+
+Submenus can nest to multiple levels. Each level opens to the side and flips direction when there is insufficient viewport space.
+
+<Example code={`<button class="button secondary" type="button" data-cx-toggle="menu" aria-expanded="false">
+  Multi-level menu
+</button>
+<div class="menu">
+  <a class="menu-item" href="#">Level 1 action</a>
+  <div class="submenu">
+    <button class="menu-item" type="button" aria-expanded="false">Level 1 submenu</button>
+    <div class="menu">
+      <a class="menu-item" href="#">Level 2 action</a>
+      <div class="submenu">
+        <button class="menu-item" type="button" aria-expanded="false">Level 2 submenu</button>
+        <div class="menu">
+          <a class="menu-item" href="#">Level 3 action A</a>
+          <a class="menu-item" href="#">Level 3 action B</a>
+        </div>
+      </div>
+      <a class="menu-item" href="#">Another level 2</a>
+    </div>
+  </div>
+  <a class="menu-item" href="#">Another level 1</a>
+</div>`} />
+
+### Submenus on mobile
+
+Add `.submenu-stacked` alongside `.menu` on the inner menu to switch to a view-replacement pattern below the `small` breakpoint. Add `<button class="submenu-back menu-item">` as the first item of each stacked level — the plugin wires the back action to close the submenu and return focus to its trigger. The button is hidden above the breakpoint, so a single markup pattern serves both layouts.
+
+<Example code={`<button class="button secondary" type="button" data-cx-toggle="menu" aria-expanded="false">
+  Stacked submenus
+</button>
+<div class="menu">
+  <a class="menu-item" href="#">Level 1 action</a>
+  <div class="submenu">
+    <button class="menu-item" type="button" aria-expanded="false">Level 1 submenu</button>
+    <div class="submenu-stacked menu">
+      <button class="submenu-back menu-item" type="button">Level 1</button>
+      <a class="menu-item" href="#">Level 2 action</a>
+      <div class="submenu">
+        <button class="menu-item" type="button" aria-expanded="false">Level 2 submenu</button>
+        <div class="submenu-stacked menu">
+          <button class="submenu-back menu-item" type="button">Level 2</button>
+          <a class="menu-item" href="#">Level 3 action A</a>
+          <a class="menu-item" href="#">Level 3 action B</a>
+        </div>
+      </div>
+      <a class="menu-item" href="#">Another level 2</a>
+    </div>
+  </div>
+  <a class="menu-item" href="#">Another level 1</a>
+</div>`} />
+
+### Close behavior
+
+The `autoClose` option controls which clicks close the menu. The default (`true`) closes on any click inside or outside. Use `'inside'` or `'outside'` to restrict to one side, or `false` to require a programmatic call.
+
+<Example class="d-flex flex-wrap gap-small" code={`<div>
+  <button class="button secondary" type="button" data-cx-toggle="menu" data-cx-auto-close="true" aria-expanded="false">
+    Default
+  </button>
+  <div class="menu">
+    <a class="menu-item" href="#">Copy</a>
+    <a class="menu-item" href="#">Paste</a>
+    <a class="menu-item" href="#">Delete</a>
+  </div>
+</div>
+
+<div>
+  <button class="button secondary" type="button" data-cx-toggle="menu" data-cx-auto-close="inside" aria-expanded="false">
+    Close inside
+  </button>
+  <div class="menu">
+    <a class="menu-item" href="#">New file</a>
+    <a class="menu-item" href="#">Open</a>
+    <a class="menu-item" href="#">Save</a>
+  </div>
+</div>
+
+<div>
+  <button class="button secondary" type="button" data-cx-toggle="menu" data-cx-auto-close="outside" aria-expanded="false">
+    Close outside
+  </button>
+  <div class="menu">
+    <a class="menu-item" href="#">Rename</a>
+    <a class="menu-item" href="#">Duplicate</a>
+    <a class="menu-item" href="#">Move to</a>
+  </div>
+</div>
+
+<div>
+  <button class="button secondary" type="button" data-cx-toggle="menu" data-cx-auto-close="false" aria-expanded="false">
+    Manual close
+  </button>
+  <div class="menu">
+    <a class="menu-item" href="#">Cut</a>
+    <a class="menu-item" href="#">Copy</a>
+    <a class="menu-item" href="#">Paste</a>
+  </div>
+</div>`} />
+
+## Theming
+
+The menu supports dark mode via `data-cx-theme`, a translucent variant for overlay contexts, and context color remapping at both the menu and item level.
+
+### Dark mode
+
+Apply `data-cx-theme="dark"` to the `.menu` or any ancestor element to opt the menu into the dark theme. In a navbar, apply the attribute to the nav item wrapper so the toggle button and menu share the same theme context.
+
+<Example code={`<div data-cx-theme="dark">
+  <button class="button secondary" type="button" data-cx-toggle="menu" aria-expanded="false">
+    Menu button
+  </button>
+  <div class="menu">
+    <a class="menu-item active" href="#" aria-current="true">Recent</a>
+    <a class="menu-item" href="#">All files</a>
+    <a class="menu-item" href="#">Shared with me</a>
+    <hr class="menu-divider">
+    <a class="menu-item" href="#">Trash</a>
+  </div>
+</div>`} />
+
+<Example code={`<nav class="navbar" data-cx-theme="dark" aria-label="Main navigation">
+  <div class="container fluid">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <ul class="navbar-nav">
+      <li class="nav-item" data-cx-theme="dark">
+        <button type="button" class="button secondary" data-cx-toggle="menu" aria-expanded="false">
+          Menu
+        </button>
+        <div class="menu">
+          <a class="menu-item" href="#">New file</a>
+          <a class="menu-item" href="#">Open</a>
+          <a class="menu-item" href="#">Settings</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>`} />
+
+### Translucent
+
+Add `.translucent` alongside `.menu` to blur and saturate the background. The variant applies `backdrop-filter: blur()` and tints the background using `--opacity-dim-main`. Browser support for `backdrop-filter` varies; the menu remains visible without blur on unsupported browsers.
+
+<Example code={`<button class="button secondary" type="button" data-cx-toggle="menu" aria-expanded="false">
+  Menu button
+</button>
+<div class="menu translucent">
+  <a class="menu-item active" href="#" aria-current="true">Recent</a>
+  <a class="menu-item" href="#">All files</a>
+  <a class="menu-item" href="#">Shared with me</a>
+  <a class="menu-item" href="#">Starred</a>
+  <hr class="menu-divider">
+  <a class="menu-item context danger" href="#">Delete</a>
+</div>`} />
+
+### Context variants
+
+Add `.context` to a `.menu` to remap all item color tokens to a semantic palette. Add `.context` to individual `.menu-item` elements to scope context coloring to a single item. Both patterns accept the same semantic modifiers as the [context system]([[docsref:/core-concepts/context-class]]).
+
+<Example class="hstack gap-medium" code={`<div class="menu show position-static">
+  <a class="menu-item context info" href="#">Copy</a>
+  <a class="menu-item context success" href="#">Save</a>
+  <a class="menu-item context warning" href="#">Overwrite</a>
+  <a class="menu-item context danger" href="#">Delete</a>
+</div>
+
+<div class="menu context info show position-static">
+  <a class="menu-item" href="#">Copy</a>
+  <a class="menu-item" href="#">Save</a>
+  <a class="menu-item" href="#">Overwrite</a>
+  <a class="menu-item" href="#">Delete</a>
+</div>`} />
+
+Context colors carry through to icons. Add `.menu-item-icon` to an icon inside a context-colored item and it picks up the correct foreground token automatically.
+
+<Example class="hstack gap-medium" code={`<div class="menu show position-static">
+  <button class="menu-item context success" type="button">
+    <Icon name="copy-solid" class="menu-item-icon" />
+    Copy
+  </button>
+  <button class="menu-item context info" type="button">
+    <Icon name="cut-solid" class="menu-item-icon" />
+    Cut
+  </button>
+  <hr class="menu-divider">
+  <button class="menu-item context danger" type="button">
+    <Icon name="trash-solid" class="menu-item-icon" />
+    Delete
+  </button>
+</div>
+
+<div class="menu context info show position-static">
+  <button class="menu-item" type="button">
+    <Icon name="copy-solid" class="menu-item-icon" />
+    Copy
+  </button>
+  <button class="menu-item" type="button">
+    <Icon name="cut-solid" class="menu-item-icon" />
+    Cut
+  </button>
+  <hr class="menu-divider">
+  <button class="menu-item" type="button">
+    <Icon name="trash-solid" class="menu-item-icon" />
+    Delete
+  </button>
+</div>`} />
+
+## Accessibility
+
+The Menu plugin does not add `role="menu"` to the container. That role is reserved for application-style menus with strict ARIA keyboard interaction requirements; a `.menu` used for navigation or actions uses plain `<a>` and `<button>` elements, which carry their own implicit roles.
+
+### ARIA attributes
+
+The toggle trigger requires `aria-expanded="false"` in the initial markup. The plugin sets it to `"true"` on open and restores `"false"` on close. Submenu triggers receive `aria-expanded` and `aria-haspopup="true"` from the plugin when the submenu opens.
+
+For items that link to the current page, add `aria-current="page"`. For items that mark the active selection in a set, add `aria-current="true"`.
+
+### Focus management
+
+Clicking the toggle opens the menu and keeps focus on the toggle button. Opening via the arrow keys opens the menu and moves focus to the first or last item. Pressing `Escape` inside a submenu closes that submenu and returns focus to the submenu trigger. Pressing `Escape` at the top level closes the menu and returns focus to the toggle.
+
+<Callout type="warning">
+`data-cx-toggle="menu"` must be present on the trigger regardless of whether the menu is opened programmatically. The plugin registers global keyboard listeners that locate menus and manage focus using this attribute.
+</Callout>
+
+### Keyboard interaction
+
+The plugin handles keyboard navigation scoped to the current menu level. Arrow key navigation wraps from last to first and vice versa.
+
+<CxTable>
+| Key | Action |
+| --- | --- |
+| `↓` / `↑` | Move focus to the next or previous item in the current menu level |
+| `→` | Open the focused submenu trigger and move focus to its first item (or `←` in RTL) |
+| `←` | Close the current submenu and return focus to its trigger (or `→` in RTL) |
+| `Enter` / `Space` | Activate the focused item, or open the submenu when the item is a submenu trigger |
+| `Esc` | Close the current submenu (returning focus to its trigger), or close the top-level menu (returning focus to the toggle) |
+| `Home` / `End` | Move focus to the first or last item in the current menu level |
+| `Tab` | Close the menu and advance browser focus |
+</CxTable>
+
+### Touch devices
+
+On touch-capable devices, the plugin temporarily adds empty `mouseover` handlers to the direct children of `<body>` to work around an iOS event delegation quirk that prevents tapping outside the menu from triggering the close handler. The handlers are removed when the menu closes. This behavior is skipped inside `.navbar-nav`.
+
+## JavaScript API
+
+The Menu plugin handles toggle, placement, submenu activation, and keyboard behavior. Import the `Menu` class as an ES module:
+
+```js
+import { Menu } from '@chassis-ui/css'
+```
+
+### Triggers
+
+The data-attribute API wires up toggle behavior without any JavaScript. Add `data-cx-toggle="menu"` and `aria-expanded="false"` to a button or link adjacent to a `.menu` element:
+
+```html
+<button type="button" data-cx-toggle="menu" aria-expanded="false">
+  Menu trigger
+</button>
+<div class="menu">
+  ...
+</div>
+```
+
+The plugin locates the `.menu` by searching, in order: the toggle's next sibling, the toggle's previous sibling, then a `.menu` child of the toggle's parent element.
+
+### Initialization
+
+For programmatic access — calling methods or listening to events — instantiate each toggle with `new Menu(element)`:
+
+```js
+const menus = [...document.querySelectorAll('[data-cx-toggle="menu"]')]
+  .map(toggle => new Menu(toggle))
+```
+
+Pass an options object as the second argument to override defaults:
+
+```js
+const menu = new Menu(toggleElement, {
+  placement: 'top-start',
+  autoClose: 'outside'
+})
+```
+
+### Methods
+
+The plugin exposes instance methods for programmatic control. Retrieve an existing instance with `Menu.getInstance(element)`.
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `dispose` | Destroys the instance. Closes open submenus, removes Floating UI cleanup, and clears stored data from the DOM element. |
+| `getInstance` | Static. Returns the instance bound to a DOM element, or `null` if none exists. |
+| `getOrCreateInstance` | Static. Returns the bound instance, or creates and returns a new one if none exists. |
+| `hide` | Hides the menu. |
+| `show` | Shows the menu. |
+| `toggle` | Toggles between shown and hidden. |
+| `update` | Recalculates and applies the Floating UI position. Call after programmatically resizing the trigger or menu content. |
+</CxTable>
+
+### Options
+
+<JsDataAttributes />
+
+<CxTable>
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `autoClose` | boolean, string | `true` | Controls which clicks close the menu. `true` closes on any click inside or outside. `false` requires a programmatic `hide` or `toggle` call. `'inside'` closes only on click inside the menu. `'outside'` closes only on click outside the menu. |
+| `boundary` | string, element | `'clippingParents'` | Overflow constraint boundary for Floating UI's `shift` middleware. Accepts `'clippingParents'` or an `HTMLElement` reference (JS only). See [Floating UI shift docs](https://floating-ui.com/docs/shift). |
+| `container` | string, element, boolean | `false` | Teleports the `.menu` element to a container on open and moves it back on close. Accepts a CSS selector, an element reference, `true` (appends to `document.body`), or `false` (no teleport). Use `'body'` or `true` to escape `overflow: hidden` ancestors. |
+| `display` | string | `'dynamic'` | Positioning mode. `'dynamic'` uses Floating UI for automatic placement. `'static'` skips Floating UI and relies on CSS positioning alone. |
+| `floatingConfig` | null, object, function | `null` | Overrides the Floating UI configuration. When a function, it receives the default config object and must return a configuration object. See [Floating UI computePosition](https://floating-ui.com/docs/computePosition). |
+| `menu` | null, element | `null` | Target `.menu` element. When `null`, the plugin applies the sibling/parent search described in [Triggers](#triggers). |
+| `offset` | array, string, function | `[0, 2]` | Distance between the menu and its reference element. Array format: `[skidding, distance]` in pixels. String format for data attributes: `"10,20"`. Function format receives placement and rect data and must return `[skidding, distance]`. See [Floating UI offset docs](https://floating-ui.com/docs/offset). |
+| `placement` | string | `'bottom-start'` | Initial placement. Accepts physical placements (`'top'`, `'bottom'`, `'left'`, `'right'`), logical placements (`'start'`, `'end'`), alignment modifiers (`'-start'`, `'-end'`), and responsive breakpoint prefixes. |
+| `reference` | string, element, object | `'toggle'` | Reference element for Floating UI positioning. `'toggle'` uses the trigger. `'parent'` uses the trigger's parent. Accepts an `HTMLElement` or a virtual element with `getBoundingClientRect`. See [Floating UI virtual elements](https://floating-ui.com/docs/virtual-elements). |
+| `strategy` | string | `'absolute'` | CSS positioning strategy passed to Floating UI. `'absolute'` is standard flow-relative positioning. `'fixed'` escapes `overflow: hidden` ancestors without moving the DOM element. See [Floating UI strategy docs](https://floating-ui.com/docs/computePosition#strategy). |
+| `submenuDelay` | number | `100` | Milliseconds before closing a submenu when the pointer leaves it. Provides a grace period for diagonal pointer movement toward the submenu. |
+| `submenuTrigger` | string | `'both'` | Submenu activation mode on hover-capable devices. `'click'` activates on click only. `'hover'` activates on hover only. `'both'` activates on both. Touch devices always use tap regardless of this setting. |
+</CxTable>
+
+Pass a function to `floatingConfig` to extend the default Floating UI configuration rather than replacing it:
+
+```js
+const menu = new Menu(element, {
+  floatingConfig(defaultConfig) {
+    return {
+      ...defaultConfig,
+      middleware: [...defaultConfig.middleware, myCustomMiddleware]
+    }
+  }
+})
+```
+
+### Events
+
+All events fire on the toggle element and bubble. `hide.cx.menu` and `hidden.cx.menu` carry a `clickEvent` property when the hide was triggered by a mouse click.
+
+<CxTable>
+| Event | Description |
+| --- | --- |
+| `hide.cx.menu` | Fires immediately when `hide` is called. Cancelable with `event.preventDefault()`. |
+| `hidden.cx.menu` | Fires after the menu finishes hiding and CSS transitions complete. |
+| `show.cx.menu` | Fires immediately when `show` is called. Cancelable with `event.preventDefault()`. |
+| `shown.cx.menu` | Fires after the menu finishes showing and CSS transitions complete. |
+</CxTable>
+
+```js
+import { Menu } from '@chassis-ui/css'
+
+const toggle = document.getElementById('myMenuToggle')
+toggle.addEventListener('show.cx.menu', event => {
+  // fires before the menu opens; call event.preventDefault() to cancel
+})
+```
+
+## CSS
+
+<DocsCSS name="Menu" />
+
+### Custom properties
+
+<DocsCSSVars name="Menu" />
+
+<ScssDocs name="menu-properties" file="scss/_menu.scss" compile />
+
+### Sass variables
+
+<DocsSASSVars name="Menu" />
+
+<ScssDocs name="menu-variables" file="scss/config/_defaults.scss" />
+
+### Design tokens
+
+<DocsDesignTokens name="Menu" />
+
+<ScssDocs name="menu-tokens" file="scss/tokens/_menu.scss" />

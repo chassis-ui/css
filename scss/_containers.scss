@@ -1,3 +1,9 @@
+@use "sass:map";
+@use "sass:string";
+@use "./config" as *;
+@use "./mixins" as *;
+@use "./placeholders" as *;
+
 //
 // Container Layouts
 //
@@ -7,74 +13,74 @@
 // .container.large (or any breakpoint name) is 100% wide until that breakpoint.
 // Generated only when $enable-container-classes is true.
 //
+@layer layout {
 
-@if $enable-container-classes {
-  .container {
-    @include make-container();
-  }
+  @if $enable-container-classes {
+    .container {
+      @include make-container();
+    }
 
-  // Placeholder for 100% width baseline.
-  // All named variants + .fluid extend this → Sass groups them into one rule.
-  %container-full {
-    max-width: 100%;
-  }
+    // Placeholder for 100% width baseline.
+    // All named variants + .fluid extend this → Sass groups them into one rule.
+    %container-full {
+      max-width: 100%;
+    }
 
-  // .fluid and every named variant start full-width.
-  // These (0,2,0) baselines beat the (0,1,0) .container rules that leak
-  // through when the element also carries the .container class.
-  .container.fluid {
-    @extend %container-full;
-  }
-
-  @each $name, $_ in $container-max-widths {
-    $sel: if(
-      str-slice(#{$name}, 1, 1) == "2",
-      ".container.\\32 " + str-slice(#{$name}, 2),
-      ".container.#{$name}"
-    );
-
-    #{$sel} {
+    // .fluid and every named variant start full-width.
+    // These (0,2,0) baselines beat the (0,1,0) .container rules that leak
+    // through when the element also carries the .container class.
+    .container.fluid {
       @extend %container-full;
     }
-  }
 
-  // Progressive max-widths via @extend.
-  // Inner loop walks $grid-breakpoints so xsmall (no min-width) maps to plain
-  // .container; all others map to .container.{name} if they have a container max-width.
-  @each $breakpoint, $container-max-width in $container-max-widths {
-    @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
-      %responsive-container-#{$breakpoint} {
-        max-width: $container-max-width;
+    @each $name, $_ in $container-max-widths {
+      $sel: ".container.#{$name}";
+      @if string.slice(#{$name}, 1, 1) == "2" {
+        $sel: ".container.\\32 " + string.slice(#{$name}, 2);
       }
 
-      $extend-breakpoint: true;
+      #{$sel} {
+        @extend %container-full;
+      }
+    }
 
-      @each $name, $width_ in $grid-breakpoints {
-        @if $extend-breakpoint {
-          @if breakpoint-min($name, $grid-breakpoints) == null {
-            // Smallest breakpoint (xsmall) → plain .container
-            .container {
-              @extend %responsive-container-#{$breakpoint};
+    // Progressive max-widths via @extend.
+    // Inner loop walks $breakpoints so xsmall (no min-width) maps to plain
+    // .container; all others map to .container.{name} if they have a container max-width.
+    @each $breakpoint, $container-max-width in $container-max-widths {
+      @include media-breakpoint-up($breakpoint, $breakpoints) {
+        %responsive-container-#{$breakpoint} {
+          max-width: $container-max-width;
+        }
+
+        $extend-breakpoint: true;
+
+        @each $name, $width_ in $breakpoints {
+          @if $extend-breakpoint {
+            @if breakpoint-min($name, $breakpoints) == null {
+              // Smallest breakpoint (xsmall) → plain .container
+              .container {
+                @extend %responsive-container-#{$breakpoint};
+              }
+            } @else if map.has-key($container-max-widths, $name) {
+              // Named variant
+              $name-selector: ".container.#{$name}";
+              @if string.slice(#{$name}, 1, 1) == "2" {
+                $name-selector: ".container.\\32 " + string.slice(#{$name}, 2);
+              }
+
+              #{$name-selector} {
+                @extend %responsive-container-#{$breakpoint};
+              }
             }
-          } @else if map-has-key($container-max-widths, $name) {
-            // Named variant
-            $name-selector: if(
-              str-slice(#{$name}, 1, 1) == "2",
-              ".container.\\32 " + str-slice(#{$name}, 2),
-              ".container.#{$name}"
-            );
 
-            #{$name-selector} {
-              @extend %responsive-container-#{$breakpoint};
+            // Once the current breakpoint is reached, stop extending
+            @if ($breakpoint == $name) {
+              $extend-breakpoint: false;
             }
-          }
-
-          // Once the current breakpoint is reached, stop extending
-          @if ($breakpoint == $name) {
-            $extend-breakpoint: false;
           }
         }
       }
     }
   }
-}
+} // @layer layout

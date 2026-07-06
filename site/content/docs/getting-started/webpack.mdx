@@ -6,7 +6,7 @@ toc: true
 
 [Webpack](https://webpack.js.org/) is a JavaScript module bundler that compiles modules and their dependencies into static assets. This guide walks through a fresh project; if you already have Webpack set up, jump to [Import Chassis](#import-chassis).
 
-If you've read [Installation]([[docsref:/getting-started/installation]]), the moving parts are familiar — the only Webpack-specific work is configuring loaders so it can process Sass.
+[Installation]([[docsref:/getting-started/installation]]) covers the moving parts — the only Webpack-specific work here is configuring loaders to process Sass.
 
 ## Setup
 
@@ -14,34 +14,35 @@ This guide assumes Node.js is installed and you're comfortable in a terminal.
 
 1. **Create a project folder and initialize npm.**
 
-   ```sh
+   ```bash
    mkdir my-project && cd my-project
    pnpm init
    ```
 
-2. **Install Webpack and its plugins.** `webpack` is the bundler core, `webpack-cli` lets you invoke it from the terminal, `webpack-dev-server` runs a local development server, and `html-webpack-plugin` lets us keep `index.html` in `src/` instead of `dist/`. The `--save-dev` flag (or `-D` in pnpm) marks these as build-time dependencies.
+2. **Install Webpack and its plugins.** `webpack` is the bundler core, `webpack-cli` enables the `webpack` command in the terminal, `webpack-dev-server` runs a local development server, and `html-webpack-plugin` keeps `index.html` in `src/` instead of `dist/`. The `--save-dev` flag (or `-D` in pnpm) marks these as build-time dependencies.
 
-   ```sh
+   ```bash
    pnpm add -D webpack webpack-cli webpack-dev-server html-webpack-plugin
    ```
 
-3. **Install Chassis CSS, its tokens, and Popper.** Popper is needed by dropdowns, popovers, and tooltips; if you're not using those plugins you can omit it.
+3. **Install Chassis CSS and its tokens.** Add the optional peer dependencies for the components that need them, or omit both and use `chassis.bundle.*` which includes them.
 
-   ```sh
-   pnpm add @chassis-ui/css @chassis-ui/tokens @popperjs/core
+   ```bash
+   pnpm add @chassis-ui/css @chassis-ui/tokens
+   pnpm add @floating-ui/dom vanilla-calendar-pro   # optional
    ```
 
 4. **Install Sass tooling.** Webpack needs loaders to handle Sass and to add vendor prefixes via PostCSS.
 
-   ```sh
+   ```bash
    pnpm add -D autoprefixer css-loader postcss-loader sass sass-loader style-loader
    ```
 
 ## Project structure
 
-Create the source folders and the empty files you'll fill in below:
+Create the source folders and starter files:
 
-```sh
+```bash
 mkdir -p src/js src/scss
 touch src/index.html src/js/main.js src/scss/styles.scss webpack.config.js
 ```
@@ -119,11 +120,11 @@ Add `start` and `build` scripts to `package.json`:
 }
 ```
 
-You can now run `pnpm start` to launch the dev server, but at this point the page won't be styled because we haven't told Webpack how to handle Sass yet.
+You can now run `pnpm start` to launch the dev server, but the page won't be styled yet — Webpack isn't configured to handle Sass.
 
 ## Import Chassis
 
-Webpack needs the Sass loaders we installed earlier and a Sass entry point that imports the tokens before Chassis itself.
+Webpack needs the Sass loaders from the previous step and a Sass entry point. The sass-loader requires a `loadPaths` entry pointing to the project's Sass directory so token overrides can be resolved.
 
 1. **Add the loader rules to `webpack.config.js`.** Replace the existing `module.exports` with the version below — the new piece is the `module.rules` block.
 
@@ -160,7 +161,16 @@ Webpack needs the Sass loaders we installed earlier and a Sass entry point that 
                loader: 'postcss-loader',
                options: { postcssOptions: { plugins: [autoprefixer] } }
              },
-             'sass-loader'       // Compiles Sass to CSS
+             {
+               loader: 'sass-loader',
+               options: {
+                 sassOptions: {
+                   loadPaths: [
+                     path.resolve(__dirname, 'src/scss')  // project token override
+                   ]
+                 }
+               }
+             }
            ]
          }
        ]
@@ -168,21 +178,20 @@ Webpack needs the Sass loaders we installed earlier and a Sass entry point that 
    }
    ```
 
-2. **Import tokens, then Chassis, in `src/scss/styles.scss`.** The order matters — Chassis's `_vendor.scss` reads `$cx-*` variables that the tokens package defines, so the tokens import must come first.
+2. **Fill in `src/scss/styles.scss`.** The token source resolves through `_vendor.scss` before the rest of Chassis processes its variables, so a single `@use` directive is all that's needed.
 
    ```scss
-   // 1. Token source (must come before chassis.scss)
-   @import "@chassis-ui/tokens/dist/web/chassis/docs/main";
+   // 1. Chassis CSS — token source resolves via the loadPaths entry in webpack.config.js
+   @use "@chassis-ui/css/scss/chassis";
 
-   // 2. Optional: settings overrides
-   // $enable-rfs: false;
-   // $enable-component-shadows: true;
-
-   // 3. Chassis CSS
-   @import "@chassis-ui/css/scss/chassis";
+   // 2. Optional: settings overrides use the `with (...)` syntax
+   // @use "@chassis-ui/css/scss/chassis" with (
+   //   $enable-fluid-font-sizes: false,
+   //   $enable-component-shadows: true,
+   // );
    ```
 
-   The token build path follows the pattern `dist/web/{brand}/{app}/main`. The default Chassis package ships with the `chassis/docs` build; for your own brand or app, switch the path accordingly.
+   The default token build (`chassis/docs`) is resolved via the `loadPaths` entry above. To switch to a custom token set, place a `_chassis-tokens.scss` on an earlier `loadPaths` entry — see [Customize → Sass]([[docsref:/customize/sass#switching-to-a-different-token-set-recommended]]) for details.
 
 3. **Import the JavaScript and load the stylesheet from `src/js/main.js`.**
 
@@ -191,7 +200,7 @@ Webpack needs the Sass loaders we installed earlier and a Sass entry point that 
    import * as chassis from '@chassis-ui/css'
    ```
 
-   For smaller bundles, import only the plugins you use:
+   For smaller bundles, import only the required plugins:
 
    ```js
    import { Modal, Tooltip } from '@chassis-ui/css'
@@ -199,21 +208,21 @@ Webpack needs the Sass loaders we installed earlier and a Sass entry point that 
 
 4. **Run the dev server.**
 
-   ```sh
+   ```bash
    pnpm start
    ```
 
    The page should now render with Chassis styling — the heading uses the Chassis type scale, the button is filled with the primary palette, and the container is constrained.
 
-## Production optimizations
+## Build optimizations
 
 The `style-loader` setup above injects CSS via a `<style>` tag in the head. That's fine in development but suboptimal for production: it ships unstyled HTML to the browser before the JS evaluates. For production builds, extract the CSS to a separate file.
 
 ### Extract CSS
 
-Install the plugin:
+The `mini-css-extract-plugin` replaces `style-loader` to write the compiled CSS to a separate file, enabling the browser to download the stylesheet in parallel with the JavaScript bundle. Install it:
 
-```sh
+```bash
 pnpm add -D mini-css-extract-plugin
 ```
 
@@ -248,33 +257,12 @@ Wire it into the config in place of `style-loader`:
  }
 ```
 
-After `pnpm build`, the bundle contains a separate `dist/main.css` that you can link from your HTML.
-
-### Extract embedded SVGs
-
-Chassis CSS includes a handful of inline `data:` URI SVGs (form check marks, dropdown carets, validation icons). If your Content Security Policy blocks `data:` URIs in `img-src` or `background-image`, extract them to files using Webpack's asset modules:
-
-```diff
- module: {
-   rules: [
-+    {
-+      mimetype: 'image/svg+xml',
-+      scheme: 'data',
-+      type: 'asset/resource',
-+      generator: { filename: 'icons/[hash].svg' }
-+    },
-     {
-       test: /\.scss$/,
-       …
-     }
-   ]
- }
-```
-
-After `pnpm build`, the SVGs are emitted to `dist/icons/` and the compiled CSS references them as files.
+After `pnpm build`, the bundle contains a separate `dist/main.css` ready to link from any HTML page.
 
 ## Next steps
 
+These docs cover JavaScript integration, Sass customization, and bundle optimization for a Webpack-based Chassis project.
+
 - [JavaScript]([[docsref:/getting-started/javascript]]) — using the JS plugins, the programmatic API, and event names.
-- [Customize → Sass]([[docsref:/customize/sass]]) — variable overrides and importing only the partials you need.
+- [Customize → Sass]([[docsref:/customize/sass]]) — variable overrides and importing only the required partials.
 - [Customize → Optimize]([[docsref:/customize/optimize]]) — keeping the Chassis output lean.

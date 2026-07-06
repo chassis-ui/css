@@ -1,0 +1,21 @@
+@use "../config" as *;
+
+//
+// Link Helpers
+//
+// Contextual .link-{name} color classes generated for each named context.
+// Applies foreground and hover colors matching the context palette.
+//
+
+@layer helpers {
+  // scss-docs-start stretched-link-helper
+  .stretched-link {
+    &::#{$stretched-link-pseudo-element} {
+      position: absolute;
+      inset: 0;
+      z-index: $stretched-link-z-index;
+      content: "";
+    }
+  }
+  // scss-docs-end stretched-link-helper
+} // @layer helpers

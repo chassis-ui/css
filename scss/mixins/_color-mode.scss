@@ -1,3 +1,12 @@
+@use "../config" as *;
+
+//
+// Color Mode Mixin
+//
+// Applies styles scoped to a specific color mode (light or dark) via either
+// a media query or a data-attribute selector based on $color-mode-type.
+//
+
 // scss-docs-start color-mode-mixin
 /// Apply styles for a specific color mode (light or dark).
 /// When `$color-mode-type` is `"media-query"`, wraps the content in a
@@ -31,42 +40,3 @@
   }
 }
 // scss-docs-end color-mode-mixin
-
-// scss-docs-start component-color-mode-mixin
-/// Apply styles for a component-level color variant (`data-cx-color` attribute).
-/// When `$color-mode-type` is `"media-query"`, wraps in a `@media (prefers-color-scheme: ...)`
-/// query. Otherwise, targets `[data-cx-color="{mode}"]` and optionally also `:root`.
-///
-/// @param {String} $mode [default] - Color mode name (e.g., "default", "dark")
-/// @param {Boolean} $root [false] - When `true`, also applies styles to `:root` (attribute mode only)
-/// @content Styles to apply for this component color mode
-/// @example
-///   @include component-color-mode(dark) { color: white; }
-///   // => [data-cx-color="dark"] { color: white; }
-@mixin component-color-mode($mode: default, $root: false) {
-  @if $color-mode-type == "media-query" {
-    @if $root == true {
-      @media (prefers-color-scheme: $mode) {
-        :root {
-          @content;
-        }
-      }
-    } @else {
-      @media (prefers-color-scheme: $mode) {
-        @content;
-      }
-    }
-  } @else {
-    @if $root == true {
-      :root,
-      [data-cx-color="#{$mode}"] {
-        @content;
-      }
-    } @else {
-      [data-cx-color="#{$mode}"] {
-        @content;
-      }
-    }
-  }
-}
-// scss-docs-end component-color-mode-mixin

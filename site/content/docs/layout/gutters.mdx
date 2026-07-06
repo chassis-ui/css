@@ -1,151 +1,175 @@
 ---
 title: Gutters
-description: Gutters are the padding between your columns, used to responsively space and align content in the Chassis CSS grid system.
+description: Horizontal, vertical, and combined gutter classes for the flexbox grid, with breakpoint-prefixed variants for responsive spacing.
 toc: true
+css_layer: layout
 ---
+import { sassVars } from '@libs/sass'
 
-## How they work
+## Overview
 
-- **Gutters are the gaps between column content, created by horizontal `padding`.** We set `padding-right` and `padding-left` on each column, and use negative `margin` to offset that at the start and end of each row to align content.
+Gutters are the gaps between column content. `.row` sets two CSS custom properties — `--gutter-x` and `--gutter-y` — that columns consume: `--gutter-x` drives `padding-inline` on each column, and `--gutter-y` drives `margin-block-start`. Gutter classes override these properties at the row level without touching the column structure.
 
-- **Gutters start at `1.5rem` (`24px`) wide.** This allows us to match our grid to the [padding and margin spacers]([[docsref:/utilities/spacing]]) scale.
-
-- **Gutters can be responsively adjusted.** Use breakpoint-specific gutter classes to modify horizontal gutters, vertical gutters, and all gutters.
+Suffixes follow the same naming scale as [padding]([[docsref:/utilities/padding]]) and [margin]([[docsref:/utilities/margin]]) utilities (`xsmall`, `small`, `medium`, `large`, …) so gutter widths stay on-scale with the rest of the layout. The default horizontal gutter is <code>{sassVars('grid').gutter}</code> (`$grid-gutter-x`); the vertical gutter defaults to `0` (`$grid-gutter-y`).
 
 ## Horizontal gutters
 
-`.gx-*` classes can be used to control the horizontal gutter widths. The `.container` or `.container.fluid` parent may need to be adjusted if larger gutters are used too to avoid unwanted overflow, using a matching padding utility. For example, in the following example we’ve increased the padding with `.px-large`:
+`.gx-{size}` overrides `--gutter-x` on a `.row` to change horizontal column spacing.
 
-<Example class="cxd-example-cols" code={`<div class="container px-large text-center">
-    <div class="row gx-5">
+<Example class="cxd-example-cols" code={`<div class="container text-center">
+    <div class="row gx-medium">
       <div class="col">
-        <div class="p-medium">Custom column padding</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Custom column padding</div>
+        <div class="p-medium">Column content</div>
       </div>
     </div>
   </div>`} />
 
-An alternative solution is to add a wrapper around the `.row` with the `.overflow-hidden` class:
+When the gutter is wider than the container's horizontal padding, the row's negative inline margins bleed outside the container edge.
 
-<Example class="cxd-example-cols" code={`<div class="container overflow-hidden text-center">
-    <div class="row gx-5">
-      <div class="col">
-        <div class="p-medium">Custom column padding</div>
+<Example class="cxd-example-cols" code={`<div class="container bg-even text-center">
+    <div class="row gx-6xlarge cxd-pattern-diagonal"><!-- [!code highlight] -->
+      <div class="col dim-slight">
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Custom column padding</div>
+        <div class="p-medium">Column content</div>
+      </div>
+    </div>
+  </div>`} />
+
+Add a matching padding utility to the `.container` to contain it:
+
+<Example class="cxd-example-cols" code={`<div class="container px-xlarge bg-even text-center"><!-- [!code highlight] -->
+    <div class="row gx-6xlarge cxd-pattern-diagonal">
+      <div class="col dim-slight">
+        <div class="p-medium">Column content</div>
+      </div>
+      <div class="col">
+        <div class="p-medium">Column content</div>
+      </div>
+    </div>
+  </div>`} />
+
+Alternatively, add `.overflow-hidden` to the `.container` to clip the bleed without extra padding:
+
+<Example class="cxd-example-cols" code={`<div class="container overflow-hidden bg-even text-center"><!-- [!code highlight] -->
+    <div class="row gx-6xlarge cxd-pattern-diagonal">
+      <div class="col dim-slight">
+        <div class="p-medium">Column content</div>
+      </div>
+      <div class="col">
+        <div class="p-medium">Column content</div>
       </div>
     </div>
   </div>`} />
 
 ## Vertical gutters
 
-`.gy-*` classes can be used to control the vertical gutter widths within a row when columns wrap to new lines. Like the horizontal gutters, the vertical gutters can cause some overflow below the `.row` at the end of a page. If this occurs, you add a wrapper around `.row` with the `.overflow-hidden` class:
+`.gy-{size}` overrides `--gutter-y` to add top spacing between rows of columns when they wrap. The `.row` applies an equal negative `margin-block-start` to cancel the gap before the first row, but this negative margin bleeds above the container boundary. Add `.overflow-hidden` to the `.container` to clip the bleed without extra padding:
 
 <Example class="cxd-example-cols" code={`<div class="container overflow-hidden text-center">
-    <div class="row gy-5">
+    <div class="row gy-medium">
       <div class="col-6">
-        <div class="p-medium">Custom column padding</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col-6">
-        <div class="p-medium">Custom column padding</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col-6">
-        <div class="p-medium">Custom column padding</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col-6">
-        <div class="p-medium">Custom column padding</div>
+        <div class="p-medium">Column content</div>
       </div>
     </div>
   </div>`} />
 
-## Horizontal & vertical gutters
+## Combined gutters
 
-Use `.g-*` classes to control the horizontal and vertical grid gutters. In the example below, we use a smaller gutter width, so there isn’t a need for the `.overflow-hidden` wrapper class.
+`.g-{size}` sets `--gutter-x` and `--gutter-y` simultaneously. At smaller values, the negative top-margin bleed is typically small enough that a container wrapper is not needed:
 
-<Example class="cxd-example-cols" code={`<div class="container text-center">
-    <div class="row g-2">
+<Example class="cxd-example-cols" code={`<div class="container overflow-hidden text-center">
+    <div class="row g-xsmall">
       <div class="col-6">
-        <div class="p-medium">Custom column padding</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col-6">
-        <div class="p-medium">Custom column padding</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col-6">
-        <div class="p-medium">Custom column padding</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col-6">
-        <div class="p-medium">Custom column padding</div>
+        <div class="p-medium">Column content</div>
       </div>
     </div>
   </div>`} />
 
-## Row columns gutters
+## Responsive gutters
 
-Gutter classes can also be added to [row columns]([[docsref:/layout/grid#row-columns]]). In the following example, we use responsive row columns and responsive gutter classes.
+All three class families accept breakpoint prefixes — `.{breakpoint}:g-{size}`, `.{breakpoint}:gx-{size}`, `.{breakpoint}:gy-{size}` — so gutter width can change at specific viewport widths. Gutter classes work with [row columns]([[docsref:/layout/grid#row-columns]]) as well as explicit column spans. The example below uses a narrow two-column layout with small gutters, switching to five columns with larger gutters at the `large` breakpoint:
 
-<Example class="cxd-example-cols" code={`<div class="container text-center">
-    <div class="row row-cols-2 large:row-cols-5 g-2 large:g-3">
+<Example class="cxd-example-cols" code={`<div class="container overflow-hidden text-center">
+    <div class="row row-cols-2 large:row-cols-5 g-xsmall large:g-medium">
       <div class="col">
-        <div class="p-medium">Row column</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Row column</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Row column</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Row column</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Row column</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Row column</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Row column</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Row column</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Row column</div>
+        <div class="p-medium">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Row column</div>
+        <div class="p-medium">Column content</div>
       </div>
     </div>
   </div>`} />
 
 ## No gutters
 
-The gutters between columns in our predefined grid classes can be removed with `.g-0`. This removes the negative `margin`s from `.row` and the horizontal `padding` from all immediate children columns.
+`.g-0` sets both `--gutter-x` and `--gutter-y` to `0`, removing the row's negative margins and the column `padding-inline`. All other grid classes — column widths, responsive tiers, reordering — remain fully composable:
 
-**Need an edge-to-edge design?** Drop the parent `.container` or `.container.fluid` and add `.mx-0` to the `.row` to prevent overflow.
-
-In practice, here’s how it looks. Note that you can continue to use this with all other predefined grid classes (including column widths, responsive tiers, reorders, and more).
+For an edge-to-edge layout, drop the `.container` wrapper and add `.mx-0` to the `.row` to prevent inline overflow.
 
 <Example class="cxd-example-row" code={`<div class="row g-0 text-center">
     <div class="small:col-6 medium:col-8">.small:col-6 .medium:col-8</div>
     <div class="col-6 medium:col-4">.col-6 .medium:col-4</div>
   </div>`} />
 
-## Change the gutters
+## CSS
 
-Classes are built from the `$gutters` Sass map which is inherited from the `$spacers` Sass map.
+<DocsCSS name="Gutter" type="utility" plural />
 
-```scss
-$grid-gutter-width: 1.5rem;
-$gutters: (
-  0: 0,
-  1: $spacer * .25,
-  2: $spacer * .5,
-  3: $spacer,
-  4: $spacer * 1.5,
-  5: $spacer * 3,
-);
-```
+### Sass variables
+
+`$grid-gutter-x` and `$grid-gutter-y` set the default gutter applied to every `.row`. Override these variables before importing Chassis to change the baseline gutter across all rows.
+
+<ScssDocs name="grid-variables" file="scss/config/_defaults.scss" />
+
+### Sass maps
+
+`$gutters` is assigned directly from `$spaces`, so every entry in the spacing scale generates a corresponding `.g-*`, `.gx-*`, and `.gy-*` class set. Extend `$spaces` before importing Chassis to add extra gutter steps; the spacing scale is shared with [padding]([[docsref:/utilities/padding]]) and [margin]([[docsref:/utilities/margin]]) utilities.
+
+<ScssDocs name="spaces-map" file="scss/maps/_spacing.scss" />

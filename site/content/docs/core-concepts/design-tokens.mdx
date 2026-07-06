@@ -1,10 +1,10 @@
 ---
 title: Design Tokens
-description: Chassis Tokens is the single source of truth for every visual decision in Chassis CSS — colors, spacing, typography, component metrics, motion, and effects — with built-in support for multiple brands, themes, and platforms.
+description: Chassis Tokens defines every color, spacing, border radius, font, motion, and shadow in Chassis CSS, with multi-brand, multi-theme, and multi-platform support.
 toc: true
 ---
 
-Every color, spacing step, border radius, font size, and shadow in Chassis CSS comes from a token. Nothing is hardcoded. A single change in Chassis Tokens flows out to every component and utility that references it — in CSS, in Figma, and across every platform you build for.
+Nothing in Chassis CSS is hardcoded. Every visual property is wired to a token — a single change in Chassis Tokens propagates to every component and utility that references it, in CSS, in Figma, and across every target platform.
 
 ## How tokens are structured
 
@@ -39,7 +39,7 @@ Because the collections are independent, switching the Theme from `light` to `da
 
 ## What's inside
 
-Here's an overview of each token category and the CSS variable shape it produces.
+Each token category maps to a predictable CSS variable pattern, carrying design decisions from Figma through to runtime values in CSS.
 
 ### Color
 
@@ -73,13 +73,13 @@ Duration and easing tokens live in `base/motion-base` and surface as `--cx-motio
 
 ### Effects
 
-Shadow definitions live in `base/effect-base`. They are applied through utilities and the elevation system rather than referenced directly.
+Shadow definitions live in `base/effect-base`. They are consumed internally by shadow utilities and the elevation system and do not surface as standalone CSS variables.
 
 ## Figma and CSS variables
 
 Chassis Tokens and Chassis CSS share a naming structure, so a token in Figma and its CSS variable always point to the same design decision:
 
-```
+```text
 color/context/{context}/{token}  →  --cx-{context}-{token}
 space/context/{step}             →  --cx-space-{step}
 ```
@@ -90,8 +90,15 @@ For example, `color/context/primary/fg-main` in Figma is `--cx-primary-fg-main` 
 
 Tokens are authored with [Tokens Studio](https://tokens.studio) inside Figma and synced to the `chassis-tokens` repository as JSON. [Style Dictionary](https://amzn.github.io/style-dictionary/) then transforms them into platform-specific output: SCSS for the web, Swift for iOS, and XML for Android. See the Chassis Tokens repository for build instructions and configuration details.
 
+<Callout type="info">
+Token values are defined and customized in Chassis Tokens, not in Chassis CSS. Visit the [Chassis Tokens documentation](https://chassis-ui.com/tokens/) to browse token values, modify the token layer system, or create a custom brand.
+</Callout>
+
 ## Further reading
+
+The color and context docs cover how token values become CSS variables; component anatomy and box model show how those variables are consumed by components and kept pixel-perfect against Figma designs.
 
 - [Color System]([[docsref:/core-concepts/color-system]]) — how the color layers map to CSS variables.
 - [Context Class]([[docsref:/core-concepts/context-class]]) — how context palettes are applied in markup.
-- [Tokens](/tokens) — browse all token values.
+- [Component Anatomy]([[docsref:/core-concepts/component-anatomy]]) — how design tokens become CSS variables and component classes.
+- [Box Model]([[docsref:/core-concepts/box-model]]) — how stroke exclusion keeps rendered components pixel-perfect against Figma designs.

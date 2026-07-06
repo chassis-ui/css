@@ -1,0 +1,37 @@
+@use "sass:map";
+@use "../maps" as *;
+@use "../functions" as *;
+
+//
+// Gap Utilities
+//
+// Utility map for the gap, row-gap, and column-gap utilities.
+//
+
+// scss-docs-start utils-gap-values
+// Build a gap values map from $spaces. Each key maps to its :root spacing variable, plus 0.
+$-gap-values: map.merge(map-loop($spaces, varify, "$key", "space"), (0: 0)) !default;
+// scss-docs-end utils-gap-values
+
+$utilities: (
+  // scss-docs-start utils-gap
+  "gap": (
+    responsive: true,
+    property: gap,
+    class: gap,
+    values: $-gap-values
+  ),
+  "row-gap": (
+    responsive: true,
+    property: row-gap,
+    class: row-gap,
+    values: $-gap-values
+  ),
+  "column-gap": (
+    responsive: true,
+    property: column-gap,
+    class: column-gap,
+    values: $-gap-values
+  ),
+  // scss-docs-end utils-gap
+) !default;

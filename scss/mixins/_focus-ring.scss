@@ -1,0 +1,19 @@
+//
+// Focus Ring Mixin
+//
+// Renders a visible keyboard focus indicator. Supports color overrides
+// and configurable outline offsets.
+//
+
+// scss-docs-start focus-ring-mixin
+@mixin focus-ring($offset: false, $color: null) {
+  @if $color != null {
+    outline: var(--focus-ring-width) solid #{$color};
+  } @else {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  }
+  @if $offset {
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+// scss-docs-end focus-ring-mixin

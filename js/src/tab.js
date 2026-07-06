@@ -8,7 +8,7 @@
 import BaseComponent from './base-component.js'
 import EventHandler from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
-import { defineJQueryPlugin, getNextActiveElement, isDisabled } from './util/index.js'
+import { getNextActiveElement, isDisabled } from './util/index.js'
 
 /**
  * Constants
@@ -36,19 +36,17 @@ const END_KEY = 'End'
 const CLASS_NAME_ACTIVE = 'active'
 const CLASS_NAME_FADE = 'fade'
 const CLASS_NAME_SHOW = 'show'
-const CLASS_DROPDOWN = 'dropdown'
-
-const SELECTOR_DROPDOWN_TOGGLE = '.dropdown-toggle'
-const SELECTOR_DROPDOWN_MENU = '.dropdown-menu'
-const NOT_SELECTOR_DROPDOWN_TOGGLE = `:not(${SELECTOR_DROPDOWN_TOGGLE})`
+const SELECTOR_MENU_TOGGLE = '[data-cx-toggle="menu"]'
+const SELECTOR_MENU = '.menu'
+const NOT_SELECTOR_MENU_TOGGLE = `:not(${SELECTOR_MENU_TOGGLE})`
 
 const SELECTOR_TAB_PANEL = '.list-group, .nav, [role="tablist"]'
 const SELECTOR_OUTER = '.nav-item, .list-item'
-const SELECTOR_INNER = `.nav-link${NOT_SELECTOR_DROPDOWN_TOGGLE}, .list-item${NOT_SELECTOR_DROPDOWN_TOGGLE}, [role="tab"]${NOT_SELECTOR_DROPDOWN_TOGGLE}`
-const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="tab"], [data-cx-toggle="pill"], [data-cx-toggle="list"]'
+const SELECTOR_INNER = `.nav-link${NOT_SELECTOR_MENU_TOGGLE}, .list-item${NOT_SELECTOR_MENU_TOGGLE}, [role="tab"]${NOT_SELECTOR_MENU_TOGGLE}`
+const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="tab"]'
 const SELECTOR_INNER_ELEM = `${SELECTOR_INNER}, ${SELECTOR_DATA_TOGGLE}`
 
-const SELECTOR_DATA_TOGGLE_ACTIVE = `.${CLASS_NAME_ACTIVE}[data-cx-toggle="tab"], .${CLASS_NAME_ACTIVE}[data-cx-toggle="pill"], .${CLASS_NAME_ACTIVE}[data-cx-toggle="list"]`
+const SELECTOR_DATA_TOGGLE_ACTIVE = `.${CLASS_NAME_ACTIVE}[data-cx-toggle="tab"]`
 
 /**
  * Class definition
@@ -61,6 +59,8 @@ class Tab extends BaseComponent {
 
     if (!this._parent) {
       return
+      // TODO: should throw exception in v6
+      // throw new TypeError(`${element.outerHTML} has not a valid parent ${SELECTOR_TAB_PANEL}`)
     }
 
     // Set up initial aria attributes
@@ -116,7 +116,7 @@ class Tab extends BaseComponent {
 
       element.removeAttribute('tabindex')
       element.setAttribute('aria-selected', true)
-      this._toggleDropDown(element, true)
+      this._toggleMenu(element, true)
       EventHandler.trigger(element, EVENT_SHOWN, {
         relatedTarget: relatedElem
       })
@@ -143,7 +143,7 @@ class Tab extends BaseComponent {
 
       element.setAttribute('aria-selected', false)
       element.setAttribute('tabindex', '-1')
-      this._toggleDropDown(element, false)
+      this._toggleMenu(element, false)
       EventHandler.trigger(element, EVENT_HIDDEN, { relatedTarget: relatedElem })
     }
 
@@ -162,7 +162,7 @@ class Tab extends BaseComponent {
     let nextActiveElement
 
     if ([HOME_KEY, END_KEY].includes(event.key)) {
-      nextActiveElement = children[event.key === HOME_KEY ? 0 : children.length - 1]
+      nextActiveElement = event.key === HOME_KEY ? children[0] : children.at(-1)
     } else {
       const isNext = [ARROW_RIGHT_KEY, ARROW_DOWN_KEY].includes(event.key)
       nextActiveElement = getNextActiveElement(children, event.target, isNext, true)
@@ -224,22 +224,21 @@ class Tab extends BaseComponent {
     }
   }
 
-  _toggleDropDown(element, open) {
+  _toggleMenu(element, open) {
     const outerElem = this._getOuterElement(element)
-    if (!outerElem.classList.contains(CLASS_DROPDOWN)) {
+    const menuToggle = SelectorEngine.findOne(SELECTOR_MENU_TOGGLE, outerElem)
+    if (!menuToggle) {
       return
     }
 
-    const toggle = (selector, className) => {
-      const element = SelectorEngine.findOne(selector, outerElem)
-      if (element) {
-        element.classList.toggle(className, open)
-      }
+    const menu = SelectorEngine.findOne(SELECTOR_MENU, outerElem)
+
+    menuToggle.classList.toggle(CLASS_NAME_ACTIVE, open)
+    if (menu) {
+      menu.classList.toggle(CLASS_NAME_SHOW, open)
     }
 
-    toggle(SELECTOR_DROPDOWN_TOGGLE, CLASS_NAME_ACTIVE)
-    toggle(SELECTOR_DROPDOWN_MENU, CLASS_NAME_SHOW)
-    outerElem.setAttribute('aria-expanded', open)
+    menuToggle.setAttribute('aria-expanded', open)
   }
 
   _setAttributeIfNotExists(element, attribute, value) {
@@ -260,23 +259,6 @@ class Tab extends BaseComponent {
   // Try to get the outer element (usually the .nav-item)
   _getOuterElement(elem) {
     return elem.closest(SELECTOR_OUTER) || elem
-  }
-
-  // Static
-  static jQueryInterface(config) {
-    return this.each(function () {
-      const data = Tab.getOrCreateInstance(this)
-
-      if (typeof config !== 'string') {
-        return
-      }
-
-      if (data[config] === undefined || config.startsWith('_') || config === 'constructor') {
-        throw new TypeError(`No method named "${config}"`)
-      }
-
-      data[config]()
-    })
   }
 }
 
@@ -304,10 +286,5 @@ EventHandler.on(window, EVENT_LOAD_DATA_API, () => {
     Tab.getOrCreateInstance(element)
   }
 })
-/**
- * jQuery
- */
-
-defineJQueryPlugin(Tab)
 
 export default Tab

@@ -19,20 +19,20 @@ export default {
 
     const instanceMap = elementMap.get(element)
 
-    // make it clear we only want one instance per element
-    // can be removed later when multiple key/instances are fine to be used
-    if (!instanceMap.has(key) && instanceMap.size !== 0) {
-      // eslint-disable-next-line no-console
-      console.error(`Chassis doesn't allow more than one instance per element. Bound instance: ${Array.from(instanceMap.keys())[0]}.`)
-      return
-    }
-
     instanceMap.set(key, instance)
   },
 
   get(element, key) {
     if (elementMap.has(element)) {
       return elementMap.get(element).get(key) || null
+    }
+
+    return null
+  },
+
+  getAny(element) {
+    if (elementMap.has(element)) {
+      return elementMap.get(element).values().next().value || null
     }
 
     return null

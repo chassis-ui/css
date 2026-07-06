@@ -1,0 +1,40 @@
+---
+title: Clearfix
+description: Clear floated content within a container using a class or Sass mixin.
+toc: true
+css_layer: helpers
+---
+
+`.clearfix` clears child floats from within a container by generating a `::after` pseudo-element. Apply it as a class or include it as a Sass mixin.
+
+```html
+<div class="clearfix">...</div>
+```
+
+The clearfix mixin can be included directly in custom selectors:
+
+```scss
+.element {
+  @include clearfix;
+}
+```
+
+Without `.clearfix`, the container collapses around the floated buttons.
+
+<Example code={`<div class="bg-info clearfix">
+    <button type="button" class="button secondary float-start">Example Button floated left</button>
+    <button type="button" class="button secondary float-end">Example Button floated right</button>
+  </div>`} />
+
+
+## CSS
+
+<DocsCSS name="Clearfix" type="helper" />
+
+<ScssDocs name="clearfix-helper" file="scss/helpers/_clearfix.scss" />
+
+### Sass mixin
+
+The `clearfix` mixin generates the float-clearing `::after` rule, usable in any custom selector without adding the class to markup.
+
+<ScssDocs name="clearfix-mixin" file="scss/mixins/_clearfix.scss" />

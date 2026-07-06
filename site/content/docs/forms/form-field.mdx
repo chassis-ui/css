@@ -1,0 +1,272 @@
+---
+title: Field
+description: A universal layout wrapper for form controls that handles label, description, and validation feedback placement with CSS grid.
+toc: true
+tokens: component
+css_layer: components
+extra_js:
+  - src: "/static/js/validate-forms.js"
+    async: true
+
+---
+
+## Overview
+
+The Field component provides essential layout, spacing, and functionality for your form input or component of choice. It even scales to support laying out checkboxes, radios, and switches in a two-column layout.
+
+<Example code={`<div class="form-field">
+    <label class="form-label" for="fieldOverview">Email address</label>
+    <input class="form-input" type="email" id="fieldOverview" placeholder="name@example.com" aria-describedby="fieldOverviewHelp">
+    <div class="form-help" id="fieldOverviewHelp">
+      We’ll never share your email with anyone else.
+    </div>
+  </div>`} />
+
+### How it works
+
+The `.form-field` wrapper uses CSS grid to manage the layout of a form control alongside its label, description, and validation feedback.
+
+- **Default layout** is a single-column grid where everything stacks vertically. Use this for text inputs, selects, textareas, ranges, input groups, and adorned inputs.
+- **Two-column layout** activates automatically via `:has()` when a `.check-input` is a direct child. The control pins to column 1 while the label, description, and feedback stack in column 2.
+- **Resets margins** for direct children `.form-label` and `.form-help` to ensure consistent spacing regardless of the control type.
+- **Spanning elements** — when a `.form-label` or `.form-help` is present alongside `.check-input`, they span both columns to maintain proper alignment and spacing.
+- **Grouped controls** — nest multiple `.form-input`s or `.form-check`s inside a `.form-field` to group them under a shared label with shared description and validation feedback.
+
+<Callout type="warning">
+  Always associate labels with their corresponding input using the `for` attribute to ensure accessibility.
+</Callout>
+
+## Examples
+
+Use `.form-field` as a wrapper for any form control to take advantage of its layout and spacing features.
+
+### Input stacking
+
+Works with any number of stacked inputs. Descriptions and validation feedback are optional.
+
+<Example code={`<div class="form-field">
+    <label for="stackedSelect" class="form-label">Options</label>
+    <select class="form-input" id="stackedSelect" aria-describedby="stackedHelp">
+      <option>Choose an option</option>
+      <option value="1">Option one</option>
+      <option value="2">Option two</option>
+      <option value="other" selected>Other</option>
+    </select>
+    <input class="form-input" type="text" aria-label="Custom option" placeholder="Please enter">
+    <div class="form-help" id="stackedHelp">
+      Select "Other" to enter a custom option.
+    </div>
+  </div>`} />
+
+### Checkbox
+
+When a `.check-input` is a direct child, the grid switches to a two-column layout with the checkbox in column 1 and the label in column 2.
+
+<Example code={`<fieldset class="form-field">
+    <legend class="form-label">Choose options</legend>
+    <input class="check-input" type="checkbox" id="fieldCheck1" aria-describedby="checkGroupHelp" />
+    <label for="fieldCheck1">Option one</label>
+    <input class="check-input" type="checkbox" id="fieldCheck2" aria-describedby="checkGroupHelp" />
+    <label for="fieldCheck2">Option two</label>
+    <div class="form-help" id="checkGroupHelp">You can select multiple options.</div>
+  </fieldset>`} />
+
+Add `role="switch"` to each checkbox input to render them as toggle switches with the toggle on the left and label on the right.
+
+<Example code={`<fieldset class="form-field">
+    <legend class="form-label">Choose options</legend>
+    <input class="check-input" type="checkbox" role="switch" id="fieldSwitch1" />
+    <label for="fieldSwitch1">Option one</label>
+    <input class="check-input" type="checkbox" role="switch" id="fieldSwitch2" />
+    <label for="fieldSwitch2">Option two</label>
+  </fieldset>`} />
+
+### Without fieldset
+
+When `<fieldset>` is not suitable — for example, inside a grid or flex layout that conflicts with its block formatting — apply `role="group"` and `aria-labelledby` to the `.form-field` wrapper instead.
+
+<Example code={`<div class="form-field" role="group" aria-labelledby="noFsGroupLabel">
+    <div class="form-label" id="noFsGroupLabel">Choose options</div>
+    <input class="check-input" type="checkbox" id="noFsCheck1" aria-describedby="noFsCheckHelp" />
+    <label for="noFsCheck1">Option one</label>
+    <input class="check-input" type="checkbox" id="noFsCheck2" aria-describedby="noFsCheckHelp" />
+    <label for="noFsCheck2">Option two</label>
+    <div class="form-help" id="noFsCheckHelp">You can select multiple options.</div>
+  </div>`} />
+
+## Descriptions
+
+Wrap checkboxes, radios, or switches in a `.form-check` to align the description with their label.
+
+<Example code={`<fieldset class="form-field">
+    <legend class="form-label">Select a plan</legend>
+    <div class="form-check">
+      <input type="radio" id="fieldDescription1" class="check-input" name="fieldDescription" checked aria-describedby="fieldDescription1Help" />
+      <label for="fieldDescription1">Basic</label>
+      <div class="form-help font-small" id="fieldDescription1Help">$9/month — For individuals.</div>
+    </div>
+    <div class="form-check">
+      <input type="radio" id="fieldDescription2" class="check-input" name="fieldDescription" aria-describedby="fieldDescription2Help" />
+      <label for="fieldDescription2">Pro</label>
+      <div class="form-help font-small" id="fieldDescription2Help">$29/month — For teams.</div>
+    </div>
+    <div class="form-help">
+      Prices are in USD and exclude applicable taxes.
+    </div>
+  </fieldset>`} />
+
+## Form cards
+
+Add `.form-card` to each inner container for a card-style treatment that highlights the selected option.
+
+<Example code={`<fieldset class="form-field">
+    <legend class="form-label">Select a plan</legend>
+      <div class="form-check form-card">
+        <input type="radio" id="fieldCard1" class="check-input" name="fieldCard" checked aria-describedby="fieldCard1Help" />
+        <label for="fieldCard1">Basic</label>
+        <div class="form-help font-small" id="fieldCard1Help">$9/month — For individuals.</div>
+      </div>
+      <div class="form-check form-card">
+        <input type="radio" id="fieldCard2" class="check-input" name="fieldCard" aria-describedby="fieldCard2Help" />
+        <label for="fieldCard2">Pro</label>
+        <div class="form-help font-small" id="fieldCard2Help">$29/month — For teams.</div>
+    </div>
+  </fieldset>`} />
+
+### Label as card
+
+For a more compact card style that uses the label as the card container, apply `.form-card` to the label instead. This allows for more flexible content inside the card while still maintaining the same layout and spacing.
+
+<Example code={`<fieldset class="form-field">
+    <legend class="form-label">Select a plan</legend>
+      <label class="form-check form-card">
+        <input type="radio" id="labelCard1" class="check-input" name="labelCard" checked />
+        Basic
+        <small class="form-help d-block">$9/month — For individuals.</small>
+      </label>
+      <label class="form-check form-card">
+        <input type="radio" id="labelCard2" class="check-input" name="labelCard" />
+        Pro
+        <small class="form-help d-block">$29/month — For teams.</small>
+    </label>
+  </fieldset>`} />
+
+
+## Using input groups
+
+Use `.input-group` inside `.form-field` to visually connect related inputs under a shared label and help text. Add `role="group"` and `aria-labelledby` to the `.form-field` wrapper so assistive technologies announce the group name alongside each input.
+
+<Example code={`<div class="form-field" role="group" aria-labelledby="nameGroupLabel">
+    <label class="form-label" for="groupedFirstName" id="nameGroupLabel">Name</label>
+    <div class="input-group">
+      <input type="text" class="form-input" id="groupedFirstName" placeholder="First" aria-label="First name" aria-describedby="groupedNameHelp">
+      <input type="text" class="form-input" placeholder="Last" aria-label="Last name" aria-describedby="groupedNameHelp">
+    </div>
+    <div class="form-help" id="groupedNameHelp">
+      Enter your first and last name.
+    </div>
+  </div>`} />
+
+## Accessibility
+
+Follow these practices to ensure your forms are accessible.
+
+### Label association
+
+Always use a `<label>` element with a `for` attribute matching the `id` of its input. This is the most reliable way to associate a label with a control and is required for screen readers and other assistive technologies.
+
+```html
+<div class="form-field">
+  <label class="form-label" for="emailField">Email address</label>
+  <input class="form-input" type="email" id="emailField" />
+</div>
+```
+
+### Grouped controls
+
+When grouping related checkboxes or radio buttons, use a `<fieldset>` with a `<legend>` so that screen readers announce the group's purpose alongside each option.
+
+```html
+<fieldset class="form-field">
+  <legend class="form-label">Select a plan</legend>
+  <div class="form-check">
+    <input type="radio" id="plan1" class="check-input" name="plan" />
+    <label for="plan1">Basic</label>
+  </div>
+  <div class="form-check">
+    <input type="radio" id="plan2" class="check-input" name="plan" />
+    <label for="plan2">Pro</label>
+  </div>
+</fieldset>
+```
+
+If `<fieldset>` is not suitable — for example, inside a layout that conflicts with its block formatting — apply `role="group"` and `aria-labelledby` to the `.form-field` wrapper instead:
+
+```html
+<div class="form-field" role="group" aria-labelledby="planGroupLabel">
+  <div class="form-label" id="planGroupLabel">Select a plan</div>
+  <div class="form-check">
+    <input type="radio" id="plan3" class="check-input" name="planAlt" />
+    <label for="plan3">Basic</label>
+  </div>
+  <div class="form-check">
+    <input type="radio" id="plan4" class="check-input" name="planAlt" />
+    <label for="plan4">Pro</label>
+  </div>
+</div>
+```
+
+### Help & feedback
+
+Use `aria-describedby` to associate `.form-help` text and validation feedback with their input, so screen readers announce the description when the field receives focus.
+
+```html
+<div class="form-field">
+  <label class="form-label" for="emailField">Email address</label>
+  <input class="form-input" type="email" id="emailField" aria-describedby="emailHelp" />
+  <div class="form-help" id="emailHelp">We'll never share your email with anyone else.</div>
+</div>
+```
+
+When displaying a validation error, also set `aria-invalid="true"` on the input and point `aria-describedby` at the error message:
+
+```html
+<div class="form-field">
+  <label class="form-label" for="emailField">Email address</label>
+  <input class="form-input is-invalid" type="email" id="emailField"
+         aria-describedby="emailError" aria-invalid="true" />
+  <div class="invalid-feedback" id="emailError">Please enter a valid email address.</div>
+</div>
+```
+
+### Switches
+
+Switches that use a checkbox as their underlying control must include `role="switch"` to convey their on/off nature to assistive technologies. Always pair a switch with a visible `<label>`.
+
+For more detailed accessibility guidance, see the [forms overview accessibility]([[docsref:/forms/overview/#accessibility]]) section.
+
+## CSS
+
+<DocsCSS name="Form Field" />
+
+### Custom properties
+
+<DocsCSSVars name="Form Field" exposed />
+
+<hr />
+
+Form field variables:
+
+<ScssDocs name="form-field-properties" file="scss/forms/_form-field.scss" />
+
+Form card variables:
+
+<ScssDocs name="form-card-properties" file="scss/forms/_form-field.scss" />
+
+### Sass variables
+
+<DocsSASSVars name="Form Field" />
+
+<ScssDocs name="form-field-variables" file="scss/config/_defaults.scss" />
+<ScssDocs name="form-label-variables" file="scss/config/_defaults.scss" />
+<ScssDocs name="form-help-variables" file="scss/config/_defaults.scss" />

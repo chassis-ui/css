@@ -1,24 +1,11 @@
-// Chassis SCSS entry point
 //
-// It imports settings and core to build the framework.
+// Chassis CSS — Reboot Bundle
+//
+// Standalone entry point for the reboot stylesheet and RFS collected rules
+// only. Used to normalize browser defaults without loading full framework CSS.
+//
 
-@import "mixins/banner";
-@include cxBanner(Utilities);
+@use "./mixins/banner" with ($file: "Reboot");
 
-// fusv-disable
-@import "settings";
-@import "vendor";
-// fusv-enable
-
-// Configuration
-@import "functions";
-@import "tokens";
-@import "variables";
-@import "maps";
-@import "rfs";
-@import "mixins";
-
-// Layout & components
-@import "root";
-@import "reboot";
-@import "placeholders";
+@forward "./root";
+@forward "./reboot";

@@ -2,6 +2,9 @@
 title: Form Validation
 description: Provide clear, accessible feedback to users with Chassis CSS's form validation styles, utilizing HTML5 validation or custom implementations.
 toc: true
+tokens: component
+css_layer: components
+mdn: https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation
 extra_js:
   - src: "/static/js/validate-forms.js"
     async: true
@@ -9,7 +12,7 @@ extra_js:
 
 import { getDocsRelativePath } from '@libs/path'
 
-<Callout type="warning" title="Accessibility note">
+<Callout type="warning" class="mt-3xlarge -mb-medium">
   When using client-side custom validation styles and tooltips, additional work is needed to ensure proper accessibility. For better out-of-the-box accessibility, consider using server-side validation or native browser validation.
 </Callout>
 
@@ -21,6 +24,7 @@ Chassis CSS provides flexible options for implementing form validation:
 - **Progressive enhancement**: Chassis uses the `.was-validated` class on forms to control when validation styles appear. This prevents invalid styles from showing when the page first loads.
 - **Server-side fallback**: The `.is-invalid` and `.is-valid` classes provide direct control for server-side validation scenarios.
 - **Custom validation messages**: Add contextual feedback to users with `.valid-feedback` and `.invalid-feedback` elements.
+- **Opt-in icons**: Add `.validation-icons` to a wrapper (e.g. the `<form>`) to render success/error glyphs inside every supported input it contains. Without it, only the colors, border, and shadow change.
 - **API integration**: All validation styles work with the browser's [Constraint Validation API](https://html.spec.whatwg.org/multipage/form-input-infrastructure.html#the-constraint-validation-api), allowing you to create custom validation logic with JavaScript.
 - **Accessible feedback**: Position validation messages consistently outside input groups for optimal screen reader compatibility.
 
@@ -35,17 +39,17 @@ Key features of Chassis validation:
 - Consistent positioning of feedback messages
 - JavaScript integration for dynamic validation
 
-<Example code={`<form class="row g-3 needs-validation" novalidate>
+<Example code={`<form class="row g-medium" data-cx-validate novalidate>
     <div class="medium:col-4">
       <label for="validationCustom01" class="form-label">First name</label>
-      <input type="text" class="form-input" id="validationCustom01" value="Mark" required>
+      <input type="text" class="form-input" id="validationCustom01" value="John" required>
       <div class="valid-feedback">
         Looks good!
       </div>
     </div>
     <div class="medium:col-4">
       <label for="validationCustom02" class="form-label">Last name</label>
-      <input type="text" class="form-input" id="validationCustom02" value="Otto" required>
+      <input type="text" class="form-input" id="validationCustom02" value="Smith" required>
       <div class="valid-feedback">
         Looks good!
       </div>
@@ -69,7 +73,7 @@ Key features of Chassis validation:
     </div>
     <div class="medium:col-3">
       <label for="validationCustom04" class="form-label">State</label>
-      <select class="form-select" id="validationCustom04" required>
+      <select class="form-input" id="validationCustom04" required>
         <option selected disabled value="">Choose...</option>
         <option>California</option>
         <option>New York</option>
@@ -112,14 +116,14 @@ Key features of Chassis validation:
 
 If you prefer simpler implementation, you can use the browser's built-in validation. Chassis CSS works seamlessly with native validation UI, though these styles cannot be customized with CSS.
 
-<Example code={`<form class="row g-3">
+<Example code={`<form class="row g-medium">
     <div class="medium:col-4">
       <label for="validationDefault01" class="form-label">First name</label>
-      <input type="text" class="form-input" id="validationDefault01" value="Mark" required>
+      <input type="text" class="form-input" id="validationDefault01" value="John" required>
     </div>
     <div class="medium:col-4">
       <label for="validationDefault02" class="form-label">Last name</label>
-      <input type="text" class="form-input" id="validationDefault02" value="Otto" required>
+      <input type="text" class="form-input" id="validationDefault02" value="Smith" required>
     </div>
     <div class="medium:col-4">
       <label for="validationDefaultUsername" class="form-label">Username</label>
@@ -134,7 +138,7 @@ If you prefer simpler implementation, you can use the browser's built-in validat
     </div>
     <div class="medium:col-3">
       <label for="validationDefault04" class="form-label">State</label>
-      <select class="form-select" id="validationDefault04" required>
+      <select class="form-input" id="validationDefault04" required>
         <option selected disabled value="">Choose...</option>
         <option>California</option>
         <option>New York</option>
@@ -170,17 +174,17 @@ For applications that validate on the server, Chassis CSS provides the `.is-vali
   For invalid fields, always connect error messages to their inputs using `aria-describedby` to ensure screen readers announce feedback properly. Multiple IDs can be referenced if a field has both help text and error messages.
 </Callout>
 
-<Example code={`<form class="row g-3">
+<Example code={`<form class="row g-medium">
     <div class="medium:col-4">
       <label for="validationServer01" class="form-label">First name</label>
-      <input type="text" class="form-input is-valid" id="validationServer01" value="Mark" required>
+      <input type="text" class="form-input is-valid" id="validationServer01" value="John" required>
       <div class="valid-feedback">
         Looks good!
       </div>
     </div>
     <div class="medium:col-4">
       <label for="validationServer02" class="form-label">Last name</label>
-      <input type="text" class="form-input is-valid" id="validationServer02" value="Otto" required>
+      <input type="text" class="form-input is-valid" id="validationServer02" value="Smith" required>
       <div class="valid-feedback">
         Looks good!
       </div>
@@ -204,7 +208,7 @@ For applications that validate on the server, Chassis CSS provides the `.is-vali
     </div>
     <div class="medium:col-3">
       <label for="validationServer04" class="form-label">State</label>
-      <select class="form-select is-invalid" id="validationServer04" aria-describedby="validationServer04Feedback" required>
+      <select class="form-input is-invalid" id="validationServer04" aria-describedby="validationServer04Feedback" required>
         <option selected disabled value="">Choose...</option>
         <option>California</option>
         <option>New York</option>
@@ -241,47 +245,145 @@ For applications that validate on the server, Chassis CSS provides the `.is-vali
 
 Chassis CSS validation styles work consistently across all basic form elements:
 
-<Example code={`<form class="was-validated">
-    <div class="mb-medium">
-      <label for="validationTextarea" class="form-label">Textarea</label>
-      <textarea class="form-input" id="validationTextarea" placeholder="Required example textarea" required></textarea>
-      <div class="invalid-feedback">
-        Please enter a message in the textarea.
-      </div>
-    </div>
-
-    <div class="form-check mb-medium">
-      <input type="checkbox" class="check-input" id="validationFormCheck1" required>
-      <label class="check-label" for="validationFormCheck1">Check this checkbox</label>
-      <div class="invalid-feedback">Example invalid feedback text</div>
-    </div>
-
-    <div class="form-check">
-      <input type="radio" class="check-input" id="validationFormCheck2" name="radio-stacked" required>
-      <label class="check-label" for="validationFormCheck2">Toggle this radio</label>
-    </div>
-    <div class="form-check mb-medium">
-      <input type="radio" class="check-input" id="validationFormCheck3" name="radio-stacked" required>
-      <label class="check-label" for="validationFormCheck3">Or toggle this other radio</label>
-      <div class="invalid-feedback">More example invalid feedback text</div>
-    </div>
-
-    <div class="mb-medium">
-      <select class="form-select" required aria-label="select example">
+<Example code={`<form class="vstack gap-medium">
+    <div class="form-field">
+      <label for="validationSelect" class="form-label">Select</label>
+      <select class="form-input is-invalid" id="validationSelect" required aria-describedby="validationSelectFeedback">
         <option value="">Choose an option</option>
         <option value="1">Option One</option>
         <option value="2">Option Two</option>
         <option value="3">Option Three</option>
       </select>
-      <div class="invalid-feedback">Example invalid select feedback</div>
+      <div class="invalid-feedback" id="validationSelectFeedback">Example invalid select feedback</div>
     </div>
 
-    <div class="mb-medium">
-      <input type="file" class="form-input" aria-label="file example" required>
-      <div class="invalid-feedback">Example invalid form file feedback</div>
+    <div class="form-field">
+      <label for="validationTextarea" class="form-label">Textarea</label>
+      <textarea class="form-input is-invalid" id="validationTextarea" placeholder="Required example textarea" required aria-describedby="validationTextareaFeedback"></textarea>
+      <div class="invalid-feedback" id="validationTextareaFeedback">
+        Example invalid textarea feedback
+      </div>
     </div>
 
-    <div class="mb-medium">
+    <div class="form-field">
+      <div class="form-label">Checkbox</div>
+      <div class="form-check">
+        <input type="checkbox" class="check-input is-invalid" id="validationCheckboxLegacy" name="checkbox-stacked-legacy" required aria-describedby="validationCheckboxLegacyFeedback">
+        <label for="validationCheckboxLegacy">Check this legacy checkbox</label>
+        <div class="invalid-feedback" id="validationCheckboxLegacyFeedback">Example invalid checkbox legacy feedback</div>
+      </div>
+      <div class="form-check">
+        <span class="check-input default">
+          <input type="checkbox" class="is-invalid" id="validationCheckboxModern" name="checkbox-stacked" required aria-describedby="validationCheckboxModernFeedback">
+        </span>
+        <label for="validationCheckboxModern">Check this modern checkbox</label>
+        <div class="invalid-feedback" id="validationCheckboxModernFeedback">Example invalid checkbox modern feedback</div>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <div class="form-label">Radio</div>
+      <div class="form-check">
+        <input type="radio" class="check-input is-invalid" id="validationRadioLegacy" name="radio-stacked" required aria-describedby="validationRadioFeedback">
+        <label for="validationRadioLegacy">Toggle this legacy radio</label>
+      </div>
+      <div class="form-check">
+        <span class="check-input default">
+          <input type="radio" class="is-invalid" id="validationRadioModern" name="radio-stacked" required aria-describedby="validationRadioFeedback">
+        </span>
+        <label for="validationRadioModern">Toggle this modern radio</label>
+      </div>
+      <div class="invalid-feedback" id="validationRadioFeedback">Example invalid radio feedback</div>
+    </div>
+
+    <div class="form-field">
+      <div class="form-label">Switch</div>
+      <div class="form-check">
+        <input type="checkbox" class="check-input is-invalid" role="switch" id="validationSwitchLegacy" required aria-describedby="validationSwitchLegacyFeedback">
+        <label for="validationSwitchLegacy">Check this legacy switch</label>
+        <div class="invalid-feedback" id="validationSwitchLegacyFeedback">Example invalid legacy switch feedback</div>
+      </div>
+      <div class="form-check">
+        <span class="check-input default">
+          <input type="checkbox" class="is-invalid" role="switch" id="validationSwitchModern" required aria-describedby="validationSwitchModernFeedback">
+        </span>
+        <label for="validationSwitchModern">Check this modern switch</label>
+        <div class="invalid-feedback" id="validationSwitchModernFeedback">Example invalid modern switch feedback</div>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="validationFile" class="form-label">File input</label>
+      <input type="file" class="form-input is-invalid" id="validationFile" aria-label="file example" required aria-describedby="validationFileFeedback">
+      <div class="invalid-feedback" id="validationFileFeedback">Example invalid form file feedback</div>
+    </div>
+
+    <div class="form-field">
+      <label for="validationColor" class="form-label">Color input</label>
+      <input type="color" class="form-input is-invalid" id="validationColor" aria-label="color example" aria-describedby="validationColorFeedback">
+      <div class="invalid-feedback" id="validationColorFeedback">Example invalid color feedback</div>
+    </div>
+
+    <div class="form-field">
+      <label for="validationRange" class="form-label">Range input</label>
+      <input type="range" class="form-range is-invalid" id="validationRange" aria-label="range example" aria-describedby="validationRangeFeedback">
+      <div class="invalid-feedback" id="validationRangeFeedback">Example invalid range feedback</div>
+    </div>
+
+    <div class="form-field">
+      <div class="form-label">Floating label</div>
+      <div class="form-floating">
+        <label for="validationFloating">Email address</label>
+        <input type="email" class="form-input is-invalid" id="validationFloating" placeholder="name@example.com" value="test@example.com" aria-describedby="validationFloatingFeedback">
+      </div>
+      <div id="validationFloatingFeedback" class="invalid-feedback">Example invalid floating label feedback</div>
+    </div>
+
+    <div class="form-field">
+      <label for="validationInputGroup" class="form-label">Input group</label>
+      <div class="input-group">
+        <span class="input-addon">@</span>
+        <input type="text" class="form-input is-invalid" id="validationInputGroup" placeholder="Username" aria-describedby="validationInputGroupFeedback">
+      </div>
+      <div id="validationInputGroupFeedback" class="invalid-feedback">Example invalid input group feedback</div>
+    </div>
+
+    <div class="form-field">
+      <label for="validationInputHelp" class="form-label">Input Help</label>
+      <div class="form-input">
+        <div class="input-help">
+          <Icon name="search-outline" />
+        </div>
+        <input type="text" class="ghost-input is-invalid" id="validationInputHelp" placeholder="Search..." aria-describedby="validationInputHelpFeedback" required>
+      </div>
+      <div class="invalid-feedback" id="validationInputHelpFeedback">Example invalid input help feedback</div>
+    </div>
+
+    <div class="form-field">
+      <label for="validationChipInput" class="form-label">Chip Input</label>
+      <div class="form-input chip-input" data-cx-chips="default smooth">
+        <span class="chip" data-cx-chip-value="example">Example</span>
+        <input type="text" class="ghost-input is-invalid" placeholder="Add more…" id="validationChipInput" aria-describedby="validationChipInputFeedback" required>
+      </div>
+      <div class="invalid-feedback" id="validationChipInputFeedback">Example invalid chip input feedback</div>
+    </div>
+
+    <div class="form-field">
+      <label for="validationCombobox" class="form-label">Role</label>
+      <div class="form-input combobox"
+           data-cx-toggle="combobox"
+           data-cx-name="role">
+        <input type="text" class="combobox-value is-invalid" placeholder="Choose an option…" autocomplete="off" id="validationCombobox" aria-describedby="validationComboboxFeedback" required>
+      </div>
+      <div class="menu" role="listbox">
+        <button class="menu-item" type="button" role="option" data-cx-value="admin">Admin</button>
+        <button class="menu-item" type="button" role="option" data-cx-value="editor">Editor</button>
+        <button class="menu-item" type="button" role="option" data-cx-value="viewer">Viewer</button>
+      </div>
+      <div class="invalid-feedback" id="validationComboboxFeedback">Example invalid combobox feedback</div>
+    </div>
+
+    <div>
       <button class="button primary" type="submit" disabled>Submit form</button>
     </div>
   </form>`} />
@@ -294,17 +396,17 @@ For compact layouts, Chassis CSS provides tooltip-style validation feedback. Sim
   Tooltips require a parent element with `position: relative`. The column classes in our examples already have this, but you may need to add it to your own layouts.
 </Callout>
 
-<Example code={`<form class="row g-3 needs-validation" novalidate>
+<Example code={`<form class="row g-medium" data-cx-validate novalidate>
     <div class="medium:col-4 position-relative">
       <label for="validationTooltip01" class="form-label">First name</label>
-      <input type="text" class="form-input" id="validationTooltip01" value="Mark" required>
+      <input type="text" class="form-input" id="validationTooltip01" value="John" required>
       <div class="valid-tooltip">
         Looks good!
       </div>
     </div>
     <div class="medium:col-4 position-relative">
       <label for="validationTooltip02" class="form-label">Last name</label>
-      <input type="text" class="form-input" id="validationTooltip02" value="Otto" required>
+      <input type="text" class="form-input" id="validationTooltip02" value="Smith" required>
       <div class="valid-tooltip">
         Looks good!
       </div>
@@ -328,7 +430,7 @@ For compact layouts, Chassis CSS provides tooltip-style validation feedback. Sim
     </div>
     <div class="medium:col-3 position-relative">
       <label for="validationTooltip04" class="form-label">State</label>
-      <select class="form-select" id="validationTooltip04" required>
+      <select class="form-input" id="validationTooltip04" required>
         <option selected disabled value="">Choose...</option>
         <option>California</option>
         <option>New York</option>
@@ -350,37 +452,113 @@ For compact layouts, Chassis CSS provides tooltip-style validation feedback. Sim
     </div>
   </form>`} />
 
-## Form helps
+## Validation icons
 
-The `.form-help` component is hidden by default when validation feedback is present. Add the `.always-show` class to keep form helps visible alongside validation feedback.
+Validation icons are opt-in at the **wrapper level**. Add the `.validation-icons` class to any ancestor — typically the `<form>`, but it also works on `.form-field`, `.input-group`, or even a single `.form-input` — and every supported descendant input renders the success or error glyph when it enters a validation state. Without an ancestor with this class, inputs still pick up validation colors, border, and shadow — only the icon is omitted.
 
-Always place form help and validation feedback elements as siblings after the input group.
+Icons appear on text inputs, single-value `<select>` elements, color inputs, `.ghost-input` (used by `.chip-input` and the `.input-help` wrapper), and `.combobox-value`. Textareas, checkboxes, radios, switches, file, and range inputs do not receive icons by design.
 
-<Callout type="info" title="Accessibility">
-  The example below demonstrates proper ARIA attribute usage with `aria-describedby` referencing both the feedback and assist elements, ensuring screen readers announce both the error state and help text. Check the [Smashing Magazine article](https://www.smashingmagazine.com/2023/02/guide-accessible-form-validation/) for more details on accessible form validation.
+<Example code={`<form class="vstack gap-medium validation-icons" data-cx-validate novalidate>
+    <div class="form-field">
+      <label for="validationIconsText" class="form-label">Text input</label>
+      <input type="text" class="form-input" id="validationIconsText" value="John" required>
+      <div class="valid-feedback">Looks good!</div>
+    </div>
+
+    <div class="form-field">
+      <label for="validationIconsSelect" class="form-label">Select</label>
+      <select class="form-input" id="validationIconsSelect" required>
+        <option selected disabled value="">Choose...</option>
+        <option>California</option>
+        <option>New York</option>
+        <option>Texas</option>
+      </select>
+      <div class="invalid-feedback">Please select a valid state.</div>
+    </div>
+
+    <div class="form-field">
+      <label for="validationIconsColor" class="form-label">Color</label>
+      <input type="color" class="form-input" id="validationIconsColor" value="#3366ff">
+      <div class="valid-feedback">Looks good!</div>
+    </div>
+
+    <div class="form-field">
+      <label for="validationIconsInputHelp" class="form-label">Input help</label>
+      <div class="form-input">
+        <span class="input-help">$</span>
+        <input type="number" class="ghost-input" id="validationIconsInputHelp" placeholder="0.00" min="1" required>
+        <span class="input-help">USD</span>
+      </div>
+      <div class="invalid-feedback">Enter an amount greater than zero.</div>
+    </div>
+
+    <div class="form-field">
+      <label for="validationIconsChipInput" class="form-label">Chip input</label>
+      <div class="form-input chip-input" data-cx-chips="primary smooth">
+        <span class="chip" data-cx-chip-value="HTML">HTML</span>
+        <span class="chip" data-cx-chip-value="CSS">CSS</span>
+        <input type="text" class="ghost-input" id="validationIconsChipInput" placeholder="Add a skill…" required>
+      </div>
+      <div class="invalid-feedback">Add at least one more skill.</div>
+    </div>
+
+    <div class="form-field">
+      <label for="validationIconsCombobox" class="form-label">Combobox</label>
+      <div class="form-input combobox" data-cx-toggle="combobox" data-cx-name="role">
+        <input type="text" class="combobox-value" id="validationIconsCombobox" placeholder="Choose a role…" autocomplete="off" required>
+      </div>
+      <div class="menu" role="listbox">
+        <button class="menu-item" type="button" role="option" data-cx-value="admin">Admin</button>
+        <button class="menu-item" type="button" role="option" data-cx-value="editor">Editor</button>
+        <button class="menu-item" type="button" role="option" data-cx-value="viewer">Viewer</button>
+      </div>
+      <div class="invalid-feedback">Please pick a role.</div>
+    </div>
+
+    <div>
+      <button class="button primary" type="submit">Submit form</button>
+    </div>
+  </form>`} />
+
+<Callout type="info" title="Disabling icons globally">
+  Set the Sass option `$enable-validation-icons: false` to strip the icon rules from the compiled bundle entirely. The `.validation-icons` class becomes a no-op when icons are disabled at compile time.
+</Callout>
+
+## Persistent Form help
+
+The `.form-help` component is hidden by default when validation feedback is present so the active message takes precedence. Add the `.always-show` class to keep help text visible alongside validation feedback. Always place form help and validation feedback elements as siblings after the input or input group.
+
+## Accessibility
+
+Validation feedback only works for every user when it's wired up with the right ARIA attributes. The example below demonstrates the recommended pattern for dynamic, JavaScript-driven validation — connecting the input to its feedback with `aria-describedby`, announcing changes through a live region, and toggling `aria-invalid` in sync with `.is-invalid`.
+
+<Callout type="info" title="Accessibility checklist">
+  Because `.invalid-feedback` and `.valid-feedback` are hidden with `display: none` when inactive, you can safely list all relevant IDs in a single static `aria-describedby` — screen readers skip `display: none` elements, so only the currently visible description is announced on focus. Add `aria-live="polite"` to feedback elements so errors injected via JavaScript are announced immediately without requiring the user to re-focus the field. Always set `aria-invalid="true"` on the input when it is invalid, and remove it when the error is cleared.
 </Callout>
 
 <Example code={`<div class="input-group">
     <span class="input-addon">@</span>
     <input type="text" class="form-input" id="username-input"
       aria-describedby="username-feedback username-help" placeholder="Username" required>
-  </div>
-  <div class="invalid-feedback" id="username-feedback"></div>
-  <div class="form-help always-show" id="username-help">Enter your username</div>
-  <div class="mt-medium">
-    <button class="button primary" type="button" onclick="validateUsername()">Validate username</button>
+    </div>
+    <div class="invalid-feedback" id="username-feedback" aria-live="polite"></div>
+    <div class="form-help always-show" id="username-help">Enter your username</div>
+    <div class="mt-medium">
+      <button class="button primary" type="button" onclick="validateUsername()">Validate username</button>
   </div>`} />
 
 <Code lang="js" code={`function validateUsername() {
     const input = document.getElementById("username-input")
     const feedback = document.getElementById("username-feedback")
-    // Clear previous validation state
-    input.classList.remove("is-invalid")
-    feedback.innerText = ""
-    if (!input.validity.valid) {
-      // Apply invalid state
-      input.classList.add("is-invalid")
-      feedback.innerText = "Username is invalid."
+    const invalid = !input.validity.valid
+
+    input.classList.toggle("is-invalid", invalid)
+    if (invalid) {
+      input.setAttribute("aria-invalid", "true")
+      feedback.textContent = input.validationMessage
+    } else {
+      input.removeAttribute("aria-invalid")
+      feedback.textContent = ""
     }
   }`} />
 
@@ -388,13 +566,15 @@ Always place form help and validation feedback elements as siblings after the in
     function validateUsername() {
       const input = document.getElementById("username-input")
       const feedback = document.getElementById("username-feedback")
-      // Clear previous validation state
-      input.classList.remove("is-invalid")
-      feedback.innerText = ""
-      if (!input.validity.valid) {
-        // Apply invalid state
-        input.classList.add("is-invalid")
-        feedback.innerText = "Username is invalid."
+      const invalid = !input.validity.valid
+
+      input.classList.toggle("is-invalid", invalid)
+      if (invalid) {
+        input.setAttribute("aria-invalid", "true")
+        feedback.textContent = input.validationMessage
+      } else {
+        input.removeAttribute("aria-invalid")
+        feedback.textContent = ""
       }
     }
   </script>`} />
@@ -409,9 +589,9 @@ Check the [overview]([[docsref:forms/overview#custom-properties]]) page to see t
 
 ### Sass variables
 
-<DocsSASSVars notExposed={true} />
+<DocsSASSVars />
 
-<ScssDocs name="form-validation-variables" file="scss/_variables.scss" />
+<ScssDocs name="form-validation-variables" file="scss/config/_defaults.scss" />
 
 ### Design tokens
 

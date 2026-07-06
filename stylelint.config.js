@@ -62,7 +62,7 @@ export default {
           border: 'none',
           outline: 'none'
         },
-        'function-disallowed-list': ['calc', 'lighten', 'darken'],
+        'function-disallowed-list': ['lighten', 'darken'],
         'property-disallowed-list': [
           'font-size',
           'border-radius',
@@ -70,8 +70,21 @@ export default {
           'border-top-right-radius',
           'border-bottom-right-radius',
           'border-bottom-left-radius',
-          'transition'
+          'border-start-start-radius',
+          'border-start-end-radius',
+          'border-end-start-radius',
+          'border-end-end-radius',
+          'transition',
+          'padding-left',
+          'padding-right',
+          'padding-top',
+          'padding-bottom',
+          'margin-left',
+          'margin-right',
+          'margin-top',
+          'margin-bottom'
         ],
+        'scss/at-function-named-arguments': ['never', { ignoreFunctions: ['if'] }],
         'scss/dollar-variable-default': [true, { ignore: 'local' }],
         'scss/selector-no-union-class-name': true
       }

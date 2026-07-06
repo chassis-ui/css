@@ -1,0 +1,89 @@
+@use "../config" as *;
+@use "../mixins" as *;
+
+//
+// Form Field
+//
+// Grid-based layout wrapper for a label, input, and help text. Establishes
+// the vertical gap between form field children.
+//
+
+// scss-docs-start form-field
+@layer components {
+  .form-field {
+    // scss-docs-start form-field-properties
+    --gap: var(--form-field-gap, #{$form-field-gap});
+    // scss-docs-end form-field-properties
+    position: relative;
+    display: grid;
+    gap: var(--gap);
+    // width: 100%;
+
+    > .form-label:is(legend) {
+      margin-block-end: var(--gap);
+    }
+
+    > label:not(.form-card),
+    > .form-label {
+      justify-self: start;
+      margin-block-end: 0;
+    }
+
+    > .form-help,
+    > .valid-feedback,
+    > .invalid-feedback {
+      margin-block-start: 0;
+    }
+
+    &:has(> .check-input) {
+      grid-template-columns: auto 1fr;
+      column-gap: var(--gap);
+      align-items: start;
+      > .check-input {
+        grid-column: 1;
+      }
+      > :not(.check-input) {
+        grid-column: 2;
+      }
+      > .form-label,
+      > .form-help {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+
+  .form-card {
+    // scss-docs-start form-card-properties
+    --padding-x: var(--form-card-padding-x, #{$form-card-padding-x});
+    --padding-y: var(--form-card-padding-y, #{$form-card-padding-y});
+    // scss-docs-end form-card-properties
+    position: relative;
+    @include exclude-strokes(form-card);
+    border: var(--border-width) solid transparent;
+    @include border-radius(var(--border-radius));
+
+    &.form-check {
+      // padding-inline-start: calc(var(--space-medium) * 2.75);
+      padding-inline-start: calc(var(--gap) + var(--input-width) + var(--padding-x));
+      // margin-inline-start: 0;
+      // margin-inline-end: .5rem;
+    }
+
+    &:not(:has(:disabled, :checked)):hover,
+    &:has(:checked):has(:disabled) {
+      background-color: var(--bg-even);
+    }
+
+    &:has(:checked) {
+      background-color: var(--bg-highlight);
+      border-color: var(--border-color);
+    }
+    // Ensure the entire card is clickable by using a pseudo-element that covers the card
+    label::before {
+      position: absolute;
+      inset: 0;
+      content: "";
+    }
+  }
+} // @layer components
+// scss-docs-end form-field

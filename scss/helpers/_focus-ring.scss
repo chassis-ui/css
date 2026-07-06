@@ -1,5 +1,16 @@
-.focus-ring:focus {
-  outline: 0;
-  // By default, there is no `--cx-focus-ring-x`, `--cx-focus-ring-y`, or `--cx-focus-ring-blur`, but we provide CSS variables with fallbacks to initial `0` values
-  box-shadow: var(--#{$prefix}focus-ring-x, 0) var(--#{$prefix}focus-ring-y, 0) var(--#{$prefix}focus-ring-blur, 0) var(--#{$prefix}focus-ring-width) var(--#{$prefix}focus-ring-color);
-}
+@use "../mixins/focus-ring" as *;
+
+//
+// Focus Ring Helper
+//
+// Opt-in .focus-ring class that renders a visible focus indicator via
+// box-shadow instead of the native browser outline.
+//
+
+@layer helpers {
+  // scss-docs-start focus-ring-helper
+  .focus-ring:focus-visible {
+    @include focus-ring(true);
+  }
+  // scss-docs-end focus-ring-helper
+} // @layer helpers

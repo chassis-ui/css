@@ -1,7 +1,8 @@
 ---
 title: Flex
-description: Quickly manage the layout, alignment, and sizing of grid columns, navigation, components, and more with a full suite of responsive flexbox utilities. For more complex implementations, custom CSS may be necessary.
+description: A full suite of responsive flexbox utilities for controlling layout direction, alignment, sizing, wrapping, and ordering of flex items.
 toc: true
+css_layer: utilities
 ---
 
 import { getData } from '@libs/data'
@@ -9,20 +10,20 @@ import { getSequence } from '@chassis-ui/docs'
 
 ## Enable flex behaviors
 
-Apply `display` utilities to create a flexbox container and transform **direct children elements** into flex items. Flex containers and items are able to be modified further with additional flex properties.
+`.d-flex` and `.d-inline-flex` turn an element into a flexbox container, making direct children flex items. Additional flex properties can then be applied to the container or individual items.
 
 <Example class="cxd-example-flex" code={`<div class="d-flex p-xsmall">I'm a flexbox container!</div>`} />
 
 <Example class="cxd-example-flex" code={`<div class="d-inline-flex p-xsmall">I'm an inline flexbox container!</div>`} />
 
-Responsive variations also exist for `.d-flex` and `.d-inline-flex`.
+Responsive variants are available for `.d-flex` and `.d-inline-flex`.
 
 <ul>
 {getData('breakpoints').map((breakpoint) => {
   return (
     <Fragment>
-      <li><code>.d{breakpoint.abbr}-flex</code></li>
-      <li><code>.d{breakpoint.abbr}-inline-flex</code></li>
+      <li><code>.{breakpoint.abbr}d-flex</code></li>
+      <li><code>.{breakpoint.abbr}d-inline-flex</code></li>
     </Fragment>
   )
 })}
@@ -30,9 +31,9 @@ Responsive variations also exist for `.d-flex` and `.d-inline-flex`.
 
 ## Direction
 
-Set the direction of flex items in a flex container with direction utilities. In most cases you can omit the horizontal class here as the browser default is `row`. However, you may encounter situations where you needed to explicitly set this value (like responsive layouts).
+Direction utilities set the `flex-direction` property. The default browser value is `row`, so `.flex-row` is typically unnecessary unless overriding a breakpoint-specific value.
 
-Use `.flex-row` to set a horizontal direction (the browser default), or `.flex-row-reverse` to start the horizontal direction from the opposite side.
+`.flex-row` produces a left-to-right horizontal layout. `.flex-row-reverse` starts items from the right.
 
 <Example class="cxd-example-flex" code={`<div class="d-flex flex-row mb-medium">
     <div class="p-xsmall">Flex item 1</div>
@@ -45,7 +46,7 @@ Use `.flex-row` to set a horizontal direction (the browser default), or `.flex-r
     <div class="p-xsmall">Flex item 3</div>
   </div>`} />
 
-Use `.flex-column` to set a vertical direction, or `.flex-column-reverse`  to start the vertical direction from the opposite side.
+`.flex-column` sets a top-to-bottom vertical direction. `.flex-column-reverse` starts items from the bottom.
 
 <Example class="cxd-example-flex" code={`<div class="d-flex flex-column mb-medium">
     <div class="p-xsmall">Flex item 1</div>
@@ -58,16 +59,16 @@ Use `.flex-column` to set a vertical direction, or `.flex-column-reverse`  to st
     <div class="p-xsmall">Flex item 3</div>
   </div>`} />
 
-Responsive variations also exist for `flex-direction`.
+Responsive variants are available for `flex-direction`.
 
 <ul>
 {getData('breakpoints').map((breakpoint) => {
   return (
     <Fragment>
-      <li><code>.flex{breakpoint.abbr}-row</code></li>
-      <li><code>.flex{breakpoint.abbr}-row-reverse</code></li>
-      <li><code>.flex{breakpoint.abbr}-column</code></li>
-      <li><code>.flex{breakpoint.abbr}-column-reverse</code></li>
+      <li><code>.{breakpoint.abbr}flex-row</code></li>
+      <li><code>.{breakpoint.abbr}flex-row-reverse</code></li>
+      <li><code>.{breakpoint.abbr}flex-column</code></li>
+      <li><code>.{breakpoint.abbr}flex-column-reverse</code></li>
     </Fragment>
   )
 })}
@@ -75,7 +76,7 @@ Responsive variations also exist for `flex-direction`.
 
 ## Justify content
 
-Use `justify-content` utilities on flexbox containers to change the alignment of flex items on the main axis (the x-axis to start, y-axis if `flex-direction: column`). Choose from `start` (browser default), `end`, `center`, `between`, `around`, or `evenly`.
+`justify-content` utilities control flex item alignment along the main axis — the x-axis by default, or the y-axis when `flex-direction: column` is applied. Available values: `start` (browser default), `end`, `center`, `between`, `around`, and `evenly`.
 
 <div class="cxd-example cxd-example-flex">
   <div class="d-flex justify-content-start mb-medium">
@@ -119,7 +120,7 @@ Use `justify-content` utilities on flexbox containers to change the alignment of
 <div class="d-flex justify-content-evenly">...</div>
 ```
 
-Responsive variations also exist for `justify-content`.
+Responsive variants are available for `justify-content`.
 
 <ul>
 {getData('breakpoints').map((breakpoint) => {
@@ -138,7 +139,7 @@ Responsive variations also exist for `justify-content`.
 
 ## Align items
 
-Use `align-items` utilities on flexbox containers to change the alignment of flex items on the cross axis (the y-axis to start, x-axis if `flex-direction: column`). Choose from `start`, `end`, `center`, `baseline`, or `stretch` (browser default).
+`align-items` utilities control flex item alignment along the cross axis — the y-axis by default, or the x-axis when `flex-direction: column` is applied. Available values: `start`, `end`, `center`, `baseline`, and `stretch` (browser default).
 
 <div class="cxd-example cxd-example-flex">
   <div class="d-flex align-items-start mb-medium" style="height: 100px">
@@ -176,7 +177,7 @@ Use `align-items` utilities on flexbox containers to change the alignment of fle
 <div class="d-flex align-items-stretch">...</div>
 ```
 
-Responsive variations also exist for `align-items`.
+Responsive variants are available for `align-items`.
 
 <ul>
 {getData('breakpoints').map((breakpoint) => {
@@ -194,7 +195,7 @@ Responsive variations also exist for `align-items`.
 
 ## Align self
 
-Use `align-self` utilities on flexbox items to individually change their alignment on the cross axis (the y-axis to start, x-axis if `flex-direction: column`). Choose from the same options as `align-items`: `start`, `end`, `center`, `baseline`, or `stretch` (browser default).
+`align-self` utilities override the container's `align-items` value for individual flex items. The same values are available as for `align-items`: `start`, `end`, `center`, `baseline`, and `stretch` (browser default).
 
 <div class="cxd-example cxd-example-flex">
   <div class="d-flex mb-medium" style="height: 100px">
@@ -232,7 +233,7 @@ Use `align-self` utilities on flexbox items to individually change their alignme
 <div class="align-self-stretch">Aligned flex item</div>
 ```
 
-Responsive variations also exist for `align-self`.
+Responsive variants are available for `align-self`.
 
 <ul>
 {getData('breakpoints').map((breakpoint) => {
@@ -250,7 +251,7 @@ Responsive variations also exist for `align-self`.
 
 ## Grow and shrink
 
-Use `.flex-grow-*` utilities to toggle a flex item’s ability to grow to fill available space. In the example below, the `.flex-grow-1` elements uses all available space it can, while allowing the remaining two flex items their necessary space.
+`.flex-grow-1` allows a flex item to expand and fill remaining space; `.flex-grow-0` prevents growth. In the example below, the `.flex-grow-1` element consumes all available space while the remaining items retain their natural size.
 
 <Example class="cxd-example-flex" code={`<div class="d-flex">
     <div class="p-xsmall flex-grow-1">Flex item</div>
@@ -258,14 +259,14 @@ Use `.flex-grow-*` utilities to toggle a flex item’s ability to grow to fill a
     <div class="p-xsmall">Flex item</div>
   </div>`} />
 
-Use `.flex-shrink-*` utilities to toggle a flex item's ability to shrink if necessary. In the example below, the second flex item with `.flex-shrink-0` cannot be forced to shrink even when space is limited, maintaining its original size even as the previous flex item with `.w-100` tries to take up more space.
+`.flex-shrink-0` prevents a flex item from shrinking below its natural size even when space is constrained. In the example below, the second item with `.flex-shrink-0` holds its size even as the first item with `.w-100` competes for space.
 
 <Example class="cxd-example-flex" code={`<div class="d-flex">
     <div class="p-xsmall w-100">Flex item</div>
     <div class="p-xsmall flex-shrink-0">Flex item with a lot of content</div>
   </div>`} />
 
-Responsive variations also exist for `flex-grow` and `flex-shrink`.
+Responsive variants are available for `flex-grow` and `flex-shrink`.
 
 <ul>
 {getData('breakpoints').map((breakpoint) => {
@@ -280,7 +281,7 @@ Responsive variations also exist for `flex-grow` and `flex-shrink`.
 
 ## Fill and grow
 
-Use the `.flex-fill` class on a series of sibling elements to force them into equal widths regardless of their content while taking up all available horizontal space.
+`.flex-fill` forces sibling flex items to equal widths, consuming all available horizontal space regardless of their content.
 
 <Example class="cxd-example-flex" code={`<div class="d-flex mb-medium">
     <div class="p-xsmall flex-fill">Flex item with a lot of content</div>
@@ -294,7 +295,7 @@ Use the `.flex-fill` class on a series of sibling elements to force them into eq
     <div class="p-xsmall flex-grow-1">Flex item</div>
   </div>`} />
 
-Responsive variations also exist for `flex-fill`.
+Responsive variants are available for `flex-fill`.
 
 <ul>
 {getData('breakpoints').map((breakpoint) => {
@@ -306,7 +307,7 @@ Responsive variations also exist for `flex-fill`.
 
 ## Auto margins
 
-Flexbox can do some pretty awesome things when you mix flex alignments with auto margins. Shown below are three examples of controlling flex items via auto margins: default (no auto margin), pushing two items to the right (`.me-auto`), and pushing two items to the left (`.ms-auto`).
+Auto margins push flex items away from each other. The examples below show three configurations: no auto margin, `.me-auto` pushing subsequent items right, and `.ms-auto` pulling an item to the right.
 
 <Example class="cxd-example-flex" code={`<div class="d-flex mb-medium">
     <div class="p-xsmall">Flex item</div>
@@ -328,7 +329,7 @@ Flexbox can do some pretty awesome things when you mix flex alignments with auto
 
 ### With align-items
 
-Vertically move one flex item to the top or bottom of a container by mixing `align-items`, `flex-direction: column`, and `margin-top: auto` or `margin-bottom: auto`.
+Combining `flex-direction: column` with `mb-auto` or `mt-auto` positions a single item at the top or bottom of the container.
 
 <Example class="cxd-example-flex" code={`<div class="d-flex align-items-start flex-column mb-medium" style="height: 200px;">
     <div class="mb-auto p-xsmall">Flex item</div>
@@ -344,7 +345,7 @@ Vertically move one flex item to the top or bottom of a container by mixing `ali
 
 ## Wrap
 
-Change how flex items wrap in a flex container. Choose from no wrapping at all (the browser default) with `.flex-nowrap`, wrapping with `.flex-wrap`, or reverse wrapping with `.flex-wrap-reverse`.
+Wrap utilities set the `flex-wrap` property. `.flex-nowrap` is the browser default; `.flex-wrap` allows items to flow onto multiple lines; `.flex-wrap-reverse` wraps in reverse order.
 
 <div class="cxd-example cxd-example-flex">
   <div class="d-flex flex-nowrap" style="width: 8rem;">
@@ -413,7 +414,7 @@ Change how flex items wrap in a flex container. Choose from no wrapping at all (
 ```
 
 
-Responsive variations also exist for `flex-wrap`.
+Responsive variants are available for `flex-wrap`.
 
 <ul>
 {getData('breakpoints').map((breakpoint) => {
@@ -429,7 +430,7 @@ Responsive variations also exist for `flex-wrap`.
 
 ## Order
 
-Change the _visual_ order of specific flex items with a handful of `order` utilities. We only provide options for making an item first or last, as well as a reset to use the DOM order. As `order` takes any integer value from 0 to 5, add custom CSS for any additional values needed.
+Order utilities set the visual sequence of flex items. Values `0`–`5` are available; custom CSS can extend this range.
 
 <Example class="cxd-example-flex" code={`<div class="d-flex flex-nowrap">
     <div class="order-3 p-xsmall">First flex item</div>
@@ -437,7 +438,7 @@ Change the _visual_ order of specific flex items with a handful of `order` utili
     <div class="order-1 p-xsmall">Third flex item</div>
   </div>`} />
 
-Responsive variations also exist for `order`.
+Responsive variants are available for `order`.
 
 <ul>
 {getData('breakpoints').map((breakpoint) => getSequence(0, 5).map((value) => {
@@ -447,7 +448,7 @@ Responsive variations also exist for `order`.
 }))}
 </ul>
 
-Additionally there are also responsive `.order-first` and `.order-last` classes that change the `order` of an element by applying `order: -1` and `order: 6`, respectively.
+`.order-first` applies `order: -1`; `.order-last` applies `order: 6`. Responsive variants are available for both.
 
 <ul>
 {getData('breakpoints').map((breakpoint) => ['first', 'last'].map((value) => {
@@ -459,9 +460,11 @@ Additionally there are also responsive `.order-first` and `.order-last` classes 
 
 ## Align content
 
-Use `align-content` utilities on flexbox containers to align flex items _together_ on the cross axis. Choose from `start` (browser default), `end`, `center`, `between`, `around`, or `stretch`. To demonstrate these utilities, we’ve enforced `flex-wrap: wrap` and increased the number of flex items.
+`align-content` utilities control how multiple lines of flex items are distributed along the cross axis. Available values: `start` (browser default), `end`, `center`, `between`, `around`, and `stretch`. The examples below use `flex-wrap: wrap` with an increased number of flex items to demonstrate the effect.
 
-**Heads up!** This property has no effect on single rows of flex items.
+<Callout type="warning">
+This property has no effect on single-line containers.
+</Callout>
 
 <div class="cxd-example cxd-example-flex">
   <div class="d-flex align-content-start flex-wrap mb-medium" style="height: 200px">
@@ -609,7 +612,7 @@ Use `align-content` utilities on flexbox containers to align flex items _togethe
 <div class="d-flex align-content-stretch flex-wrap">...</div>
 ```
 
-Responsive variations also exist for `align-content`.
+Responsive variants are available for `align-content`.
 
 <ul>
 {getData('breakpoints').map((breakpoint) => {
@@ -626,34 +629,73 @@ Responsive variations also exist for `align-content`.
 })}
 </ul>
 
-## Media object
+## Place items
 
-Looking to replicate the [media object component](https://chassis-ui.com/docs/4.6/components/media-object/) from Chassis CSS 4? Recreate it in no time with a few flex utilities that allow even more flexibility and customization than before.
+Use `place-items` utilities on CSS Grid containers as a shorthand to set both `align-items` and `justify-items` at once. This property controls how grid items are positioned within their grid areas on both axes.
 
-<Example code={`<div class="d-flex">
-    <div class="flex-shrink-0">
-      <Placeholder width="100" height="100" color="#999" background="#e5e5e5" text="Image" />
-    </div>
-    <div class="flex-grow-1 ms-medium">
-      This is some content from a media component. You can replace this with any content and adjust it as needed.
-    </div>
-  </div>`} />
+### Basic usage
 
-And say you want to vertically center the content next to the image:
+Use `place-items` utilities to control the alignment of grid items. Choose from `start`, `end`, `center`, or `stretch` (browser default).
 
-<Example code={`<div class="d-flex align-items-center">
-    <div class="flex-shrink-0">
-      <Placeholder width="100" height="100" color="#999" background="#e5e5e5" text="Image" />
-    </div>
-    <div class="flex-grow-1 ms-medium">
-      This is some content from a media component. You can replace this with any content and adjust it as needed.
-    </div>
-  </div>`} />
+<div class="cxd-example cxd-example-flex vstack gap-medium">
+  <div class="d-grid gap-medium place-items-start" style="grid-template-columns: 1fr 1fr 1fr; height: 150px;">
+    <div class="p-small">Place</div>
+    <div class="p-small">Items</div>
+    <div class="p-small">Start</div>
+  </div>
+  <div class="d-grid gap-medium place-items-end" style="grid-template-columns: 1fr 1fr 1fr; height: 150px;">
+    <div class="p-small">Place</div>
+    <div class="p-small">Items</div>
+    <div class="p-small">End</div>
+  </div>
+  <div class="d-grid gap-medium place-items-center" style="grid-template-columns: 1fr 1fr 1fr; height: 150px;">
+    <div class="p-small">Place</div>
+    <div class="p-small">Items</div>
+    <div class="p-small">Center</div>
+  </div>
+  <div class="d-grid gap-medium place-items-stretch" style="grid-template-columns: 1fr 1fr 1fr; height: 150px;">
+    <div class="p-small">Place</div>
+    <div class="p-small">Items</div>
+    <div class="p-small">Stretch</div>
+  </div>
+</div>
+
+```html
+<div class="d-grid place-items-start">...</div>
+<div class="d-grid place-items-end">...</div>
+<div class="d-grid place-items-center">...</div>
+<div class="d-grid place-items-stretch">...</div>
+```
+
+### Responsive
+
+Responsive variations also exist for `place-items`.
+
+<ul>
+{getData('breakpoints').map((breakpoint) => {
+  return (
+    <Fragment>
+      <li><code>.{breakpoint.abbr}place-items-start</code></li>
+      <li><code>.{breakpoint.abbr}place-items-end</code></li>
+      <li><code>.{breakpoint.abbr}place-items-center</code></li>
+      <li><code>.{breakpoint.abbr}place-items-stretch</code></li>
+    </Fragment>
+  )
+})}
+</ul>
 
 ## CSS
 
-### Sass utilities API
+Flexbox utilities are generated via the utilities API.
 
-Flexbox utilities are declared in our utilities API in `scss/utilities/_flex.scss`. [Learn how to use the utilities API.]([[docsref:/utilities/api#using-the-api]])
+### Reference
+
+The table lists all flexbox utilities and their CSS properties.
+
+<UtilityReferenceTable utility={["flex-", "justify-content-", "align-items-", "align-self-", "align-content-", "order-", "place-"]} />
+
+### Utilities API
+
+Flexbox utilities are declared in `scss/utilities/_flex.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
 
 <ScssDocs name="utils-flex" file="scss/utilities/_flex.scss" />

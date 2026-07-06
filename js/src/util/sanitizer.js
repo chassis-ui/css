@@ -63,8 +63,7 @@ const uriAttributes = new Set([
  *
  * Shout-out to Angular https://github.com/angular/angular/blob/15.2.8/packages/core/src/sanitization/url_sanitizer.ts#L38
  */
-// eslint-disable-next-line unicorn/better-regex
-const SAFE_URL_PATTERN = /^(?!javascript:)(?:[a-z0-9+.-]+:|[^&:/?#]*(?:[/?#]|$))/i
+const SAFE_URL_PATTERN = /^(?!javascript:)(?:[\d+.a-z-]+:|[^#&/:?]*(?:[#/?]|$))/i
 
 const allowedAttribute = (attribute, allowedAttributeList) => {
   const attributeName = attribute.nodeName.toLowerCase()
@@ -93,7 +92,7 @@ export function sanitizeHtml(unsafeHtml, allowList, sanitizeFunction) {
 
   const domParser = new window.DOMParser()
   const createdDocument = domParser.parseFromString(unsafeHtml, 'text/html')
-  const elements = [].concat(...createdDocument.body.querySelectorAll('*'))
+  const elements = [...createdDocument.body.querySelectorAll('*')]
 
   for (const element of elements) {
     const elementName = element.nodeName.toLowerCase()
@@ -103,8 +102,8 @@ export function sanitizeHtml(unsafeHtml, allowList, sanitizeFunction) {
       continue
     }
 
-    const attributeList = [].concat(...element.attributes)
-    const allowedAttributes = [].concat(allowList['*'] || [], allowList[elementName] || [])
+    const attributeList = [...element.attributes]
+    const allowedAttributes = [...(allowList['*'] || []), ...(allowList[elementName] || [])]
 
     for (const attribute of attributeList) {
       if (!allowedAttribute(attribute, allowedAttributes)) {

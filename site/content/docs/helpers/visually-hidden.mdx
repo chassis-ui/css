@@ -1,0 +1,34 @@
+---
+title: Visually hidden
+description: Helpers for visually hiding elements while keeping them accessible to screen readers.
+toc: true
+css_layer: helpers
+---
+
+`.visually-hidden` hides an element visually while keeping it accessible to screen readers. It is commonly used for text that provides context for icon-only controls. `.visually-hidden-focusable` reveals the element when it receives keyboard focus — useful for skip links. Applied to a container, the `:focus-within` selector reveals the container when any child receives focus.
+
+<Example code={`<h2 class="visually-hidden">Title for screen readers</h2>
+  <a class="visually-hidden-focusable" href="#content">Skip to main content</a>
+  <div class="visually-hidden-focusable">A container with a <a href="#">focusable element</a>.</div>`} />
+
+## CSS
+
+Both classes delegate to the `visually-hidden()` mixin — `.visually-hidden` unconditionally, `.visually-hidden-focusable` only when the element lacks focus.
+
+<ScssDocs name="visually-hidden-helper" file="scss/helpers/_visually-hidden.scss" />
+
+### Sass mixins
+
+Both classes are also available as Sass mixins for use in custom selectors where adding a class to markup is impractical.
+
+```scss
+.visually-hidden-title {
+  @include visually-hidden;
+}
+
+.skip-navigation {
+  @include visually-hidden-focusable;
+}
+```
+
+<ScssDocs name="visually-hidden-mixins" file="scss/mixins/_visually-hidden.scss" />

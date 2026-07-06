@@ -1,15 +1,36 @@
-// scss-docs-start stacks
-.hstack {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  align-self: stretch;
-}
+@use "../mixins" as *;
 
-.vstack {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  align-self: stretch;
-}
-// scss-docs-end stacks
+//
+// Stack Helpers
+//
+// Flexbox layout helpers for composing horizontal (.hstack) and vertical
+// (.vstack) one-dimensional layouts with a configurable gap.
+//
+
+@layer helpers {
+  // scss-docs-start stacks
+  [class*="hstack"],
+  [class*="vstack"] {
+    display: flex;
+    flex: var(--stack-flex, 1 1 auto);
+    flex-direction: var(--stack-direction, row);
+    align-items: var(--stack-align-items, center);
+    align-self: var(--stack-align-self, stretch);
+  }
+
+  @include loop-breakpoints-up() using ($breakpoint, $prefix) {
+    .#{$prefix}vstack {
+      @include container-breakpoint-up($breakpoint) {
+        --stack-direction: column;
+        --stack-align-items: stretch;
+      }
+    }
+    .#{$prefix}hstack {
+      @include container-breakpoint-up($breakpoint) {
+        --stack-direction: row;
+        --stack-align-items: flex-start;
+      }
+    }
+  }
+  // scss-docs-end stacks
+} // @layer helpers

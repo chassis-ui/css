@@ -1,0 +1,96 @@
+---
+title: Clone and customize
+description: Clone the Chassis CSS repository, swap in your token build, tune the settings, and ship a CSS build that belongs entirely to your product.
+toc: true
+---
+
+Chassis CSS is designed to be cloned and owned. Rather than dropping in a few variable overrides, you replace its token foundation with yours, adapt the settings to your needs, and ship a CSS build that belongs entirely to your product.
+
+If you only need Chassis as a package dependency in an existing project — without forking the framework — see [Sass customization]([[docsref:/customize/sass]]) instead.
+
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) 18 or later
+- [pnpm](https://pnpm.io/)
+- A built output from [Chassis Tokens](https://github.com/chassis-ui/tokens) for your brand, or the default `chassis` build to start
+
+## Clone the repo
+
+```bash
+git clone https://github.com/chassis-ui/css.git my-design-system
+cd my-design-system
+pnpm install
+```
+
+After installation, run `pnpm start` to build the distribution files and launch the docs dev server. The steps below walk through the customization work before that first run.
+
+## Connect your tokens
+
+Chassis CSS loads design tokens through `scss/config/_vendor.scss`, which forwards a Sass module named `chassis-tokens`. That name resolves to `scss/vendor/_chassis-tokens.scss`, which points at the bundled `chassis` token set by default.
+
+Since you own the source, edit `scss/vendor/_chassis-tokens.scss` directly and replace the `@forward` path with your token build:
+
+```scss
+// scss/vendor/_chassis-tokens.scss
+@forward "../../node_modules/@chassis-ui/tokens/dist/web/{app}/{brand}/main";
+```
+
+Replace `{app}` and `{brand}` with the app and brand names from your Chassis Tokens build. The bundled sets follow the pattern `docs/chassis` and `docs/example`.
+
+If you're starting without a custom token build, the default path works out of the box — no action needed for this step.
+
+## Configure settings
+
+`scss/config/_settings.scss` controls which framework features are active. Since you own the source, edit it directly. The most commonly changed settings:
+
+```scss
+// scss/config/_settings.scss
+$enable-dark-mode:          true !default;    // false to ship light mode only
+$enable-exclude-strokes:    true !default;    // false to disable; or a list of component names
+$enable-fluid-font-sizes:                true !default;    // false to disable responsive font scaling
+$color-mode-type:           media-query !default;  // 'data' (data-cx-theme attr) or 'media-query'
+```
+
+See [Options]([[docsref:/customize/options]]) for the full list.
+
+## Build the distribution
+
+```bash
+# Compile and minify CSS + JS into dist/
+pnpm dist
+
+# Watch for changes during development (skips minification)
+pnpm watch
+
+# Build dist and start the docs dev server
+pnpm start
+```
+
+Stylesheets land in `dist/css/` and scripts in `dist/js/`. The output paths are set in the `css:compile` and `js:compile:*` scripts in `package.json`.
+
+## Use as source dependency
+
+If your application has its own SCSS pipeline, import Chassis as a source dependency rather than linking the compiled stylesheet. Chassis ships on the Sass module system — use `@use` rather than the deprecated `@import`:
+
+```scss
+// app/styles.scss
+@use "@chassis-ui/css/scss/chassis";
+```
+
+To override settings at the import site, configure the defaults module before loading the bundle:
+
+```scss
+@use "@chassis-ui/css/scss/config/defaults" with (
+  $enable-dark-mode: false,
+  $enable-fluid-font-sizes: false,
+);
+@use "@chassis-ui/css/scss/chassis";
+```
+
+See [Customize → Sass]([[docsref:/customize/sass]]) for the full import patterns, token configuration via `@use … with (…)`, and map extension examples.
+
+## Further reading
+
+- [Options]([[docsref:/customize/options]]) — full `$enable-*` settings reference
+- [Design Tokens]([[docsref:/core-concepts/design-tokens]]) — how the token architecture works
+- [Customize → Sass]([[docsref:/customize/sass]]) — Sass variables, maps, and how to extend the framework

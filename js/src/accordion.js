@@ -6,9 +6,8 @@
  */
 
 import BaseComponent from './base-component.js'
-import SelectorEngine from './dom/selector-engine.js'
 import EventHandler from './dom/event-handler.js'
-import { defineJQueryPlugin } from './util/index.js'
+import SelectorEngine from './dom/selector-engine.js'
 
 /**
  * Constants
@@ -25,9 +24,9 @@ const EVENT_OPENED = `opened${EVENT_KEY}`
 const EVENT_CLOSE = `close${EVENT_KEY}`
 const EVENT_CLOSED = `closed${EVENT_KEY}`
 
-const SELECTOR_DETAILS = '.accordion > details'
+const ATTR_CLONE = 'data-accordion-clone' // marks clones so SELECTOR_DETAILS excludes them
+const SELECTOR_DETAILS = `.accordion > details:not([${ATTR_CLONE}])`
 const SELECTOR_SUMMARY = 'summary'
-const SELECTOR_TITLE = '.accordion-title'
 const SELECTOR_CONTENT = '.accordion-body'
 const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`
 
@@ -44,42 +43,60 @@ class Accordion extends BaseComponent {
   constructor(element, config) {
     super(element, config)
 
-    this._summary = SelectorEngine.findOne(SELECTOR_SUMMARY, element)
-    this._content = SelectorEngine.findOne(SELECTOR_CONTENT, element)
-    this._title = SelectorEngine.findOne(SELECTOR_TITLE, this._element)
+    this._summary = SelectorEngine.findOne(SELECTOR_SUMMARY, this._element)
+    this._content = SelectorEngine.findOne(SELECTOR_CONTENT, this._element)
     this._isTransitioning = false
 
-    // Using event listener causes a blink, so we use MutationObserver.
+    if (!this._summary || !this._content) {
+      return // bail on malformed markup before setting up observer
+    }
+
+    // A direct event listener on summary causes a visual blink; watching
+    // the open attribute via MutationObserver avoids it.
     this._observer = this._createObserver()
     this._observer.observe(this._element, { attributes: true })
   }
 
   // Public
+  toggle() {
+    if (this._element.open) {
+      this.close()
+    } else {
+      this.open()
+    }
+  }
+
   open() {
+    if (!this._summary || !this._content || this._isTransitioning) {
+      return
+    }
+
     const openEvent = EventHandler.trigger(this._element, EVENT_OPEN)
-    if (this._isTransitioning || openEvent.defaultPrevented) {
+    if (openEvent.defaultPrevented) {
       return
     }
 
     this._isTransitioning = true
 
-    this._setAriaExpanded()
-
-    this._element.style.overflow = 'hidden'
+    // overflow:clip avoids a new BFC (unlike hidden), so interior margins
+    // and stacking contexts are unaffected during the transition.
+    this._element.style.overflow = 'clip'
     this._element.style.height = `${this._summary.offsetHeight}px`
     this._element.style.height = `${this._summary.offsetHeight + this._content.offsetHeight}px`
 
-    const complete = () => {
+    this._queueCallback(() => {
       this._element.style.overflow = ''
       this._element.style.height = ''
       this._isTransitioning = false
       EventHandler.trigger(this._element, EVENT_OPENED)
-    }
-
-    this._queueCallback(complete, this._element, true)
+    }, this._element, true)
   }
 
   close() {
+    if (!this._summary || !this._content) {
+      return
+    }
+
     const closeEvent = EventHandler.trigger(this._element, EVENT_CLOSE)
     if (this._isTransitioning || closeEvent.defaultPrevented) {
       return
@@ -87,56 +104,65 @@ class Accordion extends BaseComponent {
 
     this._isTransitioning = true
 
-    this._setAriaExpanded()
-
-    // Details element immediately closes the summary when open is set to false.
-    // So we need to create a pseudo element for a seamless transition.
-    this._createPseudoElement()
+    // <details> collapses content instantly on open=false; insert a clone
+    // as a visual stand-in for the duration of the height transition.
+    const clone = this._createClone()
 
     this._element.style.height = `${this._summary.offsetHeight + this._content.offsetHeight}px`
     this._element.style.height = `${this._summary.offsetHeight}px`
 
-    const complete = () => {
+    this._queueCallback(() => {
       this._element.style.height = ''
-      this._pElement.remove()
+      clone.remove()
       this._isTransitioning = false
       EventHandler.trigger(this._element, EVENT_CLOSED)
+    }, this._element, true)
+  }
+
+  dispose() {
+    if (this._observer) {
+      this._observer.disconnect()
     }
 
-    this._queueCallback(complete, this._element, true)
+    super.dispose()
   }
 
   // Private
   _createObserver() {
     return new MutationObserver(mutationsList => {
       for (const mutation of mutationsList) {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'open') {
-          return this._element.open ? this.open() : this.close()
+        if (mutation.attributeName === 'open') {
+          if (this._element.open) {
+            this.open()
+          } else {
+            this.close()
+          }
+
+          break
         }
       }
     })
   }
 
-  _createPseudoElement() {
-    this._pElement = this._element.cloneNode(true)
-    this._pElement.name = ''
-    this._pElement.open = true
-    this._pSummary = SelectorEngine.findOne(SELECTOR_SUMMARY, this._pElement)
-    this._element.before(this._pElement)
-    this._pElement.style.overflow = 'hidden'
-    this._pElement.style.position = 'absolute'
-    this._pElement.style.background = 'none'
-    this._pElement.style.border = 0
-    this._pElement.style.width = `${this._element.offsetWidth}px`
-    this._pElement.style.height = `${this._pElement.offsetHeight}px`
-    this._pSummary.style.visibility = 'hidden'
-    this._pElement.style.height = `${this._summary.offsetHeight}px`
-  }
+  _createClone() {
+    const clone = this._element.cloneNode(true)
+    clone.name = ''
+    clone.open = true
+    clone.inert = true                   // no AT traversal or interaction during animation
+    clone.setAttribute(ATTR_CLONE, '')   // prevent data-API from creating a spurious instance
 
-  _setAriaExpanded() {
-    if (this._title && this._title.hasAttribute('aria-expanded')) {
-      this._title.setAttribute('aria-expanded', this._element.open)
-    }
+    const cloneSummary = SelectorEngine.findOne(SELECTOR_SUMMARY, clone)
+    this._element.before(clone)
+    clone.style.overflow = 'hidden'
+    clone.style.position = 'absolute'
+    clone.style.background = 'none'
+    clone.style.border = '0'
+    clone.style.width = `${this._element.offsetWidth}px`
+    clone.style.height = `${clone.offsetHeight}px`
+    cloneSummary.style.visibility = 'hidden'
+    clone.style.height = `${this._summary.offsetHeight}px`
+
+    return clone
   }
 }
 
@@ -144,16 +170,18 @@ class Accordion extends BaseComponent {
  * Data API implementation
  */
 
-EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DETAILS, () => {
-  for (const element of SelectorEngine.find(SELECTOR_DETAILS)) {
-    Accordion.getOrCreateInstance(element)
+// Initialize the clicked item and its same-name siblings before the browser
+// fires activation behavior — siblings need observers in place so their
+// close animations run on first interaction.
+EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DETAILS, function () {
+  Accordion.getOrCreateInstance(this)
+
+  const name = this.getAttribute('name')
+  if (name) {
+    for (const sibling of SelectorEngine.find(`details[name="${name}"]`, this.parentElement)) {
+      Accordion.getOrCreateInstance(sibling)
+    }
   }
 })
-
-/**
- * jQuery
- */
-
-defineJQueryPlugin(Accordion)
 
 export default Accordion

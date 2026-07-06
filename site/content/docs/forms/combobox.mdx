@@ -1,0 +1,532 @@
+---
+title: Combobox
+description: A select-style component built with HTML — a toggle plus a `.menu` overlay — with JS handling open/close, filtering, selection, hidden-input submission, and keyboard navigation.
+toc: true
+tokens: component
+css_layer: components
+js: required
+deps:
+  - title: Form Input
+  - title: Menu
+---
+
+## Overview
+
+A combobox is a select-style picker with one of two trigger styles:
+
+- **Input trigger** — `<input class="combobox-value">` inside the toggle. Typing filters the list inline. The same input also displays the selected value when the menu is closed.
+- **Button trigger** — `<span class="combobox-value">` (or any non-input element) inside the toggle. The toggle is display-only, like a native `<select>`. Add a `.combobox-search-input` inside the menu when the list is long enough that filtering helps.
+
+The toggle, items, and decoration are written in HTML. The JavaScript wires up open/close, item filtering, selection state, keyboard navigation, and an auto-created hidden `<input>` for form submission.
+
+## Basic usage
+
+A combobox needs three things: a toggle marked with `data-cx-toggle="combobox"`, a `.combobox-value` element inside it, and a sibling `.menu` whose buttons carry `data-cx-value` attributes.
+
+> Examples below focus on the combobox markup itself and omit visible labels for clarity. See [In a form field](#in-a-form-field) for the canonical labelled pattern.
+
+### Input trigger
+
+The toggle is a wrapper `<div class="form-input combobox">` with a text input inside. Typing filters the menu items as the user types.
+
+<Example code={`<div class="form-input combobox"
+       data-cx-toggle="combobox"
+       data-cx-name="option">
+    <input type="text" class="combobox-value" placeholder="Select an item…" autocomplete="off">
+  </div>
+  <div class="menu" role="listbox">
+    <button class="menu-item" type="button" role="option" data-cx-value="1">Option one</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="2">Option two</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="3">Option three</button>
+  </div>`} />
+
+### Button trigger
+
+The toggle is itself a `<button class="form-input combobox">`. The user cannot type into the toggle, so the menu opens like a native `<select>`. Use `data-cx-placeholder` to set the text shown when nothing is selected — the JS restores it to the `.combobox-value` element after the selection is cleared.
+
+<Example code={`<button class="form-input combobox"
+          type="button"
+          aria-label="Select an item"
+          data-cx-toggle="combobox"
+          data-cx-name="option"
+          data-cx-placeholder="Select an item…">
+    <span class="combobox-value"></span>
+  </button>
+  <div class="menu" role="listbox">
+    <button class="menu-item" type="button" role="option" data-cx-value="1">Option one</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="2">Option two</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="3">Option three</button>
+  </div>`} />
+
+### Pre-selected value
+
+Mark the initially selected menu item with both the `.selected` class and `aria-selected="true"`. On initialisation the JS reads `.selected` to set the toggle's displayed value and the hidden input. ARIA attributes on subsequent selections are managed automatically.
+
+<Example code={`<div class="form-input combobox"
+       data-cx-toggle="combobox"
+       data-cx-name="role">
+    <input type="text" class="combobox-value" placeholder="Choose a role…" autocomplete="off">
+  </div>
+  <div class="menu" role="listbox">
+    <button class="menu-item" type="button" role="option" data-cx-value="admin">Admin</button>
+    <button class="menu-item selected" type="button" role="option" aria-selected="true" data-cx-value="editor">Editor</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="viewer">Viewer</button>
+  </div>`} />
+
+## Sizing
+
+Add `.small` or `.large` to the toggle.
+
+<Example class="vstack gap-medium" code={`<div class="form-input small combobox" data-cx-toggle="combobox">
+    <input type="text" class="combobox-value" placeholder="Small combobox…" autocomplete="off">
+  </div>
+  <div class="menu" role="listbox">
+    <button class="menu-item" type="button" role="option" data-cx-value="1">Option one</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="2">Option two</button>
+  </div>
+
+  <div class="form-input combobox" data-cx-toggle="combobox">
+    <input type="text" class="combobox-value" placeholder="Default combobox…" autocomplete="off">
+  </div>
+  <div class="menu" role="listbox">
+    <button class="menu-item" type="button" role="option" data-cx-value="1">Option one</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="2">Option two</button>
+  </div>
+
+  <div class="form-input large combobox" data-cx-toggle="combobox">
+    <input type="text" class="combobox-value" placeholder="Large combobox…" autocomplete="off">
+  </div>
+  <div class="menu" role="listbox">
+    <button class="menu-item" type="button" role="option" data-cx-value="1">Option one</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="2">Option two</button>
+  </div>`} />
+
+### Menu width
+
+The menu floats independently of the toggle by default. To pin its width to the toggle's, wrap both in a `.position-relative` container and add `w-100` to the menu.
+
+<Example code={`<div class="position-relative">
+    <div class="form-input combobox" data-cx-toggle="combobox" data-cx-name="option">
+      <input type="text" class="combobox-value" placeholder="Select an item…" autocomplete="off">
+    </div>
+    <div class="menu w-100" role="listbox">
+      <button class="menu-item" type="button" role="option" data-cx-value="1">Option one</button>
+      <button class="menu-item" type="button" role="option" data-cx-value="2">Option two</button>
+      <button class="menu-item" type="button" role="option" data-cx-value="3">Option three</button>
+    </div>
+  </div>`} />
+
+## Disabled
+
+A combobox can be disabled as a whole, and individual menu items can be disabled too.
+
+### Whole combobox
+
+Disable the toggle in one of three equivalent ways — the JS keeps all three sources in sync:
+
+- `disabled` attribute on the toggle (button trigger only)
+- `disabled` attribute on the embedded `<input class="combobox-value">` (input trigger)
+- `.disabled` class on the toggle (either trigger)
+
+The hidden input is also disabled, so the value is excluded from form submission.
+
+<Example class="vstack gap-medium" code={`<div class="form-input combobox" data-cx-toggle="combobox">
+    <input type="text" class="combobox-value" placeholder="Unavailable…" autocomplete="off" disabled>
+  </div>
+  <div class="menu" role="listbox">
+    <button class="menu-item" type="button" role="option" data-cx-value="1">Option one</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="2">Option two</button>
+  </div>
+
+  <button class="form-input combobox"
+          type="button"
+          aria-label="Select an item"
+          data-cx-toggle="combobox"
+          data-cx-placeholder="Unavailable…"
+          disabled>
+    <span class="combobox-value"></span>
+  </button>
+  <div class="menu" role="listbox">
+    <button class="menu-item" type="button" role="option" data-cx-value="1">Option one</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="2">Option two</button>
+  </div>`} />
+
+### Individual items
+
+Add `disabled` (or `.disabled`) to any `.menu-item` to make that option unselectable. The combobox itself stays usable.
+
+<Example code={`<div class="form-input combobox" data-cx-toggle="combobox">
+    <input type="text" class="combobox-value" placeholder="Select an option…" autocomplete="off">
+  </div>
+  <div class="menu" role="listbox">
+    <button class="menu-item" type="button" role="option" data-cx-value="1">Available option</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="2" disabled>Unavailable option</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="3">Another option</button>
+  </div>`} />
+
+To disable or re-enable a combobox at runtime, call the `disable()` and `enable()` methods.
+
+## Menu item content
+
+A menu item is a button — anything that fits inside a button works, including SVG icons, descriptions, badges, images, or any combination.
+
+### Leading icon
+
+Add `.menu-item-icon` to an `<svg>` at the start of the item. Mark it `aria-hidden="true"` so it doesn't duplicate the item's text for screen readers.
+
+<Example code={`<div class="form-input combobox"
+       data-cx-toggle="combobox"
+       data-cx-name="language">
+    <input type="text" class="combobox-value" placeholder="Choose a language…" autocomplete="off">
+  </div>
+  <div class="menu" role="listbox">
+    <button class="menu-item" type="button" role="option" data-cx-value="html">
+      <Icon name="file-outline" class="menu-item-icon" />
+      <span>HTML</span>
+    </button>
+    <button class="menu-item" type="button" role="option" data-cx-value="css">
+      <Icon name="file-outline" class="menu-item-icon" />
+      <span>CSS</span>
+    </button>
+    <button class="menu-item" type="button" role="option" data-cx-value="js">
+      <Icon name="file-outline" class="menu-item-icon" />
+      <span>JavaScript</span>
+    </button>
+  </div>`} />
+
+### Title with description
+
+Wrap the title and description in `.menu-item-content` (a flex column) and use `.menu-item-description` for the secondary line. The JS uses the first `<span>` inside `.menu-item-content` as the selected-state display text — keep that span as the canonical label.
+
+<Example code={`<div class="form-input combobox"
+       data-cx-toggle="combobox"
+       data-cx-name="role">
+    <input type="text" class="combobox-value" placeholder="Select a role…" autocomplete="off">
+  </div>
+  <div class="menu" role="listbox">
+    <button class="menu-item" type="button" role="option" data-cx-value="admin">
+      <span class="menu-item-content">
+        <span>Admin</span>
+        <small class="menu-item-description">Full access to all resources</small>
+      </span>
+    </button>
+    <button class="menu-item" type="button" role="option" data-cx-value="editor">
+      <span class="menu-item-content">
+        <span>Editor</span>
+        <small class="menu-item-description">Can edit and publish content</small>
+      </span>
+    </button>
+    <button class="menu-item" type="button" role="option" data-cx-value="viewer">
+      <span class="menu-item-content">
+        <span>Viewer</span>
+        <small class="menu-item-description">Read-only access</small>
+      </span>
+    </button>
+  </div>`} />
+
+### Selection indicator
+
+Add `.menu-item-check` to an `<svg>` inside each item. It stays hidden until the item gains `.selected`. A `<hr class="menu-divider">` separates groups.
+
+<Example code={`<div class="form-input combobox"
+       data-cx-toggle="combobox"
+       data-cx-name="status">
+    <input type="text" class="combobox-value" placeholder="Choose a status…" autocomplete="off">
+  </div>
+  <div class="menu" role="listbox">
+    <button class="menu-item selected" type="button" role="option" aria-selected="true" data-cx-value="active">
+      <span class="menu-item-content">
+        <span>Active</span>
+        <small class="menu-item-description">Visible to users</small>
+      </span>
+      <Icon name="check-solid" class="menu-item-check" />
+    </button>
+    <button class="menu-item" type="button" role="option" data-cx-value="draft">
+      <span class="menu-item-content">
+        <span>Draft</span>
+        <small class="menu-item-description">Not yet published</small>
+      </span>
+      <Icon name="check-solid" class="menu-item-check" />
+    </button>
+    <hr class="menu-divider">
+    <button class="menu-item" type="button" role="option" data-cx-value="archived">
+      <span>Archived</span>
+      <Icon name="check-solid" class="menu-item-check" />
+    </button>
+  </div>`} />
+
+### Combined
+
+A richer item combines all three.
+
+<Example code={`<div class="form-input combobox"
+       data-cx-toggle="combobox"
+       data-cx-name="priority">
+    <input type="text" class="combobox-value" placeholder="Set priority…" autocomplete="off">
+  </div>
+  <div class="menu" role="listbox">
+    <button class="menu-item" type="button" role="option" data-cx-value="low">
+      <Icon name="clock-solid" class="menu-item-icon icon-info" />
+      <span class="menu-item-content">
+        <span>Low</span>
+        <small class="menu-item-description">No rush</small>
+      </span>
+      <Icon name="check-solid" class="menu-item-check" />
+    </button>
+    <button class="menu-item" type="button" role="option" data-cx-value="medium">
+      <Icon name="play-circle-solid" class="menu-item-icon icon-warning" />
+      <span class="menu-item-content">
+        <span>Medium</span>
+        <small class="menu-item-description">Normal priority</small>
+      </span>
+      <Icon name="check-solid" class="menu-item-check" />
+    </button>
+    <button class="menu-item" type="button" role="option" data-cx-value="high">
+      <Icon name="exclamation-circle-solid" class="menu-item-icon icon-danger" />
+      <span class="menu-item-content">
+        <span>High</span>
+        <small class="menu-item-description">Needs attention</small>
+      </span>
+      <Icon name="check-solid" class="menu-item-check" />
+    </button>
+  </div>`} />
+
+## Grouped items
+
+Use `.menu-header` for non-interactive labels that introduce groups of related items. Mark each header `role="presentation"` so screen readers skip it instead of announcing it as an option.
+
+<Example code={`<div class="form-input combobox"
+       data-cx-toggle="combobox"
+       data-cx-name="language">
+    <input type="text" class="combobox-value" placeholder="Select a language…" autocomplete="off">
+  </div>
+  <div class="menu" role="listbox">
+    <div class="menu-header" role="presentation">Frontend</div>
+    <button class="menu-item" type="button" role="option" data-cx-value="html">HTML</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="css">CSS</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="js">JavaScript</button>
+    <div class="menu-header" role="presentation">Backend</div>
+    <button class="menu-item" type="button" role="option" data-cx-value="python">Python</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="ruby">Ruby</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="go">Go</button>
+  </div>`} />
+
+## Multiple selection
+
+Add `data-cx-multiple="true"` to the toggle. Clicks toggle items, the menu stays open until dismissed, and the toggle text becomes `N selected` when more than one item is picked. The hidden input's value is a comma-separated list of the selected `data-cx-value`s. Mark the menu `aria-multiselectable="true"` so the listbox semantics match the behaviour.
+
+<Example code={`<div class="form-input combobox"
+       data-cx-toggle="combobox"
+       data-cx-name="skills"
+       data-cx-multiple="true">
+    <input type="text" class="combobox-value" placeholder="Select skills…" autocomplete="off">
+  </div>
+  <div class="menu" role="listbox" aria-multiselectable="true">
+    <button class="menu-item" type="button" role="option" data-cx-value="html">
+      HTML
+      <Icon name="check-solid" class="menu-item-check" />
+    </button>
+    <button class="menu-item" type="button" role="option" data-cx-value="css">
+      CSS
+      <Icon name="check-solid" class="menu-item-check" />
+    </button>
+    <button class="menu-item" type="button" role="option" data-cx-value="js">
+      JavaScript
+      <Icon name="check-solid" class="menu-item-check" />
+    </button>
+    <button class="menu-item" type="button" role="option" data-cx-value="python">
+      Python
+      <Icon name="check-solid" class="menu-item-check" />
+    </button>
+    <button class="menu-item" type="button" role="option" data-cx-value="ruby">
+      Ruby
+      <Icon name="check-solid" class="menu-item-check" />
+    </button>
+  </div>`} />
+
+## Filtering long lists
+
+Filtering hides items whose visible text does not match the current query. The mechanism differs between trigger styles: input-trigger comboboxes filter inline as the user types, while button-trigger comboboxes use a dedicated search field inside the menu.
+
+### Inline filtering
+
+For input-trigger comboboxes, filtering is built in. As text is typed into the `.combobox-value` input, items whose visible text does not match are hidden. No extra markup required.
+
+### Search field
+
+For button-trigger comboboxes, add a `.combobox-search-input` inside the menu. When the menu opens, focus jumps to the search field. Wrap it in `.combobox-search` for the sticky styling shown below, and add a `.combobox-no-results` element for the empty state — the JS toggles its `.d-none` class based on visible item count.
+
+<Example code={`<button class="form-input combobox"
+          type="button"
+          aria-label="Select a country"
+          data-cx-toggle="combobox"
+          data-cx-name="country"
+          data-cx-placeholder="Select a country…">
+    <span class="combobox-value"></span>
+  </button>
+  <div class="menu" role="listbox">
+    <div class="combobox-search">
+      <input type="text" class="form-input combobox-search-input small" placeholder="Search…" autocomplete="off" aria-label="Filter countries">
+    </div>
+    <button class="menu-item" type="button" role="option" data-cx-value="us">United States</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="uk">United Kingdom</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="ca">Canada</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="au">Australia</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="de">Germany</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="fr">France</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="jp">Japan</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="br">Brazil</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="in">India</button>
+    <button class="menu-item" type="button" role="option" data-cx-value="mx">Mexico</button>
+    <div class="combobox-no-results d-none">No results found</div>
+  </div>`} />
+
+### Accent-insensitive matching
+
+Enable `searchNormalize` (via `data-cx-search-normalize="true"` or the JS option) to strip diacritics before comparing — so typing "uber" matches "über". Applies to both inline filtering and the search field.
+
+## In a form field
+
+Wrap the label, combobox, and any feedback in a [form field]([[docsref:/forms/form-field]]) for a labelled, accessible layout. This is the canonical pattern for production use: a visible `<label for="…">` provides the accessible name and is clickable to focus the combobox, and the menu's `aria-label` mirrors that name so screen-reader announcements stay consistent between the toggle and the listbox.
+
+<Example code={`<div class="form-field">
+    <label for="comboFormField" class="form-label">Country</label>
+    <div class="form-input combobox"
+        data-cx-toggle="combobox"
+        data-cx-name="country">
+      <input type="text" id="comboFormField" class="combobox-value" placeholder="Pick a country…" autocomplete="off">
+    </div>
+    <div class="menu w-100" role="listbox" aria-label="Country">
+      <button class="menu-item" type="button" role="option" data-cx-value="us">United States</button>
+      <button class="menu-item" type="button" role="option" data-cx-value="uk">United Kingdom</button>
+      <button class="menu-item" type="button" role="option" data-cx-value="ca">Canada</button>
+    </div>
+    <div class="form-help">The billing region.</div>
+  </div>`} />
+
+## Form submission
+
+When `data-cx-name` is present on the toggle, the JS inserts a hidden `<input>` immediately before the toggle and keeps its `value` in sync with the selection. Without `data-cx-name`, no hidden input is created and the combobox's value is not submitted.
+
+```html
+<!-- Authored markup -->
+<div class="form-input combobox"
+     data-cx-toggle="combobox"
+     data-cx-name="country">
+  ...
+</div>
+<div class="menu">...</div>
+
+<!-- What the JS inserts before the toggle on init -->
+<input type="hidden" name="country" value="us">
+```
+
+For multi-select, the hidden input's value is a comma-separated list — `"html,css,js"`. When the combobox is disabled, the hidden input also gets `disabled`, so the value is excluded from form submission.
+
+## Accessibility
+
+Combobox accessibility has two layers: behaviour the JS handles, and markup that must be authored.
+
+### Automatic behaviour
+
+The JS keeps the following ARIA state in sync without any extra markup:
+
+- `aria-expanded` is set on the toggle when the menu opens (`true`) and closes (`false`).
+- `aria-selected` is set on each `.menu-item` after a selection change — `"true"` on selected items, `"false"` on others.
+- The toggle's `.disabled` class, `aria-disabled` attribute, and the `disabled` attribute on the embedded input are kept in sync. The hidden input's `disabled` is mirrored so disabled comboboxes do not submit a value.
+
+### Required markup
+
+The semantics that identify the combobox and its options to assistive tech must be authored — the JS does not add them:
+
+- **Accessible name for the combobox.** Either a visible `<label for="…">` pointing to the input/button id, or `aria-label`/`aria-labelledby` on the toggle. The [In a form field](#in-a-form-field) section shows the canonical labelled pattern.
+- **`role="listbox"`** on the `.menu`. When labelled, also add `aria-label` (or `aria-labelledby`) matching the toggle's accessible name. For multi-select, add `aria-multiselectable="true"`.
+- **`role="option"`** on each `.menu-item`, and `aria-selected="true"` on any pre-selected items. The JS keeps `aria-selected` in sync after that.
+- **`role="presentation"`** on `.menu-header` so headers are skipped by screen readers.
+- **`aria-hidden="true"`** on decorative SVG icons inside items.
+
+### Keyboard
+
+A combobox is fully operable from the keyboard. Behaviour depends on where focus currently is:
+
+- **Toggle focused, menu closed:** <kbd>↓</kbd> / <kbd>↑</kbd> opens the menu and focuses the first or last visible item. <kbd>Enter</kbd> opens the menu (button trigger only — on input trigger, <kbd>Enter</kbd> behaves natively).
+- **Menu open:** <kbd>↓</kbd> / <kbd>↑</kbd> moves between items (wraps at ends). <kbd>Home</kbd> / <kbd>End</kbd> jumps to the first or last. <kbd>Enter</kbd> selects the focused item. <kbd>Esc</kbd> closes the menu and returns focus to the toggle. <kbd>Tab</kbd> closes the menu and moves focus normally.
+- **Search field focused:** <kbd>↓</kbd> jumps to the first visible item. <kbd>Esc</kbd> closes the menu.
+
+## JavaScript
+
+The combobox can be configured through HTML data attributes or driven imperatively via the JS API. Data attributes cover most cases; the API is useful for runtime control (open/close, disable/enable, dispose) and for cases where the config needs to be computed at runtime.
+
+### Data attributes
+
+The following attributes are read on init. Attribute values are strings; the JS coerces them to the option's expected type.
+
+<CxTable>
+| Attribute | On | Description |
+| --- | --- | --- |
+| `data-cx-toggle="combobox"` | toggle | Initialises the combobox. |
+| `data-cx-name` | toggle | `name` of the auto-created hidden input. Omit to skip hidden-input creation. |
+| `data-cx-placeholder` | toggle | Text shown in the toggle when nothing is selected (button trigger). |
+| `data-cx-multiple` | toggle | `"true"` enables multi-select. |
+| `data-cx-search-normalize` | toggle | `"true"` strips diacritics before comparing during filtering. |
+| `data-cx-value` | `.menu-item` | The value submitted, and the source for the toggle's display text. Items without this attribute are decorative and not selectable. |
+</CxTable>
+
+### Options
+
+Pass via data attributes or as a config object during programmatic init.
+
+<CxTable>
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `multiple` | boolean | `false` | Enable multi-select. Selections toggle and the menu stays open. |
+| `name` | string \| null | `null` | Name for the auto-created hidden input. |
+| `placeholder` | string | `''` | Placeholder for the toggle (button trigger). |
+| `searchNormalize` | boolean | `false` | Strip diacritics when filtering. |
+| `placement` | string | `'bottom-start'` | Floating UI placement for the menu. |
+| `offset` | array \| string \| function | `[0, 2]` | `[skidding, distance]` offset from the toggle. |
+| `boundary` | string \| element | `'clippingParents'` | Overflow boundary for the menu. |
+</CxTable>
+
+### Methods
+
+Call methods on a combobox instance retrieved via `Combobox.getInstance(toggleElement)` or `Combobox.getOrCreateInstance(toggleElement)`.
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `show` | Opens the menu. |
+| `hide` | Closes the menu. |
+| `toggle` | Opens or closes based on current state. |
+| `disable` | Disables the combobox and closes the menu if open. |
+| `enable` | Re-enables a disabled combobox. |
+| `dispose` | Destroys the instance and removes the hidden input. |
+| `getInstance` | Static. Returns the combobox instance attached to a DOM element, or `null`. |
+| `getOrCreateInstance` | Static. Returns the instance or creates one. |
+</CxTable>
+
+### Events
+
+Events are dispatched on the toggle element.
+
+<CxTable>
+| Event | Description |
+| --- | --- |
+| `show.cx.combobox` | Fires when `show()` is called, before the menu opens. Preventable via `event.preventDefault()`. |
+| `shown.cx.combobox` | Fires after the menu is visible. |
+| `hide.cx.combobox` | Fires when `hide()` is called, before the menu closes. Preventable. |
+| `hidden.cx.combobox` | Fires after the menu is hidden. |
+| `change.cx.combobox` | Fires after a selection. `event.detail` contains `value` (string for single select, array of strings for multi) and `item` (the selected `.menu-item`). |
+</CxTable>
+
+## CSS
+
+<DocsCSS name="Combobox" />
+
+Combobox styling is split between component-specific rules and the form-element foundations shared with `.form-input`. Check the [overview]([[docsref:forms/overview#sass-variables]]) page to see the CSS properties and Sass variables shared by all form elements.
+
+### Sass variables
+
+<DocsSASSVars name="Combobox" exposed />
+
+<ScssDocs name="combobox-variables" file="scss/config/_defaults.scss" />

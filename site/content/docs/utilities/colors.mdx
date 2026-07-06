@@ -1,83 +1,91 @@
 ---
 title: Colors
-description: Convey meaning through `color` with a handful of color utility classes. Includes support for styling links with hover states, too.
+description: Foreground color utilities based on the Chassis context color system, with opacity control.
 toc: true
+css_layer: utilities
 ---
 
 import { getData } from '@libs/data'
 
 <Callout name="warning-color-assistive-technologies" />
 
-## Colors
+Color utilities cover two sub-systems: context colors and opacity control. Both integrate with the [color system]([[docsref:/core-concepts/color-system]]).
 
-Colorize text with color utilities. If you want to colorize links, you can use the [`.link-*` utility classes]([[docsref:/utilities/link]]) which have `:hover`, `:focus` `:active` and  `:visited` states.
+## Color
 
-### Body Colors
+Color utilities set the CSS `color` property using the Chassis context color palette. They do not set `background-color`, so `.bg-*` [background utilities]([[docsref:/utilities/background]]) may be needed for colored regions. For link colorization with interactive states (`:hover`, `:focus`, `:active`, `:visited`), see the [`.link-*` utilities]([[docsref:/utilities/link]]).
 
-Body colors use `default` context palette.
+### Body colors
 
+Body color classes draw from the `default` context palette.
 
 <Example code={`<p class="fg-main">.fg-main</p>
-<p class="fg-subtle">.fg.subtle</p>
+<p class="fg-subtle">.fg-subtle</p>
 <p class="fg-slight">.fg-slight</p>
 <p class="fg-inverse bg-inverse">.fg-inverse</p>
+<p class="fg-solid">.fg-solid</p>
 <p class="fg-highlight">.fg-highlight</p>`} />
 
-### Colored Texts
+### Context foreground colors
 
-Base **context colors** can be used as foreground color with `.fg-*` classes.
+Context colors are available as foreground utilities via the `.fg-{context}` class pattern.
 
 <Example code={[...getData('context-colors').map((color) => `<p class="fg-${color.name} bg-contrast">.fg-${color.name}</p>`)]} />
 
-### Context Colors
+### Context palette colors
 
-Body colors are available for every **context color**.
+Each context color exposes a set of foreground roles through a `{context}-fg-{role}` prefixed class pattern.
 
 <Example code={`<p class="primary-fg-main">.primary-fg-main</p>
-<p class="primary-fg-subtle">.primary-fg.subtle</p>
+<p class="primary-fg-subtle">.primary-fg-subtle</p>
 <p class="primary-fg-slight">.primary-fg-slight</p>
 <p class="primary-fg-inverse primary-bg-inverse">.primary-fg-inverse</p>
 <p class="primary-fg-highlight">.primary-fg-highlight</p>`} />
 
 ## Opacity
-Using CSS variables for `color` utilities allows for real-time color changes without compilation and dynamic alpha transparency changes.
+
+Opacity utilities control the alpha channel of any context color foreground through the `--cx-fg-opacity` custom property.
 
 ### How it works
 
-Consider our `.fg-primary` utility.
+Each `.fg-{context}` class writes an OKLCH relative color expression into `--cx-fg-color`, using `--cx-fg-opacity` as the alpha channel. A shared selector applies `color: var(--cx-fg-color)`. `--cx-fg-opacity` defaults to `1`.
 
 ```css
 .fg-primary {
-  color: oklch(from var(--cx-primary) l c h / var(--cx-fg-opacity, 1)) !important;
+  --cx-fg-color: oklch(from var(--cx-primary) l c h / var(--cx-fg-opacity, 1));
 }
+
+/* shared selector */
+.fg-primary, .fg-secondary, /* … */ {
+  color: var(--cx-fg-color);
+}
+
 .fg-opacity-50 {
-  --cx-fg-opacity: var(--cx-opacity-50);
+  --cx-fg-opacity: 0.5;
 }
 ```
 
-We use the `--cx-primary` CSS variable directly with CSS relative color syntax, and attach a second CSS variable, `--cx-fg-opacity`, for the alpha transparency (with a default value `1`). The `oklch(from ...)` expression derives the color from the variable and applies the opacity channel. Then, the opacity class overrides the default opacity by setting `--cx-fg-opacity` on the element.
+### Opacity override
 
-### Example
-
-To change that opacity, override `--cx-fg-opacity` via custom styles or inline styles.
+Override `--cx-fg-opacity` with an inline style or a `.fg-opacity-*` utility class.
 
 <Example code={`<div class="fg-primary">This is default primary text</div>
 <div style="--cx-fg-opacity: .6;" class="fg-primary">This is 60% opacity primary text</div>`} />
 
 Or, choose from any of the `.fg-opacity-*` utilities:
 
-<Example code={[...getData('basic-opacities').map((opacity) => `<p class="fg-primary fg-opacity-${opacity.name}">This is -opacity-${opacity.name} primary text</p>`)]} />
+<Example code={getData('token-opacities').map((opacity) => `<p class="fg-primary fg-opacity-${opacity.name}">fg-opacity-${opacity.name}</p>`)} />
 
-### Context Opacity
+### Context opacities
 
-You can directly apply a **context opacity** utility to match `fg-*` colors:
+`.fg-opacity-subtle` and `.fg-opacity-slight` match the alpha values of the pre-computed `fg-subtle` and `fg-slight` body color tokens, and can be applied to any context color.
 
-<Example code={`<div class="fg-primary fg-opacity-subtle p-2xsmall">This is <code>fg-subtle</code> primary success text</div>
-<div class="fg-primary fg-opacity-slight p-2xsmall">This is <code>fg-slight</code> primary success text</div>`} />
+<Example code={`<div class="fg-primary fg-opacity-subtle p-2xsmall">fg-opacity-subtle</div>
+<div class="fg-primary fg-opacity-slight p-2xsmall">fg-opacity-slight</div>`} />
 
 ## Reset color
 
-Reset a text or link's color with `.fg-reset`, so that it inherits the color from its parent.
+`.fg-reset` removes any foreground color override, causing the element to inherit its color from the nearest ancestor.
 
 <Example code={`<p class="fg-subtle">
     Secondary body text with a <a href="#" class="fg-reset">reset link</a>.
@@ -86,42 +94,46 @@ Reset a text or link's color with `.fg-reset`, so that it inherits the color fro
     Secondary body text with a <a href="#">normal link</a>.
   </p>`} />
 
-## Specificity
-
-Sometimes contextual classes cannot be applied due to the specificity of another selector. In some cases, a sufficient workaround is to wrap your element’s content in a `<div>` or more semantic element with the desired class.
-
 ## CSS
 
-<DocsCSS />
+Foreground color utilities are generated from Sass maps built on design token values via the utilities API.
 
-### Variables
+### Reference
 
-<DocsCSSVars />
+All foreground color utilities set `color` through the shared `--cx-fg-color` custom property. Context color foregrounds embed `--cx-fg-opacity` in the color expression; body and palette foregrounds reference a pre-computed token and are not affected by opacity utilities.
+
+The tables list all foreground color utilities and their CSS properties.
+
+**Foreground colors:**
+
+<UtilityReferenceTable utility="fg-" exclude="fg-opacity-" />
+
+**Foreground opacities:**
+
+<UtilityReferenceTable utility="fg-opacity-" />
+
+**Contextual foregrounds:**
+
+<UtilityReferenceTable utility={getData('context-colors').map((contextColor) => `${contextColor.name}-fg-`)} />
 
 ### Sass variables
 
-<DocsSASSVars />
+Foreground color tokens are part of the color system [color system]([[docsref:/core-concepts/color-system]]) in `scss/tokens/` and not listed here.
 
-Most `color` utilities are generated by [context colors]([[docsref:/core-concepts/color-system]]), reassigned from our generic color palette variables.
+### Sass maps
 
-<ScssDocs name="context-color-variables" file="scss/tokens/_colors.scss" />
+Foreground color maps are part of the [color system]([[docsref:/core-concepts/color-system]]) in `scss/maps/` and not listed here. Foreground opacity utilities are generated from two Sass maps in `scss/maps/_opacities.scss`.
 
-### Sass Maps
+`$opacities` defines the full token-named opacity scale for `.fg-opacity-{level}` utilities.
 
-Color utilities are generated from Sass maps using [utilities API]([[docsref:/utilities/api]]).
+<ScssDocs name="opacity-levels-map" file="scss/maps/_opacities.scss" />
 
-<ScssDocs name="context-colors-map" file="scss/maps/_colors.scss" />
+`$fg-opacities` defines two semantic foreground opacity levels.
 
 <ScssDocs name="fg-opacities-map" file="scss/maps/_opacities.scss" />
 
 ### Utilities API
 
-Icon utilities are generated using [utilities API]([[docsref:/utilities/api]]).
+Foreground color utilities are declared in `scss/utilities/_index.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
 
 <ScssDocs name="utils-fg-color" file="scss/utilities/_index.scss" />
-
-### Helpers
-
-Context palette `.*-fg-color` classes created in helpers.
-
-<ScssDocs name="fg-color-helper" file="scss/helpers/_context.scss" />

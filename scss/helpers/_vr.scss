@@ -1,8 +1,21 @@
-.vr {
-  display: inline-block;
-  align-self: stretch;
-  width: $vr-size;
-  min-height: 1em;
-  background-color: $vr-color;
-  opacity: $vr-opacity;
-}
+@use "../config" as *;
+
+//
+// Vertical Rule Helper
+//
+// Inline vertical divider element (.vr) for separating content in flex
+// or inline layouts.
+//
+
+@layer helpers {
+  // scss-docs-start vr
+  .vr {
+    display: inline-block;
+    align-self: stretch;
+    width: $vr-size;
+    min-height: 1em;
+    background-color: $vr-color;
+    opacity: $vr-opacity;
+  }
+  // scss-docs-end vr
+} // @layer helpers

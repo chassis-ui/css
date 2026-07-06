@@ -1,3 +1,13 @@
+@use "../config" as *;
+@use "../functions/map" as *;
+
+//
+// Dark Context Colors Map
+//
+// Sass map of base context colors for dark mode, keyed by context name.
+// Merged into the full color token set at runtime when dark mode is active.
+//
+
 // scss-docs-start context-colors-dark-map
 $context-colors-dark: (
   "default":    $default-dark,
@@ -30,21 +40,151 @@ $contrast-colors-dark: (
 ) !default;
 // scss-docs-end contrast-colors-dark-map
 
-// scss-docs-start transparent-color-colors-dark-map
-// $transparent-colors-dark: (
-//   "default-transparent":        $default-transparent-color-dark,
-//   "alternate-transparent":      $alternate-transparent-color-dark,
-//   "primary-transparent":        $primary-transparent-color-dark,
-//   "secondary-transparent":      $secondary-transparent-color-dark,
-//   "neutral-transparent":        $neutral-transparent-color-dark,
-//   "danger-transparent":         $danger-transparent-color-dark,
-//   "success-transparent":        $success-transparent-color-dark,
-//   "warning-transparent":        $warning-transparent-color-dark,
-//   "info-transparent":           $info-transparent-color-dark,
-//   "black-transparent":          $black-transparent-color-dark,
-//   "white-transparent":          $white-transparent-color-dark,
-// ) !default;
-// scss-docs-end transparent-color-colors-dark-map
+
+// scss-docs-start primary-palette-dark-map
+$primary-palette-dark: (
+  // "primary-main":           $primary-main-dark,
+  // "primary-clear":          $primary-clear-dark,
+  // "primary-contrast":       $primary-contrast-dark,
+  "primary-05":           $primary-05-dark,
+  "primary-10":           $primary-10-dark,
+  "primary-20":           $primary-20-dark,
+  "primary-30":           $primary-30-dark,
+  "primary-40":           $primary-40-dark,
+  "primary-50":           $primary-50-dark,
+  "primary-60":           $primary-60-dark,
+  "primary-70":           $primary-70-dark,
+  "primary-80":           $primary-80-dark,
+  "primary-90":           $primary-90-dark,
+  "primary-95":           $primary-95-dark,
+) !default;
+// scss-docs-end primary-palette-dark-map
+
+// scss-docs-start secondary-palette-dark-map
+$secondary-palette-dark: (
+  // "secondary-main":         $secondary-main-dark,
+  // "secondary-clear":        $secondary-clear-dark,
+  // "secondary-contrast":     $secondary-contrast-dark,
+  "secondary-05":         $secondary-05-dark,
+  "secondary-10":         $secondary-10-dark,
+  "secondary-20":         $secondary-20-dark,
+  "secondary-30":         $secondary-30-dark,
+  "secondary-40":         $secondary-40-dark,
+  "secondary-50":         $secondary-50-dark,
+  "secondary-60":         $secondary-60-dark,
+  "secondary-70":         $secondary-70-dark,
+  "secondary-80":         $secondary-80-dark,
+  "secondary-90":         $secondary-90-dark,
+  "secondary-95":         $secondary-95-dark,
+) !default;
+// scss-docs-end secondary-palette-dark-map
+
+// scss-docs-start neutral-palette-dark-map
+$neutral-palette-dark: (
+  // "neutral-main":           $neutral-main-dark,
+  // "neutral-clear":          $neutral-clear-dark,
+  // "neutral-contrast":       $neutral-contrast-dark,
+  "neutral-05":           $neutral-05-dark,
+  "neutral-10":           $neutral-10-dark,
+  "neutral-20":           $neutral-20-dark,
+  "neutral-30":           $neutral-30-dark,
+  "neutral-40":           $neutral-40-dark,
+  "neutral-50":           $neutral-50-dark,
+  "neutral-60":           $neutral-60-dark,
+  "neutral-70":           $neutral-70-dark,
+  "neutral-80":           $neutral-80-dark,
+  "neutral-90":           $neutral-90-dark,
+  "neutral-95":           $neutral-95-dark,
+) !default;
+// scss-docs-end neutral-palette-dark-map
+
+// scss-docs-start danger-palette-dark-map
+$danger-palette-dark: (
+  // "danger-main":            $danger-main-dark,
+  // "danger-clear":           $danger-clear-dark,
+  // "danger-contrast":        $danger-contrast-dark,
+  "danger-05":            $danger-05-dark,
+  "danger-10":            $danger-10-dark,
+  "danger-20":            $danger-20-dark,
+  "danger-30":            $danger-30-dark,
+  "danger-40":            $danger-40-dark,
+  "danger-50":            $danger-50-dark,
+  "danger-60":            $danger-60-dark,
+  "danger-70":            $danger-70-dark,
+  "danger-80":            $danger-80-dark,
+  "danger-90":            $danger-90-dark,
+  "danger-95":            $danger-95-dark,
+) !default;
+// scss-docs-end danger-palette-dark-map
+
+// scss-docs-start success-palette-dark-map
+$success-palette-dark: (
+  // "success-main":           $success-main-dark,
+  // "success-clear":          $success-clear-dark,
+  // "success-contrast":       $success-contrast-dark,
+  "success-05":           $success-05-dark,
+  "success-10":           $success-10-dark,
+  "success-20":           $success-20-dark,
+  "success-30":           $success-30-dark,
+  "success-40":           $success-40-dark,
+  "success-50":           $success-50-dark,
+  "success-60":           $success-60-dark,
+  "success-70":           $success-70-dark,
+  "success-80":           $success-80-dark,
+  "success-90":           $success-90-dark,
+  "success-95":           $success-95-dark,
+) !default;
+// scss-docs-end success-palette-dark-map
+
+// scss-docs-start warning-palette-dark-map
+$warning-palette-dark: (
+  // "warning-main":           $warning-main-dark,
+  // "warning-clear":          $warning-clear-dark,
+  // "warning-contrast":       $warning-contrast-dark,
+  "warning-05":           $warning-05-dark,
+  "warning-10":           $warning-10-dark,
+  "warning-20":           $warning-20-dark,
+  "warning-30":           $warning-30-dark,
+  "warning-40":           $warning-40-dark,
+  "warning-50":           $warning-50-dark,
+  "warning-60":           $warning-60-dark,
+  "warning-70":           $warning-70-dark,
+  "warning-80":           $warning-80-dark,
+  "warning-90":           $warning-90-dark,
+  "warning-95":           $warning-95-dark,
+) !default;
+// scss-docs-end warning-palette-dark-map
+
+// scss-docs-start info-palette-dark-map
+$info-palette-dark: (
+  // "info-main":              $info-main-dark,
+  // "info-clear":             $info-clear-dark,
+  // "info-contrast":          $info-contrast-dark,
+  "info-05":              $info-05-dark,
+  "info-10":              $info-10-dark,
+  "info-20":              $info-20-dark,
+  "info-30":              $info-30-dark,
+  "info-40":              $info-40-dark,
+  "info-50":              $info-50-dark,
+  "info-60":              $info-60-dark,
+  "info-70":              $info-70-dark,
+  "info-80":              $info-80-dark,
+  "info-90":              $info-90-dark,
+  "info-95":              $info-95-dark,
+) !default;
+// scss-docs-end info-palette-dark-map
+
+// scss-docs-start base-palette-dark-map
+$base-palette-dark: map-merge-multiple(
+  $primary-palette-dark,
+  $secondary-palette-dark,
+  $neutral-palette-dark,
+  $danger-palette-dark,
+  $success-palette-dark,
+  $warning-palette-dark,
+  $info-palette-dark,
+) !default;
+// scss-docs-end base-palette-dark-map
 
 // Dark mode color maps
 // scss-docs-start context-base-colors-dark-map
@@ -125,7 +265,7 @@ $fg-subtle-colors-dark: (
   "black":                  $black-fg-subtle-dark,
   "white":                  $white-fg-subtle-dark,
 ) !default;
-// scss-docs-end fg-subtle-colors--darkmap
+// scss-docs-end fg-subtle-colors-dark-map
 
 // scss-docs-start fg-slight-colors-dark-map
 $fg-slight-colors-dark: (
@@ -142,6 +282,22 @@ $fg-slight-colors-dark: (
   "white":                  $white-fg-slight-dark,
 ) !default;
 // scss-docs-end fg-slight-colors-dark-map
+
+// scss-docs-start fg-active-colors-dark-map
+$fg-active-colors-dark: (
+  "default":                $default-fg-active-dark,
+  "alternate":              $alternate-fg-active-dark,
+  "primary":                $primary-fg-active-dark,
+  "secondary":              $secondary-fg-active-dark,
+  "neutral":                $neutral-fg-active-dark,
+  "danger":                 $danger-fg-active-dark,
+  "success":                $success-fg-active-dark,
+  "warning":                $warning-fg-active-dark,
+  "info":                   $info-fg-active-dark,
+  "black":                  $black-fg-active-dark,
+  "white":                  $white-fg-active-dark,
+) !default;
+// scss-docs-end fg-active-colors-dark-map
 
 // scss-docs-start fg-inverse-colors-dark-map
 $fg-inverse-colors-dark: (
@@ -239,6 +395,22 @@ $bg-evident-colors-dark: (
   "white":                  $white-bg-evident-dark,
 ) !default;
 // scss-docs-end bg-evident-colors-dark-map
+
+// scss-docs-start bg-active-colors-dark-map
+$bg-active-colors-dark: (
+  "default":                $default-bg-active-dark,
+  "alternate":              $alternate-bg-active-dark,
+  "primary":                $primary-bg-active-dark,
+  "secondary":              $secondary-bg-active-dark,
+  "neutral":                $neutral-bg-active-dark,
+  "danger":                 $danger-bg-active-dark,
+  "success":                $success-bg-active-dark,
+  "warning":                $warning-bg-active-dark,
+  "info":                   $info-bg-active-dark,
+  "black":                  $black-bg-active-dark,
+  "white":                  $white-bg-active-dark,
+) !default;
+// scss-docs-end bg-active-colors-dark-map
 
 // scss-docs-start bg-inverse-colors-dark-map
 $bg-inverse-colors-dark: (
@@ -414,10 +586,10 @@ $link-main-colors-dark: (
   "black":                  $black-link-main-dark,
   "white":                  $white-link-main-dark,
 ) !default;
-// scss-docs-end link-main-colors-dark-dark-map
+// scss-docs-end link-main-colors-dark-map
 
-// scss-docs-start hover-colors-dark-map
-$hover-colors-dark: (
+// scss-docs-start link-hover-colors-dark-map
+$link-hover-colors-dark: (
   "default":             $default-link-hover-dark,
   "alternate":           $alternate-link-hover-dark,
   "primary":             $primary-link-hover-dark,
@@ -430,10 +602,10 @@ $hover-colors-dark: (
   "black":               $black-link-hover-dark,
   "white":               $white-link-hover-dark,
 ) !default;
-// scss-docs-end hover-colors-dark-map
+// scss-docs-end link-hover-colors-dark-map
 
-// scss-docs-start visited-colors-dark-map
-$visited-colors-dark: (
+// scss-docs-start link-visited-colors-dark-map
+$link-visited-colors-dark: (
   "default":                $default-link-visited-dark,
   "alternate":              $alternate-link-visited-dark,
   "primary":                $primary-link-visited-dark,
@@ -446,10 +618,10 @@ $visited-colors-dark: (
   "black":                  $black-link-visited-dark,
   "white":                  $white-link-visited-dark,
 ) !default;
-// scss-docs-end visited-colors-dark-map
+// scss-docs-end link-visited-colors-dark-map
 
-// scss-docs-start active-colors-map
-$active-colors-dark: (
+// scss-docs-start link-active-colors-dark-map
+$link-active-colors-dark: (
   "default":             $default-link-active-dark,
   "alternate":           $alternate-link-active-dark,
   "primary":             $primary-link-active-dark,
@@ -462,7 +634,7 @@ $active-colors-dark: (
   "black":               $black-link-active-dark,
   "white":               $white-link-active-dark,
 ) !default;
-// scss-docs-end active-colors-dark-map
+// scss-docs-end link-active-colors-dark-map
 
 // scss-docs-start dim-slight-colors-dark-map
 $dim-slight-colors-dark: (
@@ -644,84 +816,102 @@ $bg-press-colors-dark: (
 // $context-colors-border-subtle-dark: $border-subtle-colors-dark !default;
 // scss-docs-end theme-border-subtle-dark-map
 
-$context-palette-dark: map-merge-multiple(
-  $context-base-colors-dark,
-  $context-contrast-colors-dark,
-  $context-transparent-colors-dark,
+// scss-docs-start context-fg-colors-dark-map
+$context-fg-colors-dark: map-merge-multiple(
   map-rename-keys($fg-main-colors-dark, "-fg-main", "end"),
   map-rename-keys($fg-subtle-colors-dark, "-fg-subtle", "end"),
   map-rename-keys($fg-slight-colors-dark, "-fg-slight", "end"),
+  map-rename-keys($fg-active-colors-dark, "-fg-active", "end"),
   map-rename-keys($fg-inverse-colors-dark, "-fg-inverse", "end"),
   map-rename-keys($fg-solid-colors-dark, "-fg-solid", "end"),
   map-rename-keys($fg-highlight-colors-dark, "-fg-highlight", "end"),
-  map-rename-keys($bg-main-colors-dark, "-bg-main", "end"),
-  map-rename-keys($bg-even-colors-dark, "-bg-even", "end"),
-  map-rename-keys($bg-evident-colors-dark, "-bg-evident", "end"),
-  map-rename-keys($bg-inverse-colors-dark, "-bg-inverse", "end"),
-  map-rename-keys($bg-solid-colors-dark, "-bg-solid", "end"),
-  map-rename-keys($bg-highlight-colors-dark, "-bg-highlight", "end"),
-  map-rename-keys($border-main-colors-dark, "-border-main", "end"),
-  map-rename-keys($border-subtle-colors-dark, "-border-subtle", "end"),
-  map-rename-keys($icon-main-colors-dark, "-icon-main", "end"),
-  map-rename-keys($icon-subtle-colors-dark, "-icon-subtle", "end"),
-  map-rename-keys($icon-slight-colors-dark, "-icon-slight", "end"),
-  map-rename-keys($cue-main-colors-dark, "-cue-main", "end"),
-  map-rename-keys($cue-slight-colors-dark, "-cue-slight", "end"),
-  map-rename-keys($link-main-colors-dark, "-link-main", "end"),
-  map-rename-keys($visited-colors-dark, "-link-visited", "end"),
-  map-rename-keys($hover-colors-dark, "-link-hover", "end"),
-  map-rename-keys($active-colors-dark, "-link-active", "end"),
-  map-rename-keys($dim-slight-colors-dark, "-dim-slight", "end"),
-  map-rename-keys($dim-main-colors-dark, "-dim-main", "end"),
-  map-rename-keys($dim-subtle-colors-dark, "-dim-subtle", "end"),
   map-rename-keys($fg-idle-colors-dark, "-fg-idle", "end"),
   map-rename-keys($fg-disabled-colors-dark, "-fg-disabled", "end"),
   map-rename-keys($fg-hover-colors-dark, "-fg-hover", "end"),
   map-rename-keys($fg-press-colors-dark, "-fg-press", "end"),
+) !default;
+// scss-docs-end context-fg-colors-dark-map
+
+// scss-docs-start context-bg-colors-dark-map
+$context-bg-colors-dark: map-merge-multiple(
+  map-rename-keys($bg-main-colors-dark, "-bg-main", "end"),
+  map-rename-keys($bg-even-colors-dark, "-bg-even", "end"),
+  map-rename-keys($bg-evident-colors-dark, "-bg-evident", "end"),
+  map-rename-keys($bg-active-colors-dark, "-bg-active", "end"),
+  map-rename-keys($bg-inverse-colors-dark, "-bg-inverse", "end"),
+  map-rename-keys($bg-solid-colors-dark, "-bg-solid", "end"),
+  map-rename-keys($bg-highlight-colors-dark, "-bg-highlight", "end"),
   map-rename-keys($bg-idle-colors-dark, "-bg-idle", "end"),
   map-rename-keys($bg-disabled-colors-dark, "-bg-disabled", "end"),
   map-rename-keys($bg-hover-colors-dark, "-bg-hover", "end"),
   map-rename-keys($bg-press-colors-dark, "-bg-press", "end"),
 ) !default;
+// scss-docs-end context-bg-colors-dark-map
 
-// scss-docs-start body-colors-dark-map
-$body-colors-dark: (
-  "base-color":             $base-color-dark,
-  "contrast-color":         $contrast-color-dark,
-  "transparent-color":      $transparent-color-dark,
-  "fg-main":                $fg-main-dark,
-  "fg-subtle":              $fg-subtle-dark,
-  "fg-slight":              $fg-slight-dark,
-  "fg-inverse":             $fg-inverse-dark,
-  "fg-solid":               $fg-solid-dark,
-  "fg-highlight":           $fg-highlight-dark,
-  "bg-main":                $bg-main-dark,
-  "bg-even":                $bg-even-dark,
-  "bg-evident":             $bg-evident-dark,
-  "bg-inverse":             $bg-inverse-dark,
-  "bg-solid":               $bg-solid-dark,
-  "bg-highlight":           $bg-highlight-dark,
-  "border-main":            $border-main-dark,
-  "border-subtle":          $border-subtle-dark,
-  "icon-main":              $icon-main-dark,
-  "icon-subtle":            $icon-subtle-dark,
-  "icon-slight":            $icon-slight-dark,
-  "cue-main":               $cue-main-dark,
-  "cue-slight":             $cue-slight-dark,
-  "link-main":              $link-main-dark,
-  "link-hover":             $link-hover-dark,
-  "link-active":            $link-active-dark,
-  "link-visited":           $link-visited-dark,
-  "dim-main":               $dim-main-dark,
-  "dim-subtle":             $dim-subtle-dark,
-  "dim-slight":             $dim-slight-dark,
-  "fg-idle":              $fg-idle-dark,
-  "fg-disabled":            $fg-disabled-dark,
-  "fg-hover":               $fg-hover-dark,
-  "fg-press":               $fg-press-dark,
-  "bg-idle":              $bg-idle-dark,
-  "bg-disabled":            $bg-disabled-dark,
-  "bg-hover":               $bg-hover-dark,
-  "bg-press":               $bg-press-dark,
+// scss-docs-start context-border-colors-dark-map
+$context-border-colors-dark: map-merge-multiple(
+  map-rename-keys($border-main-colors-dark, "-border-main", "end"),
+  map-rename-keys($border-subtle-colors-dark, "-border-subtle", "end"),
 ) !default;
-// scss-docs-end body-colors-dark-map
+// scss-docs-end context-border-colors-dark-map
+
+// scss-docs-start context-icon-colors-dark-map
+$context-icon-colors-dark: map-merge-multiple(
+  map-rename-keys($icon-main-colors-dark, "-icon-main", "end"),
+  map-rename-keys($icon-subtle-colors-dark, "-icon-subtle", "end"),
+  map-rename-keys($icon-slight-colors-dark, "-icon-slight", "end"),
+) !default;
+// scss-docs-end context-icon-colors-dark-map
+
+// scss-docs-start context-cue-colors-dark-map
+$context-cue-colors-dark: map-merge-multiple(
+  map-rename-keys($cue-main-colors-dark, "-cue-main", "end"),
+  map-rename-keys($cue-slight-colors-dark, "-cue-slight", "end"),
+) !default;
+// scss-docs-end context-cue-colors-dark-map
+
+// scss-docs-start context-link-colors-dark-map
+$context-link-colors-dark: map-merge-multiple(
+  map-rename-keys($link-main-colors-dark, "-link-main", "end"),
+  map-rename-keys($link-hover-colors-dark, "-link-hover", "end"),
+  map-rename-keys($link-active-colors-dark, "-link-active", "end"),
+  map-rename-keys($link-visited-colors-dark, "-link-visited", "end"),
+) !default;
+// scss-docs-end context-link-colors-dark-map
+
+// scss-docs-start context-dim-colors-dark-map
+$context-dim-colors-dark: map-merge-multiple(
+  map-rename-keys($dim-slight-colors-dark, "-dim-slight", "end"),
+  map-rename-keys($dim-main-colors-dark, "-dim-main", "end"),
+  map-rename-keys($dim-subtle-colors-dark, "-dim-subtle", "end"),
+) !default;
+// scss-docs-end context-dim-colors-dark-map
+
+// scss-docs-start context-button-colors-dark-map
+$context-button-colors-dark: map-merge-multiple(
+  map-rename-keys($fg-idle-colors-dark, "-fg-idle", "end"),
+  map-rename-keys($fg-hover-colors-dark, "-fg-hover", "end"),
+  map-rename-keys($fg-press-colors-dark, "-fg-press", "end"),
+  map-rename-keys($fg-disabled-colors-dark, "-fg-disabled", "end"),
+  map-rename-keys($bg-idle-colors-dark, "-bg-idle", "end"),
+  map-rename-keys($bg-hover-colors-dark, "-bg-hover", "end"),
+  map-rename-keys($bg-press-colors-dark, "-bg-press", "end"),
+  map-rename-keys($bg-disabled-colors-dark, "-bg-disabled", "end"),
+) !default;
+// scss-docs-end context-button-colors-dark-map
+
+// scss-docs-start context-palette-dark-map
+$context-palette-dark: map-merge-multiple(
+  $context-base-colors-dark,
+  $context-contrast-colors-dark,
+  $context-transparent-colors-dark,
+  $context-fg-colors-dark,
+  $context-bg-colors-dark,
+  $context-border-colors-dark,
+  $context-icon-colors-dark,
+  $context-cue-colors-dark,
+  $context-dim-colors-dark,
+  $context-link-colors-dark,
+  $context-button-colors-dark,
+) !default;
+// scss-docs-end context-palette-dark-map

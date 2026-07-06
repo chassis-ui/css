@@ -1,12 +1,13 @@
 //
-// String utility functions for Chassis CSS
+// String Functions
 //
-// This file contains functions for string manipulation and conversion
-// including string replacement and string-to-number conversion.
+// String manipulation and conversion utilities: substring replacement and
+// string-to-number parsing. Some functions adapted from Bootstrap.
 //
-// Some functions are adapted from Bootstrap and other open source projects.
-// Special thanks to the Bootstrap Authors.
-//
+@use "sass:list";
+@use "sass:math";
+@use "sass:meta";
+@use "sass:string";
 
 /// Replace `$search` with `$replace` in `$string`
 /// Used on our SVG icon backgrounds and for processing variable names and values.
@@ -17,10 +18,10 @@
 /// @param {String} $replace ('') - New value
 /// @return {String} - Updated string
 @function str-replace($string, $search, $replace: "") {
-  $index: str-index($string, $search);
+  $index: string.index($string, $search);
 
   @if $index {
-    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+    @return string.slice($string, 1, $index - 1) + $replace + str-replace(string.slice($string, $index + string.length($search)), $search, $replace);
   }
 
   @return $string;
@@ -42,7 +43,7 @@
 ///   str-to-number("invalid") => false (with warning)
 @function str-to-number($string) {
   // If it's already a number, return it directly
-  @if type-of($string) == "number" {
+  @if meta.type-of($string) == "number" {
     @return $string;
   }
 
@@ -56,8 +57,8 @@
   $has-digits: false;
 
   // Process each character in the string
-  @for $i from 1 through str-length($string) {
-    $char: str-slice($string, $i, $i);
+  @for $i from 1 through string.length($string) {
+    $char: string.slice($string, $i, $i);
 
     // Handle negative sign at the beginning
     @if $char == "-" and $i == 1 {
@@ -75,10 +76,10 @@
     }
     // Handle digits
     @else {
-      $digit-index: index($digits, $char);
+      $digit-index: list.index($digits, $char);
 
       @if $digit-index {
-        $digit-value: nth($numbers, $digit-index);
+        $digit-value: list.nth($numbers, $digit-index);
         $has-digits: true;
 
         // Before decimal point
@@ -87,7 +88,7 @@
         } @else {
           // After decimal point
           $decimal: $decimal * 10;
-          $result: $result + divide($digit-value, $decimal);
+          $result: $result + math.div($digit-value, $decimal);
         }
       } @else {
         @warn "Invalid character in number: '#{$char}' in '#{$string}'";
@@ -103,5 +104,9 @@
   }
 
   // Apply negative sign if needed
-  @return if($negative, -$result, $result);
+  @if $negative {
+    @return -$result;
+  } @else {
+    @return $result;
+  }
 }

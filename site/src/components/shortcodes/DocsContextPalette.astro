@@ -1,75 +1,74 @@
 ---
 import { getData } from '@libs/data'
-import { getConfig } from '@libs/config'
 ---
 
 <div class="mb-medium overflow-scroll">
-  <div class="grid context-palette-grid" style="--cx-grid-columns: 11; --cx-grid-rows: 36;">
+  <div class="grid context-palette-grid" style="--cx-grid-columns: 11; --cx-grid-rows: 38;">
     <!--// DESCRIPTION COLUMN -->
     <div class="grid-col description-col">
       <div class="header grid-item"><div>Description</div></div>
-      <div class="grid-item g-row-2">
-        <h6 class="mb-0">Base Colors</h6>
+      <div class="grid-item g-rowspan-3">
+        <h4 class="mb-0">Base Colors</h4>
         <p class="font-small">
-          The base color for the context and its contrast counterpart. Contrast colors are intended
-          for design use and may not meet <a href={`/docs/getting-started/accessibility`}
-            >accessibility</a
+          The base color for the context, its contrast counterpart, and a fully transparent variant.
+          Contrast colors are intended for design use and may not meet <a
+            href={`/docs/core-concepts/accessibility`}>accessibility</a
           > contrast requirements.
         </p>
       </div>
-      <div class="grid-item g-row-6">
-        <h6 class="mb-0">Foreground Colors</h6>
+      <div class="grid-item g-rowspan-7">
+        <h4 class="mb-0">Foreground Colors</h4>
         <p class="font-small">
           Text colors named by priority or function. Used for the <code>color</code> property. Following
           abstraction principles, these tokens are not limited to text — they apply to any foreground
           element.
         </p>
       </div>
-      <div class="grid-item g-row-6">
-        <h6 class="mb-0">Background Colors</h6>
+      <div class="grid-item g-rowspan-7">
+        <h4 class="mb-0">Background Colors</h4>
         <p class="font-small">
           Solid surface colors named by priority and function. Used for the <code
             >background-color</code
           > property.
         </p>
       </div>
-      <div class="grid-item g-row-2">
-        <h6 class="mb-0">Border Colors</h6>
+      <div class="grid-item g-rowspan-2">
+        <h4 class="mb-0">Border Colors</h4>
         <p class="font-small">
           Colors for borders and separator lines. Used for the <code>border-color</code> property.
         </p>
       </div>
-      <div class="grid-item g-row-3">
-        <h6 class="mb-0">Icon Colors</h6>
+      <div class="grid-item g-rowspan-3">
+        <h4 class="mb-0">Icon Colors</h4>
         <p class="font-small">
           Colors for symbolic elements such as icons, list bullets, and disclosure arrows. Used for
           the <code>color</code> and <code>fill</code> properties.
         </p>
       </div>
-      <div class="grid-item g-row-2">
-        <h6 class="mb-0">Indicator Colors</h6>
+      <div class="grid-item g-rowspan-2">
+        <h4 class="mb-0">Cue Colors</h4>
         <p class="font-small">
           Colors for activity indicators and selection marks. Used for the <code>fill</code> and <code
             >accent-color</code
           > properties.
         </p>
       </div>
-      <div class="grid-item g-row-4">
-        <h6 class="mb-0">Scene Colors</h6>
+      <div class="grid-item g-rowspan-3">
+        <h4 class="mb-0">Dim Colors</h4>
         <p class="font-small">
           Semi-transparent surface colors named by function. Used for the <code
             >background-color</code
           > property. Suitable for overlays and layered UI surfaces.
         </p>
       </div>
-      <div class="grid-item g-row-4">
-        <h6 class="mb-0">Link Colors</h6>
+      <div class="grid-item g-rowspan-4">
+        <h4 class="mb-0">Link Colors</h4>
         <p class="font-small">
           Colors for anchor elements across all states. Used for the <code>color</code> property.
         </p>
       </div>
-      <div class="grid-item g-row-8">
-        <h6 class="mb-0">Interaction Colors</h6>
+      <div class="grid-item g-rowspan-8">
+        <h4 class="mb-0">Interaction Colors</h4>
         <p class="font-small">
           State colors for interactive elements such as buttons. Available as CSS variables only —
           not exposed as utility classes.
@@ -98,6 +97,14 @@ import { getConfig } from '@libs/config'
             <div class="grid-item">
               <div
                 class="h-100 w-100 rounded-medium"
+                style={`background-color: var(--cx-${contextColor.name}-transparent-color);`}
+              >
+                &nbsp;
+              </div>
+            </div>
+            <div class="grid-item">
+              <div
+                class="h-100 w-100 rounded-medium"
                 style={`background-color: var(--cx-${contextColor.name}-fg-main);`}
               >
                 &nbsp;
@@ -115,6 +122,14 @@ import { getConfig } from '@libs/config'
               <div
                 class="h-100 w-100 rounded-medium"
                 style={`background-color: var(--cx-${contextColor.name}-fg-slight);`}
+              >
+                &nbsp;
+              </div>
+            </div>
+            <div class="grid-item">
+              <div
+                class="h-100 w-100 rounded-medium"
+                style={`background-color: var(--cx-${contextColor.name}-fg-active);`}
               >
                 &nbsp;
               </div>
@@ -163,6 +178,14 @@ import { getConfig } from '@libs/config'
               <div
                 class="h-100 w-100 rounded-medium"
                 style={`background-color: var(--cx-${contextColor.name}-bg-evident);`}
+              >
+                &nbsp;
+              </div>
+            </div>
+            <div class="grid-item">
+              <div
+                class="h-100 w-100 rounded-medium"
+                style={`background-color: var(--cx-${contextColor.name}-bg-active);`}
               >
                 &nbsp;
               </div>
@@ -243,14 +266,6 @@ import { getConfig } from '@libs/config'
               <div
                 class="h-100 w-100 rounded-medium"
                 style={`background-color: var(--cx-${contextColor.name}-cue-slight);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-medium"
-                style={`background-color: var(--cx-${contextColor.name}-transparent-color);`}
               >
                 &nbsp;
               </div>
@@ -389,6 +404,9 @@ import { getConfig } from '@libs/config'
         <code>--cx-*-contrast-color</code>
       </div>
       <div class="grid-item">
+        <code>--cx-*-transparent-color</code>
+      </div>
+      <div class="grid-item">
         <code>--cx-*-fg-main</code>
       </div>
       <div class="grid-item">
@@ -396,6 +414,9 @@ import { getConfig } from '@libs/config'
       </div>
       <div class="grid-item">
         <code>--cx-*-fg-slight</code>
+      </div>
+      <div class="grid-item">
+        <code>--cx-*-fg-active</code>
       </div>
       <div class="grid-item">
         <code>--cx-*-fg-inverse</code>
@@ -414,6 +435,9 @@ import { getConfig } from '@libs/config'
       </div>
       <div class="grid-item">
         <code>--cx-*-bg-evident</code>
+      </div>
+      <div class="grid-item">
+        <code>--cx-*-bg-active</code>
       </div>
       <div class="grid-item">
         <code>--cx-*-bg-inverse</code>
@@ -444,9 +468,6 @@ import { getConfig } from '@libs/config'
       </div>
       <div class="grid-item">
         <code>--cx-*-cue-slight</code>
-      </div>
-      <div class="grid-item">
-        <code>--cx-*-transparent-color</code>
       </div>
       <div class="grid-item">
         <code>--cx-*-dim-slight</code>

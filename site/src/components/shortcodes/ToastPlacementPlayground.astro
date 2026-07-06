@@ -1,0 +1,178 @@
+---
+import Example from '@chassis-ui/docs/shortcodes/Example.astro'
+import { getData } from '@libs/data'
+import { highlightCode } from '@chassis-ui/docs'
+
+const color = Object.fromEntries(getData('context-colors').map((c) => [c.name, c.hex])).primary
+
+const placements = [
+  { value: 'top-0 start-0', label: 'Top start' },
+  { value: 'top-0 start-50 translate-middle-x', label: 'Top center' },
+  { value: 'top-0 end-0', label: 'Top end' },
+  { value: 'top-50 start-0 translate-middle-y', label: 'Middle start' },
+  { value: 'top-50 start-50 translate-middle', label: 'Middle center' },
+  { value: 'top-50 end-0 translate-middle-y', label: 'Middle end' },
+  { value: 'bottom-0 start-0', label: 'Bottom start' },
+  { value: 'bottom-0 start-50 translate-middle-x', label: 'Bottom center' },
+  { value: 'bottom-0 end-0', label: 'Bottom end' }
+]
+
+const toastInner = `  <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <svg aria-hidden="true" class="cxd-placeholder-image rounded me-xsmall" height="20" preserveAspectRatio="xMidYMid slice" width="20" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="${color}" /></svg>
+      <strong class="me-auto">Chassis</strong>
+      <small>11 mins ago</small>
+    </div>
+    <div class="toast-body">
+      Hello, world! This is a toast message.
+    </div>
+  </div>`
+
+const variants = await Promise.all(
+  placements.map(async ({ value }) => {
+    const containerClass = `toast-container position-fixed ${value} p-medium`
+    const { html } = await highlightCode(
+      `<div class="${containerClass}">\n${toastInner}\n</div>`,
+      'html'
+    )
+    return { value, html }
+  })
+)
+---
+
+<div class="bg-even p-medium mb-medium font-small rounded-medium">
+  <div class="hstack gap-medium align-items-center">
+    <label class="form-label font-strong mb-0" for="toast-placement-menu">Placement:</label>
+    <div>
+      <button
+        type="button"
+        class="button default menu-toggle"
+        id="toast-placement-menu"
+        data-cx-toggle="menu"
+        aria-expanded="false"
+        data-placement="bottom-0 end-0"
+        data-color={color}
+      >
+        <span>Bottom end</span>
+      </button>
+      <div class="menu" style="z-index: 1100;">
+        {
+          placements.map((p) => (
+            <button
+              type="button"
+              class:list={['menu-item', { active: p.value === 'bottom-0 end-0' }]}
+              data-placement={p.value}
+            >
+              {p.label}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<Example
+  class="cxd-example-toasts position-relative p-0"
+  code={`<div class="toast-container p-medium">
+  <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <Placeholder width="20" height="20" background="${color}" class="rounded me-xsmall" text={false} title={false} />
+      <strong class="me-auto">Chassis</strong>
+      <small>11 mins ago</small>
+    </div>
+    <div class="toast-body">
+      Hello, world! This is a toast message.
+    </div>
+  </div>
+</div>`}
+  id="toast-placement-preview"
+/>
+
+<div hidden>
+  {variants.map((v) => <div data-toast-placement-code={v.value} set:html={v.html} />)}
+</div>
+
+<script>
+  const placementMenuButton = document.querySelector('#toast-placement-menu') as HTMLButtonElement
+  const placementMenuItems = document.querySelectorAll('#toast-placement-menu + .menu .menu-item')
+  const previewContainer = document.querySelector('#toast-placement-preview') as HTMLElement
+  const previewToastContainer = previewContainer?.querySelector('.toast-container') as HTMLElement
+  const codeSnippet = previewContainer
+    ?.closest('.cxd-example-snippet')
+    ?.querySelector('.cxd-code') as HTMLElement
+
+  const allPlacementTokens = [
+    'top-0',
+    'bottom-0',
+    'start-0',
+    'end-0',
+    'start-50',
+    'top-50',
+    'translate-middle-x',
+    'translate-middle-y',
+    'translate-middle',
+    'position-absolute'
+  ]
+
+  const placementLabels: Record<string, string> = {
+    'top-0 start-0': 'Top start',
+    'top-0 start-50 translate-middle-x': 'Top center',
+    'top-0 end-0': 'Top end',
+    'top-50 start-0 translate-middle-y': 'Middle start',
+    'top-50 start-50 translate-middle': 'Middle center',
+    'top-50 end-0 translate-middle-y': 'Middle end',
+    'bottom-0 start-0': 'Bottom start',
+    'bottom-0 start-50 translate-middle-x': 'Bottom center',
+    'bottom-0 end-0': 'Bottom end'
+  }
+
+  function updatePlacement(placement: string) {
+    if (!previewToastContainer || !placementMenuButton) return
+
+    const labelSpan = placementMenuButton.querySelector('span')
+    if (labelSpan) {
+      labelSpan.textContent = placementLabels[placement] ?? placement
+    }
+    placementMenuButton.dataset.placement = placement
+
+    placementMenuItems.forEach((item) => {
+      const itemPlacement = (item as HTMLElement).dataset.placement
+      item.classList.toggle('active', itemPlacement === placement)
+    })
+
+    allPlacementTokens.forEach((cls) => {
+      previewToastContainer.classList.remove(cls)
+    })
+
+    if (placement) {
+      previewToastContainer.classList.add('position-absolute')
+      placement.split(' ').forEach((cls) => {
+        previewToastContainer.classList.add(cls)
+      })
+    }
+
+    updateCodeSnippet(placement)
+  }
+
+  function updateCodeSnippet(placement: string) {
+    if (!codeSnippet) return
+    const variant = document.querySelector<HTMLElement>(
+      `[data-toast-placement-code="${placement}"]`
+    )
+    if (variant) {
+      codeSnippet.innerHTML = variant.innerHTML
+    }
+  }
+
+  if (placementMenuButton) {
+    placementMenuItems.forEach((item) => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault()
+        const placement = (item as HTMLElement).dataset.placement || ''
+        updatePlacement(placement)
+      })
+    })
+    updatePlacement('bottom-0 end-0')
+  }
+</script>

@@ -1,3 +1,11 @@
+@use "sass:string";
+@use "sass:map";
+@use "./config" as *;
+@use "./maps" as *;
+@use "./mixins" as *;
+@use "./rfs" as *;
+@use "./placeholders" as *;
+
 //
 // Card Component
 //
@@ -11,10 +19,14 @@
 // scss-docs-start _card-exclude-strokes
 @mixin _card-exclude-strokes($comp: null, $padding-factor: 1) {
   @if $enable-exclude-strokes == true or index($enable-exclude-strokes, card) {
-    $border-width: var(--#{$prefix}border-width);
-    $padding-modifier: #{calc(var(--#{$prefix}border-width) * $padding-factor)};
-    $padding-y: #{calc(var(--#{$prefix}#{if($comp, "#{$comp}-", "")}padding-y) - #{$padding-modifier})};
-    $padding-x: #{calc(var(--#{$prefix}#{if($comp, "#{$comp}-", "")}padding-x) - #{$border-width})};
+    $-prefix: "";
+    @if $comp {
+      $-prefix: "#{$comp}-";
+    }
+    $border-width: var(--border-width);
+    $padding-modifier: calc(var(--border-width) * $padding-factor);
+    $padding-y: calc(var(--#{$-prefix}padding-y) - #{$padding-modifier});
+    $padding-x: calc(var(--#{$-prefix}padding-x) - #{$border-width});
     padding: $padding-y $padding-x;
   } @else {
     @include padding($comp);
@@ -22,348 +34,379 @@
 }
 // scss-docs-end _card-exclude-strokes
 
-.card {
-  // scss-docs-start card-css-vars
-  --#{$prefix}padding-y: var(--#{$prefix}card-padding-y, #{$card-padding-y});
-  --#{$prefix}padding-x: var(--#{$prefix}card-padding-x, #{$card-padding-x});
-  --#{$prefix}header-padding-y: var(--#{$prefix}card-header-padding-y, #{$card-header-padding-y});
-  --#{$prefix}header-padding-x: var(--#{$prefix}card-header-padding-x, #{$card-header-padding-x});
-  --#{$prefix}footer-padding-y: var(--#{$prefix}card-footer-padding-y, #{$card-footer-padding-y});
-  --#{$prefix}footer-padding-x: var(--#{$prefix}card-footer-padding-x, #{$card-footer-padding-x});
-  --#{$prefix}gap-y: var(--#{$prefix}card-gap-y, #{$card-gap-y});
-  --#{$prefix}gap-x: var(--#{$prefix}card-gap-x, #{$card-gap-x});
+// Applies font properties from $context-fonts for a given font class name (e.g. "font-title").
+// Used to replace cross-module @extend which is not supported in the Sass module system.
+@mixin _context-font($class-name) {
+  $key: string.slice($class-name, 6); // strip "font-" prefix to get map key
+  $font: map.get($context-fonts, $key);
+  @if $font {
+    font-family: map.get($font, "font-family");
+    font-style: map.get($font, "font-style");
+    @include clamp(map.get($font, "font-size"), font-size);
+    @include clamp(map.get($font, "line-height"), line-height);
+    font-weight: map.get($font, "font-weight");
+    text-decoration: map.get($font, "text-decoration");
+    text-transform: map.get($font, "text-transform");
+    letter-spacing: map.get($font, "letter-spacing");
+  }
+}
 
-  --#{$prefix}border-width: var(--#{$prefix}card-border-width, #{$card-border-width});
-  --#{$prefix}border-color: var(--#{$prefix}card-border-color, #{$card-border-color});
-  --#{$prefix}border-radius: var(--#{$prefix}card-border-radius, #{$card-border-radius});
-  --#{$prefix}inner-border-radius: var(--#{$prefix}card-inner-border-radius, #{$card-inner-border-radius});
-  --#{$prefix}box-shadow: var(--#{$prefix}card-box-shadow, #{$card-box-shadow});
+@layer components {
+  .card {
+    // scss-docs-start card-css-vars
+    --padding-y: var(--card-padding-y, #{$card-padding-y});
+    --padding-x: var(--card-padding-x, #{$card-padding-x});
+    --gap-y: var(--card-gap-y, #{$card-gap-y});
+    --gap-x: var(--card-gap-x, #{$card-gap-x});
+    --header-padding-y: var(--card-header-padding-y, #{$card-header-padding-y});
+    --header-padding-x: var(--card-header-padding-x, #{$card-header-padding-x});
+    --footer-padding-y: var(--card-footer-padding-y, #{$card-footer-padding-y});
+    --footer-padding-x: var(--card-footer-padding-x, #{$card-footer-padding-x});
 
-  --#{$prefix}header-fg-color: var(--#{$prefix}card-header-fg-color, #{$card-header-fg-color});
-  --#{$prefix}header-bg-color: var(--#{$prefix}card-header-bg-color, #{$card-header-bg-color});
-  --#{$prefix}fg-color: var(--#{$prefix}card-fg-color, #{$card-fg-color});
-  --#{$prefix}bg-color: var(--#{$prefix}card-bg-color, #{$card-bg-color});
-  --#{$prefix}title-fg-color: var(--#{$prefix}card-title-fg-color, #{$card-title-color});
-  --#{$prefix}subtitle-fg-color: var(--#{$prefix}card-subtitle-fg-color, #{$card-subtitle-color});
+    --border-width: var(--card-border-width, #{$card-border-width});
+    --border-color: var(--card-border-color, #{$card-border-color});
+    --border-radius: var(--card-border-radius, #{$card-border-radius});
+    --inner-border-radius: var(--card-inner-border-radius, #{$card-inner-border-radius});
+    --box-shadow: var(--card-box-shadow, #{$card-box-shadow});
 
-  --#{$prefix}height: var(--#{$prefix}card-heading, #{$card-height});
-  --#{$prefix}group-margin: var(--#{$prefix}card-group-margin, #{$card-group-margin});
-  // scss-docs-end card-css-vars
+    --fg-color: var(--card-fg-color, #{$card-fg-color});
+    --bg-color: var(--card-bg-color, #{$card-bg-color});
+    --title-fg-color: var(--card-title-fg-color, #{$card-title-color});
+    --subtitle-fg-color: var(--card-subtitle-fg-color, #{$card-subtitle-color});
+    --header-fg-color: var(--card-header-fg-color, #{$card-header-fg-color});
+    --header-bg-color: var(--card-header-bg-color, #{$card-header-bg-color});
+    --footer-fg-color: var(--card-footer-fg-color, #{$card-footer-fg-color});
+    --footer-bg-color: var(--card-footer-bg-color, #{$card-footer-bg-color});
 
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: var(--#{$prefix}height);
-  word-wrap: break-word;
-  background-clip: border-box;
-  @include box-shadow(var(--#{$prefix}box-shadow));
+    --header-font-weight: var(--card-header-font-weight, #{$card-header-font-weight});
 
-  @extend %component;
+    @include map-font($card-medium-title-font, card-title, title);
+    @include map-font($card-medium-subtitle-font, card-subtitle, subtitle);
+    @include map-font($card-medium-body-font, card);
 
-  &.large {
-    --#{$prefix}card-padding-y: #{$card-large-padding-y};
-    --#{$prefix}card-padding-x: #{$card-large-padding-x};
-    --#{$prefix}card-header-padding-y: #{$card-large-header-padding-y};
-    --#{$prefix}card-header-padding-x: #{$card-large-header-padding-x};
-    --#{$prefix}card-footer-padding-y: #{$card-large-footer-padding-y};
-    --#{$prefix}card-footer-padding-x: #{$card-large-footer-padding-x};
-    --#{$prefix}card-gap-y: #{$card-large-gap-y};
-    --#{$prefix}card-gap-x: #{$card-large-gap-x};
+    --height: var(--card-heading, #{$card-height});
+    --group-margin: var(--card-group-margin, #{$card-group-margin});
+    // scss-docs-end card-css-vars
 
-    .button:not(.small):not(.medium) {
-      @extend %button-large;
+    // Set list component CSS vars to card CSS vars so that lists within cards
+    // can inherit and use them for consistent spacing and borders.
+    --list-padding-x: var(--padding-x);
+    --list-border-width: var(--border-width);
+    --list-border-color: var(--border-color);
+    --list-border-radius: var(--border-radius);
+    --list-inner-border-radius: var(--inner-border-radius);
+
+    @extend %component;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: var(--height);
+    word-wrap: break-word;
+    background-clip: border-box;
+    @include box-shadow(var(--box-shadow));
+
+    &.large {
+      // scss-docs-start card-large-css-vars
+      --padding-y: var(--card-large-padding-y, #{$card-large-padding-y});
+      --padding-x: var(--card-large-padding-x, #{$card-large-padding-x});
+      --header-padding-y: var(--card-large-header-padding-y, #{$card-large-header-padding-y});
+      --header-padding-x: var(--card-large-header-padding-x, #{$card-large-header-padding-x});
+      --footer-padding-y: var(--card-large-footer-padding-y, #{$card-large-footer-padding-y});
+      --footer-padding-x: var(--card-large-footer-padding-x, #{$card-large-footer-padding-x});
+      --gap-y: var(--card-large-gap-y, #{$card-large-gap-y});
+      --gap-x: var(--card-large-gap-x, #{$card-large-gap-x});
+      @include map-font($card-large-title-font, card-large, title);
+      @include map-font($card-large-subtitle-font, card-large, subtitle);
+      @include map-font($card-large-body-font, card-large);
+      // scss-docs-end card-large-css-vars
+
+      .button:not(.small):not(.medium) {
+        @extend %button-large;
+      }
+
+    }
+
+    &.small {
+      // scss-docs-start card-small-css-vars
+      --padding-y: var(--card-small-padding-y, #{$card-small-padding-y});
+      --padding-x: var(--card-small-padding-x, #{$card-small-padding-x});
+      --header-padding-y: var(--card-small-header-padding-y, #{$card-small-header-padding-y});
+      --header-padding-x: var(--card-small-header-padding-x, #{$card-small-header-padding-x});
+      --footer-padding-y: var(--card-small-footer-padding-y, #{$card-small-footer-padding-y});
+      --footer-padding-x: var(--card-small-footer-padding-x, #{$card-small-footer-padding-x});
+      --gap-y: var(--card-small-gap-y, #{$card-small-gap-y});
+      --gap-x: var(--card-small-gap-x, #{$card-small-gap-x});
+      @include map-font($card-small-title-font, card-small, title);
+      @include map-font($card-small-subtitle-font, card-small, subtitle);
+      @include map-font($card-small-body-font, card-small);
+      // scss-docs-end card-small-css-vars
+
+      .button:not(.large):not(.medium) {
+        @extend %button-small;
+      }
+
+    }
+
+    > hr {
+      margin-inline: 0;
+    }
+
+    > .list.flush{
+      border-block: var(--border-width) solid var(--border-color);
+
+      &:first-child {
+        border-block-start-width: 0;
+        @include border-top-radius(var(--inner-border-radius));
+      }
+
+      &:last-child  {
+        border-block-end-width: 0;
+        @include border-bottom-radius(var(--inner-border-radius));
+      }
+    }
+
+    // Due to specificity of the above selector (`.card > .list`), we must
+    // use a child selector here to prevent double borders.
+    > .card-header + .list {
+      border-block-start: 0;
+    }
+    > .list:has(+ .card-footer) {
+      border-block-end: 0;
+    }
+  }
+
+  .card-body {
+    display: flex;
+    // Enable `flex-grow: 1` for decks and groups so that card blocks take up
+    // as much space as possible, ensuring footers are aligned to the bottom.
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--gap-y);
+
+    @include _card-exclude-strokes();
+
+    &:has(.card-image:only-child):not(.row > [class*="col-"]) {
+      flex-grow: 0;
+      &:has(+ .card-body)  {
+        padding-block-end: 0;
+      }
+      &:is(.card-body + &)  {
+        padding-block-start: 0;
+      }
+    }
+
+    &:has(.card-image:only-child):is(.row > [class*="col-"]) {
+      &:has(+ .card-body[class*="col-"])  {
+        padding-inline-end: 0;
+      }
+      &:is(.card-body[class*="col-"] + &)  {
+        padding-inline-start: 0;
+      }
+    }
+
+    > * {
+      margin-block-end: 0;
     }
 
   }
 
-  &.small {
-    --#{$prefix}card-padding-y: #{$card-small-padding-y};
-    --#{$prefix}card-padding-x: #{$card-small-padding-x};
-    --#{$prefix}card-header-padding-y: #{$card-small-header-padding-y};
-    --#{$prefix}card-header-padding-x: #{$card-small-header-padding-x};
-    --#{$prefix}card-footer-padding-y: #{$card-small-footer-padding-y};
-    --#{$prefix}card-footer-padding-x: #{$card-small-footer-padding-x};
-    --#{$prefix}card-gap-y: #{$card-small-gap-y};
-    --#{$prefix}card-gap-x: #{$card-small-gap-x};
-
-    .button:not(.large):not(.medium) {
-      @extend %button-small;
-    }
-
+  .card-title {
+    color: var(--card-title-fg-color);
+    @include font(title);
   }
 
-  > hr {
-    margin-right: 0;
-    margin-left: 0;
+  .card-subtitle {
+    color: var(--subtitle-fg-color);
+    @include font(subtitle);
   }
 
-  > .list-group {
-    border-top: inherit;
-    border-bottom: inherit;
-    &.outline {
-      border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
-      border-bottom: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
+  .card-title + .card-subtitle,
+  .card-subtitle + .card-title {
+    margin-block-start: calc(var(--gap-y) * -1);
+  }
+
+  .card-link {
+    &:hover {
+      @if $link-hover-decoration == underline {
+        text-decoration: none;
+      }
     }
+
+    + .card-link {
+      margin-inline-start: var(--gap-x);
+    }
+  }
+
+  //
+  // Optional textual headers
+  //
+
+  .card-header {
+    @include _card-exclude-strokes(header, .5);
+
+    margin-block-end: 0; // Removes the default margin-bottom of <hN>
+    font-weight: var(--header-font-weight);
+    color: var(--header-fg-color);
+    background-color: var(--header-bg-color);
+    border-block-end: var(--border-width) solid var(--border-color);
 
     &:first-child {
-      border-top-width: 0;
-      @include border-top-radius(var(--#{$prefix}inner-border-radius));
-    }
-
-    &:last-child  {
-      border-bottom-width: 0;
-      @include border-bottom-radius(var(--#{$prefix}inner-border-radius));
+      @include border-radius(var(--inner-border-radius) var(--inner-border-radius) 0 0);
     }
   }
 
-  // Due to specificity of the above selector (`.card > .list-group`), we must
-  // use a child selector here to prevent double borders.
-  > .card-header + .list-group {
-    border-top: 0;
-  }
-  > .list-group:has(+ .card-footer) {
-    border-bottom: 0;
-  }
-}
+  .card-footer {
+    @include _card-exclude-strokes(footer, .5);
+    color: var(--footer-fg-color);
+    background-color: var(--footer-bg-color);
+    border-block-start: var(--border-width) solid var(--border-color);
 
-.card-content {
-  // Enable `flex-grow: 1` for decks and groups so that card blocks take up
-  // as much space as possible, ensuring footers are aligned to the bottom.
-  flex: 1 1 auto;
-  @include _card-exclude-strokes();
-
-  &:has(.card-image:only-child):not(.row > [class*="col-"]) {
-    flex-grow: 0;
-    &:has(+ .card-content)  {
-      padding-bottom: 0;
-    }
-    &:is(.card-content + &)  {
-      padding-top: 0;
+    &:last-child {
+      @include border-radius(0 0 var(--inner-border-radius) var(--inner-border-radius));
     }
   }
 
-  &:has(.card-image:only-child):is(.row > [class*="col-"]) {
-    &:has(+ .card-content[class*="col-"])  {
-      padding-right: 0;
-    }
-    &:is(.card-content[class*="col-"] + &)  {
-      padding-left: 0;
-    }
-  }
 
-}
+  //
+  // Header navs
+  //
 
-.card-title {
-  margin-bottom: var(--#{$prefix}gap-y);
-  color: var(--#{$prefix}card-title-fg-color);
-  @if $card-title-font-extend-class {
-    @extend .#{$card-title-font-extend-class};
-    .card.large & {
-      @extend .#{$card-title-font-extend-class}-large;
-    }
-    .card.small & {
-      @extend .#{$card-title-font-extend-class}-small;
+  .nav.card-header-tabs {
+    margin-block-end: calc(-1 * var(--header-padding-y));
+    font-weight: var(--link-font-weight, initial);
+    border-block-end: 0;
+
+    .nav-link.active {
+      background-color: var(--bg-color);
+      border-block-end-color: var(--bg-color);
     }
   }
-}
 
-.card-subtitle {
-  margin-bottom: var(--#{$prefix}gap-y);
-  color: var(--#{$prefix}subtitle-fg-color);
-  @if $card-subtitle-font-extend-class {
-    @extend .#{$card-subtitle-font-extend-class};
-    .card.large & {
-      @extend .#{$card-subtitle-font-extend-class}-large;
+  .card-header-pills {
+    margin-inline: calc(-.5 * var(--header-padding-x));
+  }
+
+  // Card image
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    padding: var(--padding-y) var(--padding-x);
+    overflow: hidden;
+    @include border-radius(var(--inner-border-radius));
+  }
+
+  .card-image,
+  .card-image-top,
+  .card-image-bottom,
+  .card-image-start,
+  .card-image-end {
+    width: 100%; // Required because we use flexbox and this inherently applies align-self: stretch
+  }
+
+  .card-image,
+  .card-image-top {
+    @include border-top-radius(var(--inner-border-radius));
+  }
+
+  .card-image,
+  .card-image-bottom {
+    @include border-bottom-radius(var(--inner-border-radius));
+  }
+
+  .card-image-start {
+    @include border-start-radius(var(--inner-border-radius));
+  }
+
+  .card-image-end {
+    @include border-end-radius(var(--inner-border-radius));
+  }
+
+  // Responsive card-image-start/end via media queries.
+  // Usage: <img class="card-image-top medium:card-image-start" ...>
+  // Border-radius and layout switch are coupled — both fire at the same viewport breakpoint.
+  @include loop-breakpoints-up() using ($breakpoint, $prefix) {
+    @if $prefix != "" {
+      @include media-breakpoint-up($breakpoint) {
+        // Flush variant: image as direct card child
+        .#{$prefix}card-image-start {
+          @include border-start-radius(var(--inner-border-radius));
+          @include border-end-radius(0);
+          height: 100%;
+          aspect-ratio: auto;
+        }
+
+        .#{$prefix}card-image-end {
+          @include border-end-radius(var(--inner-border-radius));
+          @include border-start-radius(0);
+          height: 100%;
+          aspect-ratio: auto;
+        }
+
+      }
     }
-    .card.small & {
-      @extend .#{$card-subtitle-font-extend-class}-small;
-    }
-  }
-}
-
-.card-title:has(+ .card-subtitle),
-.card-subtitle:has(+ .card-title) {
-  margin-bottom: 0;
-}
-
-.card-body {
-  margin-bottom: var(--#{$prefix}padding-y);
-  @if $card-body-font-extend-class {
-    @extend .#{$card-body-font-extend-class};
-    .card.large & {
-      @extend .#{$card-body-font-extend-class}-large;
-    }
-    .card.small & {
-      @extend .#{$card-body-font-extend-class}-small;
-    }
-  }
-}
-
-.card-body:last-child {
-  margin-bottom: 0;
-}
-
-.card-link {
-  &:hover {
-    text-decoration: if($link-hover-decoration == underline, none, null);
   }
 
-  + .card-link {
-    margin-left: var(--#{$prefix}gap-x);
-  }
-}
 
-//
-// Optional textual headers
-//
+  //
+  // Card groups
+  //
 
-.card-header {
-  // padding: var(--#{$prefix}header-padding-y) var(--#{$prefix}header-padding-x);
-  //padding: #{calc(var(--#{$prefix}header-padding-y) - var(--#{$prefix}border-width))} #{calc(var(--#{$prefix}header-padding-x) - var(--#{$prefix}border-width))};
-  @include _card-exclude-strokes(header, .5);
-
-  margin-bottom: 0; // Removes the default margin-bottom of <hN>
-  color: var(--#{$prefix}header-fg-color);
-  background-color: var(--#{$prefix}header-bg-color);
-  border-bottom: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
-
-  &:first-child {
-    @include border-radius(var(--#{$prefix}inner-border-radius) var(--#{$prefix}inner-border-radius) 0 0);
-  }
-}
-
-.card-footer {
-  // padding: var(--#{$prefix}header-padding-y) var(--#{$prefix}header-padding-x);
-  // padding: #{calc(var(--#{$prefix}header-padding-y) - var(--#{$prefix}border-width))} #{calc(var(--#{$prefix}header-padding-x) - var(--#{$prefix}border-width))};
-  @include _card-exclude-strokes(footer, .5);
-  color: var(--#{$prefix}header-fg-color);
-  background-color: var(--#{$prefix}header-bg-color);
-  border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
-
-  &:last-child {
-    @include border-radius(0 0 var(--#{$prefix}inner-border-radius) var(--#{$prefix}inner-border-radius));
-  }
-}
-
-
-//
-// Header navs
-//
-
-.card-header-tabs {
-  margin-right: calc(-.5 * var(--#{$prefix}header-padding-x)); // stylelint-disable-line function-disallowed-list
-  margin-bottom: calc(-1 * var(--#{$prefix}header-padding-y)); // stylelint-disable-line function-disallowed-list
-  margin-left: calc(-.5 * var(--#{$prefix}header-padding-x)); // stylelint-disable-line function-disallowed-list
-  border-bottom: 0;
-
-  .nav-link.active {
-    background-color: var(--#{$prefix}bg-color);
-    border-bottom-color: var(--#{$prefix}bg-color);
-  }
-}
-
-.card-header-pills {
-  margin-right: calc(-.5 * var(--#{$prefix}header-padding-x)); // stylelint-disable-line function-disallowed-list
-  margin-left: calc(-.5 * var(--#{$prefix}header-padding-x)); // stylelint-disable-line function-disallowed-list
-}
-
-// Card image
-.card-overlay {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  padding: var(--#{$prefix}padding-y) var(--#{$prefix}padding-x);
-  overflow: hidden;
-  @include border-radius(var(--#{$prefix}inner-border-radius));
-}
-
-.card-image,
-.card-image-top,
-.card-image-bottom,
-.card-image-start,
-.card-image-end {
-  width: 100%; // Required because we use flexbox and this inherently applies align-self: stretch
-}
-
-.card-image,
-.card-image-top {
-  @include border-top-radius(var(--#{$prefix}inner-border-radius));
-}
-
-.card-image,
-.card-image-bottom {
-  @include border-bottom-radius(var(--#{$prefix}inner-border-radius));
-}
-
-.card-image-start {
-  @include border-start-radius(var(--#{$prefix}inner-border-radius));
-}
-
-.card-image-end {
-  @include border-end-radius(var(--#{$prefix}inner-border-radius));
-}
-
-
-//
-// Card groups
-//
-
-.card-group {
-  // The child selector allows nested `.card` within `.card-group`
-  // to display properly.
-  > .card {
-    margin-bottom: var(--#{$prefix}group-margin);
-  }
-
-  @include media-breakpoint-up(small) {
-    display: flex;
-    flex-flow: row wrap;
+  .card-group {
     // The child selector allows nested `.card` within `.card-group`
     // to display properly.
     > .card {
-      // Flexbugs #4: https://github.com/philipwalton/flexbugs#flexbug-4
-      flex: 1 0 0%;
-      margin-bottom: 0;
+      margin-block-end: var(--group-margin);
+    }
 
-      + .card {
-        margin-left: 0;
-        border-left: 0;
-      }
+    @include container-breakpoint-up(small) {
+      display: flex;
+      flex-flow: row wrap;
+      // The child selector allows nested `.card` within `.card-group`
+      // to display properly.
+      > .card {
+        // Flexbugs #4: https://github.com/philipwalton/flexbugs#flexbug-4
+        flex: 1 0 0%;
+        margin-block-end: 0;
 
-      // Handle rounded corners
-      @if $enable-rounded-borders {
-        &:not(:last-child) {
-          @include border-end-radius(0);
-
-          .card-image-top,
-          .card-header {
-            // stylelint-disable-next-line property-disallowed-list
-            border-top-right-radius: 0;
-          }
-          .card-image-bottom,
-          .card-footer {
-            // stylelint-disable-next-line property-disallowed-list
-            border-bottom-right-radius: 0;
-          }
+        + .card {
+          margin-inline-start: 0;
+          border-inline-start: 0;
         }
 
-        &:not(:first-child) {
-          @include border-start-radius(0);
+        // Handle rounded corners
+        @if $enable-rounded-borders {
+          &:not(:last-child) {
+            @include border-end-radius(0);
 
-          .card-image-top,
-          .card-header {
-            // stylelint-disable-next-line property-disallowed-list
-            border-top-left-radius: 0;
+            .card-image-top,
+            .card-header {
+              // stylelint-disable-next-line property-disallowed-list
+              border-start-end-radius: 0;
+            }
+            .card-image-bottom,
+            .card-footer {
+              // stylelint-disable-next-line property-disallowed-list
+              border-end-end-radius: 0;
+            }
           }
-          .card-image-bottom,
-          .card-footer {
-            // stylelint-disable-next-line property-disallowed-list
-            border-bottom-left-radius: 0;
+
+          &:not(:first-child) {
+            @include border-start-radius(0);
+
+            .card-image-top,
+            .card-header {
+              // stylelint-disable-next-line property-disallowed-list
+              border-start-start-radius: 0;
+            }
+            .card-image-bottom,
+            .card-footer {
+              // stylelint-disable-next-line property-disallowed-list
+              border-end-start-radius: 0;
+            }
           }
         }
       }
     }
   }
-}
+} // @layer components

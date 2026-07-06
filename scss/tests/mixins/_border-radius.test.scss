@@ -1,0 +1,169 @@
+@use "../../config" as *;
+@use "../../mixins" as *;
+
+// stylelint-disable property-disallowed-list
+
+@include describe("valid-radius function") {
+  @include it("passes a positive value through") {
+    @include assert() {
+      @include output() {
+        .el { border-radius: valid-radius(8px); }
+      }
+      @include expect() {
+        .el { border-radius: 8px; }
+      }
+    }
+  }
+
+  @include it("clamps a negative value to 0") {
+    @include assert() {
+      @include output() {
+        .el { border-radius: valid-radius(-4px); }
+      }
+      @include expect() {
+        .el { border-radius: 0; }
+      }
+    }
+  }
+
+  @include it("clamps negative values within a multi-value list") {
+    @include assert() {
+      @include output() {
+        // -4px → 0 (unitless); 0px is already ≥ 0 so it keeps its unit
+        .el { border-radius: valid-radius(8px -4px 0px); }
+      }
+      @include expect() {
+        .el { border-radius: 8px 0 0px; }
+      }
+    }
+  }
+
+  @include it("passes non-number values (e.g. CSS variables) through unchanged") {
+    @include assert() {
+      @include output() {
+        .el { border-radius: valid-radius(var(--radius)); }
+      }
+      @include expect() {
+        .el { border-radius: var(--radius); }
+      }
+    }
+  }
+}
+
+@include describe("border-radius mixin") {
+  @include it("emits border-radius when rounded borders are enabled") {
+    $enable-rounded-borders: true !global;
+    @include assert() {
+      @include output() {
+        .el { @include border-radius(4px); }
+      }
+      @include expect() {
+        .el { border-radius: 4px; }
+      }
+    }
+  }
+
+  @include it("emits nothing when rounded borders are disabled and no fallback given") {
+    $enable-rounded-borders: false !global;
+    @include assert() {
+      @include output() {
+        .el { @include border-radius(4px); }
+      }
+      @include expect() {
+        .el { }
+      }
+    }
+  }
+
+  @include it("emits the fallback when rounded borders are disabled and fallback is given") {
+    $enable-rounded-borders: false !global;
+    @include assert() {
+      @include output() {
+        .el { @include border-radius(4px, 0); }
+      }
+      @include expect() {
+        .el { border-radius: 0; }
+      }
+    }
+  }
+}
+
+@include describe("border-top-radius mixin") {
+  @include it("emits top-left and top-right radius when enabled") {
+    $enable-rounded-borders: true !global;
+    @include assert() {
+      @include output() {
+        .el { @include border-top-radius(4px); }
+      }
+      @include expect() {
+        .el {
+          border-top-left-radius: 4px;
+          border-top-right-radius: 4px;
+        }
+      }
+    }
+  }
+
+  @include it("emits nothing when disabled") {
+    $enable-rounded-borders: false !global;
+    @include assert() {
+      @include output() {
+        .el { @include border-top-radius(4px); }
+      }
+      @include expect() {
+        .el { }
+      }
+    }
+  }
+}
+
+@include describe("border-end-radius mixin") {
+  @include it("emits start-end and end-end logical radius when enabled") {
+    $enable-rounded-borders: true !global;
+    @include assert() {
+      @include output() {
+        .el { @include border-end-radius(4px); }
+      }
+      @include expect() {
+        .el {
+          border-start-end-radius: 4px;
+          border-end-end-radius: 4px;
+        }
+      }
+    }
+  }
+}
+
+@include describe("border-bottom-radius mixin") {
+  @include it("emits end-start and end-end logical radius when enabled") {
+    $enable-rounded-borders: true !global;
+    @include assert() {
+      @include output() {
+        .el { @include border-bottom-radius(4px); }
+      }
+      @include expect() {
+        .el {
+          border-end-start-radius: 4px;
+          border-end-end-radius: 4px;
+        }
+      }
+    }
+  }
+}
+
+@include describe("border-start-radius mixin") {
+  @include it("emits start-start and end-start logical radius when enabled") {
+    $enable-rounded-borders: true !global;
+    @include assert() {
+      @include output() {
+        .el { @include border-start-radius(4px); }
+      }
+      @include expect() {
+        .el {
+          border-start-start-radius: 4px;
+          border-end-start-radius: 4px;
+        }
+      }
+    }
+  }
+}

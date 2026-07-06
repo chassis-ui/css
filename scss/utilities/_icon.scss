@@ -1,0 +1,43 @@
+@use "../config" as *;
+@use "../maps" as *;
+@use "../functions" as *;
+
+//
+// Icon Utilities
+//
+// Utility map for icon size classes generated from the icon size token map.
+//
+
+$utilities: (
+  // scss-docs-start utils-icons
+  "icon-size": (
+    property: --icon-size,
+    responsive: $enable-responsive-font-sizes,
+    class: null,
+    values: map-loop(map-rename-keys($icon-sizes, "icon-", "start"), varify, "$key")
+  ),
+  "icon-color": (
+    property: (
+      "--icon-color": null,
+      "color": var(--icon-color),
+      "fill": var(--icon-color)
+    ),
+    class: null,
+    group: true,
+    values: map-merge-multiple(
+      map-rename-keys(map-loop($context-colors, opacity-var, #{"$key"}, #{"icon"}), "icon-", "start"),
+      map-loop($context-icon-colors, varify, #{"$key"}),
+      map-loop($body-icon-colors, varify, #{"$key"}),
+      ( "icon-reset": var(--fg-color) )
+    )
+  ),
+  "icon-opacity": (
+    property: --icon-opacity,
+    class: icon-opacity,
+    values: map-merge-multiple(
+      map-loop($opacities, varify, "$key", "opacity"),
+      map-loop($icon-opacities, varify, "$key", "opacity-icon")
+    )
+  )
+  // scss-docs-end utils-icons
+) !default;

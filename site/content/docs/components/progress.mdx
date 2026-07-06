@@ -2,6 +2,8 @@
 title: Progress
 description: Visualize completion status with Chassis CSS's progress component system, featuring accessible markup, stacked displays, and comprehensive theming support.
 toc: true
+tokens: context
+css_layer: components
 ---
 
 ## Introduction
@@ -108,7 +110,7 @@ Apply [background utilities]([[docsref:/utilities/colors]]) to customize progres
 
 ### Accessible color labeling
 
-When using custom background colors with labels, ensure sufficient contrast by applying [contrast utilities]([[docsref:/utilities/contrast]]) for optimal readability.
+When using custom background colors with labels, ensure sufficient contrast by applying [contrast utilities]([[docsref:/helpers/contrast]]) for optimal readability.
 
 <Example code={`<div class="progress" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
     <div class="progress-bar fg-contrast bg-success" style="width: 25%">25%</div>
@@ -181,7 +183,7 @@ Enhance striped progress bars with motion by adding `.animated` to create flowin
 
 <DocsSASSVars />
 
-<ScssDocs name="progress-variables" file="scss/_variables.scss" />
+<ScssDocs name="progress-variables" file="scss/config/_defaults.scss" />
 
 ### Animation keyframes
 

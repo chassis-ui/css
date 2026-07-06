@@ -1,104 +1,95 @@
-@import "accordion";
-@import "badge";
-@import "colors";
-@import "colors-dark";
-@import "fonts";
-@import "buttons";
-@import "chips";
-@import "forms";
-@import "shadows";
-@import "table";
+@use "../config/vendor" as *;
 
-// scss-docs-start asset-tokens
-$separator-size:       $cx-size-asset-separator !default;
-$indicator-size:       $cx-size-asset-indicator !default;
-// scss-docs-start asset-tokens
-// scss-docs-start base-opacity-tokens
-$opacity-zero:         $cx-opacity-level-zero !default;
-$opacity-95:           $cx-opacity-level-95 !default;
-$opacity-90:           $cx-opacity-level-90 !default;
-$opacity-80:           $cx-opacity-level-80 !default;
-$opacity-70:           $cx-opacity-level-70 !default;
-$opacity-60:           $cx-opacity-level-60 !default;
-$opacity-50:           $cx-opacity-level-50 !default;
-$opacity-40:           $cx-opacity-level-40 !default;
-$opacity-30:           $cx-opacity-level-30 !default;
-$opacity-20:           $cx-opacity-level-20 !default;
-$opacity-10:           $cx-opacity-level-10 !default;
-$opacity-05:           $cx-opacity-level-05 !default;
-$opacity-solid:        $cx-opacity-level-solid !default;
-// scss-docs-end base-opacity-tokens
+//
+// Tokens Index
+//
+// Forwards all Chassis CSS token files: colors, typography, borders,
+// breakpoints, spacing, sizing, opacity, shadows, and all component tokens.
+//
 
-// scss-docs-start grid-tokens
-$breakpoint-2xlarge:     $cx-grid-breakpoint-2xlarge !default;
-$breakpoint-xlarge:      $cx-grid-breakpoint-xlarge !default;
-$breakpoint-large:       $cx-grid-breakpoint-large !default;
-$breakpoint-medium:      $cx-grid-breakpoint-medium !default;
-$breakpoint-small:       $cx-grid-breakpoint-small !default;
-// $breakpoint-xsmall:      $cx-grid-breakpoint-xsmall !default;
-// $gutter-2xlarge:         $cx-grid-gutter-2xlarge !default;
-// $gutter-xlarge:          $cx-grid-gutter-xlarge !default;
-// $gutter-large:           $cx-grid-gutter-large !default;
-$gutter-medium:          $cx-grid-gutter-medium !default;
-// $gutter-small:           $cx-grid-gutter-small !default;
-// $gutter-xsmall:          $cx-grid-gutter-xsmall !default;
-// scss-docs-end grid-tokens
+@forward "./accordion";
+@forward "./alert";
+@forward "./badge";
+@forward "./colors";
+@forward "./colors-dark";
+@forward "./datepicker";
+@forward "./fonts";
+@forward "./grid";
+@forward "./buttons";
+@forward "./menu";
+@forward "./chips";
+@forward "./modal";
+@forward "./notification";
+@forward "./opacity";
+@forward "./border";
+@forward "./icon";
+@forward "./sizing";
+@forward "./spacing";
+@forward "./stepper";
+@forward "./forms";
+@forward "./shadow";
+@forward "./table";
 
-// scss-docs-start context-opacity-tokens
-// scss-docs-start fg-opacity-tokens
-$opacity-fg-slight:         $cx-opacity-context-fg-slight !default;
-$opacity-fg-subtle:         $cx-opacity-context-fg-subtle !default;
-// scss-docs-end fg-opacity-tokens
-// scss-docs-start border-opacity-tokens
-$opacity-border-main:       $cx-opacity-context-border-main !default;
-$opacity-border-subtle:     $cx-opacity-context-border-subtle !default;
-// scss-docs-end border-opacity-tokens
-// scss-docs-start icon-opacity-tokens
-$opacity-icon-subtle:       $cx-opacity-context-icon-subtle !default;
-$opacity-icon-slight:       $cx-opacity-context-icon-slight !default;
-// scss-docs-end icon-opacity-tokens
-// scss-docs-start indicator-opacity-tokens
-$opacity-cue-slight:  $cx-opacity-context-icon-slight !default;
-// scss-docs-end icon-opacity-tokens
-// scss-docs-start bg-opacity-tokens
-$opacity-dim-main:         $cx-opacity-context-dim-main !default;
-$opacity-dim-subtle:        $cx-opacity-context-dim-subtle !default;
-$opacity-dim-slight:       $cx-opacity-context-dim-slight !default;
-$opacity-transparent-color:       $cx-opacity-context-transparent-color !default;
-// scss-docs-end bg-opacity-tokens
-// scss-docs-end context-opacity-tokens
-
-// scss-docs-start border-width-tokens
-$border-width-zero:         $cx-border-width-context-zero !default;
-$border-width-small:        $cx-border-width-context-small !default;
-$border-width-medium:       $cx-border-width-context-medium !default;
-$border-width-large:        $cx-border-width-context-large !default;
-$border-width-xlarge:       $cx-border-width-context-xlarge !default;
-$border-width-2xlarge:      $cx-border-width-context-2xlarge !default;
-// scss-docs-end border-width-tokens
-
-// scss-docs-start border-radius-tokens
-$border-radius-zero:        $cx-border-radius-context-zero !default;
-$border-radius-xsmall:      $cx-border-radius-context-xsmall !default;
-$border-radius-small:       $cx-border-radius-context-small !default;
-$border-radius-medium:      $cx-border-radius-context-medium !default;
-$border-radius-large:       $cx-border-radius-context-large !default;
-$border-radius-xlarge:      $cx-border-radius-context-xlarge !default;
-$border-radius-2xlarge:     $cx-border-radius-context-2xlarge !default;
-$border-radius-3xlarge:     $cx-border-radius-context-3xlarge !default;
-$border-radius-round:       $cx-border-radius-context-round !default;
-// scss-docs-end border-radius-tokens
-
-// scss-docs-start icon-size-tokens
-$icon-4xlarge:      $cx-size-icon-glyph-4xlarge !default;
-$icon-3xlarge:      $cx-size-icon-glyph-3xlarge !default;
-$icon-2xlarge:      $cx-size-icon-glyph-2xlarge !default;
-$icon-xlarge:       $cx-size-icon-glyph-xlarge !default;
-$icon-large:        $cx-size-icon-glyph-large !default;
-$icon-medium:       $cx-size-icon-glyph-medium !default;
-$icon-small:        $cx-size-icon-glyph-small !default;
-$icon-xsmall:       $cx-size-icon-glyph-xsmall !default;
-$icon-2xsmall:      $cx-size-icon-glyph-2xsmall !default;
-$icon-3xsmall:      $cx-size-icon-glyph-3xsmall !default;
-$icon-size:         $icon-medium !default;
-// scss-docs-end icon-size-tokens
+// TODO: Check disabled tokens
+// - $zindex-drawer-backdrop scss/config/_defaults.scss:416
+// - $zindex-modal-backdrop scss/config/_defaults.scss:418
+// - $zindex-alert-backdrop scss/config/_defaults.scss:420
+// - $nav-link-align scss/config/_defaults.scss:775
+// - $nav-link-justify scss/config/_defaults.scss:776
+// - $menu-min-width scss/config/_defaults.scss:915
+// - $menu-selected-font-weight scss/config/_defaults.scss:934
+// - $menu-box-shadow scss/config/_defaults.scss:938
+// - $menu-item-image-size scss/config/_defaults.scss:939
+// - $modal-small scss/config/_defaults.scss:1154
+// - $modal-large scss/config/_defaults.scss:1156
+// - $modal-xlarge scss/config/_defaults.scss:1157
+// - $modal-fade-transform scss/config/_defaults.scss:1159
+// - $modal-show-transform scss/config/_defaults.scss:1160
+// - $modal-transition scss/config/_defaults.scss:1161
+// - $modal-scale-transform scss/config/_defaults.scss:1162
+// - $modal-backdrop-color scss/config/_defaults.scss:1164
+// - $modal-backdrop-opacity scss/config/_defaults.scss:1165
+// - $modal-container-margin scss/config/_defaults.scss:1168
+// - $modal-container-margin-y-small-up scss/config/_defaults.scss:1169
+// - $modal-window-shadow-small-up scss/config/_defaults.scss:1182
+// - $alert-fade-transform scss/config/_defaults.scss:1228
+// - $alert-show-transform scss/config/_defaults.scss:1229
+// - $alert-scale-transform scss/config/_defaults.scss:1230
+// - $alert-transition scss/config/_defaults.scss:1231
+// - $drawer-z-index scss/config/_defaults.scss:1425
+// - $datepicker-bg-idle scss/tokens/_datepicker.scss:3
+// - $datepicker-fg-hover scss/tokens/_datepicker.scss:4
+// - $datepicker-fg-press scss/tokens/_datepicker.scss:6
+// - $datepicker-bg-press scss/tokens/_datepicker.scss:7
+// - $datepicker-bg-outside scss/tokens/_datepicker.scss:17
+// - $datepicker-border-subtle scss/tokens/_datepicker.scss:21
+// - $datepicker-border-radius-menu scss/tokens/_datepicker.scss:24
+// - $datepicker-day-width scss/tokens/_datepicker.scss:30
+// - $datepicker-day-height scss/tokens/_datepicker.scss:31
+// - $datepicker-week-width scss/tokens/_datepicker.scss:32
+// - $datepicker-padding-y scss/tokens/_datepicker.scss:34
+// - $datepicker-gap scss/tokens/_datepicker.scss:36
+// - $menu-item-idle-bg-color scss/tokens/_menu.scss:17
+// - $menu-item-idle-icon-color scss/tokens/_menu.scss:18
+// - $menu-item-hover-icon-color scss/tokens/_menu.scss:21
+// - $menu-item-active-icon-color scss/tokens/_menu.scss:24
+// - $menu-item-disabled-bg-color scss/tokens/_menu.scss:26
+// - $menu-item-disabled-icon-color scss/tokens/_menu.scss:27
+// - $menu-item-header-fg-color scss/tokens/_menu.scss:28
+// - $menu-item-header-bg-color scss/tokens/_menu.scss:29
+// - $menu-fg-main scss/tokens/_menu.scss:30
+// - $menu-bg-main scss/tokens/_menu.scss:31
+//
+// - $modal-window-xlarge-h scss/tokens/_modal.scss:7
+// - $modal-window-large-h scss/tokens/_modal.scss:8
+// - $modal-window-medium-h scss/tokens/_modal.scss:9
+// - $modal-window-small-h scss/tokens/_modal.scss:10
+// - $modal-large-padding-y scss/tokens/_modal.scss:11
+// - $modal-large-padding-x scss/tokens/_modal.scss:12
+// - $modal-large-gap scss/tokens/_modal.scss:13
+// - $modal-medium-padding-y scss/tokens/_modal.scss:14
+// - $modal-medium-padding-x scss/tokens/_modal.scss:15
+// - $modal-medium-gap scss/tokens/_modal.scss:16
+// - $modal-small-padding-y scss/tokens/_modal.scss:17
+// - $modal-small-padding-x scss/tokens/_modal.scss:18
+// - $modal-small-gap scss/tokens/_modal.scss:19
