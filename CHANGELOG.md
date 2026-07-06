@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2026-07-07
+
+### Fixed
+- Fixed `build/css-minify.js`: the dynamic `import('browserslist')` used to read `.browserslistrc` targets was silently failing under pnpm's strict `node_modules` layout (`browserslist` was never a direct dependency, only a transitive one), so every build minified with lightningcss's default targets instead of this project's actual declared browser support. Added `browserslist` as a direct devDependency; a failure to load targets now fails the build instead of silently degrading. Also dropped the invalid `sourceRoot: null` key lightningcss emits in source maps (violates the source map spec, triggers devtools warnings), removed a redundant JSON parse/stringify round-trip on the input source map, and anchored the `.css` → `.min.css` extension replace to the end of the filename
+- Fixed the docs site dev server (`site/`) intermittently failing to load `Dialog`/`Drawer`/etc. component scripts (e.g. modals opening and immediately closing): whenever `@chassis-ui/docs` is installed as a real dependency (not workspace-linked), Vite's `optimizeDeps` pre-bundles its `example-mode.js` with its own inlined copy of `@chassis-ui/css`, producing a second module instance and duplicate data-api click listeners alongside the one aliased in `site/src/libs/astro.ts`. Excluded `@chassis-ui/docs` from `optimizeDeps` so it always resolves through the same aliased instance
+
 ## [0.3.2] - 2026-07-05
 
 ### Fixed

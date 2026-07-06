@@ -9,6 +9,7 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
+import browserslist from 'browserslist'
 import { transform, browserslistToTargets } from 'lightningcss'
 
 const distDir = path.join(process.cwd(), 'dist/css')
@@ -18,28 +19,29 @@ const cssFiles = fs
   .readdirSync(distDir)
   .filter((file) => file.endsWith('.css') && !file.endsWith('.min.css'))
 
-// Target browsers (read from .browserslistrc when available)
+// Target browsers, read from .browserslistrc. Minifying without these silently
+// drops the project's real support matrix, so a failure here fails the build
+// instead of falling back to lightningcss's defaults.
 let targets
 try {
-  const { default: browserslist } = await import('browserslist')
   const browsers = browserslist()
   console.log('Target browsers from .browserslistrc:', browsers)
   targets = browserslistToTargets(browsers)
-} catch {
-  console.error('Could not load browserslist')
+} catch (error) {
+  console.error('Could not load browserslist targets:', error.message)
+  process.exit(1)
 }
 
 for (const file of cssFiles) {
   const inputPath = path.join(distDir, file)
-  const outputPath = path.join(distDir, file.replace('.css', '.min.css'))
+  const outputPath = path.join(distDir, file.replace(/\.css$/, '.min.css'))
   const mapPath = `${outputPath}.map`
 
   console.log(`Minifying ${file}...`)
 
   const inputCss = fs.readFileSync(inputPath, 'utf8')
-  const inputMap = fs.existsSync(`${inputPath}.map`)
-    ? JSON.parse(fs.readFileSync(`${inputPath}.map`, 'utf8'))
-    : undefined
+  const inputMapPath = `${inputPath}.map`
+  const inputMap = fs.existsSync(inputMapPath) ? fs.readFileSync(inputMapPath, 'utf8') : undefined
 
   try {
     const result = transform({
@@ -47,7 +49,7 @@ for (const file of cssFiles) {
       code: Buffer.from(inputCss),
       minify: true,
       sourceMap: true,
-      inputSourceMap: inputMap ? JSON.stringify(inputMap) : undefined,
+      inputSourceMap: inputMap,
       targets
     })
 
@@ -57,7 +59,14 @@ for (const file of cssFiles) {
 
     // Write source map
     if (result.map) {
-      fs.writeFileSync(mapPath, result.map.toString())
+      // lightningcss always emits a `sourceRoot` key, using JSON null when
+      // unset, which violates the source map spec (must be a string or
+      // omitted) and triggers "invalid sourceRoot" warnings in devtools.
+      const map = JSON.parse(result.map.toString())
+      if (map.sourceRoot === null) {
+        delete map.sourceRoot
+      }
+      fs.writeFileSync(mapPath, JSON.stringify(map))
     }
 
     console.log(`  ✓ ${file} → ${path.basename(outputPath)}`)

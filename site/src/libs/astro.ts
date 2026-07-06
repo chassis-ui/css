@@ -71,12 +71,11 @@ export function chassis(): AstroIntegration[] {
           // Reload the config when these integration files are modified.
           addWatchFile(path.join(getDocsFsPath(), 'src/libs/astro.ts'))
 
-          // In dev, alias `@chassis-ui/css` to this repo's own compiled bundle instead of
-          // node_modules — this repo IS that package, so it can't depend on itself.
-          // Aliasing to a path outside node_modules also keeps it out of Vite's dependency
-          // pre-bundling, so every importer (the footer script in @chassis-ui/docs,
-          // example-mode.js, etc.) resolves to the same file/URL and shares one instance
-          // instead of each getting its own duplicate copy with duplicate event listeners.
+          // Dev-only: alias `@chassis-ui/css` to our own bundle since this repo can't
+          // depend on itself. Also exclude `@chassis-ui/docs` from optimizeDeps — otherwise
+          // esbuild pre-bundles its example-mode.js with its own inlined copy of
+          // `@chassis-ui/css`, giving two module instances and duplicate data-api listeners
+          // (modals open then immediately close).
           if (cmd === 'dev') {
             updateConfig({
               vite: {
@@ -84,6 +83,9 @@ export function chassis(): AstroIntegration[] {
                   alias: {
                     '@chassis-ui/css': path.join(getChassisCSSFsPath(), 'js/chassis.bundle.js')
                   }
+                },
+                optimizeDeps: {
+                  exclude: ['@chassis-ui/docs']
                 }
               }
             })
