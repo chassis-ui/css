@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-07-04
+
+### Fixed
+- Fixed `scss/vendor/_chassis-tokens.scss` default token forward: replaced the relative `../../node_modules/@chassis-ui/tokens/...` path (which only resolved when `@chassis-ui/tokens` was hoisted/nested inside `@chassis-ui/css`'s own `node_modules`) with a bare `@chassis-ui/tokens/...` package specifier, so consumers installing `@chassis-ui/css` under pnpm's isolated `node_modules` layout no longer hit a "Can't find stylesheet to import" Sass build error
+- Added `--load-path node_modules` to `css:compile` so the Dart Sass CLI resolves the bare `@chassis-ui/tokens` specifier the same way Vite/Astro consumers already do
+
 ## [0.3.0] - 2026-07-04
 
 Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the component set, and the JavaScript plugin layer. Almost every class, custom property, and Sass API surface changed in some way — treat this as a breaking major-style release despite the semver-minor version number.

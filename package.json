@@ -1,7 +1,7 @@
 {
   "name": "@chassis-ui/css",
   "description": "A CSS framework which synchronizes with Figma components by using design tokens.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "config": {
     "version_short": "0.2"
@@ -50,7 +50,7 @@
     "dist": "run-p css js",
     "test": "pnpm check:code && pnpm dist && pnpm css:test && pnpm js:test && pnpm site:build && pnpm site:lint",
     "css": "pnpm css:compile && pnpm css:prefix && pnpm css:minify",
-    "css:compile": "sass --load-path scss/vendor/ --style expanded --source-map --embed-sources scss/:dist/css/",
+    "css:compile": "sass --load-path scss/vendor/ --load-path node_modules --style expanded --source-map --embed-sources scss/:dist/css/",
     "css:lint": "run-p css:lint:stylelint css:lint:vars",
     "css:lint:imports": "node build/check-imports.js scss/ site/src/scss/",
     "css:lint:stylelint": "stylelint \"**/*.{css,scss}\" \"!vendor/**\" --cache --cache-location .cache/.stylelintcache",
@@ -116,7 +116,7 @@
     "@astrojs/markdown-remark": "^7.2.1",
     "@astrojs/mdx": "^7.0.2",
     "@astrojs/sitemap": "^3.7.3",
-    "@chassis-ui/docs": "^0.3.0",
+    "@chassis-ui/docs": "^0.3.3",
     "@chassis-ui/icons": "^0.3.0",
     "@chassis-ui/tokens": "^0.3.0",
     "@eslint/js": "^10.0.1",
