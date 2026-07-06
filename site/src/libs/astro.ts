@@ -77,12 +77,13 @@ export function chassis(): AstroIntegration[] {
           // pre-bundling, so every importer (the footer script in @chassis-ui/docs,
           // example-mode.js, etc.) resolves to the same file/URL and shares one instance
           // instead of each getting its own duplicate copy with duplicate event listeners.
-          // In build, `rollupOptions.external` + `paths` below handles the equivalent redirect.
           if (cmd === 'dev') {
             updateConfig({
               vite: {
                 resolve: {
-                  alias: { '@chassis-ui/css': path.join(getChassisCSSFsPath(), 'js/chassis.bundle.js') }
+                  alias: {
+                    '@chassis-ui/css': path.join(getChassisCSSFsPath(), 'js/chassis.bundle.js')
+                  }
                 }
               }
             })
@@ -111,13 +112,14 @@ export function chassis(): AstroIntegration[] {
   ]
 }
 
-// Copy the previously-generated Pagefind search index from `_site/pagefind/`
-// into `site/public/pagefind/` so `astro dev` can serve it at `/pagefind/`.
+// Copy the previously-generated Pagefind search index from `_site/css/pagefind/`
+// into `site/public/css/pagefind/` so `astro dev` can serve it at `/css/pagefind/`,
+// matching the path prefix this site is proxied under in production.
 // No-op if no build has been run yet; dev simply has no search results until then.
 function copyPagefindIndex() {
-  const source = path.join(process.cwd(), '_site', 'pagefind')
+  const source = path.join(process.cwd(), '_site', 'css', 'pagefind')
   if (!fs.existsSync(source)) return
-  const destination = path.join(getDocsPublicFsPath(), 'pagefind')
+  const destination = path.join(getDocsPublicFsPath(), 'css', 'pagefind')
 
   fs.mkdirSync(destination, { recursive: true })
   fs.cpSync(source, destination, { recursive: true })
