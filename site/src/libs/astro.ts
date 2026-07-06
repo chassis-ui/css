@@ -3,7 +3,6 @@ import path from 'node:path'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import type { AstroIntegration } from 'astro'
-import { chassisBundlePlugin } from '@chassis-ui/docs'
 import { getConfig } from './config'
 import {
   getDocsFsPath,
@@ -72,8 +71,22 @@ export function chassis(): AstroIntegration[] {
           // Reload the config when these integration files are modified.
           addWatchFile(path.join(getDocsFsPath(), 'src/libs/astro.ts'))
 
-          const { plugin, define } = chassisBundlePlugin(getChassisCSSFsPath)
-          updateConfig({ vite: { plugins: [plugin], define } })
+          // In dev, alias `@chassis-ui/css` to this repo's own compiled bundle instead of
+          // node_modules — this repo IS that package, so it can't depend on itself.
+          // Aliasing to a path outside node_modules also keeps it out of Vite's dependency
+          // pre-bundling, so every importer (the footer script in @chassis-ui/docs,
+          // example-mode.js, etc.) resolves to the same file/URL and shares one instance
+          // instead of each getting its own duplicate copy with duplicate event listeners.
+          // In build, `rollupOptions.external` + `paths` below handles the equivalent redirect.
+          if (cmd === 'dev') {
+            updateConfig({
+              vite: {
+                resolve: {
+                  alias: { '@chassis-ui/css': path.join(getChassisCSSFsPath(), 'js/chassis.bundle.js') }
+                }
+              }
+            })
+          }
         },
         'astro:config:done': () => {
           if (command === 'sync') return
