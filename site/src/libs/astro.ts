@@ -30,7 +30,7 @@ export function chassis(): AstroIntegration[] {
 
   // `astro check` / `astro sync` doesn't need static assets copied into _site.
   // Track the command so the config:done hook can skip expensive file copies.
-  let command = 'dev'
+  let cmd = 'dev'
 
   const watchPairs: Array<[string, string]> = [
     [
@@ -66,8 +66,8 @@ export function chassis(): AstroIntegration[] {
             server.ws.send({ type: 'full-reload' })
           })
         },
-        'astro:config:setup': ({ addWatchFile, command: cmd, updateConfig }) => {
-          command = cmd
+        'astro:config:setup': ({ addWatchFile, command, updateConfig }) => {
+          cmd = command
           // Reload the config when these integration files are modified.
           addWatchFile(path.join(getDocsFsPath(), 'src/libs/astro.ts'))
 
@@ -92,7 +92,7 @@ export function chassis(): AstroIntegration[] {
           }
         },
         'astro:config:done': () => {
-          if (command === 'sync') return
+          if (cmd === 'sync') return
           cleanPublicDirectory()
           copyStatic()
           copyChassisCSS()

@@ -33,7 +33,8 @@ const configSchema = z.object({
     dist: z.url(),
     source: z.url()
   }),
-  github_org: z.url(),
+  figma_handle: z.string(),
+  github_org: z.string(),
   repo: z.url(),
   subtitle: z.string(),
   title: z.string(),
@@ -41,7 +42,7 @@ const configSchema = z.object({
     min: z.number(),
     max: z.number()
   }),
-  x: z.string()
+  x_username: z.string()
 })
 
 let config: Config | undefined

@@ -83,7 +83,7 @@ jobs:
         if: steps.npm-check.outputs.already-published == 'false'
         run: npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_CHASSIS_CSS }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_CHASSIS_UI }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
