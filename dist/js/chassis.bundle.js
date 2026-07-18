@@ -1,5 +1,5 @@
 /*!
-  * Chassis v0.3.3 (https://chassis-ui.com)
+  * Chassis v0.3.4 (https://chassis-ui.com)
   * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
   * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
   */
@@ -573,7 +573,7 @@ class Config {
  * Constants
  */
 
-const VERSION = '0.3.3';
+const VERSION = '0.3.4';
 
 /**
  * Class definition

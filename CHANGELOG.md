@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.4] - 2026-07-18
+
+### Changed
+- `Pagination`: reworked the color custom properties into explicit per-state variables (`--idle-fg-color`/`--idle-bg-color`, `--hover-fg-color`/`--hover-bg-color`, `--focus-fg-color`/`--focus-bg-color`, `--active-fg-color`/`--active-bg-color`/`--active-border-color`, `--disabled-fg-color`/`--disabled-bg-color`/`--disabled-border-color`) instead of overloading a single `--fg-color`/`--bg-color` pair across `:hover`, `:focus-visible`, `.active`, and `.disabled`; `.page-link` switched from `display: block` to a flex layout (`align-items: center`, `height: 100%`) so icon-based prev/next controls center correctly, and icons get `transform: translateZ(0)` to prevent a sub-pixel shift when `z-index` changes on hover/focus/active; added a new `$pagination-icon-size`/`--pagination-icon-size` Sass variable and CSS custom property
+
+### Fixed
+- Fixed `Pagination`'s `--border-radius` custom property incorrectly falling back through `--pagination-border-color` instead of `--pagination-border-radius`, so overriding `--pagination-border-color` silently also overrode the border radius
+- Fixed `_icon-link.scss`: `text-decoration-color` now resolves from `currentcolor` instead of the hardcoded `--link-main-color`, so the underline correctly follows contextual link colors (e.g. `.link-danger`) instead of always rendering in the base link color
+- Fixed `b`/`strong` bold weight in `_reboot.scss` to use the `$font-weight-bolder` (`bolder` keyword) Sass variable directly instead of the fixed `--bold-font-weight` custom property, so bold text scales relative to its inherited weight instead of always resolving to the same absolute value
+
 ## [0.3.3] - 2026-07-07
 
 ### Fixed
@@ -336,6 +346,7 @@ The project was transferred to the chassis-ui organization, establishing it as a
 
 ---
 
+[0.3.4]: https://github.com/chassis-ui/css/compare/v0.3.3...v0.3.4
 [0.2.3]: https://github.com/chassis-ui/css/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/chassis-ui/css/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/chassis-ui/css/compare/v0.2.0...v0.2.1

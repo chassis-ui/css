@@ -14,13 +14,23 @@
     // scss-docs-start pagination-css-vars
     --padding-y: var(--pagination-padding-y, #{$pagination-padding-y});
     --padding-x: var(--pagination-padding-x, #{$pagination-padding-x});
-    --fg-color: var(--pagination-fg-color, #{$pagination-fg-color});
-    --bg-color: var(--pagination-bg-color, #{$pagination-bg-color});
+    --idle-fg-color: var(--pagination-idle-fg-color, #{$pagination-idle-fg-color});
+    --idle-bg-color: var(--pagination-idle-bg-color, #{$pagination-idle-bg-color});
+    --hover-fg-color: var(--pagination-hover-fg-color, #{$pagination-hover-fg-color});
+    --hover-bg-color: var(--pagination-hover-bg-color, #{$pagination-hover-bg-color});
+    --focus-fg-color: var(--pagination-focus-fg-color, #{$pagination-focus-fg-color});
+    --focus-bg-color: var(--pagination-focus-bg-color, #{$pagination-focus-bg-color});
+    --active-fg-color: var(--pagination-active-fg-color, #{$pagination-active-fg-color});
+    --active-bg-color: var(--pagination-active-bg-color, #{$pagination-active-bg-color});
+    --active-border-color: var(--pagination-active-border-color, #{$pagination-active-border-color});
+    --disabled-fg-color: var(--pagination-disabled-fg-color, #{$pagination-disabled-fg-color});
+    --disabled-bg-color: var(--pagination-disabled-bg-color, #{$pagination-disabled-bg-color});
+    --disabled-border-color: var(--pagination-disabled-border-color, #{$pagination-disabled-border-color});
     --border-width: var(--pagination-border-width, #{$pagination-border-width});
     --border-color: var(--pagination-border-color, #{$pagination-border-color});
-    --border-radius: var(--pagination-border-color, #{$pagination-border-radius});
-    --icon-color: var(--pagination-icon-color, var(--fg-color));
-    --icon-size: var(--pagination-icon-size, var(--icon-small));
+    --border-radius: var(--pagination-border-radius, #{$pagination-border-radius});
+    --icon-size: var(--pagination-icon-size, #{$pagination-icon-size});
+    --focus-ring-offset: var(--pagination-focus-ring-offset, #{$pagination-focus-ring-offset});
     @include map-font($pagination-font, pagination);
     // scss-docs-end pagination-css-vars
 
@@ -44,50 +54,57 @@
 
   .page-link {
 
+    --fg-color: var(--idle-fg-color);
+    --icon-color: var(--fg-color);
+
     @extend %component;
 
     position: relative;
-    display: block;
+    display: flex;
+    align-items: center;
+    height: 100%;
     text-decoration: none;
     @include exclude-strokes(pagination);
     @include gradient();
     @include transition($pagination-transition);
 
     &:hover {
+      --fg-color: var(--hover-fg-color);
+      --bg-color: var(--hover-bg-color);
       z-index: 2;
-      color: var(--pagination-hover-color, #{$pagination-hover-fg-color});
       @if $link-hover-decoration == underline {
         text-decoration: none;
       }
-      background-color: var(--pagination-hover-bg-color, #{$pagination-hover-bg-color});
-      fill: var(--pagination-hover-color, #{$pagination-hover-fg-color});
     }
 
     &:focus-visible {
-      --focus-ring-offset: var(--pagination-focus-ring-offset, #{$pagination-focus-ring-offset});
+      --fg-color: var(--focus-fg-color);
+      --bg-color: var(--focus-bg-color);
       z-index: 3;
-      color: var(--pagination-focus-fg-color, #{$pagination-focus-fg-color});
-      background-color: var(--pagination-focus-bg-color, #{$pagination-focus-bg-color});
       @include focus-ring(true);
     }
 
     &.active,
     .active > & {
-      --icon-color: var(--pagination-active-fg-color, #{$pagination-active-fg-color});
+      --fg-color: var(--active-fg-color);
+      --bg-color: var(--active-bg-color);
+      --border-color: var(--active-border-color);
       z-index: 3;
-      color: var(--pagination-active-fg-color, #{$pagination-active-fg-color});
-      background-color: var(--pagination-active-bg-color, #{$pagination-active-bg-color});
-      border-color: var(--pagination-active-border-color, #{$pagination-active-border-color});
       @include gradient();
     }
 
     &.disabled,
     .disabled > & {
-      --icon-color: var(--pagination-disabled-fg-color, #{$pagination-disabled-fg-color});
-      color: var(--pagination-disabled-fg-color, #{$pagination-disabled-fg-color});
+      // --icon-color: var(--disabled-fg-color);
+      --fg-color: var(--disabled-fg-color);
+      --bg-color: var(--disabled-bg-color);
+      --border-color: var(--disabled-border-color);
       pointer-events: none;
-      background-color: var(--pagination-disabled-bg-color, #{$pagination-disabled-bg-color});
-      border-color: var(--pagination-disabled-border-color, #{$pagination-disabled-border-color});
+    }
+
+    > .icon {
+      // Prevent icon shifts on hover/focus/active z-index changes
+      transform: translateZ(0);
     }
   }
 

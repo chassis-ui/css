@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*!
-  * Chassis CSS -  v0.3.3 (https://chassis-ui.com/)
+  * Chassis CSS -  v0.3.4 (https://chassis-ui.com/)
   * Copyright 2026 Ozgur Gunes
   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
   */
@@ -7365,13 +7365,23 @@
   .pagination {
     --cx-padding-y: var(--cx-pagination-padding-y, 0.5rem);
     --cx-padding-x: var(--cx-pagination-padding-x, 0.75rem);
-    --cx-fg-color: var(--cx-pagination-fg-color, var(--cx-fg-main));
-    --cx-bg-color: var(--cx-pagination-bg-color, var(--cx-bg-main));
+    --cx-idle-fg-color: var(--cx-pagination-idle-fg-color, var(--cx-fg-main));
+    --cx-idle-bg-color: var(--cx-pagination-idle-bg-color, var(--cx-bg-main));
+    --cx-hover-fg-color: var(--cx-pagination-hover-fg-color, var(--cx-fg-hover));
+    --cx-hover-bg-color: var(--cx-pagination-hover-bg-color, var(--cx-bg-hover));
+    --cx-focus-fg-color: var(--cx-pagination-focus-fg-color, var(--cx-fg-main));
+    --cx-focus-bg-color: var(--cx-pagination-focus-bg-color, var(--cx-bg-main));
+    --cx-active-fg-color: var(--cx-pagination-active-fg-color, var(--cx-fg-active));
+    --cx-active-bg-color: var(--cx-pagination-active-bg-color, var(--cx-bg-active));
+    --cx-active-border-color: var(--cx-pagination-active-border-color, var(--cx-bg-active));
+    --cx-disabled-fg-color: var(--cx-pagination-disabled-fg-color, var(--cx-fg-slight));
+    --cx-disabled-bg-color: var(--cx-pagination-disabled-bg-color, var(--cx-bg-main));
+    --cx-disabled-border-color: var(--cx-pagination-disabled-border-color, var(--cx-border-main));
     --cx-border-width: var(--cx-pagination-border-width, var(--cx-border-width-medium));
     --cx-border-color: var(--cx-pagination-border-color, var(--cx-border-main));
-    --cx-border-radius: var(--cx-pagination-border-color, var(--cx-border-radius-medium));
-    --cx-icon-color: var(--cx-pagination-icon-color, var(--cx-fg-color));
+    --cx-border-radius: var(--cx-pagination-border-radius, var(--cx-border-radius-medium));
     --cx-icon-size: var(--cx-pagination-icon-size, var(--cx-icon-small));
+    --cx-focus-ring-offset: var(--cx-pagination-focus-ring-offset, 0px);
     --cx-font-family: var(--cx-pagination-font-family, var(--cx-font-family-text));
     --cx-font-size: var(--cx-pagination-font-size, var(--cx-font-size-medium));
     --cx-font-weight: var(--cx-pagination-font-weight, var(--cx-font-weight-strong));
@@ -7399,8 +7409,12 @@
     --cx-line-height: var(--cx-pagination-line-height, var(--cx-line-height-small));
   }
   .page-link {
+    --cx-fg-color: var(--cx-idle-fg-color);
+    --cx-icon-color: var(--cx-fg-color);
     position: relative;
-    display: block;
+    display: flex;
+    align-items: center;
+    height: 100%;
     text-decoration: none;
     padding: calc(var(--cx-padding-y) - var(--cx-border-width)) calc(var(--cx-padding-x) - var(--cx-border-width));
     background-image: var(--cx-bg-gradient);
@@ -7412,33 +7426,32 @@
     }
   }
   .page-link:hover {
+    --cx-fg-color: var(--cx-hover-fg-color);
+    --cx-bg-color: var(--cx-hover-bg-color);
     z-index: 2;
-    color: var(--cx-pagination-hover-color, var(--cx-fg-hover));
-    background-color: var(--cx-pagination-hover-bg-color, var(--cx-bg-hover));
-    fill: var(--cx-pagination-hover-color, var(--cx-fg-hover));
   }
   .page-link:focus-visible {
-    --cx-focus-ring-offset: var(--cx-pagination-focus-ring-offset, 0px);
+    --cx-fg-color: var(--cx-focus-fg-color);
+    --cx-bg-color: var(--cx-focus-bg-color);
     z-index: 3;
-    color: var(--cx-pagination-focus-fg-color, var(--cx-fg-main));
-    background-color: var(--cx-pagination-focus-bg-color, var(--cx-bg-main));
     outline: var(--cx-focus-ring-width) solid var(--cx-focus-ring-color);
     outline-offset: var(--cx-focus-ring-offset);
   }
   .page-link.active, .active > .page-link {
-    --cx-icon-color: var(--cx-pagination-active-fg-color, var(--cx-fg-active));
+    --cx-fg-color: var(--cx-active-fg-color);
+    --cx-bg-color: var(--cx-active-bg-color);
+    --cx-border-color: var(--cx-active-border-color);
     z-index: 3;
-    color: var(--cx-pagination-active-fg-color, var(--cx-fg-active));
-    background-color: var(--cx-pagination-active-bg-color, var(--cx-bg-active));
-    border-color: var(--cx-pagination-active-border-color, var(--cx-bg-active));
     background-image: var(--cx-bg-gradient);
   }
   .page-link.disabled, .disabled > .page-link {
-    --cx-icon-color: var(--cx-pagination-disabled-fg-color, var(--cx-fg-slight));
-    color: var(--cx-pagination-disabled-fg-color, var(--cx-fg-slight));
+    --cx-fg-color: var(--cx-disabled-fg-color);
+    --cx-bg-color: var(--cx-disabled-bg-color);
+    --cx-border-color: var(--cx-disabled-border-color);
     pointer-events: none;
-    background-color: var(--cx-pagination-disabled-bg-color, var(--cx-bg-main));
-    border-color: var(--cx-pagination-disabled-border-color, var(--cx-border-main));
+  }
+  .page-link > .icon {
+    transform: translateZ(0);
   }
   .page-item:not(:first-child) .page-link {
     margin-inline-start: calc(var(--cx-border-width-medium) * -1);
@@ -8305,7 +8318,7 @@
     display: inline-flex;
     gap: 0.375rem;
     align-items: center;
-    text-decoration-color: oklch(from var(--cx-link-main-color) l c h / var(--cx-link-opacity, 0.5));
+    text-decoration-color: oklch(from currentcolor l c h / var(--cx-link-opacity, 0.5));
     text-underline-offset: 0.25em;
     backface-visibility: hidden;
   }
@@ -8630,7 +8643,7 @@
   }
   b,
   strong {
-    font-weight: var(--cx-bold-font-weight, 700) !important;
+    font-weight: bolder;
   }
   small {
     font-size: var(--cx-small-font-size, 0.875em);
