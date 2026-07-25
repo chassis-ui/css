@@ -133,7 +133,7 @@ describe('Chip', () => {
       expect(chipEl).not.toHaveClass('active')
     })
 
-    it('should set aria-selected to true when activating', () => {
+    it('should set aria-pressed to true when activating', () => {
       fixtureEl.innerHTML = '<span class="chip">Tag</span>'
 
       const chipEl = fixtureEl.querySelector('.chip')
@@ -141,10 +141,10 @@ describe('Chip', () => {
 
       chip.toggle()
 
-      expect(chipEl.getAttribute('aria-selected')).toEqual('true')
+      expect(chipEl.getAttribute('aria-pressed')).toEqual('true')
     })
 
-    it('should set aria-selected to false when deactivating', () => {
+    it('should set aria-pressed to false when deactivating', () => {
       fixtureEl.innerHTML = '<span class="chip active">Tag</span>'
 
       const chipEl = fixtureEl.querySelector('.chip')
@@ -152,7 +152,7 @@ describe('Chip', () => {
 
       chip.toggle()
 
-      expect(chipEl.getAttribute('aria-selected')).toEqual('false')
+      expect(chipEl.getAttribute('aria-pressed')).toEqual('false')
     })
 
     it('should fire toggle event with active state', () => {
