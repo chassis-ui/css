@@ -16,7 +16,8 @@ Chassis accordions leverage the native HTML5 `<details>` and `<summary>` element
 
 - **Native browser functionality**: The browser handles expanding and collapsing content without requiring extensive JavaScript
 - **Built-in accessibility**: Native keyboard navigation and screen reader support through the HTML5 elements
-- **Enhanced with JavaScript**: While fully functional without JavaScript, our optional JS adds smooth transitions between states
+- **Styled with CSS**: Apply the `.accordion` class to the wrapper for visual styling of `<details>` elements.
+- **Enhanced with JavaScript**: Add the `data-cx-accordion` attribute to the wrapper to opt in smooth transitions via JS
 - **Group behavior**: Using the same `name` attribute on multiple `<details>` elements creates accordion groups where only one item can be open at a time
 
 <Callout name="info-prefersreducedmotion" />
@@ -27,7 +28,7 @@ Click the accordions below to expand/collapse the content. Each item in this exa
 
 Add the `open` attribute to any `<details>` element to render it expanded by default.
 
-<Example code={`<div class="accordion">
+<Example code={`<div class="accordion" data-cx-accordion>
   <details name="example" open>
     <summary>
       <span class="accordion-title">Accordion Item #1</span>
@@ -58,7 +59,7 @@ Add the `open` attribute to any `<details>` element to render it expanded by def
 
 The HTML spec permits one heading element as a direct child of `<summary>` — no ARIA role overrides are needed. Use a heading element as `.accordion-title` when accordion headers need to participate in the document's visual and source-order hierarchy.
 
-<Example code={`<div class="accordion">
+<Example code={`<div class="accordion" data-cx-accordion>
   <details name="example-headings" open>
     <summary>
       <h3 class="accordion-title">Accordion Item #1</h3>
@@ -91,7 +92,7 @@ The heading level does not appear in assistive technology heading navigation —
 
 Accordions with the same `name` attribute form groups that close automatically when another item in the group is opened. Items without a name attribute (or with unique names) remain independent. You can mix both types in a single accordion.
 
-<Example code={`<div class="accordion">
+<Example code={`<div class="accordion" data-cx-accordion>
     <details open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -124,7 +125,7 @@ Add `.flush` to remove some borders and rounded corners to render accordions edg
 
 <div class="cxd-example">
 
-  <div class="accordion flush">
+  <div class="accordion flush" data-cx-accordion>
     <details name="example-flush" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -154,7 +155,7 @@ Add `.flush` to remove some borders and rounded corners to render accordions edg
 </div>
 
 ```html
-  <div class="accordion flush">
+  <div class="accordion flush" data-cx-accordion>
     ...
   </div>
 ```
@@ -165,7 +166,7 @@ Add `.caret-end` to the accordion container to move the caret icon to the end of
 
 <div class="cxd-example">
 
-  <div class="accordion caret-end">
+  <div class="accordion caret-end" data-cx-accordion>
     <details name="example-end" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -195,7 +196,7 @@ Add `.caret-end` to the accordion container to move the caret icon to the end of
 </div>
 
 ```html
-  <div class="accordion caret-end">
+  <div class="accordion caret-end" data-cx-accordion>
     ...
   </div>
 ```
@@ -206,7 +207,7 @@ Add `.no-transition` to the accordion container to disable the smooth transition
 
 <div class="cxd-example">
 
-  <div class="accordion no-transition">
+  <div class="accordion no-transition" data-cx-accordion>
     <details name="example-no-transition" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -236,7 +237,7 @@ Add `.no-transition` to the accordion container to disable the smooth transition
 </div>
 
 ```html
-  <div class="accordion no-transition">
+  <div class="accordion no-transition" data-cx-accordion>
     ...
   </div>
 ```
@@ -253,7 +254,7 @@ Add `.large` for larger font size and more generous spacing. Suitable for primar
 
 <div class="cxd-example">
 
-  <div class="accordion large">
+  <div class="accordion large" data-cx-accordion>
     <details name="example-large" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -283,7 +284,7 @@ Add `.large` for larger font size and more generous spacing. Suitable for primar
 </div>
 
 ```html
-  <div class="accordion large">
+  <div class="accordion large" data-cx-accordion>
     ...
   </div>
 ```
@@ -294,7 +295,7 @@ Add `.small` for reduced font size and compact spacing. Suitable for secondary c
 
 <div class="cxd-example">
 
-  <div class="accordion small">
+  <div class="accordion small" data-cx-accordion>
     <details name="example-small" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -324,7 +325,7 @@ Add `.small` for reduced font size and compact spacing. Suitable for secondary c
 </div>
 
 ```html
-<div class="accordion small">
+<div class="accordion small" data-cx-accordion>
   ...
 </div>
 ```
@@ -343,7 +344,7 @@ Use `.context` class on accordion with a color, like `.primary`.
   <div class="row row-cols-1 medium:row-cols-2 g-large">
 
 <div class="col">
-  <div class="accordion context neutral small">
+  <div class="accordion context neutral small" data-cx-accordion>
     <details name="example-neutral" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -372,7 +373,7 @@ Use `.context` class on accordion with a color, like `.primary`.
 </div>
 
 <div class="col">
-  <div class="accordion context primary small">
+  <div class="accordion context primary small" data-cx-accordion>
     <details name="example-primary" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -401,7 +402,7 @@ Use `.context` class on accordion with a color, like `.primary`.
 </div>
 
 <div class="col">
-  <div class="accordion context secondary small">
+  <div class="accordion context secondary small" data-cx-accordion>
     <details name="example-secondary" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -430,7 +431,7 @@ Use `.context` class on accordion with a color, like `.primary`.
 </div>
 
 <div class="col">
-  <div class="accordion context alternate small">
+  <div class="accordion context alternate small" data-cx-accordion>
     <details name="example-alternate" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -462,19 +463,19 @@ Use `.context` class on accordion with a color, like `.primary`.
 </div>
 
 ```html
-<div class="accordion context neutral small">
+<div class="accordion context neutral small" data-cx-accordion>
   ...
 </div>
 
-<div class="accordion context primary small">
+<div class="accordion context primary small" data-cx-accordion>
   ...
 </div>
 
-<div class="accordion context secondary small">
+<div class="accordion context secondary small" data-cx-accordion>
   ...
 </div>
 
-<div class="accordion context alternate small">
+<div class="accordion context alternate small" data-cx-accordion>
   ...
 </div>
 ```
@@ -488,7 +489,7 @@ Use `.context` class on accordions with a color and style, like `.primary` and `
   <div class="row row-cols-1 medium:row-cols-2 g-large">
 
 <div class="col">
-  <div class="accordion context primary small">
+  <div class="accordion context primary small" data-cx-accordion>
     <details name="example-basic" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -517,7 +518,7 @@ Use `.context` class on accordions with a color and style, like `.primary` and `
 </div>
 
 <div class="col">
-  <div class="accordion context primary solid small">
+  <div class="accordion context primary solid small" data-cx-accordion>
     <details name="example-solid" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -546,7 +547,7 @@ Use `.context` class on accordions with a color and style, like `.primary` and `
 </div>
 
 <div class="col">
-  <div class="accordion context primary smooth small">
+  <div class="accordion context primary smooth small" data-cx-accordion>
     <details name="example-smooth" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -575,7 +576,7 @@ Use `.context` class on accordions with a color and style, like `.primary` and `
 </div>
 
 <div class="col">
-  <div class="accordion context primary outline small">
+  <div class="accordion context primary outline small" data-cx-accordion>
     <details name="example-outline" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -607,19 +608,19 @@ Use `.context` class on accordions with a color and style, like `.primary` and `
 </div>
 
 ```html
-<div class="accordion context primary small">
+<div class="accordion context primary small" data-cx-accordion>
   ...
 </div>
 
-<div class="accordion context primary solid small">
+<div class="accordion context primary solid small" data-cx-accordion>
   ...
 </div>
 
-<div class="accordion context primary smooth small">
+<div class="accordion context primary smooth small" data-cx-accordion>
   ...
 </div>
 
-<div class="accordion context primary outline small">
+<div class="accordion context primary outline small" data-cx-accordion>
   ...
 </div>
 ```

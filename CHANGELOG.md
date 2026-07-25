@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.5] - 2026-07-25
+
+### Changed
+- `Accordion`: JavaScript now initializes via a `data-cx-accordion` attribute on the wrapper instead of the `.accordion` class, so `.accordion` is purely a visual/CSS class and no longer triggers JS on its own. Markup that relied on `.accordion` alone for the smooth open/close transition needs `data-cx-accordion` added to the wrapper to keep that behavior. Also renamed the internal attribute marking the transient clone used during the close transition from `data-accordion-clone` to `data-cx-clone`
+
 ## [0.3.4] - 2026-07-18
 
 ### Changed
@@ -347,6 +352,7 @@ The project was transferred to the chassis-ui organization, establishing it as a
 ---
 
 [0.3.4]: https://github.com/chassis-ui/css/compare/v0.3.3...v0.3.4
+[0.3.5]: https://github.com/chassis-ui/css/compare/v0.3.4...v0.3.5
 [0.2.3]: https://github.com/chassis-ui/css/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/chassis-ui/css/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/chassis-ui/css/compare/v0.2.0...v0.2.1

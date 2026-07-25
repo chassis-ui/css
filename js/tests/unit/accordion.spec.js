@@ -15,7 +15,7 @@ describe('Accordion', () => {
 
   function makeAccordionHTML(open = false) {
     return [
-      '<div class="accordion">',
+      '<div class="accordion" data-cx-accordion>',
       `  <details${open ? ' open' : ''}>`,
       '    <summary><div class="accordion-title">Title</div></summary>',
       '    <div class="accordion-body">Content</div>',
@@ -74,7 +74,7 @@ describe('Accordion', () => {
 
     it('should bail on malformed markup with no summary', () => {
       fixtureEl.innerHTML = [
-        '<div class="accordion">',
+        '<div class="accordion" data-cx-accordion>',
         '  <details>',
         '    <div class="accordion-body">Content</div>',
         '  </details>',
@@ -90,7 +90,7 @@ describe('Accordion', () => {
 
     it('should bail on malformed markup with no body', () => {
       fixtureEl.innerHTML = [
-        '<div class="accordion">',
+        '<div class="accordion" data-cx-accordion>',
         '  <details>',
         '    <summary>Title</summary>',
         '  </details>',
@@ -385,7 +385,7 @@ describe('Accordion', () => {
 
       accordion.close()
 
-      const clone = accordionEl.querySelector('details[data-accordion-clone]')
+      const clone = accordionEl.querySelector('details[data-cx-clone]')
       expect(clone).not.toBeNull()
       expect(clone.inert).toBeTrue()
     })
@@ -399,7 +399,7 @@ describe('Accordion', () => {
         const accordion = new Accordion(detailsEl)
 
         detailsEl.addEventListener('closed.cx.accordion', () => {
-          const clone = accordionEl.querySelector('details[data-accordion-clone]')
+          const clone = accordionEl.querySelector('details[data-cx-clone]')
           expect(clone).toBeNull()
           resolve()
         })
@@ -492,7 +492,7 @@ describe('Accordion', () => {
 
     it('should initialise all named siblings when a grouped item is clicked', () => {
       fixtureEl.innerHTML = [
-        '<div class="accordion">',
+        '<div class="accordion" data-cx-accordion>',
         '  <details name="group1">',
         '    <summary><div class="accordion-title">Item 1</div></summary>',
         '    <div class="accordion-body">Content 1</div>',
@@ -513,6 +513,23 @@ describe('Accordion', () => {
 
       expect(Accordion.getInstance(details1)).toBeInstanceOf(Accordion)
       expect(Accordion.getInstance(details2)).toBeInstanceOf(Accordion)
+    })
+
+    it('should not initialise when the wrapper only has the .accordion class without data-cx-accordion', () => {
+      fixtureEl.innerHTML = [
+        '<div class="accordion">',
+        '  <details>',
+        '    <summary><div class="accordion-title">Title</div></summary>',
+        '    <div class="accordion-body">Content</div>',
+        '  </details>',
+        '</div>'
+      ].join('')
+
+      const detailsEl = fixtureEl.querySelector('details')
+
+      detailsEl.click()
+
+      expect(Accordion.getInstance(detailsEl)).toBeNull()
     })
   })
 })

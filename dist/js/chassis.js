@@ -1,5 +1,5 @@
 /*!
-  * Chassis v0.3.4 (https://chassis-ui.com)
+  * Chassis v0.3.5 (https://chassis-ui.com)
   * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
   * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
   */
@@ -576,7 +576,7 @@ class Config {
  * Constants
  */
 
-const VERSION = '0.3.4';
+const VERSION = '0.3.5';
 
 /**
  * Class definition
@@ -743,8 +743,9 @@ const EVENT_OPEN = `open${EVENT_KEY$j}`;
 const EVENT_OPENED = `opened${EVENT_KEY$j}`;
 const EVENT_CLOSE$2 = `close${EVENT_KEY$j}`;
 const EVENT_CLOSED$1 = `closed${EVENT_KEY$j}`;
-const ATTR_CLONE = 'data-accordion-clone'; // marks clones so SELECTOR_DETAILS excludes them
-const SELECTOR_DETAILS = `.accordion > details:not([${ATTR_CLONE}])`;
+const ATTR_CLONE = 'data-cx-clone'; // marks clones so SELECTOR_DETAILS excludes them
+const ATTR_ACCORDION = 'data-cx-accordion';
+const SELECTOR_DETAILS = `[${ATTR_ACCORDION}] > details:not([${ATTR_CLONE}])`;
 const SELECTOR_SUMMARY = 'summary';
 const SELECTOR_CONTENT$1 = '.accordion-body';
 const EVENT_CLICK_DATA_API$a = `click${EVENT_KEY$j}${DATA_API_KEY$d}`;
