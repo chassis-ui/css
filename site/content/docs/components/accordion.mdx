@@ -123,9 +123,7 @@ Accordions with the same `name` attribute form groups that close automatically w
 
 Add `.flush` to remove some borders and rounded corners to render accordions edge-to-edge with their parent container.
 
-<div class="cxd-example">
-
-  <div class="accordion flush" data-cx-accordion>
+<Example code={`<div class="accordion flush" data-cx-accordion>
     <details name="example-flush" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -150,23 +148,17 @@ Add `.flush` to remove some borders and rounded corners to render accordions edg
         <p>This is the <b>third item's body</b>. It is hidden by default and will open when its summary element is clicked.</p>
       </div>
     </details>
-  </div>
-
-</div>
-
-```html
-  <div class="accordion flush" data-cx-accordion>
+  </div>`}
+  customMarkup={`<div class="accordion flush" data-cx-accordion>
     ...
-  </div>
-```
+  </div>`} />
+
 
 ### Caret Position
 
 Add `.caret-end` to the accordion container to move the caret icon to the end of the summary element.
 
-<div class="cxd-example">
-
-  <div class="accordion caret-end" data-cx-accordion>
+<Example code={`<div class="accordion caret-end" data-cx-accordion>
     <details name="example-end" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -191,23 +183,16 @@ Add `.caret-end` to the accordion container to move the caret icon to the end of
         <p>This is the <b>third item's body</b>. It is hidden by default and will open when its summary element is clicked.</p>
       </div>
     </details>
-  </div>
-
-</div>
-
-```html
-  <div class="accordion caret-end" data-cx-accordion>
+  </div>`}
+  customMarkup={`<div class="accordion caret-end" data-cx-accordion>
     ...
-  </div>
-```
+  </div>`} />
 
-### Disable Animation
+### Without Animation
 
-Add `.no-transition` to the accordion container to disable the smooth transition effect.
+Without the `data-cx-accordion` attribute, the accordion will function without smooth transitions. The content will open and close instantly and the caret icon will not animate.
 
-<div class="cxd-example">
-
-  <div class="accordion no-transition" data-cx-accordion>
+<Example code={`<div class="accordion">
     <details name="example-no-transition" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -232,15 +217,11 @@ Add `.no-transition` to the accordion container to disable the smooth transition
         <p>This is the <b>third item's body</b>. It is hidden by default and will open when its summary element is clicked.</p>
       </div>
     </details>
-  </div>
-
-</div>
-
-```html
-  <div class="accordion no-transition" data-cx-accordion>
+  </div>`}
+  customMarkup={`<div class="accordion">
     ...
-  </div>
-```
+  </div>`} />
+
 
 ## Sizes
 
@@ -252,9 +233,7 @@ Chassis CSS offers size variations to help accordions integrate seamlessly with 
 
 Add `.large` for larger font size and more generous spacing. Suitable for primary content areas, FAQ sections, or hero elements where accordions need more visual prominence.
 
-<div class="cxd-example">
-
-  <div class="accordion large" data-cx-accordion>
+<Example code={`<div class="accordion large" data-cx-accordion>
     <details name="example-large" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -279,23 +258,16 @@ Add `.large` for larger font size and more generous spacing. Suitable for primar
         <p>This is the <b>third item's body</b>. It is hidden by default and will open when its summary element is clicked.</p>
       </div>
     </details>
-  </div>
-
-</div>
-
-```html
-  <div class="accordion large" data-cx-accordion>
+  </div>`}
+  customMarkup={`<div class="accordion large" data-cx-accordion>
     ...
-  </div>
-```
+  </div>`} />
 
 ### Small
 
 Add `.small` for reduced font size and compact spacing. Suitable for secondary content areas like cards, sidebars, or dense layouts where space efficiency is a priority.
 
-<div class="cxd-example">
-
-  <div class="accordion small" data-cx-accordion>
+<Example code={`<div class="accordion small" data-cx-accordion>
     <details name="example-small" open>
       <summary>
         <span class="accordion-title">Accordion Item #1</span>
@@ -320,15 +292,10 @@ Add `.small` for reduced font size and compact spacing. Suitable for secondary c
         <p>This is the <b>third item's body</b>. It is hidden by default and will open when its summary element is clicked.</p>
       </div>
     </details>
-  </div>
-
-</div>
-
-```html
-<div class="accordion small" data-cx-accordion>
-  ...
-</div>
-```
+  </div>`}
+  customMarkup={`<div class="accordion small" data-cx-accordion>
+    ...
+  </div>`} />
 
 ## Context Variants
 
@@ -340,8 +307,7 @@ You can use the `.context` class to add a color or style to the accordion. The c
 
 Use `.context` class on accordion with a color, like `.primary`.
 
-<div class="cxd-example">
-  <div class="row row-cols-1 medium:row-cols-2 g-large">
+<Example code={`<div class="row row-cols-1 medium:row-cols-2 g-large">
 
 <div class="col">
   <div class="accordion context neutral small" data-cx-accordion>
@@ -459,34 +425,29 @@ Use `.context` class on accordion with a color, like `.primary`.
   </div>
 </div>
 
+  </div>`}
+  customMarkup={`<div class="accordion context neutral small" data-cx-accordion>
+    ...
   </div>
-</div>
 
-```html
-<div class="accordion context neutral small" data-cx-accordion>
-  ...
-</div>
+  <div class="accordion context primary small" data-cx-accordion>
+    ...
+  </div>
 
-<div class="accordion context primary small" data-cx-accordion>
-  ...
-</div>
+  <div class="accordion context secondary small" data-cx-accordion>
+    ...
+  </div>
 
-<div class="accordion context secondary small" data-cx-accordion>
-  ...
-</div>
-
-<div class="accordion context alternate small" data-cx-accordion>
-  ...
-</div>
-```
+  <div class="accordion context alternate small" data-cx-accordion>
+    ...
+  </div>`} />
 
 
 ### Styles
 
 Use `.context` class on accordions with a color and style, like `.primary` and `.solid`.
 
-<div class="cxd-example">
-  <div class="row row-cols-1 medium:row-cols-2 g-large">
+<Example code={`<div class="row row-cols-1 medium:row-cols-2 g-large">
 
 <div class="col">
   <div class="accordion context primary small" data-cx-accordion>
@@ -604,26 +565,22 @@ Use `.context` class on accordions with a color and style, like `.primary` and `
   </div>
 </div>
 
+  </div>`}
+  customMarkup={`<div class="accordion context primary small" data-cx-accordion>
+    ...
   </div>
-</div>
 
-```html
-<div class="accordion context primary small" data-cx-accordion>
-  ...
-</div>
+  <div class="accordion context primary solid small" data-cx-accordion>
+    ...
+  </div>
 
-<div class="accordion context primary solid small" data-cx-accordion>
-  ...
-</div>
+  <div class="accordion context primary smooth small" data-cx-accordion>
+    ...
+  </div>
 
-<div class="accordion context primary smooth small" data-cx-accordion>
-  ...
-</div>
-
-<div class="accordion context primary outline small" data-cx-accordion>
-  ...
-</div>
-```
+  <div class="accordion context primary outline small" data-cx-accordion>
+    ...
+  </div>`} />
 
 ## Accessibility
 
@@ -652,22 +609,22 @@ When AT heading-outline navigation is a hard requirement, the [WAI-ARIA APG acco
 
 ## CSS
 
-<DocsCSS />
+<DocsCSS exposed />
 
 ### Custom properties
 
-<DocsCSSVars />
+<DocsCSSVars name="Accordion" cascading />
 
-<ScssDocs name="accordion-css-vars" file="scss/_accordion.scss" />
+<ScssDocs name="accordion-css-vars" file="scss/_accordion.scss" compile />
 
 ### Sass variables
 
-<DocsSASSVars />
+<DocsSASSVars name="Accordion" exposed />
 
 <ScssDocs name="accordion-variables" file="scss/config/_defaults.scss" />
 
 ### Design tokens
 
-<DocsDesignTokens />
+<DocsDesignTokens name="Accordion" />
 
 <ScssDocs name="accordion-tokens" file="scss/tokens/_accordion.scss" />
