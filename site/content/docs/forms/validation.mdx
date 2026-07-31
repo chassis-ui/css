@@ -351,7 +351,7 @@ Chassis CSS validation styles work consistently across all basic form elements:
     <div class="form-field">
       <label for="validationInputHelp" class="form-label">Input Help</label>
       <div class="form-input">
-        <div class="input-help">
+        <div class="input-adorn">
           <Icon name="search-outline" />
         </div>
         <input type="text" class="ghost-input is-invalid" id="validationInputHelp" placeholder="Search..." aria-describedby="validationInputHelpFeedback" required>
@@ -456,7 +456,7 @@ For compact layouts, Chassis CSS provides tooltip-style validation feedback. Sim
 
 Validation icons are opt-in at the **wrapper level**. Add the `.validation-icons` class to any ancestor — typically the `<form>`, but it also works on `.form-field`, `.input-group`, or even a single `.form-input` — and every supported descendant input renders the success or error glyph when it enters a validation state. Without an ancestor with this class, inputs still pick up validation colors, border, and shadow — only the icon is omitted.
 
-Icons appear on text inputs, single-value `<select>` elements, color inputs, `.ghost-input` (used by `.chip-input` and the `.input-help` wrapper), and `.combobox-value`. Textareas, checkboxes, radios, switches, file, and range inputs do not receive icons by design.
+Icons appear on text inputs, single-value `<select>` elements, color inputs, `.ghost-input` (used by `.chip-input` and the `.input-adorn` wrapper), and `.combobox-value`. Textareas, checkboxes, radios, switches, file, and range inputs do not receive icons by design.
 
 <Example code={`<form class="vstack gap-medium validation-icons" data-cx-validate novalidate>
     <div class="form-field">
@@ -485,9 +485,9 @@ Icons appear on text inputs, single-value `<select>` elements, color inputs, `.g
     <div class="form-field">
       <label for="validationIconsInputHelp" class="form-label">Input help</label>
       <div class="form-input">
-        <span class="input-help">$</span>
+        <span class="input-adorn">$</span>
         <input type="number" class="ghost-input" id="validationIconsInputHelp" placeholder="0.00" min="1" required>
-        <span class="input-help">USD</span>
+        <span class="input-adorn">USD</span>
       </div>
       <div class="invalid-feedback">Enter an amount greater than zero.</div>
     </div>

@@ -2,17 +2,17 @@
 @use "../placeholders" as *;
 
 //
-// Input Help
+// Input Adorn
 //
-// Inline help icon anchored inside a form input. Positions a decorative or
-// interactive icon at the trailing edge of the input field.
+// Leading or trailing icon, text, or button slot inside a `.form-input`,
+// positioned before or after the `.ghost-input` element.
 //
 
 @layer components {
-  .form-input:has(.input-help) {
-    // scss-docs-start input-help-properties
-    // --icon-color: var(--input-help-fg-color);
-    // scss-docs-end input-help-properties
+  .form-input:has(.input-adorn) {
+    // scss-docs-start input-adorn-properties
+    // --icon-color: var(--input-adorn-fg-color);
+    // scss-docs-end input-adorn-properties
 
     display: flex;
     gap: var(--gap);
@@ -29,7 +29,7 @@
     }
   }
 
-  .input-help:is(button) {
+  .input-adorn:is(button) {
     --button-icon-size: var(--input-icon-size, #{$form-medium-icon-size});
     min-width: auto;
     min-height: auto;
@@ -40,9 +40,9 @@
 
   }
 
-  .input-help,
-  .input-help.valid-feedback,
-  .input-help.invalid-feedback {
+  .input-adorn,
+  .input-adorn.valid-feedback,
+  .input-adorn.invalid-feedback {
     display: flex;
     flex-shrink: 0;
     align-items: center;
