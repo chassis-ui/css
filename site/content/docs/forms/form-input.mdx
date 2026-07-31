@@ -18,7 +18,7 @@ export const _time = `${_pad(_now.getHours())}:${_pad(_now.getMinutes())}`
 
 ## Overview
 
-Chassis CSS form elements feature a clean, modern design with consistent states, sizing options, and accessibility enhancements. They adapt to color modes using CSS variables for seamless theming.
+Use the `.form-input` class to style `<input>`, `<select>`, and `<textarea>` elements with a consistent appearance, sizing, and states.
 
 <Example class="vstack gap-xsmall" code={`<input class="form-input" type="text" placeholder="Example text input">
   <select class="form-input">
@@ -26,11 +26,35 @@ Chassis CSS form elements feature a clean, modern design with consistent states,
     <option value="option1">Option one</option>
     <option value="option2">Option two</option>
   </select>
-  <textarea class="form-input" placeholder="Example textarea" rows="3"></textarea>`} />
+  <textarea class="form-input" placeholder="Example textarea"></textarea>`} />
 
 <Callout type="info">
   Caret icon for select inputs is implemented using a background image and supports both disabled state and dark mode. Caret icon can be customized with [Chassis Tokens]([[docsref:/core-concepts/design-tokens]]) or by overriding the [CSS variables](#custom-properties) at runtime.
 </Callout>
+
+## Select
+
+Use the `multiple` attribute to allow multiple selections.
+
+<Example class="vstack gap-xsmall" code={`<select class="form-input" multiple>
+    <option value="option1">Option one</option>
+    <option value="option2">Option two</option>
+    <option value="option3">Option three</option>
+  </select>`} />
+
+Use the `size` attribute to control the number of visible options.
+
+<Example class="vstack gap-xsmall" code={`<select class="form-input" size="3">
+    <option value="option1">Option one</option>
+    <option value="option2">Option two</option>
+    <option value="option3">Option three</option>
+  </select>`} />
+
+## Textarea
+
+Use the `rows` attribute to control the height of the textarea.
+
+<Example class="vstack gap-xsmall" code={`<textarea class="form-input" placeholder="Example textarea with rows attribute" rows="4"></textarea>`} />
 
 ## Sizing
 
