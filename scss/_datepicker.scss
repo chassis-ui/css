@@ -1,6 +1,7 @@
 @use "./config" as *;
 @use "./mixins" as *;
 @use "./placeholders" as *;
+@use "./functions" as *;
 
 //
 // Datepicker Component
@@ -10,10 +11,12 @@
 //
 
 @layer components {
-  [data-vc="calendar"] {
+  [data-vc="calendar"],
+  .cx-datepicker-calendar {
     // scss-docs-start datepicker-tokens
     --padding-x: var(--datepicker-padding-x, #{$datepicker-padding-x});
     --padding-y: var(--datepicker-padding-y, #{$datepicker-padding-y});
+    --gap: var(--datepicker-gap, #{$datepicker-gap});
     --bg-color: var(--datepicker-bg-color, #{$datepicker-bg-main});
     --fg-color: var(--datepicker-fg-color, #{$datepicker-fg-main});
     --border-color: var(--datepicker-border-color, #{$datepicker-border-main});
@@ -23,10 +26,11 @@
     --box-shadow: var(--datepicker-box-shadow, #{$datepicker-shadow-main});
     @include map-font-size($datepicker-font-day, datepicker);
     @include map-font-weight($datepicker-font-today, datepicker, today);
-    --min-width: var(--datepicker-min-width, #{$datepicker-menu-width});
+    --min-width: var(--datepicker-min-width, #{$datepicker-week-width});
     --zindex: var(--datepicker-zindex, #{$zindex-menu});
     @include map-font-size($datepicker-font-label, datepicker-header, header);
     @include map-font-weight($datepicker-font-label, datepicker-header, header);
+    --arrow-icon: var(--datepicker-arrow-icon, #{svg-icon($datepicker-arrow-icon)});
     --weekday-fg-color: var(--datepicker-weekday-fg-color, #{$datepicker-fg-idle});
     --day-hover-bg-color: var(--datepicker-day-hover-bg-color, #{$datepicker-bg-hover});
     --day-selected-bg-color: var(--datepicker-day-selected-bg-color, #{$datepicker-bg-active});
@@ -97,10 +101,13 @@
     &::before {
       position: absolute;
       inset: .25rem;
+      // width: 2rem;
+      // height: 2rem;
       content: "";
-      background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%236b7280' d='M12 16c-.3 0-.5-.1-.7-.3l-6-6c-.4-.4-.4-1 0-1.4s1-.4 1.4 0l5.3 5.3 5.3-5.3c.4-.4 1-.4 1.4 0s.4 1 0 1.4l-6 6c-.2.2-.4.3-.7.3'/></svg>");
-      background-repeat: no-repeat;
-      background-position: center;
+      background-color: var(--fg-color);
+      // mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 24 24'><path d='M12 16c-.3 0-.5-.1-.7-.3l-6-6c-.4-.4-.4-1 0-1.4s1-.4 1.4 0l5.3 5.3 5.3-5.3c.4-.4 1-.4 1.4 0s.4 1 0 1.4l-6 6c-.2.2-.4.3-.7.3'/></svg>");
+      mask-image: var(--arrow-icon);
+      mask-position: center;
     }
 
     &:hover {
@@ -126,9 +133,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-block-start: var(--padding-y);
-    padding-inline: var(--padding-x);
     pointer-events: none;
+
+    &:not([data-cx-inline] > &) {
+      padding-block-start: var(--padding-y);
+      padding-inline: var(--padding-x);
+    }
   }
 
   [data-vc="grid"] {
@@ -200,8 +210,8 @@
     display: grid;
     flex-grow: 1;
     grid-template-columns: repeat(var(--vc-columns, 4), minmax(0, 1fr));
-    row-gap: 1rem;
-    column-gap: .25rem;
+    row-gap: var(--gap);
+    column-gap: var(--gap);
     align-items: center;
   }
 

@@ -1364,7 +1364,8 @@
     --cx-separator-color: var(--cx-context-base-color);
     border: var(--cx-border-width) var(--cx-border-style) var(--cx-border-color);
   }
-  .toast, .popover, .page-link, .notification, .menu, .input-addon, .form-input::file-selector-button, [data-vc=calendar], .chip, .card, .button, .breadcrumb, .badge, .alert, .form-input {
+  .toast, .popover, .page-link, .notification, .menu, .input-addon, .form-input::file-selector-button, [data-vc=calendar],
+  .cx-datepicker-calendar, .chip, .card, .button, .breadcrumb, .badge, .alert, .form-input {
     font: var(--cx-font-weight) var(--cx-font-size)/var(--cx-line-height) var(--cx-font-family);
     color: var(--cx-fg-color);
     background-color: var(--cx-bg-color);
@@ -3314,9 +3315,11 @@
     background-color: var(--cx-bg-color);
     border-color: var(--cx-border-color);
   }
-  [data-vc=calendar] {
+  [data-vc=calendar],
+  .cx-datepicker-calendar {
     --cx-padding-x: var(--cx-datepicker-padding-x, 0.5rem);
     --cx-padding-y: var(--cx-datepicker-padding-y, 0.5rem);
+    --cx-gap: var(--cx-datepicker-gap, 0.25rem);
     --cx-bg-color: var(--cx-datepicker-bg-color, var(--cx-default-bg-main));
     --cx-fg-color: var(--cx-datepicker-fg-color, var(--cx-default-fg-main));
     --cx-border-color: var(--cx-datepicker-border-color, var(--cx-default-transparent-color));
@@ -3326,10 +3329,11 @@
     --cx-box-shadow: var(--cx-datepicker-box-shadow, var(--cx-box-shadow-medium));
     --cx-font-size: var(--cx-datepicker-font-size, var(--cx-font-size-small));
     --cx-today-font-weight: var(--cx-datepicker-today-font-weight, var(--cx-font-weight-strong));
-    --cx-min-width: var(--cx-datepicker-min-width, 7.5rem);
+    --cx-min-width: var(--cx-datepicker-min-width, 17.5rem);
     --cx-zindex: var(--cx-datepicker-zindex, 1000);
     --cx-header-font-size: var(--cx-datepicker-header-header-font-size, var(--cx-font-size-small));
     --cx-header-font-weight: var(--cx-datepicker-header-header-font-weight, var(--cx-font-weight-strong));
+    --cx-arrow-icon: var(--cx-datepicker-arrow-icon, url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 24 24'%3e%3cpath d='M12 16c-.3 0-.5-.1-.7-.3l-6-6c-.4-.4-.4-1 0-1.4s1-.4 1.4 0l5.3 5.3 5.3-5.3c.4-.4 1-.4 1.4 0s.4 1 0 1.4l-6 6c-.2.2-.4.3-.7.3'/%3e%3c/svg%3e"));
     --cx-weekday-fg-color: var(--cx-datepicker-weekday-fg-color, var(--cx-default-fg-main));
     --cx-day-hover-bg-color: var(--cx-datepicker-day-hover-bg-color, var(--cx-default-bg-even));
     --cx-day-selected-bg-color: var(--cx-datepicker-day-selected-bg-color, var(--cx-default-cue-main));
@@ -3351,7 +3355,8 @@
     padding: var(--cx-padding-y) var(--cx-padding-x);
     box-shadow: var(--cx-box-shadow);
   }
-  [data-vc=calendar] button:focus-visible {
+  [data-vc=calendar] button:focus-visible,
+  .cx-datepicker-calendar button:focus-visible {
     position: relative;
     z-index: 1;
     outline: var(--cx-focus-ring-width) solid var(--cx-focus-ring-color);
@@ -3390,9 +3395,9 @@
     position: absolute;
     inset: 0.25rem;
     content: "";
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%236b7280' d='M12 16c-.3 0-.5-.1-.7-.3l-6-6c-.4-.4-.4-1 0-1.4s1-.4 1.4 0l5.3 5.3 5.3-5.3c.4-.4 1-.4 1.4 0s.4 1 0 1.4l-6 6c-.2.2-.4.3-.7.3'/></svg>");
-    background-repeat: no-repeat;
-    background-position: center;
+    background-color: var(--cx-fg-color);
+    mask-image: var(--cx-arrow-icon);
+    mask-position: center;
   }
   [data-vc-arrow]:hover {
     color: var(--cx-day-hover-fg-color);
@@ -3412,9 +3417,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    pointer-events: none;
+  }
+  [data-vc=controls]:not([data-cx-inline] > [data-vc=controls]) {
     padding-block-start: var(--cx-padding-y);
     padding-inline: var(--cx-padding-x);
-    pointer-events: none;
   }
   [data-vc=grid] {
     display: flex;
@@ -3472,8 +3479,8 @@
     display: grid;
     flex-grow: 1;
     grid-template-columns: repeat(var(--cx-vc-columns, 4), minmax(0, 1fr));
-    row-gap: 1rem;
-    column-gap: 0.25rem;
+    row-gap: var(--cx-gap);
+    column-gap: var(--cx-gap);
     align-items: center;
   }
   [data-vc=years] {
