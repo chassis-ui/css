@@ -12,7 +12,7 @@ deps:
 
 ## Overview
 
-The Bootstrap Datepicker is a wrapper around [Vanilla Calendar Pro](https://vanilla-calendar.pro/) that provides a consistent, accessible date selection experience. It supports light/dark themes, input binding, and flexible configuration via data attributes or JavaScript.
+The Chassis CSS Datepicker is a wrapper around [Vanilla Calendar Pro](https://vanilla-calendar.pro/) that provides a consistent, accessible date selection experience. It supports light/dark themes, input binding, and flexible configuration via data attributes or JavaScript.
 
 <Example code={`<label for="datepicker1" class="form-label">Datepicker</label>
   <input type="text" class="form-input w-12" id="datepicker1" data-cx-toggle="datepicker" placeholder="Choose date…">`} />
@@ -25,7 +25,7 @@ Note that we’re using a width utility of `.w-12` to ensure the input is wide e
 - Use `type="text"` to avoid conflicts with native browser date pickers
 - When focused, the calendar popup appears below the input
 - Selecting a date updates the input value and closes the picker
-- The picker respects Bootstrap’s color modes (`data-cx-theme`)
+- The picker respects Chassis CSS’s color modes (`data-cx-theme`)
 - Configurable with any [Vanilla Calendar Pro option](https://vanilla-calendar.pro/docs/reference/settings) via `vcpOptions` when initializing with JavaScript
 
 ## Examples
@@ -187,7 +187,7 @@ const datepicker = new bootstrap.Datepicker(element, {
 
 ## Dark mode
 
-The datepicker automatically adapts to Bootstrap’s color modes. When `data-cx-theme="dark"` is set on a parent element or the `<html>` tag, the calendar popup inherits that theme.
+The datepicker automatically adapts to Chassis CSS’s color modes. When `data-cx-theme="dark"` is set on a parent element or the `<html>` tag, the calendar popup inherits that theme.
 
 ### Inherited from parent
 
@@ -242,6 +242,8 @@ const datepicker = new bootstrap.Datepicker(datepickerEl, {
 
 ### Options
 
+<JsDataAttributes />
+
 <CxTable>
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -263,7 +265,7 @@ const datepicker = new bootstrap.Datepicker(datepickerEl, {
 
 ### Advanced configuration
 
-For features not directly exposed by Bootstrap’s options, use `vcpOptions` to pass any Vanilla Calendar Pro setting:
+For features not directly exposed by Chassis CSS’s options, use `vcpOptions` to pass any Vanilla Calendar Pro setting:
 
 ```js
 const datepicker = new bootstrap.Datepicker(element, {
@@ -299,16 +301,16 @@ See the [Vanilla Calendar Pro documentation](https://vanilla-calendar.pro/docs/r
 <CxTable>
 | Event | Description |
 | --- | --- |
-| `show.bs.datepicker` | Fires immediately when the `show` method is called |
-| `shown.bs.datepicker` | Fires when the datepicker has been made visible |
-| `hide.bs.datepicker` | Fires immediately when the `hide` method is called |
-| `hidden.bs.datepicker` | Fires when the datepicker has been hidden |
-| `change.bs.datepicker` | Fires when a date is selected. Event includes `dates` (array) and `event` properties |
+| `show.cx.datepicker` | Fires immediately when the `show` method is called |
+| `shown.cx.datepicker` | Fires when the datepicker has been made visible |
+| `hide.cx.datepicker` | Fires immediately when the `hide` method is called |
+| `hidden.cx.datepicker` | Fires when the datepicker has been hidden |
+| `change.cx.datepicker` | Fires when a date is selected. Event includes `dates` (array) and `event` properties |
 </CxTable>
 
 ```js
 const datepickerEl = document.getElementById('myDatepicker')
-datepickerEl.addEventListener('change.bs.datepicker', event => {
+datepickerEl.addEventListener('change.cx.datepicker', event => {
   console.log('Selected dates:', event.dates)
 })
 ```
