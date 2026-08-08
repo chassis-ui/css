@@ -8,290 +8,233 @@
 // Content slideshow cycling through elements with slide and fade transition
 // effects. Includes navigation controls, position indicators, and touch-event
 // support for swipe gestures.
-//
-// The implementation carefully manages animation states to prevent conflicts
-// between concurrent transitions and provides clean entry/exit animations.
-//
-// Notes on the classes:
-//
-// 1. .carousel.pointer-event uses pan-y to allow vertical scrolling while
-//    preventing horizontal scroll interference with the carousel
-// 2. .carousel-item-start and .carousel-item-end indicate slide movement direction
-// 3. .active.carousel-item is the current visible slide
-// 4. .active.carousel-item-start and .active.carousel-item-end represent
-//    the current slide during transition states
-// 5. .carousel-item-next.carousel-item-start and .carousel-item-prev.carousel-item-end
-//    are the upcoming slides during transition
 
 @layer components {
   .carousel {
     // scss-docs-start carousel-variables
-    --control-color: var(--carousel-control-color, #{$carousel-control-color});
-    --control-size: var(--carousel-control-size, #{$carousel-control-size});
-    --control-opacity: var(--carousel-control-opacity, #{$carousel-control-opacity});
-    --control-hover-opacity: var(--carousel-control-hover-opacity, #{$carousel-control-hover-opacity});
-    --control-transition: var(--carousel-control-transition, #{$carousel-control-transition});
-    --indicator-width: var(--carousel-indicator-width, #{$carousel-indicator-width});
-    --indicator-height: var(--carousel-indicator-height, #{$carousel-indicator-height});
-    --indicator-padding-y: var(--carousel-indicator-padding-y, #{$carousel-indicator-padding-y});
-    --indicator-padding-x: var(--carousel-indicator-padding-x, #{$carousel-indicator-padding-x});
-    --indicator-border-radius: var(--carousel-indicator-border-radius, #{$carousel-indicator-border-radius});
-    --indicator-margin: var(--carousel-indicator-margin, #{$carousel-indicator-margin});
-    --indicator-opacity: var(--carousel-indicator-opacity, #{$carousel-indicator-opacity});
-    --indicator-color: var(--carousel-indicator-color, #{$carousel-indicator-color});
-    --indicator-active-opacity: var(--carousel-indicator-active-opacity, #{$carousel-indicator-active-opacity});
+    --gap: var(--carousel-gap, #{$carousel-gap});
+
+    // --control-color: var(--carousel-control-color, #{$carousel-control-color});
+    // --control-size: var(--carousel-control-size, #{$carousel-control-size});
+    // --control-opacity: var(--carousel-control-opacity, #{$carousel-control-opacity});
+    // --control-hover-opacity: var(--carousel-control-hover-opacity, #{$carousel-control-hover-opacity});
+    // --control-transition: var(--carousel-control-transition, #{$carousel-control-transition});
+
+    --indicator-gap: var(--carousel-indicator-gap, #{$carousel-indicator-gap});
+    --indicator-idle-width: var(--carousel-indicator-idle-width, #{$carousel-indicator-idle-width});
+    --indicator-idle-height: var(--carousel-indicator-idle-height, #{$carousel-indicator-idle-height});
+    --indicator-idle-radius: var(--carousel-indicator-idle-radius, #{$carousel-indicator-idle-radius});
+    --indicator-active-width: var(--carousel-indicator-active-width, #{$carousel-indicator-active-width});
+    --indicator-active-height: var(--carousel-indicator-active-height, #{$carousel-indicator-active-height});
+    --indicator-active-radius: var(--carousel-indicator-active-radius, #{$carousel-indicator-active-radius});
+    --indicator-idle-color: var(--carousel-indicator-idle-color, #{$carousel-indicator-idle-color});
+    --indicator-active-color: var(--carousel-indicator-active-color, #{$carousel-indicator-active-color});
     --indicator-transition: var(--carousel-indicator-transition, #{$carousel-indicator-transition});
-    --caption-width: var(--carousel-caption-width, #{$carousel-caption-width});
-    --caption-color: var(--carousel-caption-color, #{$carousel-caption-color});
-    --caption-padding-y: var(--carousel-caption-padding-y, #{$carousel-caption-padding-y});
-    --caption-spacer: var(--carousel-caption-spacer, #{$carousel-caption-spacer});
-    --control-icon-size: var(--carousel-control-icon-size, #{$carousel-control-icon-size});
-    --control-prev-icon: var(--carousel-control-prev-icon, #{svg-icon($carousel-control-prev-icon)});
-    --control-next-icon: var(--carousel-control-next-icon, #{svg-icon($carousel-control-next-icon)});
-    --control-prev-bg: var(--carousel-control-prev-bg, #{$carousel-control-prev-bg});
-    --control-next-bg: var(--carousel-control-next-bg, #{$carousel-control-next-bg});
-    --transition-duration: var(--carousel-transition-duration, #{$carousel-transition-duration});
-    --transition: var(--carousel-transition, #{$carousel-transition});
-    // --dark-caption-color: var(--carousel-dark-caption-color, #{$carousel-dark-caption-color});
-    // --dark-control-icon-filter: var(--carousel-dark-control-icon-filter, #{$carousel-dark-control-icon-filter});
+
+    --overlay-inset: var(--carousel-overlay-inset, #{$carousel-overlay-inset});
+    --overlay-color: var(--carousel-overlay-color, #{$carousel-overlay-color});
+    // --control-icon-size: var(--carousel-control-icon-size, #{$carousel-control-icon-size});
+    // --control-prev-bg: var(--carousel-control-prev-bg, #{$carousel-control-prev-bg});
+    // --control-next-bg: var(--carousel-control-next-bg, #{$carousel-control-next-bg});
+
+    --items: var(--carousel-items, #{$carousel-items});
+    --items-gap: var(--carousel-items-gap, #{$carousel-items-gap});
+    --items-peek: var(--carousel-items-peek, #{$carousel-items-peek});
+    --fade-duration: var(--carousel-fade-duration, #{$carousel-fade-duration});
+    --fade-timing: var(--carousel-fade-timing, #{$carousel-fade-timing});
     // scss-docs-end carousel-variables
+
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+
   }
 
-  .carousel.pointer-event {
-    touch-action: pan-y;
-  }
-
+  // The scroll viewport
   .carousel-inner {
-    position: relative;
+    display: flex;
+    gap: var(--items-gap);
     width: 100%;
-    overflow: hidden;
-    @include clearfix();
+    padding-inline: var(--items-peek);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--items-peek);
+    scrollbar-width: none; // Hide the scrollbar without losing scrollability
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  // Smooth programmatic/keyboard scrolling, disabled under reduced-motion
+  @media (prefers-reduced-motion: no-preference) {
+    .carousel-inner {
+      scroll-behavior: smooth;
+    }
   }
 
   .carousel-item {
-    position: relative;
-    display: none;
-    float: inline-start;
-    width: 100%;
-    margin-inline-end: -100%;
-    backface-visibility: hidden;
-    @include transition(var(--transition));
+    // `100%` here is `.carousel-inner`'s content box, which `padding-inline`
+    // has already inset by the peek on each side, so the peek must NOT be
+    // subtracted again — doing so makes every slide `2 * peek` too narrow and
+    // the peek lopsided. Only the inter-slide gaps need removing.
+    flex: 0 0 calc((100% - (var(--items) - 1) * var(--items-gap)) / var(--items));
+    min-width: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
 
-  .carousel-item.active,
-  .carousel-item-next,
-  .carousel-item-prev {
-    display: block;
+  //
+  // Layout variants
+  //
+
+  // Center the active slide in the viewport (pairs well with `--carousel-items-peek`)
+  .carousel-center {
+    .carousel-item {
+      scroll-snap-align: center;
+    }
   }
 
-  .carousel-item-next:not(.carousel-item-start),
-  .active.carousel-item-end {
-    transform: translateX(100%);
+  // Let each slide size itself; snap points still land on every item
+  .carousel-auto {
+    .carousel-item {
+      flex-basis: auto;
+    }
   }
-
-  .carousel-item-prev:not(.carousel-item-end),
-  .active.carousel-item-start {
-    transform: translateX(-100%);
-  }
-
 
   //
   // Alternate transitions
   //
 
+  // Fade can't ride scroll-snap (it stacks slides instead of scrolling), so it
+  // becomes a JavaScript-driven mode: every slide is stacked and the active one
+  // is faded in via a CSS opacity transition.
   .carousel-fade {
+    .carousel-inner {
+      display: grid;
+      overflow: hidden;
+      scroll-snap-type: none;
+    }
+
     .carousel-item {
+      grid-area: 1 / 1;
+      width: 100%;
+      visibility: hidden;
       opacity: 0;
-      transition-property: opacity;
-      transform: none;
+      @include transition(opacity var(--fade-duration) var(--fade-timing), visibility 0s linear var(--fade-duration));
     }
 
-    .carousel-item.active,
-    .carousel-item-next.carousel-item-start,
-    .carousel-item-prev.carousel-item-end {
-      z-index: 1;
+    .carousel-item.active {
+      visibility: visible;
       opacity: 1;
-    }
-
-    .active.carousel-item-start,
-    .active.carousel-item-end {
-      z-index: 0;
-      opacity: 0;
-      @include transition(opacity 0s var(--transition-duration));
+      @include transition(opacity var(--fade-duration) var(--fade-timing));
     }
   }
 
-
+  // Optional play/pause control
   //
-  // Left/right controls for nav
-  //
+  // A discoverable toggle so users can stop an autoplaying carousel, as required
+  // by WCAG 2.2.2 (Pause, Stop, Hide). `.carousel-control-play-pause` is only a
+  // behavior hook—JS toggles `.paused` on it and its appearance comes from the
+  // wrapping button (e.g. `.btn-icon`). The button holds both glyphs and we show
+  // whichever `.carousel-icon-*` matches the current state.
+  .carousel-control-play-pause .carousel-icon-play {
+    display: none;
+  }
 
-  .carousel-control-prev,
-  .carousel-control-next {
-    position: absolute;
-    inset-block: 0;
-    z-index: 1;
-    // Use flex for alignment (1-3)
-    display: flex; // 1. allow flex styles
-    align-items: center; // 2. vertically center contents
-    justify-content: center; // 3. horizontally center contents
-    width: var(--control-size);
-    padding: 0;
-    color: var(--control-color);
-    text-align: center;
-    background: none;
-    border: 0;
-    opacity: var(--control-opacity);
-    @include transition(var(--control-transition));
-
-    // Hover/focus state
-    &:hover,
-    &:focus {
-      color: var(--control-color);
-      text-decoration: none;
-      outline: 0;
-      opacity: var(--control-hover-opacity);
+  .carousel-control-play-pause.paused {
+    .carousel-icon-pause {
+      display: none;
     }
-  }
-  .carousel-control-prev {
-    inset-inline-start: 0;
-    background-image: $carousel-control-prev-bg;
-  }
-  .carousel-control-next {
-    inset-inline-end: 0;
-    background-image: $carousel-control-next-bg;
-  }
 
-  // Icons for within
-  .carousel-control-prev-icon,
-  .carousel-control-next-icon {
-    display: inline-block;
-    width: var(--control-icon-size);
-    height: var(--control-icon-size);
-    background-repeat: no-repeat;
-    background-position: 50%;
-    background-size: 100% 100%;
-
-    &::before {
-      position: absolute;
-      // inset-inline: 0;
-      width: var(--control-icon-size);
-      height: var(--control-icon-size);
-      margin-inline-start: #{calc(var(--control-icon-size) * -.5)};
-      content: " ";
-      background-color: var(--control-color);
-      mask-position: center;
-      mask-size: var(--control-icon-size) var(--control-icon-size);
+    .carousel-icon-play {
+      display: inline-block;
     }
   }
 
-  .carousel-control-prev-icon::before {
-    mask-image: var(--control-prev-icon);
+  [dir="rtl"] .carousel-icon-prev,
+  [dir="rtl"] .carousel-icon-next {
+    transform: scaleX(-1);
   }
-  [dir="rtl"] .carousel-control-prev-icon::before {
-    mask-image: var(--control-next-icon);
-  }
-  .carousel-control-next-icon::before {
-    mask-image: var(--control-next-icon);
-  }
-  [dir="rtl"] .carousel-control-next-icon::before {
-    mask-image: var(--control-prev-icon);
-  }
-
-  // Optional indicator pips/controls
-  //
-  // Add a container (such as a list) with the following class and add an item (ideally a focusable control,
-  // like a button) with data-cx-target for each slide your carousel holds.
 
   .carousel-indicators {
-    position: absolute;
-    inset-block-end: 0;
-    inset-inline: 0;
-    z-index: 2;
     display: flex;
+    gap: var(--indicator-gap);
     justify-content: center;
-    padding: 0;
-    // Use the .carousel-control's width as margin so we don't overlay those
-    margin-block-end: 1rem;
-    margin-inline: var(--control-size);
 
-    [data-cx-target] {
-      box-sizing: content-box;
+    > button {
       flex: 0 1 auto;
-      width: var(--indicator-width);
-      height: var(--indicator-height);
-      padding: var(--indicator-padding-y) var(--indicator-padding-x);
-      margin-inline: var(--indicator-margin);
-      text-indent: -1 * $utility-pixel-999;
+      width: var(--indicator-idle-width);
+      height: var(--indicator-idle-height);
+      padding: 0;
       cursor: pointer;
-      background-color: transparent;
-      background-clip: padding-box;
-      // Use transparent borders to increase the hit area by 10px on top and bottom.
+      background-color: var(--indicator-idle-color);
       border: 0;
-      opacity: var(--indicator-opacity);
+      @include border-radius(var(--indicator-idle-radius));
       @include transition(var(--indicator-transition));
+    }
 
-      &::before {
-        position: absolute;
-        display: block;
-        width: var(--indicator-width);
-        height: var(--indicator-height);
-        margin-block-start: calc(var(--indicator-height) * -.5);
-        content: "";
-        background-color: var(--indicator-color);
-      border-radius: var(--indicator-border-radius); // stylelint-disable-line
+    > .active {
+      width: var(--indicator-active-width);
+      height: var(--indicator-active-height);
+      background-color: var(--indicator-active-color);
+      @include border-radius(var(--indicator-active-radius));
+      // border-color: var(--indicator-active-color);
+    }
+  }
+
+  // Autoplay progress: fill the active indicator like a progress bar over the
+  // current slide's interval. The JS adds `.carousel-playing` and sets
+  // `--carousel-interval` (shipped as `--bs-carousel-interval`) while autoplay is
+  // running. The fill restarts on its own each slide because `.active` moves to a
+  // fresh indicator, so its `::after` animation begins from scratch.
+  @if $enable-transitions {
+    @keyframes carousel-indicator-progress {
+      from { inline-size: 0; }
+      to { inline-size: 100%; }
+    }
+
+    .carousel-playing .carousel-indicators .active {
+      @media (prefers-reduced-motion: no-preference) {
+        position: relative;
+        overflow: hidden;
+        // Empty the pill so it reads as a track that the fill grows across.
+        background-color: var(--indicator-idle-color);
+
+        &::after {
+          position: absolute;
+          inset-block: 0;
+          inset-inline-start: 0;
+          inline-size: 0;
+          content: "";
+          background-color: var(--indicator-active-color);
+          animation: carousel-indicator-progress var(--carousel-interval, 5000ms) linear forwards;
+        }
       }
     }
+  }
 
-    .active {
-      opacity: var(--indicator-active-opacity);
+  // Overlay controls
+  //
+  // Overlays the prev/next controls, play/pause button, and indicators on top of
+  // the slides (the classic carousel look) instead of stacking them in the flow.
+
+
+  .carousel-overlay {
+    --fg-color: var(--overlay-color);
+    position: absolute;
+    inset: var(--overlay-inset);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    > .carousel-indicators {
+      // allow to change the color with fg utility classes, e.g. `fg-white`
+      --indicator-idle-color: #{to-opacity(var(--fg-color), var(--opacity-fg-subtle))};
+      --indicator-active-color: var(--fg-color);
     }
   }
 
-
-  // Optional captions
-  //
-  //
-
-  .carousel-caption {
-    position: absolute;
-    inset-block-end: var(--caption-spacer);
-    inset-inline: calc((100% - var(--caption-width)) * .5);
-    padding-block: var(--caption-padding-y);
-    color: var(--caption-color);
-    text-align: center;
-  }
-
-  // Dark mode carousel
-
-  // @mixin carousel-dark() {
-  //   .carousel-control-prev-icon,
-  //   .carousel-control-next-icon {
-  //     filter: var(--dark-control-icon-filter);
-  //   }
-
-  //   .carousel-caption {
-  //     color: var(--dark-caption-color);
-  //   }
-  // }
-
-  // .carousel-dark {
-  //   @include carousel-dark();
-  // }
-
-  // @if $enable-dark-mode {
-  //   @include color-mode(dark) {
-  //     @if $color-mode-type == "media-query" {
-  //       .carousel {
-  //         @include carousel-dark();
-  //       }
-  //     } @else {
-  //       .carousel,
-  //       &.carousel {
-  //         @include carousel-dark();
-  //       }
-  //     }
-  //   }
-  // }
 } // @layer components
