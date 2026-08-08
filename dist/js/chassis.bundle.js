@@ -1094,7 +1094,9 @@ class Carousel extends BaseComponent {
     // Don't advance when the page or the carousel isn't visible
     if (document.visibilityState === 'visible' && isVisible(this._element)) {
       this.next();
+      return true;
     }
+    return false;
   }
   prev() {
     this.to(this._navIndex() - 1);
@@ -1209,7 +1211,9 @@ class Carousel extends BaseComponent {
     EventHandler.on(this._viewport, EVENT_POINTERDOWN$1, () => this._pauseFromInteraction());
   }
   _keydown(event) {
-    if (/input|textarea/i.test(event.target.tagName)) {
+    // Don't hijack arrow keys native to a form control or editable content
+    // living inside a slide (a `<select>`'s value, a text caret, etc).
+    if (event.target.closest('input, textarea, select, [contenteditable="true"]')) {
       return;
     }
     const direction = KEY_TO_DIRECTION[event.key];
@@ -1533,23 +1537,63 @@ class Carousel extends BaseComponent {
       atStart = this._activeIndex <= 0;
       atEnd = this._activeIndex >= last;
     }
+
+    // Decide where focus should land, if it needs to move, before either
+    // side is actually disabled below — otherwise disabling prev first can
+    // "move" focus to a next control that's about to be disabled too (a
+    // single-slide carousel disables both ends in the same pass).
+    this._preserveFocus(atStart, atEnd);
     this._setControlsDisabled(this._prevControls, atStart);
     this._setControlsDisabled(this._nextControls, atEnd);
   }
+
+  // a11y: if the currently-focused control is about to be disabled, move
+  // focus somewhere that isn't. Prefers the opposite control, but only if it
+  // isn't *also* about to be disabled in this same pass; otherwise falls back
+  // to the viewport.
+  _preserveFocus(atStart, atEnd) {
+    const focused = document.activeElement;
+    const focusedIsPrev = atStart && this._prevControls.includes(focused);
+    const focusedIsNext = atEnd && this._nextControls.includes(focused);
+    if (!focusedIsPrev && !focusedIsNext) {
+      return;
+    }
+    const opposite = focusedIsPrev ? this._nextControls : this._prevControls;
+    const oppositeStaysEnabled = focusedIsPrev ? !atEnd : !atStart;
+    const fallback = oppositeStaysEnabled ? opposite[0] : null;
+    if (fallback) {
+      // `preventScroll` so moving focus doesn't yank the page/viewport to the
+      // newly-focused control mid-navigation.
+      fallback.focus({
+        preventScroll: true
+      });
+      return;
+    }
+
+    // No control to fall back to. Not every browser makes a scrollable region
+    // programmatically focusable on its own, so make sure this one is before
+    // trying — done lazily, here, so carousels that never hit this edge case
+    // keep the viewport's default focus behavior (Chrome's native
+    // auto-focusable scroller).
+    if (!this._viewport.hasAttribute('tabindex')) {
+      this._viewport.setAttribute('tabindex', '-1');
+    }
+    this._viewport.focus({
+      preventScroll: true
+    });
+  }
   _setControlsDisabled(controls, disabled) {
     for (const control of controls) {
-      // a11y: if we're about to disable the focused control, move focus to the
-      // opposite (still-enabled) control so focus isn't lost.
-      if (disabled && control === document.activeElement) {
-        const opposite = controls === this._prevControls ? this._nextControls : this._prevControls;
-        const fallback = opposite[0] ?? this._viewport;
-        // `preventScroll` so moving focus doesn't yank the page/viewport to the
-        // newly-focused control mid-navigation.
-        fallback.focus({
-          preventScroll: true
-        });
+      // Native form controls (`<button>`, etc.) reflect `disabled` themselves —
+      // the browser blocks their clicks and drops them from the tab order.
+      // Anything else used as a control (e.g. an `<a>`) has no such IDL
+      // property to set, so fall back to `aria-disabled`; the data-api click
+      // handler checks for it since the browser won't block the click itself.
+      if ('disabled' in control) {
+        control.disabled = disabled;
+      } else {
+        control.setAttribute('aria-disabled', String(disabled));
       }
-      control.disabled = disabled;
     }
   }
   _setActiveIndicatorElement(index) {
@@ -1617,7 +1661,15 @@ class Carousel extends BaseComponent {
       // it after `nextWhenVisible()` would schedule the next wait from the slide
       // we're leaving — making per-item `data-cx-interval`s lag by one slide.
       const upcoming = this._upcomingIndex();
-      this.nextWhenVisible();
+      const advanced = this.nextWhenVisible();
+
+      // The page or carousel wasn't visible, so nothing actually moved: retry
+      // with the same slide's interval instead of adopting `upcoming`'s, or
+      // the progress fill and wait would jump ahead of the real active slide.
+      if (!advanced) {
+        this._scheduleAutoplay(index);
+        return;
+      }
 
       // Nothing comes after the last slide when `ends: 'stop'`; stop cycling
       // instead of re-arming a timer that can never advance.
@@ -1699,6 +1751,13 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$8, SELECTOR_DATA_SLIDE, function 
     return;
   }
   event.preventDefault();
+
+  // A real `<button disabled>` never dispatches this click at all; this only
+  // catches controls with no native disabled state to block it with (e.g. an
+  // `<a>`), which `_setControlsDisabled` marks via `aria-disabled` instead.
+  if (this.getAttribute('aria-disabled') === 'true') {
+    return;
+  }
   const carousel = Carousel.getOrCreateInstance(target);
 
   // Manually cycling the carousel is an explicit interaction, so stop autoplay

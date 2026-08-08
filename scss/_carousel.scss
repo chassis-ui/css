@@ -14,12 +14,6 @@
     // scss-docs-start carousel-variables
     --gap: var(--carousel-gap, #{$carousel-gap});
 
-    // --control-color: var(--carousel-control-color, #{$carousel-control-color});
-    // --control-size: var(--carousel-control-size, #{$carousel-control-size});
-    // --control-opacity: var(--carousel-control-opacity, #{$carousel-control-opacity});
-    // --control-hover-opacity: var(--carousel-control-hover-opacity, #{$carousel-control-hover-opacity});
-    // --control-transition: var(--carousel-control-transition, #{$carousel-control-transition});
-
     --indicator-gap: var(--carousel-indicator-gap, #{$carousel-indicator-gap});
     --indicator-idle-width: var(--carousel-indicator-idle-width, #{$carousel-indicator-idle-width});
     --indicator-idle-height: var(--carousel-indicator-idle-height, #{$carousel-indicator-idle-height});
@@ -33,9 +27,6 @@
 
     --overlay-inset: var(--carousel-overlay-inset, #{$carousel-overlay-inset});
     --overlay-color: var(--carousel-overlay-color, #{$carousel-overlay-color});
-    // --control-icon-size: var(--carousel-control-icon-size, #{$carousel-control-icon-size});
-    // --control-prev-bg: var(--carousel-control-prev-bg, #{$carousel-control-prev-bg});
-    // --control-next-bg: var(--carousel-control-next-bg, #{$carousel-control-next-bg});
 
     --items: var(--carousel-items, #{$carousel-items});
     --items-gap: var(--carousel-items-gap, #{$carousel-items-gap});
@@ -164,7 +155,7 @@
     gap: var(--indicator-gap);
     justify-content: center;
 
-    > button {
+    button {
       flex: 0 1 auto;
       width: var(--indicator-idle-width);
       height: var(--indicator-idle-height);
@@ -172,15 +163,17 @@
       cursor: pointer;
       background-color: var(--indicator-idle-color);
       border: 0;
-      @include border-radius(var(--indicator-idle-radius));
+      // Shape-defining: dots/pills must stay rounded even with rounded
+      // corners disabled globally, so use the raw property, not the mixin.
+      border-radius: var(--indicator-idle-radius); // stylelint-disable-line property-disallowed-list
       @include transition(var(--indicator-transition));
     }
 
-    > .active {
+    .active {
       width: var(--indicator-active-width);
       height: var(--indicator-active-height);
       background-color: var(--indicator-active-color);
-      @include border-radius(var(--indicator-active-radius));
+      border-radius: var(--indicator-active-radius); // stylelint-disable-line property-disallowed-list
       // border-color: var(--indicator-active-color);
     }
   }
@@ -230,7 +223,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    > .carousel-indicators {
+
+    .carousel-indicators {
       // allow to change the color with fg utility classes, e.g. `fg-white`
       --indicator-idle-color: #{to-opacity(var(--fg-color), var(--opacity-fg-subtle))};
       --indicator-active-color: var(--fg-color);
