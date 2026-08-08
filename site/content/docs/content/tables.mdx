@@ -532,60 +532,38 @@ Add `.stacked` to convert a table’s rows into stacked blocks when space is lim
 
 Both `.stacked` and `.table-responsive` use container queries, so the `.table-responsive` wrapper is required as the query container. Use `.max-medium:stacked`, `.max-large:stacked`, etc. to only stack until up to a specific container width. The default `.stacked` always stacks.
 
-<ResizableExample code={`
-<div class="table-responsive">
-  <table class="table max-medium:stacked">
-    <thead>
-      <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Type</th>
-        <th scope="col">Default</th>
-        <th scope="col">Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td data-cell="Name">animation</td>
-        <td data-cell="Type">boolean</td>
-        <td data-cell="Default">true</td>
-        <td data-cell="Description">Applies a CSS fade transition on show and hide.</td>
-      </tr>
-      <tr>
-        <td data-cell="Name">autohide</td>
-        <td data-cell="Type">boolean</td>
-        <td data-cell="Default">true</td>
-        <td data-cell="Description">Hides the toast automatically after delay milliseconds. The timer pauses while the pointer is over the toast or focus is within it.</td>
-      </tr>
-      <tr>
-        <td data-cell="Name">delay</td>
-        <td data-cell="Type">number</td>
-        <td data-cell="Default">5000</td>
-        <td data-cell="Description">Milliseconds to wait before hiding. Only applies when autohide is true.</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-`} customMarkup={`
-<div class="table-responsive">
-  <table class="table max:medium:stacked">
-    <thead>
-      <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Type</th>
-        ...
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td data-cell="Name">animation</td>
-        <td data-cell="Type">boolean</td>
-        ...
-      </tr>
-      ...
-    </tbody>
-  </table>
-</div>
-`} />
+<ResizableExample code={`<div class="table-responsive">
+    <table class="table max-medium:stacked">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Type</th>
+          <th scope="col">Default</th>
+          <th scope="col">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-cell="Name">animation</td>
+          <td data-cell="Type">boolean</td>
+          <td data-cell="Default">true</td>
+          <td data-cell="Description">Applies a CSS fade transition on show and hide.</td>
+        </tr>
+        <tr>
+          <td data-cell="Name">autohide</td>
+          <td data-cell="Type">boolean</td>
+          <td data-cell="Default">true</td>
+          <td data-cell="Description">Hides the toast automatically after delay milliseconds. The timer pauses while the pointer is over the toast or focus is within it.</td>
+        </tr>
+        <tr>
+          <td data-cell="Name">delay</td>
+          <td data-cell="Type">number</td>
+          <td data-cell="Default">5000</td>
+          <td data-cell="Description">Milliseconds to wait before hiding. Only applies when autohide is true.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>`} />
 
 ```html
 <!-- Always stacked -->
