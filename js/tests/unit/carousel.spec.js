@@ -63,6 +63,25 @@ describe('Carousel', () => {
     ].join('')
   }
 
+  // `<a>`-based prev/next controls: unlike `<button>`, an `<a>` has no native
+  // `disabled` IDL property, so `_setControlsDisabled` falls back to
+  // `aria-disabled` and the data-api click handler must respect it explicitly.
+  const anchorControlsMarkup = ({ slides = 3 } = {}) => {
+    const items = Array.from({ length: slides }, (_, index) =>
+      `    <div id="item${index + 1}" class="carousel-item${index === 0 ? ' active' : ''}">item ${index + 1}</div>`
+    ).join('')
+
+    return [
+      '<div id="myCarousel" class="carousel slide">',
+      '  <div class="carousel-inner">',
+      items,
+      '  </div>',
+      '  <a id="prev" href="#" data-cx-target="#myCarousel" data-cx-slide="prev"></a>',
+      '  <a id="next" href="#" data-cx-target="#myCarousel" data-cx-slide="next"></a>',
+      '</div>'
+    ].join('')
+  }
+
   // Give the viewport and items a deterministic horizontal layout so the
   // bounding-rect maths in `_scrollToIndex` produces predictable scroll deltas.
   // (Unit tests run without the carousel CSS, so real layout would collapse
@@ -306,6 +325,26 @@ describe('Carousel', () => {
       expect(animateScrollSpy).not.toHaveBeenCalled()
     })
 
+    it('should wrap next() once the viewport has run out of scroll room, even when `_navIndex` sits short of the last slide (multi-item)', () => {
+      fixtureEl.innerHTML = basicMarkup()
+
+      const carousel = new Carousel('#myCarousel', { ends: 'wrap' })
+      stubLayout(carousel)
+      // Multi-item/peek layouts can rest at the real scroll extent while
+      // `_navIndex()` still reports an index short of `length - 1` — the last
+      // slide(s) can never become left-most — so plain `+ 1` arithmetic never
+      // crosses the wrap threshold in `_normalizeIndex` (see `_nextRawIndex`).
+      spyOn(carousel, '_navIndex').and.returnValue(1)
+      Object.defineProperty(carousel._viewport, 'scrollWidth', { configurable: true, get: () => 400 })
+      Object.defineProperty(carousel._viewport, 'clientWidth', { configurable: true, get: () => 300 })
+      Object.defineProperty(carousel._viewport, 'scrollLeft', { configurable: true, get: () => 100 })
+      const toSpy = spyOn(carousel, 'to').and.callThrough()
+
+      carousel.next()
+
+      expect(toSpy).toHaveBeenCalledWith(carousel._getItems().length)
+    })
+
     it('should center the active slide when `.carousel-center` is present', () => {
       fixtureEl.innerHTML = basicMarkup({ classes: 'carousel slide carousel-center' })
 
@@ -546,10 +585,19 @@ describe('Carousel', () => {
 
       const carousel = new Carousel('#myCarousel', { ends: 'wrap' })
       stubLayout(carousel)
+      // `to()` is the reliable way to observe the next()-from-last wrap: the
+      // target (item 1) shares the stubbed viewport's rect, so its scroll delta
+      // is 0 and `_scrollToIndex` never reaches `_animateScroll` for it.
+      const toSpy = spyOn(carousel, 'to').and.callThrough()
 
       carousel.prev()
       // wraps to the last item (item3), two item-widths (200) to the right
       expect(animateScrollSpy.calls.mostRecent().args[0]).toEqual(200)
+      expect(toSpy).toHaveBeenCalledWith(-1)
+
+      carousel._activeIndex = 2
+      carousel.next()
+      expect(toSpy).toHaveBeenCalledWith(carousel._getItems().length)
     })
   })
 
@@ -577,6 +625,32 @@ describe('Carousel', () => {
       expect(carousel._looping).toBeFalse()
       expect(slidSpy.calls.mostRecent().args[0].to).toEqual(0)
       expect(slidSpy.calls.mostRecent().args[0].direction).toEqual('left')
+    })
+
+    it('should strip ids from the cloned subtree while the loop clone is on screen', () => {
+      fixtureEl.innerHTML = [
+        '<div id="myCarousel" class="carousel slide">',
+        '  <div class="carousel-inner">',
+        '    <div id="item1" class="carousel-item active"><span id="nested">item 1</span></div>',
+        '    <div id="item2" class="carousel-item">item 2</div>',
+        '    <div id="item3" class="carousel-item">item 3</div>',
+        '  </div>',
+        '</div>'
+      ].join('')
+
+      const carouselEl = fixtureEl.querySelector('#myCarousel')
+      const carousel = new Carousel(carouselEl, { ends: 'loop' })
+      stubLayout(carousel)
+      carousel._activeIndex = 2
+
+      // Going next from the last slide clones item 1 (the loop destination),
+      // which carries both its own id and a nested id.
+      carousel.next()
+
+      const clone = carousel._viewport.querySelector('.carousel-item-clone')
+      expect(clone.id).toEqual('')
+      expect(clone.querySelector('span').id).toEqual('')
+      expect(clone.querySelector('#nested')).toBeNull()
     })
 
     it('should continue into a transient clone and teleport to the last slide when going prev from the first', () => {
@@ -799,6 +873,17 @@ describe('Carousel', () => {
 
       expect(fixtureEl.querySelector('#prev').disabled).toBeTrue()
       expect(fixtureEl.querySelector('#next').disabled).toBeTrue()
+    })
+
+    it('should mark a non-button control (e.g. `<a>`) with `aria-disabled` instead of the `disabled` property', () => {
+      fixtureEl.innerHTML = anchorControlsMarkup()
+
+      new Carousel('#myCarousel', { ends: 'stop' }) // eslint-disable-line no-new
+
+      // An `<a>` has no native `disabled` IDL property for the browser to block
+      // clicks with, so the fallback is an explicit `aria-disabled` attribute.
+      expect(fixtureEl.querySelector('#prev').getAttribute('aria-disabled')).toEqual('true')
+      expect(fixtureEl.querySelector('#next').getAttribute('aria-disabled')).toEqual('false')
     })
 
     it('should move focus off a control that becomes disabled', () => {
@@ -1127,6 +1212,50 @@ describe('Carousel', () => {
       expect(carousel._itemInterval(upcoming)).toEqual(2000)
     })
 
+    it('should wrap the upcoming autoplay index once the viewport has run out of scroll room (multi-item)', () => {
+      fixtureEl.innerHTML = basicMarkup()
+
+      const carousel = new Carousel('#myCarousel', { ends: 'wrap' })
+      // Same multi-item scroll-extent scenario as `next()`'s wrap test: `_navIndex()`
+      // sits short of the last slide even though the viewport has nowhere left
+      // to scroll, so `_upcomingIndex()` must wrap via `_nextRawIndex()` too.
+      spyOn(carousel, '_navIndex').and.returnValue(1)
+      Object.defineProperty(carousel._viewport, 'scrollWidth', { configurable: true, get: () => 400 })
+      Object.defineProperty(carousel._viewport, 'clientWidth', { configurable: true, get: () => 300 })
+      Object.defineProperty(carousel._viewport, 'scrollLeft', { configurable: true, get: () => 100 })
+
+      expect(carousel._upcomingIndex()).toEqual(0)
+    })
+
+    it('should advance and reschedule autoplay using the upcoming slide\'s own interval', () => {
+      jasmine.clock().install()
+
+      try {
+        fixtureEl.innerHTML = [
+          '<div id="myCarousel" class="carousel slide" data-cx-autoplay="true">',
+          '  <div class="carousel-inner">',
+          '    <div id="item1" class="carousel-item active" data-cx-interval="1000">item 1</div>',
+          '    <div id="item2" class="carousel-item" data-cx-interval="2000">item 2</div>',
+          '  </div>',
+          '</div>'
+        ].join('')
+
+        const carouselEl = fixtureEl.querySelector('#myCarousel')
+        const carousel = new Carousel(carouselEl, { ends: 'wrap' })
+        expect(carouselEl.style.getPropertyValue('--cx-carousel-interval')).toEqual('1000ms')
+
+        jasmine.clock().tick(1001)
+
+        // Rescheduling happens synchronously after the advance, independent of
+        // whether the (stubbed) scroll animation itself has settled — it must
+        // pick up item 2's own interval, not fall back to the carousel default.
+        expect(carousel._interval).not.toBeNull()
+        expect(carouselEl.style.getPropertyValue('--cx-carousel-interval')).toEqual('2000ms')
+      } finally {
+        jasmine.clock().uninstall()
+      }
+    })
+
     it('should resume cycling on mouse leave only while playing', () => {
       fixtureEl.innerHTML = basicMarkup({ autoplay: true })
 
@@ -1404,6 +1533,20 @@ describe('Carousel', () => {
       expect(animateScrollSpy.calls.mostRecent().args[0]).toEqual(200)
     })
 
+    it('should ignore clicks on a non-button control marked `aria-disabled`', () => {
+      fixtureEl.innerHTML = anchorControlsMarkup()
+
+      const carousel = new Carousel('#myCarousel', { ends: 'stop' })
+      stubLayout(carousel)
+
+      // On the first slide, `#prev` has no native `disabled` to block the click
+      // at the browser level, so the handler must check `aria-disabled` itself.
+      expect(fixtureEl.querySelector('#prev').getAttribute('aria-disabled')).toEqual('true')
+      fixtureEl.querySelector('#prev').click()
+
+      expect(animateScrollSpy).not.toHaveBeenCalled()
+    })
+
     it('should toggle play/pause via the data-api', () => {
       fixtureEl.innerHTML = [
         '<div id="myCarousel" class="carousel slide" data-cx-autoplay="true">',
@@ -1439,6 +1582,18 @@ describe('Carousel', () => {
       ].join('')
 
       fixtureEl.querySelector('#next').click()
+      expect().nothing()
+    })
+
+    it('should do nothing if the play/pause target is not a carousel', () => {
+      fixtureEl.innerHTML = [
+        '<div id="myCarousel" class="slide">',
+        '  <div class="carousel-inner"><div class="carousel-item active">item 1</div></div>',
+        '  <button id="pp" class="carousel-control-play-pause" type="button" data-cx-target="#myCarousel"></button>',
+        '</div>'
+      ].join('')
+
+      fixtureEl.querySelector('#pp').click()
       expect().nothing()
     })
   })
@@ -1499,13 +1654,21 @@ describe('Carousel', () => {
       const carousel = new Carousel('#myCarousel', { ends: 'loop' })
       stubLayout(carousel)
       carousel._activeIndex = 2
+      // Opt into the real `_animateScroll` so a genuine rAF handle lands in
+      // `_scrollFrame`; the stubbed `requestAnimationFrame` never resolves, so
+      // the animation stays in flight for `dispose()` to interrupt.
+      animateScrollSpy.and.callThrough()
+      spyOn(window, 'requestAnimationFrame').and.returnValue(42)
+      const cancelSpy = spyOn(window, 'cancelAnimationFrame').and.callThrough()
 
       carousel.next()
       const { _viewport: viewport } = carousel
       expect(viewport.querySelector('.carousel-item-clone')).not.toBeNull()
+      expect(carousel._scrollFrame).toEqual(42)
 
       expect(() => carousel.dispose()).not.toThrow()
       expect(viewport.querySelector('.carousel-item-clone')).toBeNull()
+      expect(cancelSpy).toHaveBeenCalledWith(42)
     })
   })
 })

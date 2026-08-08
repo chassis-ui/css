@@ -1088,7 +1088,7 @@ class Carousel extends BaseComponent {
 
   // Public
   next() {
-    this.to(this._navIndex() + 1);
+    this.to(this._nextRawIndex());
   }
   nextWhenVisible() {
     // Don't advance when the page or the carousel isn't visible
@@ -1518,25 +1518,10 @@ class Carousel extends BaseComponent {
     if (this._config.ends !== ENDS_STOP) {
       return;
     }
-    const viewport = this._viewport;
-    const maxScroll = viewport.scrollWidth - viewport.clientWidth;
-    let atStart;
-    let atEnd;
-    if (maxScroll > 0) {
-      // Scrollable: measure the real scroll extent so this works for multi-item,
-      // peek, and variable-width layouts where the last slide can never become
-      // the left-most (active) one. `Math.abs` keeps it correct in RTL, where
-      // `scrollLeft` runs from 0 down to negative.
-      const progress = Math.abs(viewport.scrollLeft);
-      atStart = progress <= 1;
-      atEnd = progress >= maxScroll - 1;
-    } else {
-      // Not scrollable (or no layout yet, e.g. in unit tests): fall back to the
-      // active index for the single-slide case.
-      const last = this._getItems().length - 1;
-      atStart = this._activeIndex <= 0;
-      atEnd = this._activeIndex >= last;
-    }
+    const {
+      atStart,
+      atEnd
+    } = this._scrollEdges();
 
     // Decide where focus should land, if it needs to move, before either
     // side is actually disabled below — otherwise disabling prev first can
@@ -1545,6 +1530,33 @@ class Carousel extends BaseComponent {
     this._preserveFocus(atStart, atEnd);
     this._setControlsDisabled(this._prevControls, atStart);
     this._setControlsDisabled(this._nextControls, atEnd);
+  }
+
+  // Whether the viewport is resting at either scroll extent. Used both to drive
+  // `ends: 'stop'`'s end controls and to detect when a forward step under
+  // `wrap`/`loop` has nowhere left to scroll to (see `_nextRawIndex`).
+  _scrollEdges() {
+    const viewport = this._viewport;
+    const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+    if (maxScroll > 0) {
+      // Scrollable: measure the real scroll extent so this works for multi-item,
+      // peek, and variable-width layouts where the last slide can never become
+      // the left-most (active) one. `Math.abs` keeps it correct in RTL, where
+      // `scrollLeft` runs from 0 down to negative.
+      const progress = Math.abs(viewport.scrollLeft);
+      return {
+        atStart: progress <= 1,
+        atEnd: progress >= maxScroll - 1
+      };
+    }
+
+    // Not scrollable (or no layout yet, e.g. in unit tests): fall back to the
+    // active index for the single-slide case.
+    const last = this._getItems().length - 1;
+    return {
+      atStart: this._activeIndex <= 0,
+      atEnd: this._activeIndex >= last
+    };
   }
 
   // a11y: if the currently-focused control is about to be disabled, move
@@ -1685,7 +1697,21 @@ class Carousel extends BaseComponent {
   // position (which still reflects the current slide when the timer fires).
   // Returns `null` when there's nowhere left to advance (`ends: stop` at the end).
   _upcomingIndex() {
-    return this._normalizeIndex(this._navIndex() + 1, this._getItems().length);
+    return this._normalizeIndex(this._nextRawIndex(), this._getItems().length);
+  }
+
+  // The raw (pre-normalize) index a forward step targets. Ordinarily that's just
+  // one past `_navIndex()`, but multi-item, peek, and variable-width layouts can
+  // rest at the far scroll edge while `_navIndex()` still reports an index short
+  // of `length - 1` (the last slide(s) can never become the left-most one), so
+  // `+ 1` alone never crosses the `_normalizeIndex` wrap threshold. Once the
+  // viewport has actually run out of room to scroll, treat it as past the last
+  // slide so `wrap`/`loop` can wrap back to the start.
+  _nextRawIndex() {
+    if (this._wrapsAround() && this._scrollEdges().atEnd) {
+      return this._getItems().length;
+    }
+    return this._navIndex() + 1;
   }
   _itemInterval(index = this._activeIndex) {
     const item = this._getItems()[index];

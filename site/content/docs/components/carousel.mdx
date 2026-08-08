@@ -1,6 +1,6 @@
 ---
 title: Carousel
-description: Create fluid, touch-enabled content sliders with Chassis CSS's carousel component, featuring smooth transitions and comprehensive accessibility support.
+description: Touch-enabled content sliders built on a real scroll container with CSS scroll-snap, keyboard navigation, and autoplay controls.
 toc: true
 tokens: context
 css_layer: components
@@ -9,25 +9,17 @@ js: required
 
 ## Introduction
 
-Carousels in Chassis CSS deliver smooth, touch-enabled content sliders designed for modern web experiences. Built with CSS 3D transforms and intelligent JavaScript controls, carousels seamlessly integrate with your design system while maintaining optimal performance and accessibility standards.
+Chassis CSS carousels are content sliders built on `.carousel-inner`, a real horizontally-scrolling container using CSS scroll-snap, rather than JavaScript-driven position transforms. The browser handles touch, trackpad, and mouse-drag scrolling natively; the `Carousel` plugin layers on keyboard navigation, autoplay, the prev/next and indicator controls, and end-of-track behavior.
 
-Chassis CSS carousels operate on a performance-first architecture, using explicit JavaScript initialization to prevent unnecessary overhead while ensuring optimal loading performance. The positioning system leverages CSS 3D transforms to deliver hardware-accelerated transitions with smooth visual effects across all supported browsers.
+Carousels require explicit JavaScript initialization — construct an instance with the [`Carousel` class](#initialization) before user interaction. A carousel decorated with `data-cx-autoplay="true"` initializes automatically on page load; constructing it again manually creates a second instance without disposing the first, leaving its listeners and `IntersectionObserver` active, so pick one initialization path per carousel.
 
-Touch support is built into the core experience, providing native swipe gestures alongside keyboard navigation and traditional mouse controls. The autoplay system intelligently manages pause and resume behavior based on user interaction and page visibility, while comprehensive ARIA support ensures compatibility with screen readers and assistive technologies.
-
-Chassis CSS carousels use explicit initialization to prevent performance overhead on unused components. Initialize carousels using the [constructor method](#api-methods) before user interaction. Carousels with `data-cx-ride="carousel"` initialize automatically on page load, so avoid duplicate initialization when using this attribute.
-
-Note that nested carousels are not supported—consider accessibility implications and provide alternative navigation methods for complex content.
+Nested carousels are not supported: prev/next controls and indicators are located by scanning the entire carousel subtree, so an inner carousel's controls would also be picked up by the outer instance. Provide an alternative navigation pattern for carousel-like content nested inside another carousel.
 
 <Callout name="info-prefersreducedmotion" />
 
-## Examples
+## Basic structure
 
-Explore practical carousel implementations showcasing Chassis CSS's flexible architecture and comprehensive feature set. These examples demonstrate real-world usage patterns from basic content sliders to advanced interactive experiences.
-
-### Basic structure
-
-This foundational example demonstrates the essential carousel structure with navigation controls and indicators. Chassis CSS recommends semantic `<button>` elements for optimal accessibility, though `<a>` elements with `role="button"` are supported for specific design requirements.
+This foundational example shows the essential carousel structure: navigation controls, indicators, and slides. Controls work as semantic `<button>` elements; `<a>` elements are also supported as controls but need `role="button"`, since they carry no `href`.
 
 <Example code={`<div id="carouselExample" class="carousel slide">
     <div class="d-flex justify-content-between align-items-center">
@@ -59,6 +51,7 @@ This foundational example demonstrates the essential carousel structure with nav
       </div>
     </div>
   </div>`} />
+
 
 ### Bottom controls
 
@@ -129,9 +122,9 @@ Wrap controls and indicators in a `.carousel-overlay` container to overlay them 
     </div>
   </div>`} />
 
-### Fade transitions
+## Fade transitions
 
-Transform slide behavior with elegant fade transitions using `.carousel-fade`. This alternative animation style works particularly well with text-heavy content or when seeking subtle visual transitions. For optimal crossfading with certain content types, consider adding `.bg-main` or custom backgrounds to `.carousel-item` elements.
+Replace the scroll transition with a crossfade using `.carousel-fade`. Fade mode stacks every slide instead of scrolling between them, fading the active one in over `--carousel-fade-duration`; for optimal crossfading with certain content types, consider adding `.bg-main` or a custom background to `.carousel-item`.
 
 <Example code={`<div id="carouselExampleFade" class="carousel slide carousel-fade">
     <div class="carousel-inner">
@@ -157,17 +150,17 @@ Transform slide behavior with elegant fade transitions using `.carousel-fade`. T
     </div>
   </div>`} />
 
-## Autoplay behavior
+## Autoplay
 
-Chassis CSS carousels support intelligent autoplay functionality with comprehensive user interaction controls. Set the `autoplay` option to `true` (or add `data-cx-autoplay="true"`) to cycle a carousel automatically on page load. The system automatically pauses on mouse hover and respects the [Page Visibility API](https://www.w3.org/TR/page-visibility/) to stop cycling when pages aren't visible.
+Set the `autoplay` option to `true` (or add `data-cx-autoplay="true"`) to cycle a carousel automatically on page load. Autoplay pauses on `mouseenter` by default (the `pause` option) and stops advancing once the page or the carousel itself isn't visible, per the [Page Visibility API](https://www.w3.org/TR/page-visibility/). The first control click, arrow-key press, or track drag/tap turns autoplay off for good, so content doesn't keep moving out from under someone who's just started interacting with it — part of complying with [WCAG 2.2 Success Criterion 2.2.2 Pause, Stop, Hide](https://www.w3.org/TR/WCAG/#pause-stop-hide).
 
 <Callout>
-Chassis CSS recommends providing explicit pause/stop controls for autoplaying carousels to ensure compliance with [WCAG 2.2 Success Criterion 2.2.2 Pause, Stop, Hide](https://www.w3.org/TR/WCAG/#pause-stop-hide) and improve user experience for all users. 
+Chassis CSS recommends providing explicit pause/stop controls for autoplaying carousels to ensure compliance with [WCAG 2.2 Success Criterion 2.2.2 Pause, Stop, Hide](https://www.w3.org/TR/WCAG/#pause-stop-hide) and improve user experience for all users.
 
 Add a button with `.carousel-control-play-pause` class (shown below) to allow users to toggle autoplay on and off. The button automatically updates its icon and accessible name to reflect the current state.
 </Callout>
 
-The play/pause button toggles autoplay and reflects the current state automatically—a pause icon while playing, a play icon while stopped. Give each state an accessible name with the `data-cx-play-label` and `data-cx-pause-label` attributes. While playing, the active indicator fills like a progress bar over the current slide’s [interval](#individual-intervals) as a visual countdown; it pauses with autoplay and is disabled under reduced motion. Set its color with the `--cx-carousel-indicator-active-color` CSS variable.
+The play/pause button toggles autoplay and reflects the current state automatically—a pause icon while playing, a play icon while stopped. Give each state an accessible name with the `data-cx-play-label` and `data-cx-pause-label` attributes. While playing, the active indicator fills like a progress bar over the current slide's [interval](#timing-control) as a visual countdown; the fill pauses with autoplay and is skipped entirely under reduced motion. Set its color with the `--cx-carousel-indicator-active-color` CSS variable.
 
 <Example code={`<div id="carouselExampleAutoplaying" class="carousel slide" data-cx-autoplay="true">
     <div class="carousel-inner">
@@ -206,7 +199,7 @@ The play/pause button toggles autoplay and reflects the current state automatica
 
 ### Timing control
 
-Add `data-cx-interval=""` to a `.carousel-item` to change the amount of time to delay between automatically cycling to the next item. The indicator’s progress fill matches each slide’s own interval, so the countdown speeds up or slows down to match (2s, then 4s, then 6s below).
+Add `data-cx-interval=""` to a `.carousel-item` to change the amount of time to delay before autoplay advances past that item. The indicator's progress fill matches each slide's own interval, so the countdown speeds up or slows down to match (2s, then 4s, then 6s below).
 
 <Example code={`<div id="carouselExampleInterval" class="carousel slide" data-cx-autoplay="true">
     <div class="carousel-inner rounded-5">
@@ -232,146 +225,6 @@ Add `data-cx-interval=""` to a `.carousel-item` to change the amount of time to 
       </div>
     </div>
   </div>`} />
-
-## Carousel items
-
-Because the carousel is a real scroll container, you can put any content, change how many slides are visible and how they’re sized with a few CSS custom properties on the `.carousel` without writing any JavaScript.
-
-### Custom content
-
-You can put any markup you like inside each `.carousel-item`. Add content, then size and style it with utilities or custom CSS as needed.
-
-<Example code={`<div id="carouselExampleContent" class="carousel slide">
-    <div class="carousel-inner rounded-xlarge">
-      <div class="carousel-item active">
-        <div class="d-flex flex-column justify-content-center primary-bg-even p-6xlarge" style="min-height: 320px;">
-          <h3>Build anything</h3>
-          <p>Compose slides from your own markup—text, buttons, cards, or media.</p>
-          <div><a class="button primary" href="#">Get started</a></div>
-        </div>
-      </div>
-      <div class="carousel-item">
-        <div class="d-flex flex-column justify-content-center text-center success-bg-even p-6xlarge" style="min-height: 320px;">
-          <h3>Style it your way</h3>
-          <p>Use utilities or custom CSS to size and theme each slide however you need.</p>
-          <div><a class="button success" href="#">Learn more</a></div>
-        </div>
-      </div>
-      <div class="carousel-item">
-        <div class="d-flex flex-column justify-content-center text-end warning-bg-even p-6xlarge" style="min-height: 320px;">
-          <h3>Mix and match</h3>
-          <p>Combine custom content with controls, indicators, and the overlay layout.</p>
-          <div><a class="button black" href="#">Browse examples</a></div>
-        </div>
-      </div>
-    </div>
-    <div class="d-flex justify-content-center">
-      <button class="button small icon-only" type="button" data-cx-target="#carouselExampleContent" data-cx-slide="prev" style="--cx-carousel-control-icon-width: 1rem;">
-        <Icon name="chevron-left-outline" class="carousel-icon-prev" />
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button class="button small icon-only" type="button" data-cx-target="#carouselExampleContent" data-cx-slide="next" style="--cx-carousel-control-icon-width: 1rem;">
-        <Icon name="chevron-right-outline" class="carousel-icon-next" />
-        <span class="visually-hidden">Next</span>
-      </button>
-    </div>
-  </div>`} />
-
-### Multiple items
-
-Set `--cx-carousel-items` inline to show several slides at once. Combine it with `--cx-carousel-items-gap` for spacing.
-
-<Example code={`<div id="carouselMultiple" class="carousel slide" data-cx-ends="stop" 
-      style="--cx-carousel-items: 3; --cx-carousel-items-gap: 1rem;"><!--[!code highlight]-->
-    <div class="carousel-inner">
-      <div class="carousel-item active"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="1" /></div>
-      <div class="carousel-item"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="2" /></div>
-      <div class="carousel-item"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="3" /></div>
-      <div class="carousel-item"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="4" /></div>
-      <div class="carousel-item"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="5" /></div>
-      <div class="carousel-item"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="6" /></div>
-      <div class="carousel-item"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="7" /></div>
-    </div>
-    <div class="d-flex justify-content-center">
-      <button class="button small icon-only" type="button" data-cx-target="#carouselMultiple" data-cx-slide="prev">
-        <Icon name="chevron-left-outline" class="carousel-icon-prev" />
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button class="button small icon-only" type="button" data-cx-target="#carouselMultiple" data-cx-slide="next">
-        <Icon name="chevron-right-outline" class="carousel-icon-next" />
-        <span class="visually-hidden">Next</span>
-      </button>
-    </div>
-  </div>`} />
-
-- `--cx-carousel-items` sets the number of whole slides visible per view (default `1`).
-- `--cx-carousel-items-gap` sets the space between slides (default `0`).
-
-### Peeking
-
-Set `--cx-carousel-items-peek` inline to reveal a sliver of the previous and next slides, hinting that there’s more to scroll.
-
-<Example code={`<div id="carouselPeek" class="carousel slide" data-cx-ends="stop" 
-      style="--cx-carousel-items-peek: 3rem; --cx-carousel-items-gap: 1rem;"><!--[!code highlight]-->
-    <div class="carousel-inner">
-      <div class="carousel-item active"><Placeholder width="800" height="300" class="cxd-placeholder-image-large d-block w-100 rounded-xlarge" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="First slide" /></div>
-      <div class="carousel-item"><Placeholder width="800" height="300" class="cxd-placeholder-image-large d-block w-100 rounded-xlarge" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="Second slide" /></div>
-      <div class="carousel-item"><Placeholder width="800" height="300" class="cxd-placeholder-image-large d-block w-100 rounded-xlarge" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="Third slide" /></div>
-      <div class="carousel-item"><Placeholder width="800" height="300" class="cxd-placeholder-image-large d-block w-100 rounded-xlarge" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="Fourth slide" /></div>
-      <div class="carousel-item"><Placeholder width="800" height="300" class="cxd-placeholder-image-large d-block w-100 rounded-xlarge" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="Fifth slide" /></div>
-    </div>
-    <div class="d-flex justify-content-center">
-      <button class="button small icon-only" type="button" data-cx-target="#carouselPeek" data-cx-slide="prev">
-        <Icon name="chevron-left-outline" class="carousel-icon-prev" />
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button class="button small icon-only" type="button" data-cx-target="#carouselPeek" data-cx-slide="next">
-        <Icon name="chevron-right-outline" class="carousel-icon-next" />
-        <span class="visually-hidden">Next</span>
-      </button>
-    </div>
-  </div>`} />
-
-- `--cx-carousel-items-peek` sets how much of the neighboring slides to reveal (default `0`).
-
-### Variable width
-
-Add `.carousel-auto` and size each `.carousel-item` yourself (utilities or custom CSS). Snap points still land on every slide.
-
-<Example code={`<div id="carouselVariable" class="carousel carousel-auto slide" data-cx-ends="stop" style="--cx-carousel-items-gap: 1rem;"><!--[!code highlight]-->
-    <div class="carousel-inner">
-      <div class="carousel-item active" style="width: 160px;"><!--[!code highlight]-->
-        <Placeholder width="160" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="A" />
-      </div>
-      <div class="carousel-item" style="width: 320px;"><!--[!code highlight]-->
-        <Placeholder width="320" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="B" />
-      </div>
-      <div class="carousel-item" style="width: 220px;"><!--[!code highlight]-->
-        <Placeholder width="220" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="C" />
-      </div>
-      <div class="carousel-item" style="width: 380px;"><!--[!code highlight]-->
-        <Placeholder width="380" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="D" />
-      </div>
-      <div class="carousel-item" style="width: 200px;"><!--[!code highlight]-->
-        <Placeholder width="200" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="E" />
-      </div>
-      <div class="carousel-item" style="width: 300px;"><!--[!code highlight]-->
-        <Placeholder width="300" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="F" />
-      </div>
-    </div>
-    <div class="d-flex justify-content-center">
-      <button class="button small icon-only" type="button" data-cx-target="#carouselVariable" data-cx-slide="prev">
-        <Icon name="chevron-left-outline" class="carousel-icon-prev" />
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button class="button small icon-only" type="button" data-cx-target="#carouselVariable" data-cx-slide="next">
-        <Icon name="chevron-right-outline" class="carousel-icon-next" />
-        <span class="visually-hidden">Next</span>
-      </button>
-    </div>
-  </div>`} />
-
-Add `.carousel-center` to snap the active slide to the center of the viewport instead of its start—pairs nicely with `--bs-carousel-items-peek`.
 
 ## End behavior
 
@@ -435,7 +288,7 @@ With `data-cx-ends="wrap"` the carousel jumps from the last slide back to the fi
 
 ### Stop
 
-With `data-cx-ends="stop"` the carousel hard-stops at the first and last slide. The previous control is automatically disabled on the first slide and the next control on the last (via the native `disabled` attribute on `<button>` controls); when a focused control becomes disabled, focus shifts to the opposite control so it isn’t lost.
+With `data-cx-ends="stop"` the carousel hard-stops at the first and last slide. The previous control is automatically disabled on the first slide and the next control on the last (via the native `disabled` attribute on `<button>` controls); when a focused control becomes disabled, focus shifts to the opposite control so it isn't lost.
 
 <Example code={`<div id="carouselEndsStop" class="carousel slide" data-cx-ends="stop">
     <div class="carousel-inner">
@@ -461,6 +314,287 @@ With `data-cx-ends="stop"` the carousel hard-stops at the first and last slide. 
     </div>
   </div>`} />
 
+## Content
+
+Any markup can go inside a `.carousel-item`, and CSS custom properties on `.carousel` control how many slides show at once and how they're sized—no extra JavaScript beyond the base plugin.
+
+### Custom content
+
+Any markup can go inside a `.carousel-item` — add it, then size and style it with utilities or custom CSS.
+
+<Example code={`<div id="carouselExampleContent" class="carousel slide">
+    <div class="carousel-inner rounded-xlarge">
+      <div class="carousel-item active">
+        <div class="d-flex flex-column justify-content-center primary-bg-even p-6xlarge" style="min-height: 320px;">
+          <h3>Build anything</h3>
+          <p>Compose slides from your own markup—text, buttons, cards, or media.</p>
+          <div><a class="button primary" href="#">Get started</a></div>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="d-flex flex-column justify-content-center text-center success-bg-even p-6xlarge" style="min-height: 320px;">
+          <h3>Style it your way</h3>
+          <p>Use utilities or custom CSS to size and theme each slide however you need.</p>
+          <div><a class="button success" href="#">Learn more</a></div>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="d-flex flex-column justify-content-center text-end warning-bg-even p-6xlarge" style="min-height: 320px;">
+          <h3>Mix and match</h3>
+          <p>Combine custom content with controls, indicators, and the overlay layout.</p>
+          <div><a class="button black" href="#">Browse examples</a></div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-center">
+      <button class="button small icon-only" type="button" data-cx-target="#carouselExampleContent" data-cx-slide="prev" style="--cx-carousel-control-icon-width: 1rem;">
+        <Icon name="chevron-left-outline" class="carousel-icon-prev" />
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="button small icon-only" type="button" data-cx-target="#carouselExampleContent" data-cx-slide="next" style="--cx-carousel-control-icon-width: 1rem;">
+        <Icon name="chevron-right-outline" class="carousel-icon-next" />
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>`} />
+
+### Multiple items
+
+Set `--cx-carousel-items` inline to show several slides at once. Combine it with `--cx-carousel-items-gap` for spacing. Since seamless looping only applies to single-slide carousels (see [Loop (default)](#loop-default)), this example sets `data-cx-ends="stop"` for a clean boundary instead of a `wrap` jump.
+
+<Example code={`<div id="carouselMultiple" class="carousel slide" data-cx-ends="stop" 
+      style="--cx-carousel-items: 3; --cx-carousel-items-gap: 1rem;"><!--[!code highlight]-->
+    <div class="carousel-inner">
+      <div class="carousel-item active"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="1" /></div>
+      <div class="carousel-item"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="2" /></div>
+      <div class="carousel-item"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="3" /></div>
+      <div class="carousel-item"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="4" /></div>
+      <div class="carousel-item"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="5" /></div>
+      <div class="carousel-item"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="6" /></div>
+      <div class="carousel-item"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="7" /></div>
+    </div>
+    <div class="d-flex justify-content-center">
+      <button class="button small icon-only" type="button" data-cx-target="#carouselMultiple" data-cx-slide="prev">
+        <Icon name="chevron-left-outline" class="carousel-icon-prev" />
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="button small icon-only" type="button" data-cx-target="#carouselMultiple" data-cx-slide="next">
+        <Icon name="chevron-right-outline" class="carousel-icon-next" />
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>`} />
+
+- `--cx-carousel-items` sets the number of whole slides visible per view (default `1`).
+- `--cx-carousel-items-gap` sets the space between slides (default `0`).
+
+### Peeking
+
+Set `--cx-carousel-items-peek` inline to reveal a sliver of the previous and next slides, hinting that there's more to scroll.
+
+<Example code={`<div id="carouselPeek" class="carousel slide" data-cx-ends="stop" 
+      style="--cx-carousel-items-peek: 3rem; --cx-carousel-items-gap: 1rem;"><!--[!code highlight]-->
+    <div class="carousel-inner">
+      <div class="carousel-item active"><Placeholder width="800" height="300" class="cxd-placeholder-image-large d-block w-100 rounded-xlarge" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="First slide" /></div>
+      <div class="carousel-item"><Placeholder width="800" height="300" class="cxd-placeholder-image-large d-block w-100 rounded-xlarge" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="Second slide" /></div>
+      <div class="carousel-item"><Placeholder width="800" height="300" class="cxd-placeholder-image-large d-block w-100 rounded-xlarge" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="Third slide" /></div>
+      <div class="carousel-item"><Placeholder width="800" height="300" class="cxd-placeholder-image-large d-block w-100 rounded-xlarge" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="Fourth slide" /></div>
+      <div class="carousel-item"><Placeholder width="800" height="300" class="cxd-placeholder-image-large d-block w-100 rounded-xlarge" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="Fifth slide" /></div>
+    </div>
+    <div class="d-flex justify-content-center">
+      <button class="button small icon-only" type="button" data-cx-target="#carouselPeek" data-cx-slide="prev">
+        <Icon name="chevron-left-outline" class="carousel-icon-prev" />
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="button small icon-only" type="button" data-cx-target="#carouselPeek" data-cx-slide="next">
+        <Icon name="chevron-right-outline" class="carousel-icon-next" />
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>`} />
+
+- `--cx-carousel-items-peek` sets how much of the neighboring slides to reveal (default `0`).
+
+### Variable width
+
+Add `.carousel-auto` and size each `.carousel-item` individually with utilities or custom CSS; snap points still land on every slide.
+
+<Example code={`<div id="carouselVariable" class="carousel carousel-auto slide" data-cx-ends="stop" style="--cx-carousel-items-gap: 1rem;"><!--[!code highlight]-->
+    <div class="carousel-inner">
+      <div class="carousel-item active" style="width: 160px;"><!--[!code highlight]-->
+        <Placeholder width="160" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="A" />
+      </div>
+      <div class="carousel-item" style="width: 320px;"><!--[!code highlight]-->
+        <Placeholder width="320" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="B" />
+      </div>
+      <div class="carousel-item" style="width: 220px;"><!--[!code highlight]-->
+        <Placeholder width="220" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="C" />
+      </div>
+      <div class="carousel-item" style="width: 380px;"><!--[!code highlight]-->
+        <Placeholder width="380" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="D" />
+      </div>
+      <div class="carousel-item" style="width: 200px;"><!--[!code highlight]-->
+        <Placeholder width="200" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="E" />
+      </div>
+      <div class="carousel-item" style="width: 300px;"><!--[!code highlight]-->
+        <Placeholder width="300" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="F" />
+      </div>
+    </div>
+    <div class="d-flex justify-content-center">
+      <button class="button small icon-only" type="button" data-cx-target="#carouselVariable" data-cx-slide="prev">
+        <Icon name="chevron-left-outline" class="carousel-icon-prev" />
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="button small icon-only" type="button" data-cx-target="#carouselVariable" data-cx-slide="next">
+        <Icon name="chevron-right-outline" class="carousel-icon-next" />
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>`} />
+
+Add `.carousel-center` to snap the active slide to the center of the viewport instead of its start — pairs well with `--cx-carousel-items-peek`.
+
+## Accessibility
+
+Carousel accessibility centers on keyboard control, focus preservation at the ends, and ARIA state that mirrors the current slide.
+
+### Keyboard navigation
+
+With the `keyboard` option enabled (the default), Left Arrow and Right Arrow move to the previous and next slide while focus is inside the carousel; either key turns autoplay off for good, the same as a control click. Arrow keys inside a nested `<input>`, `<textarea>`, `<select>`, or `[contenteditable]` element are left alone so native form navigation keeps working.
+
+### Focus at the ends
+
+With `ends: "stop"`, a control at a disabled end can't hold focus. Before disabling it, the plugin moves focus to the opposite control if that one stays enabled, or to the carousel viewport itself — making it focusable with `tabindex="-1"` if it isn't already — so focus never lands on nothing.
+
+### ARIA state
+
+The plugin sets `aria-current="true"` on the active indicator and removes it from the previous one; give every indicator button its own `aria-label` identifying the slide it jumps to (`aria-label="Slide 1"`). Controls implemented as `<a>` rather than `<button>` have no native `disabled` state, so a disabled end sets `aria-disabled="true"` instead — pair `<a>` controls with `role="button"` (see [Basic structure](#basic-structure)).
+
+## JavaScript API
+
+The Carousel plugin manages slide navigation, autoplay, and end-of-track control state. Chassis JS ships as an ES module — import the `Carousel` class:
+
+```js
+import { Carousel } from '@chassis-ui/css'
+```
+
+### Triggers
+
+The data-attribute API drives navigation and autoplay without writing any custom JavaScript:
+
+```html
+<button data-cx-target="#myCarousel" data-cx-slide="prev">Previous</button>
+<button data-cx-target="#myCarousel" data-cx-slide="next">Next</button>
+<button data-cx-target="#myCarousel" data-cx-slide-to="2">Slide 3</button>
+
+<div id="myCarousel" class="carousel slide" data-cx-autoplay="true" data-cx-ends="stop">
+  ...
+</div>
+```
+
+<CxTable>
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-cx-target` | CSS selector | The `.carousel` element a control acts on. |
+| `data-cx-slide` | `prev`, `next` | Moves relative to the current slide. |
+| `data-cx-slide-to` | number | Zero-based index of the slide to show. |
+| `data-cx-autoplay` | `true` | Autoplays on load. Also marks the element for automatic initialization. |
+| `data-cx-interval` | number (ms) | On the carousel root, overrides the `interval` option. On a `.carousel-item`, overrides the wait before autoplay advances past that slide. |
+| `data-cx-ends` | `loop`, `wrap`, `stop` | Overrides the `ends` option. |
+| `data-cx-keyboard` | `true`, `false` | Overrides the `keyboard` option. |
+| `data-cx-pause` | `hover`, `false` | Overrides the `pause` option. |
+| `data-cx-play-label` | string | On `.carousel-control-play-pause`, the `aria-label` to apply while autoplay is stopped. |
+| `data-cx-pause-label` | string | On `.carousel-control-play-pause`, the `aria-label` to apply while autoplay is playing. |
+</CxTable>
+
+### Initialization
+
+For programmatic access — calling methods or listening to events — instantiate each element with the `Carousel` class:
+
+```js
+const carousel = new Carousel('#myCarousel')
+
+// With options
+const carousel = new Carousel('#myCarousel', {
+  interval: 2000,
+  ends: 'stop'
+})
+```
+
+### Options
+
+<JsDataAttributes />
+
+<CxTable>
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `autoplay` | boolean | `false` | Autoplays the carousel on load. |
+| `ends` | string | `"loop"` | Behavior at the first/last slide. `"stop"` hard-stops and disables the previous control on the first slide and the next control on the last (via the native `disabled` attribute — `<a>` controls get `aria-disabled` instead, since they have no `disabled` IDL property). `"wrap"` jumps from the last slide back to the first, and vice versa. `"loop"` continues seamlessly past the ends for single-slide carousels, falling back to `"wrap"` for multi-item, peek, centered, or variable-width layouts, and under reduced motion. |
+| `interval` | number | `5000` | Milliseconds to wait before automatically advancing to the next item. |
+| `keyboard` | boolean | `true` | Whether Left/Right arrow keys navigate the carousel. |
+| `pause` | string, boolean | `"hover"` | `"hover"` pauses cycling on `mouseenter` and resumes it on `mouseleave`. `false` disables pause-on-hover. |
+</CxTable>
+
+### Methods
+
+<Callout name="danger-async-methods" type="danger" />
+
+Re-entrant calls are handled differently depending on what's in flight: navigating during a seamless loop transition is ignored until it finishes, while calling `to()`/`next()`/`prev()` during a plain scroll interrupts it and restarts toward the new target.
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `next()` | Advances to the next slide. |
+| `prev()` | Moves to the previous slide. |
+| `to(index)` | Navigates directly to a slide by zero-based index. |
+| `nextWhenVisible()` | Calls `next()` only when the document and the carousel element are both visible. Returns `true` if it advanced, `false` otherwise. |
+| `cycle()` | Starts (or restarts) autoplay from the current slide. |
+| `pause()` | Stops autoplay; the indicator progress fill disappears until autoplay resumes. |
+| `dispose()` | Disconnects the instance's listeners and `IntersectionObserver`, cancels any in-flight scroll animation, and removes the stored instance data. |
+| `getInstance()` | *Static.* Returns the instance for an element, or `null`. |
+| `getOrCreateInstance()` | *Static.* Returns the existing instance or creates one. |
+</CxTable>
+
+```js
+const carousel = new Carousel('#myCarousel', { interval: 2000 })
+
+carousel.next()
+carousel.prev()
+carousel.to(2)
+carousel.cycle()
+carousel.pause()
+carousel.dispose()
+
+const instance = Carousel.getInstance('#myCarousel')
+const instance = Carousel.getOrCreateInstance('#myCarousel')
+```
+
+### Events
+
+All events fire on the `.carousel` element and are cancelable — calling `event.preventDefault()` on `slide.cx.carousel` blocks the transition, including a seamless loop transition.
+
+<CxTable>
+| Event | Description |
+| --- | --- |
+| `slide.cx.carousel` | Fires immediately when a transition begins. Cancelable. |
+| `slid.cx.carousel` | Fires once the transition completes and the new slide is active. |
+</CxTable>
+
+Both events carry the same detail:
+
+- `direction` — `"left"` or `"right"`, mirrored in RTL.
+- `relatedTarget` — the `.carousel-item` becoming active.
+- `from` — the outgoing slide's index.
+- `to` — the incoming slide's index.
+
+```js
+const myCarousel = document.getElementById('myCarousel')
+
+myCarousel.addEventListener('slide.cx.carousel', event => {
+  console.log(`Sliding from ${event.from} to ${event.to}`)
+})
+```
+
 ## CSS
 
 <DocsCSS name="Carousel" exposed />
@@ -476,103 +610,3 @@ With `data-cx-ends="stop"` the carousel hard-stops at the first and last slide. 
 <DocsSASSVars name="Carousel" />
 
 <ScssDocs name="carousel-variables" file="scss/config/_defaults.scss" />
-
-## JavaScript API
-
-Control carousel behavior programmatically with Chassis CSS's comprehensive JavaScript interface, featuring smooth transitions, autoplay management, and accessibility controls.
-
-### Data attributes
-
-Configure carousel behavior declaratively through data attributes for simple implementation without JavaScript initialization.
-
-Use `data-cx-slide` with `prev` or `next` keywords for relative navigation, or `data-cx-slide-to` with numeric values for direct slide access (zero-indexed, like arrays).
-
-<CxTable>
-| Attribute | Description |
-| --- | --- |
-| `data-cx-autoplay` | Set to `true` to autoplay the carousel on load. |
-| `data-cx-slide` | `prev` or `next` to move the carousel relative to the current slide. |
-| `data-cx-slide-to` | Zero-based index of the slide to show. |
-| `data-cx-interval` | Autoplay interval in milliseconds between slides. |
-| `data-cx-ends` | How the carousel behaves at its ends: `stop`, `wrap`, or `loop`. |
-| `data-cx-play-label` | On a `.carousel-control-play-pause` button, the `aria-label` to apply while autoplay is stopped. |
-| `data-cx-pause-label` | On a `.carousel-control-play-pause` button, the `aria-label` to apply while autoplay is playing. |
-</CxTable>
-
-### Initialization
-
-Initialize carousels programmatically for advanced control and configuration:
-
-```js
-const carousel = new chassis.Carousel('#myCarousel')
-```
-
-### Options
-
-<JsDataAttributes />
-
-<CxTable>
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| `autoplay` | boolean | `false` | If set to `true`, autoplays the carousel on load. Otherwise the carousel does not autoplay. |
-| `ends` | string | `"loop"` | How the carousel behaves at its ends. `"stop"` hard-stops at the first/last slide—and disables the previous control on the first slide and the next control on the last (via the native `disabled` attribute on `<button>` controls, so `<a>` controls aren’t affected). `"wrap"` jumps from the last slide back to the first (and vice versa), and `"loop"` scrolls seamlessly past the ends for single-slide carousels (falling back to `"wrap"` for multi-item/peek/centered/variable-width layouts and under reduced motion). |
-| `interval` | number | `5000` | The amount of time to delay between automatically cycling an item. |
-| `keyboard` | boolean | `true` | Whether the carousel should react to keyboard events. |
-| `pause` | string, boolean | `"hover"` | If set to `"hover"`, pauses the cycling of the carousel on `mouseenter` and resumes it on `mouseleave`. If set to `false`, hovering over the carousel won’t pause it. |
-</CxTable>
-
-### Methods
-
-<Callout name="danger-async-methods" type="danger" />
-
-Create carousel instances with comprehensive configuration options. For example, to initialize an autoplay carousel with custom timing and disabled touch support:
-
-```js
-const myCarouselElement = document.querySelector('#myCarousel')
-
-const carousel = new chassis.Carousel(myCarouselElement, {
-  interval: 2000,
-  touch: false
-})
-```
-
-<CxTable>
-| Method | Description |
-| --- | --- |
-| `cycle` | Initiates automatic cycling through carousel items from left to right. |
-| `dispose` | Completely destroys the carousel instance and removes all stored DOM data. |
-| `getInstance` | Static method returning the carousel instance associated with a DOM element: `chassis.Carousel.getInstance(element)`. |
-| `getOrCreateInstance` | Static method that returns existing carousel instance or creates new one if uninitialized: `chassis.Carousel.getOrCreateInstance(element)`. |
-| `next` | Advances to next slide. **Returns immediately before transition completes** (before `slid.cx.carousel` event). |
-| `nextWhenVisible` | Smart next navigation that respects page/element visibility. **Returns before target slide is shown**. |
-| `pause` | Halts automatic cycling while preserving current state. |
-| `prev` | Moves to previous slide. **Returns immediately before transition completes** (before `slid.cx.carousel` event). |
-| `to` | Direct navigation to specific slide by index (zero-based). **Returns before target slide is shown**. |
-</CxTable>
-
-### Events
-
-Chassis CSS carousels provide comprehensive event hooks for application integration and analytics.
-
-- `direction`: Transition direction (`"left"` or `"right"`)
-- `relatedTarget`: DOM element becoming the active slide
-- `from`: Current slide index
-- `to`: Target slide index
-
-All events fire at the carousel element (`<div class="carousel">`) and include detailed transition information:
-
-<CxTable>
-| Event type | Description |
-| --- | --- |
-| `slid.cx.carousel` | Fired when slide transition animation completes. |
-| `slide.cx.carousel` | Fired immediately when slide transition begins. |
-</CxTable>
-
-```js
-const myCarousel = document.getElementById('myCarousel')
-
-myCarousel.addEventListener('slide.cx.carousel', event => {
-  // Access event properties for analytics or custom logic
-  console.log(`Sliding from ${event.from} to ${event.to}`)
-})
-```
