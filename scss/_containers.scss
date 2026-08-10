@@ -1,5 +1,4 @@
 @use "sass:map";
-@use "sass:string";
 @use "./config" as *;
 @use "./mixins" as *;
 @use "./placeholders" as *;
@@ -34,10 +33,7 @@
     }
 
     @each $name, $_ in $container-max-widths {
-      $sel: ".container.#{$name}";
-      @if string.slice(#{$name}, 1, 1) == "2" {
-        $sel: ".container.\\32 " + string.slice(#{$name}, 2);
-      }
+      $sel: ".container.#{css-escape-ident($name)}";
 
       #{$sel} {
         @extend %container-full;
@@ -64,10 +60,7 @@
               }
             } @else if map.has-key($container-max-widths, $name) {
               // Named variant
-              $name-selector: ".container.#{$name}";
-              @if string.slice(#{$name}, 1, 1) == "2" {
-                $name-selector: ".container.\\32 " + string.slice(#{$name}, 2);
-              }
+              $name-selector: ".container.#{css-escape-ident($name)}";
 
               #{$name-selector} {
                 @extend %responsive-container-#{$breakpoint};
