@@ -28,23 +28,36 @@ The plugin adds `.show` to the `.menu` element, the toggle button, and the toggl
 
 ## Basic structure
 
-Use [button elements]([[docsref:/components/button]]) as toggle triggers wherever possible — they handle keyboard activation natively. When a link element is used as a trigger, add `role="button"` to communicate its purpose to assistive technology.
+Use [button]([[docsref:/components/button]]) elements with `.caret` [helper]([[docsref:/helpers/carets]]) as toggle triggers wherever possible — they handle keyboard activation natively. When a link element is used as a trigger, add `role="button"` to communicate its purpose to assistive technology. 
 
-<Example code={`<button type="button" class="button primary" data-cx-toggle="menu" aria-expanded="false">
-  Toggle menu
-</button>
-<div class="menu">
-  <a class="menu-item" href="#">Copy</a>
-  <a class="menu-item" href="#">Paste</a>
-  <a class="menu-item" href="#">Delete</a>
-</div>`} />
+<Example code={`<button type="button" class="button primary caret" data-cx-toggle="menu" aria-expanded="false">
+    Toggle menu
+  </button>
+  <div class="menu">
+    <a class="menu-item" href="#">Copy</a>
+    <a class="menu-item" href="#">Paste</a>
+    <a class="menu-item" href="#">Delete</a>
+  </div>`} />
 
-Use [button groups]([[docsref:/components/button-group]]) to build split buttons where a secondary toggle opens the menu while the primary button carries its own action.
+Use [button group]([[docsref:/components/button-group]]) to build split buttons where a secondary toggle opens the menu while the primary button carries its own action.
 
 <Example code={`<div class="button-group">
   <button type="button" class="button secondary">Split</button>
-  <button type="button" class="button secondary" data-cx-toggle="menu" aria-expanded="false">
+  <button type="button" class="button secondary caret icon-only" data-cx-toggle="menu" aria-expanded="false">
     <span class="visually-hidden">Open actions menu</span>
+  </button>
+  <div class="menu">
+    <a class="menu-item" href="#">New file</a>
+    <a class="menu-item" href="#">Open file</a>
+    <hr class="menu-divider">
+    <a class="menu-item" href="#">Settings</a>
+  </div>
+</div>`} />
+
+<Example code={`<div class="button-group">
+  <button type="button" class="button secondary">Split</button>
+  <button type="button" class="button secondary caret icon-only" data-cx-toggle="menu" aria-expanded="false">
+    <Icon name="gear-solid" />
   </button>
   <div class="menu">
     <a class="menu-item" href="#">New file</a>

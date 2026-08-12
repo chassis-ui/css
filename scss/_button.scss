@@ -62,10 +62,6 @@
       @extend %button-small;
     }
 
-    &.icon-only {
-      --padding-x: var(--padding-y);
-    }
-
     > .icon {
       line-height: 0;
       vertical-align: top;
@@ -80,6 +76,11 @@
         margin-inline-start: var(--nudge);
         margin-inline-end: calc(-1 * var(--nudge));
       }
+    }
+
+    &.icon-only {
+      --padding-x: var(--padding-y);
+      --caret-spacing: 0;
     }
 
     //
@@ -113,9 +114,5 @@
       }
     }
 
-    // Split menu-toggle spacing
-    &:has(.visually-hidden:only-child) {
-      --caret-spacing: calc(-1 * var(--nudge));
-    }
   }
 } // @layer components
