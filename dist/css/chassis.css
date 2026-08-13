@@ -2343,7 +2343,7 @@
   .badge > .icon:last-child {
     margin-inline-end: calc(-1 * var(--cx-nudge));
   }
-  .badge:empty {
+  .badge:empty:not(.skeleton) {
     display: none;
   }
   .badge-adaptive {
@@ -7607,23 +7607,29 @@
   .progress-stacked > .progress > .progress-bar {
     width: 100%;
   }
-  .skeleton {
+  .skeleton,
+  .skeleton-glow,
+  .skeleton-wave {
+    --cx-color: var(--cx-skeleton-color, var(--cx-fg-color));
     --cx-opacity-min: var(--cx-skeleton-opacity-min, 0.15);
-    --cx-opacity-max: var(--cx-skeleton-opacity-max, 0.3);
-    --cx-color: var(--cx-skeleton-color, currentcolor);
+    --cx-opacity-max: var(--cx-skeleton-opacity-max, 0.25);
+    --cx-opacity-wave: var(--cx-skeleton-opacity-wave, 0.75);
+  }
+  .skeleton {
     display: inline-block;
     min-height: 1em;
     vertical-align: middle;
     cursor: wait !important;
     opacity: var(--cx-opacity-max);
   }
-  .skeleton:not(.button) {
+  .skeleton:not(.button, .chip, .badge) {
     background-color: var(--cx-color);
   }
-  .skeleton.button::before {
+  .skeleton:where(.button, .chip, .badge)::before {
     display: inline-block;
     content: "";
   }
+  .skeleton-glow.skeleton,
   .skeleton-glow .skeleton {
     animation: skeleton-glow 2s ease-in-out infinite;
   }
@@ -7633,7 +7639,7 @@
     }
   }
   .skeleton-wave {
-    mask-image: linear-gradient(135deg, #000000 40%, oklch(from #000000 l c h / calc(1 - var(--cx-opacity-min))) 50%, #000000 60%);
+    mask-image: linear-gradient(135deg, var(--cx-color) 40%, oklch(from var(--cx-color) l c h / var(--cx-opacity-wave)) 50%, var(--cx-color) 60%);
     mask-size: 200% 100%;
     animation: skeleton-wave 2s linear infinite;
   }
