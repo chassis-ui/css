@@ -2288,6 +2288,7 @@
     --cx-gap: var(--cx-badge-gap, 0rem);
     --cx-nudge: var(--cx-badge-nudge, 0.25rem);
     --cx-border-width: var(--cx-badge-border-width, var(--cx-border-width-medium));
+    --cx-border-color: var(--cx-badge-border-color, transparent);
     --cx-border-radius: var(--cx-badge-border-radius, var(--cx-border-radius-full));
     --cx-icon-size: var(--cx-badge-icon-size, 1rem);
     --cx-font-family: var(--cx-badge-font-family, var(--cx-font-family-text));
@@ -9159,11 +9160,24 @@
     padding-inline-start: calc(var(--cx-cell-padding-x) - 0.25rem);
     border-inline-start: 0.25rem solid var(--cx-cue-color);
   }
-  .table-divider > tr:first-child > * {
-    border-block-start: calc(var(--cx-border-width-medium) * 2) solid var(--cx-divider-color, currentcolor);
-  }
   .table.caption-top {
     caption-side: top;
+  }
+  .table.sticky-header > thead {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 2;
+  }
+  .table.sticky-column > :not(caption) > * > *:first-child {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 1;
+  }
+  .table.sticky-header.sticky-column > thead > * > *:first-child {
+    z-index: 3;
+  }
+  .table-divider > tr:first-child > * {
+    border-block-start: calc(var(--cx-border-width-medium) * 2) solid var(--cx-divider-color, currentcolor);
   }
   .max-2xlarge\:table-responsive, .max-xlarge\:table-responsive, .max-large\:table-responsive, .max-medium\:table-responsive, .max-small\:table-responsive, .table-responsive {
     container-type: inline-size;
