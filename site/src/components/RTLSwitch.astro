@@ -1,0 +1,47 @@
+---
+/**
+ * RTL Switch
+ *
+ * Switch to toggle right-to-left (RTL) mode on and off. When enabled, the
+ * `dir` attribute of the `<html>` element is set to `rtl`, and the `lang`
+ * attribute is set to `ar`. When disabled, the `dir` attribute is set to
+ * `ltr`, and the `lang` attribute is set to `en`.
+ */
+
+interface Props {
+  /** Additional CSS class(es) to add alongside the standard `form-check` class. */
+  class?: string
+}
+
+const { class: className } = Astro.props as Props
+---
+
+<div class:list={['form-check', className]}>
+  <span class="check-input">
+    <input type="checkbox" value="" id="rtlSwitch" role="switch" />
+  </span>
+  <label for="rtlSwitch">Enable RTL mode</label>
+</div>
+
+<script>
+  ;(function () {
+    const rtlSwitch = document.getElementById('rtlSwitch') as HTMLInputElement | null
+    const htmlElement = document.documentElement
+
+    // Use optional chaining (?.) here
+    if (htmlElement.getAttribute('dir') === 'rtl' && rtlSwitch) {
+      rtlSwitch.checked = true
+    }
+
+    // Use optional chaining (?.) before addEventListener
+    rtlSwitch?.addEventListener('change', function (this: HTMLInputElement) {
+      if (this.checked) {
+        htmlElement.setAttribute('dir', 'rtl')
+        htmlElement.setAttribute('lang', 'ar')
+      } else {
+        htmlElement.setAttribute('dir', 'ltr')
+        htmlElement.setAttribute('lang', 'en')
+      }
+    })
+  })()
+</script>

@@ -7,6 +7,7 @@ css_layer: helpers
 ---
 
 import { getData } from '@libs/data'
+import RTLSwitch from '@components/RTLSwitch.astro'
 
 [api]: [[docsref:/utilities/api]]
 
@@ -152,6 +153,25 @@ Icons sized with an explicit `.icon-{size}` class align properly alongside text 
     <Icon name="info-circle-solid" font class="icon-adaptive" />
     Text with a leading font icon.
   </div>`} />
+
+## Directional icon
+
+`.directional-icon` flips the icon horizontally when the page is in right-to-left mode.
+
+<div class="cxd-example">
+  <RTLSwitch />
+</div>
+
+<Example
+  code={`<a href="#" class="button">
+    <Icon name="arrow-left-solid" class="directional-icon" /> 
+    Back
+  </a>
+  <a href="#" class="button">
+    Next 
+    <Icon name="arrow-right-solid" class="directional-icon" />
+  </a>`} />
+
 
 ## Opacity
 
