@@ -17,7 +17,7 @@ try {
 }
 
 // Parse lines that contain PASS or FAIL
-const lines = stdout.split('\n').filter(l => l.startsWith('PASS') || l.startsWith('FAIL'))
+const lines = stdout.split('\n').filter((l) => l.startsWith('PASS') || l.startsWith('FAIL'))
 
 if (lines.length === 0) {
   console.log(stdout)
@@ -25,33 +25,35 @@ if (lines.length === 0) {
 }
 
 // Parse size string to number (KB)
-const parseSize = str => Number.parseFloat(str.replace('KB', ''))
+const parseSize = (str) => Number.parseFloat(str.replace('KB', ''))
 
 // Calculate column widths and headroom
-const rows = lines.map(line => {
-  const match = line.match(/(PASS|FAIL)\s+(.+?):\s+([\d.]+KB)\s+([<>])\s+([\d.]+KB)/)
-  if (match) {
-    const sizeNum = parseSize(match[3])
-    const maxNum = parseSize(match[5])
-    const headroomNum = maxNum - sizeNum
-    const headroom = `${headroomNum.toFixed(2)}KB`
-    return {
-      status: match[1],
-      file: match[2],
-      size: match[3],
-      max: match[5],
-      headroomNum,
-      headroom: match[1] === 'PASS' ? `+${headroom}` : `-${Math.abs(headroomNum).toFixed(2)}KB`
+const rows = lines
+  .map((line) => {
+    const match = line.match(/(PASS|FAIL)\s+(.+?):\s+([\d.]+KB)\s+([<>])\s+([\d.]+KB)/)
+    if (match) {
+      const sizeNum = parseSize(match[3])
+      const maxNum = parseSize(match[5])
+      const headroomNum = maxNum - sizeNum
+      const headroom = `${headroomNum.toFixed(2)}KB`
+      return {
+        status: match[1],
+        file: match[2],
+        size: match[3],
+        max: match[5],
+        headroomNum,
+        headroom: match[1] === 'PASS' ? `+${headroom}` : `-${Math.abs(headroomNum).toFixed(2)}KB`
+      }
     }
-  }
 
-  return null
-}).filter(Boolean)
+    return null
+  })
+  .filter(Boolean)
 
-const maxFileLen = Math.max(...rows.map(r => r.file.length), 4)
-const maxSizeLen = Math.max(...rows.map(r => r.size.length), 4)
-const maxMaxLen = Math.max(...rows.map(r => r.max.length), 3)
-const maxHeadroomLen = Math.max(...rows.map(r => r.headroom.length), 8)
+const maxFileLen = Math.max(...rows.map((r) => r.file.length), 4)
+const maxSizeLen = Math.max(...rows.map((r) => r.size.length), 4)
+const maxMaxLen = Math.max(...rows.map((r) => r.max.length), 3)
+const maxHeadroomLen = Math.max(...rows.map((r) => r.headroom.length), 8)
 
 // Build table
 const hr = `+-${'-'.repeat(maxFileLen)}-+-${'-'.repeat(maxSizeLen)}-+-${'-'.repeat(maxMaxLen)}-+-${'-'.repeat(maxHeadroomLen)}-+`
@@ -59,7 +61,9 @@ const hr = `+-${'-'.repeat(maxFileLen)}-+-${'-'.repeat(maxSizeLen)}-+-${'-'.repe
 console.log('')
 console.log('bundlewatch results')
 console.log(hr)
-console.log(`| ${'File'.padEnd(maxFileLen)} | ${'Size'.padStart(maxSizeLen)} | ${'Max'.padStart(maxMaxLen)} | ${'Headroom'.padStart(maxHeadroomLen)} |`)
+console.log(
+  `| ${'File'.padEnd(maxFileLen)} | ${'Size'.padStart(maxSizeLen)} | ${'Max'.padStart(maxMaxLen)} | ${'Headroom'.padStart(maxHeadroomLen)} |`
+)
 console.log(hr)
 
 const green = '\u001B[32m'
@@ -72,14 +76,16 @@ for (const row of rows) {
   const headroomColor = row.headroomNum > 0.25 ? red : ''
   const headroomReset = row.headroomNum > 0.25 ? reset : ''
   const coloredHeadroom = `${headroomColor}${row.headroom.padStart(maxHeadroomLen)}${headroomReset}`
-  console.log(`| ${row.file.padEnd(maxFileLen)} | ${coloredSize} | ${row.max.padStart(maxMaxLen)} | ${coloredHeadroom} |`)
+  console.log(
+    `| ${row.file.padEnd(maxFileLen)} | ${coloredSize} | ${row.max.padStart(maxMaxLen)} | ${coloredHeadroom} |`
+  )
 }
 
 console.log(hr)
 
 // Summary
-const passed = rows.filter(r => r.status === 'PASS').length
-const failed = rows.filter(r => r.status === 'FAIL').length
+const passed = rows.filter((r) => r.status === 'PASS').length
+const failed = rows.filter((r) => r.status === 'FAIL').length
 
 console.log('')
 if (failed > 0) {
