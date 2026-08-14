@@ -52,7 +52,7 @@
     }
   }
 
-  .page-link {
+  .pagination-link {
 
     --fg-color: var(--idle-fg-color);
     --icon-color: var(--fg-color);
@@ -108,32 +108,32 @@
     }
   }
 
-  .page-item {
-    &:not(:first-child) .page-link {
+  .pagination-item {
+    &:not(:first-child) .pagination-link {
       margin-inline-start: $pagination-margin-start;
     }
 
     @if $pagination-margin-start == calc(#{$pagination-border-width} * -1) {
       &:last-child {
-        .page-link {
+        .pagination-link {
           @include border-start-radius(0);
         }
       }
 
       &:first-child {
-        .page-link {
+        .pagination-link {
           @include border-end-radius(0);
         }
       }
 
       &:not(:first-child):not(:last-child) {
-        .page-link {
+        .pagination-link {
           @include border-radius(0);
         }
       }
     } @else {
       // Add border-radius to all pageLinks in case they have left margin
-      .page-link {
+      .pagination-link {
         @include border-radius(var(--border-radius));
       }
     }
