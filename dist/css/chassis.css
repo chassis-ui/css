@@ -3011,14 +3011,15 @@
   .carousel-control-play-pause.paused .carousel-icon-play {
     display: inline-block;
   }
-  [dir=rtl] .carousel-icon-prev,
-  [dir=rtl] .carousel-icon-next {
-    transform: scaleX(-1);
-  }
   .carousel-indicators {
     display: flex;
     gap: var(--cx-indicator-gap);
     justify-content: center;
+    margin: 0;
+    list-style: none;
+  }
+  .carousel-indicators li {
+    display: flex;
   }
   .carousel-indicators button {
     flex: 0 1 auto;
@@ -8251,6 +8252,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  [dir=rtl] .icon.directional-icon {
+    transform: scaleX(-1);
+  }
   .icon-adaptive:not(:empty) {
     --cx-icon-size: 1.125em;
   }
@@ -8277,8 +8281,14 @@
       transition: none;
     }
   }
+  .icon-link-hover {
+    --cx-transform: var(--cx-icon-link-transform, translate3d(0.25em, 0, 0));
+  }
   .icon-link-hover:hover > .icon, .icon-link-hover:focus-visible > .icon {
-    transform: var(--cx-icon-link-transform, translate3d(0.25em, 0, 0));
+    transform: var(--cx-transform);
+  }
+  [dir=rtl] .icon-link-hover {
+    --cx-icon-link-transform: translate3d(-0.25em, 0, 0);
   }
   .last-mb-0 > p:last-child {
     margin-block-end: 0;
