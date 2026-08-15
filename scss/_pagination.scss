@@ -14,12 +14,12 @@
     // scss-docs-start pagination-css-vars
     --padding-y: var(--pagination-padding-y, #{$pagination-padding-y});
     --padding-x: var(--pagination-padding-x, #{$pagination-padding-x});
+    --min-size: var(--pagination-min-size, #{$pagination-min-size});
+    --gap: var(--pagination-gap, #{$pagination-gap});
     --idle-fg-color: var(--pagination-idle-fg-color, #{$pagination-idle-fg-color});
     --idle-bg-color: var(--pagination-idle-bg-color, #{$pagination-idle-bg-color});
     --hover-fg-color: var(--pagination-hover-fg-color, #{$pagination-hover-fg-color});
     --hover-bg-color: var(--pagination-hover-bg-color, #{$pagination-hover-bg-color});
-    --focus-fg-color: var(--pagination-focus-fg-color, #{$pagination-focus-fg-color});
-    --focus-bg-color: var(--pagination-focus-bg-color, #{$pagination-focus-bg-color});
     --active-fg-color: var(--pagination-active-fg-color, #{$pagination-active-fg-color});
     --active-bg-color: var(--pagination-active-bg-color, #{$pagination-active-bg-color});
     --active-border-color: var(--pagination-active-border-color, #{$pagination-active-border-color});
@@ -35,36 +35,46 @@
     // scss-docs-end pagination-css-vars
 
     display: flex;
+    background: none;
     @include bulletless();
 
     &.large {
-      --pagination-padding-y: #{$pagination-large-padding-y};
-      --pagination-padding-x: #{$pagination-large-padding-x};
+      --pagination-min-size: #{$pagination-large-min-size};
       --pagination-border-radius: #{$pagination-large-border-radius};
-      @include map-font($pagination-large-font, pagination);
+      @include map-font-size($pagination-large-font, pagination);
+      @include map-line-height($pagination-large-font, pagination);
     }
 
     &.small {
-      --pagination-padding-y: #{$pagination-small-padding-y};
-      --pagination-padding-x: #{$pagination-small-padding-x};
+      --pagination-min-size: #{$pagination-small-min-size};
       --pagination-border-radius: #{$pagination-small-border-radius};
-      @include map-font($pagination-small-font, pagination);
+      @include map-font-size($pagination-small-font, pagination);
+      @include map-line-height($pagination-small-font, pagination);
     }
   }
 
   .pagination-link {
 
     --fg-color: var(--idle-fg-color);
+    --bg-color: var(--idle-bg-color);
     --icon-color: var(--fg-color);
 
-    @extend %component;
+    // @extend %component;
 
     position: relative;
     display: flex;
     align-items: center;
-    height: 100%;
+    justify-content: center;
+    min-width: var(--min-size);
+    min-height: var(--min-size);
+    text-align: center;
     text-decoration: none;
-    @include exclude-strokes(pagination);
+    border: 0;
+    // @include exclude-strokes(pagination);
+    @include padding();
+    @include colors();
+    @include font();
+    @include border-radius(var(--border-radius));
     @include gradient();
     @include transition($pagination-transition);
 
@@ -78,8 +88,6 @@
     }
 
     &:focus-visible {
-      --fg-color: var(--focus-fg-color);
-      --bg-color: var(--focus-bg-color);
       z-index: 3;
       @include focus-ring(true);
     }
@@ -106,35 +114,38 @@
       // Prevent icon shifts on hover/focus/active z-index changes
       transform: translateZ(0);
     }
+
+    .pagination.bordered &,
+    .pagination.grouped & {
+      @include border();
+    }
   }
 
-  .pagination-item {
-    &:not(:first-child) .pagination-link {
-      margin-inline-start: $pagination-margin-start;
+  .pagination.bordered {
+    gap: var(--gap);
+  }
+
+  .pagination.grouped {
+
+    :not(:first-child) .pagination-link {
+      margin-inline-start: calc(var(--border-width) * -1);
     }
 
-    @if $pagination-margin-start == calc(#{$pagination-border-width} * -1) {
-      &:last-child {
-        .pagination-link {
-          @include border-start-radius(0);
-        }
-      }
-
-      &:first-child {
-        .pagination-link {
-          @include border-end-radius(0);
-        }
-      }
-
-      &:not(:first-child):not(:last-child) {
-        .pagination-link {
-          @include border-radius(0);
-        }
-      }
-    } @else {
-      // Add border-radius to all pageLinks in case they have left margin
+    :last-child {
       .pagination-link {
-        @include border-radius(var(--border-radius));
+        @include border-start-radius(0);
+      }
+    }
+
+    :first-child {
+      .pagination-link {
+        @include border-end-radius(0);
+      }
+    }
+
+    :not(:first-child):not(:last-child) {
+      .pagination-link {
+        @include border-radius(0);
       }
     }
   }

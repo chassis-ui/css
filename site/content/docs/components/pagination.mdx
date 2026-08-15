@@ -16,30 +16,66 @@ When implementing multiple pagination sections, provide descriptive `aria-label`
 
 <Example code={`<nav aria-label="Page navigation example">
     <ul class="pagination">
-      <li class="pagination-item"><a class="pagination-link" href="#">Previous</a></li>
-      <li class="pagination-item"><a class="pagination-link" href="#">1</a></li>
-      <li class="pagination-item"><a class="pagination-link" href="#">2</a></li>
-      <li class="pagination-item"><a class="pagination-link" href="#">3</a></li>
-      <li class="pagination-item"><a class="pagination-link" href="#">Next</a></li>
-    </ul>
-  </nav>`} />
-
-## Working with icons
-
-Transform pagination controls by replacing text with icons while maintaining comprehensive screen reader support through proper ARIA attributes and semantic markup.
-
-<Example code={`<nav aria-label="Page navigation example">
-    <ul class="pagination">
       <li class="pagination-item">
-        <a class="pagination-link" href="#" aria-label="Previous">
+        <a class="pagination-link" href="#">
           <Icon name="chevron-left-solid" class="directional-icon" />
         </a>
       </li>
       <li class="pagination-item"><a class="pagination-link" href="#">1</a></li>
       <li class="pagination-item"><a class="pagination-link" href="#">2</a></li>
       <li class="pagination-item"><a class="pagination-link" href="#">3</a></li>
+      <li class="pagination-item"><a class="pagination-link" href="#">4</a></li>
+      <li class="pagination-item"><a class="pagination-link" href="#">5</a></li>
       <li class="pagination-item">
-        <a class="pagination-link" href="#" aria-label="Next">
+        <a class="pagination-link" href="#">
+          <Icon name="chevron-right-solid" class="directional-icon" />
+        </a>
+      </li>
+    </ul>
+  </nav>`} />
+
+### Bordered 
+
+Add `.bordered` to the `.pagination` class to create a distinct separation between page links, enhancing visual clarity and touch target definition.
+
+<Example code={`<nav aria-label="Page navigation example">
+    <ul class="pagination bordered">
+      <li class="pagination-item">
+        <a class="pagination-link" href="#">
+          <Icon name="chevron-left-solid" class="directional-icon" />
+        </a>
+      </li>
+      <li class="pagination-item"><a class="pagination-link" href="#">1</a></li>
+      <li class="pagination-item"><a class="pagination-link" href="#">2</a></li>
+      <li class="pagination-item"><a class="pagination-link" href="#">3</a></li>
+      <li class="pagination-item"><a class="pagination-link" href="#">4</a></li>
+      <li class="pagination-item"><a class="pagination-link" href="#">5</a></li>
+      <li class="pagination-item">
+        <a class="pagination-link" href="#">
+          <Icon name="chevron-right-solid" class="directional-icon" />
+        </a>
+      </li>
+    </ul>
+  </nav>`} />
+
+### Grouped
+
+Use `.grouped` to create a connected pagination layout where page links appear as a single unit, emphasizing their relationship and improving usability.
+
+<Example code={`<nav aria-label="Page navigation example">
+    <ul class="pagination grouped">
+      <li class="pagination-item">
+        <a class="pagination-link" href="#">
+          <Icon name="chevron-left-solid" class="directional-icon" />
+        </a>
+      </li>
+      <li class="pagination-item"><a class="pagination-link" href="#">1</a></li>
+      <li class="pagination-item"><a class="pagination-link" href="#">2</a></li>
+      <li class="pagination-item"><a class="pagination-link" href="#">3</a></li>
+      <li class="pagination-item"><a class="pagination-link" href="#">4</a></li>
+      <li class="pagination-item"><a class="pagination-link" href="#">5</a></li>
+      <li class="pagination-item">
+        <a class="pagination-link" href="#">
           <Icon name="chevron-right-solid" class="directional-icon" />
         </a>
       </li>
@@ -55,24 +91,24 @@ In Chassis CSS, state classes can be applied to either the `.pagination-item` pa
 <Example code={`<nav aria-label="...">
     <ul class="pagination">
       <li class="pagination-item disabled">
-        <a class="pagination-link" tabindex="-1" aria-disabled="true">Previous</a>
+        <span class="pagination-link">
+          <Icon name="chevron-left-solid" class="directional-icon" />
+        </span>
       </li>
-      <li class="pagination-item"><a class="pagination-link" href="#">1</a></li>
-      <li class="pagination-item active" aria-current="page">
+      <li class="pagination-item active"><a class="pagination-link" href="#">1</a></li>
+      <li class="pagination-item" aria-current="page">
         <a class="pagination-link" href="#">2</a>
       </li>
       <li class="pagination-item"><a class="pagination-link" href="#">3</a></li>
       <li class="pagination-item">
-        <a class="pagination-link" href="#">Next</a>
+        <a class="pagination-link" href="#" aria-label="Next">
+          <Icon name="chevron-right-solid" class="directional-icon" />
+        </a>
       </li>
     </ul>
   </nav>`} />
 
 For enhanced accessibility and to completely remove click functionality, replace anchor elements with `<span>` for disabled and active states:
-
-<Code lang='html' code={`<li class="pagination-item disabled">
-    <span class="pagination-link">Previous</span>
-  </li>`} />
 
 ## Sizing
 
@@ -80,21 +116,37 @@ Chassis provides three size variants to match your interface requirements. Add `
 
 <Example code={`<nav aria-label="...">
     <ul class="pagination large">
-      <li class="pagination-item active" aria-current="page">
-        <span class="pagination-link">1</span>
+      <li class="pagination-item">
+        <a class="pagination-link" href="#">
+          <Icon name="chevron-left-solid" class="directional-icon" />
+        </a>
       </li>
+      <li class="pagination-item"><a class="pagination-link" href="#">1</a></li>
       <li class="pagination-item"><a class="pagination-link" href="#">2</a></li>
       <li class="pagination-item"><a class="pagination-link" href="#">3</a></li>
+      <li class="pagination-item">
+        <a class="pagination-link" href="#">
+          <Icon name="chevron-right-solid" class="directional-icon" />
+        </a>
+      </li>
     </ul>
   </nav>`} />
 
 <Example code={`<nav aria-label="...">
     <ul class="pagination small">
-      <li class="pagination-item active" aria-current="page">
-        <span class="pagination-link">1</span>
+      <li class="pagination-item">
+        <a class="pagination-link" href="#">
+          <Icon name="chevron-left-solid" class="directional-icon" />
+        </a>
       </li>
+      <li class="pagination-item"><a class="pagination-link" href="#">1</a></li>
       <li class="pagination-item"><a class="pagination-link" href="#">2</a></li>
       <li class="pagination-item"><a class="pagination-link" href="#">3</a></li>
+      <li class="pagination-item">
+        <a class="pagination-link" href="#">
+          <Icon name="chevron-right-solid" class="directional-icon" />
+        </a>
+      </li>
     </ul>
   </nav>`} />
 
@@ -106,14 +158,18 @@ With `.justify-content-center`:
 
 <Example code={`<nav aria-label="Centered pagination">
     <ul class="pagination justify-content-center">
-      <li class="pagination-item disabled">
-        <a class="pagination-link" tabindex="-1" aria-disabled="true">Previous</a>
+      <li class="pagination-item">
+        <a class="pagination-link" href="#">
+          <Icon name="chevron-left-solid" class="directional-icon" />
+        </a>
       </li>
       <li class="pagination-item"><a class="pagination-link" href="#">1</a></li>
       <li class="pagination-item"><a class="pagination-link" href="#">2</a></li>
       <li class="pagination-item"><a class="pagination-link" href="#">3</a></li>
       <li class="pagination-item">
-        <a class="pagination-link" href="#">Next</a>
+        <a class="pagination-link" href="#">
+          <Icon name="chevron-right-solid" class="directional-icon" />
+        </a>
       </li>
     </ul>
   </nav>`} />
@@ -122,14 +178,18 @@ Or with `.justify-content-end`:
 
 <Example code={`<nav aria-label="Right-aligned pagination">
     <ul class="pagination justify-content-end">
-      <li class="pagination-item disabled">
-        <a class="pagination-link" tabindex="-1" aria-disabled="true">Previous</a>
+      <li class="pagination-item">
+        <a class="pagination-link" href="#">
+          <Icon name="chevron-left-solid" class="directional-icon" />
+        </a>
       </li>
       <li class="pagination-item"><a class="pagination-link" href="#">1</a></li>
       <li class="pagination-item"><a class="pagination-link" href="#">2</a></li>
       <li class="pagination-item"><a class="pagination-link" href="#">3</a></li>
       <li class="pagination-item">
-        <a class="pagination-link" href="#">Next</a>
+        <a class="pagination-link" href="#">
+          <Icon name="chevron-right-solid" class="directional-icon" />
+        </a>
       </li>
     </ul>
   </nav>`} />
