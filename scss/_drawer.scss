@@ -134,8 +134,11 @@
             transform: translateY(calc(100% + var(--inset)));
           }
 
-          // Open state: slide in with transition
-          &[open] {
+          // Open state: slide in with transition. The :not(.hiding) qualifier lets the exit
+          // transition fall back to the off-screen transforms above while `open` is still
+          // present — the JS keeps the native `open` attribute until the exit transition
+          // finishes, so this is what actually drives the visible slide-out.
+          &[open]:not(.hiding) {
             visibility: visible;
             @include transition(transform var(--transition-duration) var(--transition-timing), visibility 0s);
             transform: none;
@@ -143,14 +146,15 @@
         }
 
         // Open state base (always applies, regardless of animation mode)
-        &[open] {
+        &[open]:not(.hiding) {
           visibility: visible;
           transform: none;
         }
 
-        // Static backdrop bounce — must match specificity of &:not(.instant)[open]
-        // so it overrides transform: none on the open state.
-        &[open].static {
+        // Static backdrop bounce — must match specificity of &:not(.instant)[open]:not(.hiding)
+        // so it overrides transform: none on the open state, and stays excluded while hiding
+        // so a backdrop click mid-exit doesn't fight the slide-out transform.
+        &[open].static:not(.hiding) {
           transform: scale(1.02);
         }
       }
@@ -217,6 +221,15 @@
       background-color: color-mix(in oklch, var(--backdrop-bg) var(--backdrop-opacity), transparent);
       backdrop-filter: blur(var(--backdrop-blur));
       @include backdrop-transitions(var(--transition-duration), var(--transition-timing));
+    }
+
+    // Exit: fade the native backdrop out alongside the panel. The JS keeps `open` (and the
+    // dialog in the top layer) for the whole exit transition, so without this the backdrop —
+    // which otherwise only has an entry fade via @starting-style — would just sit fully opaque
+    // until `close()` finally yanks it out of the top layer at the end.
+    .#{max-prefix($prefix)}drawer.hiding::backdrop {
+      background-color: transparent;
+      backdrop-filter: blur(0);
     }
   }
 

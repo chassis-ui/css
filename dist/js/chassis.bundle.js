@@ -6566,11 +6566,13 @@ class DialogBase extends BaseComponent {
     }
   }
 
-  // Hook: return true to keep the dialog in the top layer (i.e., delay
-  // calling close()) until the exit transition completes. The base class
-  // closes synchronously; Dialog overrides this for animated modal cases.
+  // Keep the dialog in the top layer until the exit transition ends. Both the native
+  // ::backdrop and (for subclasses whose positioning relies on it, e.g. Dialog's centering)
+  // the browser's own top-layer placement disappear synchronously the moment close() is
+  // called — closing immediately would cut those off while the rest of the element is still
+  // visibly animating out. Only skipped when there's no transition to protect (`.instant`).
   _shouldDeferClose() {
-    return false;
+    return this._isAnimated();
   }
   _triggerBackdropTransition() {
     const hidePreventedEvent = EventHandler.trigger(this._element, this.constructor.eventName('hidePrevented'));
@@ -6719,16 +6721,6 @@ class Dialog extends DialogBase {
   }
   _onAfterHide() {
     this._element.classList.remove(CLASS_NAME_NONMODAL);
-  }
-
-  // Keep the dialog in the top layer until the exit transition ends. This
-  // preserves the browser's modal centering and the native ::backdrop, both
-  // of which disappear synchronously the moment close() is called. Without
-  // this, the dialog would jump to the top of the page and the backdrop
-  // blur would vanish instantly while the dialog faded — making the exit
-  // animation appear to skip entirely.
-  _shouldDeferClose() {
-    return this._isAnimated();
   }
   _onCancel() {
     EventHandler.trigger(this._element, EVENT_CANCEL);
