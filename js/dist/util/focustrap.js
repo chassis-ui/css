@@ -9,7 +9,7 @@ import Config from './config.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/focustrap.js
+ * Chassis CSS util/focustrap.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -29,7 +29,7 @@ const TAB_NAV_FORWARD = 'forward';
 const TAB_NAV_BACKWARD = 'backward';
 const Default = {
   autofocus: true,
-  trapElement: null // The element to trap focus inside of
+  trapElement: null
 };
 const DefaultType = {
   autofocus: 'boolean',

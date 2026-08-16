@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/scrollbar.js
+ * Chassis CSS util/scrollbar.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -23,18 +23,20 @@ const PROPERTY_MARGIN = 'margin-right'
  */
 
 class ScrollBarHelper {
+  protected declare _element: HTMLElement
+
   constructor() {
     this._element = document.body
   }
 
   // Public
-  getWidth() {
+  getWidth(): number {
     // https://developer.mozilla.org/en-US/docs/Web/API/Window/innerWidth#usage_notes
     const documentWidth = document.documentElement.clientWidth
     return Math.abs(window.innerWidth - documentWidth)
   }
 
-  hide() {
+  hide(): void {
     const width = this.getWidth()
     this._disableOverFlow()
     // give padding to element to balance the hidden scrollbar width
@@ -44,26 +46,26 @@ class ScrollBarHelper {
     this._setElementAttributes(SELECTOR_STICKY_CONTENT, PROPERTY_MARGIN, calculatedValue => calculatedValue - width)
   }
 
-  reset() {
+  reset(): void {
     this._resetElementAttributes(this._element, 'overflow')
     this._resetElementAttributes(this._element, PROPERTY_PADDING)
     this._resetElementAttributes(SELECTOR_FIXED_CONTENT, PROPERTY_PADDING)
     this._resetElementAttributes(SELECTOR_STICKY_CONTENT, PROPERTY_MARGIN)
   }
 
-  isOverflowing() {
+  isOverflowing(): boolean {
     return this.getWidth() > 0
   }
 
   // Private
-  _disableOverFlow() {
+  protected _disableOverFlow(): void {
     this._saveInitialAttribute(this._element, 'overflow')
     this._element.style.overflow = 'hidden'
   }
 
-  _setElementAttributes(selector, styleProperty, callback) {
+  protected _setElementAttributes(selector: string | Element, styleProperty: string, callback: (value: number) => number): void {
     const scrollbarWidth = this.getWidth()
-    const manipulationCallBack = element => {
+    const manipulationCallBack = (element: HTMLElement): void => {
       if (element !== this._element && window.innerWidth > element.clientWidth + scrollbarWidth) {
         return
       }
@@ -76,15 +78,15 @@ class ScrollBarHelper {
     this._applyManipulationCallback(selector, manipulationCallBack)
   }
 
-  _saveInitialAttribute(element, styleProperty) {
+  protected _saveInitialAttribute(element: HTMLElement, styleProperty: string): void {
     const actualValue = element.style.getPropertyValue(styleProperty)
     if (actualValue) {
       Manipulator.setDataAttribute(element, styleProperty, actualValue)
     }
   }
 
-  _resetElementAttributes(selector, styleProperty) {
-    const manipulationCallBack = element => {
+  protected _resetElementAttributes(selector: string | Element, styleProperty: string): void {
+    const manipulationCallBack = (element: HTMLElement): void => {
       const value = Manipulator.getDataAttribute(element, styleProperty)
       // We only want to remove the property if the value is `null`; the value can also be zero
       if (value === null) {
@@ -93,19 +95,19 @@ class ScrollBarHelper {
       }
 
       Manipulator.removeDataAttribute(element, styleProperty)
-      element.style.setProperty(styleProperty, value)
+      element.style.setProperty(styleProperty, value as string)
     }
 
     this._applyManipulationCallback(selector, manipulationCallBack)
   }
 
-  _applyManipulationCallback(selector, callBack) {
+  protected _applyManipulationCallback(selector: string | Element, callBack: (element: HTMLElement) => void): void {
     if (isElement(selector)) {
-      callBack(selector)
+      callBack(selector as HTMLElement)
       return
     }
 
-    for (const sel of SelectorEngine.find(selector, this._element)) {
+    for (const sel of SelectorEngine.find<HTMLElement>(selector, this._element)) {
       callBack(sel)
     }
   }

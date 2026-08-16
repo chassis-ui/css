@@ -1,14 +1,16 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/sanitizer.js
+ * Chassis CSS util/sanitizer.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
+type SanitizerAllowList = Record<string, Array<string | RegExp>>
+
 // js-docs-start allow-list
 const ARIA_ATTRIBUTE_PATTERN = /^aria-[\w-]*$/i
 
-export const DefaultAllowlist = {
+export const DefaultAllowlist: SanitizerAllowList = {
   // Global attributes allowed on any supplied element below.
   '*': ['class', 'dir', 'id', 'lang', 'role', ARIA_ATTRIBUTE_PATTERN],
   a: ['target', 'href', 'title', 'rel'],
@@ -63,14 +65,22 @@ const uriAttributes = new Set([
  *
  * Shout-out to Angular https://github.com/angular/angular/blob/15.2.8/packages/core/src/sanitization/url_sanitizer.ts#L38
  */
-const SAFE_URL_PATTERN = /^(?!javascript:)(?:[\d+.a-z-]+:|[^#&/:?]*(?:[#/?]|$))/i
+const SAFE_URL_PATTERN = /^(?!(?:javascript|data|vbscript):)(?:[a-z0-9+.-]+:|[^&:/?#]*(?:[/?#]|$))/i
 
-const allowedAttribute = (attribute, allowedAttributeList) => {
+/**
+ * A pattern that matches safe data URLs. Only matches image, video and audio
+ * types — notably NOT `data:text/html`, which is an XSS vector.
+ *
+ * Shout-out to Angular https://github.com/angular/angular/blob/15.2.8/packages/core/src/sanitization/url_sanitizer.ts#L49
+ */
+const DATA_URL_PATTERN = /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:mp3|oga|ogg|opus));base64,[\d+/a-z=]+$/i
+
+const allowedAttribute = (attribute: Attr, allowedAttributeList: Array<string | RegExp>): boolean => {
   const attributeName = attribute.nodeName.toLowerCase()
 
   if (allowedAttributeList.includes(attributeName)) {
     if (uriAttributes.has(attributeName)) {
-      return Boolean(SAFE_URL_PATTERN.test(attribute.nodeValue))
+      return Boolean(SAFE_URL_PATTERN.test(attribute.nodeValue!) || DATA_URL_PATTERN.test(attribute.nodeValue!))
     }
 
     return true
@@ -81,7 +91,7 @@ const allowedAttribute = (attribute, allowedAttributeList) => {
     .some(regex => regex.test(attributeName))
 }
 
-export function sanitizeHtml(unsafeHtml, allowList, sanitizeFunction) {
+export function sanitizeHtml(unsafeHtml: string, allowList: SanitizerAllowList, sanitizeFunction?: ((unsafeHtml: string) => string) | null): string {
   if (!unsafeHtml.length) {
     return unsafeHtml
   }
@@ -114,3 +124,5 @@ export function sanitizeHtml(unsafeHtml, allowList, sanitizeFunction) {
 
   return createdDocument.body.innerHTML
 }
+
+export type { SanitizerAllowList }

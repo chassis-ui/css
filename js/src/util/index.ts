@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/index.js
+ * Chassis CSS util/index.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -11,32 +11,32 @@ const TRANSITION_END = 'transitionend'
 
 /**
  * Properly escape IDs selectors to handle weird IDs
- * @param {string} selector
- * @returns {string}
  */
-const parseSelector = selector => {
-  if (selector && window.CSS && window.CSS.escape) {
+const parseSelector = (selector: string): string => {
+  // The `window.CSS` checks guard against ancient browsers, so check them as
+  // untyped values instead of letting tsc call them always-defined
+  if (selector && (window as any).CSS && (window as any).CSS.escape) {
     // document.querySelector needs escaping to handle IDs (html5+) containing for instance /
-    selector = selector.replace(/#([^\s"#']+)/g, (match, id) => `#${CSS.escape(id)}`)
+    selector = selector.replace(/#([^\s"#']+)/g, (match, id: string) => `#${CSS.escape(id)}`)
   }
 
   return selector
 }
 
 // Shout-out Angus Croll (https://goo.gl/pxwQGp)
-const toType = object => {
+const toType = (object: unknown): string => {
   if (object === null || object === undefined) {
     return `${object}`
   }
 
-  return Object.prototype.toString.call(object).match(/\s([a-z]+)/i)[1].toLowerCase()
+  return Object.prototype.toString.call(object).match(/\s([a-z]+)/i)![1].toLowerCase()
 }
 
 /**
  * Public Util API
  */
 
-const getUID = prefix => {
+const getUID = (prefix: string): string => {
   do {
     prefix += Math.floor(Math.random() * MAX_UID)
   } while (document.getElementById(prefix))
@@ -44,7 +44,7 @@ const getUID = prefix => {
   return prefix
 }
 
-const getTransitionDurationFromElement = element => {
+const getTransitionDurationFromElement = (element: Element | null): number => {
   if (!element) {
     return 0
   }
@@ -67,31 +67,31 @@ const getTransitionDurationFromElement = element => {
   return (Number.parseFloat(transitionDuration) + Number.parseFloat(transitionDelay)) * MILLISECONDS_MULTIPLIER
 }
 
-const triggerTransitionEnd = element => {
+const triggerTransitionEnd = (element: Element): void => {
   element.dispatchEvent(new Event(TRANSITION_END))
 }
 
-const isElement = object => {
+const isElement = (object: unknown): object is Element => {
   if (!object || typeof object !== 'object') {
     return false
   }
 
-  return typeof object.nodeType !== 'undefined'
+  return typeof (object as Element).nodeType !== 'undefined'
 }
 
-const getElement = object => {
+const getElement = (object: unknown): HTMLElement | null => {
   if (isElement(object)) {
-    return object
+    return object as HTMLElement
   }
 
   if (typeof object === 'string' && object.length > 0) {
-    return document.querySelector(parseSelector(object))
+    return document.querySelector<HTMLElement>(parseSelector(object))
   }
 
   return null
 }
 
-const isVisible = element => {
+const isVisible = (element: unknown): boolean => {
   if (!isElement(element) || element.getClientRects().length === 0) {
     return false
   }
@@ -118,7 +118,7 @@ const isVisible = element => {
   return elementIsVisible
 }
 
-const isDisabled = element => {
+const isDisabled = (element: Element | null | undefined): boolean => {
   if (!element || element.nodeType !== Node.ELEMENT_NODE) {
     return true
   }
@@ -127,14 +127,16 @@ const isDisabled = element => {
     return true
   }
 
-  if (typeof element.disabled !== 'undefined') {
-    return element.disabled
+  const disableableElement = element as HTMLElement & { disabled?: boolean }
+
+  if (typeof disableableElement.disabled !== 'undefined') {
+    return disableableElement.disabled
   }
 
   return element.hasAttribute('disabled') && element.getAttribute('disabled') !== 'false'
 }
 
-const findShadowRoot = element => {
+const findShadowRoot = (element: Node): ShadowRoot | null => {
   if (!document.documentElement.attachShadow) {
     return null
   }
@@ -157,23 +159,20 @@ const findShadowRoot = element => {
   return findShadowRoot(element.parentNode)
 }
 
-const noop = () => {}
+const noop = (): void => {}
 
 /**
  * Trick to restart an element's animation
  *
- * @param {HTMLElement} element
- * @return void
- *
  * @see https://www.harrytheo.com/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
  */
-const reflow = element => {
-  element.offsetHeight // eslint-disable-line no-unused-expressions
+const reflow = (element: HTMLElement): void => {
+  element.offsetHeight // eslint-disable-line @typescript-eslint/no-unused-expressions
 }
 
-const DOMContentLoadedCallbacks = []
+const DOMContentLoadedCallbacks: Array<() => void> = []
 
-const onDOMContentLoaded = callback => {
+const onDOMContentLoaded = (callback: () => void): void => {
   if (document.readyState === 'loading') {
     // add listener on the first call when the document is in loading state
     if (!DOMContentLoadedCallbacks.length) {
@@ -190,13 +189,13 @@ const onDOMContentLoaded = callback => {
   }
 }
 
-const isRTL = () => document.documentElement.dir === 'rtl'
+const isRTL = (): boolean => document.documentElement.dir === 'rtl'
 
-const execute = (possibleCallback, args = [], defaultValue = possibleCallback) => {
-  return typeof possibleCallback === 'function' ? possibleCallback.call(...args) : defaultValue
+const execute = <T = any>(possibleCallback: T | ((...functionArgs: any[]) => T), args: any[] = [], defaultValue: T | ((...functionArgs: any[]) => T) = possibleCallback): T => {
+  return typeof possibleCallback === 'function' ? (possibleCallback as any).call(...args) : (defaultValue as T)
 }
 
-const executeAfterTransition = (callback, transitionElement, waitForTransition = true) => {
+const executeAfterTransition = (callback: () => void, transitionElement: Element, waitForTransition = true): void => {
   if (!waitForTransition) {
     execute(callback)
     return
@@ -207,7 +206,7 @@ const executeAfterTransition = (callback, transitionElement, waitForTransition =
 
   let called = false
 
-  const handler = ({ target }) => {
+  const handler = ({ target }: Event): void => {
     if (target !== transitionElement) {
       return
     }
@@ -228,13 +227,13 @@ const executeAfterTransition = (callback, transitionElement, waitForTransition =
 /**
  * Return the previous/next element of a list.
  *
- * @param {array} list    The list of elements
+ * @param list            The list of elements
  * @param activeElement   The active element
  * @param shouldGetNext   Choose to get next or previous element
  * @param isCycleAllowed
- * @return {Element|elem} The proper element
+ * @return The proper element
  */
-const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed) => {
+const getNextActiveElement = <T>(list: T[], activeElement: T, shouldGetNext: boolean, isCycleAllowed: boolean): T => {
   const listLength = list.length
   let index = list.indexOf(activeElement)
 

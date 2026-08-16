@@ -46,9 +46,7 @@ class Config {
   }
 
   protected _mergeConfigObj(config?: ComponentConfig | null, element?: Element): ComponentConfig {
-    // Non-null assertion: isElement() is still a plain JS boolean check (Phase 3 gives it
-    // a real `object is Element` type predicate), so it doesn't narrow `element` here yet.
-    const jsonConfig = isElement(element) ? Manipulator.getDataAttribute(element!, 'config') : {} // try to parse
+    const jsonConfig = isElement(element) ? Manipulator.getDataAttribute(element, 'config') : {} // try to parse
 
     return {
       ...this.constructor.Default,

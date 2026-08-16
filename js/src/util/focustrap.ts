@@ -1,11 +1,11 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/focustrap.js
+ * Chassis CSS util/focustrap.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
-import EventHandler from '../dom/event-handler.js'
+import EventHandler, { type ChassisEvent } from '../dom/event-handler.js'
 import SelectorEngine from '../dom/selector-engine.js'
 import Config from './config.js'
 
@@ -23,9 +23,14 @@ const TAB_KEY = 'Tab'
 const TAB_NAV_FORWARD = 'forward'
 const TAB_NAV_BACKWARD = 'backward'
 
-const Default = {
+type FocusTrapConfig = {
+  autofocus: boolean
+  trapElement: HTMLElement | null // The element to trap focus inside of
+}
+
+const Default: FocusTrapConfig = {
   autofocus: true,
-  trapElement: null // The element to trap focus inside of
+  trapElement: null
 }
 
 const DefaultType = {
@@ -38,34 +43,38 @@ const DefaultType = {
  */
 
 class FocusTrap extends Config {
-  constructor(config) {
+  protected declare _config: FocusTrapConfig
+  protected declare _isActive: boolean
+  protected declare _lastTabNavDirection: string | null
+
+  constructor(config?: Partial<FocusTrapConfig> | null) {
     super()
-    this._config = this._getConfig(config)
+    this._config = this._getConfig(config) as FocusTrapConfig
     this._isActive = false
     this._lastTabNavDirection = null
   }
 
   // Getters
-  static get Default() {
+  static override get Default(): FocusTrapConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): Record<string, string> {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  activate() {
+  activate(): void {
     if (this._isActive) {
       return
     }
 
     if (this._config.autofocus) {
-      this._config.trapElement.focus()
+      this._config.trapElement!.focus()
     }
 
     EventHandler.off(document, EVENT_KEY) // guard against infinite focus loop
@@ -75,7 +84,7 @@ class FocusTrap extends Config {
     this._isActive = true
   }
 
-  deactivate() {
+  deactivate(): void {
     if (!this._isActive) {
       return
     }
@@ -85,25 +94,25 @@ class FocusTrap extends Config {
   }
 
   // Private
-  _handleFocusin(event) {
+  protected _handleFocusin(event: ChassisEvent): void {
     const { trapElement } = this._config
 
-    if (event.target === document || event.target === trapElement || trapElement.contains(event.target)) {
+    if (event.target === document || event.target === trapElement || trapElement!.contains(event.target as Node)) {
       return
     }
 
-    const elements = SelectorEngine.focusableChildren(trapElement)
+    const elements = SelectorEngine.focusableChildren(trapElement!)
 
     if (elements.length === 0) {
-      trapElement.focus()
+      trapElement!.focus()
     } else if (this._lastTabNavDirection === TAB_NAV_BACKWARD) {
-      elements.at(-1).focus()
+      elements.at(-1)!.focus()
     } else {
       elements[0].focus()
     }
   }
 
-  _handleKeydown(event) {
+  protected _handleKeydown(event: ChassisEvent): void {
     if (event.key !== TAB_KEY) {
       return
     }
@@ -113,3 +122,4 @@ class FocusTrap extends Config {
 }
 
 export default FocusTrap
+export type { FocusTrapConfig }

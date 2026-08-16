@@ -9,7 +9,7 @@ import { execute, reflow, getElement, executeAfterTransition } from './index.js'
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/backdrop.js
+ * Chassis CSS util/backdrop.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

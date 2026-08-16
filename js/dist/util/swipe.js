@@ -9,7 +9,7 @@ import { execute } from './index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/swipe.js
+ * Chassis CSS util/swipe.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

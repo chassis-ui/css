@@ -1,11 +1,11 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/swipe.js
+ * Chassis CSS util/swipe.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
-import EventHandler from '../dom/event-handler.js'
+import EventHandler, { type ChassisEvent } from '../dom/event-handler.js'
 import Config from './config.js'
 import { execute } from './index.js'
 
@@ -25,7 +25,15 @@ const POINTER_TYPE_PEN = 'pen'
 const CLASS_NAME_POINTER_EVENT = 'pointer-event'
 const SWIPE_THRESHOLD = 40
 
-const Default = {
+type SwipeConfig = {
+  endCallback: (() => void) | null
+  leftCallback: (() => void) | null
+  rightCallback: (() => void) | null
+  upCallback: (() => void) | null
+  downCallback: (() => void) | null
+}
+
+const Default: SwipeConfig = {
   endCallback: null,
   leftCallback: null,
   rightCallback: null,
@@ -46,15 +54,21 @@ const DefaultType = {
  */
 
 class Swipe extends Config {
-  constructor(element, config) {
+  protected declare _element: HTMLElement
+  protected declare _config: SwipeConfig
+  protected declare _deltaX: number
+  protected declare _deltaY: number
+  protected declare _supportPointerEvents: boolean
+
+  constructor(element: HTMLElement | null, config?: Partial<SwipeConfig> | null) {
     super()
-    this._element = element
+    this._element = element as HTMLElement
 
     if (!element || !Swipe.isSupported()) {
       return
     }
 
-    this._config = this._getConfig(config)
+    this._config = this._getConfig(config) as SwipeConfig
     this._deltaX = 0
     this._deltaY = 0
     this._supportPointerEvents = Boolean(window.PointerEvent)
@@ -62,25 +76,25 @@ class Swipe extends Config {
   }
 
   // Getters
-  static get Default() {
+  static override get Default(): SwipeConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): Record<string, string> {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  dispose() {
+  dispose(): void {
     EventHandler.off(this._element, EVENT_KEY)
   }
 
   // Private
-  _start(event) {
+  protected _start(event: ChassisEvent): void {
     if (!this._supportPointerEvents) {
       this._deltaX = event.touches[0].clientX
       this._deltaY = event.touches[0].clientY
@@ -94,7 +108,7 @@ class Swipe extends Config {
     }
   }
 
-  _end(event) {
+  protected _end(event: ChassisEvent): void {
     if (this._eventIsPointerPenTouch(event)) {
       this._deltaX = event.clientX - this._deltaX
       this._deltaY = event.clientY - this._deltaY
@@ -104,7 +118,7 @@ class Swipe extends Config {
     execute(this._config.endCallback)
   }
 
-  _move(event) {
+  protected _move(event: ChassisEvent): void {
     if (event.touches && event.touches.length > 1) {
       this._deltaX = 0
       this._deltaY = 0
@@ -115,7 +129,7 @@ class Swipe extends Config {
     this._deltaY = event.touches[0].clientY - this._deltaY
   }
 
-  _handleSwipe() {
+  protected _handleSwipe(): void {
     const absDeltaX = Math.abs(this._deltaX)
     const absDeltaY = Math.abs(this._deltaY)
 
@@ -147,7 +161,7 @@ class Swipe extends Config {
     this._deltaY = 0
   }
 
-  _initEvents() {
+  protected _initEvents(): void {
     if (this._supportPointerEvents) {
       EventHandler.on(this._element, EVENT_POINTERDOWN, event => this._start(event))
       EventHandler.on(this._element, EVENT_POINTERUP, event => this._end(event))
@@ -160,14 +174,15 @@ class Swipe extends Config {
     }
   }
 
-  _eventIsPointerPenTouch(event) {
+  protected _eventIsPointerPenTouch(event: ChassisEvent): boolean {
     return this._supportPointerEvents && (event.pointerType === POINTER_TYPE_PEN || event.pointerType === POINTER_TYPE_TOUCH)
   }
 
   // Static
-  static isSupported() {
+  static isSupported(): boolean {
     return 'ontouchstart' in document.documentElement || navigator.maxTouchPoints > 0
   }
 }
 
 export default Swipe
+export type { SwipeConfig }

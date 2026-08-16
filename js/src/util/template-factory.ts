@@ -1,13 +1,13 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/template-factory.js
+ * Chassis CSS util/template-factory.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
 import SelectorEngine from '../dom/selector-engine.js'
-import Config from './config.js'
-import { DefaultAllowlist, sanitizeHtml } from './sanitizer.js'
+import Config, { type ComponentConfig } from './config.js'
+import { DefaultAllowlist, sanitizeHtml, type SanitizerAllowList } from './sanitizer.js'
 import { execute, getElement, isElement } from './index.js'
 
 /**
@@ -16,7 +16,19 @@ import { execute, getElement, isElement } from './index.js'
 
 const NAME = 'TemplateFactory'
 
-const Default = {
+type TemplateContentEntry = string | Element | ((...args: any[]) => string | Element | null) | null
+
+type TemplateFactoryConfig = {
+  allowList: SanitizerAllowList
+  content: Record<string, TemplateContentEntry>
+  extraClass: string | ((...args: any[]) => string)
+  html: boolean
+  sanitize: boolean
+  sanitizeFn: ((unsafeHtml: string) => string) | null
+  template: string
+}
+
+const Default: TemplateFactoryConfig = {
   allowList: DefaultAllowlist,
   content: {}, // { selector : text ,  selector2 : text2 , }
   extraClass: '',
@@ -46,42 +58,44 @@ const DefaultContentType = {
  */
 
 class TemplateFactory extends Config {
-  constructor(config) {
+  protected declare _config: TemplateFactoryConfig
+
+  constructor(config?: Partial<TemplateFactoryConfig> | null) {
     super()
-    this._config = this._getConfig(config)
+    this._config = this._getConfig(config) as TemplateFactoryConfig
   }
 
   // Getters
-  static get Default() {
+  static override get Default(): TemplateFactoryConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): ComponentConfig {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  getContent() {
+  getContent(): Array<string | Element> {
     return Object.values(this._config.content)
       .map(config => this._resolvePossibleFunction(config))
-      .filter(Boolean)
+      .filter(Boolean) as Array<string | Element>
   }
 
-  hasContent() {
+  hasContent(): boolean {
     return this.getContent().length > 0
   }
 
-  changeContent(content) {
+  changeContent(content: Record<string, TemplateContentEntry>): this {
     this._checkContent(content)
     this._config.content = { ...this._config.content, ...content }
     return this
   }
 
-  toHtml() {
+  toHtml(): HTMLElement {
     const templateWrapper = document.createElement('div')
     templateWrapper.innerHTML = this._maybeSanitize(this._config.template)
 
@@ -89,7 +103,7 @@ class TemplateFactory extends Config {
       this._setContent(templateWrapper, text, selector)
     }
 
-    const template = templateWrapper.children[0]
+    const template = templateWrapper.children[0] as HTMLElement
     const extraClass = this._resolvePossibleFunction(this._config.extraClass)
 
     if (extraClass) {
@@ -100,18 +114,18 @@ class TemplateFactory extends Config {
   }
 
   // Private
-  _typeCheckConfig(config) {
+  protected override _typeCheckConfig(config: ComponentConfig): void {
     super._typeCheckConfig(config)
     this._checkContent(config.content)
   }
 
-  _checkContent(arg) {
+  protected _checkContent(arg: Record<string, TemplateContentEntry>): void {
     for (const [selector, content] of Object.entries(arg)) {
       super._typeCheckConfig({ selector, entry: content }, DefaultContentType)
     }
   }
 
-  _setContent(template, content, selector) {
+  protected _setContent(template: Element, content: TemplateContentEntry, selector: string): void {
     const templateElement = SelectorEngine.findOne(selector, template)
 
     if (!templateElement) {
@@ -126,7 +140,7 @@ class TemplateFactory extends Config {
     }
 
     if (isElement(content)) {
-      this._putElementInTemplate(getElement(content), templateElement)
+      this._putElementInTemplate(getElement(content)!, templateElement)
       return
     }
 
@@ -138,15 +152,15 @@ class TemplateFactory extends Config {
     templateElement.textContent = content
   }
 
-  _maybeSanitize(arg) {
+  protected _maybeSanitize(arg: string): string {
     return this._config.sanitize ? sanitizeHtml(arg, this._config.allowList, this._config.sanitizeFn) : arg
   }
 
-  _resolvePossibleFunction(arg) {
+  protected _resolvePossibleFunction<T>(arg: T | ((...args: any[]) => T)): T {
     return execute(arg, [undefined, this])
   }
 
-  _putElementInTemplate(element, templateElement) {
+  protected _putElementInTemplate(element: Element, templateElement: Element): void {
     if (this._config.html) {
       templateElement.innerHTML = ''
       templateElement.append(element)
@@ -158,3 +172,4 @@ class TemplateFactory extends Config {
 }
 
 export default TemplateFactory
+export type { TemplateFactoryConfig, TemplateContentEntry }

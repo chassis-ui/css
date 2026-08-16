@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/backdrop.js
+ * Chassis CSS util/backdrop.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -20,7 +20,15 @@ const CLASS_NAME_FADE = 'fade'
 const CLASS_NAME_SHOW = 'show'
 const EVENT_MOUSEDOWN = `mousedown.cx.${NAME}`
 
-const Default = {
+type BackdropConfig = {
+  className: string
+  clickCallback: (() => void) | null
+  isAnimated: boolean
+  isVisible: boolean
+  rootElement: HTMLElement | string | null
+}
+
+const Default: BackdropConfig = {
   className: 'modal-backdrop',
   clickCallback: null,
   isAnimated: false,
@@ -41,28 +49,32 @@ const DefaultType = {
  */
 
 class Backdrop extends Config {
-  constructor(config) {
+  protected declare _config: BackdropConfig
+  protected declare _isAppended: boolean
+  protected declare _element: HTMLElement | null
+
+  constructor(config?: Partial<BackdropConfig> | null) {
     super()
-    this._config = this._getConfig(config)
+    this._config = this._getConfig(config) as BackdropConfig
     this._isAppended = false
     this._element = null
   }
 
   // Getters
-  static get Default() {
+  static override get Default(): BackdropConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): Record<string, string> {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  show(callback) {
+  show(callback?: () => void): void {
     if (!this._config.isVisible) {
       execute(callback)
       return
@@ -82,7 +94,7 @@ class Backdrop extends Config {
     })
   }
 
-  hide(callback) {
+  hide(callback?: () => void): void {
     if (!this._config.isVisible) {
       execute(callback)
       return
@@ -96,19 +108,19 @@ class Backdrop extends Config {
     })
   }
 
-  dispose() {
+  dispose(): void {
     if (!this._isAppended) {
       return
     }
 
     EventHandler.off(this._element, EVENT_MOUSEDOWN)
 
-    this._element.remove()
+    this._element!.remove()
     this._isAppended = false
   }
 
   // Private
-  _getElement() {
+  protected _getElement(): HTMLElement {
     if (!this._element) {
       const backdrop = document.createElement('div')
       backdrop.className = this._config.className
@@ -122,19 +134,19 @@ class Backdrop extends Config {
     return this._element
   }
 
-  _configAfterMerge(config) {
+  protected _configAfterMerge(config: BackdropConfig): BackdropConfig {
     // use getElement() with the default "body" to get a fresh Element on each instantiation
     config.rootElement = getElement(config.rootElement)
     return config
   }
 
-  _append() {
+  protected _append(): void {
     if (this._isAppended) {
       return
     }
 
     const element = this._getElement()
-    this._config.rootElement.append(element)
+    ;(this._config.rootElement as HTMLElement).append(element)
 
     EventHandler.on(element, EVENT_MOUSEDOWN, () => {
       execute(this._config.clickCallback)
@@ -143,9 +155,10 @@ class Backdrop extends Config {
     this._isAppended = true
   }
 
-  _emulateAnimation(callback) {
+  protected _emulateAnimation(callback: () => void): void {
     executeAfterTransition(callback, this._getElement(), this._config.isAnimated)
   }
 }
 
 export default Backdrop
+export type { BackdropConfig }

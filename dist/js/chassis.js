@@ -315,7 +315,7 @@ const Manipulator = {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/index.js
+ * Chassis CSS util/index.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -326,10 +326,10 @@ const TRANSITION_END = 'transitionend';
 
 /**
  * Properly escape IDs selectors to handle weird IDs
- * @param {string} selector
- * @returns {string}
  */
 const parseSelector = selector => {
+  // The `window.CSS` checks guard against ancient browsers, so check them as
+  // untyped values instead of letting tsc call them always-defined
   if (selector && window.CSS && window.CSS.escape) {
     // document.querySelector needs escaping to handle IDs (html5+) containing for instance /
     selector = selector.replace(/#([^\s"#']+)/g, (match, id) => `#${CSS.escape(id)}`);
@@ -424,8 +424,9 @@ const isDisabled = element => {
   if (element.classList.contains('disabled')) {
     return true;
   }
-  if (typeof element.disabled !== 'undefined') {
-    return element.disabled;
+  const disableableElement = element;
+  if (typeof disableableElement.disabled !== 'undefined') {
+    return disableableElement.disabled;
   }
   return element.hasAttribute('disabled') && element.getAttribute('disabled') !== 'false';
 };
@@ -454,13 +455,10 @@ const noop = () => {};
 /**
  * Trick to restart an element's animation
  *
- * @param {HTMLElement} element
- * @return void
- *
  * @see https://www.harrytheo.com/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
  */
 const reflow = element => {
-  element.offsetHeight; // eslint-disable-line no-unused-expressions
+  element.offsetHeight; // eslint-disable-line @typescript-eslint/no-unused-expressions
 };
 const isRTL = () => document.documentElement.dir === 'rtl';
 const execute = (possibleCallback, args = [], defaultValue = possibleCallback) => {
@@ -495,11 +493,11 @@ const executeAfterTransition = (callback, transitionElement, waitForTransition =
 /**
  * Return the previous/next element of a list.
  *
- * @param {array} list    The list of elements
+ * @param list            The list of elements
  * @param activeElement   The active element
  * @param shouldGetNext   Choose to get next or previous element
  * @param isCycleAllowed
- * @return {Element|elem} The proper element
+ * @return The proper element
  */
 const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed) => {
   const listLength = list.length;
@@ -554,8 +552,6 @@ class Config {
     return config;
   }
   _mergeConfigObj(config, element) {
-    // Non-null assertion: isElement() is still a plain JS boolean check (Phase 3 gives it
-    // a real `object is Element` type predicate), so it doesn't narrow `element` here yet.
     const jsonConfig = isElement(element) ? Manipulator.getDataAttribute(element, 'config') : {}; // try to parse
 
     return {
@@ -1831,7 +1827,7 @@ EventHandler.on(window, EVENT_LOAD_DATA_API$3, () => {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/component-functions.js
+ * Chassis CSS util/component-functions.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -5183,7 +5179,7 @@ enableDismissTrigger(Dialog);
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/swipe.js
+ * Chassis CSS util/swipe.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -6073,7 +6069,7 @@ EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$5}${DATA_API_KEY$2}`, () 
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/sanitizer.js
+ * Chassis CSS util/sanitizer.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -6126,12 +6122,20 @@ const uriAttributes = new Set(['background', 'cite', 'href', 'itemtype', 'longde
  *
  * Shout-out to Angular https://github.com/angular/angular/blob/15.2.8/packages/core/src/sanitization/url_sanitizer.ts#L38
  */
-const SAFE_URL_PATTERN = /^(?!javascript:)(?:[\d+.a-z-]+:|[^#&/:?]*(?:[#/?]|$))/i;
+const SAFE_URL_PATTERN = /^(?!(?:javascript|data|vbscript):)(?:[a-z0-9+.-]+:|[^&:/?#]*(?:[/?#]|$))/i;
+
+/**
+ * A pattern that matches safe data URLs. Only matches image, video and audio
+ * types — notably NOT `data:text/html`, which is an XSS vector.
+ *
+ * Shout-out to Angular https://github.com/angular/angular/blob/15.2.8/packages/core/src/sanitization/url_sanitizer.ts#L49
+ */
+const DATA_URL_PATTERN = /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:mp3|oga|ogg|opus));base64,[\d+/a-z=]+$/i;
 const allowedAttribute = (attribute, allowedAttributeList) => {
   const attributeName = attribute.nodeName.toLowerCase();
   if (allowedAttributeList.includes(attributeName)) {
     if (uriAttributes.has(attributeName)) {
-      return Boolean(SAFE_URL_PATTERN.test(attribute.nodeValue));
+      return Boolean(SAFE_URL_PATTERN.test(attribute.nodeValue) || DATA_URL_PATTERN.test(attribute.nodeValue));
     }
     return true;
   }
@@ -6168,7 +6172,7 @@ function sanitizeHtml(unsafeHtml, allowList, sanitizeFunction) {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/template-factory.js
+ * Chassis CSS util/template-factory.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

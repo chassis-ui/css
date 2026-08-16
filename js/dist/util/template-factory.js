@@ -10,7 +10,7 @@ import { isElement, getElement, execute } from './index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/template-factory.js
+ * Chassis CSS util/template-factory.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
