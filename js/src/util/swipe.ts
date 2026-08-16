@@ -53,7 +53,7 @@ const DefaultType = {
  * Class definition
  */
 
-class Swipe extends Config {
+class Swipe extends Config<SwipeConfig> {
   protected declare _element: HTMLElement
   protected declare _config: SwipeConfig
   protected declare _deltaX: number
@@ -68,7 +68,7 @@ class Swipe extends Config {
       return
     }
 
-    this._config = this._getConfig(config) as SwipeConfig
+    this._config = this._getConfig(config)
     this._deltaX = 0
     this._deltaY = 0
     this._supportPointerEvents = Boolean(window.PointerEvent)

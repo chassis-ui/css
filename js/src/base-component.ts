@@ -24,7 +24,7 @@ const disposedInstances = new WeakSet<BaseComponent>()
  * Class definition
  */
 
-class BaseComponent extends Config {
+class BaseComponent extends Config<ComponentConfig> {
   declare ['constructor']: typeof BaseComponent
   protected declare _element: HTMLElement
   protected declare _config: ComponentConfig

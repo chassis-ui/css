@@ -57,12 +57,12 @@ const DefaultContentType = {
  * Class definition
  */
 
-class TemplateFactory extends Config {
+class TemplateFactory extends Config<TemplateFactoryConfig> {
   protected declare _config: TemplateFactoryConfig
 
   constructor(config?: Partial<TemplateFactoryConfig> | null) {
     super()
-    this._config = this._getConfig(config) as TemplateFactoryConfig
+    this._config = this._getConfig(config)
   }
 
   // Getters

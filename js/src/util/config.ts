@@ -18,8 +18,8 @@ type ComponentConfig = Record<string, any>
  * Class definition
  */
 
-class Config {
-  declare ['constructor']: typeof Config
+class Config<TConfig extends ComponentConfig = ComponentConfig> {
+  declare ['constructor']: typeof Config<any>
 
   // Getters
   static get Default(): ComponentConfig {
@@ -34,18 +34,18 @@ class Config {
     throw new Error('You have to implement the static method "NAME", for each component!')
   }
 
-  protected _getConfig(config?: ComponentConfig | null): ComponentConfig {
-    config = this._mergeConfigObj(config)
-    config = this._configAfterMerge(config)
-    this._typeCheckConfig(config)
+  protected _getConfig(config?: Partial<TConfig> | null): TConfig {
+    let mergedConfig = this._mergeConfigObj(config)
+    mergedConfig = this._configAfterMerge(mergedConfig)
+    this._typeCheckConfig(mergedConfig)
+    return mergedConfig
+  }
+
+  protected _configAfterMerge(config: TConfig): TConfig {
     return config
   }
 
-  protected _configAfterMerge(config: ComponentConfig): ComponentConfig {
-    return config
-  }
-
-  protected _mergeConfigObj(config?: ComponentConfig | null, element?: Element): ComponentConfig {
+  protected _mergeConfigObj(config?: Partial<TConfig> | null, element?: Element): TConfig {
     const jsonConfig = isElement(element) ? Manipulator.getDataAttribute(element, 'config') : {} // try to parse
     const dataAttributes = isElement(element) ? Manipulator.getDataAttributes(element as HTMLElement) : {}
 
@@ -62,7 +62,7 @@ class Config {
       ...(typeof jsonConfig === 'object' ? jsonConfig : {}),
       ...dataAttributes,
       ...(typeof config === 'object' ? config : {})
-    }
+    } as TConfig
   }
 
   // Override to strip config keys that should never come from a data-*
