@@ -26,7 +26,7 @@ interface BreakpointListener {
   handler: (event: MediaQueryListEvent) => void
 }
 
-class FloatingBase extends BaseComponent {
+abstract class FloatingBase extends BaseComponent {
   protected declare _config: ComponentConfig
   protected declare _floatingCleanup: (() => void) | null
   protected declare _mediaQueryListeners: BreakpointListener[]
@@ -172,14 +172,10 @@ class FloatingBase extends BaseComponent {
   }
 
   // Implemented by subclasses (Menu, Tooltip) — whether the floating element is currently shown.
-  protected _isShown(): boolean {
-    throw new Error('You have to implement the private method "_isShown", for each component!')
-  }
+  protected abstract _isShown(): boolean
 
   // Implemented by subclasses — (re)computes and applies the floating element's position.
-  protected _updateFloatingPosition(): any {
-    throw new Error('You have to implement the private method "_updateFloatingPosition", for each component!')
-  }
+  protected abstract _updateFloatingPosition(): any
 
   protected _getOffset(): number[] | ((state: MiddlewareState) => any) {
     const { offset: offsetConfig } = this._config
