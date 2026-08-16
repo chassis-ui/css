@@ -22,6 +22,16 @@ import Manipulator from './dom/manipulator.js'
 import SelectorEngine from './dom/selector-engine.js'
 import type { ComponentConfig } from './util/config.js'
 import {
+  ARROW_DOWN_KEY,
+  ARROW_LEFT_KEY,
+  ARROW_RIGHT_KEY,
+  ARROW_UP_KEY,
+  END_KEY,
+  ENTER_KEY,
+  ESCAPE_KEY,
+  HOME_KEY,
+  SPACE_KEY,
+  TAB_KEY,
   getElement,
   getNextActiveElement,
   isDisabled,
@@ -40,16 +50,6 @@ const DATA_KEY = 'cx.menu'
 const EVENT_KEY = `.${DATA_KEY}`
 const DATA_API_KEY = '.data-api'
 
-const ESCAPE_KEY = 'Escape'
-const TAB_KEY = 'Tab'
-const ARROW_UP_KEY = 'ArrowUp'
-const ARROW_DOWN_KEY = 'ArrowDown'
-const ARROW_LEFT_KEY = 'ArrowLeft'
-const ARROW_RIGHT_KEY = 'ArrowRight'
-const HOME_KEY = 'Home'
-const END_KEY = 'End'
-const ENTER_KEY = 'Enter'
-const SPACE_KEY = ' '
 const RIGHT_MOUSE_BUTTON = 2
 
 const SUBMENU_CLOSE_DELAY = 100

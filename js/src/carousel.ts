@@ -10,7 +10,7 @@ import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
 import Manipulator from './dom/manipulator.js'
 import SelectorEngine from './dom/selector-engine.js'
 import type { ComponentConfig } from './util/config.js'
-import { isRTL, isVisible } from './util/index.js'
+import { ARROW_LEFT_KEY, ARROW_RIGHT_KEY, isRTL, isVisible } from './util/index.js'
 
 /**
  * Constants
@@ -20,9 +20,6 @@ const NAME = 'carousel'
 const DATA_KEY = 'cx.carousel'
 const EVENT_KEY = `.${DATA_KEY}`
 const DATA_API_KEY = '.data-api'
-
-const ARROW_LEFT_KEY = 'ArrowLeft'
-const ARROW_RIGHT_KEY = 'ArrowRight'
 
 const DIRECTION_LEFT = 'left'
 const DIRECTION_RIGHT = 'right'

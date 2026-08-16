@@ -8,7 +8,7 @@
 import BaseComponent from './base-component.js'
 import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
-import { getClipboardText } from './util/index.js'
+import { ARROW_LEFT_KEY, ARROW_RIGHT_KEY, BACKSPACE_KEY, DELETE_KEY, getClipboardText } from './util/index.js'
 
 /**
  * Constants
@@ -172,7 +172,7 @@ class OtpInput extends BaseComponent {
     const { key } = event
 
     switch (key) {
-      case 'Backspace': {
+      case BACKSPACE_KEY: {
         if (!this._inputs[index].value && index > 0) {
           // Move to previous input and clear it
           event.preventDefault()
@@ -183,7 +183,7 @@ class OtpInput extends BaseComponent {
         break
       }
 
-      case 'Delete': {
+      case DELETE_KEY: {
         // Clear current and shift remaining values left
         event.preventDefault()
         for (let i = index; i < this._inputs.length - 1; i++) {
@@ -194,7 +194,7 @@ class OtpInput extends BaseComponent {
         break
       }
 
-      case 'ArrowLeft': {
+      case ARROW_LEFT_KEY: {
         if (index > 0) {
           event.preventDefault()
           this._inputs[index - 1].focus()
@@ -203,7 +203,7 @@ class OtpInput extends BaseComponent {
         break
       }
 
-      case 'ArrowRight': {
+      case ARROW_RIGHT_KEY: {
         if (index < this._inputs.length - 1) {
           event.preventDefault()
           this._inputs[index + 1].focus()

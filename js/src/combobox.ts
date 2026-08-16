@@ -9,7 +9,19 @@ import BaseComponent from './base-component.js'
 import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
 import Menu from './menu.js'
-import { getNextActiveElement, isDisabled, isVisible } from './util/index.js'
+import {
+  ARROW_DOWN_KEY,
+  ARROW_UP_KEY,
+  END_KEY,
+  ENTER_KEY,
+  ESCAPE_KEY,
+  HOME_KEY,
+  SPACE_KEY,
+  TAB_KEY,
+  getNextActiveElement,
+  isDisabled,
+  isVisible
+} from './util/index.js'
 
 /**
  * Constants
@@ -19,15 +31,6 @@ const NAME = 'combobox'
 const DATA_KEY = 'cx.combobox'
 const EVENT_KEY = `.${DATA_KEY}`
 const DATA_API_KEY = '.data-api'
-
-const ESCAPE_KEY = 'Escape'
-const TAB_KEY = 'Tab'
-const ARROW_UP_KEY = 'ArrowUp'
-const ARROW_DOWN_KEY = 'ArrowDown'
-const HOME_KEY = 'Home'
-const END_KEY = 'End'
-const ENTER_KEY = 'Enter'
-const SPACE_KEY = ' '
 
 const EVENT_CHANGE = `change${EVENT_KEY}`
 const EVENT_SHOW = `show${EVENT_KEY}`

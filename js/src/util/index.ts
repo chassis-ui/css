@@ -9,6 +9,19 @@ const MAX_UID = 1_000_000
 const MILLISECONDS_MULTIPLIER = 1000
 const TRANSITION_END = 'transitionend'
 
+const ESCAPE_KEY = 'Escape'
+const TAB_KEY = 'Tab'
+const ENTER_KEY = 'Enter'
+const SPACE_KEY = ' '
+const BACKSPACE_KEY = 'Backspace'
+const DELETE_KEY = 'Delete'
+const HOME_KEY = 'Home'
+const END_KEY = 'End'
+const ARROW_UP_KEY = 'ArrowUp'
+const ARROW_DOWN_KEY = 'ArrowDown'
+const ARROW_LEFT_KEY = 'ArrowLeft'
+const ARROW_RIGHT_KEY = 'ArrowRight'
+
 /**
  * Properly escape IDs selectors to handle weird IDs
  */
@@ -275,6 +288,18 @@ const getNextActiveElement = <T>(list: T[], activeElement: T, shouldGetNext: boo
 }
 
 export {
+  ARROW_DOWN_KEY,
+  ARROW_LEFT_KEY,
+  ARROW_RIGHT_KEY,
+  ARROW_UP_KEY,
+  BACKSPACE_KEY,
+  DELETE_KEY,
+  END_KEY,
+  ENTER_KEY,
+  ESCAPE_KEY,
+  HOME_KEY,
+  SPACE_KEY,
+  TAB_KEY,
   execute,
   executeAfterTransition,
   findShadowRoot,
