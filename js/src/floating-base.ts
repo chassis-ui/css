@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS floating-base.js
+ * Chassis CSS floating-base.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -9,22 +9,39 @@ import {
   offset,
   flip,
   shift,
-  arrow
+  arrow,
+  type Middleware,
+  type MiddlewareState,
+  type Placement
 } from '@floating-ui/dom'
 import BaseComponent from './base-component.js'
 import { execute } from './util/index.js'
+import type { ComponentConfig } from './util/config.js'
+
+type Breakpoints = Record<string, number>
+type ResponsivePlacements = Record<string, string>
+
+interface BreakpointListener {
+  mql: MediaQueryList
+  handler: (event: MediaQueryListEvent) => void
+}
 
 class FloatingBase extends BaseComponent {
+  protected declare _config: ComponentConfig
+  protected declare _floatingCleanup: (() => void) | null
+  protected declare _mediaQueryListeners: BreakpointListener[]
+  protected declare _responsivePlacements: ResponsivePlacements | null
+
   // -------------------------------------------------------------------------
   // Static utilities
   // -------------------------------------------------------------------------
 
-  static get BREAKPOINTS() {
+  static get BREAKPOINTS(): Breakpoints {
     const rootStyle = getComputedStyle(document.documentElement)
     // Breakpoint custom properties are authored in rem (e.g. 36rem), so resolve
     // them against the root font size to get the px values matchMedia expects.
     const rootFontSize = Number.parseFloat(rootStyle.fontSize) || 16
-    const toPx = (property, fallback) => {
+    const toPx = (property: string, fallback: number): number => {
       const raw = rootStyle.getPropertyValue(property).trim()
       const value = Number.parseFloat(raw)
 
@@ -44,13 +61,13 @@ class FloatingBase extends BaseComponent {
     }
   }
 
-  static parseResponsivePlacement(placementString, defaultPlacement = 'bottom') {
+  static parseResponsivePlacement(placementString?: string | null, defaultPlacement = 'bottom'): ResponsivePlacements | null {
     if (!placementString || !placementString.includes(':')) {
       return null
     }
 
     const parts = placementString.split(/\s+/)
-    const placements = { xsmall: defaultPlacement }
+    const placements: ResponsivePlacements = { xsmall: defaultPlacement }
     const breakpoints = FloatingBase.BREAKPOINTS
 
     for (const part of parts) {
@@ -67,7 +84,7 @@ class FloatingBase extends BaseComponent {
     return placements
   }
 
-  static getResponsivePlacement(responsivePlacements, defaultPlacement = 'bottom') {
+  static getResponsivePlacement(responsivePlacements: ResponsivePlacements | null, defaultPlacement = 'bottom'): string {
     if (!responsivePlacements) {
       return defaultPlacement
     }
@@ -86,8 +103,8 @@ class FloatingBase extends BaseComponent {
     return activePlacement
   }
 
-  static createBreakpointListeners(callback) {
-    const listeners = []
+  static createBreakpointListeners(callback: (event: MediaQueryListEvent) => void): BreakpointListener[] {
+    const listeners: BreakpointListener[] = []
     const breakpoints = FloatingBase.BREAKPOINTS
 
     for (const breakpoint of Object.keys(breakpoints)) {
@@ -100,7 +117,7 @@ class FloatingBase extends BaseComponent {
     return listeners
   }
 
-  static disposeBreakpointListeners(listeners) {
+  static disposeBreakpointListeners(listeners: BreakpointListener[]): void {
     for (const { mql, handler } of listeners) {
       mql.removeEventListener('change', handler)
     }
@@ -110,7 +127,7 @@ class FloatingBase extends BaseComponent {
   // Instance methods
   // -------------------------------------------------------------------------
 
-  constructor(element, config) {
+  constructor(element?: string | Element | null, config?: ComponentConfig | null) {
     super(element, config)
 
     this._floatingCleanup = null
@@ -118,7 +135,7 @@ class FloatingBase extends BaseComponent {
     this._responsivePlacements = null
   }
 
-  _parseResponsivePlacements() {
+  protected _parseResponsivePlacements(): void {
     if (typeof this._config.placement !== 'string') {
       this._responsivePlacements = null
       return
@@ -132,15 +149,15 @@ class FloatingBase extends BaseComponent {
   }
 
   // Override in subclass to set the xs/base fallback placement
-  _getDefaultPlacement() {
+  protected _getDefaultPlacement(): string {
     return 'bottom'
   }
 
-  _getResponsivePlacement() {
+  protected _getResponsivePlacement(): string {
     return FloatingBase.getResponsivePlacement(this._responsivePlacements, this._getDefaultPlacement())
   }
 
-  _setupMediaQueryListeners() {
+  protected _setupMediaQueryListeners(): void {
     this._disposeMediaQueryListeners()
     this._mediaQueryListeners = FloatingBase.createBreakpointListeners(() => {
       if (this._isShown()) {
@@ -149,20 +166,30 @@ class FloatingBase extends BaseComponent {
     })
   }
 
-  _disposeMediaQueryListeners() {
+  protected _disposeMediaQueryListeners(): void {
     FloatingBase.disposeBreakpointListeners(this._mediaQueryListeners)
     this._mediaQueryListeners = []
   }
 
-  _getOffset() {
+  // Implemented by subclasses (Menu, Tooltip) — whether the floating element is currently shown.
+  protected _isShown(): boolean {
+    throw new Error('You have to implement the private method "_isShown", for each component!')
+  }
+
+  // Implemented by subclasses — (re)computes and applies the floating element's position.
+  protected _updateFloatingPosition(): any {
+    throw new Error('You have to implement the private method "_updateFloatingPosition", for each component!')
+  }
+
+  protected _getOffset(): number[] | ((state: MiddlewareState) => any) {
     const { offset: offsetConfig } = this._config
 
     if (typeof offsetConfig === 'string') {
-      return offsetConfig.split(',').map(value => Number.parseInt(value, 10))
+      return offsetConfig.split(',').map((value: string) => Number.parseInt(value, 10))
     }
 
     if (typeof offsetConfig === 'function') {
-      return ({ placement, rects }) => {
+      return ({ placement, rects }: MiddlewareState) => {
         const result = offsetConfig({ placement, reference: rects.reference, floating: rects.floating }, this._element)
         return result
       }
@@ -172,14 +199,14 @@ class FloatingBase extends BaseComponent {
   }
 
   // Override in subclass to provide component-specific fallback placements
-  _getFallbackPlacements() {
+  protected _getFallbackPlacements(): Placement[] {
     return this._config.fallbackPlacements || []
   }
 
-  _getFloatingMiddleware(arrowElement = null) {
+  protected _getFloatingMiddleware(arrowElement: Element | null = null): Middleware[] {
     const offsetValue = this._getOffset()
 
-    const middleware = [
+    const middleware: Middleware[] = [
       offset(
         typeof offsetValue === 'function' ?
           offsetValue :
@@ -200,7 +227,7 @@ class FloatingBase extends BaseComponent {
     return middleware
   }
 
-  _getFloatingConfig(placement, middleware) {
+  protected _getFloatingConfig(placement: Placement | string, middleware: Middleware[]): Record<string, any> {
     const defaultConfig = {
       placement,
       middleware
@@ -212,7 +239,7 @@ class FloatingBase extends BaseComponent {
     }
   }
 
-  _disposeFloating() {
+  protected _disposeFloating(): void {
     if (this._floatingCleanup) {
       this._floatingCleanup()
       this._floatingCleanup = null

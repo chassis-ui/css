@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS menu.js
+ * Chassis CSS menu.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -10,12 +10,17 @@ import {
   flip,
   shift,
   offset,
-  autoUpdate
+  autoUpdate,
+  type Middleware,
+  type Placement,
+  type ReferenceElement,
+  type Strategy
 } from '@floating-ui/dom'
 import FloatingBase from './floating-base.js'
-import EventHandler from './dom/event-handler.js'
+import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
 import Manipulator from './dom/manipulator.js'
 import SelectorEngine from './dom/selector-engine.js'
+import type { ComponentConfig } from './util/config.js'
 import {
   execute,
   getElement,
@@ -84,7 +89,7 @@ const SELECTOR_KB_NAV_ITEMS = [
 const DEFAULT_PLACEMENT = 'bottom-start'
 const SUBMENU_PLACEMENT = 'end-start'
 
-const resolveLogicalPlacement = placement => {
+const resolveLogicalPlacement = (placement: string): string => {
   if (isRTL()) {
     return placement.replace(/^start(?=-|$)/, 'right').replace(/^end(?=-|$)/, 'left')
   }
@@ -92,10 +97,27 @@ const resolveLogicalPlacement = placement => {
   return placement.replace(/^start(?=-|$)/, 'left').replace(/^end(?=-|$)/, 'right')
 }
 
-const triangleSign = (p1, p2, p3) =>
+type Point = { x: number, y: number }
+
+const triangleSign = (p1: Point, p2: Point, p3: Point): number =>
   ((p1.x - p3.x) * (p2.y - p3.y)) - ((p2.x - p3.x) * (p1.y - p3.y))
 
-const Default = {
+type MenuConfig = {
+  autoClose: boolean | 'inside' | 'outside'
+  boundary: string | Element
+  container: string | Element | boolean
+  display: string
+  offset: number[] | string | ((data: Record<string, any>, element: HTMLElement) => number[])
+  floatingConfig: Record<string, any> | ((defaultConfig: Record<string, any>) => Record<string, any>) | null
+  menu: HTMLElement | null
+  placement: string
+  reference: string | Element | Record<string, any>
+  strategy: string
+  submenuTrigger: string
+  submenuDelay: number
+}
+
+const Default: MenuConfig = {
   autoClose: true,
   boundary: 'clippingParents',
   container: false,
@@ -130,22 +152,31 @@ const DefaultType = {
  */
 
 class Menu extends FloatingBase {
-  static _openInstances = new Set()
+  static _openInstances = new Set<Menu>()
 
-  constructor(element, config) {
+  protected declare _config: MenuConfig
+  protected declare _parent: HTMLElement
+  protected declare _isSubmenu: boolean
+  protected declare _openSubmenus: Map<HTMLElement, () => void>
+  protected declare _submenuCloseTimeouts: Map<HTMLElement, number>
+  protected declare _hoverIntentSamples: Array<{ x: number, y: number, t: number }>
+  protected declare _menu: HTMLElement
+  protected declare _menuOriginalParent: ParentNode | null
+
+  constructor(element?: string | Element | null, config?: Partial<MenuConfig> | null) {
     if (typeof computePosition === 'undefined') {
       throw new TypeError('Chassis CSS\'s menus require Floating UI (https://floating-ui.com)')
     }
 
     super(element, config)
 
-    this._parent = this._element.parentNode
+    this._parent = this._element.parentNode as HTMLElement
     this._isSubmenu = this._parent.classList?.contains('submenu')
     this._openSubmenus = new Map()
     this._submenuCloseTimeouts = new Map()
     this._hoverIntentSamples = []
 
-    this._menu = this._config.menu || this._findMenu()
+    this._menu = (this._config.menu || this._findMenu()) as HTMLElement
 
     this._menuOriginalParent = this._menu?.parentNode
 
@@ -154,24 +185,24 @@ class Menu extends FloatingBase {
   }
 
   // Getters
-  static get Default() {
+  static override get Default(): MenuConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): Record<string, string> {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  toggle() {
+  toggle(): void {
     return this._isShown() ? this.hide() : this.show()
   }
 
-  show() {
+  show(): void {
     if (isDisabled(this._element) || this._isShown()) {
       return
     }
@@ -209,19 +240,19 @@ class Menu extends FloatingBase {
     EventHandler.trigger(this._element, EVENT_SHOWN, relatedTarget)
   }
 
-  hide() {
+  hide(): void {
     if (isDisabled(this._element) || !this._isShown()) {
       return
     }
 
-    const relatedTarget = {
+    const relatedTarget: Record<string, unknown> = {
       relatedTarget: this._element
     }
 
     this._completeHide(relatedTarget)
   }
 
-  dispose() {
+  override dispose(): void {
     this._closeAllSubmenus()
     this._clearAllSubmenuTimeouts()
     this._disposeFloating()
@@ -252,20 +283,20 @@ class Menu extends FloatingBase {
     super.dispose()
   }
 
-  update() {
+  update(): void {
     if (this._floatingCleanup) {
       this._updateFloatingPosition()
     }
   }
 
   // Private
-  _findMenu() {
+  protected _findMenu(): Element | null {
     return SelectorEngine.next(this._element, SELECTOR_MENU)[0] ||
       SelectorEngine.prev(this._element, SELECTOR_MENU)[0] ||
       SelectorEngine.findOne(SELECTOR_MENU, this._parent)
   }
 
-  _completeHide(relatedTarget) {
+  protected _completeHide(relatedTarget: Record<string, unknown>): void {
     const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE, relatedTarget)
     if (hideEvent.defaultPrevented) {
       return
@@ -296,7 +327,7 @@ class Menu extends FloatingBase {
     EventHandler.trigger(this._element, EVENT_HIDDEN, relatedTarget)
   }
 
-  _getConfig(config) {
+  protected override _getConfig(config?: ComponentConfig | null): ComponentConfig {
     config = super._getConfig(config)
 
     if (typeof config.reference === 'object' && !isElement(config.reference) &&
@@ -308,20 +339,20 @@ class Menu extends FloatingBase {
     return config
   }
 
-  _createFloating() {
+  protected _createFloating(): void {
     if (this._config.display === 'static') {
       Manipulator.setDataAttribute(this._menu, 'display', 'static')
       return
     }
 
-    let referenceElement = this._element
+    let referenceElement: ReferenceElement = this._element
 
     if (this._config.reference === 'parent') {
       referenceElement = this._parent
     } else if (isElement(this._config.reference)) {
-      referenceElement = getElement(this._config.reference)
+      referenceElement = getElement(this._config.reference)!
     } else if (typeof this._config.reference === 'object') {
-      referenceElement = this._config.reference
+      referenceElement = this._config.reference as ReferenceElement
     }
 
     this._updateFloatingPosition(referenceElement)
@@ -333,7 +364,7 @@ class Menu extends FloatingBase {
     )
   }
 
-  async _updateFloatingPosition(referenceElement = null) {
+  protected override async _updateFloatingPosition(referenceElement: ReferenceElement | null = null): Promise<void> {
     if (!this._menu) {
       return
     }
@@ -344,7 +375,7 @@ class Menu extends FloatingBase {
       } else if (isElement(this._config.reference)) {
         referenceElement = getElement(this._config.reference)
       } else if (typeof this._config.reference === 'object') {
-        referenceElement = this._config.reference
+        referenceElement = this._config.reference as ReferenceElement
       } else {
         referenceElement = this._element
       }
@@ -355,7 +386,7 @@ class Menu extends FloatingBase {
     const floatingConfig = this._getFloatingConfig(placement, middleware)
 
     await this._applyFloatingPosition(
-      referenceElement,
+      referenceElement!,
       this._menu,
       floatingConfig.placement,
       floatingConfig.middleware,
@@ -363,11 +394,11 @@ class Menu extends FloatingBase {
     )
   }
 
-  _isShown() {
+  protected override _isShown(): boolean {
     return this._menu.classList.contains(CLASS_NAME_SHOW)
   }
 
-  _getPlacement() {
+  protected _getPlacement(): string {
     const placement = this._responsivePlacements ?
       this._getResponsivePlacement() :
       this._config.placement
@@ -375,14 +406,14 @@ class Menu extends FloatingBase {
     return resolveLogicalPlacement(placement)
   }
 
-  _getDefaultPlacement() {
+  protected override _getDefaultPlacement(): string {
     return DEFAULT_PLACEMENT
   }
 
-  _getFallbackPlacements() {
+  protected override _getFallbackPlacements(): Placement[] {
     const placement = this._getPlacement()
 
-    const fallbackMap = {
+    const fallbackMap: Record<string, Placement[]> = {
       bottom: ['top', 'bottom-start', 'bottom-end', 'top-start', 'top-end'],
       'bottom-start': ['top-start', 'bottom-end', 'top-end'],
       'bottom-end': ['top-end', 'bottom-start', 'top-start'],
@@ -400,7 +431,7 @@ class Menu extends FloatingBase {
     return fallbackMap[placement] || ['top', 'bottom', 'right', 'left']
   }
 
-  _getFloatingConfig(placement, middleware) {
+  protected override _getFloatingConfig(placement: string, middleware: Middleware[]): Record<string, any> {
     const defaultConfig = {
       placement,
       middleware,
@@ -413,7 +444,7 @@ class Menu extends FloatingBase {
     }
   }
 
-  _getContainer() {
+  protected _getContainer(): HTMLElement | null {
     const { container } = this._config
     if (container === false) {
       return null
@@ -422,7 +453,7 @@ class Menu extends FloatingBase {
     return container === true ? document.body : getElement(container)
   }
 
-  _moveMenuToContainer() {
+  protected _moveMenuToContainer(): void {
     const container = this._getContainer()
     if (!container || !this._menu) {
       return
@@ -433,7 +464,7 @@ class Menu extends FloatingBase {
     }
   }
 
-  _restoreMenuToOriginalParent() {
+  protected _restoreMenuToOriginalParent(): void {
     if (!this._menuOriginalParent || !this._menu) {
       return
     }
@@ -443,7 +474,7 @@ class Menu extends FloatingBase {
     }
   }
 
-  async _applyFloatingPosition(reference, floating, placement, middleware, strategy = 'absolute') {
+  protected async _applyFloatingPosition(reference: ReferenceElement, floating: HTMLElement, placement: Placement, middleware: Middleware[], strategy: Strategy = 'absolute'): Promise<string | null> {
     if (!floating.isConnected || !floating.classList.contains(CLASS_NAME_SHOW)) {
       return null
     }
@@ -473,7 +504,7 @@ class Menu extends FloatingBase {
   // Submenu handling
   // -------------------------------------------------------------------------
 
-  _setupSubmenuListeners() {
+  protected _setupSubmenuListeners(): void {
     if (!this._menu || !SelectorEngine.findOne(SELECTOR_SUBMENU, this._menu)) {
       return
     }
@@ -507,13 +538,13 @@ class Menu extends FloatingBase {
     })
   }
 
-  _onSubmenuTriggerEnter(event) {
-    const trigger = event.target.closest(SELECTOR_SUBMENU_TOGGLE)
+  protected _onSubmenuTriggerEnter(event: ChassisEvent): void {
+    const trigger = (event.target as Element).closest<HTMLElement>(SELECTOR_SUBMENU_TOGGLE)
     if (!trigger) {
       return
     }
 
-    const submenuWrapper = trigger.closest(SELECTOR_SUBMENU)
+    const submenuWrapper = trigger.closest(SELECTOR_SUBMENU)!
     const submenu = SelectorEngine.findOne(SELECTOR_MENU, submenuWrapper)
     if (!submenu) {
       return
@@ -524,8 +555,8 @@ class Menu extends FloatingBase {
     this._openSubmenu(trigger, submenu, submenuWrapper)
   }
 
-  _onSubmenuLeave(event) {
-    const submenuWrapper = event.target.closest(SELECTOR_SUBMENU)
+  protected _onSubmenuLeave(event: ChassisEvent): void {
+    const submenuWrapper = (event.target as Element).closest(SELECTOR_SUBMENU)!
     const submenu = SelectorEngine.findOne(SELECTOR_MENU, submenuWrapper)
     if (!submenu || !this._openSubmenus.has(submenu)) {
       return
@@ -538,8 +569,8 @@ class Menu extends FloatingBase {
     this._scheduleSubmenuClose(submenu, submenuWrapper)
   }
 
-  _onSubmenuTriggerClick(event) {
-    const trigger = event.target.closest(SELECTOR_SUBMENU_TOGGLE)
+  protected _onSubmenuTriggerClick(event: ChassisEvent): void {
+    const trigger = (event.target as Element).closest<HTMLElement>(SELECTOR_SUBMENU_TOGGLE)
     if (!trigger) {
       return
     }
@@ -547,7 +578,7 @@ class Menu extends FloatingBase {
     event.preventDefault()
     event.stopPropagation()
 
-    const submenuWrapper = trigger.closest(SELECTOR_SUBMENU)
+    const submenuWrapper = trigger.closest(SELECTOR_SUBMENU)!
     const submenu = SelectorEngine.findOne(SELECTOR_MENU, submenuWrapper)
     if (!submenu) {
       return
@@ -570,7 +601,7 @@ class Menu extends FloatingBase {
     }
   }
 
-  _openSubmenu(trigger, submenu, submenuWrapper) {
+  protected _openSubmenu(trigger: HTMLElement, submenu: HTMLElement, submenuWrapper: Element): void {
     if (this._openSubmenus.has(submenu)) {
       return
     }
@@ -589,8 +620,8 @@ class Menu extends FloatingBase {
     })
   }
 
-  _onSubmenuBackClick(event) {
-    const back = event.target.closest(SELECTOR_SUBMENU_BACK)
+  protected _onSubmenuBackClick(event: ChassisEvent): void {
+    const back = (event.target as Element).closest<HTMLElement>(SELECTOR_SUBMENU_BACK)
     if (!back) {
       return
     }
@@ -599,7 +630,7 @@ class Menu extends FloatingBase {
     event.stopPropagation()
 
     const wrapper = back.closest(SELECTOR_SUBMENU)
-    const submenu = back.closest(SELECTOR_MENU)
+    const submenu = back.closest<HTMLElement>(SELECTOR_MENU)
     if (!wrapper || !submenu) {
       return
     }
@@ -611,14 +642,14 @@ class Menu extends FloatingBase {
     }
   }
 
-  _closeSubmenu(submenu, submenuWrapper) {
+  protected _closeSubmenu(submenu: HTMLElement, submenuWrapper: Element): void {
     if (!this._openSubmenus.has(submenu)) {
       return
     }
 
     const nestedSubmenus = SelectorEngine.find(`${SELECTOR_SUBMENU} ${SELECTOR_MENU}.${CLASS_NAME_SHOW}`, submenu)
     for (const nested of nestedSubmenus) {
-      const nestedWrapper = nested.closest(SELECTOR_SUBMENU)
+      const nestedWrapper = nested.closest(SELECTOR_SUBMENU)!
       this._closeSubmenu(nested, nestedWrapper)
     }
 
@@ -640,36 +671,36 @@ class Menu extends FloatingBase {
     submenuWrapper.classList.remove(CLASS_NAME_SHOW)
   }
 
-  _closeAllSubmenus() {
+  protected _closeAllSubmenus(): void {
     for (const [submenu] of this._openSubmenus) {
-      const submenuWrapper = submenu.closest(SELECTOR_SUBMENU)
+      const submenuWrapper = submenu.closest(SELECTOR_SUBMENU)!
       this._closeSubmenu(submenu, submenuWrapper)
     }
   }
 
-  _closeSiblingSubmenus(currentSubmenuWrapper) {
-    const parent = currentSubmenuWrapper.parentNode
+  protected _closeSiblingSubmenus(currentSubmenuWrapper: Element): void {
+    const parent = currentSubmenuWrapper.parentNode as ParentNode
     const siblingSubmenus = SelectorEngine.find(`${SELECTOR_SUBMENU} > ${SELECTOR_MENU}.${CLASS_NAME_SHOW}`, parent)
 
     for (const siblingMenu of siblingSubmenus) {
-      const siblingWrapper = siblingMenu.closest(SELECTOR_SUBMENU)
+      const siblingWrapper = siblingMenu.closest(SELECTOR_SUBMENU)!
       if (siblingWrapper !== currentSubmenuWrapper) {
         this._closeSubmenu(siblingMenu, siblingWrapper)
       }
     }
   }
 
-  _createSubmenuFloating(trigger, submenu, submenuWrapper) {
+  protected _createSubmenuFloating(trigger: HTMLElement, submenu: HTMLElement, submenuWrapper: Element): () => void {
     const referenceElement = submenuWrapper
-    const placement = resolveLogicalPlacement(SUBMENU_PLACEMENT)
-    const middleware = [
+    const placement = resolveLogicalPlacement(SUBMENU_PLACEMENT) as Placement
+    const middleware: Middleware[] = [
       offset({ mainAxis: 0, crossAxis: -4 }),
       flip({
         fallbackPlacements: [
           resolveLogicalPlacement('start-start'),
           resolveLogicalPlacement('end-end'),
           resolveLogicalPlacement('start-end')
-        ]
+        ] as Placement[]
       }),
       shift({ padding: 8 })
     ]
@@ -680,7 +711,7 @@ class Menu extends FloatingBase {
     return autoUpdate(referenceElement, submenu, updatePosition)
   }
 
-  _scheduleSubmenuClose(submenu, submenuWrapper) {
+  protected _scheduleSubmenuClose(submenu: HTMLElement, submenuWrapper: Element): void {
     this._cancelSubmenuCloseTimeout(submenu)
 
     const timeoutId = setTimeout(() => {
@@ -691,7 +722,7 @@ class Menu extends FloatingBase {
     this._submenuCloseTimeouts.set(submenu, timeoutId)
   }
 
-  _cancelSubmenuCloseTimeout(submenu) {
+  protected _cancelSubmenuCloseTimeout(submenu: HTMLElement): void {
     const timeoutId = this._submenuCloseTimeouts.get(submenu)
     if (timeoutId) {
       clearTimeout(timeoutId)
@@ -699,7 +730,7 @@ class Menu extends FloatingBase {
     }
   }
 
-  _clearAllSubmenuTimeouts() {
+  protected _clearAllSubmenuTimeouts(): void {
     for (const timeoutId of this._submenuCloseTimeouts.values()) {
       clearTimeout(timeoutId)
     }
@@ -711,7 +742,7 @@ class Menu extends FloatingBase {
   // Hover intent / Safe triangle
   // -------------------------------------------------------------------------
 
-  _trackMousePosition(event) {
+  protected _trackMousePosition(event: ChassisEvent): void {
     const now = Date.now()
     this._hoverIntentSamples.push({ x: event.clientX, y: event.clientY, t: now })
 
@@ -720,13 +751,13 @@ class Menu extends FloatingBase {
     }
   }
 
-  _isMovingTowardSubmenu(event, submenu) {
+  protected _isMovingTowardSubmenu(event: ChassisEvent, submenu: HTMLElement): boolean {
     if (this._hoverIntentSamples.length < 2) {
       return false
     }
 
     const now = Date.now()
-    let oldSample = null
+    let oldSample: { x: number, y: number, t: number } | null = null
     for (let i = this._hoverIntentSamples.length - 1; i >= 0; i--) {
       if (now - this._hoverIntentSamples[i].t >= 50) {
         oldSample = this._hoverIntentSamples[i]
@@ -750,7 +781,7 @@ class Menu extends FloatingBase {
     return this._pointInTriangle(currentPos, lastPos, topCorner, bottomCorner)
   }
 
-  _pointInTriangle(point, v1, v2, v3) {
+  protected _pointInTriangle(point: Point, v1: Point, v2: Point, v3: Point): boolean {
     const d1 = triangleSign(point, v1, v2)
     const d2 = triangleSign(point, v2, v3)
     const d3 = triangleSign(point, v3, v1)
@@ -765,8 +796,8 @@ class Menu extends FloatingBase {
   // Keyboard navigation
   // -------------------------------------------------------------------------
 
-  _selectMenuItem({ key, target }) {
-    const currentMenu = target.closest(SELECTOR_MENU) || this._menu
+  protected _selectMenuItem({ key, target }: ChassisEvent): void {
+    const currentMenu = (target as Element).closest(SELECTOR_MENU) || this._menu
     const items = SelectorEngine.find(SELECTOR_KB_NAV_ITEMS, currentMenu)
       .filter(element => isVisible(element))
 
@@ -774,27 +805,27 @@ class Menu extends FloatingBase {
       return
     }
 
-    getNextActiveElement(items, target, key === ARROW_DOWN_KEY, !items.includes(target)).focus()
+    getNextActiveElement(items, target as HTMLElement, key === ARROW_DOWN_KEY, !items.includes(target as HTMLElement)).focus()
   }
 
-  _handleSubmenuKeydown(event) {
+  protected _handleSubmenuKeydown(event: ChassisEvent): boolean {
     const { key, target } = event
     const isRtl = isRTL()
 
     const enterKey = isRtl ? ARROW_LEFT_KEY : ARROW_RIGHT_KEY
     const exitKey = isRtl ? ARROW_RIGHT_KEY : ARROW_LEFT_KEY
 
-    const submenuWrapper = target.closest(SELECTOR_SUBMENU)
-    const isSubmenuTrigger = submenuWrapper && target.matches(SELECTOR_SUBMENU_TOGGLE)
+    const submenuWrapper = (target as Element).closest(SELECTOR_SUBMENU)
+    const isSubmenuTrigger = submenuWrapper && (target as Element).matches(SELECTOR_SUBMENU_TOGGLE)
 
     if (isSubmenuTrigger && (key === ENTER_KEY || key === SPACE_KEY || key === enterKey)) {
       event.preventDefault()
       event.stopPropagation()
 
-      const submenu = SelectorEngine.findOne(SELECTOR_MENU, submenuWrapper)
+      const submenu = SelectorEngine.findOne(SELECTOR_MENU, submenuWrapper!)
       if (submenu) {
-        this._closeSiblingSubmenus(submenuWrapper)
-        this._openSubmenu(target, submenu, submenuWrapper)
+        this._closeSiblingSubmenus(submenuWrapper!)
+        this._openSubmenu(target as HTMLElement, submenu, submenuWrapper!)
         requestAnimationFrame(() => {
           const firstItem = SelectorEngine.findOne(SELECTOR_VISIBLE_ITEMS, submenu)
           if (firstItem) {
@@ -807,7 +838,7 @@ class Menu extends FloatingBase {
     }
 
     if (key === exitKey) {
-      const currentMenu = target.closest(SELECTOR_MENU)
+      const currentMenu = (target as Element).closest(SELECTOR_MENU)
       const parentSubmenuWrapper = currentMenu?.closest(SELECTOR_SUBMENU)
 
       if (parentSubmenuWrapper) {
@@ -815,7 +846,7 @@ class Menu extends FloatingBase {
         event.stopPropagation()
 
         const parentTrigger = SelectorEngine.findOne(SELECTOR_SUBMENU_TOGGLE, parentSubmenuWrapper)
-        this._closeSubmenu(currentMenu, parentSubmenuWrapper)
+        this._closeSubmenu(currentMenu as HTMLElement, parentSubmenuWrapper)
         if (parentTrigger) {
           parentTrigger.focus()
         }
@@ -828,12 +859,12 @@ class Menu extends FloatingBase {
       event.preventDefault()
       event.stopPropagation()
 
-      const currentMenu = target.closest(SELECTOR_MENU)
+      const currentMenu = (target as Element).closest(SELECTOR_MENU)!
       const items = SelectorEngine.find(SELECTOR_KB_NAV_ITEMS, currentMenu)
         .filter(element => isVisible(element))
 
       if (items.length) {
-        const targetItem = key === HOME_KEY ? items[0] : items.at(-1)
+        const targetItem = key === HOME_KEY ? items[0] : items.at(-1)!
         targetItem.focus()
       }
 
@@ -843,7 +874,7 @@ class Menu extends FloatingBase {
     return false
   }
 
-  static clearMenus(event) {
+  static clearMenus(event: ChassisEvent): void {
     if (event.button === RIGHT_MOUSE_BUTTON || (event.type === 'keyup' && event.key !== TAB_KEY)) {
       return
     }
@@ -863,11 +894,11 @@ class Menu extends FloatingBase {
         continue
       }
 
-      if (instance._menu.contains(event.target) && ((event.type === 'keyup' && event.key === TAB_KEY) || /input|select|option|textarea|form/i.test(event.target.tagName))) {
+      if (instance._menu.contains(event.target as Node) && ((event.type === 'keyup' && event.key === TAB_KEY) || /input|select|option|textarea|form/i.test((event.target as HTMLElement).tagName))) {
         continue
       }
 
-      const relatedTarget = { relatedTarget: instance._element }
+      const relatedTarget: Record<string, unknown> = { relatedTarget: instance._element }
 
       if (event.type === 'click') {
         relatedTarget.clickEvent = event
@@ -877,15 +908,15 @@ class Menu extends FloatingBase {
     }
   }
 
-  static dataApiKeydownHandler(event) {
-    const isInput = /input|textarea/i.test(event.target.tagName)
+  static dataApiKeydownHandler(this: HTMLElement, event: ChassisEvent): void {
+    const isInput = /input|textarea/i.test((event.target as HTMLElement).tagName)
     const isEscapeEvent = event.key === ESCAPE_KEY
     const isUpOrDownEvent = [ARROW_UP_KEY, ARROW_DOWN_KEY].includes(event.key)
     const isLeftOrRightEvent = [ARROW_LEFT_KEY, ARROW_RIGHT_KEY].includes(event.key)
     const isHomeOrEndEvent = [HOME_KEY, END_KEY].includes(event.key)
     const isEnterOrSpaceEvent = [ENTER_KEY, SPACE_KEY].includes(event.key)
 
-    const isSubmenuTrigger = event.target.matches(SELECTOR_SUBMENU_TOGGLE)
+    const isSubmenuTrigger = (event.target as Element).matches(SELECTOR_SUBMENU_TOGGLE)
 
     if (!isUpOrDownEvent && !isEscapeEvent && !isLeftOrRightEvent && !isHomeOrEndEvent &&
         !(isEnterOrSpaceEvent && isSubmenuTrigger)) {
@@ -903,14 +934,15 @@ class Menu extends FloatingBase {
     // .menu — its siblings are submenu content, not the toggle. We walk
     // through every enclosing .submenu to reach the outermost .menu, whose
     // prev sibling is the original toggle.
-    let getToggleButton = this.matches(SELECTOR_DATA_TOGGLE) ?
+    let getToggleButton: HTMLElement | null = this.matches(SELECTOR_DATA_TOGGLE) ?
       this :
-      (SelectorEngine.prev(this, SELECTOR_DATA_TOGGLE)[0] ||
+      ((SelectorEngine.prev(this, SELECTOR_DATA_TOGGLE)[0] ||
         SelectorEngine.next(this, SELECTOR_DATA_TOGGLE)[0] ||
-        SelectorEngine.findOne(SELECTOR_DATA_TOGGLE, event.delegateTarget.parentNode))
+        SelectorEngine.findOne(SELECTOR_DATA_TOGGLE, event.delegateTarget.parentNode)) as HTMLElement | null)
 
     if (!getToggleButton) {
-      let rootMenu = this
+      // eslint-disable-next-line @typescript-eslint/no-this-alias -- walking up from `this` to find the enclosing top-level .menu
+      let rootMenu: Element = this
       let enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU)
       while (enclosingSubmenu) {
         const enclosingMenu = enclosingSubmenu.closest(SELECTOR_MENU)
@@ -924,9 +956,9 @@ class Menu extends FloatingBase {
 
       if (rootMenu !== this) {
         getToggleButton =
-          SelectorEngine.prev(rootMenu, SELECTOR_DATA_TOGGLE)[0] ||
+          (SelectorEngine.prev(rootMenu, SELECTOR_DATA_TOGGLE)[0] ||
           SelectorEngine.next(rootMenu, SELECTOR_DATA_TOGGLE)[0] ||
-          SelectorEngine.findOne(SELECTOR_DATA_TOGGLE, rootMenu.parentNode)
+          SelectorEngine.findOne(SELECTOR_DATA_TOGGLE, rootMenu.parentNode as ParentNode)) as HTMLElement | null
       }
 
       if (!getToggleButton) {
@@ -952,12 +984,12 @@ class Menu extends FloatingBase {
       event.preventDefault()
       event.stopPropagation()
 
-      const currentMenu = event.target.closest(SELECTOR_MENU)
+      const currentMenu = (event.target as Element).closest(SELECTOR_MENU)
       const parentSubmenuWrapper = currentMenu?.closest(SELECTOR_SUBMENU)
 
       if (parentSubmenuWrapper && instance._openSubmenus.size > 0) {
         const parentTrigger = SelectorEngine.findOne(SELECTOR_SUBMENU_TOGGLE, parentSubmenuWrapper)
-        instance._closeSubmenu(currentMenu, parentSubmenuWrapper)
+        instance._closeSubmenu(currentMenu as HTMLElement, parentSubmenuWrapper)
         if (parentTrigger) {
           parentTrigger.focus()
         }
@@ -1004,3 +1036,4 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (
 })
 
 export default Menu
+export type { MenuConfig }

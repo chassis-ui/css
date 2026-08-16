@@ -1,12 +1,12 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS combobox.js
+ * Chassis CSS combobox.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
 import BaseComponent from './base-component.js'
-import EventHandler from './dom/event-handler.js'
+import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
 import Menu from './menu.js'
 import { getNextActiveElement, isDisabled, isVisible } from './util/index.js'
@@ -48,7 +48,17 @@ const SELECTOR_VALUE = '.combobox-value'
 const SELECTOR_SEARCH_INPUT = '.combobox-search-input'
 const SELECTOR_NO_RESULTS = '.combobox-no-results'
 
-const Default = {
+type ComboboxConfig = {
+  boundary: string | Element
+  multiple: boolean
+  name: string | null
+  offset: number[] | string | ((data: Record<string, any>, element: HTMLElement) => number[])
+  placeholder: string
+  placement: string
+  searchNormalize: boolean
+}
+
+const Default: ComboboxConfig = {
   boundary: 'clippingParents',
   multiple: false,
   name: null,
@@ -73,16 +83,29 @@ const DefaultType = {
  */
 
 class Combobox extends BaseComponent {
-  constructor(element, config) {
+  protected declare _config: ComboboxConfig
+  protected declare _toggle: HTMLElement
+  protected declare _menu: HTMLElement
+  protected declare _valueDisplay: HTMLElement
+  // Not `protected` — read from the data-API click handler below (a top-level
+  // function, not a class member, so it can't reach a protected field).
+  declare _comboInput: HTMLInputElement | null
+  protected declare _searchInput: HTMLInputElement | null
+  protected declare _noResults: HTMLElement | null
+  protected declare _hiddenInput: HTMLInputElement | null
+  protected declare _menuInstance: Menu | null
+  protected declare _ignoreNextFocus: boolean
+
+  constructor(element?: string | Element | null, config?: Partial<ComboboxConfig> | null) {
     super(element, config)
 
     this._toggle = this._element
-    this._menu = SelectorEngine.next(this._toggle, SELECTOR_MENU)[0]
-    this._valueDisplay = SelectorEngine.findOne(SELECTOR_VALUE, this._toggle)
+    this._menu = SelectorEngine.next(this._toggle, SELECTOR_MENU)[0] as HTMLElement
+    this._valueDisplay = SelectorEngine.findOne(SELECTOR_VALUE, this._toggle)!
     this._comboInput = this._valueDisplay instanceof HTMLInputElement ? this._valueDisplay : null
     // Search input inside the menu is only meaningful for button-triggered comboboxes.
     // When the toggle has a text input (comboInput), filtering happens inline — _searchInput is ignored.
-    this._searchInput = this._comboInput ? null : SelectorEngine.findOne(SELECTOR_SEARCH_INPUT, this._menu)
+    this._searchInput = this._comboInput ? null : SelectorEngine.findOne<HTMLInputElement>(SELECTOR_SEARCH_INPUT, this._menu)
     this._noResults = SelectorEngine.findOne(SELECTOR_NO_RESULTS, this._menu)
     this._hiddenInput = null
     this._menuInstance = null
@@ -96,24 +119,24 @@ class Combobox extends BaseComponent {
   }
 
   // Getters
-  static get Default() {
+  static override get Default(): ComboboxConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): Record<string, string> {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  toggle() {
+  toggle(): void {
     return this._isShown() ? this.hide() : this.show()
   }
 
-  show() {
+  show(): void {
     if (isDisabled(this._toggle) || this._isShown()) {
       return
     }
@@ -123,7 +146,7 @@ class Combobox extends BaseComponent {
       return
     }
 
-    this._menuInstance.show()
+    this._menuInstance!.show()
 
     if (this._searchInput) {
       this._searchInput.value = ''
@@ -142,7 +165,7 @@ class Combobox extends BaseComponent {
     EventHandler.trigger(this._toggle, EVENT_SHOWN)
   }
 
-  hide() {
+  hide(): void {
     if (!this._isShown()) {
       return
     }
@@ -155,11 +178,11 @@ class Combobox extends BaseComponent {
     // _menuInstance.hide() fires hidden.cx.menu synchronously, which the
     // hidden.cx.menu listener uses to run _restoreAfterClose — so by the
     // time we fire EVENT_HIDDEN the comboInput/items are already restored.
-    this._menuInstance.hide()
+    this._menuInstance!.hide()
     EventHandler.trigger(this._toggle, EVENT_HIDDEN)
   }
 
-  disable() {
+  disable(): void {
     if (this._isShown()) {
       this.hide()
     }
@@ -167,11 +190,11 @@ class Combobox extends BaseComponent {
     this._syncDisabledState(true)
   }
 
-  enable() {
+  enable(): void {
     this._syncDisabledState(false)
   }
 
-  dispose() {
+  override dispose(): void {
     if (this._menuInstance) {
       this._menuInstance.dispose()
       this._menuInstance = null
@@ -197,11 +220,11 @@ class Combobox extends BaseComponent {
   }
 
   // Private
-  _isShown() {
+  protected _isShown(): boolean {
     return this._menu.classList.contains(CLASS_NAME_SHOW)
   }
 
-  _syncDisabledState(disabled) {
+  protected _syncDisabledState(disabled?: boolean): void {
     // If called without an argument, read the current state from either source
     if (disabled === undefined) {
       const toggleDisabled = this._toggle.classList.contains('disabled') ||
@@ -231,7 +254,7 @@ class Combobox extends BaseComponent {
     }
   }
 
-  _createHiddenInput() {
+  protected _createHiddenInput(): void {
     const { name } = this._config
     if (!name) {
       return
@@ -241,10 +264,10 @@ class Combobox extends BaseComponent {
     this._hiddenInput.type = 'hidden'
     this._hiddenInput.name = name
     this._hiddenInput.value = ''
-    this._toggle.parentNode.insertBefore(this._hiddenInput, this._toggle)
+    this._toggle.parentNode!.insertBefore(this._hiddenInput, this._toggle)
   }
 
-  _createMenuInstance() {
+  protected _createMenuInstance(): void {
     this._menuInstance = new Menu(this._toggle, {
       menu: this._menu,
       autoClose: this._config.multiple ? 'outside' : true,
@@ -254,7 +277,7 @@ class Combobox extends BaseComponent {
     })
   }
 
-  _syncInitialSelection() {
+  protected _syncInitialSelection(): void {
     // Defensive: ensure aria-selected reflects the .selected class on every
     // item, so markup that only sets one of the two ends up consistent.
     for (const item of SelectorEngine.find(SELECTOR_MENU_ITEM, this._menu)) {
@@ -270,7 +293,7 @@ class Combobox extends BaseComponent {
     }
   }
 
-  _restoreAfterClose() {
+  protected _restoreAfterClose(): void {
     if (!this._comboInput) {
       return
     }
@@ -285,7 +308,7 @@ class Combobox extends BaseComponent {
     }
   }
 
-  _addEventListeners() {
+  protected _addEventListeners(): void {
     // Run restoration whenever the underlying menu closes — covers both
     // combobox.hide() and Menu's autoClose (outside click / select).
     EventHandler.on(this._toggle, 'hidden.cx.menu', () => {
@@ -293,7 +316,7 @@ class Combobox extends BaseComponent {
     })
 
     EventHandler.on(this._menu, `click${EVENT_KEY}`, SELECTOR_MENU_ITEM, event => {
-      const item = event.target.closest(SELECTOR_MENU_ITEM)
+      const item = (event.target as Element).closest<HTMLElement>(SELECTOR_MENU_ITEM)
       if (!item || isDisabled(item)) {
         return
       }
@@ -327,7 +350,7 @@ class Combobox extends BaseComponent {
       })
 
       EventHandler.on(this._comboInput, `input${EVENT_KEY}`, () => {
-        const visibleCount = this._filterItems(this._comboInput.value)
+        const visibleCount = this._filterItems(this._comboInput!.value)
 
         // Input-trigger menu visibility tracks filter results: collapse when
         // nothing matches the active query, reopen when matches reappear
@@ -337,16 +360,16 @@ class Combobox extends BaseComponent {
         // and the input isn't re-selected mid-type. Button-trigger menus are
         // out of scope here — they don't have this handler.
         if (visibleCount > 0 && !this._isShown()) {
-          this._menuInstance.show()
+          this._menuInstance!.show()
         } else if (visibleCount === 0 && this._isShown()) {
-          this._menuInstance.hide()
+          this._menuInstance!.hide()
         }
       })
     }
 
     if (this._searchInput) {
       EventHandler.on(this._searchInput, `input${EVENT_KEY}`, () => {
-        this._filterItems(this._searchInput.value)
+        this._filterItems(this._searchInput!.value)
       })
 
       EventHandler.on(this._searchInput, `keydown${EVENT_KEY}`, event => {
@@ -368,7 +391,7 @@ class Combobox extends BaseComponent {
     }
   }
 
-  _selectItem(item) {
+  protected _selectItem(item: HTMLElement): void {
     if (this._config.multiple) {
       const isNowSelected = item.classList.toggle(CLASS_NAME_SELECTED)
       item.setAttribute('aria-selected', isNowSelected ? 'true' : 'false')
@@ -406,7 +429,7 @@ class Combobox extends BaseComponent {
     }
   }
 
-  _updateToggleText() {
+  protected _updateToggleText(): void {
     const selectedItems = this._getSelectedItems()
 
     if (selectedItems.length === 0) {
@@ -414,13 +437,13 @@ class Combobox extends BaseComponent {
       return
     }
 
-    let text
+    let text: string
     if (this._config.multiple && selectedItems.length > 1) {
       text = `${selectedItems.length} selected`
     } else {
       const item = selectedItems[0]
       const label = SelectorEngine.findOne('.menu-item-content > span:first-child', item)
-      text = label ? label.textContent : item.textContent.trim()
+      text = label ? (label.textContent ?? '') : item.textContent!.trim()
     }
 
     if (this._comboInput) {
@@ -431,7 +454,7 @@ class Combobox extends BaseComponent {
     }
   }
 
-  _showPlaceholder() {
+  protected _showPlaceholder(): void {
     const { placeholder } = this._config
     if (this._comboInput) {
       this._comboInput.value = ''
@@ -442,32 +465,32 @@ class Combobox extends BaseComponent {
     }
   }
 
-  _updateHiddenInput() {
+  protected _updateHiddenInput(): void {
     if (!this._hiddenInput) {
       return
     }
 
     const selectedItems = this._getSelectedItems()
-    const values = selectedItems.map(el => el.dataset.cxValue)
+    const values = selectedItems.map(el => el.dataset.cxValue as string)
     this._hiddenInput.value = this._config.multiple ? values.join(',') : (values[0] || '')
   }
 
-  _getSelectedItems() {
+  protected _getSelectedItems(): HTMLElement[] {
     return SelectorEngine.find(`.${CLASS_NAME_SELECTED}`, this._menu)
   }
 
-  _getVisibleItems() {
+  protected _getVisibleItems(): HTMLElement[] {
     return SelectorEngine.find(SELECTOR_VISIBLE_ITEMS, this._menu)
       .filter(item => isVisible(item))
   }
 
-  _filterItems(query) {
+  protected _filterItems(query: string): number {
     const normalizedQuery = this._normalizeText(query.toLowerCase().trim())
     const items = SelectorEngine.find(SELECTOR_MENU_ITEM, this._menu)
     let visibleCount = 0
 
     for (const item of items) {
-      const text = this._normalizeText(item.textContent.toLowerCase().trim())
+      const text = this._normalizeText((item.textContent ?? '').toLowerCase().trim())
       const matches = !normalizedQuery || text.includes(normalizedQuery)
       item.style.display = matches ? '' : 'none'
       if (matches) {
@@ -482,7 +505,7 @@ class Combobox extends BaseComponent {
     return visibleCount
   }
 
-  _normalizeText(text) {
+  protected _normalizeText(text: string): string {
     if (this._config.searchNormalize) {
       return text.normalize('NFD').replace(/[\u0300-\u036F]/g, '')
     }
@@ -490,7 +513,7 @@ class Combobox extends BaseComponent {
     return text
   }
 
-  _handleToggleKeydown(event) {
+  protected _handleToggleKeydown(event: ChassisEvent): void {
     const { key } = event
 
     if (key === ARROW_DOWN_KEY || key === ARROW_UP_KEY) {
@@ -501,7 +524,7 @@ class Combobox extends BaseComponent {
 
       const items = this._getVisibleItems()
       if (items.length > 0) {
-        const target = key === ARROW_DOWN_KEY ? items[0] : items.at(-1)
+        const target = key === ARROW_DOWN_KEY ? items[0] : items.at(-1)!
         target.focus()
       }
 
@@ -514,7 +537,7 @@ class Combobox extends BaseComponent {
     }
   }
 
-  _handleMenuKeydown(event) {
+  protected _handleMenuKeydown(event: ChassisEvent): void {
     const { key, target } = event
 
     if (key === ESCAPE_KEY) {
@@ -531,13 +554,13 @@ class Combobox extends BaseComponent {
       return
     }
 
-    const isInput = target.matches('input')
+    const isInput = (target as Element).matches('input')
 
     if (key === ARROW_DOWN_KEY || key === ARROW_UP_KEY) {
       event.preventDefault()
       const items = this._getVisibleItems()
       if (items.length > 0) {
-        getNextActiveElement(items, target, key === ARROW_DOWN_KEY, !items.includes(target)).focus()
+        getNextActiveElement(items, target as HTMLElement, key === ARROW_DOWN_KEY, !items.includes(target as HTMLElement)).focus()
       }
 
       return
@@ -547,7 +570,7 @@ class Combobox extends BaseComponent {
       event.preventDefault()
       const items = this._getVisibleItems()
       if (items.length > 0) {
-        const targetItem = key === HOME_KEY ? items[0] : items.at(-1)
+        const targetItem = key === HOME_KEY ? items[0] : items.at(-1)!
         targetItem.focus()
       }
 
@@ -556,7 +579,7 @@ class Combobox extends BaseComponent {
 
     if ((key === ENTER_KEY || key === SPACE_KEY) && !isInput) {
       event.preventDefault()
-      const item = target.closest(SELECTOR_MENU_ITEM)
+      const item = (target as Element).closest<HTMLElement>(SELECTOR_MENU_ITEM)
       if (item && !isDisabled(item)) {
         this._selectItem(item)
       }
@@ -589,3 +612,4 @@ EventHandler.on(document, 'DOMContentLoaded', () => {
 })
 
 export default Combobox
+export type { ComboboxConfig }
