@@ -21,7 +21,7 @@ const plugins = [
     // Include the helpers in the bundle, at most one copy of each
     babelHelpers: 'bundled',
     extensions: ['.js', '.ts'],
-    presets: ['@babel/preset-typescript']
+    presets: [['@babel/preset-typescript', { allowDeclareFields: true }]]
   })
 ]
 

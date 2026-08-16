@@ -5,7 +5,7 @@
   */
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dom/manipulator.js
+ * Chassis CSS dom/manipulator.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

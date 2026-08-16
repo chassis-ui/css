@@ -1,9 +1,27 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dom/event-handler.js
+ * Chassis CSS dom/event-handler.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
+
+/**
+ * Types
+ */
+
+type ChassisEvent = Event & Record<string, any>
+
+type EventCallable = (this: any, event: ChassisEvent) => any
+
+interface WrappedHandler {
+  (this: Element, event: Event): any
+  oneOff?: boolean
+  uidEvent?: string | number
+  callable?: EventCallable
+  delegationSelector?: string | null
+}
+
+type ElementEvents = Record<string, Record<string, WrappedHandler>>
 
 /**
  * Constants
@@ -12,9 +30,9 @@
 const namespaceRegex = /[^.]*(?=\..*)\.|.*/
 const stripNameRegex = /\..*/
 const stripUidRegex = /::\d+$/
-const eventRegistry = {} // Events storage
+const eventRegistry: Record<string | number, ElementEvents> = {} // Events storage
 let uidEvent = 1
-const customEvents = {
+const customEvents: Record<string, string> = {
   mouseenter: 'mouseover',
   mouseleave: 'mouseout'
 }
@@ -73,11 +91,11 @@ const nativeEvents = new Set([
  * Private methods
  */
 
-function makeEventUid(element, uid) {
+function makeEventUid(element: any, uid?: string): string | number {
   return (uid && `${uid}::${uidEvent++}`) || element.uidEvent || uidEvent++
 }
 
-function getElementEvents(element) {
+function getElementEvents(element: Element & { uidEvent?: string | number }): ElementEvents {
   const uid = makeEventUid(element)
 
   element.uidEvent = uid
@@ -86,23 +104,23 @@ function getElementEvents(element) {
   return eventRegistry[uid]
 }
 
-function chassisHandler(element, fn) {
-  return function handler(event) {
+function chassisHandler(element: Element, fn: EventCallable): WrappedHandler {
+  return function handler(event: Event) {
     hydrateObj(event, { delegateTarget: element })
 
-    if (handler.oneOff) {
+    if ((handler as WrappedHandler).oneOff) {
       EventHandler.off(element, event.type, fn)
     }
 
     return fn.apply(element, [event])
-  }
+  } as WrappedHandler
 }
 
-function chassisDelegationHandler(element, selector, fn) {
-  return function handler(event) {
+function chassisDelegationHandler(element: Element, selector: string, fn: EventCallable): WrappedHandler {
+  return function handler(this: Element, event: Event) {
     const domElements = element.querySelectorAll(selector)
 
-    for (let { target } = event; target && target !== this; target = target.parentNode) {
+    for (let { target } = event; target && target !== this; target = (target as Node).parentNode) {
       for (const domElement of domElements) {
         if (domElement !== target) {
           continue
@@ -110,24 +128,24 @@ function chassisDelegationHandler(element, selector, fn) {
 
         hydrateObj(event, { delegateTarget: target })
 
-        if (handler.oneOff) {
+        if ((handler as WrappedHandler).oneOff) {
           EventHandler.off(element, event.type, selector, fn)
         }
 
         return fn.apply(target, [event])
       }
     }
-  }
+  } as WrappedHandler
 }
 
-function findHandler(events, callable, delegationSelector = null) {
+function findHandler(events: Record<string, WrappedHandler>, callable?: EventCallable, delegationSelector: string | null = null): WrappedHandler | undefined {
   return Object.values(events)
     .find(event => event.callable === callable && event.delegationSelector === delegationSelector)
 }
 
-function normalizeParameters(originalTypeEvent, handler, delegationFunction) {
+function normalizeParameters(originalTypeEvent: string, handler?: string | EventCallable, delegationFunction?: EventCallable): [boolean, EventCallable, string] {
   const isDelegated = typeof handler === 'string'
-  const callable = isDelegated ? delegationFunction : (handler || delegationFunction)
+  const callable = (isDelegated ? delegationFunction : (handler || delegationFunction)) as EventCallable
   let typeEvent = getTypeEvent(originalTypeEvent)
 
   if (!nativeEvents.has(typeEvent)) {
@@ -137,18 +155,19 @@ function normalizeParameters(originalTypeEvent, handler, delegationFunction) {
   return [isDelegated, callable, typeEvent]
 }
 
-function addHandler(element, originalTypeEvent, handler, delegationFunction, oneOff) {
+function addHandler(element: Element, originalTypeEvent: string, handler?: string | EventCallable, delegationFunction?: EventCallable, oneOff?: boolean): void {
   if (typeof originalTypeEvent !== 'string' || !element) {
     return
   }
 
-  let [isDelegated, callable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction)
+  const [isDelegated, initialCallable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction)
+  let callable = initialCallable
 
   // in case of mouseenter or mouseleave wrap the handler within a function that checks for its DOM position
   // this prevents the handler from being dispatched the same way as mouseover or mouseout does
   if (originalTypeEvent in customEvents) {
-    const wrapFunction = fn => {
-      return function (event) {
+    const wrapFunction = (fn: EventCallable): EventCallable => {
+      return function (this: any, event: ChassisEvent) {
         if (!event.relatedTarget || (event.relatedTarget !== event.delegateTarget && !event.delegateTarget.contains(event.relatedTarget))) {
           return fn.call(this, event)
         }
@@ -160,7 +179,7 @@ function addHandler(element, originalTypeEvent, handler, delegationFunction, one
 
   const events = getElementEvents(element)
   const handlers = events[typeEvent] || (events[typeEvent] = {})
-  const previousFunction = findHandler(handlers, callable, isDelegated ? handler : null)
+  const previousFunction = findHandler(handlers, callable, isDelegated ? (handler as string) : null)
 
   if (previousFunction) {
     previousFunction.oneOff = previousFunction.oneOff && oneOff
@@ -170,10 +189,10 @@ function addHandler(element, originalTypeEvent, handler, delegationFunction, one
 
   const uid = makeEventUid(callable, originalTypeEvent.replace(namespaceRegex, ''))
   const fn = isDelegated ?
-    chassisDelegationHandler(element, handler, callable) :
+    chassisDelegationHandler(element, handler as string, callable) :
     chassisHandler(element, callable)
 
-  fn.delegationSelector = isDelegated ? handler : null
+  fn.delegationSelector = isDelegated ? (handler as string) : null
   fn.callable = callable
   fn.oneOff = oneOff
   fn.uidEvent = uid
@@ -182,7 +201,7 @@ function addHandler(element, originalTypeEvent, handler, delegationFunction, one
   element.addEventListener(typeEvent, fn, isDelegated)
 }
 
-function removeHandler(element, events, typeEvent, handler, delegationSelector) {
+function removeHandler(element: Element, events: ElementEvents, typeEvent: string, handler?: EventCallable, delegationSelector: string | null = null): void {
   const fn = findHandler(events[typeEvent], handler, delegationSelector)
 
   if (!fn) {
@@ -190,10 +209,10 @@ function removeHandler(element, events, typeEvent, handler, delegationSelector) 
   }
 
   element.removeEventListener(typeEvent, fn, Boolean(delegationSelector))
-  delete events[typeEvent][fn.uidEvent]
+  delete events[typeEvent][fn.uidEvent!]
 }
 
-function removeNamespacedHandlers(element, events, typeEvent, namespace) {
+function removeNamespacedHandlers(element: Element, events: ElementEvents, typeEvent: string, namespace: string): void {
   const storeElementEvent = events[typeEvent] || {}
 
   for (const [handlerKey, event] of Object.entries(storeElementEvent)) {
@@ -203,29 +222,41 @@ function removeNamespacedHandlers(element, events, typeEvent, namespace) {
   }
 }
 
-function getTypeEvent(event) {
+function getTypeEvent(event: string): string {
   // allow to get the native events from namespaced events ('click.cx.button' --> 'click')
   event = event.replace(stripNameRegex, '')
   return customEvents[event] || event
 }
 
+function trigger(element: EventTarget, event: string, args?: Record<string, unknown>): ChassisEvent
+function trigger(element: EventTarget | null, event: string, args?: Record<string, unknown>): ChassisEvent | null
+function trigger(element: EventTarget | null, event: string, args?: Record<string, unknown>): ChassisEvent | null {
+  if (typeof event !== 'string' || !element) {
+    return null
+  }
+
+  const evt = hydrateObj(new Event(event, { bubbles: true, cancelable: true }), args)
+  element.dispatchEvent(evt)
+  return evt
+}
+
 const EventHandler = {
-  on(element, event, handler, delegationFunction) {
-    addHandler(element, event, handler, delegationFunction, false)
+  on(element: EventTarget | null, event: string, handler?: string | EventCallable, delegationFunction?: EventCallable): void {
+    addHandler(element as Element, event, handler, delegationFunction, false)
   },
 
-  one(element, event, handler, delegationFunction) {
-    addHandler(element, event, handler, delegationFunction, true)
+  one(element: EventTarget | null, event: string, handler?: string | EventCallable, delegationFunction?: EventCallable): void {
+    addHandler(element as Element, event, handler, delegationFunction, true)
   },
 
-  off(element, originalTypeEvent, handler, delegationFunction) {
+  off(element: EventTarget | null, originalTypeEvent: string, handler?: string | EventCallable, delegationFunction?: EventCallable): void {
     if (typeof originalTypeEvent !== 'string' || !element) {
       return
     }
 
     const [isDelegated, callable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction)
     const inNamespace = typeEvent !== originalTypeEvent
-    const events = getElementEvents(element)
+    const events = getElementEvents(element as Element)
     const storeElementEvent = events[typeEvent] || {}
     const isNamespace = originalTypeEvent.startsWith('.')
 
@@ -235,13 +266,13 @@ const EventHandler = {
         return
       }
 
-      removeHandler(element, events, typeEvent, callable, isDelegated ? handler : null)
+      removeHandler(element as Element, events, typeEvent, callable, isDelegated ? (handler as string) : null)
       return
     }
 
     if (isNamespace) {
       for (const elementEvent of Object.keys(events)) {
-        removeNamespacedHandlers(element, events, elementEvent, originalTypeEvent.slice(1))
+        removeNamespacedHandlers(element as Element, events, elementEvent, originalTypeEvent.slice(1))
       }
     }
 
@@ -249,26 +280,18 @@ const EventHandler = {
       const handlerKey = keyHandlers.replace(stripUidRegex, '')
 
       if (!inNamespace || originalTypeEvent.includes(handlerKey)) {
-        removeHandler(element, events, typeEvent, event.callable, event.delegationSelector)
+        removeHandler(element as Element, events, typeEvent, event.callable, event.delegationSelector)
       }
     }
   },
 
-  trigger(element, event, args) {
-    if (typeof event !== 'string' || !element) {
-      return null
-    }
-
-    const evt = hydrateObj(new Event(event, { bubbles: true, cancelable: true }), args)
-    element.dispatchEvent(evt)
-    return evt
-  }
+  trigger
 }
 
-function hydrateObj(obj, meta = {}) {
+function hydrateObj<T extends object>(obj: T, meta: Record<string, unknown> = {}): T & Record<string, any> {
   for (const [key, value] of Object.entries(meta)) {
     try {
-      obj[key] = value
+      (obj as Record<string, unknown>)[key] = value
     } catch {
       Object.defineProperty(obj, key, {
         configurable: true,
@@ -283,3 +306,4 @@ function hydrateObj(obj, meta = {}) {
 }
 
 export default EventHandler
+export type { ChassisEvent, EventCallable }

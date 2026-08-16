@@ -10,7 +10,7 @@ import { getElement, executeAfterTransition } from './util/index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS base-component.js
+ * Chassis CSS base-component.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

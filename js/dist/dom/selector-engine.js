@@ -7,7 +7,7 @@ import { isDisabled, isVisible, parseSelector } from '../util/index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dom/selector-engine.js
+ * Chassis CSS dom/selector-engine.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

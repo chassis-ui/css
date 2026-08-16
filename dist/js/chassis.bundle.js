@@ -5,7 +5,7 @@
   */
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dom/data.js
+ * Chassis CSS dom/data.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -24,13 +24,13 @@ const Data = {
     instanceMap.set(key, instance);
   },
   get(element, key) {
-    if (elementMap.has(element)) {
+    if (element && elementMap.has(element)) {
       return elementMap.get(element).get(key) || null;
     }
     return null;
   },
   getAny(element) {
-    if (elementMap.has(element)) {
+    if (element && elementMap.has(element)) {
       return elementMap.get(element).values().next().value || null;
     }
     return null;
@@ -51,9 +51,13 @@ const Data = {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dom/event-handler.js
+ * Chassis CSS dom/event-handler.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
+ */
+
+/**
+ * Types
  */
 
 /**
@@ -132,7 +136,8 @@ function addHandler(element, originalTypeEvent, handler, delegationFunction, one
   if (typeof originalTypeEvent !== 'string' || !element) {
     return;
   }
-  let [isDelegated, callable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction);
+  const [isDelegated, initialCallable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction);
+  let callable = initialCallable;
 
   // in case of mouseenter or mouseleave wrap the handler within a function that checks for its DOM position
   // this prevents the handler from being dispatched the same way as mouseover or mouseout does
@@ -162,7 +167,7 @@ function addHandler(element, originalTypeEvent, handler, delegationFunction, one
   handlers[uid] = fn;
   element.addEventListener(typeEvent, fn, isDelegated);
 }
-function removeHandler(element, events, typeEvent, handler, delegationSelector) {
+function removeHandler(element, events, typeEvent, handler, delegationSelector = null) {
   const fn = findHandler(events[typeEvent], handler, delegationSelector);
   if (!fn) {
     return;
@@ -182,6 +187,17 @@ function getTypeEvent(event) {
   // allow to get the native events from namespaced events ('click.cx.button' --> 'click')
   event = event.replace(stripNameRegex, '');
   return customEvents[event] || event;
+}
+function trigger(element, event, args) {
+  if (typeof event !== 'string' || !element) {
+    return null;
+  }
+  const evt = hydrateObj(new Event(event, {
+    bubbles: true,
+    cancelable: true
+  }), args);
+  element.dispatchEvent(evt);
+  return evt;
 }
 const EventHandler = {
   on(element, event, handler, delegationFunction) {
@@ -219,17 +235,7 @@ const EventHandler = {
       }
     }
   },
-  trigger(element, event, args) {
-    if (typeof event !== 'string' || !element) {
-      return null;
-    }
-    const evt = hydrateObj(new Event(event, {
-      bubbles: true,
-      cancelable: true
-    }), args);
-    element.dispatchEvent(evt);
-    return evt;
-  }
+  trigger
 };
 function hydrateObj(obj, meta = {}) {
   for (const [key, value] of Object.entries(meta)) {
@@ -249,7 +255,7 @@ function hydrateObj(obj, meta = {}) {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dom/manipulator.js
+ * Chassis CSS dom/manipulator.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -510,11 +516,15 @@ const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/config.js
+ * Chassis CSS util/config.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
+
+/**
+ * Types
+ */
 
 /**
  * Class definition
@@ -541,6 +551,8 @@ class Config {
     return config;
   }
   _mergeConfigObj(config, element) {
+    // Non-null assertion: isElement() is still a plain JS boolean check (Phase 3 gives it
+    // a real `object is Element` type predicate), so it doesn't narrow `element` here yet.
     const jsonConfig = isElement$1(element) ? Manipulator.getDataAttribute(element, 'config') : {}; // try to parse
 
     return {
@@ -563,7 +575,7 @@ class Config {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS base-component.js
+ * Chassis CSS base-component.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -634,7 +646,7 @@ class BaseComponent extends Config {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dom/selector-engine.js
+ * Chassis CSS dom/selector-engine.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

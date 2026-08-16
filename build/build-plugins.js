@@ -24,10 +24,12 @@ const jsFiles = await globby(`${sourcePath}/**/*.{js,ts}`)
 const resolvedPlugins = []
 
 for (const file of jsFiles) {
+  const dist = file.replace('src', 'dist').replace(/\.ts$/, '.js')
+
   resolvedPlugins.push({
     src: file,
-    dist: file.replace('src', 'dist').replace(/\.ts$/, '.js'),
-    fileName: path.basename(file)
+    dist,
+    fileName: path.basename(dist)
   })
 }
 
@@ -42,7 +44,7 @@ const build = async (plugin) => {
         // Include the helpers in each file, at most one copy of each
         babelHelpers: 'bundled',
         extensions: ['.js', '.ts'],
-        presets: ['@babel/preset-typescript']
+        presets: [['@babel/preset-typescript', { allowDeclareFields: true }]]
       })
     ],
     external: () => true

@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dom/data.js
+ * Chassis CSS dom/data.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -9,41 +9,41 @@
  * Constants
  */
 
-const elementMap = new Map()
+const elementMap = new Map<Element, Map<string, unknown>>()
 
 export default {
-  set(element, key, instance) {
+  set(element: Element, key: string, instance: unknown): void {
     if (!elementMap.has(element)) {
       elementMap.set(element, new Map())
     }
 
-    const instanceMap = elementMap.get(element)
+    const instanceMap = elementMap.get(element)!
 
     instanceMap.set(key, instance)
   },
 
-  get(element, key) {
-    if (elementMap.has(element)) {
-      return elementMap.get(element).get(key) || null
+  get(element: Element | null, key: string): any {
+    if (element && elementMap.has(element)) {
+      return elementMap.get(element)!.get(key) || null
     }
 
     return null
   },
 
-  getAny(element) {
-    if (elementMap.has(element)) {
-      return elementMap.get(element).values().next().value || null
+  getAny(element: Element | null): any {
+    if (element && elementMap.has(element)) {
+      return elementMap.get(element)!.values().next().value || null
     }
 
     return null
   },
 
-  remove(element, key) {
+  remove(element: Element, key: string): void {
     if (!elementMap.has(element)) {
       return
     }
 
-    const instanceMap = elementMap.get(element)
+    const instanceMap = elementMap.get(element)!
 
     instanceMap.delete(key)
 

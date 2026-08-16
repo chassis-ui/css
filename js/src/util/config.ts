@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/config.js
+ * Chassis CSS util/config.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -9,46 +9,56 @@ import Manipulator from '../dom/manipulator.js'
 import { isElement, toType } from './index.js'
 
 /**
+ * Types
+ */
+
+type ComponentConfig = Record<string, any>
+
+/**
  * Class definition
  */
 
 class Config {
+  declare ['constructor']: typeof Config
+
   // Getters
-  static get Default() {
+  static get Default(): ComponentConfig {
     return {}
   }
 
-  static get DefaultType() {
+  static get DefaultType(): ComponentConfig {
     return {}
   }
 
-  static get NAME() {
+  static get NAME(): string {
     throw new Error('You have to implement the static method "NAME", for each component!')
   }
 
-  _getConfig(config) {
+  protected _getConfig(config?: ComponentConfig | null): ComponentConfig {
     config = this._mergeConfigObj(config)
     config = this._configAfterMerge(config)
     this._typeCheckConfig(config)
     return config
   }
 
-  _configAfterMerge(config) {
+  protected _configAfterMerge(config: ComponentConfig): ComponentConfig {
     return config
   }
 
-  _mergeConfigObj(config, element) {
-    const jsonConfig = isElement(element) ? Manipulator.getDataAttribute(element, 'config') : {} // try to parse
+  protected _mergeConfigObj(config?: ComponentConfig | null, element?: Element): ComponentConfig {
+    // Non-null assertion: isElement() is still a plain JS boolean check (Phase 3 gives it
+    // a real `object is Element` type predicate), so it doesn't narrow `element` here yet.
+    const jsonConfig = isElement(element) ? Manipulator.getDataAttribute(element!, 'config') : {} // try to parse
 
     return {
       ...this.constructor.Default,
       ...(typeof jsonConfig === 'object' ? jsonConfig : {}),
-      ...(isElement(element) ? Manipulator.getDataAttributes(element) : {}),
+      ...(isElement(element) ? Manipulator.getDataAttributes(element as HTMLElement) : {}),
       ...(typeof config === 'object' ? config : {})
     }
   }
 
-  _typeCheckConfig(config, configTypes = this.constructor.DefaultType) {
+  protected _typeCheckConfig(config: ComponentConfig, configTypes: ComponentConfig = this.constructor.DefaultType): void {
     for (const [property, expectedTypes] of Object.entries(configTypes)) {
       const value = config[property]
       const valueType = isElement(value) ? 'element' : toType(value)
@@ -63,3 +73,4 @@ class Config {
 }
 
 export default Config
+export type { ComponentConfig }

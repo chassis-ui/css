@@ -5,7 +5,7 @@
   */
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dom/data.js
+ * Chassis CSS dom/data.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -24,13 +24,13 @@ const data = {
     instanceMap.set(key, instance);
   },
   get(element, key) {
-    if (elementMap.has(element)) {
+    if (element && elementMap.has(element)) {
       return elementMap.get(element).get(key) || null;
     }
     return null;
   },
   getAny(element) {
-    if (elementMap.has(element)) {
+    if (element && elementMap.has(element)) {
       return elementMap.get(element).values().next().value || null;
     }
     return null;

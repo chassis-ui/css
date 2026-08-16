@@ -8,11 +8,15 @@ import { isElement, toType } from './index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/config.js
+ * Chassis CSS util/config.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
+
+/**
+ * Types
+ */
 
 /**
  * Class definition
@@ -39,6 +43,8 @@ class Config {
     return config;
   }
   _mergeConfigObj(config, element) {
+    // Non-null assertion: isElement() is still a plain JS boolean check (Phase 3 gives it
+    // a real `object is Element` type predicate), so it doesn't narrow `element` here yet.
     const jsonConfig = isElement(element) ? Manipulator.getDataAttribute(element, 'config') : {}; // try to parse
 
     return {

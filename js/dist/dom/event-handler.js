@@ -5,9 +5,13 @@
   */
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dom/event-handler.js
+ * Chassis CSS dom/event-handler.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
+ */
+
+/**
+ * Types
  */
 
 /**
@@ -86,7 +90,8 @@ function addHandler(element, originalTypeEvent, handler, delegationFunction, one
   if (typeof originalTypeEvent !== 'string' || !element) {
     return;
   }
-  let [isDelegated, callable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction);
+  const [isDelegated, initialCallable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction);
+  let callable = initialCallable;
 
   // in case of mouseenter or mouseleave wrap the handler within a function that checks for its DOM position
   // this prevents the handler from being dispatched the same way as mouseover or mouseout does
@@ -116,7 +121,7 @@ function addHandler(element, originalTypeEvent, handler, delegationFunction, one
   handlers[uid] = fn;
   element.addEventListener(typeEvent, fn, isDelegated);
 }
-function removeHandler(element, events, typeEvent, handler, delegationSelector) {
+function removeHandler(element, events, typeEvent, handler, delegationSelector = null) {
   const fn = findHandler(events[typeEvent], handler, delegationSelector);
   if (!fn) {
     return;
@@ -136,6 +141,17 @@ function getTypeEvent(event) {
   // allow to get the native events from namespaced events ('click.cx.button' --> 'click')
   event = event.replace(stripNameRegex, '');
   return customEvents[event] || event;
+}
+function trigger(element, event, args) {
+  if (typeof event !== 'string' || !element) {
+    return null;
+  }
+  const evt = hydrateObj(new Event(event, {
+    bubbles: true,
+    cancelable: true
+  }), args);
+  element.dispatchEvent(evt);
+  return evt;
 }
 const EventHandler = {
   on(element, event, handler, delegationFunction) {
@@ -173,17 +189,7 @@ const EventHandler = {
       }
     }
   },
-  trigger(element, event, args) {
-    if (typeof event !== 'string' || !element) {
-      return null;
-    }
-    const evt = hydrateObj(new Event(event, {
-      bubbles: true,
-      cancelable: true
-    }), args);
-    element.dispatchEvent(evt);
-    return evt;
-  }
+  trigger
 };
 function hydrateObj(obj, meta = {}) {
   for (const [key, value] of Object.entries(meta)) {

@@ -1,11 +1,11 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dom/manipulator.js
+ * Chassis CSS dom/manipulator.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
-function normalizeData(value) {
+function normalizeData(value: string | null | undefined): unknown {
   if (value === 'true') {
     return true
   }
@@ -33,25 +33,25 @@ function normalizeData(value) {
   }
 }
 
-function normalizeDataKey(key) {
+function normalizeDataKey(key: string): string {
   return key.replace(/[A-Z]/g, chr => `-${chr.toLowerCase()}`)
 }
 
 const Manipulator = {
-  setDataAttribute(element, key, value) {
-    element.setAttribute(`data-cx-${normalizeDataKey(key)}`, value)
+  setDataAttribute(element: Element, key: string, value: unknown): void {
+    element.setAttribute(`data-cx-${normalizeDataKey(key)}`, value as string)
   },
 
-  removeDataAttribute(element, key) {
+  removeDataAttribute(element: Element, key: string): void {
     element.removeAttribute(`data-cx-${normalizeDataKey(key)}`)
   },
 
-  getDataAttributes(element) {
+  getDataAttributes(element: HTMLElement | null): Record<string, unknown> {
     if (!element) {
       return {}
     }
 
-    const attributes = {}
+    const attributes: Record<string, unknown> = {}
     const cxKeys = Object.keys(element.dataset).filter(key => key.startsWith('cx') && !key.startsWith('cxConfig'))
 
     for (const key of cxKeys) {
@@ -63,7 +63,7 @@ const Manipulator = {
     return attributes
   },
 
-  getDataAttribute(element, key) {
+  getDataAttribute(element: Element, key: string): unknown {
     return normalizeData(element.getAttribute(`data-cx-${normalizeDataKey(key)}`))
   }
 }

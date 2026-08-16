@@ -1,13 +1,13 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dom/selector-engine.js
+ * Chassis CSS dom/selector-engine.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
 import { isDisabled, isVisible, parseSelector } from '../util/index.js'
 
-const getSelector = element => {
+const getSelector = (element: Element): string | null => {
   let selector = element.getAttribute('data-cx-target')
 
   if (!selector || selector === '#') {
@@ -32,31 +32,31 @@ const getSelector = element => {
 }
 
 const SelectorEngine = {
-  find(selector, element = document.documentElement) {
-    return [...Element.prototype.querySelectorAll.call(element, selector)]
+  find<T extends Element = HTMLElement>(selector: string, element: ParentNode = document.documentElement): T[] {
+    return [...Element.prototype.querySelectorAll.call(element as Element, selector)] as T[]
   },
 
-  findOne(selector, element = document.documentElement) {
-    return Element.prototype.querySelector.call(element, selector)
+  findOne<T extends Element = HTMLElement>(selector: string, element: ParentNode = document.documentElement): T | null {
+    return Element.prototype.querySelector.call(element as Element, selector) as T | null
   },
 
-  children(element, selector) {
+  children(element: Element, selector: string): Element[] {
     return [...element.children].filter(child => child.matches(selector))
   },
 
-  parents(element, selector) {
+  parents(element: Element, selector: string): Element[] {
     const parents = []
-    let ancestor = element.parentNode.closest(selector)
+    let ancestor = (element.parentNode as Element).closest(selector)
 
     while (ancestor) {
       parents.push(ancestor)
-      ancestor = ancestor.parentNode.closest(selector)
+      ancestor = (ancestor.parentNode as Element).closest(selector)
     }
 
     return parents
   },
 
-  prev(element, selector) {
+  prev(element: Element, selector: string): Element[] {
     let previous = element.previousElementSibling
 
     while (previous) {
@@ -71,7 +71,7 @@ const SelectorEngine = {
   },
 
   // TODO: this is now unused; remove later along with prev()
-  next(element, selector) {
+  next(element: Element, selector: string): Element[] {
     let next = element.nextElementSibling
 
     while (next) {
@@ -85,7 +85,7 @@ const SelectorEngine = {
     return []
   },
 
-  focusableChildren(element) {
+  focusableChildren(element: Element): HTMLElement[] {
     const focusables = [
       'a',
       'button',
@@ -97,10 +97,10 @@ const SelectorEngine = {
       '[contenteditable="true"]'
     ].map(selector => `${selector}:not([tabindex^="-"])`).join(',')
 
-    return this.find(focusables, element).filter(el => !isDisabled(el) && isVisible(el))
+    return this.find<HTMLElement>(focusables, element).filter(el => !isDisabled(el) && isVisible(el))
   },
 
-  getSelectorFromElement(element) {
+  getSelectorFromElement(element: Element): string | null {
     const selector = getSelector(element)
 
     if (selector) {
@@ -110,13 +110,13 @@ const SelectorEngine = {
     return null
   },
 
-  getElementFromSelector(element) {
+  getElementFromSelector(element: Element): HTMLElement | null {
     const selector = getSelector(element)
 
     return selector ? SelectorEngine.findOne(selector) : null
   },
 
-  getMultipleElementsFromSelector(element) {
+  getMultipleElementsFromSelector(element: Element): HTMLElement[] {
     const selector = getSelector(element)
 
     return selector ? SelectorEngine.find(selector) : []
