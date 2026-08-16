@@ -228,11 +228,14 @@ class FloatingBase extends BaseComponent {
   }
 
   protected _getFloatingConfig(placement: Placement | string, middleware: Middleware[]): Record<string, any> {
-    const defaultConfig = {
-      placement,
-      middleware
-    }
+    return this._mergeFloatingConfig({ placement, middleware })
+  }
 
+  // Merges a subclass-supplied default config with the user's `floatingConfig`
+  // option (object or a function of the default). Subclasses that need extra
+  // fields in the default (e.g. Menu's `strategy`) build their own defaultConfig
+  // and call this instead of reimplementing the merge.
+  protected _mergeFloatingConfig(defaultConfig: Record<string, any>): Record<string, any> {
     return {
       ...defaultConfig,
       ...execute(this._config.floatingConfig, [undefined, defaultConfig])

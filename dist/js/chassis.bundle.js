@@ -203,7 +203,7 @@ const EventHandler = {
 	off(element, originalTypeEvent, handler, delegationFunction) {
 		if (typeof originalTypeEvent !== "string" || !element) return;
 		const [isDelegated, callable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction);
-		const inNamespace = typeEvent !== originalTypeEvent;
+		const inNamespace = typeEvent !== originalTypeEvent && originalTypeEvent.includes(".");
 		const events = getElementEvents(element);
 		const storeElementEvent = events[typeEvent] || {};
 		const isNamespace = originalTypeEvent.startsWith(".");
@@ -3244,10 +3244,12 @@ var FloatingBase = class FloatingBase extends BaseComponent {
 		return middleware;
 	}
 	_getFloatingConfig(placement, middleware) {
-		const defaultConfig = {
+		return this._mergeFloatingConfig({
 			placement,
 			middleware
-		};
+		});
+	}
+	_mergeFloatingConfig(defaultConfig) {
 		return {
 			...defaultConfig,
 			...execute(this._config.floatingConfig, [void 0, defaultConfig])
@@ -3351,6 +3353,8 @@ var Menu = class Menu extends FloatingBase {
 		this._openSubmenus = /* @__PURE__ */ new Map();
 		this._submenuCloseTimeouts = /* @__PURE__ */ new Map();
 		this._hoverIntentSamples = [];
+		this._mousemoveRAF = null;
+		this._pendingMouseEvent = null;
 		this._menu = this._config.menu || this._findMenu();
 		this._menuOriginalParent = this._menu?.parentNode;
 		this._parseResponsivePlacements();
@@ -3391,6 +3395,11 @@ var Menu = class Menu extends FloatingBase {
 	dispose() {
 		this._closeAllSubmenus();
 		this._clearAllSubmenuTimeouts();
+		if (this._mousemoveRAF !== null) {
+			cancelAnimationFrame(this._mousemoveRAF);
+			this._mousemoveRAF = null;
+		}
+		this._pendingMouseEvent = null;
 		this._disposeFloating();
 		this._restoreMenuToOriginalParent();
 		this._disposeMediaQueryListeners();
@@ -3559,15 +3568,11 @@ var Menu = class Menu extends FloatingBase {
 		];
 	}
 	_getFloatingConfig(placement, middleware) {
-		const defaultConfig = {
+		return this._mergeFloatingConfig({
 			placement,
 			middleware,
 			strategy: this._config.strategy
-		};
-		return {
-			...defaultConfig,
-			...execute(this._config.floatingConfig, [void 0, defaultConfig])
-		};
+		});
 	}
 	_getContainer() {
 		const { container } = this._config;
@@ -3610,7 +3615,7 @@ var Menu = class Menu extends FloatingBase {
 				this._onSubmenuLeave(event);
 			});
 			EventHandler.on(this._menu, "mousemove", (event) => {
-				this._trackMousePosition(event);
+				this._scheduleTrackMousePosition(event);
 			});
 		}
 		if (this._config.submenuTrigger === "click" || this._config.submenuTrigger === "both") EventHandler.on(this._menu, "click", SELECTOR_SUBMENU_TOGGLE, (event) => {
@@ -3746,6 +3751,17 @@ var Menu = class Menu extends FloatingBase {
 	_clearAllSubmenuTimeouts() {
 		for (const timeoutId of this._submenuCloseTimeouts.values()) clearTimeout(timeoutId);
 		this._submenuCloseTimeouts.clear();
+	}
+	_scheduleTrackMousePosition(event) {
+		this._pendingMouseEvent = event;
+		if (this._mousemoveRAF !== null) return;
+		this._mousemoveRAF = requestAnimationFrame(() => {
+			this._mousemoveRAF = null;
+			if (this._pendingMouseEvent) {
+				this._trackMousePosition(this._pendingMouseEvent);
+				this._pendingMouseEvent = null;
+			}
+		});
 	}
 	_trackMousePosition(event) {
 		const now = Date.now();
