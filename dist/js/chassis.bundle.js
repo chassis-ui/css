@@ -643,30 +643,32 @@ var Accordion = class extends BaseComponent {
 		if (!this._summary || !this._content || this._isTransitioning) return;
 		if (EventHandler.trigger(this._element, EVENT_OPEN).defaultPrevented) return;
 		this._isTransitioning = true;
-		this._element.style.overflow = "clip";
-		this._element.style.height = `${this._summary.offsetHeight}px`;
-		this._element.style.height = `${this._summary.offsetHeight + this._content.offsetHeight}px`;
+		const element = this._element;
+		element.style.overflow = "clip";
+		element.style.height = `${this._summary.offsetHeight}px`;
+		element.style.height = `${this._summary.offsetHeight + this._content.offsetHeight}px`;
 		this._queueCallback(() => {
-			this._element.style.overflow = "";
-			this._element.style.height = "";
+			element.style.overflow = "";
+			element.style.height = "";
 			this._isTransitioning = false;
-			EventHandler.trigger(this._element, EVENT_OPENED);
-		}, this._element, true);
+			EventHandler.trigger(element, EVENT_OPENED);
+		}, element, true);
 	}
 	close() {
 		if (!this._summary || !this._content) return;
 		const closeEvent = EventHandler.trigger(this._element, EVENT_CLOSE$2);
 		if (this._isTransitioning || closeEvent.defaultPrevented) return;
 		this._isTransitioning = true;
+		const element = this._element;
 		const clone = this._createClone();
-		this._element.style.height = `${this._summary.offsetHeight + this._content.offsetHeight}px`;
-		this._element.style.height = `${this._summary.offsetHeight}px`;
+		element.style.height = `${this._summary.offsetHeight + this._content.offsetHeight}px`;
+		element.style.height = `${this._summary.offsetHeight}px`;
 		this._queueCallback(() => {
-			this._element.style.height = "";
+			element.style.height = "";
 			clone.remove();
 			this._isTransitioning = false;
-			EventHandler.trigger(this._element, EVENT_CLOSED$1);
-		}, this._element, true);
+			EventHandler.trigger(element, EVENT_CLOSED$1);
+		}, element, true);
 	}
 	dispose() {
 		if (this._observer) this._observer.disconnect();
@@ -706,7 +708,7 @@ var Accordion = class extends BaseComponent {
 EventHandler.on(document, EVENT_CLICK_DATA_API$10, SELECTOR_DETAILS, function() {
 	Accordion.getOrCreateInstance(this);
 	const name = this.getAttribute("name");
-	if (name) for (const sibling of SelectorEngine.find(`details[name="${name}"]`, this.parentElement)) Accordion.getOrCreateInstance(sibling);
+	if (name) for (const sibling of SelectorEngine.find(`details[name="${CSS.escape(name)}"]`, this.parentElement)) Accordion.getOrCreateInstance(sibling);
 });
 //#endregion
 //#region js/src/button.ts
