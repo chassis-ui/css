@@ -110,7 +110,8 @@ var Carousel = class extends BaseComponent {
 		return NAME;
 	}
 	next() {
-		this.to(this._nextRawIndex());
+		const items = this._getItems();
+		this.to(this._nextRawIndex(items), items);
 	}
 	nextWhenVisible() {
 		if (document.visibilityState === "visible" && isVisible(this._element)) {
@@ -120,7 +121,8 @@ var Carousel = class extends BaseComponent {
 		return false;
 	}
 	prev() {
-		this.to(this._navIndex() - 1);
+		const items = this._getItems();
+		this.to(this._navIndex(items) - 1, items);
 	}
 	pause() {
 		this._clearInterval();
@@ -131,22 +133,21 @@ var Carousel = class extends BaseComponent {
 		this._scheduleAutoplay();
 		this._element.classList.add(CLASS_NAME_PLAYING);
 	}
-	to(index) {
+	to(index, items = this._getItems()) {
 		if (this._looping) return;
-		const items = this._getItems();
 		const rawIndex = Number.parseInt(String(index), 10);
-		if (this._config.ends === ENDS_LOOP && !this._prefersReducedMotion() && this._canLoop()) {
+		if (this._config.ends === ENDS_LOOP && !this._prefersReducedMotion() && this._canLoop(items)) {
 			if (rawIndex > items.length - 1) {
-				this._loopTransition(true);
+				this._loopTransition(true, items);
 				return;
 			}
 			if (rawIndex < 0) {
-				this._loopTransition(false);
+				this._loopTransition(false, items);
 				return;
 			}
 		}
 		const targetIndex = this._normalizeIndex(rawIndex, items.length);
-		const currentIndex = this._navIndex();
+		const currentIndex = this._navIndex(items);
 		if (targetIndex === null || targetIndex === currentIndex) return;
 		if (EventHandler.trigger(this._element, EVENT_SLIDE, {
 			relatedTarget: items[targetIndex],
@@ -155,10 +156,10 @@ var Carousel = class extends BaseComponent {
 			to: targetIndex
 		}).defaultPrevented) return;
 		if (this._isFade()) {
-			this._fadeTo(targetIndex);
+			this._fadeTo(targetIndex, items);
 			return;
 		}
-		this._scrollToIndex(targetIndex);
+		this._scrollToIndex(targetIndex, items);
 	}
 	dispose() {
 		this._clearInterval();
@@ -217,19 +218,21 @@ var Carousel = class extends BaseComponent {
 	_handleIntersection(entries) {
 		if (this._looping) return;
 		for (const entry of entries) this._visibility.set(entry.target, entry.isIntersecting ? entry.intersectionRatio : 0);
-		const ratios = this._getItems().map((item) => this._visibility.get(item) ?? 0);
+		const items = this._getItems();
+		const ratios = items.map((item) => this._visibility.get(item) ?? 0);
 		const maxRatio = Math.max(...ratios);
 		let bestIndex = this._activeIndex;
 		if (maxRatio > 0) bestIndex = ratios.findIndex((ratio) => ratio >= maxRatio - ACTIVE_RATIO_TOLERANCE);
-		this._setActive(bestIndex);
-		this._updateEndControls();
+		this._setActive(bestIndex, items);
+		this._updateEndControls(items);
 	}
-	_navIndex() {
+	_navIndex(items = this._getItems()) {
 		if (this._isFade() || this._viewport.scrollWidth - this._viewport.clientWidth <= 0) return this._activeIndex;
 		let index = this._activeIndex;
 		let smallestDelta = Number.POSITIVE_INFINITY;
-		for (const [itemIndex, item] of this._getItems().entries()) {
-			const delta = Math.abs(this._scrollDelta(item));
+		const viewportRect = this._viewport.getBoundingClientRect();
+		for (const [itemIndex, item] of items.entries()) {
+			const delta = Math.abs(this._scrollDelta(item, viewportRect));
 			if (delta < smallestDelta) {
 				smallestDelta = delta;
 				index = itemIndex;
@@ -237,8 +240,8 @@ var Carousel = class extends BaseComponent {
 		}
 		return index;
 	}
-	_scrollToIndex(index) {
-		const item = this._getItems()[index];
+	_scrollToIndex(index, items = this._getItems()) {
+		const item = items[index];
 		if (!item) return;
 		const left = this._scrollDelta(item);
 		if (Math.abs(left) < 1) return;
@@ -286,15 +289,13 @@ var Carousel = class extends BaseComponent {
 		};
 		this._scrollFrame = requestAnimationFrame(step);
 	}
-	_scrollDelta(element) {
-		const viewportRect = this._viewport.getBoundingClientRect();
+	_scrollDelta(element, viewportRect = this._viewport.getBoundingClientRect()) {
 		const rect = element.getBoundingClientRect();
 		if (this._element.classList.contains(CLASS_NAME_CENTER)) return rect.left + rect.width / 2 - (viewportRect.left + viewportRect.width / 2);
 		const padStart = Number.parseFloat(getComputedStyle(this._viewport).scrollPaddingInlineStart) || 0;
 		return isRTL() ? rect.right - (viewportRect.right - padStart) : rect.left - (viewportRect.left + padStart);
 	}
-	_loopTransition(isNext) {
-		const items = this._getItems();
+	_loopTransition(isNext, items) {
 		const last = items.length - 1;
 		const fromIndex = this._activeIndex;
 		const toIndex = isNext ? 0 : last;
@@ -323,7 +324,7 @@ var Carousel = class extends BaseComponent {
 			clone.remove();
 			this._jumpScroll(this._scrollDelta(items[toIndex]));
 			this._activeIndex = toIndex;
-			this._refreshActiveState();
+			this._refreshActiveState(items);
 			EventHandler.trigger(this._element, EVENT_SLID, {
 				relatedTarget: items[toIndex],
 				direction,
@@ -346,15 +347,14 @@ var Carousel = class extends BaseComponent {
 			behavior: "instant"
 		});
 	}
-	_fadeTo(index) {
-		this._setActive(index);
+	_fadeTo(index, items) {
+		this._setActive(index, items);
 	}
-	_setActive(index) {
-		const items = this._getItems();
+	_setActive(index, items = this._getItems()) {
 		if (index === this._activeIndex || !items[index]) return;
 		const from = this._activeIndex;
 		this._activeIndex = index;
-		this._refreshActiveState();
+		this._refreshActiveState(items);
 		EventHandler.trigger(this._element, EVENT_SLID, {
 			relatedTarget: items[index],
 			direction: this._direction(from, index),
@@ -362,20 +362,19 @@ var Carousel = class extends BaseComponent {
 			to: index
 		});
 	}
-	_refreshActiveState() {
-		const items = this._getItems();
+	_refreshActiveState(items = this._getItems()) {
 		for (const [index, item] of items.entries()) item.classList.toggle(CLASS_NAME_ACTIVE, index === this._activeIndex);
 		this._setActiveIndicatorElement(this._activeIndex);
-		this._updateEndControls();
+		this._updateEndControls(items);
 	}
-	_updateEndControls() {
+	_updateEndControls(items = this._getItems()) {
 		if (this._config.ends !== ENDS_STOP) return;
-		const { atStart, atEnd } = this._scrollEdges();
+		const { atStart, atEnd } = this._scrollEdges(items);
 		this._preserveFocus(atStart, atEnd);
 		this._setControlsDisabled(this._prevControls, atStart);
 		this._setControlsDisabled(this._nextControls, atEnd);
 	}
-	_scrollEdges() {
+	_scrollEdges(items) {
 		const viewport = this._viewport;
 		const maxScroll = viewport.scrollWidth - viewport.clientWidth;
 		if (maxScroll > 0) {
@@ -385,7 +384,7 @@ var Carousel = class extends BaseComponent {
 				atEnd: progress >= maxScroll - 1
 			};
 		}
-		const last = this._getItems().length - 1;
+		const last = items.length - 1;
 		return {
 			atStart: this._activeIndex <= 0,
 			atEnd: this._activeIndex >= last
@@ -431,8 +430,8 @@ var Carousel = class extends BaseComponent {
 	_wrapsAround() {
 		return this._config.ends === ENDS_WRAP || this._config.ends === ENDS_LOOP;
 	}
-	_canLoop() {
-		if (this._isFade() || this._getItems().length < 2) return false;
+	_canLoop(items) {
+		if (this._isFade() || items.length < 2) return false;
 		const styles = getComputedStyle(this._element);
 		const num = (name) => Number.parseFloat(styles.getPropertyValue(name)) || 0;
 		return (num("--cx-carousel-items") || 1) === 1 && num("--cx-carousel-items-peek") === 0 && !this._element.classList.contains(CLASS_NAME_CENTER) && !this._element.classList.contains(CLASS_NAME_AUTO);
@@ -459,11 +458,12 @@ var Carousel = class extends BaseComponent {
 		}, interval);
 	}
 	_upcomingIndex() {
-		return this._normalizeIndex(this._nextRawIndex(), this._getItems().length);
+		const items = this._getItems();
+		return this._normalizeIndex(this._nextRawIndex(items), items.length);
 	}
-	_nextRawIndex() {
-		if (this._wrapsAround() && this._scrollEdges().atEnd) return this._getItems().length;
-		return this._navIndex() + 1;
+	_nextRawIndex(items) {
+		if (this._wrapsAround() && this._scrollEdges(items).atEnd) return items.length;
+		return this._navIndex(items) + 1;
 	}
 	_itemInterval(index = this._activeIndex) {
 		const item = this._getItems()[index];

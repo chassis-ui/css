@@ -196,7 +196,8 @@ class Carousel extends BaseComponent {
 
   // Public
   next(): void {
-    this.to(this._nextRawIndex())
+    const items = this._getItems()
+    this.to(this._nextRawIndex(items), items)
   }
 
   nextWhenVisible(): boolean {
@@ -210,7 +211,8 @@ class Carousel extends BaseComponent {
   }
 
   prev(): void {
-    this.to(this._navIndex() - 1)
+    const items = this._getItems()
+    this.to(this._navIndex(items) - 1, items)
   }
 
   pause(): void {
@@ -226,26 +228,28 @@ class Carousel extends BaseComponent {
     this._element.classList.add(CLASS_NAME_PLAYING)
   }
 
-  to(index: number | string): void {
+  // `items` lets `next()`/`prev()` hand off the array they already queried
+  // instead of this method re-querying it; callers navigating to a specific
+  // index directly (indicators, the data-API) fall back to a fresh query.
+  to(index: number | string, items: HTMLElement[] = this._getItems()): void {
     // Ignore navigation while a seamless loop transition is animating
     if (this._looping) {
       return
     }
 
-    const items = this._getItems()
     const rawIndex = Number.parseInt(String(index), 10)
 
     // Seamless loop: continue forward/backward into a transient clone instead of
     // the visible `wrap` jump. Only the simple single-slide scroll layout
     // qualifies, and reduced motion falls back to the plain wrap below.
-    if (this._config.ends === ENDS_LOOP && !this._prefersReducedMotion() && this._canLoop()) {
+    if (this._config.ends === ENDS_LOOP && !this._prefersReducedMotion() && this._canLoop(items)) {
       if (rawIndex > items.length - 1) {
-        this._loopTransition(true)
+        this._loopTransition(true, items)
         return
       }
 
       if (rawIndex < 0) {
-        this._loopTransition(false)
+        this._loopTransition(false, items)
         return
       }
     }
@@ -255,7 +259,7 @@ class Carousel extends BaseComponent {
     // asynchronously, so an indicator/control used mid-scroll must compare
     // against where the viewport actually rests (`_navIndex` returns the tracked
     // active index for fade/non-scrollable layouts).
-    const currentIndex = this._navIndex()
+    const currentIndex = this._navIndex(items)
 
     if (targetIndex === null || targetIndex === currentIndex) {
       return
@@ -273,13 +277,13 @@ class Carousel extends BaseComponent {
     }
 
     if (this._isFade()) {
-      this._fadeTo(targetIndex)
+      this._fadeTo(targetIndex, items)
       return
     }
 
     // Scroll mode: the IntersectionObserver fires `slid` and syncs state once
     // the new slide settles into view.
-    this._scrollToIndex(targetIndex)
+    this._scrollToIndex(targetIndex, items)
   }
 
   override dispose(): void {
@@ -404,11 +408,11 @@ class Carousel extends BaseComponent {
       bestIndex = ratios.findIndex(ratio => ratio >= maxRatio - ACTIVE_RATIO_TOLERANCE)
     }
 
-    this._setActive(bestIndex)
+    this._setActive(bestIndex, items)
     // Keep the end controls in sync with the scroll position even when the
     // active index doesn't change (e.g. the final stretch of a multi-item
     // scroll, where the left-most slide is already the last reachable one).
-    this._updateEndControls()
+    this._updateEndControls(items)
   }
 
   // The index a `next()`/`prev()` step is measured from. Scroll layouts read it
@@ -419,17 +423,20 @@ class Carousel extends BaseComponent {
   // symptom). Fade and non-scrollable layouts have no scroll position to read,
   // so they keep using the tracked active index (also what the unit tests rely
   // on when there's no real layout).
-  protected _navIndex(): number {
+  protected _navIndex(items: HTMLElement[] = this._getItems()): number {
     if (this._isFade() || (this._viewport.scrollWidth - this._viewport.clientWidth) <= 0) {
       return this._activeIndex
     }
 
     let index = this._activeIndex
     let smallestDelta = Number.POSITIVE_INFINITY
+    // Same viewport rect for every item in the loop instead of forcing a
+    // reflow per iteration.
+    const viewportRect = this._viewport.getBoundingClientRect()
 
-    for (const [itemIndex, item] of this._getItems().entries()) {
+    for (const [itemIndex, item] of items.entries()) {
       // The slide currently resting at the active position has ~zero delta.
-      const delta = Math.abs(this._scrollDelta(item))
+      const delta = Math.abs(this._scrollDelta(item, viewportRect))
       if (delta < smallestDelta) {
         smallestDelta = delta
         index = itemIndex
@@ -439,8 +446,8 @@ class Carousel extends BaseComponent {
     return index
   }
 
-  protected _scrollToIndex(index: number): void {
-    const item = this._getItems()[index]
+  protected _scrollToIndex(index: number, items: HTMLElement[] = this._getItems()): void {
+    const item = items[index]
     if (!item) {
       return
     }
@@ -528,8 +535,7 @@ class Carousel extends BaseComponent {
   // (including the page), so an autoplaying carousel below the fold would yank
   // the whole page to itself on each tick. Using bounding rects keeps it
   // direction-agnostic (works in RTL).
-  protected _scrollDelta(element: Element): number {
-    const viewportRect = this._viewport.getBoundingClientRect()
+  protected _scrollDelta(element: Element, viewportRect: DOMRect = this._viewport.getBoundingClientRect()): number {
     const rect = element.getBoundingClientRect()
 
     if (this._element.classList.contains(CLASS_NAME_CENTER)) {
@@ -549,8 +555,7 @@ class Carousel extends BaseComponent {
 
   // Seamless loop: continue past an end into a one-off clone of the destination
   // slide, then teleport to the real slide so there's no visible backward jump.
-  protected _loopTransition(isNext: boolean): void {
-    const items = this._getItems()
+  protected _loopTransition(isNext: boolean, items: HTMLElement[]): void {
     const last = items.length - 1
     const fromIndex = this._activeIndex
     const toIndex = isNext ? 0 : last
@@ -601,7 +606,7 @@ class Carousel extends BaseComponent {
       this._jumpScroll(this._scrollDelta(items[toIndex]))
 
       this._activeIndex = toIndex
-      this._refreshActiveState()
+      this._refreshActiveState(items)
 
       EventHandler.trigger(this._element, EVENT_SLID, {
         relatedTarget: items[toIndex],
@@ -638,12 +643,11 @@ class Carousel extends BaseComponent {
   // mixin). It deliberately avoids the View Transition API: a view transition
   // crossfades a page snapshot over its own (shorter) duration while this CSS
   // fade also runs underneath, so the two animations overlap and visibly stutter.
-  protected _fadeTo(index: number): void {
-    this._setActive(index)
+  protected _fadeTo(index: number, items: HTMLElement[]): void {
+    this._setActive(index, items)
   }
 
-  protected _setActive(index: number): void {
-    const items = this._getItems()
+  protected _setActive(index: number, items: HTMLElement[] = this._getItems()): void {
     if (index === this._activeIndex || !items[index]) {
       return
     }
@@ -651,7 +655,7 @@ class Carousel extends BaseComponent {
     const from = this._activeIndex
 
     this._activeIndex = index
-    this._refreshActiveState()
+    this._refreshActiveState(items)
 
     EventHandler.trigger(this._element, EVENT_SLID, {
       relatedTarget: items[index],
@@ -661,18 +665,16 @@ class Carousel extends BaseComponent {
     })
   }
 
-  protected _refreshActiveState(): void {
-    const items = this._getItems()
-
+  protected _refreshActiveState(items: HTMLElement[] = this._getItems()): void {
     for (const [index, item] of items.entries()) {
       item.classList.toggle(CLASS_NAME_ACTIVE, index === this._activeIndex)
     }
 
     this._setActiveIndicatorElement(this._activeIndex)
-    this._updateEndControls()
+    this._updateEndControls(items)
   }
 
-  protected _updateEndControls(): void {
+  protected _updateEndControls(items: HTMLElement[] = this._getItems()): void {
     // Only `ends: 'stop'` has real ends; under `wrap`/`loop` you can always
     // advance, so disabling end controls would be meaningless. When stopping,
     // disable the prev control at the start of the scroll range and the next
@@ -681,7 +683,7 @@ class Carousel extends BaseComponent {
       return
     }
 
-    const { atStart, atEnd } = this._scrollEdges()
+    const { atStart, atEnd } = this._scrollEdges(items)
 
     // Decide where focus should land, if it needs to move, before either
     // side is actually disabled below — otherwise disabling prev first can
@@ -695,7 +697,7 @@ class Carousel extends BaseComponent {
   // Whether the viewport is resting at either scroll extent. Used both to drive
   // `ends: 'stop'`'s end controls and to detect when a forward step under
   // `wrap`/`loop` has nowhere left to scroll to (see `_nextRawIndex`).
-  protected _scrollEdges(): { atStart: boolean, atEnd: boolean } {
+  protected _scrollEdges(items: HTMLElement[]): { atStart: boolean, atEnd: boolean } {
     const viewport = this._viewport
     const maxScroll = viewport.scrollWidth - viewport.clientWidth
 
@@ -710,7 +712,7 @@ class Carousel extends BaseComponent {
 
     // Not scrollable (or no layout yet, e.g. in unit tests): fall back to the
     // active index for the single-slide case.
-    const last = this._getItems().length - 1
+    const last = items.length - 1
     return { atStart: this._activeIndex <= 0, atEnd: this._activeIndex >= last }
   }
 
@@ -808,8 +810,8 @@ class Carousel extends BaseComponent {
   // Seamless looping is only supported for the simple single-slide scroll
   // layout. Multi-item, peek, center, and variable-width layouts fall back to
   // the plain `wrap` jump.
-  protected _canLoop(): boolean {
-    if (this._isFade() || this._getItems().length < 2) {
+  protected _canLoop(items: HTMLElement[]): boolean {
+    if (this._isFade() || items.length < 2) {
       return false
     }
 
@@ -868,7 +870,8 @@ class Carousel extends BaseComponent {
   // position (which still reflects the current slide when the timer fires).
   // Returns `null` when there's nowhere left to advance (`ends: stop` at the end).
   protected _upcomingIndex(): number | null {
-    return this._normalizeIndex(this._nextRawIndex(), this._getItems().length)
+    const items = this._getItems()
+    return this._normalizeIndex(this._nextRawIndex(items), items.length)
   }
 
   // The raw (pre-normalize) index a forward step targets. Ordinarily that's just
@@ -878,12 +881,12 @@ class Carousel extends BaseComponent {
   // `+ 1` alone never crosses the `_normalizeIndex` wrap threshold. Once the
   // viewport has actually run out of room to scroll, treat it as past the last
   // slide so `wrap`/`loop` can wrap back to the start.
-  protected _nextRawIndex(): number {
-    if (this._wrapsAround() && this._scrollEdges().atEnd) {
-      return this._getItems().length
+  protected _nextRawIndex(items: HTMLElement[]): number {
+    if (this._wrapsAround() && this._scrollEdges(items).atEnd) {
+      return items.length
     }
 
-    return this._navIndex() + 1
+    return this._navIndex(items) + 1
   }
 
   protected _itemInterval(index: number = this._activeIndex): number {
