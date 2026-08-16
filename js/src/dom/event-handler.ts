@@ -74,6 +74,7 @@ const nativeEvents = new Set([
   'reset',
   'select',
   'submit',
+  'paste',
   'focusin',
   'focusout',
   'load',

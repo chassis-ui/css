@@ -8,6 +8,7 @@
 import BaseComponent from './base-component.js'
 import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
+import { getClipboardText } from './util/index.js'
 
 /**
  * Constants
@@ -217,7 +218,7 @@ class OtpInput extends BaseComponent {
 
   protected _handlePaste(event: ChassisEvent): void {
     event.preventDefault()
-    const pastedData = (event.clipboardData || (window as any).clipboardData).getData('text')
+    const pastedData = getClipboardText(event)
     const digits = pastedData.replace(/\D/g, '').slice(0, this._inputs.length)
 
     if (digits) {

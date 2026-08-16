@@ -53,6 +53,7 @@ const nativeEvents = /* @__PURE__ */ new Set([
 	"reset",
 	"select",
 	"submit",
+	"paste",
 	"focusin",
 	"focusout",
 	"load",

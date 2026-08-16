@@ -75,6 +75,9 @@ const isDisabled = (element) => {
 const preventNavigationForAnchor = (event, element) => {
 	if (["A", "AREA"].includes(element.tagName)) event.preventDefault();
 };
+const getClipboardText = (event) => {
+	return (event.clipboardData || window.clipboardData).getData("text");
+};
 const setAriaAttribute = (element, name, value) => {
 	element.setAttribute(name, String(value));
 };
@@ -146,6 +149,6 @@ const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed
 	return list[Math.max(0, Math.min(index, listLength - 1))];
 };
 //#endregion
-export { execute, executeAfterTransition, findShadowRoot, getElement, getNextActiveElement, getTransitionDurationFromElement, getUID, isDisabled, isElement, isRTL, isVisible, noop, onDOMContentLoaded, parseSelector, preventNavigationForAnchor, reflow, setAriaAttribute, toType, triggerTransitionEnd };
+export { execute, executeAfterTransition, findShadowRoot, getClipboardText, getElement, getNextActiveElement, getTransitionDurationFromElement, getUID, isDisabled, isElement, isRTL, isVisible, noop, onDOMContentLoaded, parseSelector, preventNavigationForAnchor, reflow, setAriaAttribute, toType, triggerTransitionEnd };
 
 //# sourceMappingURL=index.js.map

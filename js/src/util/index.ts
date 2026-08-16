@@ -145,6 +145,12 @@ const preventNavigationForAnchor = (event: Event, element: Element): void => {
   }
 }
 
+// Clipboard data lives on event.clipboardData in modern browsers, falling back to
+// the legacy window.clipboardData some callers still need to support.
+const getClipboardText = (event: Event & Record<string, any>): string => {
+  return (event.clipboardData || (window as any).clipboardData).getData('text')
+}
+
 // ARIA state attributes take the strings 'true' and 'false', but we track those
 // states as booleans. This keeps the conversion in one place, so callers do not
 // have to reach for a cast to satisfy `setAttribute`.
@@ -272,6 +278,7 @@ export {
   execute,
   executeAfterTransition,
   findShadowRoot,
+  getClipboardText,
   getElement,
   getNextActiveElement,
   getTransitionDurationFromElement,

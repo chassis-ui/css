@@ -87,6 +87,7 @@ const nativeEvents = /* @__PURE__ */ new Set([
 	"reset",
 	"select",
 	"submit",
+	"paste",
 	"focusin",
 	"focusout",
 	"load",
@@ -352,6 +353,9 @@ const isDisabled = (element) => {
 };
 const preventNavigationForAnchor = (event, element) => {
 	if (["A", "AREA"].includes(element.tagName)) event.preventDefault();
+};
+const getClipboardText = (event) => {
+	return (event.clipboardData || window.clipboardData).getData("text");
 };
 const setAriaAttribute = (element, name, value) => {
 	element.setAttribute(name, String(value));
@@ -1416,7 +1420,6 @@ var ChipInput = class extends BaseComponent {
 		const attrValue = this._element.dataset.cxChips?.trim();
 		if (attrValue) this._config.chipClass = attrValue;
 		this._input = SelectorEngine.findOne(SELECTOR_GHOST_INPUT, this._element);
-		this._chips = [];
 		this._selectedChips = /* @__PURE__ */ new Set();
 		this._anchorChip = null;
 		if (!this._input) this._createInput();
@@ -1435,15 +1438,15 @@ var ChipInput = class extends BaseComponent {
 	add(value) {
 		const trimmedValue = String(value).trim();
 		if (!trimmedValue) return null;
-		if (!this._config.allowDuplicates && this._chips.includes(trimmedValue)) return null;
-		if (this._config.maxChips !== null && this._chips.length >= this._config.maxChips) return null;
+		const currentValues = this.getValues();
+		if (!this._config.allowDuplicates && currentValues.includes(trimmedValue)) return null;
+		if (this._config.maxChips !== null && currentValues.length >= this._config.maxChips) return null;
 		if (EventHandler.trigger(this._element, EVENT_ADD, {
 			value: trimmedValue,
 			relatedTarget: this._input
 		}).defaultPrevented) return null;
 		const chip = this._createChip(trimmedValue);
 		this._element.insertBefore(chip, this._input);
-		this._chips.push(trimmedValue);
 		EventHandler.trigger(this._element, EVENT_CHANGE$2, { values: this.getValues() });
 		return chip;
 	}
@@ -1468,8 +1471,6 @@ var ChipInput = class extends BaseComponent {
 		if (this._anchorChip === chip) this._anchorChip = null;
 		Chip.getInstance(chip)?.dispose();
 		chip.remove();
-		const chipIndex = this._chips.indexOf(value);
-		if (chipIndex !== -1) this._chips.splice(chipIndex, 1);
 		EventHandler.trigger(this._element, EVENT_CHANGE$2, { values: this.getValues() });
 		return true;
 	}
@@ -1479,7 +1480,7 @@ var ChipInput = class extends BaseComponent {
 		this._input?.focus();
 	}
 	getValues() {
-		return [...this._chips];
+		return this._getChipElements().map((chip) => this._getChipValue(chip));
 	}
 	getSelectedValues() {
 		return [...this._selectedChips].map((chip) => this._getChipValue(chip));
@@ -1495,19 +1496,18 @@ var ChipInput = class extends BaseComponent {
 			Chip.getInstance(chip)?.dispose();
 			chip.remove();
 		}
-		this._chips = [];
 		this._selectedChips.clear();
 		this._anchorChip = null;
 		EventHandler.trigger(this._element, EVENT_CHANGE$2, { values: [] });
 	}
-	clearSelection() {
+	clearSelection(silent = false) {
 		for (const chip of this._selectedChips) {
 			chip.classList.remove(CLASS_NAME_ACTIVE$2);
 			chip.setAttribute("aria-selected", "false");
 		}
 		this._selectedChips.clear();
 		this._anchorChip = null;
-		EventHandler.trigger(this._element, EVENT_SELECT, { selected: [] });
+		if (!silent) EventHandler.trigger(this._element, EVENT_SELECT, { selected: [] });
 	}
 	selectChip(chip, options = {}) {
 		const { addToSelection = false, rangeSelect = false } = options;
@@ -1518,7 +1518,7 @@ var ChipInput = class extends BaseComponent {
 			const chipIndex = chipElements.indexOf(chip);
 			const start = Math.min(anchorIndex, chipIndex);
 			const end = Math.max(anchorIndex, chipIndex);
-			if (!addToSelection) this._clearSelectionSilent();
+			if (!addToSelection) this.clearSelection(true);
 			for (let i = start; i <= end; i++) {
 				this._selectedChips.add(chipElements[i]);
 				chipElements[i].classList.add(CLASS_NAME_ACTIVE$2);
@@ -1551,14 +1551,6 @@ var ChipInput = class extends BaseComponent {
 		if (this._input) EventHandler.off(this._input, EVENT_KEY$15);
 		super.dispose();
 	}
-	_clearSelectionSilent() {
-		for (const chip of this._selectedChips) {
-			chip.classList.remove(CLASS_NAME_ACTIVE$2);
-			chip.setAttribute("aria-selected", "false");
-		}
-		this._selectedChips.clear();
-		this._anchorChip = null;
-	}
 	_getChipElements() {
 		return SelectorEngine.find(SELECTOR_CHIP, this._element);
 	}
@@ -1576,7 +1568,6 @@ var ChipInput = class extends BaseComponent {
 			const value = this._getChipValue(chip);
 			if (value) {
 				chip.dataset.cxChipValue = value;
-				this._chips.push(value);
 				this._setupChip(chip);
 			}
 		}
@@ -1616,14 +1607,14 @@ var ChipInput = class extends BaseComponent {
 		return clone.textContent?.trim() || "";
 	}
 	_addEventListeners() {
-		EventHandler.on(this._input, "keydown", (event) => this._handleInputKeydown(event));
-		EventHandler.on(this._input, "input", (event) => this._handleInput(event));
-		EventHandler.on(this._input, "paste", (event) => this._handlePaste(event));
-		EventHandler.on(this._input, "focus", () => this.clearSelection());
-		if (this._config.createOnBlur) EventHandler.on(this._input, "blur", (event) => {
+		EventHandler.on(this._input, `keydown${EVENT_KEY$15}`, (event) => this._handleInputKeydown(event));
+		EventHandler.on(this._input, `input${EVENT_KEY$15}`, (event) => this._handleInput(event));
+		EventHandler.on(this._input, `paste${EVENT_KEY$15}`, (event) => this._handlePaste(event));
+		EventHandler.on(this._input, `focus${EVENT_KEY$15}`, () => this.clearSelection());
+		if (this._config.createOnBlur) EventHandler.on(this._input, `blur${EVENT_KEY$15}`, (event) => {
 			if (!event.relatedTarget?.closest(SELECTOR_CHIP)) this._createChipFromInput();
 		});
-		EventHandler.on(this._element, "click", SELECTOR_CHIP, (event) => {
+		EventHandler.on(this._element, `click${EVENT_KEY$15}`, SELECTOR_CHIP, (event) => {
 			if (event.target.closest(SELECTOR_CHIP_DISMISS)) return;
 			const chip = event.target.closest(SELECTOR_CHIP);
 			if (chip) {
@@ -1635,7 +1626,7 @@ var ChipInput = class extends BaseComponent {
 				chip.focus();
 			}
 		});
-		EventHandler.on(this._element, "click", SELECTOR_CHIP_DISMISS, (event) => {
+		EventHandler.on(this._element, `click${EVENT_KEY$15}`, SELECTOR_CHIP_DISMISS, (event) => {
 			event.stopPropagation();
 			const chip = event.target.closest(SELECTOR_CHIP);
 			if (chip) {
@@ -1643,10 +1634,10 @@ var ChipInput = class extends BaseComponent {
 				this._input?.focus();
 			}
 		});
-		EventHandler.on(this._element, "keydown", SELECTOR_CHIP, (event) => {
+		EventHandler.on(this._element, `keydown${EVENT_KEY$15}`, SELECTOR_CHIP, (event) => {
 			this._handleChipKeydown(event);
 		});
-		EventHandler.on(this._element, "click", (event) => {
+		EventHandler.on(this._element, `click${EVENT_KEY$15}`, (event) => {
 			if (event.target === this._element) {
 				this.clearSelection();
 				this._input?.focus();
@@ -1784,7 +1775,7 @@ var ChipInput = class extends BaseComponent {
 	_handlePaste(event) {
 		const { separator } = this._config;
 		if (!separator) return;
-		const pastedData = (event.clipboardData || window.clipboardData).getData("text");
+		const pastedData = getClipboardText(event);
 		if (pastedData.includes(separator)) {
 			event.preventDefault();
 			const parts = pastedData.split(separator);
@@ -4357,7 +4348,7 @@ var OtpInput = class extends BaseComponent {
 	}
 	_handlePaste(event) {
 		event.preventDefault();
-		const digits = (event.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "").slice(0, this._inputs.length);
+		const digits = getClipboardText(event).replace(/\D/g, "").slice(0, this._inputs.length);
 		if (digits) {
 			this.setValue(digits);
 			const lastIndex = Math.min(digits.length, this._inputs.length) - 1;
