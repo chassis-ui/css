@@ -1,12 +1,12 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS toast.js
+ * Chassis CSS toast.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
 import BaseComponent from './base-component.js'
-import EventHandler from './dom/event-handler.js'
+import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
 import { enableDismissTrigger } from './util/component-functions.js'
 import { reflow } from './util/index.js'
 
@@ -31,13 +31,19 @@ const CLASS_NAME_FADE = 'fade'
 const CLASS_NAME_SHOW = 'show'
 const CLASS_NAME_SHOWING = 'showing'
 
+type ToastConfig = {
+  animation: boolean
+  autohide: boolean
+  delay: number
+}
+
 const DefaultType = {
   animation: 'boolean',
   autohide: 'boolean',
   delay: 'number'
 }
 
-const Default = {
+const Default: ToastConfig = {
   animation: true,
   autohide: true,
   delay: 5000
@@ -48,7 +54,12 @@ const Default = {
  */
 
 class Toast extends BaseComponent {
-  constructor(element, config) {
+  protected declare _config: ToastConfig
+  protected declare _timeout: number | null
+  protected declare _hasMouseInteraction: boolean
+  protected declare _hasKeyboardInteraction: boolean
+
+  constructor(element?: string | Element | null, config?: Partial<ToastConfig> | null) {
     super(element, config)
 
     this._timeout = null
@@ -58,20 +69,20 @@ class Toast extends BaseComponent {
   }
 
   // Getters
-  static get Default() {
+  static override get Default(): ToastConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): Record<string, string> {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  show() {
+  show(): void {
     const showEvent = EventHandler.trigger(this._element, EVENT_SHOW)
 
     if (showEvent.defaultPrevented) {
@@ -97,11 +108,11 @@ class Toast extends BaseComponent {
     this._queueCallback(complete, this._element, this._config.animation)
   }
 
-  toggle() {
+  toggle(): void {
     return this.isShown() ? this.hide() : this.show()
   }
 
-  hide() {
+  hide(): void {
     if (!this.isShown()) {
       return
     }
@@ -123,7 +134,7 @@ class Toast extends BaseComponent {
     this._queueCallback(complete, this._element, this._config.animation)
   }
 
-  dispose() {
+  override dispose(): void {
     this._clearTimeout()
 
     if (this.isShown()) {
@@ -133,12 +144,12 @@ class Toast extends BaseComponent {
     super.dispose()
   }
 
-  isShown() {
+  isShown(): boolean {
     return this._element.classList.contains(CLASS_NAME_SHOW)
   }
 
   // Private
-  _maybeScheduleHide() {
+  protected _maybeScheduleHide(): void {
     if (!this._config.autohide) {
       return
     }
@@ -152,7 +163,7 @@ class Toast extends BaseComponent {
     }, this._config.delay)
   }
 
-  _onInteraction(event, isInteracting) {
+  protected _onInteraction(event: ChassisEvent, isInteracting: boolean): void {
     switch (event.type) {
       case 'mouseover':
       case 'mouseout': {
@@ -184,15 +195,15 @@ class Toast extends BaseComponent {
     this._maybeScheduleHide()
   }
 
-  _setListeners() {
+  protected _setListeners(): void {
     EventHandler.on(this._element, EVENT_MOUSEOVER, event => this._onInteraction(event, true))
     EventHandler.on(this._element, EVENT_MOUSEOUT, event => this._onInteraction(event, false))
     EventHandler.on(this._element, EVENT_FOCUSIN, event => this._onInteraction(event, true))
     EventHandler.on(this._element, EVENT_FOCUSOUT, event => this._onInteraction(event, false))
   }
 
-  _clearTimeout() {
-    clearTimeout(this._timeout)
+  protected _clearTimeout(): void {
+    clearTimeout(this._timeout!)
     this._timeout = null
   }
 }
@@ -204,3 +215,4 @@ class Toast extends BaseComponent {
 enableDismissTrigger(Toast)
 
 export default Toast
+export type { ToastConfig }

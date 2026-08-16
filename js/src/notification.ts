@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS notification.js
+ * Chassis CSS notification.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -28,12 +28,12 @@ const CLASS_NAME_SHOW = 'show'
 
 class Notification extends BaseComponent {
   // Getters
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  close() {
+  close(): void {
     const closeEvent = EventHandler.trigger(this._element, EVENT_CLOSE)
 
     if (closeEvent.defaultPrevented) {
@@ -47,7 +47,7 @@ class Notification extends BaseComponent {
   }
 
   // Private
-  _destroyElement() {
+  protected _destroyElement(): void {
     this._element.remove()
     EventHandler.trigger(this._element, EVENT_CLOSED)
     this.dispose()

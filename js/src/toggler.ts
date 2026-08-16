@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS toggler.js
+ * Chassis CSS toggler.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -23,14 +23,23 @@ const EVENT_CLICK = 'click'
 
 const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="toggler"]'
 
-const DefaultType = {
-  attribute: 'string',
-  value: '(string|number|boolean)'
+type TogglerConfig = {
+  attribute: string
+  value: string | number | boolean
 }
 
-const Default = {
+// `value` is required: it's the class/attribute value every `_execute()`
+// branch acts on. The public type omits `null` because `DefaultType` rejects
+// it — `Default.value` is a not-set sentinel that must be overridden, so a
+// Toggler built without a `value` throws from `_typeCheckConfig`.
+const DefaultType = {
+  attribute: 'string',
+  value: '(string|number|boolean|null)'
+}
+
+const Default: TogglerConfig = {
   attribute: 'class',
-  value: null
+  value: null as unknown as TogglerConfig['value']
 }
 
 /**
@@ -38,21 +47,23 @@ const Default = {
  */
 
 class Toggler extends BaseComponent {
+  protected declare _config: TogglerConfig
+
   // Getters
-  static get Default() {
+  static override get Default(): TogglerConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): Record<string, string> {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  toggle() {
+  toggle(): void {
     const toggleEvent = EventHandler.trigger(this._element, EVENT_TOGGLE)
 
     if (toggleEvent.defaultPrevented) {
@@ -65,15 +76,20 @@ class Toggler extends BaseComponent {
   }
 
   // Private
-  _execute() {
+  protected _execute(): void {
     const { attribute, value } = this._config
 
     if (attribute === 'id') {
       return // You have to be kidding
     }
 
+    // Nothing to toggle without a value (e.g. missing `data-cx-value`)
+    if (value === null || value === undefined) {
+      return
+    }
+
     if (attribute === 'class') {
-      this._element.classList.toggle(value)
+      this._element.classList.toggle(value as string)
       return
     }
 
@@ -83,7 +99,7 @@ class Toggler extends BaseComponent {
       return
     }
 
-    this._element.setAttribute(attribute, value)
+    this._element.setAttribute(attribute, value as string)
   }
 }
 
@@ -94,3 +110,4 @@ class Toggler extends BaseComponent {
 eventActionOnPlugin(Toggler, EVENT_CLICK, SELECTOR_DATA_TOGGLE, 'toggle')
 
 export default Toggler
+export type { TogglerConfig }

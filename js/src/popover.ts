@@ -1,12 +1,13 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS popover.js
+ * Chassis CSS popover.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
 import Tooltip from './tooltip.js'
-import EventHandler from './dom/event-handler.js'
+import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
+import type { TemplateContentEntry } from './util/template-factory.js'
 
 /**
  * Constants
@@ -22,8 +23,14 @@ const EVENT_CLICK = 'click'
 const EVENT_FOCUSIN = 'focusin'
 const EVENT_MOUSEENTER = 'mouseenter'
 
-const Default = {
-  ...Tooltip.Default,
+// Tooltip itself isn't converted until Phase 8 (js/src/tooltip.js), so this can't
+// extend a `TooltipConfig` type yet - it's `Record<string, any>` until then.
+type PopoverConfig = Record<string, any> & {
+  content: string | Element | ((...args: any[]) => string | Element) | null
+}
+
+const Default: PopoverConfig = {
+  ...(Tooltip.Default as Record<string, any>),
   content: '',
   offset: [0, 8],
   placement: 'right',
@@ -36,7 +43,7 @@ const Default = {
 }
 
 const DefaultType = {
-  ...Tooltip.DefaultType,
+  ...(Tooltip.DefaultType as Record<string, any>),
   content: '(null|string|element|function)'
 }
 
@@ -45,33 +52,38 @@ const DefaultType = {
  */
 
 class Popover extends Tooltip {
+  protected declare _config: PopoverConfig
+
   // Getters
-  static get Default() {
+  static override get Default(): PopoverConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): Record<string, string> {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Overrides
-  _isWithContent() {
+  protected _isWithContent(): boolean {
     return this._getTitle() || this._getContent()
   }
 
   // Private
-  _getContentForTemplate() {
+  // @ts-expect-error -- Tooltip is still untyped JS until Phase 8, so tsc infers an
+  // overly-narrow return type for the base method from its current object literal.
+  // Remove this once tooltip.js converts and _getContentForTemplate() is properly typed.
+  protected _getContentForTemplate(): Record<string, TemplateContentEntry> {
     return {
       [SELECTOR_TITLE]: this._getTitle(),
       [SELECTOR_CONTENT]: this._getContent()
     }
   }
 
-  _getContent() {
+  protected _getContent(): string | Element | null {
     return this._resolvePossibleFunction(this._config.content)
   }
 }
@@ -80,8 +92,8 @@ class Popover extends Tooltip {
  * Data API implementation - auto-initialize popovers
  */
 
-const initPopover = event => {
-  const target = event.target.closest(SELECTOR_DATA_TOGGLE)
+const initPopover = (event: ChassisEvent): void => {
+  const target = (event.target as Element).closest(SELECTOR_DATA_TOGGLE)
   if (!target) {
     return
   }
@@ -104,3 +116,4 @@ EventHandler.on(document, EVENT_FOCUSIN, SELECTOR_DATA_TOGGLE, initPopover)
 EventHandler.on(document, EVENT_MOUSEENTER, SELECTOR_DATA_TOGGLE, initPopover)
 
 export default Popover
+export type { PopoverConfig }
