@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS accordion.js
+ * Chassis CSS accordion.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -8,6 +8,7 @@
 import BaseComponent from './base-component.js'
 import EventHandler from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
+import type { ComponentConfig } from './util/config.js'
 
 /**
  * Constants
@@ -36,12 +37,18 @@ const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`
  */
 
 class Accordion extends BaseComponent {
+  protected declare _element: HTMLDetailsElement
+  protected declare _summary: HTMLElement | null
+  protected declare _content: HTMLElement | null
+  protected declare _isTransitioning: boolean
+  protected declare _observer: MutationObserver | undefined
+
   // Getters
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
-  constructor(element, config) {
+  constructor(element?: string | Element | null, config?: ComponentConfig | null) {
     super(element, config)
 
     this._summary = SelectorEngine.findOne(SELECTOR_SUMMARY, this._element)
@@ -59,7 +66,7 @@ class Accordion extends BaseComponent {
   }
 
   // Public
-  toggle() {
+  toggle(): void {
     if (this._element.open) {
       this.close()
     } else {
@@ -67,7 +74,7 @@ class Accordion extends BaseComponent {
     }
   }
 
-  open() {
+  open(): void {
     if (!this._summary || !this._content || this._isTransitioning) {
       return
     }
@@ -93,7 +100,7 @@ class Accordion extends BaseComponent {
     }, this._element, true)
   }
 
-  close() {
+  close(): void {
     if (!this._summary || !this._content) {
       return
     }
@@ -120,7 +127,7 @@ class Accordion extends BaseComponent {
     }, this._element, true)
   }
 
-  dispose() {
+  override dispose(): void {
     if (this._observer) {
       this._observer.disconnect()
     }
@@ -129,7 +136,7 @@ class Accordion extends BaseComponent {
   }
 
   // Private
-  _createObserver() {
+  protected _createObserver(): MutationObserver {
     return new MutationObserver(mutationsList => {
       for (const mutation of mutationsList) {
         if (mutation.attributeName === 'open') {
@@ -145,14 +152,14 @@ class Accordion extends BaseComponent {
     })
   }
 
-  _createClone() {
-    const clone = this._element.cloneNode(true)
+  protected _createClone(): HTMLDetailsElement {
+    const clone = this._element.cloneNode(true) as HTMLDetailsElement
     clone.name = ''
     clone.open = true
     clone.inert = true                   // no AT traversal or interaction during animation
     clone.setAttribute(ATTR_CLONE, '')   // prevent data-API from creating a spurious instance
 
-    const cloneSummary = SelectorEngine.findOne(SELECTOR_SUMMARY, clone)
+    const cloneSummary = SelectorEngine.findOne(SELECTOR_SUMMARY, clone)!
     this._element.before(clone)
     clone.style.overflow = 'hidden'
     clone.style.position = 'absolute'
@@ -161,7 +168,7 @@ class Accordion extends BaseComponent {
     clone.style.width = `${this._element.offsetWidth}px`
     clone.style.height = `${clone.offsetHeight}px`
     cloneSummary.style.visibility = 'hidden'
-    clone.style.height = `${this._summary.offsetHeight}px`
+    clone.style.height = `${this._summary!.offsetHeight}px`
 
     return clone
   }
@@ -179,7 +186,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DETAILS, function () {
 
   const name = this.getAttribute('name')
   if (name) {
-    for (const sibling of SelectorEngine.find(`details[name="${name}"]`, this.parentElement)) {
+    for (const sibling of SelectorEngine.find(`details[name="${name}"]`, this.parentElement!)) {
       Accordion.getOrCreateInstance(sibling)
     }
   }

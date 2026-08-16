@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS strength.js
+ * Chassis CSS strength.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -24,7 +24,16 @@ const SELECTOR_DATA_STRENGTH = '[data-cx-strength]'
 
 const STRENGTH_LEVELS = ['weak', 'fair', 'good', 'strong']
 
-const Default = {
+type StrengthConfig = {
+  input: string | HTMLInputElement | null
+  minLength: number
+  messages: Record<string, string>
+  weights: Record<string, number>
+  thresholds: number[]
+  scorer: ((password: string) => number) | null
+}
+
+const Default: StrengthConfig = {
   input: null, // Selector or element for password input
   minLength: 8,
   messages: {
@@ -61,12 +70,18 @@ const DefaultType = {
  */
 
 class Strength extends BaseComponent {
-  constructor(element, config) {
+  protected declare _config: StrengthConfig
+  protected declare _input: HTMLInputElement | null
+  protected declare _segments: HTMLElement[]
+  protected declare _textElement: HTMLElement | null
+  protected declare _currentStrength: string | null
+
+  constructor(element?: string | Element | null, config?: Partial<StrengthConfig> | null) {
     super(element, config)
 
     this._input = this._getInput()
     this._segments = SelectorEngine.find('.strength-segment', this._element)
-    this._textElement = SelectorEngine.findOne('.strength-text', this._element.parentElement)
+    this._textElement = SelectorEngine.findOne('.strength-text', this._element.parentElement!)
     this._currentStrength = null
 
     if (this._input) {
@@ -77,53 +92,53 @@ class Strength extends BaseComponent {
   }
 
   // Getters
-  static get Default() {
+  static override get Default(): StrengthConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): Record<string, string> {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  getStrength() {
+  getStrength(): string | null {
     return this._currentStrength
   }
 
-  evaluate() {
+  evaluate(): void {
     this._evaluate()
   }
 
   // Private
-  _getInput() {
+  protected _getInput(): HTMLInputElement | null {
     if (this._config.input) {
       return typeof this._config.input === 'string' ?
-        SelectorEngine.findOne(this._config.input) :
+        SelectorEngine.findOne<HTMLInputElement>(this._config.input) :
         this._config.input
     }
 
     // Look for preceding password input
     const parent = this._element.parentElement
-    return SelectorEngine.findOne('input[type="password"]', parent)
+    return SelectorEngine.findOne<HTMLInputElement>('input[type="password"]', parent!)
   }
 
-  _addEventListeners() {
+  protected _addEventListeners(): void {
     EventHandler.on(this._input, 'input', () => this._evaluate())
     EventHandler.on(this._input, 'change', () => this._evaluate())
   }
 
-  _evaluate() {
-    const password = this._input.value
+  protected _evaluate(): void {
+    const password = this._input!.value
     const score = this._calculateScore(password)
     const strength = this._scoreToStrength(score)
 
     if (strength !== this._currentStrength) {
       this._currentStrength = strength
-      this._updateUI(strength, score)
+      this._updateUI(strength)
 
       EventHandler.trigger(this._element, EVENT_STRENGTH_CHANGE, {
         strength,
@@ -133,7 +148,7 @@ class Strength extends BaseComponent {
     }
   }
 
-  _calculateScore(password) {
+  protected _calculateScore(password: string): number {
     if (!password) {
       return 0
     }
@@ -185,7 +200,7 @@ class Strength extends BaseComponent {
     return score
   }
 
-  _scoreToStrength(score) {
+  protected _scoreToStrength(score: number): string | null {
     if (score === 0) {
       return null
     }
@@ -207,7 +222,7 @@ class Strength extends BaseComponent {
     return 'strong'
   }
 
-  _updateUI(strength) {
+  protected _updateUI(strength: string | null): void {
     // Update data attribute on element
     if (strength) {
       this._element.dataset.cxStrength = strength
@@ -233,7 +248,7 @@ class Strength extends BaseComponent {
         this._textElement.dataset.cxStrength = strength
 
         // Also set the color via inheriting from parent or using CSS variable
-        const colorMap = {
+        const colorMap: Record<string, string> = {
           weak: 'danger',
           fair: 'warning',
           good: 'info',
@@ -259,3 +274,4 @@ EventHandler.on(document, `DOMContentLoaded${EVENT_KEY}${DATA_API_KEY}`, () => {
 })
 
 export default Strength
+export type { StrengthConfig }

@@ -1,14 +1,14 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS tab.js
+ * Chassis CSS tab.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
 import BaseComponent from './base-component.js'
-import EventHandler from './dom/event-handler.js'
+import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
-import { getNextActiveElement, isDisabled } from './util/index.js'
+import { getNextActiveElement, isDisabled, setAriaAttribute } from './util/index.js'
 
 /**
  * Constants
@@ -53,7 +53,9 @@ const SELECTOR_DATA_TOGGLE_ACTIVE = `.${CLASS_NAME_ACTIVE}[data-cx-toggle="tab"]
  */
 
 class Tab extends BaseComponent {
-  constructor(element) {
+  protected declare _parent: Element | null
+
+  constructor(element?: string | Element | null) {
     super(element)
     this._parent = this._element.closest(SELECTOR_TAB_PANEL)
 
@@ -70,12 +72,12 @@ class Tab extends BaseComponent {
   }
 
   // Getters
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  show() { // Shows this elem and deactivate the active sibling if exists
+  show(): void { // Shows this elem and deactivate the active sibling if exists
     const innerElem = this._element
     if (this._elemIsActive(innerElem)) {
       return
@@ -99,7 +101,7 @@ class Tab extends BaseComponent {
   }
 
   // Private
-  _activate(element, relatedElem) {
+  protected _activate(element: HTMLElement | null, relatedElem?: HTMLElement | null): void {
     if (!element) {
       return
     }
@@ -115,7 +117,7 @@ class Tab extends BaseComponent {
       }
 
       element.removeAttribute('tabindex')
-      element.setAttribute('aria-selected', true)
+      setAriaAttribute(element, 'aria-selected', true)
       this._toggleMenu(element, true)
       EventHandler.trigger(element, EVENT_SHOWN, {
         relatedTarget: relatedElem
@@ -125,7 +127,7 @@ class Tab extends BaseComponent {
     this._queueCallback(complete, element, element.classList.contains(CLASS_NAME_FADE))
   }
 
-  _deactivate(element, relatedElem) {
+  protected _deactivate(element: HTMLElement | null, relatedElem?: HTMLElement | null): void {
     if (!element) {
       return
     }
@@ -141,7 +143,7 @@ class Tab extends BaseComponent {
         return
       }
 
-      element.setAttribute('aria-selected', false)
+      setAriaAttribute(element, 'aria-selected', false)
       element.setAttribute('tabindex', '-1')
       this._toggleMenu(element, false)
       EventHandler.trigger(element, EVENT_HIDDEN, { relatedTarget: relatedElem })
@@ -150,7 +152,7 @@ class Tab extends BaseComponent {
     this._queueCallback(complete, element, element.classList.contains(CLASS_NAME_FADE))
   }
 
-  _keydown(event) {
+  protected _keydown(event: ChassisEvent): void {
     if (!([ARROW_LEFT_KEY, ARROW_RIGHT_KEY, ARROW_UP_KEY, ARROW_DOWN_KEY, HOME_KEY, END_KEY].includes(event.key))) {
       return
     }
@@ -159,13 +161,13 @@ class Tab extends BaseComponent {
     event.preventDefault()
 
     const children = this._getChildren().filter(element => !isDisabled(element))
-    let nextActiveElement
+    let nextActiveElement: HTMLElement | undefined
 
     if ([HOME_KEY, END_KEY].includes(event.key)) {
       nextActiveElement = event.key === HOME_KEY ? children[0] : children.at(-1)
     } else {
       const isNext = [ARROW_RIGHT_KEY, ARROW_DOWN_KEY].includes(event.key)
-      nextActiveElement = getNextActiveElement(children, event.target, isNext, true)
+      nextActiveElement = getNextActiveElement(children, event.target as HTMLElement, isNext, true)
     }
 
     if (nextActiveElement) {
@@ -174,15 +176,15 @@ class Tab extends BaseComponent {
     }
   }
 
-  _getChildren() { // collection of inner elements
-    return SelectorEngine.find(SELECTOR_INNER_ELEM, this._parent)
+  protected _getChildren(): HTMLElement[] { // collection of inner elements
+    return SelectorEngine.find(SELECTOR_INNER_ELEM, this._parent!)
   }
 
-  _getActiveElem() {
+  protected _getActiveElem(): HTMLElement | null {
     return this._getChildren().find(child => this._elemIsActive(child)) || null
   }
 
-  _setInitialAttributes(parent, children) {
+  protected _setInitialAttributes(parent: Element, children: HTMLElement[]): void {
     this._setAttributeIfNotExists(parent, 'role', 'tablist')
 
     for (const child of children) {
@@ -190,11 +192,11 @@ class Tab extends BaseComponent {
     }
   }
 
-  _setInitialAttributesOnChild(child) {
-    child = this._getInnerElement(child)
+  protected _setInitialAttributesOnChild(child: HTMLElement): void {
+    child = this._getInnerElement(child)!
     const isActive = this._elemIsActive(child)
     const outerElem = this._getOuterElement(child)
-    child.setAttribute('aria-selected', isActive)
+    setAriaAttribute(child, 'aria-selected', isActive)
 
     if (outerElem !== child) {
       this._setAttributeIfNotExists(outerElem, 'role', 'presentation')
@@ -210,7 +212,7 @@ class Tab extends BaseComponent {
     this._setInitialAttributesOnTargetPanel(child)
   }
 
-  _setInitialAttributesOnTargetPanel(child) {
+  protected _setInitialAttributesOnTargetPanel(child: HTMLElement): void {
     const target = SelectorEngine.getElementFromSelector(child)
 
     if (!target) {
@@ -224,7 +226,7 @@ class Tab extends BaseComponent {
     }
   }
 
-  _toggleMenu(element, open) {
+  protected _toggleMenu(element: HTMLElement, open: boolean): void {
     const outerElem = this._getOuterElement(element)
     const menuToggle = SelectorEngine.findOne(SELECTOR_MENU_TOGGLE, outerElem)
     if (!menuToggle) {
@@ -238,26 +240,26 @@ class Tab extends BaseComponent {
       menu.classList.toggle(CLASS_NAME_SHOW, open)
     }
 
-    menuToggle.setAttribute('aria-expanded', open)
+    setAriaAttribute(menuToggle, 'aria-expanded', open)
   }
 
-  _setAttributeIfNotExists(element, attribute, value) {
+  protected _setAttributeIfNotExists(element: Element, attribute: string, value: string): void {
     if (!element.hasAttribute(attribute)) {
       element.setAttribute(attribute, value)
     }
   }
 
-  _elemIsActive(elem) {
+  protected _elemIsActive(elem: HTMLElement): boolean {
     return elem.classList.contains(CLASS_NAME_ACTIVE)
   }
 
   // Try to get the inner element (usually the .nav-link)
-  _getInnerElement(elem) {
+  protected _getInnerElement(elem: HTMLElement): HTMLElement | null {
     return elem.matches(SELECTOR_INNER_ELEM) ? elem : SelectorEngine.findOne(SELECTOR_INNER_ELEM, elem)
   }
 
   // Try to get the outer element (usually the .nav-item)
-  _getOuterElement(elem) {
+  protected _getOuterElement(elem: HTMLElement): Element {
     return elem.closest(SELECTOR_OUTER) || elem
   }
 }

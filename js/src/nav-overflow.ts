@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS nav-overflow.js
+ * Chassis CSS nav-overflow.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -31,7 +31,16 @@ const SELECTOR_OVERFLOW_MENU = '.nav-overflow-menu'
 const SELECTOR_CUSTOM_ICON = '[data-cx-overflow-icon]'
 const CLASS_NAME_KEEP = 'nav-overflow-keep'
 
-const Default = {
+type NavOverflowConfig = {
+  collapseBelow: number | string
+  iconPlacement: string
+  menuPlacement: string
+  moreText: string
+  moreIcon: string
+  threshold: number
+}
+
+const Default: NavOverflowConfig = {
   collapseBelow: 0,
   iconPlacement: 'start',
   menuPlacement: 'bottom-end',
@@ -54,7 +63,16 @@ const DefaultType = {
  */
 
 class NavOverflow extends BaseComponent {
-  constructor(element, config) {
+  protected declare _config: NavOverflowConfig
+  protected declare _items: HTMLElement[]
+  protected declare _overflowItems: HTMLElement[]
+  protected declare _overflowMenu: HTMLElement | null
+  protected declare _overflowToggle: HTMLElement | null
+  protected declare _resizeObserver: ResizeObserver | null
+  protected declare _collapseBelow: number
+  protected declare _isInitialized: boolean
+
+  constructor(element?: string | Element | null, config?: Partial<NavOverflowConfig> | null) {
     super(element, config)
 
     this._items = []
@@ -69,25 +87,25 @@ class NavOverflow extends BaseComponent {
   }
 
   // Getters
-  static get Default() {
+  static override get Default(): NavOverflowConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): Record<string, string> {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  update() {
+  update(): void {
     this._calculateOverflow()
     EventHandler.trigger(this._element, EVENT_UPDATE)
   }
 
-  dispose() {
+  override dispose(): void {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect()
     }
@@ -104,7 +122,7 @@ class NavOverflow extends BaseComponent {
   }
 
   // Private
-  _init() {
+  protected _init(): void {
     // Add overflow class to nav
     this._element.classList.add(CLASS_NAME_OVERFLOW)
 
@@ -113,7 +131,7 @@ class NavOverflow extends BaseComponent {
 
     // Store original order data
     for (const [index, item] of this._items.entries()) {
-      item.dataset.cxNavOrder = index
+      item.dataset.cxNavOrder = String(index)
     }
 
     // Resolve collapseBelow threshold once
@@ -131,7 +149,7 @@ class NavOverflow extends BaseComponent {
     this._isInitialized = true
   }
 
-  _createOverflowMenu() {
+  protected _createOverflowMenu(): void {
     // Check if overflow menu already exists
     this._overflowToggle = SelectorEngine.findOne(SELECTOR_OVERFLOW_TOGGLE, this._element)
 
@@ -161,14 +179,14 @@ class NavOverflow extends BaseComponent {
     this._overflowMenu = overflowItem.querySelector(SELECTOR_OVERFLOW_MENU)
   }
 
-  _resolveIcon() {
+  protected _resolveIcon(): string {
     const customIconElement = SelectorEngine.findOne(SELECTOR_CUSTOM_ICON, this._element)
 
     if (!customIconElement) {
       return this._config.moreIcon
     }
 
-    const iconClone = customIconElement.cloneNode(true)
+    const iconClone = customIconElement.cloneNode(true) as HTMLElement
     iconClone.removeAttribute('data-cx-overflow-icon')
     const iconHtml = iconClone.outerHTML
 
@@ -177,7 +195,7 @@ class NavOverflow extends BaseComponent {
     return iconHtml
   }
 
-  _resolveCollapseBelow() {
+  protected _resolveCollapseBelow(): number {
     const value = this._config.collapseBelow
 
     if (typeof value === 'number') {
@@ -193,7 +211,7 @@ class NavOverflow extends BaseComponent {
     return 0
   }
 
-  _setupResizeObserver() {
+  protected _setupResizeObserver(): void {
     if (typeof ResizeObserver === 'undefined') {
       // Fallback for older browsers
       EventHandler.on(window, 'resize', () => this._calculateOverflow())
@@ -207,12 +225,12 @@ class NavOverflow extends BaseComponent {
     this._resizeObserver.observe(this._element)
   }
 
-  _calculateOverflow() {
+  protected _calculateOverflow(): void {
     // First, restore all items to measure properly
     this._restoreItems()
 
     const navWidth = this._element.offsetWidth
-    const overflowItem = this._overflowToggle?.closest('.nav-item')
+    const overflowItem = this._overflowToggle?.closest(SELECTOR_NAV_ITEM) ?? null
 
     // When below the collapseBelow threshold, force all items into overflow
     if (this._collapseBelow > 0 && navWidth < this._collapseBelow) {
@@ -240,7 +258,7 @@ class NavOverflow extends BaseComponent {
       return
     }
 
-    const overflowWidth = overflowItem?.offsetWidth || 0
+    const overflowWidth = (overflowItem as HTMLElement | null)?.offsetWidth || 0
 
     // Keep items are always visible; subtract their widths so the threshold
     // reflects actual available space for non-keep items.
@@ -249,7 +267,7 @@ class NavOverflow extends BaseComponent {
       .reduce((sum, item) => sum + item.offsetWidth, 0)
 
     let usedWidth = 0
-    const itemsToOverflow = []
+    const itemsToOverflow: HTMLElement[] = []
     const overflowThreshold = navWidth - overflowWidth - keepWidth - 10 // 10px buffer
 
     // Calculate which items need to overflow (skip items with keep class)
@@ -296,7 +314,7 @@ class NavOverflow extends BaseComponent {
     }
   }
 
-  _moveToOverflow(items) {
+  protected _moveToOverflow(items: HTMLElement[]): void {
     if (!this._overflowMenu) {
       return
     }
@@ -311,7 +329,7 @@ class NavOverflow extends BaseComponent {
         continue
       }
 
-      const clonedLink = link.cloneNode(true)
+      const clonedLink = link.cloneNode(true) as HTMLElement
       clonedLink.className = 'menu-item'
 
       if (link.classList.contains('active')) {
@@ -332,7 +350,7 @@ class NavOverflow extends BaseComponent {
     }
   }
 
-  _restoreItems() {
+  protected _restoreItems(): void {
     for (const item of this._items) {
       item.classList.remove(CLASS_NAME_HIDDEN)
       delete item.dataset.cxNavOverflow
@@ -357,3 +375,4 @@ EventHandler.on(document, 'DOMContentLoaded', () => {
 })
 
 export default NavOverflow
+export type { NavOverflowConfig }
