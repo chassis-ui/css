@@ -450,12 +450,20 @@ var Config = class {
 	}
 	_mergeConfigObj(config, element) {
 		const jsonConfig = isElement(element) ? Manipulator.getDataAttribute(element, "config") : {};
+		const dataAttributes = isElement(element) ? Manipulator.getDataAttributes(element) : {};
+		for (const key of this._excludedConfigKeys()) {
+			if (typeof jsonConfig === "object" && jsonConfig !== null) delete jsonConfig[key];
+			delete dataAttributes[key];
+		}
 		return {
 			...this.constructor.Default,
 			...typeof jsonConfig === "object" ? jsonConfig : {},
-			...isElement(element) ? Manipulator.getDataAttributes(element) : {},
+			...dataAttributes,
 			...typeof config === "object" ? config : {}
 		};
+	}
+	_excludedConfigKeys() {
+		return [];
 	}
 	_typeCheckConfig(config, configTypes = this.constructor.DefaultType) {
 		for (const [property, expectedTypes] of Object.entries(configTypes)) {
@@ -4722,8 +4730,11 @@ var Tooltip = class extends FloatingBase {
 		this._disposeMediaQueryListeners();
 		super.dispose();
 	}
-	async show() {
+	show() {
 		if (this._element.style.display === "none") throw new Error("Please use show on visible elements");
+		return this._show();
+	}
+	async _show() {
 		if (!(this._isWithContent() && this._isEnabled)) return;
 		const showEvent = EventHandler.trigger(this._element, this.constructor.eventName(EVENT_SHOW$2));
 		const isInTheDom = (findShadowRoot(this._element) || this._element.ownerDocument.documentElement).contains(this._element);
@@ -4925,22 +4936,8 @@ var Tooltip = class extends FloatingBase {
 	_isWithActiveTrigger() {
 		return Object.values(this._activeTrigger).includes(true);
 	}
-	_getConfig(config) {
-		const jsonConfig = Manipulator.getDataAttribute(this._element, "config") || {};
-		const dataAttributes = Manipulator.getDataAttributes(this._element);
-		for (const key of DISALLOWED_ATTRIBUTES) {
-			delete jsonConfig[key];
-			delete dataAttributes[key];
-		}
-		config = {
-			...this.constructor.Default,
-			...typeof jsonConfig === "object" ? jsonConfig : {},
-			...dataAttributes,
-			...typeof config === "object" && config ? config : {}
-		};
-		config = this._configAfterMerge(config);
-		this._typeCheckConfig(config);
-		return config;
+	_excludedConfigKeys() {
+		return [...DISALLOWED_ATTRIBUTES];
 	}
 	_configAfterMerge(config) {
 		config.container = config.container === false ? document.body : getElement(config.container);

@@ -36,12 +36,20 @@ var Config = class {
 	}
 	_mergeConfigObj(config, element) {
 		const jsonConfig = isElement(element) ? Manipulator.getDataAttribute(element, "config") : {};
+		const dataAttributes = isElement(element) ? Manipulator.getDataAttributes(element) : {};
+		for (const key of this._excludedConfigKeys()) {
+			if (typeof jsonConfig === "object" && jsonConfig !== null) delete jsonConfig[key];
+			delete dataAttributes[key];
+		}
 		return {
 			...this.constructor.Default,
 			...typeof jsonConfig === "object" ? jsonConfig : {},
-			...isElement(element) ? Manipulator.getDataAttributes(element) : {},
+			...dataAttributes,
 			...typeof config === "object" ? config : {}
 		};
+	}
+	_excludedConfigKeys() {
+		return [];
 	}
 	_typeCheckConfig(config, configTypes = this.constructor.DefaultType) {
 		for (const [property, expectedTypes] of Object.entries(configTypes)) {

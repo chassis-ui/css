@@ -47,13 +47,29 @@ class Config {
 
   protected _mergeConfigObj(config?: ComponentConfig | null, element?: Element): ComponentConfig {
     const jsonConfig = isElement(element) ? Manipulator.getDataAttribute(element, 'config') : {} // try to parse
+    const dataAttributes = isElement(element) ? Manipulator.getDataAttributes(element as HTMLElement) : {}
+
+    for (const key of this._excludedConfigKeys()) {
+      if (typeof jsonConfig === 'object' && jsonConfig !== null) {
+        delete (jsonConfig as ComponentConfig)[key]
+      }
+
+      delete dataAttributes[key]
+    }
 
     return {
       ...this.constructor.Default,
       ...(typeof jsonConfig === 'object' ? jsonConfig : {}),
-      ...(isElement(element) ? Manipulator.getDataAttributes(element as HTMLElement) : {}),
+      ...dataAttributes,
       ...(typeof config === 'object' ? config : {})
     }
+  }
+
+  // Override to strip config keys that should never come from a data-*
+  // attribute or the data-cx-config JSON blob (e.g. keys only safe to set
+  // programmatically), before they reach the merged config object.
+  protected _excludedConfigKeys(): string[] {
+    return []
   }
 
   protected _typeCheckConfig(config: ComponentConfig, configTypes: ComponentConfig = this.constructor.DefaultType): void {
