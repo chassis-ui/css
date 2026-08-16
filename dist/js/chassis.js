@@ -4009,7 +4009,7 @@ var NavOverflow = class extends BaseComponent {
 		this._overflowToggle = null;
 		this._resizeObserver = null;
 		this._collapseBelow = 0;
-		this._isInitialized = false;
+		this._resizeRAF = null;
 		this._init();
 	}
 	static get Default() {
@@ -4027,6 +4027,7 @@ var NavOverflow = class extends BaseComponent {
 	}
 	dispose() {
 		if (this._resizeObserver) this._resizeObserver.disconnect();
+		if (this._resizeRAF !== null) cancelAnimationFrame(this._resizeRAF);
 		this._restoreItems();
 		if (this._overflowToggle && this._overflowToggle.parentElement) this._overflowToggle.parentElement.remove();
 		super.dispose();
@@ -4039,7 +4040,6 @@ var NavOverflow = class extends BaseComponent {
 		this._createOverflowMenu();
 		this._setupResizeObserver();
 		this._calculateOverflow();
-		this._isInitialized = true;
 	}
 	_createOverflowMenu() {
 		this._overflowToggle = SelectorEngine.findOne(SELECTOR_OVERFLOW_TOGGLE, this._element);
@@ -4082,18 +4082,28 @@ var NavOverflow = class extends BaseComponent {
 	}
 	_setupResizeObserver() {
 		if (typeof ResizeObserver === "undefined") {
-			EventHandler.on(window, "resize", () => this._calculateOverflow());
+			EventHandler.on(window, "resize", () => this._scheduleCalculateOverflow());
 			return;
 		}
 		this._resizeObserver = new ResizeObserver(() => {
-			this._calculateOverflow();
+			this._scheduleCalculateOverflow();
 		});
 		this._resizeObserver.observe(this._element);
+	}
+	_scheduleCalculateOverflow() {
+		if (this._resizeRAF !== null) cancelAnimationFrame(this._resizeRAF);
+		this._resizeRAF = requestAnimationFrame(() => {
+			this._resizeRAF = null;
+			this._calculateOverflow();
+		});
+	}
+	_getOverflowNavItem() {
+		return this._overflowToggle?.closest(SELECTOR_NAV_ITEM) ?? null;
 	}
 	_calculateOverflow() {
 		this._restoreItems();
 		const navWidth = this._element.offsetWidth;
-		const overflowItem = this._overflowToggle?.closest(SELECTOR_NAV_ITEM) ?? null;
+		const overflowItem = this._getOverflowNavItem();
 		if (this._collapseBelow > 0 && navWidth < this._collapseBelow) {
 			const itemsToOverflow = this._items.filter((item) => !item.classList.contains(CLASS_NAME_KEEP));
 			this._moveToOverflow(itemsToOverflow);
@@ -4138,7 +4148,7 @@ var NavOverflow = class extends BaseComponent {
 			const clonedLink = link.cloneNode(true);
 			clonedLink.className = "menu-item";
 			if (link.classList.contains("active")) clonedLink.classList.add("active");
-			if (link.classList.contains("disabled") || link.hasAttribute("disabled")) clonedLink.classList.add("disabled");
+			if (isDisabled(link)) clonedLink.classList.add("disabled");
 			this._overflowMenu.append(clonedLink);
 			item.classList.add(CLASS_NAME_HIDDEN);
 			item.dataset.cxNavOverflow = "true";
@@ -4150,6 +4160,7 @@ var NavOverflow = class extends BaseComponent {
 			item.classList.remove(CLASS_NAME_HIDDEN);
 			delete item.dataset.cxNavOverflow;
 		}
+		this._getOverflowNavItem()?.classList.remove(CLASS_NAME_HIDDEN);
 		if (this._overflowMenu) this._overflowMenu.innerHTML = "";
 		this._overflowItems = [];
 	}

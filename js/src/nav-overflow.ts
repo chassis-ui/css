@@ -8,6 +8,7 @@
 import BaseComponent from './base-component.js'
 import EventHandler from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
+import { isDisabled } from './util/index.js'
 
 /**
  * Constants
@@ -70,7 +71,7 @@ class NavOverflow extends BaseComponent {
   protected declare _overflowToggle: HTMLElement | null
   protected declare _resizeObserver: ResizeObserver | null
   protected declare _collapseBelow: number
-  protected declare _isInitialized: boolean
+  protected declare _resizeRAF: number | null
 
   constructor(element?: string | Element | null, config?: Partial<NavOverflowConfig> | null) {
     super(element, config)
@@ -81,7 +82,7 @@ class NavOverflow extends BaseComponent {
     this._overflowToggle = null
     this._resizeObserver = null
     this._collapseBelow = 0
-    this._isInitialized = false
+    this._resizeRAF = null
 
     this._init()
   }
@@ -108,6 +109,10 @@ class NavOverflow extends BaseComponent {
   override dispose(): void {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect()
+    }
+
+    if (this._resizeRAF !== null) {
+      cancelAnimationFrame(this._resizeRAF)
     }
 
     // Move items back to original positions
@@ -145,8 +150,6 @@ class NavOverflow extends BaseComponent {
 
     // Initial calculation
     this._calculateOverflow()
-
-    this._isInitialized = true
   }
 
   protected _createOverflowMenu(): void {
@@ -214,15 +217,32 @@ class NavOverflow extends BaseComponent {
   protected _setupResizeObserver(): void {
     if (typeof ResizeObserver === 'undefined') {
       // Fallback for older browsers
-      EventHandler.on(window, 'resize', () => this._calculateOverflow())
+      EventHandler.on(window, 'resize', () => this._scheduleCalculateOverflow())
       return
     }
 
     this._resizeObserver = new ResizeObserver(() => {
-      this._calculateOverflow()
+      this._scheduleCalculateOverflow()
     })
 
     this._resizeObserver.observe(this._element)
+  }
+
+  // Batch rapid-fire resize ticks into one recalculation per frame instead
+  // of forcing a reflow + DOM-rebuild pass on every observer callback.
+  protected _scheduleCalculateOverflow(): void {
+    if (this._resizeRAF !== null) {
+      cancelAnimationFrame(this._resizeRAF)
+    }
+
+    this._resizeRAF = requestAnimationFrame(() => {
+      this._resizeRAF = null
+      this._calculateOverflow()
+    })
+  }
+
+  protected _getOverflowNavItem(): HTMLElement | null {
+    return (this._overflowToggle?.closest(SELECTOR_NAV_ITEM) as HTMLElement | null) ?? null
   }
 
   protected _calculateOverflow(): void {
@@ -230,7 +250,7 @@ class NavOverflow extends BaseComponent {
     this._restoreItems()
 
     const navWidth = this._element.offsetWidth
-    const overflowItem = this._overflowToggle?.closest(SELECTOR_NAV_ITEM) ?? null
+    const overflowItem = this._getOverflowNavItem()
 
     // When below the collapseBelow threshold, force all items into overflow
     if (this._collapseBelow > 0 && navWidth < this._collapseBelow) {
@@ -258,7 +278,7 @@ class NavOverflow extends BaseComponent {
       return
     }
 
-    const overflowWidth = (overflowItem as HTMLElement | null)?.offsetWidth || 0
+    const overflowWidth = overflowItem?.offsetWidth || 0
 
     // Keep items are always visible; subtract their widths so the threshold
     // reflects actual available space for non-keep items.
@@ -336,7 +356,7 @@ class NavOverflow extends BaseComponent {
         clonedLink.classList.add('active')
       }
 
-      if (link.classList.contains('disabled') || link.hasAttribute('disabled')) {
+      if (isDisabled(link)) {
         clonedLink.classList.add('disabled')
       }
 
@@ -355,6 +375,8 @@ class NavOverflow extends BaseComponent {
       item.classList.remove(CLASS_NAME_HIDDEN)
       delete item.dataset.cxNavOverflow
     }
+
+    this._getOverflowNavItem()?.classList.remove(CLASS_NAME_HIDDEN)
 
     if (this._overflowMenu) {
       this._overflowMenu.innerHTML = ''
