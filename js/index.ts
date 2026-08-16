@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS index.js
+ * Chassis CSS index.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

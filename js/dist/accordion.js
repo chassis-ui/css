@@ -9,11 +9,10 @@ import SelectorEngine from './dom/selector-engine.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS accordion.js
+ * Chassis CSS accordion.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
-
 
 /**
  * Constants

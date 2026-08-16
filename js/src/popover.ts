@@ -52,6 +52,16 @@ const DefaultType = {
 class Popover extends Tooltip {
   protected declare _config: PopoverConfig
 
+  // Without this override, `ConstructorParameters<typeof Popover>[1]` would
+  // resolve to Tooltip's narrower `Partial<TooltipConfig>` (missing
+  // `content`), and `Popover.getOrCreateInstance(target, config)` in the
+  // data-API handling code (which passes a `content`-bearing config) would
+  // fail to type-check - same reasoning as Dialog's constructor override
+  // from Phase 5 (see .claude/ts-migration-plan.md).
+  constructor(element?: string | Element | null, config?: Partial<PopoverConfig> | null) {
+    super(element, config)
+  }
+
   // Getters
   static override get Default(): PopoverConfig {
     return Default

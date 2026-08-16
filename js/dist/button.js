@@ -5,10 +5,11 @@
   */
 import BaseComponent from './base-component.js';
 import EventHandler from './dom/event-handler.js';
+import { setAriaAttribute } from './util/index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS button.js
+ * Chassis CSS button.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -25,7 +26,6 @@ const DATA_API_KEY = '.data-api';
 const CLASS_NAME_ACTIVE = 'active';
 const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="button"]';
 const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`;
-const EVENT_TOGGLE = `toggle${EVENT_KEY}`;
 
 /**
  * Class definition
@@ -39,11 +39,8 @@ class Button extends BaseComponent {
 
   // Public
   toggle() {
-    const isActive = this._element.classList.toggle(CLASS_NAME_ACTIVE);
-    this._element.setAttribute('aria-pressed', isActive);
-    EventHandler.trigger(this._element, EVENT_TOGGLE, {
-      active: isActive
-    });
+    // Toggle class and sync the `aria-pressed` attribute with the return value of the `.toggle()` method
+    setAriaAttribute(this._element, 'aria-pressed', this._element.classList.toggle(CLASS_NAME_ACTIVE));
   }
 }
 

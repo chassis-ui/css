@@ -120,6 +120,13 @@ const isDisabled = element => {
   }
   return element.hasAttribute('disabled') && element.getAttribute('disabled') !== 'false';
 };
+
+// ARIA state attributes take the strings 'true' and 'false', but we track those
+// states as booleans. This keeps the conversion in one place, so callers do not
+// have to reach for a cast to satisfy `setAttribute`.
+const setAriaAttribute = (element, name, value) => {
+  element.setAttribute(name, String(value));
+};
 const findShadowRoot = element => {
   if (!document.documentElement.attachShadow) {
     return null;
@@ -221,5 +228,5 @@ const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed
   return list[Math.max(0, Math.min(index, listLength - 1))];
 };
 
-export { execute, executeAfterTransition, findShadowRoot, getElement, getNextActiveElement, getTransitionDurationFromElement, getUID, isDisabled, isElement, isRTL, isVisible, noop, onDOMContentLoaded, parseSelector, reflow, toType, triggerTransitionEnd };
+export { execute, executeAfterTransition, findShadowRoot, getElement, getNextActiveElement, getTransitionDurationFromElement, getUID, isDisabled, isElement, isRTL, isVisible, noop, onDOMContentLoaded, parseSelector, reflow, setAriaAttribute, toType, triggerTransitionEnd };
 //# sourceMappingURL=index.js.map

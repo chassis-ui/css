@@ -9,7 +9,7 @@ import SelectorEngine from './dom/selector-engine.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS nav-overflow.js
+ * Chassis CSS nav-overflow.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -108,7 +108,7 @@ class NavOverflow extends BaseComponent {
 
     // Store original order data
     for (const [index, item] of this._items.entries()) {
-      item.dataset.cxNavOrder = index;
+      item.dataset.cxNavOrder = String(index);
     }
 
     // Resolve collapseBelow threshold once
@@ -184,7 +184,7 @@ class NavOverflow extends BaseComponent {
     // First, restore all items to measure properly
     this._restoreItems();
     const navWidth = this._element.offsetWidth;
-    const overflowItem = this._overflowToggle?.closest('.nav-item');
+    const overflowItem = this._overflowToggle?.closest(SELECTOR_NAV_ITEM) ?? null;
 
     // When below the collapseBelow threshold, force all items into overflow
     if (this._collapseBelow > 0 && navWidth < this._collapseBelow) {

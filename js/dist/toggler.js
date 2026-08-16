@@ -9,7 +9,7 @@ import { eventActionOnPlugin } from './util/component-functions.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS toggler.js
+ * Chassis CSS toggler.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -26,9 +26,13 @@ const EVENT_TOGGLE = `toggle${EVENT_KEY}`;
 const EVENT_TOGGLED = `toggled${EVENT_KEY}`;
 const EVENT_CLICK = 'click';
 const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="toggler"]';
+// `value` is required: it's the class/attribute value every `_execute()`
+// branch acts on. The public type omits `null` because `DefaultType` rejects
+// it — `Default.value` is a not-set sentinel that must be overridden, so a
+// Toggler built without a `value` throws from `_typeCheckConfig`.
 const DefaultType = {
   attribute: 'string',
-  value: '(string|number|boolean)'
+  value: '(string|number|boolean|null)'
 };
 const Default = {
   attribute: 'class',
@@ -69,6 +73,11 @@ class Toggler extends BaseComponent {
     } = this._config;
     if (attribute === 'id') {
       return; // You have to be kidding
+    }
+
+    // Nothing to toggle without a value (e.g. missing `data-cx-value`)
+    if (value === null || value === undefined) {
+      return;
     }
     if (attribute === 'class') {
       this._element.classList.toggle(value);

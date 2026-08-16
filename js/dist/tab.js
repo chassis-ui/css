@@ -6,11 +6,11 @@
 import BaseComponent from './base-component.js';
 import EventHandler from './dom/event-handler.js';
 import SelectorEngine from './dom/selector-engine.js';
-import { isDisabled, getNextActiveElement } from './util/index.js';
+import { isDisabled, getNextActiveElement, setAriaAttribute } from './util/index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS tab.js
+ * Chassis CSS tab.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -110,7 +110,7 @@ class Tab extends BaseComponent {
         return;
       }
       element.removeAttribute('tabindex');
-      element.setAttribute('aria-selected', true);
+      setAriaAttribute(element, 'aria-selected', true);
       this._toggleMenu(element, true);
       EventHandler.trigger(element, EVENT_SHOWN, {
         relatedTarget: relatedElem
@@ -131,7 +131,7 @@ class Tab extends BaseComponent {
         element.classList.remove(CLASS_NAME_SHOW);
         return;
       }
-      element.setAttribute('aria-selected', false);
+      setAriaAttribute(element, 'aria-selected', false);
       element.setAttribute('tabindex', '-1');
       this._toggleMenu(element, false);
       EventHandler.trigger(element, EVENT_HIDDEN, {
@@ -178,7 +178,7 @@ class Tab extends BaseComponent {
     child = this._getInnerElement(child);
     const isActive = this._elemIsActive(child);
     const outerElem = this._getOuterElement(child);
-    child.setAttribute('aria-selected', isActive);
+    setAriaAttribute(child, 'aria-selected', isActive);
     if (outerElem !== child) {
       this._setAttributeIfNotExists(outerElem, 'role', 'presentation');
     }
@@ -211,7 +211,7 @@ class Tab extends BaseComponent {
     if (menu) {
       menu.classList.toggle(CLASS_NAME_SHOW, open);
     }
-    menuToggle.setAttribute('aria-expanded', open);
+    setAriaAttribute(menuToggle, 'aria-expanded', open);
   }
   _setAttributeIfNotExists(element, attribute, value) {
     if (!element.hasAttribute(attribute)) {

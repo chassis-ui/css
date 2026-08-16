@@ -10,7 +10,7 @@ import { reflow } from './util/index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS toast.js
+ * Chassis CSS toast.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

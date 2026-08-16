@@ -12,7 +12,7 @@ import { isVisible } from './util/index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dialog.js
+ * Chassis CSS dialog.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -50,6 +50,10 @@ const DefaultType = {
  */
 
 class Dialog extends DialogBase {
+  constructor(element, config) {
+    super(element, config);
+  }
+
   // Getters
   static get Default() {
     return Default;

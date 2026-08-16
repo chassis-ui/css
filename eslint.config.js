@@ -92,6 +92,16 @@ export default defineConfig([
       '@typescript-eslint/no-explicit-any': 'off'
     }
   },
+  // js/tests/types/** - compile-time type assertions, never executed
+  {
+    files: ['js/tests/types/**'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-expressions': 'off',
+      'no-new': 'off',
+      'no-unused-expressions': 'off'
+    }
+  },
   {
     files: ['js/**/*.html', '**/*.md/*.html'],
     plugins: { html: htmlPlugin },

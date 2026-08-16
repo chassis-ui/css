@@ -10,7 +10,7 @@ import SelectorEngine from './dom/selector-engine.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dialog-base.js
+ * Chassis CSS dialog-base.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -21,7 +21,6 @@ import SelectorEngine from './dom/selector-engine.js';
  */
 
 const CLASS_NAME_OPEN = 'dialog-open';
-
 /**
  * Class definition
  *

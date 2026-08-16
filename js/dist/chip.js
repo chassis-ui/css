@@ -6,10 +6,11 @@
 import BaseComponent from './base-component.js';
 import EventHandler from './dom/event-handler.js';
 import { enableDismissTrigger } from './util/component-functions.js';
+import { setAriaAttribute } from './util/index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS chip.js
+ * Chassis CSS chip.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -50,7 +51,7 @@ class Chip extends BaseComponent {
   }
   toggle() {
     const isActive = this._element.classList.toggle(CLASS_NAME_ACTIVE);
-    this._element.setAttribute('aria-pressed', isActive);
+    setAriaAttribute(this._element, 'aria-pressed', isActive);
     EventHandler.trigger(this._element, EVENT_TOGGLE, {
       active: isActive
     });

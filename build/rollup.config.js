@@ -39,7 +39,7 @@ if (BUNDLE) {
 }
 
 const rollupConfig = {
-  input: path.resolve(__dirname, '../js/index.js'),
+  input: path.resolve(__dirname, '../js/index.ts'),
   output: {
     banner: banner(),
     file: path.resolve(__dirname, `../dist/js/${destinationFile}.js`),

@@ -6,11 +6,11 @@
 import BaseComponent from './base-component.js';
 import EventHandler from './dom/event-handler.js';
 import SelectorEngine from './dom/selector-engine.js';
-import { reflow, getElement } from './util/index.js';
+import { reflow, getElement, setAriaAttribute } from './util/index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS collapse.js
+ * Chassis CSS collapse.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -198,7 +198,7 @@ class Collapse extends BaseComponent {
     }
     for (const element of triggerArray) {
       element.classList.toggle(CLASS_NAME_COLLAPSED, !isOpen);
-      element.setAttribute('aria-expanded', isOpen);
+      setAriaAttribute(element, 'aria-expanded', isOpen);
     }
   }
 }

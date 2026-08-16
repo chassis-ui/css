@@ -12,7 +12,7 @@ import { isDisabled, noop, isElement, getElement, execute, isRTL, isVisible, get
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS menu.js
+ * Chassis CSS menu.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -733,6 +733,7 @@ class Menu extends FloatingBase {
     // prev sibling is the original toggle.
     let getToggleButton = this.matches(SELECTOR_DATA_TOGGLE) ? this : SelectorEngine.prev(this, SELECTOR_DATA_TOGGLE)[0] || SelectorEngine.next(this, SELECTOR_DATA_TOGGLE)[0] || SelectorEngine.findOne(SELECTOR_DATA_TOGGLE, event.delegateTarget.parentNode);
     if (!getToggleButton) {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias -- walking up from `this` to find the enclosing top-level .menu
       let rootMenu = this;
       let enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU);
       while (enclosingSubmenu) {

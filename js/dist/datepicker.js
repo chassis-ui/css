@@ -10,7 +10,7 @@ import { isDisabled } from './util/index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS datepicker.js
+ * Chassis CSS datepicker.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -73,31 +73,21 @@ const styles = {
 };
 const Default = {
   datepickerTheme: null,
-  // 'light', 'dark', 'auto' - explicit theme for datepicker popover only
   dateMin: null,
   dateMax: null,
   dateFormat: null,
   // Intl.DateTimeFormat options, or function(date, locale) => string
   displayElement: null,
-  // Element to show formatted date (defaults to element for buttons)
   displayMonthsCount: 1,
-  // Number of months to display side-by-side
   firstWeekday: 1,
-  // Monday
   inline: false,
-  // Render calendar inline (no popup)
   locale: navigator.language.substring(0, 2),
-  // Default to browser locale
   positionElement: null,
-  // Element to position calendar relative to (defaults to input)
   selectedDates: [],
   selectionMode: 'single',
-  // 'single', 'multiple', 'multiple-ranged'
   placement: 'left',
-  // 'left', 'center', 'right', 'auto'
   vcpOptions: {},
-  // Pass-through for any VCP option
-  styles: styles // Pass-through for any VCP style class overrides
+  styles: styles
 };
 const DefaultType = {
   datepickerTheme: '(null|string)',
@@ -151,7 +141,11 @@ class Datepicker extends BaseComponent {
     if (this._config.inline) {
       return; // Inline calendars are always visible
     }
-    return this._isShown ? this.hide() : this.show();
+    if (this._isShown) {
+      this.hide();
+    } else {
+      this.show();
+    }
   }
   show() {
     if (!this._calendar) {
@@ -416,7 +410,7 @@ class Datepicker extends BaseComponent {
   }
   _parseDate(dateStr) {
     const [year, month, day] = dateStr.split('-');
-    return new Date(year, month - 1, day);
+    return new Date(Number(year), Number(month) - 1, Number(day));
   }
   _formatDate(dateStr) {
     const date = this._parseDate(dateStr);

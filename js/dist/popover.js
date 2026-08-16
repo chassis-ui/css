@@ -8,11 +8,10 @@ import EventHandler from './dom/event-handler.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS popover.js
+ * Chassis CSS popover.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
-
 
 /**
  * Constants
@@ -43,6 +42,16 @@ const DefaultType = {
  */
 
 class Popover extends Tooltip {
+  // Without this override, `ConstructorParameters<typeof Popover>[1]` would
+  // resolve to Tooltip's narrower `Partial<TooltipConfig>` (missing
+  // `content`), and `Popover.getOrCreateInstance(target, config)` in the
+  // data-API handling code (which passes a `content`-bearing config) would
+  // fail to type-check - same reasoning as Dialog's constructor override
+  // from Phase 5 (see .claude/ts-migration-plan.md).
+  constructor(element, config) {
+    super(element, config);
+  }
+
   // Getters
   static get Default() {
     return Default;
@@ -56,7 +65,7 @@ class Popover extends Tooltip {
 
   // Overrides
   _isWithContent() {
-    return this._getTitle() || this._getContent();
+    return Boolean(this._getTitle() || this._getContent());
   }
 
   // Private

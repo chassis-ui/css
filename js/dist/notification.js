@@ -9,7 +9,7 @@ import { enableDismissTrigger } from './util/component-functions.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS notification.js
+ * Chassis CSS notification.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

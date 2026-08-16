@@ -9,7 +9,7 @@ import { execute } from './util/index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS floating-base.js
+ * Chassis CSS floating-base.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -138,6 +138,16 @@ class FloatingBase extends BaseComponent {
   _disposeMediaQueryListeners() {
     FloatingBase.disposeBreakpointListeners(this._mediaQueryListeners);
     this._mediaQueryListeners = [];
+  }
+
+  // Implemented by subclasses (Menu, Tooltip) — whether the floating element is currently shown.
+  _isShown() {
+    throw new Error('You have to implement the private method "_isShown", for each component!');
+  }
+
+  // Implemented by subclasses — (re)computes and applies the floating element's position.
+  _updateFloatingPosition() {
+    throw new Error('You have to implement the private method "_updateFloatingPosition", for each component!');
   }
   _getOffset() {
     const {

@@ -31,13 +31,17 @@
   "sass": "scss/chassis.scss",
   "style": "dist/css/chassis.css",
   "sideEffects": [
-    "./js/index.js",
-    "./js/src/*.js",
+    "./js/index.ts",
+    "./js/src/*.ts",
     "./js/dist/*.js",
     "./dist/js/*.js"
   ],
+  "types": "./js/index.ts",
   "exports": {
-    ".": "./js/index.js",
+    ".": {
+      "types": "./js/index.ts",
+      "default": "./js/index.ts"
+    },
     "./js/src/*": "./js/src/*",
     "./js/dist/*": "./js/dist/*",
     "./dist/js/*": "./dist/js/*",
@@ -211,8 +215,9 @@
   },
   "files": [
     "dist/{css,js}/*.{css,js,map}",
-    "js/{src,dist}/**/*.{js,map}",
-    "js/index.js",
+    "js/src/**/*.ts",
+    "js/dist/**/*.{js,map,d.ts}",
+    "js/index.ts",
     "scss/**/*.scss",
     "!scss/tests/**"
   ],

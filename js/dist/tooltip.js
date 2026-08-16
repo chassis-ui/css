@@ -13,7 +13,7 @@ import TemplateFactory from './util/template-factory.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS tooltip.js
+ * Chassis CSS tooltip.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -299,10 +299,10 @@ class Tooltip extends FloatingBase {
     return this.constructor.getOrCreateInstance(event.delegateTarget, this._getDelegateConfig());
   }
   _isAnimated() {
-    return this._config.animation || this.tip && this.tip.classList.contains(CLASS_NAME_FADE);
+    return this._config.animation || this.tip !== null && this.tip.classList.contains(CLASS_NAME_FADE);
   }
   _isShown() {
-    return this.tip && this.tip.classList.contains(CLASS_NAME_SHOW);
+    return Boolean(this.tip && this.tip.classList.contains(CLASS_NAME_SHOW));
   }
   _getPlacement(tip) {
     const toPhysical = placement => {

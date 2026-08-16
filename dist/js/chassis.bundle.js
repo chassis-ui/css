@@ -427,6 +427,13 @@ const isDisabled = element => {
   }
   return element.hasAttribute('disabled') && element.getAttribute('disabled') !== 'false';
 };
+
+// ARIA state attributes take the strings 'true' and 'false', but we track those
+// states as booleans. This keeps the conversion in one place, so callers do not
+// have to reach for a cast to satisfy `setAttribute`.
+const setAriaAttribute = (element, name, value) => {
+  element.setAttribute(name, String(value));
+};
 const findShadowRoot = element => {
   if (!document.documentElement.attachShadow) {
     return null;
@@ -730,11 +737,10 @@ const SelectorEngine = {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS accordion.js
+ * Chassis CSS accordion.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
-
 
 /**
  * Constants
@@ -895,7 +901,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$a, SELECTOR_DETAILS, function () 
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS button.js
+ * Chassis CSS button.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -912,7 +918,6 @@ const DATA_API_KEY$c = '.data-api';
 const CLASS_NAME_ACTIVE$5 = 'active';
 const SELECTOR_DATA_TOGGLE$b = '[data-cx-toggle="button"]';
 const EVENT_CLICK_DATA_API$9 = `click${EVENT_KEY$i}${DATA_API_KEY$c}`;
-const EVENT_TOGGLE$2 = `toggle${EVENT_KEY$i}`;
 
 /**
  * Class definition
@@ -926,11 +931,8 @@ class Button extends BaseComponent {
 
   // Public
   toggle() {
-    const isActive = this._element.classList.toggle(CLASS_NAME_ACTIVE$5);
-    this._element.setAttribute('aria-pressed', isActive);
-    EventHandler.trigger(this._element, EVENT_TOGGLE$2, {
-      active: isActive
-    });
+    // Toggle class and sync the `aria-pressed` attribute with the return value of the `.toggle()` method
+    setAriaAttribute(this._element, 'aria-pressed', this._element.classList.toggle(CLASS_NAME_ACTIVE$5));
   }
 }
 
@@ -947,7 +949,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$9, SELECTOR_DATA_TOGGLE$b, event 
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS carousel.js
+ * Chassis CSS carousel.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -1126,7 +1128,7 @@ class Carousel extends BaseComponent {
       return;
     }
     const items = this._getItems();
-    const rawIndex = Number.parseInt(index, 10);
+    const rawIndex = Number.parseInt(String(index), 10);
 
     // Seamless loop: continue forward/backward into a transient clone instead of
     // the visible `wrap` jump. Only the simple single-slide scroll layout
@@ -1723,7 +1725,7 @@ class Carousel extends BaseComponent {
   }
   _itemInterval(index = this._activeIndex) {
     const item = this._getItems()[index];
-    const interval = item ? Number.parseInt(item.getAttribute('data-cx-interval'), 10) : Number.NaN;
+    const interval = item ? Number.parseInt(item.getAttribute('data-cx-interval') ?? '', 10) : Number.NaN;
     return Number.isNaN(interval) ? this._config.interval : interval;
   }
   _maybeEnableCycle() {
@@ -1733,12 +1735,19 @@ class Carousel extends BaseComponent {
     this.cycle();
   }
 
-  // Turn autoplay off for good once the user interacts with the carousel
+  // Turn autoplay off for good once the user interacts with the carousel.
+  // Not `protected`: the data-API click handler below calls this on an instance
+  // from outside the class body, and TS (unlike the previous JS) enforces
+  // `protected` across that boundary even though it was always freely callable
+  // at runtime.
   _pauseFromInteraction() {
     this._playing = false;
     this.pause();
     this._updatePlayPauseControl();
   }
+
+  // Same reason as `_pauseFromInteraction()` above: called from the play/pause
+  // data-API handler outside the class body.
   _togglePlayPause() {
     if (this._playing) {
       this._pauseFromInteraction();
@@ -1877,7 +1886,7 @@ const eventAction = (onEvent, stringSelector, callback) => {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS chip.js
+ * Chassis CSS chip.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -1918,7 +1927,7 @@ class Chip extends BaseComponent {
   }
   toggle() {
     const isActive = this._element.classList.toggle(CLASS_NAME_ACTIVE$3);
-    this._element.setAttribute('aria-pressed', isActive);
+    setAriaAttribute(this._element, 'aria-pressed', isActive);
     EventHandler.trigger(this._element, EVENT_TOGGLE$1, {
       active: isActive
     });
@@ -1939,7 +1948,7 @@ enableDismissTrigger(Chip, 'close');
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS chip-input.js
+ * Chassis CSS chip-input.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -2561,7 +2570,7 @@ EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$f}${DATA_API_KEY$9}`, () 
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS collapse.js
+ * Chassis CSS collapse.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -2749,7 +2758,7 @@ class Collapse extends BaseComponent {
     }
     for (const element of triggerArray) {
       element.classList.toggle(CLASS_NAME_COLLAPSED, !isOpen);
-      element.setAttribute('aria-expanded', isOpen);
+      setAriaAttribute(element, 'aria-expanded', isOpen);
     }
   }
 }
@@ -4396,7 +4405,7 @@ const computePosition = (reference, floating, options) => {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS floating-base.js
+ * Chassis CSS floating-base.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -4526,6 +4535,16 @@ class FloatingBase extends BaseComponent {
     FloatingBase.disposeBreakpointListeners(this._mediaQueryListeners);
     this._mediaQueryListeners = [];
   }
+
+  // Implemented by subclasses (Menu, Tooltip) — whether the floating element is currently shown.
+  _isShown() {
+    throw new Error('You have to implement the private method "_isShown", for each component!');
+  }
+
+  // Implemented by subclasses — (re)computes and applies the floating element's position.
+  _updateFloatingPosition() {
+    throw new Error('You have to implement the private method "_updateFloatingPosition", for each component!');
+  }
   _getOffset() {
     const {
       offset: offsetConfig
@@ -4590,7 +4609,7 @@ class FloatingBase extends BaseComponent {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS menu.js
+ * Chassis CSS menu.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -5311,6 +5330,7 @@ class Menu extends FloatingBase {
     // prev sibling is the original toggle.
     let getToggleButton = this.matches(SELECTOR_DATA_TOGGLE$8) ? this : SelectorEngine.prev(this, SELECTOR_DATA_TOGGLE$8)[0] || SelectorEngine.next(this, SELECTOR_DATA_TOGGLE$8)[0] || SelectorEngine.findOne(SELECTOR_DATA_TOGGLE$8, event.delegateTarget.parentNode);
     if (!getToggleButton) {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias -- walking up from `this` to find the enclosing top-level .menu
       let rootMenu = this;
       let enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU);
       while (enclosingSubmenu) {
@@ -5391,7 +5411,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$5, SELECTOR_DATA_TOGGLE$8, functi
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS combobox.js
+ * Chassis CSS combobox.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -5453,6 +5473,9 @@ const DefaultType$d = {
  */
 
 class Combobox extends BaseComponent {
+  // Not `protected` — read from the data-API click handler below (a top-level
+  // function, not a class member, so it can't reach a protected field).
+
   constructor(element, config) {
     super(element, config);
     this._toggle = this._element;
@@ -5750,7 +5773,7 @@ class Combobox extends BaseComponent {
     } else {
       const item = selectedItems[0];
       const label = SelectorEngine.findOne('.menu-item-content > span:first-child', item);
-      text = label ? label.textContent : item.textContent.trim();
+      text = label ? label.textContent ?? '' : item.textContent.trim();
     }
     if (this._comboInput) {
       this._comboInput.value = text;
@@ -5790,7 +5813,7 @@ class Combobox extends BaseComponent {
     const items = SelectorEngine.find(SELECTOR_MENU_ITEM, this._menu);
     let visibleCount = 0;
     for (const item of items) {
-      const text = this._normalizeText(item.textContent.toLowerCase().trim());
+      const text = this._normalizeText((item.textContent ?? '').toLowerCase().trim());
       const matches = !normalizedQuery || text.includes(normalizedQuery);
       item.style.display = matches ? '' : 'none';
       if (matches) {
@@ -5901,7 +5924,7 @@ var __defProp=Object.defineProperty,__defProps=Object.defineProperties,__getOwnP
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS datepicker.js
+ * Chassis CSS datepicker.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -5964,31 +5987,21 @@ const styles = {
 };
 const Default$c = {
   datepickerTheme: null,
-  // 'light', 'dark', 'auto' - explicit theme for datepicker popover only
   dateMin: null,
   dateMax: null,
   dateFormat: null,
   // Intl.DateTimeFormat options, or function(date, locale) => string
   displayElement: null,
-  // Element to show formatted date (defaults to element for buttons)
   displayMonthsCount: 1,
-  // Number of months to display side-by-side
   firstWeekday: 1,
-  // Monday
   inline: false,
-  // Render calendar inline (no popup)
   locale: navigator.language.substring(0, 2),
-  // Default to browser locale
   positionElement: null,
-  // Element to position calendar relative to (defaults to input)
   selectedDates: [],
   selectionMode: 'single',
-  // 'single', 'multiple', 'multiple-ranged'
   placement: 'left',
-  // 'left', 'center', 'right', 'auto'
   vcpOptions: {},
-  // Pass-through for any VCP option
-  styles: styles // Pass-through for any VCP style class overrides
+  styles: styles
 };
 const DefaultType$c = {
   datepickerTheme: '(null|string)',
@@ -6042,7 +6055,11 @@ class Datepicker extends BaseComponent {
     if (this._config.inline) {
       return; // Inline calendars are always visible
     }
-    return this._isShown ? this.hide() : this.show();
+    if (this._isShown) {
+      this.hide();
+    } else {
+      this.show();
+    }
   }
   show() {
     if (!this._calendar) {
@@ -6307,7 +6324,7 @@ class Datepicker extends BaseComponent {
   }
   _parseDate(dateStr) {
     const [year, month, day] = dateStr.split('-');
-    return new Date(year, month - 1, day);
+    return new Date(Number(year), Number(month) - 1, Number(day));
   }
   _formatDate(dateStr) {
     const date = this._parseDate(dateStr);
@@ -6390,7 +6407,7 @@ EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$b}${DATA_API_KEY$5}`, () 
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dialog-base.js
+ * Chassis CSS dialog-base.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -6401,7 +6418,6 @@ EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$b}${DATA_API_KEY$5}`, () 
  */
 
 const CLASS_NAME_OPEN = 'dialog-open';
-
 /**
  * Class definition
  *
@@ -6660,7 +6676,7 @@ class DialogBase extends BaseComponent {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dialog.js
+ * Chassis CSS dialog.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -6698,6 +6714,10 @@ const DefaultType$b = {
  */
 
 class Dialog extends DialogBase {
+  constructor(element, config) {
+    super(element, config);
+  }
+
   // Getters
   static get Default() {
     return Default$b;
@@ -6952,7 +6972,7 @@ class Swipe extends Config {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS drawer.js
+ * Chassis CSS drawer.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -7116,7 +7136,7 @@ EventHandler.on(document, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, function (
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS nav-overflow.js
+ * Chassis CSS nav-overflow.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -7215,7 +7235,7 @@ class NavOverflow extends BaseComponent {
 
     // Store original order data
     for (const [index, item] of this._items.entries()) {
-      item.dataset.cxNavOrder = index;
+      item.dataset.cxNavOrder = String(index);
     }
 
     // Resolve collapseBelow threshold once
@@ -7291,7 +7311,7 @@ class NavOverflow extends BaseComponent {
     // First, restore all items to measure properly
     this._restoreItems();
     const navWidth = this._element.offsetWidth;
-    const overflowItem = this._overflowToggle?.closest('.nav-item');
+    const overflowItem = this._overflowToggle?.closest(SELECTOR_NAV_ITEM) ?? null;
 
     // When below the collapseBelow threshold, force all items into overflow
     if (this._collapseBelow > 0 && navWidth < this._collapseBelow) {
@@ -7415,7 +7435,7 @@ EventHandler.on(document, 'DOMContentLoaded', () => {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS notification.js
+ * Chassis CSS notification.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -7470,7 +7490,7 @@ enableDismissTrigger(Notification, 'close');
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS otp-input.js
+ * Chassis CSS otp-input.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -7932,7 +7952,7 @@ class TemplateFactory extends Config {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS tooltip.js
+ * Chassis CSS tooltip.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -8218,10 +8238,10 @@ class Tooltip extends FloatingBase {
     return this.constructor.getOrCreateInstance(event.delegateTarget, this._getDelegateConfig());
   }
   _isAnimated() {
-    return this._config.animation || this.tip && this.tip.classList.contains(CLASS_NAME_FADE$2);
+    return this._config.animation || this.tip !== null && this.tip.classList.contains(CLASS_NAME_FADE$2);
   }
   _isShown() {
-    return this.tip && this.tip.classList.contains(CLASS_NAME_SHOW$2);
+    return Boolean(this.tip && this.tip.classList.contains(CLASS_NAME_SHOW$2));
   }
   _getPlacement(tip) {
     const toPhysical = placement => {
@@ -8465,11 +8485,10 @@ EventHandler.on(document, EVENT_MOUSEENTER$1, SELECTOR_DATA_TOGGLE$3, initToolti
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS popover.js
+ * Chassis CSS popover.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
-
 
 /**
  * Constants
@@ -8500,6 +8519,16 @@ const DefaultType$4 = {
  */
 
 class Popover extends Tooltip {
+  // Without this override, `ConstructorParameters<typeof Popover>[1]` would
+  // resolve to Tooltip's narrower `Partial<TooltipConfig>` (missing
+  // `content`), and `Popover.getOrCreateInstance(target, config)` in the
+  // data-API handling code (which passes a `content`-bearing config) would
+  // fail to type-check - same reasoning as Dialog's constructor override
+  // from Phase 5 (see .claude/ts-migration-plan.md).
+  constructor(element, config) {
+    super(element, config);
+  }
+
   // Getters
   static get Default() {
     return Default$4;
@@ -8513,7 +8542,7 @@ class Popover extends Tooltip {
 
   // Overrides
   _isWithContent() {
-    return this._getTitle() || this._getContent();
+    return Boolean(this._getTitle() || this._getContent());
   }
 
   // Private
@@ -8557,7 +8586,7 @@ EventHandler.on(document, EVENT_MOUSEENTER, SELECTOR_DATA_TOGGLE$2, initPopover)
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS scrollspy.js
+ * Chassis CSS scrollspy.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -8791,7 +8820,7 @@ EventHandler.on(window, EVENT_LOAD_DATA_API$1, () => {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS strength.js
+ * Chassis CSS strength.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -8898,7 +8927,7 @@ class Strength extends BaseComponent {
     const strength = this._scoreToStrength(score);
     if (strength !== this._currentStrength) {
       this._currentStrength = strength;
-      this._updateUI(strength, score);
+      this._updateUI(strength);
       EventHandler.trigger(this._element, EVENT_STRENGTH_CHANGE, {
         strength,
         score,
@@ -9021,7 +9050,7 @@ EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$3}${DATA_API_KEY}`, () =>
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS tab.js
+ * Chassis CSS tab.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -9121,7 +9150,7 @@ class Tab extends BaseComponent {
         return;
       }
       element.removeAttribute('tabindex');
-      element.setAttribute('aria-selected', true);
+      setAriaAttribute(element, 'aria-selected', true);
       this._toggleMenu(element, true);
       EventHandler.trigger(element, EVENT_SHOWN$1, {
         relatedTarget: relatedElem
@@ -9142,7 +9171,7 @@ class Tab extends BaseComponent {
         element.classList.remove(CLASS_NAME_SHOW$1);
         return;
       }
-      element.setAttribute('aria-selected', false);
+      setAriaAttribute(element, 'aria-selected', false);
       element.setAttribute('tabindex', '-1');
       this._toggleMenu(element, false);
       EventHandler.trigger(element, EVENT_HIDDEN$1, {
@@ -9189,7 +9218,7 @@ class Tab extends BaseComponent {
     child = this._getInnerElement(child);
     const isActive = this._elemIsActive(child);
     const outerElem = this._getOuterElement(child);
-    child.setAttribute('aria-selected', isActive);
+    setAriaAttribute(child, 'aria-selected', isActive);
     if (outerElem !== child) {
       this._setAttributeIfNotExists(outerElem, 'role', 'presentation');
     }
@@ -9222,7 +9251,7 @@ class Tab extends BaseComponent {
     if (menu) {
       menu.classList.toggle(CLASS_NAME_SHOW$1, open);
     }
-    menuToggle.setAttribute('aria-expanded', open);
+    setAriaAttribute(menuToggle, 'aria-expanded', open);
   }
   _setAttributeIfNotExists(element, attribute, value) {
     if (!element.hasAttribute(attribute)) {
@@ -9269,7 +9298,7 @@ EventHandler.on(window, EVENT_LOAD_DATA_API, () => {
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS toast.js
+ * Chassis CSS toast.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -9434,7 +9463,7 @@ enableDismissTrigger(Toast);
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS toggler.js
+ * Chassis CSS toggler.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -9451,9 +9480,13 @@ const EVENT_TOGGLE = `toggle${EVENT_KEY}`;
 const EVENT_TOGGLED = `toggled${EVENT_KEY}`;
 const EVENT_CLICK = 'click';
 const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="toggler"]';
+// `value` is required: it's the class/attribute value every `_execute()`
+// branch acts on. The public type omits `null` because `DefaultType` rejects
+// it — `Default.value` is a not-set sentinel that must be overridden, so a
+// Toggler built without a `value` throws from `_typeCheckConfig`.
 const DefaultType = {
   attribute: 'string',
-  value: '(string|number|boolean)'
+  value: '(string|number|boolean|null)'
 };
 const Default = {
   attribute: 'class',
@@ -9494,6 +9527,11 @@ class Toggler extends BaseComponent {
     } = this._config;
     if (attribute === 'id') {
       return; // You have to be kidding
+    }
+
+    // Nothing to toggle without a value (e.g. missing `data-cx-value`)
+    if (value === null || value === undefined) {
+      return;
     }
     if (attribute === 'class') {
       this._element.classList.toggle(value);

@@ -11,7 +11,7 @@ import { isDisabled, isVisible, getNextActiveElement } from './util/index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS combobox.js
+ * Chassis CSS combobox.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -73,6 +73,9 @@ const DefaultType = {
  */
 
 class Combobox extends BaseComponent {
+  // Not `protected` — read from the data-API click handler below (a top-level
+  // function, not a class member, so it can't reach a protected field).
+
   constructor(element, config) {
     super(element, config);
     this._toggle = this._element;
@@ -370,7 +373,7 @@ class Combobox extends BaseComponent {
     } else {
       const item = selectedItems[0];
       const label = SelectorEngine.findOne('.menu-item-content > span:first-child', item);
-      text = label ? label.textContent : item.textContent.trim();
+      text = label ? label.textContent ?? '' : item.textContent.trim();
     }
     if (this._comboInput) {
       this._comboInput.value = text;
@@ -410,7 +413,7 @@ class Combobox extends BaseComponent {
     const items = SelectorEngine.find(SELECTOR_MENU_ITEM, this._menu);
     let visibleCount = 0;
     for (const item of items) {
-      const text = this._normalizeText(item.textContent.toLowerCase().trim());
+      const text = this._normalizeText((item.textContent ?? '').toLowerCase().trim());
       const matches = !normalizedQuery || text.includes(normalizedQuery);
       item.style.display = matches ? '' : 'none';
       if (matches) {

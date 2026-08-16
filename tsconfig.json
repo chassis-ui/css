@@ -4,13 +4,6 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    // TEMPORARY bridge for the incremental migration: lets converted .ts files
-    // import from not-yet-converted .js files without TS7016 errors. Bootstrap
-    // didn't need this (they converted all 33 files in one commit) - remove
-    // allowJs/checkJs and narrow `include` to *.ts once Phase 8 finishes, to
-    // land on Bootstrap's exact clean config. See .claude/ts-migration-plan.md.
-    "allowJs": true,
-    "checkJs": false,
     "strict": true,
     "noEmit": true,
     "verbatimModuleSyntax": true,
@@ -19,5 +12,5 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": ["js/src/**/*.ts", "js/src/**/*.js"]
+  "include": ["js/index.ts", "js/src/**/*.ts", "js/tests/types/**/*.ts"]
 }

@@ -11,7 +11,7 @@ import { isDisabled, isVisible, isRTL } from './util/index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS drawer.js
+ * Chassis CSS drawer.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */

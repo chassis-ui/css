@@ -11,7 +11,7 @@ import { isVisible, isRTL } from './util/index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS carousel.js
+ * Chassis CSS carousel.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -190,7 +190,7 @@ class Carousel extends BaseComponent {
       return;
     }
     const items = this._getItems();
-    const rawIndex = Number.parseInt(index, 10);
+    const rawIndex = Number.parseInt(String(index), 10);
 
     // Seamless loop: continue forward/backward into a transient clone instead of
     // the visible `wrap` jump. Only the simple single-slide scroll layout
@@ -787,7 +787,7 @@ class Carousel extends BaseComponent {
   }
   _itemInterval(index = this._activeIndex) {
     const item = this._getItems()[index];
-    const interval = item ? Number.parseInt(item.getAttribute('data-cx-interval'), 10) : Number.NaN;
+    const interval = item ? Number.parseInt(item.getAttribute('data-cx-interval') ?? '', 10) : Number.NaN;
     return Number.isNaN(interval) ? this._config.interval : interval;
   }
   _maybeEnableCycle() {
@@ -797,12 +797,19 @@ class Carousel extends BaseComponent {
     this.cycle();
   }
 
-  // Turn autoplay off for good once the user interacts with the carousel
+  // Turn autoplay off for good once the user interacts with the carousel.
+  // Not `protected`: the data-API click handler below calls this on an instance
+  // from outside the class body, and TS (unlike the previous JS) enforces
+  // `protected` across that boundary even though it was always freely callable
+  // at runtime.
   _pauseFromInteraction() {
     this._playing = false;
     this.pause();
     this._updatePlayPauseControl();
   }
+
+  // Same reason as `_pauseFromInteraction()` above: called from the play/pause
+  // data-API handler outside the class body.
   _togglePlayPause() {
     if (this._playing) {
       this._pauseFromInteraction();

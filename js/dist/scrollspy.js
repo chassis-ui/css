@@ -10,7 +10,7 @@ import { getElement, isDisabled, isVisible } from './util/index.js';
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS scrollspy.js
+ * Chassis CSS scrollspy.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
