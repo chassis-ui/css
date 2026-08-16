@@ -81,6 +81,7 @@ const nativeEvents = /* @__PURE__ */ new Set([
 	"blur",
 	"input",
 	"change",
+	"cancel",
 	"reset",
 	"select",
 	"submit",
@@ -5872,6 +5873,10 @@ var DialogBase = class extends BaseComponent {
 	static get NAME() {
 		return "dialogbase";
 	}
+	dispose() {
+		if (this._element.open) this._closeAndCleanup();
+		super.dispose();
+	}
 	toggle(relatedTarget) {
 		return this._element.open ? this.hide() : this.show(relatedTarget);
 	}
@@ -5915,7 +5920,7 @@ var DialogBase = class extends BaseComponent {
 		return !this._element.classList.contains(this._getInstantClassName());
 	}
 	_getInstantClassName() {
-		return "dialog-instant";
+		return "instant";
 	}
 	_getStaticClassName() {
 		return "dialog-static";
@@ -5966,7 +5971,7 @@ var DialogBase = class extends BaseComponent {
 	}
 	_addDialogListeners() {
 		const eventKey = this.constructor.EVENT_KEY;
-		EventHandler.on(this._element, "cancel", (event) => {
+		EventHandler.on(this._element, `cancel${eventKey}`, (event) => {
 			event.preventDefault();
 			if (!this._config.keyboard) {
 				this._triggerBackdropTransition();
@@ -6011,7 +6016,7 @@ const EVENT_HIDDEN$4 = `hidden${EVENT_KEY$10}`;
 const EVENT_CANCEL = `cancel${EVENT_KEY$10}`;
 const EVENT_CLICK_DATA_API$2 = `click${EVENT_KEY$10}${DATA_API_KEY$4}`;
 const CLASS_NAME_NONMODAL = "nonmodal";
-const CLASS_NAME_INSTANT$1 = "instant";
+const CLASS_NAME_INSTANT = "instant";
 const CLASS_NAME_SWAP_IN = "swap-in";
 const SELECTOR_DATA_TOGGLE$5 = "[data-cx-toggle=\"dialog\"]";
 const Default$11 = {
@@ -6063,6 +6068,7 @@ var Dialog = class extends DialogBase {
 EventHandler.on(document, EVENT_CLICK_DATA_API$2, SELECTOR_DATA_TOGGLE$5, function(event) {
 	const target = SelectorEngine.getElementFromSelector(this);
 	if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
+	if (!target) return;
 	EventHandler.one(target, EVENT_SHOW$3, (showEvent) => {
 		if (showEvent.defaultPrevented) return;
 		EventHandler.one(target, EVENT_HIDDEN$4, () => {
@@ -6080,9 +6086,9 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$2, SELECTOR_DATA_TOGGLE$5, functi
 		});
 		const currentInstance = Dialog.getInstance(currentDialog);
 		if (currentInstance) {
-			currentDialog.classList.add(CLASS_NAME_INSTANT$1);
+			currentDialog.classList.add(CLASS_NAME_INSTANT);
 			EventHandler.one(currentDialog, EVENT_HIDDEN$4, () => {
-				currentDialog.classList.remove(CLASS_NAME_INSTANT$1);
+				currentDialog.classList.remove(CLASS_NAME_INSTANT);
 			});
 			currentInstance.hide();
 		}
@@ -6239,7 +6245,6 @@ const EVENT_RESIZE = `resize${EVENT_KEY$8}`;
 const EVENT_CLICK_DATA_API$1 = `click${EVENT_KEY$8}${DATA_API_KEY$3}`;
 const EVENT_CLICK_DISMISS = `click.dismiss${EVENT_KEY$8}`;
 const EVENT_LOAD_DATA_API$2 = `load${EVENT_KEY$8}${DATA_API_KEY$3}`;
-const CLASS_NAME_INSTANT = "instant";
 const CLASS_NAME_STATIC = "static";
 const SELECTOR_DATA_TOGGLE$4 = "[data-cx-toggle=\"drawer\"]";
 const SELECTOR_DATA_DISMISS = "[data-cx-dismiss=\"drawer\"]";
@@ -6285,9 +6290,6 @@ var Drawer = class extends DialogBase {
 	_onBeforeShow() {
 		this._initSwipe();
 	}
-	_getInstantClassName() {
-		return CLASS_NAME_INSTANT;
-	}
 	_getStaticClassName() {
 		return CLASS_NAME_STATIC;
 	}
@@ -6309,6 +6311,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$1, SELECTOR_DATA_TOGGLE$4, functi
 	const target = SelectorEngine.getElementFromSelector(this);
 	if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
 	if (isDisabled(this)) return;
+	if (!target) return;
 	EventHandler.one(target, EVENT_HIDDEN$3, () => {
 		if (isVisible(this)) this.focus();
 	});

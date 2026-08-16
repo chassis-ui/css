@@ -49,6 +49,7 @@ const nativeEvents = /* @__PURE__ */ new Set([
 	"blur",
 	"input",
 	"change",
+	"cancel",
 	"reset",
 	"select",
 	"submit",

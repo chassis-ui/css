@@ -70,6 +70,7 @@ const nativeEvents = new Set([
   'blur',
   'input',
   'change',
+  'cancel',
   'reset',
   'select',
   'submit',

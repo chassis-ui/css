@@ -26,7 +26,6 @@ const EVENT_RESIZE = `resize${EVENT_KEY}`;
 const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`;
 const EVENT_CLICK_DISMISS = `click.dismiss${EVENT_KEY}`;
 const EVENT_LOAD_DATA_API = `load${EVENT_KEY}${DATA_API_KEY}`;
-const CLASS_NAME_INSTANT = "instant";
 const CLASS_NAME_STATIC = "static";
 const SELECTOR_DATA_TOGGLE = "[data-cx-toggle=\"drawer\"]";
 const SELECTOR_DATA_DISMISS = "[data-cx-dismiss=\"drawer\"]";
@@ -72,9 +71,6 @@ var Drawer = class extends DialogBase {
 	_onBeforeShow() {
 		this._initSwipe();
 	}
-	_getInstantClassName() {
-		return CLASS_NAME_INSTANT;
-	}
 	_getStaticClassName() {
 		return CLASS_NAME_STATIC;
 	}
@@ -96,6 +92,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function(e
 	const target = SelectorEngine.getElementFromSelector(this);
 	if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
 	if (isDisabled(this)) return;
+	if (!target) return;
 	EventHandler.one(target, EVENT_HIDDEN, () => {
 		if (isVisible(this)) this.focus();
 	});

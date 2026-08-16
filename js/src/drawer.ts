@@ -30,7 +30,6 @@ const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`
 const EVENT_CLICK_DISMISS = `click.dismiss${EVENT_KEY}`
 const EVENT_LOAD_DATA_API = `load${EVENT_KEY}${DATA_API_KEY}`
 
-const CLASS_NAME_INSTANT = 'instant'
 const CLASS_NAME_STATIC = 'static'
 
 const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="drawer"]'
@@ -103,10 +102,6 @@ class Drawer extends DialogBase {
     this._initSwipe()
   }
 
-  protected override _getInstantClassName(): string {
-    return CLASS_NAME_INSTANT
-  }
-
   protected override _getStaticClassName(): string {
     return CLASS_NAME_STATIC
   }
@@ -149,6 +144,10 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (
   }
 
   if (isDisabled(this)) {
+    return
+  }
+
+  if (!target) {
     return
   }
 

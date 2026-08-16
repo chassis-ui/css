@@ -112,6 +112,10 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (
     event.preventDefault()
   }
 
+  if (!target) {
+    return
+  }
+
   EventHandler.one(target, EVENT_SHOW, showEvent => {
     if (showEvent.defaultPrevented) {
       return
@@ -147,15 +151,15 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (
     //   4. Clean up the .dialog-swap-in flag once the incoming dialog
     //      finishes its entry transition.
     const newDialog = Dialog.getOrCreateInstance(target, config)
-    target!.classList.add(CLASS_NAME_SWAP_IN)
+    target.classList.add(CLASS_NAME_SWAP_IN)
     newDialog.show(this)
     EventHandler.one(target, `shown${EVENT_KEY}`, () => {
-      target!.classList.remove(CLASS_NAME_SWAP_IN)
+      target.classList.remove(CLASS_NAME_SWAP_IN)
     })
 
     const currentInstance = Dialog.getInstance(currentDialog)
     if (currentInstance) {
-      // Force synchronous close: .dialog-instant makes _isAnimated() false,
+      // Force synchronous close: .instant makes _isAnimated() false,
       // which makes _shouldDeferClose() false, so hide() calls close()
       // immediately (no deferred .hiding path). The class is removed after
       // the (now-synchronous) hidden event fires.

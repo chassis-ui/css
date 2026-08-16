@@ -79,6 +79,7 @@ var Dialog = class extends DialogBase {
 EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function(event) {
 	const target = SelectorEngine.getElementFromSelector(this);
 	if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
+	if (!target) return;
 	EventHandler.one(target, EVENT_SHOW, (showEvent) => {
 		if (showEvent.defaultPrevented) return;
 		EventHandler.one(target, EVENT_HIDDEN, () => {
