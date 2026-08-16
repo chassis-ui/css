@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS tooltip.js
+ * Chassis CSS tooltip.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -10,13 +10,14 @@ import {
   autoUpdate
 } from '@floating-ui/dom'
 import FloatingBase from './floating-base.js'
-import EventHandler from './dom/event-handler.js'
+import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
 import Manipulator from './dom/manipulator.js'
+import type { ComponentConfig } from './util/config.js'
 import {
   execute, findShadowRoot, getElement, getUID, isRTL, noop
 } from './util/index.js'
-import { DefaultAllowlist } from './util/sanitizer.js'
-import TemplateFactory from './util/template-factory.js'
+import { DefaultAllowlist, type SanitizerAllowList } from './util/sanitizer.js'
+import TemplateFactory, { type TemplateContentEntry } from './util/template-factory.js'
 
 /**
  * Constants
@@ -52,7 +53,27 @@ const EVENT_MOUSEENTER = 'mouseenter'
 const EVENT_MOUSELEAVE = 'mouseleave'
 
 
-const Default = {
+type TooltipConfig = {
+  allowList: SanitizerAllowList
+  animation: boolean
+  boundary: string | Element
+  container: string | Element | boolean
+  customClass: string | ((...args: any[]) => string)
+  delay: number | { show: number, hide: number }
+  fallbackPlacements: string[]
+  html: boolean
+  offset: number[] | string | ((...args: any[]) => any)
+  placement: string | ((this: Tooltip, tip: HTMLElement, trigger: HTMLElement) => string)
+  floatingConfig: Record<string, any> | ((...args: any[]) => Record<string, any>) | null
+  sanitize: boolean
+  sanitizeFn: ((unsafeHtml: string) => string) | null
+  selector: string | boolean
+  template: string
+  title: string | Element | ((...args: any[]) => string | Element)
+  trigger: string
+}
+
+const Default: TooltipConfig = {
   allowList: DefaultAllowlist,
   animation: true,
   boundary: 'clippingParents',
@@ -100,7 +121,18 @@ const DefaultType = {
  */
 
 class Tooltip extends FloatingBase {
-  constructor(element, config) {
+  declare ['constructor']: typeof Tooltip
+  protected declare _config: TooltipConfig
+  protected declare _isEnabled: boolean
+  protected declare _timeout: ReturnType<typeof setTimeout> | number
+  protected declare _isHovered: boolean | null
+  protected declare _activeTrigger: Record<string, boolean>
+  protected declare _templateFactory: TemplateFactory | null
+  protected declare _newContent: Record<string, TemplateContentEntry> | null
+  protected declare _hideModalHandler: () => void
+  declare tip: HTMLElement | null
+
+  constructor(element?: string | Element | null, config?: Partial<TooltipConfig> | null) {
     if (typeof computePosition === 'undefined') {
       throw new TypeError('Chassis CSS\'s tooltips require Floating UI (https://floating-ui.com)')
     }
@@ -127,32 +159,32 @@ class Tooltip extends FloatingBase {
   }
 
   // Getters
-  static get Default() {
+  static override get Default(): TooltipConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): Record<string, string> {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  enable() {
+  enable(): void {
     this._isEnabled = true
   }
 
-  disable() {
+  disable(): void {
     this._isEnabled = false
   }
 
-  toggleEnabled() {
+  toggleEnabled(): void {
     this._isEnabled = !this._isEnabled
   }
 
-  toggle() {
+  toggle(): void {
     if (!this._isEnabled) {
       return
     }
@@ -165,13 +197,13 @@ class Tooltip extends FloatingBase {
     this._enter()
   }
 
-  dispose() {
+  override dispose(): void {
     clearTimeout(this._timeout)
 
     EventHandler.off(this._element.closest(SELECTOR_MODAL), EVENT_MODAL_HIDE, this._hideModalHandler)
 
     if (this._element.getAttribute('data-cx-original-title')) {
-      this._element.setAttribute('title', this._element.getAttribute('data-cx-original-title'))
+      this._element.setAttribute('title', this._element.getAttribute('data-cx-original-title')!)
     }
 
     this._disposeFloating()
@@ -179,7 +211,7 @@ class Tooltip extends FloatingBase {
     super.dispose()
   }
 
-  async show() {
+  async show(): Promise<void> {
     if (this._element.style.display === 'none') {
       throw new Error('Please use show on visible elements')
     }
@@ -200,9 +232,9 @@ class Tooltip extends FloatingBase {
 
     const tip = this._getTipElement()
 
-    this._element.setAttribute('aria-describedby', tip.getAttribute('id'))
+    this._element.setAttribute('aria-describedby', tip.getAttribute('id')!)
 
-    let { container } = this._config
+    let { container } = this._config as TooltipConfig & { container: Element }
     const closestDialog = this._element.closest('dialog[open]')
     if (closestDialog && container === document.body) {
       container = closestDialog
@@ -237,10 +269,10 @@ class Tooltip extends FloatingBase {
       this._isHovered = false
     }
 
-    this._queueCallback(complete, this.tip, this._isAnimated())
+    this._queueCallback(complete, this.tip!, this._isAnimated()!)
   }
 
-  hide() {
+  hide(): void {
     if (!this._isShown()) {
       return
     }
@@ -279,21 +311,21 @@ class Tooltip extends FloatingBase {
       EventHandler.trigger(this._element, this.constructor.eventName(EVENT_HIDDEN))
     }
 
-    this._queueCallback(complete, this.tip, this._isAnimated())
+    this._queueCallback(complete, this.tip!, this._isAnimated()!)
   }
 
-  update() {
+  update(): void {
     if (this._floatingCleanup && this.tip) {
       this._updateFloatingPosition()
     }
   }
 
   // Protected
-  _isWithContent() {
+  protected _isWithContent(): boolean {
     return Boolean(this._getTitle())
   }
 
-  _getTipElement() {
+  protected _getTipElement(): HTMLElement {
     if (!this.tip) {
       this.tip = this._createTipElement(this._newContent || this._getContentForTemplate())
     }
@@ -301,7 +333,7 @@ class Tooltip extends FloatingBase {
     return this.tip
   }
 
-  _createTipElement(content) {
+  protected _createTipElement(content: Record<string, TemplateContentEntry>): HTMLElement {
     const tip = this._getTemplateFactory(content).toHtml()
 
     tip.classList.remove(CLASS_NAME_FADE, CLASS_NAME_SHOW)
@@ -318,7 +350,7 @@ class Tooltip extends FloatingBase {
     return tip
   }
 
-  setContent(content) {
+  setContent(content: Record<string, TemplateContentEntry>): void {
     this._newContent = content
     if (this._isShown()) {
       this._disposeFloating()
@@ -326,7 +358,7 @@ class Tooltip extends FloatingBase {
     }
   }
 
-  _getTemplateFactory(content) {
+  protected _getTemplateFactory(content: Record<string, TemplateContentEntry>): TemplateFactory {
     if (this._templateFactory) {
       this._templateFactory.changeContent(content)
     } else {
@@ -342,31 +374,31 @@ class Tooltip extends FloatingBase {
     return this._templateFactory
   }
 
-  _getContentForTemplate() {
+  protected _getContentForTemplate(): Record<string, TemplateContentEntry> {
     return {
       [SELECTOR_TOOLTIP_INNER]: this._getTitle()
     }
   }
 
-  _getTitle() {
+  protected _getTitle(): string | Element | null {
     return this._resolvePossibleFunction(this._config.title) || this._element.getAttribute('data-cx-original-title')
   }
 
   // Private
-  _initializeOnDelegatedTarget(event) {
+  protected _initializeOnDelegatedTarget(event: ChassisEvent): Tooltip {
     return this.constructor.getOrCreateInstance(event.delegateTarget, this._getDelegateConfig())
   }
 
-  _isAnimated() {
-    return this._config.animation || (this.tip && this.tip.classList.contains(CLASS_NAME_FADE))
+  protected _isAnimated(): boolean | null {
+    return this._config.animation || (this.tip !== null && this.tip.classList.contains(CLASS_NAME_FADE))
   }
 
-  _isShown() {
-    return this.tip && this.tip.classList.contains(CLASS_NAME_SHOW)
+  protected override _isShown(): boolean {
+    return Boolean(this.tip && this.tip.classList.contains(CLASS_NAME_SHOW))
   }
 
-  _getPlacement(tip) {
-    const toPhysical = placement => {
+  protected _getPlacement(tip: HTMLElement): string {
+    const toPhysical = (placement: unknown): string => {
       const rtl = isRTL()
       switch (String(placement).toLowerCase()) {
         case 'start': return rtl ? 'right' : 'left'
@@ -382,13 +414,13 @@ class Tooltip extends FloatingBase {
     return toPhysical(execute(this._config.placement, [this, tip, this._element]))
   }
 
-  _getDefaultPlacement() {
+  protected override _getDefaultPlacement(): string {
     return 'top'
   }
 
-  async _createFloating(tip) {
+  protected async _createFloating(tip: HTMLElement): Promise<void> {
     const placement = this._getPlacement(tip)
-    const arrowElement = tip.querySelector(`.${this.constructor.NAME}-arrow`)
+    const arrowElement = tip.querySelector<HTMLElement>(`.${this.constructor.NAME}-arrow`)
 
     // Initial position update
     await this._updateFloatingPosition(tip, placement, arrowElement)
@@ -401,7 +433,7 @@ class Tooltip extends FloatingBase {
     )
   }
 
-  async _updateFloatingPosition(tip = this.tip, placement = null, arrowElement = null) {
+  protected override async _updateFloatingPosition(tip: HTMLElement | null = this.tip, placement: string | null = null, arrowElement: HTMLElement | null = null): Promise<void> {
     if (!tip) {
       return
     }
@@ -411,7 +443,7 @@ class Tooltip extends FloatingBase {
     }
 
     if (!arrowElement) {
-      arrowElement = tip.querySelector(`.${this.constructor.NAME}-arrow`)
+      arrowElement = tip.querySelector<HTMLElement>(`.${this.constructor.NAME}-arrow`)
     }
 
     const middleware = this._getFloatingMiddleware(arrowElement)
@@ -456,16 +488,16 @@ class Tooltip extends FloatingBase {
     }
   }
 
-  _resolvePossibleFunction(arg) {
+  protected _resolvePossibleFunction<T>(arg: T | ((...args: any[]) => T)): T {
     return execute(arg, [this._element, this._element])
   }
 
-  _setListeners() {
+  protected _setListeners(): void {
     const triggers = this._config.trigger.split(' ')
 
     for (const trigger of triggers) {
       if (trigger === 'click') {
-        EventHandler.on(this._element, this.constructor.eventName(EVENT_CLICK), this._config.selector, event => {
+        EventHandler.on(this._element, this.constructor.eventName(EVENT_CLICK), this._config.selector as string, event => {
           const context = this._initializeOnDelegatedTarget(event)
           context._activeTrigger[TRIGGER_CLICK] = !(context._isShown() && context._activeTrigger[TRIGGER_CLICK])
           context.toggle()
@@ -478,15 +510,15 @@ class Tooltip extends FloatingBase {
           this.constructor.eventName(EVENT_MOUSELEAVE) :
           this.constructor.eventName(EVENT_FOCUSOUT)
 
-        EventHandler.on(this._element, eventIn, this._config.selector, event => {
+        EventHandler.on(this._element, eventIn, this._config.selector as string, event => {
           const context = this._initializeOnDelegatedTarget(event)
           context._activeTrigger[event.type === 'focusin' ? TRIGGER_FOCUS : TRIGGER_HOVER] = true
           context._enter()
         })
-        EventHandler.on(this._element, eventOut, this._config.selector, event => {
+        EventHandler.on(this._element, eventOut, this._config.selector as string, event => {
           const context = this._initializeOnDelegatedTarget(event)
           context._activeTrigger[event.type === 'focusout' ? TRIGGER_FOCUS : TRIGGER_HOVER] =
-            context._element.contains(event.relatedTarget)
+            context._element.contains(event.relatedTarget as Node | null)
 
           context._leave()
         })
@@ -502,14 +534,14 @@ class Tooltip extends FloatingBase {
     EventHandler.on(this._element.closest(SELECTOR_MODAL), EVENT_MODAL_HIDE, this._hideModalHandler)
   }
 
-  _fixTitle() {
+  protected _fixTitle(): void {
     const title = this._element.getAttribute('title')
 
     if (!title) {
       return
     }
 
-    if (!this._element.getAttribute('aria-label') && !this._element.textContent.trim()) {
+    if (!this._element.getAttribute('aria-label') && !this._element.textContent!.trim()) {
       this._element.setAttribute('aria-label', title)
     }
 
@@ -517,7 +549,7 @@ class Tooltip extends FloatingBase {
     this._element.removeAttribute('title')
   }
 
-  _enter() {
+  protected _enter(): void {
     if (this._isShown() || this._isHovered) {
       this._isHovered = true
       return
@@ -529,10 +561,10 @@ class Tooltip extends FloatingBase {
       if (this._isHovered) {
         this.show()
       }
-    }, this._config.delay.show)
+    }, (this._config.delay as { show: number, hide: number }).show)
   }
 
-  _leave() {
+  protected _leave(): void {
     if (this._isWithActiveTrigger()) {
       return
     }
@@ -543,20 +575,20 @@ class Tooltip extends FloatingBase {
       if (!this._isHovered) {
         this.hide()
       }
-    }, this._config.delay.hide)
+    }, (this._config.delay as { show: number, hide: number }).hide)
   }
 
-  _setTimeout(handler, timeout) {
+  protected _setTimeout(handler: () => void, timeout: number): void {
     clearTimeout(this._timeout)
     this._timeout = setTimeout(handler, timeout)
   }
 
-  _isWithActiveTrigger() {
+  protected _isWithActiveTrigger(): boolean {
     return Object.values(this._activeTrigger).includes(true)
   }
 
-  _getConfig(config) {
-    const jsonConfig = Manipulator.getDataAttribute(this._element, 'config') || {}
+  protected override _getConfig(config?: ComponentConfig | null): ComponentConfig {
+    const jsonConfig = (Manipulator.getDataAttribute(this._element, 'config') || {}) as ComponentConfig
     const dataAttributes = Manipulator.getDataAttributes(this._element)
 
     for (const key of DISALLOWED_ATTRIBUTES) {
@@ -575,7 +607,7 @@ class Tooltip extends FloatingBase {
     return config
   }
 
-  _configAfterMerge(config) {
+  protected override _configAfterMerge(config: ComponentConfig): ComponentConfig {
     config.container = config.container === false ? document.body : getElement(config.container)
 
     if (typeof config.delay === 'number') {
@@ -596,11 +628,11 @@ class Tooltip extends FloatingBase {
     return config
   }
 
-  _getDelegateConfig() {
-    const config = {}
+  protected _getDelegateConfig(): ComponentConfig {
+    const config: ComponentConfig = {}
 
     for (const [key, value] of Object.entries(this._config)) {
-      if (this.constructor.Default[key] !== value) {
+      if (this.constructor.Default[key as keyof TooltipConfig] !== value) {
         config[key] = value
       }
     }
@@ -614,7 +646,7 @@ class Tooltip extends FloatingBase {
     return config
   }
 
-  _disposeFloating() {
+  protected override _disposeFloating(): void {
     super._disposeFloating()
 
     if (this.tip) {
@@ -628,8 +660,8 @@ class Tooltip extends FloatingBase {
  * Data API implementation - auto-initialize tooltips
  */
 
-const initTooltip = event => {
-  const target = event.target.closest(SELECTOR_DATA_TOGGLE)
+const initTooltip = (event: ChassisEvent): void => {
+  const target = (event.target as Element).closest(SELECTOR_DATA_TOGGLE)
   if (!target) {
     return
   }
@@ -649,3 +681,4 @@ EventHandler.on(document, EVENT_FOCUSIN, SELECTOR_DATA_TOGGLE, initTooltip)
 EventHandler.on(document, EVENT_MOUSEENTER, SELECTOR_DATA_TOGGLE, initTooltip)
 
 export default Tooltip
+export type { TooltipConfig }

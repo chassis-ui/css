@@ -1,13 +1,13 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS chip-input.js
+ * Chassis CSS chip-input.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
 import BaseComponent from './base-component.js'
 import Chip from './chip.js'
-import EventHandler from './dom/event-handler.js'
+import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
 
 /**
@@ -35,7 +35,23 @@ const CLASS_NAME_ACTIVE = 'active'
 
 const DEFAULT_DISMISS_TEXT = '×'
 
-const Default = {
+type SelectChipOptions = {
+  addToSelection?: boolean
+  rangeSelect?: boolean
+}
+
+type ChipInputConfig = {
+  separator: string | null
+  allowDuplicates: boolean
+  maxChips: number | null
+  placeholder: string
+  dismissible: boolean
+  createOnBlur: boolean
+  chipClass: string
+  dismissText: string
+}
+
+const Default: ChipInputConfig = {
   separator: ',',
   allowDuplicates: false,
   maxChips: null,
@@ -62,7 +78,14 @@ const DefaultType = {
  */
 
 class ChipInput extends BaseComponent {
-  constructor(element, config) {
+  declare ['constructor']: typeof ChipInput
+  protected declare _config: ChipInputConfig
+  protected declare _input: HTMLInputElement | null
+  protected declare _chips: string[]
+  protected declare _selectedChips: Set<HTMLElement>
+  protected declare _anchorChip: HTMLElement | null
+
+  constructor(element?: string | Element | null, config?: Partial<ChipInputConfig> | null) {
     super(element, config)
 
     // Allow data-cx-chips="primary smooth" to set chip classes
@@ -71,7 +94,7 @@ class ChipInput extends BaseComponent {
       this._config.chipClass = attrValue
     }
 
-    this._input = SelectorEngine.findOne(SELECTOR_GHOST_INPUT, this._element)
+    this._input = SelectorEngine.findOne<HTMLInputElement>(SELECTOR_GHOST_INPUT, this._element)
     this._chips = []
     this._selectedChips = new Set()
     this._anchorChip = null // For shift+click range selection
@@ -85,20 +108,20 @@ class ChipInput extends BaseComponent {
   }
 
   // Getters
-  static get Default() {
+  static override get Default(): ChipInputConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): Record<string, string> {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  add(value) {
+  add(value: string): HTMLElement | null {
     const trimmedValue = String(value).trim()
 
     if (!trimmedValue) {
@@ -135,13 +158,13 @@ class ChipInput extends BaseComponent {
     return chip
   }
 
-  remove(chipOrValue) {
+  remove(chipOrValue: HTMLElement | string): boolean {
     if (!chipOrValue) {
       return false
     }
 
-    let chip
-    let value
+    let chip: HTMLElement | undefined
+    let value: string | undefined
 
     if (typeof chipOrValue === 'string') {
       value = chipOrValue
@@ -186,7 +209,7 @@ class ChipInput extends BaseComponent {
     return true
   }
 
-  removeSelected() {
+  removeSelected(): void {
     const chipsToRemove = [...this._selectedChips]
     for (const chip of chipsToRemove) {
       this.remove(chip)
@@ -195,15 +218,15 @@ class ChipInput extends BaseComponent {
     this._input?.focus()
   }
 
-  getValues() {
+  getValues(): string[] {
     return [...this._chips]
   }
 
-  getSelectedValues() {
+  getSelectedValues(): string[] {
     return [...this._selectedChips].map(chip => this._getChipValue(chip))
   }
 
-  clear() {
+  clear(): void {
     const chips = SelectorEngine.find(SELECTOR_CHIP, this._element)
     for (const chip of chips) {
       EventHandler.trigger(this._element, EVENT_REMOVE, {
@@ -224,7 +247,7 @@ class ChipInput extends BaseComponent {
     })
   }
 
-  clearSelection() {
+  clearSelection(): void {
     for (const chip of this._selectedChips) {
       chip.classList.remove(CLASS_NAME_ACTIVE)
       chip.setAttribute('aria-selected', 'false')
@@ -238,7 +261,7 @@ class ChipInput extends BaseComponent {
     })
   }
 
-  selectChip(chip, options = {}) {
+  selectChip(chip: HTMLElement, options: SelectChipOptions = {}): void {
     const { addToSelection = false, rangeSelect = false } = options
     const chipElements = this._getChipElements()
 
@@ -288,11 +311,11 @@ class ChipInput extends BaseComponent {
     })
   }
 
-  focus() {
+  focus(): void {
     this._input?.focus()
   }
 
-  dispose() {
+  override dispose(): void {
     for (const chip of this._getChipElements()) {
       Chip.getInstance(chip)?.dispose()
     }
@@ -305,7 +328,7 @@ class ChipInput extends BaseComponent {
   }
 
   // Private
-  _clearSelectionSilent() {
+  protected _clearSelectionSilent(): void {
     for (const chip of this._selectedChips) {
       chip.classList.remove(CLASS_NAME_ACTIVE)
       chip.setAttribute('aria-selected', 'false')
@@ -315,11 +338,11 @@ class ChipInput extends BaseComponent {
     this._anchorChip = null
   }
 
-  _getChipElements() {
+  protected _getChipElements(): HTMLElement[] {
     return SelectorEngine.find(SELECTOR_CHIP, this._element)
   }
 
-  _createInput() {
+  protected _createInput(): void {
     const input = document.createElement('input')
     input.type = 'text'
     input.className = 'ghost-input'
@@ -331,7 +354,7 @@ class ChipInput extends BaseComponent {
     this._input = input
   }
 
-  _initializeExistingChips() {
+  protected _initializeExistingChips(): void {
     const existingChips = SelectorEngine.find(SELECTOR_CHIP, this._element)
     for (const chip of existingChips) {
       const value = this._getChipValue(chip)
@@ -343,7 +366,7 @@ class ChipInput extends BaseComponent {
     }
   }
 
-  _setupChip(chip) {
+  protected _setupChip(chip: HTMLElement): void {
     // Make chip focusable
     chip.setAttribute('tabindex', '0')
     chip.setAttribute('aria-selected', 'false')
@@ -361,7 +384,7 @@ class ChipInput extends BaseComponent {
     Chip.getOrCreateInstance(chip)
   }
 
-  _createChip(value) {
+  protected _createChip(value: string): HTMLElement {
     const chip = document.createElement('span')
     chip.className = CLASS_NAME_CHIP
     chip.dataset.cxChipValue = value
@@ -375,7 +398,7 @@ class ChipInput extends BaseComponent {
     return chip
   }
 
-  _createDismissButton() {
+  protected _createDismissButton(): HTMLButtonElement {
     const button = document.createElement('button')
     button.type = 'button'
     button.className = CLASS_NAME_CHIP_DISMISS
@@ -385,17 +408,17 @@ class ChipInput extends BaseComponent {
     return button
   }
 
-  _findChipByValue(value) {
+  protected _findChipByValue(value: string): HTMLElement | undefined {
     const chips = this._getChipElements()
     return chips.find(chip => this._getChipValue(chip) === value)
   }
 
-  _getChipValue(chip) {
+  protected _getChipValue(chip: HTMLElement): string {
     if (chip.dataset.cxChipValue) {
       return chip.dataset.cxChipValue
     }
 
-    const clone = chip.cloneNode(true)
+    const clone = chip.cloneNode(true) as HTMLElement
     const dismiss = SelectorEngine.findOne(SELECTOR_CHIP_DISMISS, clone)
     if (dismiss) {
       dismiss.remove()
@@ -404,7 +427,7 @@ class ChipInput extends BaseComponent {
     return clone.textContent?.trim() || ''
   }
 
-  _addEventListeners() {
+  protected _addEventListeners(): void {
     // Input events
     EventHandler.on(this._input, 'keydown', event => this._handleInputKeydown(event))
     EventHandler.on(this._input, 'input', event => this._handleInput(event))
@@ -423,11 +446,11 @@ class ChipInput extends BaseComponent {
     // Chip click events (delegated)
     EventHandler.on(this._element, 'click', SELECTOR_CHIP, event => {
       // Ignore clicks on dismiss button
-      if (event.target.closest(SELECTOR_CHIP_DISMISS)) {
+      if ((event.target as Element).closest(SELECTOR_CHIP_DISMISS)) {
         return
       }
 
-      const chip = event.target.closest(SELECTOR_CHIP)
+      const chip = (event.target as Element).closest<HTMLElement>(SELECTOR_CHIP)
       if (chip) {
         event.preventDefault()
         this.selectChip(chip, {
@@ -441,7 +464,7 @@ class ChipInput extends BaseComponent {
     // Dismiss button clicks (delegated)
     EventHandler.on(this._element, 'click', SELECTOR_CHIP_DISMISS, event => {
       event.stopPropagation()
-      const chip = event.target.closest(SELECTOR_CHIP)
+      const chip = (event.target as Element).closest<HTMLElement>(SELECTOR_CHIP)
       if (chip) {
         this.remove(chip)
         this._input?.focus()
@@ -462,7 +485,7 @@ class ChipInput extends BaseComponent {
     })
   }
 
-  _handleInputKeydown(event) {
+  protected _handleInputKeydown(event: ChassisEvent): void {
     const { key } = event
 
     switch (key) {
@@ -474,13 +497,13 @@ class ChipInput extends BaseComponent {
 
       case 'Backspace':
       case 'Delete': {
-        if (this._input.value === '') {
+        if (this._input!.value === '') {
           event.preventDefault()
           const chips = this._getChipElements()
 
           if (chips.length > 0) {
             // Select last chip and focus it
-            const lastChip = chips.at(-1)
+            const lastChip = chips.at(-1)!
             this.selectChip(lastChip)
             lastChip.focus()
           }
@@ -490,11 +513,11 @@ class ChipInput extends BaseComponent {
       }
 
       case 'ArrowLeft': {
-        if (this._input.selectionStart === 0 && this._input.selectionEnd === 0) {
+        if (this._input!.selectionStart === 0 && this._input!.selectionEnd === 0) {
           event.preventDefault()
           const chips = this._getChipElements()
           if (chips.length > 0) {
-            const lastChip = chips.at(-1)
+            const lastChip = chips.at(-1)!
             if (event.shiftKey) {
               this.selectChip(lastChip, { addToSelection: true })
             } else {
@@ -509,9 +532,9 @@ class ChipInput extends BaseComponent {
       }
 
       case 'Escape': {
-        this._input.value = ''
+        this._input!.value = ''
         this.clearSelection()
-        this._input.blur()
+        this._input!.blur()
         break
       }
 
@@ -519,9 +542,9 @@ class ChipInput extends BaseComponent {
     }
   }
 
-  _handleChipKeydown(event) {
+  protected _handleChipKeydown(event: ChassisEvent): void {
     const { key } = event
-    const chip = event.target.closest(SELECTOR_CHIP)
+    const chip = (event.target as Element).closest<HTMLElement>(SELECTOR_CHIP)
     if (!chip) {
       return
     }
@@ -578,7 +601,7 @@ class ChipInput extends BaseComponent {
     }
   }
 
-  _handleChipDelete(currentIndex, chips) {
+  protected _handleChipDelete(currentIndex: number, chips: HTMLElement[]): void {
     if (this._selectedChips.size === 0) {
       return
     }
@@ -596,7 +619,7 @@ class ChipInput extends BaseComponent {
     }
   }
 
-  _navigateChip(chips, currentIndex, direction, shiftKey) {
+  protected _navigateChip(chips: HTMLElement[], currentIndex: number, direction: number, shiftKey: boolean): void {
     const targetIndex = currentIndex + direction
 
     if (targetIndex >= 0 && targetIndex < chips.length) {
@@ -610,7 +633,7 @@ class ChipInput extends BaseComponent {
     // direction < 0 at index 0: already at first chip, intentional no-op
   }
 
-  _navigateToEdge(chips, targetIndex, shiftKey) {
+  protected _navigateToEdge(chips: HTMLElement[], targetIndex: number, shiftKey: boolean): void {
     if (chips.length === 0) {
       return
     }
@@ -620,7 +643,7 @@ class ChipInput extends BaseComponent {
     targetChip.focus()
   }
 
-  _handleSelectAll(event, chips) {
+  protected _handleSelectAll(event: ChassisEvent, chips: HTMLElement[]): void {
     if (!(event.metaKey || event.ctrlKey)) {
       return
     }
@@ -639,8 +662,8 @@ class ChipInput extends BaseComponent {
     })
   }
 
-  _handleInput(event) {
-    const { value } = event.target
+  protected _handleInput(event: ChassisEvent): void {
+    const { value } = event.target as HTMLInputElement
     const { separator } = this._config
 
     if (separator && value.includes(separator)) {
@@ -649,17 +672,17 @@ class ChipInput extends BaseComponent {
         this.add(part.trim())
       }
 
-      this._input.value = parts.at(-1)
+      this._input!.value = parts.at(-1)!
     }
   }
 
-  _handlePaste(event) {
+  protected _handlePaste(event: ChassisEvent): void {
     const { separator } = this._config
     if (!separator) {
       return
     }
 
-    const pastedData = (event.clipboardData || window.clipboardData).getData('text')
+    const pastedData: string = (event.clipboardData || (window as any).clipboardData).getData('text')
     if (pastedData.includes(separator)) {
       event.preventDefault()
 
@@ -668,15 +691,15 @@ class ChipInput extends BaseComponent {
         this.add(part.trim())
       }
 
-      this._input.value = parts.at(-1)
+      this._input!.value = parts.at(-1)!
     }
   }
 
-  _createChipFromInput() {
-    const value = this._input.value.trim()
+  protected _createChipFromInput(): void {
+    const value = this._input!.value.trim()
     if (value) {
       this.add(value)
-      this._input.value = ''
+      this._input!.value = ''
     }
   }
 }
@@ -692,3 +715,4 @@ EventHandler.on(document, `DOMContentLoaded${EVENT_KEY}${DATA_API_KEY}`, () => {
 })
 
 export default ChipInput
+export type { ChipInputConfig }

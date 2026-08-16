@@ -5,7 +5,7 @@
  * --------------------------------------------------------------------------
  */
 
-import Tooltip from './tooltip.js'
+import Tooltip, { type TooltipConfig } from './tooltip.js'
 import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
 import type { TemplateContentEntry } from './util/template-factory.js'
 
@@ -23,14 +23,12 @@ const EVENT_CLICK = 'click'
 const EVENT_FOCUSIN = 'focusin'
 const EVENT_MOUSEENTER = 'mouseenter'
 
-// Tooltip itself isn't converted until Phase 8 (js/src/tooltip.js), so this can't
-// extend a `TooltipConfig` type yet - it's `Record<string, any>` until then.
-type PopoverConfig = Record<string, any> & {
+type PopoverConfig = TooltipConfig & {
   content: string | Element | ((...args: any[]) => string | Element) | null
 }
 
 const Default: PopoverConfig = {
-  ...(Tooltip.Default as Record<string, any>),
+  ...Tooltip.Default,
   content: '',
   offset: [0, 8],
   placement: 'right',
@@ -43,7 +41,7 @@ const Default: PopoverConfig = {
 }
 
 const DefaultType = {
-  ...(Tooltip.DefaultType as Record<string, any>),
+  ...Tooltip.DefaultType,
   content: '(null|string|element|function)'
 }
 
@@ -68,15 +66,12 @@ class Popover extends Tooltip {
   }
 
   // Overrides
-  protected _isWithContent(): boolean {
-    return this._getTitle() || this._getContent()
+  protected override _isWithContent(): boolean {
+    return Boolean(this._getTitle() || this._getContent())
   }
 
   // Private
-  // @ts-expect-error -- Tooltip is still untyped JS until Phase 8, so tsc infers an
-  // overly-narrow return type for the base method from its current object literal.
-  // Remove this once tooltip.js converts and _getContentForTemplate() is properly typed.
-  protected _getContentForTemplate(): Record<string, TemplateContentEntry> {
+  protected override _getContentForTemplate(): Record<string, TemplateContentEntry> {
     return {
       [SELECTOR_TITLE]: this._getTitle(),
       [SELECTOR_CONTENT]: this._getContent()

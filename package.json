@@ -66,7 +66,7 @@
     "js:compile:bundle": "rollup --environment BUNDLE:true --config build/rollup.config.js --sourcemap",
     "js:compile:plugins": "node build/build-plugins.js",
     "js:emit-types": "tsc --project build/tsconfig.dts.json",
-    "js:lint": "eslint --cache --cache-location .cache/.eslintcache --report-unused-disable-directives --ext .html,.js,.cjs,.mjs,.md .",
+    "js:lint": "eslint --cache --cache-location .cache/.eslintcache --report-unused-disable-directives --ext .html,.js,.ts,.cjs,.mjs,.md .",
     "js:minify": "run-p js:minify:standalone js:minify:bundle",
     "js:minify:standalone": "terser --compress passes=2 --mangle --comments \"/^!/\" --source-map \"content=dist/js/chassis.js.map,includeSources,url=chassis.min.js.map\" --output dist/js/chassis.min.js dist/js/chassis.js",
     "js:minify:bundle": "terser --compress passes=2 --mangle --comments \"/^!/\" --source-map \"content=dist/js/chassis.bundle.js.map,includeSources,url=chassis.bundle.min.js.map\" --output dist/js/chassis.bundle.min.js dist/js/chassis.bundle.js",
