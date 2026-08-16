@@ -163,14 +163,18 @@ class Combobox extends BaseComponent {
     if (this._searchInput) {
       this._searchInput.value = ''
       this._filterItems('')
-      // Guard against dispose between the rAF schedule and its callback —
-      // Base.dispose() nulls every instance property.
-      requestAnimationFrame(() => this._searchInput?.focus())
+      requestAnimationFrame(() => {
+        if (!this.isDisposed()) {
+          this._searchInput?.focus()
+        }
+      })
     } else if (this._comboInput) {
       this._filterItems('')
       requestAnimationFrame(() => {
-        this._comboInput?.focus()
-        this._comboInput?.select()
+        if (!this.isDisposed()) {
+          this._comboInput?.focus()
+          this._comboInput?.select()
+        }
       })
     }
 

@@ -164,10 +164,9 @@ class Datepicker extends BaseComponent {
 
   // Public
   toggle(): void {
-    // Check _calendar first: dispose() nulls every instance property
-    // (including _config), and a deferred hide() (see _maybeHideAfterSelection)
-    // can still fire after dispose.
-    if (!this._calendar) {
+    // A deferred hide() (see _maybeHideAfterSelection) can still fire
+    // after dispose(), so check first.
+    if (this.isDisposed()) {
       return
     }
 
@@ -183,7 +182,7 @@ class Datepicker extends BaseComponent {
   }
 
   show(): void {
-    if (!this._calendar) {
+    if (this.isDisposed()) {
       return
     }
 
@@ -200,14 +199,14 @@ class Datepicker extends BaseComponent {
       return
     }
 
-    this._calendar.show()
+    this._calendar!.show()
     this._isShown = true
 
     EventHandler.trigger(this._element, EVENT_SHOWN)
   }
 
   hide(): void {
-    if (!this._calendar) {
+    if (this.isDisposed()) {
       return
     }
 
@@ -224,7 +223,7 @@ class Datepicker extends BaseComponent {
       return
     }
 
-    this._calendar.hide()
+    this._calendar!.hide()
     this._isShown = false
 
     EventHandler.trigger(this._element, EVENT_HIDDEN)

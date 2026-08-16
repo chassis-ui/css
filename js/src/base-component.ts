@@ -16,6 +16,10 @@ import { executeAfterTransition, getElement } from './util/index.js'
 
 const VERSION = '0.3.5'
 
+// Tracks disposed instances outside the instance itself, since dispose()'s
+// own property-nulling loop would otherwise stomp on any flag set on `this`.
+const disposedInstances = new WeakSet<BaseComponent>()
+
 /**
  * Class definition
  */
@@ -41,12 +45,18 @@ class BaseComponent extends Config {
 
   // Public
   dispose(): void {
+    disposedInstances.add(this)
+
     Data.remove(this._element, this.constructor.DATA_KEY)
     EventHandler.off(this._element, this.constructor.EVENT_KEY)
 
     for (const propertyName of Object.getOwnPropertyNames(this)) {
       (this as Record<string, any>)[propertyName] = null
     }
+  }
+
+  isDisposed(): boolean {
+    return disposedInstances.has(this)
   }
 
   // Private
