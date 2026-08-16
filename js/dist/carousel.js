@@ -79,7 +79,7 @@ const easeInOutCubic = (progress) => progress < .5 ? 4 * progress * progress * p
 /**
 * Class definition
 */
-var Carousel = class extends BaseComponent {
+var Carousel = class Carousel extends BaseComponent {
 	constructor(element, config) {
 		super(element, config);
 		this._viewport = SelectorEngine.findOne(SELECTOR_INNER, this._element) || this._element;
@@ -509,34 +509,36 @@ var Carousel = class extends BaseComponent {
 			this._interval = null;
 		}
 	}
+	static dataApiSlideHandler(event) {
+		const target = SelectorEngine.getElementFromSelector(this);
+		if (!target || !target.classList.contains(CLASS_NAME_CAROUSEL)) return;
+		event.preventDefault();
+		if (this.getAttribute("aria-disabled") === "true") return;
+		const carousel = Carousel.getOrCreateInstance(target);
+		carousel._pauseFromInteraction();
+		const slideIndex = this.getAttribute("data-cx-slide-to");
+		if (slideIndex) {
+			carousel.to(slideIndex);
+			return;
+		}
+		if (Manipulator.getDataAttribute(this, "slide") === "next") {
+			carousel.next();
+			return;
+		}
+		carousel.prev();
+	}
+	static dataApiPlayPauseHandler(event) {
+		const target = SelectorEngine.getElementFromSelector(this);
+		if (!target || !target.classList.contains(CLASS_NAME_CAROUSEL)) return;
+		event.preventDefault();
+		Carousel.getOrCreateInstance(target)._togglePlayPause();
+	}
 };
 /**
 * Data API implementation
 */
-EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_SLIDE, function(event) {
-	const target = SelectorEngine.getElementFromSelector(this);
-	if (!target || !target.classList.contains(CLASS_NAME_CAROUSEL)) return;
-	event.preventDefault();
-	if (this.getAttribute("aria-disabled") === "true") return;
-	const carousel = Carousel.getOrCreateInstance(target);
-	carousel._pauseFromInteraction();
-	const slideIndex = this.getAttribute("data-cx-slide-to");
-	if (slideIndex) {
-		carousel.to(slideIndex);
-		return;
-	}
-	if (Manipulator.getDataAttribute(this, "slide") === "next") {
-		carousel.next();
-		return;
-	}
-	carousel.prev();
-});
-EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_PLAY_PAUSE, function(event) {
-	const target = SelectorEngine.getElementFromSelector(this);
-	if (!target || !target.classList.contains(CLASS_NAME_CAROUSEL)) return;
-	event.preventDefault();
-	Carousel.getOrCreateInstance(target)._togglePlayPause();
-});
+EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_SLIDE, Carousel.dataApiSlideHandler);
+EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_PLAY_PAUSE, Carousel.dataApiPlayPauseHandler);
 EventHandler.on(window, EVENT_LOAD_DATA_API, () => {
 	const carousels = SelectorEngine.find(SELECTOR_DATA_AUTOPLAY);
 	for (const carousel of carousels) Carousel.getOrCreateInstance(carousel);

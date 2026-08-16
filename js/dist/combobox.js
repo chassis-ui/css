@@ -45,6 +45,7 @@ const SELECTOR_VISIBLE_ITEMS = ".menu-item[data-cx-value]:not(.disabled):not(:di
 const SELECTOR_VALUE = ".combobox-value";
 const SELECTOR_SEARCH_INPUT = ".combobox-search-input";
 const SELECTOR_NO_RESULTS = ".combobox-no-results";
+const FILTER_DEBOUNCE_DELAY = 150;
 const Default = {
 	boundary: "clippingParents",
 	multiple: false,
@@ -66,7 +67,7 @@ const DefaultType = {
 /**
 * Class definition
 */
-var Combobox = class extends BaseComponent {
+var Combobox = class Combobox extends BaseComponent {
 	constructor(element, config) {
 		super(element, config);
 		this._toggle = this._element;
@@ -78,6 +79,7 @@ var Combobox = class extends BaseComponent {
 		this._hiddenInput = null;
 		this._menuInstance = null;
 		this._ignoreNextFocus = false;
+		this._filterDebounceTimer = null;
 		this._createHiddenInput();
 		this._createMenuInstance();
 		this._syncDisabledState();
@@ -100,6 +102,7 @@ var Combobox = class extends BaseComponent {
 		if (isDisabled(this._toggle) || this._isShown()) return;
 		if (EventHandler.trigger(this._toggle, EVENT_SHOW).defaultPrevented) return;
 		this._menuInstance.show();
+		this._cancelFilterDebounce();
 		if (this._searchInput) {
 			this._searchInput.value = "";
 			this._filterItems("");
@@ -127,6 +130,7 @@ var Combobox = class extends BaseComponent {
 		this._syncDisabledState(false);
 	}
 	dispose() {
+		this._cancelFilterDebounce();
 		if (this._menuInstance) {
 			this._menuInstance.dispose();
 			this._menuInstance = null;
@@ -183,6 +187,7 @@ var Combobox = class extends BaseComponent {
 	}
 	_restoreAfterClose() {
 		if (!this._comboInput) return;
+		this._cancelFilterDebounce();
 		this._filterItems("");
 		if (this._getSelectedItems().length > 0) this._updateToggleText();
 		else this._comboInput.value = "";
@@ -213,14 +218,15 @@ var Combobox = class extends BaseComponent {
 				if (!this._isShown()) this.show();
 			});
 			EventHandler.on(this._comboInput, `input${EVENT_KEY}`, () => {
-				const visibleCount = this._filterItems(this._comboInput.value);
-				if (visibleCount > 0 && !this._isShown()) this._menuInstance.show();
-				else if (visibleCount === 0 && this._isShown()) this._menuInstance.hide();
+				this._scheduleFilter(this._comboInput.value, (visibleCount) => {
+					if (visibleCount > 0 && !this._isShown()) this._menuInstance.show();
+					else if (visibleCount === 0 && this._isShown()) this._menuInstance.hide();
+				});
 			});
 		}
 		if (this._searchInput) {
 			EventHandler.on(this._searchInput, `input${EVENT_KEY}`, () => {
-				this._filterItems(this._searchInput.value);
+				this._scheduleFilter(this._searchInput.value);
 			});
 			EventHandler.on(this._searchInput, `keydown${EVENT_KEY}`, (event) => {
 				if (event.key === ARROW_DOWN_KEY) {
@@ -302,6 +308,20 @@ var Combobox = class extends BaseComponent {
 	_getVisibleItems() {
 		return SelectorEngine.find(SELECTOR_VISIBLE_ITEMS, this._menu).filter((item) => isVisible(item));
 	}
+	_scheduleFilter(query, onFiltered) {
+		this._cancelFilterDebounce();
+		this._filterDebounceTimer = setTimeout(() => {
+			this._filterDebounceTimer = null;
+			const visibleCount = this._filterItems(query);
+			onFiltered?.(visibleCount);
+		}, FILTER_DEBOUNCE_DELAY);
+	}
+	_cancelFilterDebounce() {
+		if (this._filterDebounceTimer !== null) {
+			clearTimeout(this._filterDebounceTimer);
+			this._filterDebounceTimer = null;
+		}
+	}
 	_filterItems(query) {
 		const normalizedQuery = this._normalizeText(query.toLowerCase().trim());
 		const items = SelectorEngine.find(SELECTOR_MENU_ITEM, this._menu);
@@ -366,19 +386,20 @@ var Combobox = class extends BaseComponent {
 			if (item && !isDisabled(item)) this._selectItem(item);
 		}
 	}
+	static dataApiClickHandler(event) {
+		const instance = Combobox.getOrCreateInstance(this);
+		if (event.target === instance._comboInput) {
+			instance.show();
+			return;
+		}
+		event.preventDefault();
+		instance.toggle();
+	}
 };
 /**
 * Data API implementation
 */
-EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function(event) {
-	const instance = Combobox.getOrCreateInstance(this);
-	if (event.target === instance._comboInput) {
-		instance.show();
-		return;
-	}
-	event.preventDefault();
-	instance.toggle();
-});
+EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, Combobox.dataApiClickHandler);
 EventHandler.on(document, "DOMContentLoaded", () => {
 	for (const toggle of SelectorEngine.find(SELECTOR_DATA_TOGGLE)) Combobox.getOrCreateInstance(toggle);
 });

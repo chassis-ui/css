@@ -904,19 +904,13 @@ class Carousel extends BaseComponent {
   }
 
   // Turn autoplay off for good once the user interacts with the carousel.
-  // Not `protected`: the data-API click handler below calls this on an instance
-  // from outside the class body, and TS (unlike the previous JS) enforces
-  // `protected` across that boundary even though it was always freely callable
-  // at runtime.
-  _pauseFromInteraction(): void {
+  protected _pauseFromInteraction(): void {
     this._playing = false
     this.pause()
     this._updatePlayPauseControl()
   }
 
-  // Same reason as `_pauseFromInteraction()` above: called from the play/pause
-  // data-API handler outside the class body.
-  _togglePlayPause(): void {
+  protected _togglePlayPause(): void {
     if (this._playing) {
       this._pauseFromInteraction()
       return
@@ -963,59 +957,62 @@ class Carousel extends BaseComponent {
       this._interval = null
     }
   }
+
+  static dataApiSlideHandler(this: HTMLElement, event: ChassisEvent): void {
+    const target = SelectorEngine.getElementFromSelector(this)
+
+    if (!target || !target.classList.contains(CLASS_NAME_CAROUSEL)) {
+      return
+    }
+
+    event.preventDefault()
+
+    // A real `<button disabled>` never dispatches this click at all; this only
+    // catches controls with no native disabled state to block it with (e.g. an
+    // `<a>`), which `_setControlsDisabled` marks via `aria-disabled` instead.
+    if (this.getAttribute('aria-disabled') === 'true') {
+      return
+    }
+
+    const carousel = Carousel.getOrCreateInstance(target)
+
+    // Manually cycling the carousel is an explicit interaction, so stop autoplay
+    carousel._pauseFromInteraction()
+
+    const slideIndex = this.getAttribute('data-cx-slide-to')
+
+    if (slideIndex) {
+      carousel.to(slideIndex)
+      return
+    }
+
+    if (Manipulator.getDataAttribute(this, 'slide') === 'next') {
+      carousel.next()
+      return
+    }
+
+    carousel.prev()
+  }
+
+  static dataApiPlayPauseHandler(this: HTMLElement, event: ChassisEvent): void {
+    const target = SelectorEngine.getElementFromSelector(this)
+
+    if (!target || !target.classList.contains(CLASS_NAME_CAROUSEL)) {
+      return
+    }
+
+    event.preventDefault()
+
+    Carousel.getOrCreateInstance(target)._togglePlayPause()
+  }
 }
 
 /**
  * Data API implementation
  */
 
-EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_SLIDE, function (event) {
-  const target = SelectorEngine.getElementFromSelector(this)
-
-  if (!target || !target.classList.contains(CLASS_NAME_CAROUSEL)) {
-    return
-  }
-
-  event.preventDefault()
-
-  // A real `<button disabled>` never dispatches this click at all; this only
-  // catches controls with no native disabled state to block it with (e.g. an
-  // `<a>`), which `_setControlsDisabled` marks via `aria-disabled` instead.
-  if (this.getAttribute('aria-disabled') === 'true') {
-    return
-  }
-
-  const carousel = Carousel.getOrCreateInstance(target)
-
-  // Manually cycling the carousel is an explicit interaction, so stop autoplay
-  carousel._pauseFromInteraction()
-
-  const slideIndex = this.getAttribute('data-cx-slide-to')
-
-  if (slideIndex) {
-    carousel.to(slideIndex)
-    return
-  }
-
-  if (Manipulator.getDataAttribute(this, 'slide') === 'next') {
-    carousel.next()
-    return
-  }
-
-  carousel.prev()
-})
-
-EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_PLAY_PAUSE, function (event) {
-  const target = SelectorEngine.getElementFromSelector(this)
-
-  if (!target || !target.classList.contains(CLASS_NAME_CAROUSEL)) {
-    return
-  }
-
-  event.preventDefault()
-
-  Carousel.getOrCreateInstance(target)._togglePlayPause()
-})
+EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_SLIDE, Carousel.dataApiSlideHandler)
+EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_PLAY_PAUSE, Carousel.dataApiPlayPauseHandler)
 
 EventHandler.on(window, EVENT_LOAD_DATA_API, () => {
   const carousels = SelectorEngine.find(SELECTOR_DATA_AUTOPLAY)
