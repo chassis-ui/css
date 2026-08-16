@@ -10,7 +10,7 @@ import EventHandler from './dom/event-handler.js'
 import Manipulator from './dom/manipulator.js'
 import SelectorEngine from './dom/selector-engine.js'
 import { enableDismissTrigger } from './util/component-functions.js'
-import { isVisible, preventNavigationForAnchor } from './util/index.js'
+import { preventNavigationForAnchor } from './util/index.js'
 
 /**
  * Constants
@@ -119,11 +119,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (
       return
     }
 
-    EventHandler.one(target, EVENT_HIDDEN, () => {
-      if (isVisible(this)) {
-        this.focus()
-      }
-    })
+    Dialog.restoreFocusOnHide(target, this)
   })
 
   // Get config from trigger's data attributes

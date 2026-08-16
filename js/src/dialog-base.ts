@@ -9,6 +9,7 @@ import BaseComponent from './base-component.js'
 import Data from './dom/data.js'
 import EventHandler from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
+import { isVisible } from './util/index.js'
 
 /**
  * Constants
@@ -53,6 +54,17 @@ class DialogBase extends BaseComponent {
   // Getters — subclasses override NAME with their own component name.
   static override get NAME(): string {
     return 'dialogbase'
+  }
+
+  // Shared by Dialog/Drawer's top-level data-API click handlers: once `target`
+  // (the dialog/drawer element) fires its next `hidden` event, refocus
+  // `trigger` (the element that opened it) if it's still visible.
+  static restoreFocusOnHide(target: Element, trigger: HTMLElement): void {
+    EventHandler.one(target, this.eventName('hidden'), () => {
+      if (isVisible(trigger)) {
+        trigger.focus()
+      }
+    })
   }
 
   // Public — shared lifecycle methods
