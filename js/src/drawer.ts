@@ -1,14 +1,14 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS drawer.js
+ * Chassis CSS drawer.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
-import DialogBase from './dialog-base.js'
+import DialogBase, { type DialogBaseConfig } from './dialog-base.js'
 import EventHandler from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
-import Swipe from './util/swipe.js'
+import Swipe, { type SwipeConfig } from './util/swipe.js'
 import {
   isDisabled,
   isRTL,
@@ -38,7 +38,11 @@ const SELECTOR_DATA_DISMISS = '[data-cx-dismiss="drawer"]'
 const SELECTOR_OPEN_DRAWER = 'dialog.drawer[open], dialog[open][class*=":drawer"]'
 const SELECTOR_RESPONSIVE_OPEN = 'dialog[open][class*=":drawer"]'
 
-const Default = {
+type DrawerConfig = DialogBaseConfig & {
+  scroll: boolean
+}
+
+const Default: DrawerConfig = {
   backdrop: true,
   keyboard: true,
   scroll: false
@@ -55,26 +59,29 @@ const DefaultType = {
  */
 
 class Drawer extends DialogBase {
-  constructor(element, config) {
+  protected declare _config: DrawerConfig
+  protected declare _swipeHelper: Swipe | null
+
+  constructor(element?: string | Element | null, config?: Partial<DrawerConfig> | null) {
     super(element, config)
     this._swipeHelper = null
   }
 
   // Getters
-  static get Default() {
+  static override get Default(): DrawerConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): Record<string, string> {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  dispose() {
+  override dispose(): void {
     if (this._swipeHelper) {
       this._swipeHelper.dispose()
     }
@@ -84,7 +91,7 @@ class Drawer extends DialogBase {
 
   // Protected — hook overrides
 
-  _getShowOptions() {
+  protected override _getShowOptions(): { modal: boolean, preventBodyScroll: boolean } {
     const useModal = Boolean(this._config.backdrop) || !this._config.scroll
     return {
       modal: useModal,
@@ -92,27 +99,27 @@ class Drawer extends DialogBase {
     }
   }
 
-  _onBeforeShow() {
+  protected override _onBeforeShow(): void {
     this._initSwipe()
   }
 
-  _getInstantClassName() {
+  protected override _getInstantClassName(): string {
     return CLASS_NAME_INSTANT
   }
 
-  _getStaticClassName() {
+  protected override _getStaticClassName(): string {
     return CLASS_NAME_STATIC
   }
 
   // Private
 
-  _initSwipe() {
+  protected _initSwipe(): void {
     if (this._swipeHelper || !Swipe.isSupported()) {
       return
     }
 
     // Determine which swipe direction dismisses based on placement
-    const swipeConfig = {}
+    const swipeConfig: Partial<SwipeConfig> = {}
     const element = this._element
 
     if (element.classList.contains('drawer-bottom')) {
@@ -197,3 +204,4 @@ EventHandler.on(document, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, function (
 })
 
 export default Drawer
+export type { DrawerConfig }

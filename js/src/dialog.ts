@@ -1,11 +1,11 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dialog.js
+ * Chassis CSS dialog.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
-import DialogBase from './dialog-base.js'
+import DialogBase, { type DialogBaseConfig } from './dialog-base.js'
 import EventHandler from './dom/event-handler.js'
 import Manipulator from './dom/manipulator.js'
 import SelectorEngine from './dom/selector-engine.js'
@@ -32,7 +32,11 @@ const CLASS_NAME_SWAP_IN = 'swap-in'
 
 const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="dialog"]'
 
-const Default = {
+type DialogConfig = DialogBaseConfig & {
+  modal: boolean
+}
+
+const Default: DialogConfig = {
   backdrop: true,
   keyboard: true,
   modal: true
@@ -49,44 +53,50 @@ const DefaultType = {
  */
 
 class Dialog extends DialogBase {
+  protected declare _config: DialogConfig
+
+  constructor(element?: string | Element | null, config?: Partial<DialogConfig> | null) {
+    super(element, config)
+  }
+
   // Getters
-  static get Default() {
+  static override get Default(): DialogConfig {
     return Default
   }
 
-  static get DefaultType() {
+  static override get DefaultType(): Record<string, string> {
     return DefaultType
   }
 
-  static get NAME() {
+  static override get NAME(): string {
     return NAME
   }
 
   // Public
-  handleUpdate() {
+  handleUpdate(): void {
     // Provided for API consistency with Modal.
   }
 
   // Protected — hook overrides
 
-  _getShowOptions() {
+  protected override _getShowOptions(): { modal: boolean, preventBodyScroll: boolean } {
     return {
       modal: this._config.modal,
       preventBodyScroll: this._config.modal
     }
   }
 
-  _onBeforeShow() {
+  protected override _onBeforeShow(): void {
     if (!this._config.modal) {
       this._element.classList.add(CLASS_NAME_NONMODAL)
     }
   }
 
-  _onAfterHide() {
+  protected override _onAfterHide(): void {
     this._element.classList.remove(CLASS_NAME_NONMODAL)
   }
 
-  _onCancel() {
+  protected override _onCancel(): void {
     EventHandler.trigger(this._element, EVENT_CANCEL)
   }
 }
@@ -137,10 +147,10 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (
     //   4. Clean up the .dialog-swap-in flag once the incoming dialog
     //      finishes its entry transition.
     const newDialog = Dialog.getOrCreateInstance(target, config)
-    target.classList.add(CLASS_NAME_SWAP_IN)
+    target!.classList.add(CLASS_NAME_SWAP_IN)
     newDialog.show(this)
     EventHandler.one(target, `shown${EVENT_KEY}`, () => {
-      target.classList.remove(CLASS_NAME_SWAP_IN)
+      target!.classList.remove(CLASS_NAME_SWAP_IN)
     })
 
     const currentInstance = Dialog.getInstance(currentDialog)
@@ -166,3 +176,4 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (
 enableDismissTrigger(Dialog)
 
 export default Dialog
+export type { DialogConfig }

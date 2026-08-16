@@ -1,6 +1,6 @@
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS dialog-base.js
+ * Chassis CSS dialog-base.ts
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -15,6 +15,11 @@ import SelectorEngine from './dom/selector-engine.js'
  */
 
 const CLASS_NAME_OPEN = 'dialog-open'
+
+type DialogBaseConfig = {
+  backdrop: boolean | string
+  keyboard: boolean
+}
 
 /**
  * Class definition
@@ -32,7 +37,12 @@ const CLASS_NAME_OPEN = 'dialog-open'
  */
 
 class DialogBase extends BaseComponent {
-  constructor(element, config) {
+  protected declare _element: HTMLDialogElement
+  protected declare _config: DialogBaseConfig
+  protected declare _isTransitioning: boolean
+  protected declare _openedAsModal: boolean
+
+  constructor(element?: string | Element | null, config?: Partial<DialogBaseConfig> | null) {
     super(element, config)
 
     this._isTransitioning = false
@@ -41,17 +51,17 @@ class DialogBase extends BaseComponent {
   }
 
   // Getters — subclasses override NAME with their own component name.
-  static get NAME() {
+  static override get NAME(): string {
     return 'dialogbase'
   }
 
   // Public — shared lifecycle methods
 
-  toggle(relatedTarget) {
+  toggle(relatedTarget?: HTMLElement): void {
     return this._element.open ? this.hide() : this.show(relatedTarget)
   }
 
-  show(relatedTarget) {
+  show(relatedTarget?: HTMLElement): void {
     if (this._element.open || this._isTransitioning) {
       return
     }
@@ -82,7 +92,7 @@ class DialogBase extends BaseComponent {
     }, this._element, this._isAnimated())
   }
 
-  hide() {
+  hide(): void {
     if (!this._element.open || this._isTransitioning) {
       return
     }
@@ -119,37 +129,37 @@ class DialogBase extends BaseComponent {
 
   // Protected — hooks for subclasses to override
 
-  _getShowOptions() {
+  protected _getShowOptions(): { modal: boolean, preventBodyScroll: boolean } {
     return { modal: true, preventBodyScroll: true }
   }
 
-  _onBeforeShow() {
+  protected _onBeforeShow(): void {
     // No-op by default — Dialog overrides to add nonmodal class
   }
 
-  _onAfterHide() {
+  protected _onAfterHide(): void {
     // No-op by default — Dialog overrides to remove nonmodal class
   }
 
-  _isAnimated() {
+  protected _isAnimated(): boolean {
     return !this._element.classList.contains(this._getInstantClassName())
   }
 
-  _getInstantClassName() {
+  protected _getInstantClassName(): string {
     return 'dialog-instant'
   }
 
-  _getStaticClassName() {
+  protected _getStaticClassName(): string {
     return 'dialog-static'
   }
 
-  _onCancel() {
+  protected _onCancel(): void {
     // No-op by default — Dialog overrides to fire cancel event
   }
 
   // Protected — shared mechanics
 
-  _showElement({ modal = true, preventBodyScroll = true } = {}) {
+  protected _showElement({ modal = true, preventBodyScroll = true }: { modal?: boolean, preventBodyScroll?: boolean } = {}): void {
     this._openedAsModal = modal
 
     if (modal) {
@@ -169,7 +179,7 @@ class DialogBase extends BaseComponent {
     //   no autofocus           → focus the dialog itself (prevents the browser
     //                            from defaulting to the first focusable child,
     //                            usually the close button)
-    const autofocusEl = this._element.querySelector('[autofocus]')
+    const autofocusEl = this._element.querySelector<HTMLElement>('[autofocus]')
     if (autofocusEl) {
       autofocusEl.focus()
     } else {
@@ -178,7 +188,7 @@ class DialogBase extends BaseComponent {
     }
   }
 
-  _hideElement() {
+  protected _hideElement(): void {
     this._hideChildComponents()
 
     // Add .hiding before close() so CSS exit transitions can play.
@@ -198,7 +208,7 @@ class DialogBase extends BaseComponent {
 
   // Closes the native <dialog> and tears down body-scroll prevention.
   // Safe to call multiple times — close() is a no-op on a closed dialog.
-  _closeAndCleanup() {
+  protected _closeAndCleanup(): void {
     this._element.close()
     this._openedAsModal = false
 
@@ -213,11 +223,11 @@ class DialogBase extends BaseComponent {
   // the browser's own top-layer placement disappear synchronously the moment close() is
   // called — closing immediately would cut those off while the rest of the element is still
   // visibly animating out. Only skipped when there's no transition to protect (`.instant`).
-  _shouldDeferClose() {
+  protected _shouldDeferClose(): boolean {
     return this._isAnimated()
   }
 
-  _triggerBackdropTransition() {
+  protected _triggerBackdropTransition(): void {
     const hidePreventedEvent = EventHandler.trigger(
       this._element,
       this.constructor.eventName('hidePrevented')
@@ -237,7 +247,7 @@ class DialogBase extends BaseComponent {
   // Hide any tooltips, popovers, or toasts inside the dialog before closing.
   // These components append to the dialog (for top-layer rendering) and would
   // otherwise persist visibly after close().
-  _hideChildComponents() {
+  protected _hideChildComponents(): void {
     const selector = '[data-cx-toggle="tooltip"], [data-cx-toggle="popover"], [data-cx-toggle="menu"]'
 
     for (const el of SelectorEngine.find(selector, this._element)) {
@@ -258,7 +268,7 @@ class DialogBase extends BaseComponent {
 
   // Private
 
-  _addDialogListeners() {
+  protected _addDialogListeners(): void {
     const eventKey = this.constructor.EVENT_KEY
 
     // Handle native cancel event (Escape key) — only fires for modal dialogs
@@ -307,3 +317,4 @@ class DialogBase extends BaseComponent {
 }
 
 export default DialogBase
+export type { DialogBaseConfig }
