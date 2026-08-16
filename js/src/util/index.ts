@@ -136,6 +136,15 @@ const isDisabled = (element: Element | null | undefined): boolean => {
   return element.hasAttribute('disabled') && element.getAttribute('disabled') !== 'false'
 }
 
+// <a>/<area> elements navigate on click by default. Data-API triggers reuse
+// these tags for styling (e.g. button-styled links) but drive behavior via
+// JS, so the native navigation needs to be suppressed.
+const preventNavigationForAnchor = (event: Event, element: Element): void => {
+  if (['A', 'AREA'].includes(element.tagName)) {
+    event.preventDefault()
+  }
+}
+
 // ARIA state attributes take the strings 'true' and 'false', but we track those
 // states as booleans. This keeps the conversion in one place, so callers do not
 // have to reach for a cast to satisfy `setAttribute`.
@@ -274,6 +283,7 @@ export {
   noop,
   onDOMContentLoaded,
   parseSelector,
+  preventNavigationForAnchor,
   reflow,
   setAriaAttribute,
   triggerTransitionEnd,

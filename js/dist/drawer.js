@@ -7,7 +7,7 @@ import DialogBase from "./dialog-base.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import Swipe from "./util/swipe.js";
-import { isDisabled, isRTL, isVisible } from "./util/index.js";
+import { isDisabled, isRTL, isVisible, preventNavigationForAnchor } from "./util/index.js";
 //#region js/src/drawer.ts
 /**
 * --------------------------------------------------------------------------
@@ -90,7 +90,7 @@ var Drawer = class extends DialogBase {
 */
 EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function(event) {
 	const target = SelectorEngine.getElementFromSelector(this);
-	if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
+	preventNavigationForAnchor(event, this);
 	if (isDisabled(this)) return;
 	if (!target) return;
 	EventHandler.one(target, EVENT_HIDDEN, () => {
@@ -107,7 +107,7 @@ EventHandler.on(window, EVENT_RESIZE, () => {
 	for (const element of SelectorEngine.find(SELECTOR_RESPONSIVE_OPEN)) if (getComputedStyle(element).position !== "fixed") Drawer.getOrCreateInstance(element).hide();
 });
 EventHandler.on(document, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, function(event) {
-	if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
+	preventNavigationForAnchor(event, this);
 	if (isDisabled(this)) return;
 	const target = SelectorEngine.getElementFromSelector(this) || this.closest(".drawer") || this.closest("dialog[class*=\":drawer\"]");
 	if (!target) return;

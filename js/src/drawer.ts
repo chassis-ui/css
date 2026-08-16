@@ -12,7 +12,8 @@ import Swipe, { type SwipeConfig } from './util/swipe.js'
 import {
   isDisabled,
   isRTL,
-  isVisible
+  isVisible,
+  preventNavigationForAnchor
 } from './util/index.js'
 
 /**
@@ -139,9 +140,7 @@ class Drawer extends DialogBase {
 EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (event) {
   const target = SelectorEngine.getElementFromSelector(this)
 
-  if (['A', 'AREA'].includes(this.tagName)) {
-    event.preventDefault()
-  }
+  preventNavigationForAnchor(event, this)
 
   if (isDisabled(this)) {
     return
@@ -183,9 +182,7 @@ EventHandler.on(window, EVENT_RESIZE, () => {
 // Custom dismiss handler — extends the standard pattern to also resolve
 // responsive drawer variants (e.g. .max-large:drawer) that have no .drawer class.
 EventHandler.on(document, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, function (event) {
-  if (['A', 'AREA'].includes(this.tagName)) {
-    event.preventDefault()
-  }
+  preventNavigationForAnchor(event, this)
 
   if (isDisabled(this)) {
     return

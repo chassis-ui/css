@@ -350,6 +350,9 @@ const isDisabled = (element) => {
 	if (typeof disableableElement.disabled !== "undefined") return disableableElement.disabled;
 	return element.hasAttribute("disabled") && element.getAttribute("disabled") !== "false";
 };
+const preventNavigationForAnchor = (event, element) => {
+	if (["A", "AREA"].includes(element.tagName)) event.preventDefault();
+};
 const setAriaAttribute = (element, name, value) => {
 	element.setAttribute(name, String(value));
 };
@@ -1283,9 +1286,10 @@ const enableDismissTrigger = (component, method = "hide") => {
 	const clickEvent = `click.dismiss${component.EVENT_KEY}`;
 	const name = component.NAME;
 	EventHandler.on(document, clickEvent, `[data-cx-dismiss="${name}"]`, function(event) {
-		if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
+		preventNavigationForAnchor(event, this);
 		if (isDisabled(this)) return;
 		const target = SelectorEngine.getElementFromSelector(this) || this.closest(`.${name}`);
+		if (!target) return;
 		component.getOrCreateInstance(target)[method]();
 	});
 };
@@ -1302,7 +1306,7 @@ const eventActionOnPlugin = (Plugin, onEvent, stringSelector, method, callback =
 const eventAction = (onEvent, stringSelector, callback) => {
 	const selector = `${stringSelector}:not(.disabled):not(:disabled)`;
 	EventHandler.on(document, onEvent, selector, function(event) {
-		if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
+		preventNavigationForAnchor(event, this);
 		const selector = SelectorEngine.getSelectorFromElement(this);
 		callback({
 			targets: selector ? SelectorEngine.find(selector) : [this],
@@ -3688,7 +3692,7 @@ var Dialog = class extends DialogBase {
 */
 EventHandler.on(document, EVENT_CLICK_DATA_API$2, SELECTOR_DATA_TOGGLE$5, function(event) {
 	const target = SelectorEngine.getElementFromSelector(this);
-	if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
+	preventNavigationForAnchor(event, this);
 	if (!target) return;
 	EventHandler.one(target, EVENT_SHOW$3, (showEvent) => {
 		if (showEvent.defaultPrevented) return;
@@ -3930,7 +3934,7 @@ var Drawer = class extends DialogBase {
 */
 EventHandler.on(document, EVENT_CLICK_DATA_API$1, SELECTOR_DATA_TOGGLE$4, function(event) {
 	const target = SelectorEngine.getElementFromSelector(this);
-	if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
+	preventNavigationForAnchor(event, this);
 	if (isDisabled(this)) return;
 	if (!target) return;
 	EventHandler.one(target, EVENT_HIDDEN$3, () => {
@@ -3947,7 +3951,7 @@ EventHandler.on(window, EVENT_RESIZE, () => {
 	for (const element of SelectorEngine.find(SELECTOR_RESPONSIVE_OPEN)) if (getComputedStyle(element).position !== "fixed") Drawer.getOrCreateInstance(element).hide();
 });
 EventHandler.on(document, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, function(event) {
-	if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
+	preventNavigationForAnchor(event, this);
 	if (isDisabled(this)) return;
 	const target = SelectorEngine.getElementFromSelector(this) || this.closest(".drawer") || this.closest("dialog[class*=\":drawer\"]");
 	if (!target) return;
@@ -5528,7 +5532,7 @@ var Tab = class Tab extends BaseComponent {
 * Data API implementation
 */
 EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE$1, function(event) {
-	if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
+	preventNavigationForAnchor(event, this);
 	if (isDisabled(this)) return;
 	Tab.getOrCreateInstance(this).show();
 });
