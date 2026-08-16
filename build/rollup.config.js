@@ -5,6 +5,7 @@ import { babel } from '@rollup/plugin-babel'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import replace from '@rollup/plugin-replace'
 import banner from './banner.js'
+import tsExtensionAlias from './rollup-plugin-ts-resolve.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -13,11 +14,14 @@ const BUNDLE = process.env.BUNDLE === 'true'
 let destinationFile = 'chassis'
 const external = ['@floating-ui/dom', 'vanilla-calendar-pro']
 const plugins = [
+  tsExtensionAlias(),
   babel({
     // Only transpile our source code
     exclude: 'node_modules/**',
     // Include the helpers in the bundle, at most one copy of each
-    babelHelpers: 'bundled'
+    babelHelpers: 'bundled',
+    extensions: ['.js', '.ts'],
+    presets: ['@babel/preset-typescript']
   })
 ]
 

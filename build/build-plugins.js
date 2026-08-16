@@ -12,12 +12,13 @@ import { babel } from '@rollup/plugin-babel'
 import { globby } from 'globby'
 import { rollup } from 'rollup'
 import banner from './banner.js'
+import tsExtensionAlias from './rollup-plugin-ts-resolve.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const sourcePath = path.resolve(__dirname, '../js/src/').replace(/\\/g, '/')
-const jsFiles = await globby(`${sourcePath}/**/*.js`)
+const jsFiles = await globby(`${sourcePath}/**/*.{js,ts}`)
 
 // Array which holds the resolved plugins
 const resolvedPlugins = []
@@ -25,7 +26,7 @@ const resolvedPlugins = []
 for (const file of jsFiles) {
   resolvedPlugins.push({
     src: file,
-    dist: file.replace('src', 'dist'),
+    dist: file.replace('src', 'dist').replace(/\.ts$/, '.js'),
     fileName: path.basename(file)
   })
 }
@@ -34,11 +35,14 @@ const build = async (plugin) => {
   const bundle = await rollup({
     input: plugin.src,
     plugins: [
+      tsExtensionAlias(),
       babel({
         // Only transpile our source code
         exclude: 'node_modules/**',
         // Include the helpers in each file, at most one copy of each
-        babelHelpers: 'bundled'
+        babelHelpers: 'bundled',
+        extensions: ['.js', '.ts'],
+        presets: ['@babel/preset-typescript']
       })
     ],
     external: () => true
