@@ -6,6 +6,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve'
 import replace from '@rollup/plugin-replace'
 import { browsers } from './browsers.js'
 import { fileURLToPath } from 'node:url'
+import tsExtensionAlias from '../../build/rollup-plugin-ts-resolve.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -71,22 +72,27 @@ const config = {
   },
   rollupPreprocessor: {
     plugins: [
+      tsExtensionAlias(),
       replace({
         'process.env.NODE_ENV': '"dev"',
         preventAssignment: true
       }),
+      babel({
+        // Only transpile our source code
+        exclude: 'node_modules/**',
+        // Inline the required helpers in each file
+        babelHelpers: 'inline',
+        extensions: ['.js', '.ts'],
+        presets: [['@babel/preset-typescript', { allowDeclareFields: true }]]
+      }),
+      // Runs after the TypeScript-stripping babel() pass above — istanbul's
+      // instrumenter parses with the plain JS parser and chokes on `.ts` syntax.
       istanbul({
         exclude: [
           'node_modules/**',
           'js/tests/unit/**/*.spec.js',
           'js/tests/helpers/**/*.js'
         ]
-      }),
-      babel({
-        // Only transpile our source code
-        exclude: 'node_modules/**',
-        // Inline the required helpers in each file
-        babelHelpers: 'inline'
       }),
       nodeResolve()
     ],
