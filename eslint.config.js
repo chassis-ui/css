@@ -84,6 +84,24 @@ export default defineConfig([
       'unicorn/better-regex': 'error'
     }
   },
+  ...tseslint.configs.recommended.map((config) => ({ ...config, files: ['js/**/*.ts'] })),
+  {
+    files: ['js/**/*.ts'],
+    rules: {
+      // DOM/config plumbing (event registry, config merging) is inherently dynamic
+      '@typescript-eslint/no-explicit-any': 'off'
+    }
+  },
+  // js/tests/types/** - compile-time type assertions, never executed
+  {
+    files: ['js/tests/types/**'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-expressions': 'off',
+      'no-new': 'off',
+      'no-unused-expressions': 'off'
+    }
+  },
   {
     files: ['js/**/*.html', '**/*.md/*.html'],
     plugins: { html: htmlPlugin },
