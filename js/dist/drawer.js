@@ -7,7 +7,7 @@ import DialogBase from "./dialog-base.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import Swipe from "./util/swipe.js";
-import { isDisabled, isRTL, isVisible, preventNavigationForAnchor } from "./util/index.js";
+import { isDisabled, isRTL, preventNavigationForAnchor } from "./util/index.js";
 //#region js/src/drawer.ts
 /**
 * --------------------------------------------------------------------------
@@ -21,7 +21,6 @@ import { isDisabled, isRTL, isVisible, preventNavigationForAnchor } from "./util
 const NAME = "drawer";
 const EVENT_KEY = `.cx.drawer`;
 const DATA_API_KEY = ".data-api";
-const EVENT_HIDDEN = `hidden${EVENT_KEY}`;
 const EVENT_RESIZE = `resize${EVENT_KEY}`;
 const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`;
 const EVENT_CLICK_DISMISS = `click.dismiss${EVENT_KEY}`;
@@ -93,9 +92,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function(e
 	preventNavigationForAnchor(event, this);
 	if (isDisabled(this)) return;
 	if (!target) return;
-	EventHandler.one(target, EVENT_HIDDEN, () => {
-		if (isVisible(this)) this.focus();
-	});
+	Drawer.restoreFocusOnHide(target, this);
 	const alreadyOpen = SelectorEngine.findOne(SELECTOR_OPEN_DRAWER);
 	if (alreadyOpen && alreadyOpen !== target) Drawer.getInstance(alreadyOpen)?.hide();
 	Drawer.getOrCreateInstance(target).toggle(this);

@@ -292,6 +292,15 @@ const Manipulator = {
 const MAX_UID = 1e6;
 const MILLISECONDS_MULTIPLIER = 1e3;
 const TRANSITION_END = "transitionend";
+const ESCAPE_KEY = "Escape";
+const ENTER_KEY = "Enter";
+const BACKSPACE_KEY = "Backspace";
+const DELETE_KEY = "Delete";
+const HOME_KEY = "Home";
+const ARROW_UP_KEY = "ArrowUp";
+const ARROW_DOWN_KEY = "ArrowDown";
+const ARROW_LEFT_KEY = "ArrowLeft";
+const ARROW_RIGHT_KEY = "ArrowRight";
 /**
 * Properly escape IDs selectors to handle weird IDs
 */
@@ -440,10 +449,10 @@ var Config = class {
 		throw new Error("You have to implement the static method \"NAME\", for each component!");
 	}
 	_getConfig(config) {
-		config = this._mergeConfigObj(config);
-		config = this._configAfterMerge(config);
-		this._typeCheckConfig(config);
-		return config;
+		let mergedConfig = this._mergeConfigObj(config);
+		mergedConfig = this._configAfterMerge(mergedConfig);
+		this._typeCheckConfig(mergedConfig);
+		return mergedConfig;
 	}
 	_configAfterMerge(config) {
 		return config;
@@ -485,6 +494,7 @@ var Config = class {
 * Constants
 */
 const VERSION = "0.3.5";
+const disposedInstances = /* @__PURE__ */ new WeakSet();
 /**
 * Class definition
 */
@@ -498,9 +508,13 @@ var BaseComponent = class extends Config {
 		data_default.set(this._element, this.constructor.DATA_KEY, this);
 	}
 	dispose() {
+		disposedInstances.add(this);
 		data_default.remove(this._element, this.constructor.DATA_KEY);
 		EventHandler.off(this._element, this.constructor.EVENT_KEY);
 		for (const propertyName of Object.getOwnPropertyNames(this)) this[propertyName] = null;
+	}
+	isDisposed() {
+		return disposedInstances.has(this);
 	}
 	_queueCallback(callback, element, isAnimated = true) {
 		executeAfterTransition(callback, element, isAnimated);
@@ -774,8 +788,6 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$9, SELECTOR_DATA_TOGGLE$11, (even
 const NAME$20 = "carousel";
 const EVENT_KEY$17 = `.cx.carousel`;
 const DATA_API_KEY$11 = ".data-api";
-const ARROW_LEFT_KEY$2 = "ArrowLeft";
-const ARROW_RIGHT_KEY$2 = "ArrowRight";
 const DIRECTION_LEFT = "left";
 const DIRECTION_RIGHT = "right";
 const EVENT_SLIDE = `slide${EVENT_KEY$17}`;
@@ -808,8 +820,8 @@ const SELECTOR_DATA_SLIDE_PREV = "[data-cx-slide=\"prev\"]";
 const SELECTOR_DATA_SLIDE_NEXT = "[data-cx-slide=\"next\"]";
 const SELECTOR_DATA_AUTOPLAY = "[data-cx-autoplay=\"true\"]";
 const KEY_TO_DIRECTION = {
-	[ARROW_LEFT_KEY$2]: DIRECTION_RIGHT,
-	[ARROW_RIGHT_KEY$2]: DIRECTION_LEFT
+	[ARROW_LEFT_KEY]: DIRECTION_RIGHT,
+	[ARROW_RIGHT_KEY]: DIRECTION_LEFT
 };
 const ENDS_STOP = "stop";
 const ENDS_WRAP = "wrap";
@@ -1657,12 +1669,12 @@ var ChipInput = class extends BaseComponent {
 	_handleInputKeydown(event) {
 		const { key } = event;
 		switch (key) {
-			case "Enter":
+			case ENTER_KEY:
 				event.preventDefault();
 				this._createChipFromInput();
 				break;
-			case "Backspace":
-			case "Delete":
+			case BACKSPACE_KEY:
+			case DELETE_KEY:
 				if (this._input.value === "") {
 					event.preventDefault();
 					const chips = this._getChipElements();
@@ -1673,7 +1685,7 @@ var ChipInput = class extends BaseComponent {
 					}
 				}
 				break;
-			case "ArrowLeft":
+			case ARROW_LEFT_KEY:
 				if (this._input.selectionStart === 0 && this._input.selectionEnd === 0) {
 					event.preventDefault();
 					const chips = this._getChipElements();
@@ -1685,7 +1697,7 @@ var ChipInput = class extends BaseComponent {
 					}
 				}
 				break;
-			case "Escape":
+			case ESCAPE_KEY:
 				this._input.value = "";
 				this.clearSelection();
 				this._input.blur();
@@ -1699,20 +1711,20 @@ var ChipInput = class extends BaseComponent {
 		const chips = this._getChipElements();
 		const currentIndex = chips.indexOf(chip);
 		switch (key) {
-			case "Backspace":
-			case "Delete":
+			case BACKSPACE_KEY:
+			case DELETE_KEY:
 				event.preventDefault();
 				this._handleChipDelete(currentIndex, chips);
 				break;
-			case "ArrowLeft":
+			case ARROW_LEFT_KEY:
 				event.preventDefault();
 				this._navigateChip(chips, currentIndex, -1, event.shiftKey);
 				break;
-			case "ArrowRight":
+			case ARROW_RIGHT_KEY:
 				event.preventDefault();
 				this._navigateChip(chips, currentIndex, 1, event.shiftKey);
 				break;
-			case "Home":
+			case HOME_KEY:
 				event.preventDefault();
 				this._navigateToEdge(chips, 0, event.shiftKey);
 				break;
@@ -1724,7 +1736,7 @@ var ChipInput = class extends BaseComponent {
 			case "a":
 				this._handleSelectAll(event, chips);
 				break;
-			case "Escape":
+			case ESCAPE_KEY:
 				event.preventDefault();
 				this.clearSelection();
 				this._input?.focus();
@@ -1824,7 +1836,7 @@ const DATA_API_KEY$8 = ".data-api";
 const EVENT_SHOW$7 = `show${EVENT_KEY$14}`;
 const EVENT_SHOWN$6 = `shown${EVENT_KEY$14}`;
 const EVENT_HIDE$6 = `hide${EVENT_KEY$14}`;
-const EVENT_HIDDEN$8 = `hidden${EVENT_KEY$14}`;
+const EVENT_HIDDEN$7 = `hidden${EVENT_KEY$14}`;
 const EVENT_CLICK_DATA_API$6 = `click${EVENT_KEY$14}${DATA_API_KEY$8}`;
 const CLASS_NAME_SHOW$6 = "show";
 const CLASS_NAME_COLLAPSE = "collapse";
@@ -1916,7 +1928,7 @@ var Collapse = class Collapse extends BaseComponent {
 			this._isTransitioning = false;
 			this._element.classList.remove(CLASS_NAME_COLLAPSING);
 			this._element.classList.add(CLASS_NAME_COLLAPSE);
-			EventHandler.trigger(this._element, EVENT_HIDDEN$8);
+			EventHandler.trigger(this._element, EVENT_HIDDEN$7);
 		};
 		this._element.style[dimension] = "";
 		this._queueCallback(complete, this._element, true);
@@ -2057,12 +2069,6 @@ var FloatingBase = class FloatingBase extends BaseComponent {
 		FloatingBase.disposeBreakpointListeners(this._mediaQueryListeners);
 		this._mediaQueryListeners = [];
 	}
-	_isShown() {
-		throw new Error("You have to implement the private method \"_isShown\", for each component!");
-	}
-	_updateFloatingPosition() {
-		throw new Error("You have to implement the private method \"_updateFloatingPosition\", for each component!");
-	}
 	_getOffset() {
 		const { offset: offsetConfig } = this._config;
 		if (typeof offsetConfig === "string") return offsetConfig.split(",").map((value) => Number.parseInt(value, 10));
@@ -2124,20 +2130,10 @@ var FloatingBase = class FloatingBase extends BaseComponent {
 const NAME$16 = "menu";
 const EVENT_KEY$13 = `.cx.menu`;
 const DATA_API_KEY$7 = ".data-api";
-const ESCAPE_KEY$1 = "Escape";
-const TAB_KEY$1 = "Tab";
-const ARROW_UP_KEY$2 = "ArrowUp";
-const ARROW_DOWN_KEY$2 = "ArrowDown";
-const ARROW_LEFT_KEY$1 = "ArrowLeft";
-const ARROW_RIGHT_KEY$1 = "ArrowRight";
-const HOME_KEY$2 = "Home";
-const END_KEY$2 = "End";
-const ENTER_KEY$1 = "Enter";
-const SPACE_KEY$1 = " ";
 const RIGHT_MOUSE_BUTTON = 2;
 const SUBMENU_CLOSE_DELAY = 100;
 const EVENT_HIDE$5 = `hide${EVENT_KEY$13}`;
-const EVENT_HIDDEN$7 = `hidden${EVENT_KEY$13}`;
+const EVENT_HIDDEN$6 = `hidden${EVENT_KEY$13}`;
 const EVENT_SHOW$6 = `show${EVENT_KEY$13}`;
 const EVENT_SHOWN$5 = `shown${EVENT_KEY$13}`;
 const EVENT_CLICK_DATA_API$5 = `click${EVENT_KEY$13}${DATA_API_KEY$7}`;
@@ -2290,7 +2286,7 @@ var Menu = class Menu extends FloatingBase {
 		Manipulator.removeDataAttribute(this._menu, "placement");
 		Manipulator.removeDataAttribute(this._menu, "display");
 		Menu._openInstances.delete(this);
-		EventHandler.trigger(this._element, EVENT_HIDDEN$7, relatedTarget);
+		EventHandler.trigger(this._element, EVENT_HIDDEN$6, relatedTarget);
 	}
 	_getConfig(config) {
 		config = super._getConfig(config);
@@ -2659,15 +2655,15 @@ var Menu = class Menu extends FloatingBase {
 		const currentMenu = target.closest(SELECTOR_MENU$2) || this._menu;
 		const items = SelectorEngine.find(SELECTOR_KB_NAV_ITEMS, currentMenu).filter((element) => isVisible(element));
 		if (!items.length) return;
-		getNextActiveElement(items, target, key === ARROW_DOWN_KEY$2, !items.includes(target)).focus();
+		getNextActiveElement(items, target, key === ARROW_DOWN_KEY, !items.includes(target)).focus();
 	}
 	_handleSubmenuKeydown(event) {
 		const { key, target } = event;
 		const isRtl = isRTL();
-		const enterKey = isRtl ? ARROW_LEFT_KEY$1 : ARROW_RIGHT_KEY$1;
-		const exitKey = isRtl ? ARROW_RIGHT_KEY$1 : ARROW_LEFT_KEY$1;
+		const enterKey = isRtl ? ARROW_LEFT_KEY : ARROW_RIGHT_KEY;
+		const exitKey = isRtl ? ARROW_RIGHT_KEY : ARROW_LEFT_KEY;
 		const submenuWrapper = target.closest(SELECTOR_SUBMENU);
-		if (submenuWrapper && target.matches(SELECTOR_SUBMENU_TOGGLE) && (key === ENTER_KEY$1 || key === SPACE_KEY$1 || key === enterKey)) {
+		if (submenuWrapper && target.matches(SELECTOR_SUBMENU_TOGGLE) && (key === "Enter" || key === " " || key === enterKey)) {
 			event.preventDefault();
 			event.stopPropagation();
 			const submenu = SelectorEngine.findOne(SELECTOR_MENU$2, submenuWrapper);
@@ -2693,24 +2689,24 @@ var Menu = class Menu extends FloatingBase {
 				return true;
 			}
 		}
-		if (key === HOME_KEY$2 || key === END_KEY$2) {
+		if (key === "Home" || key === "End") {
 			event.preventDefault();
 			event.stopPropagation();
 			const currentMenu = target.closest(SELECTOR_MENU$2);
 			const items = SelectorEngine.find(SELECTOR_KB_NAV_ITEMS, currentMenu).filter((element) => isVisible(element));
-			if (items.length) (key === HOME_KEY$2 ? items[0] : items.at(-1)).focus();
+			if (items.length) (key === "Home" ? items[0] : items.at(-1)).focus();
 			return true;
 		}
 		return false;
 	}
 	static clearMenus(event) {
-		if (event.button === RIGHT_MOUSE_BUTTON || event.type === "keyup" && event.key !== TAB_KEY$1) return;
+		if (event.button === RIGHT_MOUSE_BUTTON || event.type === "keyup" && event.key !== "Tab") return;
 		for (const instance of Menu._openInstances) {
 			if (instance._config.autoClose === false) continue;
 			const composedPath = event.composedPath();
 			const isMenuTarget = composedPath.includes(instance._menu);
 			if (composedPath.includes(instance._element) || instance._config.autoClose === "inside" && !isMenuTarget || instance._config.autoClose === "outside" && isMenuTarget) continue;
-			if (instance._menu.contains(event.target) && (event.type === "keyup" && event.key === TAB_KEY$1 || /input|select|option|textarea|form/i.test(event.target.tagName))) continue;
+			if (instance._menu.contains(event.target) && (event.type === "keyup" && event.key === "Tab" || /input|select|option|textarea|form/i.test(event.target.tagName))) continue;
 			const relatedTarget = { relatedTarget: instance._element };
 			if (event.type === "click") relatedTarget.clickEvent = event;
 			instance._completeHide(relatedTarget);
@@ -2718,11 +2714,11 @@ var Menu = class Menu extends FloatingBase {
 	}
 	static dataApiKeydownHandler(event) {
 		const isInput = /input|textarea/i.test(event.target.tagName);
-		const isEscapeEvent = event.key === ESCAPE_KEY$1;
-		const isUpOrDownEvent = [ARROW_UP_KEY$2, ARROW_DOWN_KEY$2].includes(event.key);
-		const isLeftOrRightEvent = [ARROW_LEFT_KEY$1, ARROW_RIGHT_KEY$1].includes(event.key);
-		const isHomeOrEndEvent = [HOME_KEY$2, END_KEY$2].includes(event.key);
-		const isEnterOrSpaceEvent = [ENTER_KEY$1, SPACE_KEY$1].includes(event.key);
+		const isEscapeEvent = event.key === ESCAPE_KEY;
+		const isUpOrDownEvent = [ARROW_UP_KEY, ARROW_DOWN_KEY].includes(event.key);
+		const isLeftOrRightEvent = [ARROW_LEFT_KEY, ARROW_RIGHT_KEY].includes(event.key);
+		const isHomeOrEndEvent = [HOME_KEY, "End"].includes(event.key);
+		const isEnterOrSpaceEvent = [ENTER_KEY, " "].includes(event.key);
 		const isSubmenuTrigger = event.target.matches(SELECTOR_SUBMENU_TOGGLE);
 		if (!isUpOrDownEvent && !isEscapeEvent && !isLeftOrRightEvent && !isHomeOrEndEvent && !(isEnterOrSpaceEvent && isSubmenuTrigger)) return;
 		if (isInput && !isEscapeEvent) return;
@@ -2805,19 +2801,11 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$5, SELECTOR_DATA_TOGGLE$8, functi
 const NAME$15 = "combobox";
 const EVENT_KEY$12 = `.cx.combobox`;
 const DATA_API_KEY$6 = ".data-api";
-const ESCAPE_KEY = "Escape";
-const TAB_KEY = "Tab";
-const ARROW_UP_KEY$1 = "ArrowUp";
-const ARROW_DOWN_KEY$1 = "ArrowDown";
-const HOME_KEY$1 = "Home";
-const END_KEY$1 = "End";
-const ENTER_KEY = "Enter";
-const SPACE_KEY = " ";
 const EVENT_CHANGE$1 = `change${EVENT_KEY$12}`;
 const EVENT_SHOW$5 = `show${EVENT_KEY$12}`;
 const EVENT_SHOWN$4 = `shown${EVENT_KEY$12}`;
 const EVENT_HIDE$4 = `hide${EVENT_KEY$12}`;
-const EVENT_HIDDEN$6 = `hidden${EVENT_KEY$12}`;
+const EVENT_HIDDEN$5 = `hidden${EVENT_KEY$12}`;
 const EVENT_CLICK_DATA_API$4 = `click${EVENT_KEY$12}${DATA_API_KEY$6}`;
 const CLASS_NAME_SHOW$4 = "show";
 const CLASS_NAME_SELECTED = "selected";
@@ -2890,12 +2878,16 @@ var Combobox = class Combobox extends BaseComponent {
 		if (this._searchInput) {
 			this._searchInput.value = "";
 			this._filterItems("");
-			requestAnimationFrame(() => this._searchInput?.focus());
+			requestAnimationFrame(() => {
+				if (!this.isDisposed()) this._searchInput?.focus();
+			});
 		} else if (this._comboInput) {
 			this._filterItems("");
 			requestAnimationFrame(() => {
-				this._comboInput?.focus();
-				this._comboInput?.select();
+				if (!this.isDisposed()) {
+					this._comboInput?.focus();
+					this._comboInput?.select();
+				}
 			});
 		}
 		EventHandler.trigger(this._toggle, EVENT_SHOWN$4);
@@ -2904,7 +2896,7 @@ var Combobox = class Combobox extends BaseComponent {
 		if (!this._isShown()) return;
 		if (EventHandler.trigger(this._toggle, EVENT_HIDE$4).defaultPrevented) return;
 		this._menuInstance.hide();
-		EventHandler.trigger(this._toggle, EVENT_HIDDEN$6);
+		EventHandler.trigger(this._toggle, EVENT_HIDDEN$5);
 	}
 	disable() {
 		if (this._isShown()) this.hide();
@@ -3013,13 +3005,13 @@ var Combobox = class Combobox extends BaseComponent {
 				this._scheduleFilter(this._searchInput.value);
 			});
 			EventHandler.on(this._searchInput, `keydown${EVENT_KEY$12}`, (event) => {
-				if (event.key === ARROW_DOWN_KEY$1) {
+				if (event.key === "ArrowDown") {
 					event.preventDefault();
 					event.stopPropagation();
 					const items = this._getVisibleItems();
 					if (items.length > 0) items[0].focus();
 				}
-				if (event.key === ESCAPE_KEY) {
+				if (event.key === "Escape") {
 					this._ignoreNextFocus = true;
 					this.hide();
 					(this._comboInput ?? this._toggle).focus();
@@ -3125,21 +3117,21 @@ var Combobox = class Combobox extends BaseComponent {
 	}
 	_handleToggleKeydown(event) {
 		const { key } = event;
-		if (key === ARROW_DOWN_KEY$1 || key === ARROW_UP_KEY$1) {
+		if (key === "ArrowDown" || key === "ArrowUp") {
 			event.preventDefault();
 			if (!this._isShown()) this.show();
 			const items = this._getVisibleItems();
-			if (items.length > 0) (key === ARROW_DOWN_KEY$1 ? items[0] : items.at(-1)).focus();
+			if (items.length > 0) (key === "ArrowDown" ? items[0] : items.at(-1)).focus();
 			return;
 		}
-		if ((key === ENTER_KEY || key === SPACE_KEY) && !this._isShown() && event.target !== this._comboInput) {
+		if ((key === "Enter" || key === " ") && !this._isShown() && event.target !== this._comboInput) {
 			event.preventDefault();
 			this.show();
 		}
 	}
 	_handleMenuKeydown(event) {
 		const { key, target } = event;
-		if (key === ESCAPE_KEY) {
+		if (key === "Escape") {
 			event.preventDefault();
 			event.stopPropagation();
 			this._ignoreNextFocus = true;
@@ -3147,24 +3139,24 @@ var Combobox = class Combobox extends BaseComponent {
 			(this._comboInput ?? this._toggle).focus();
 			return;
 		}
-		if (key === TAB_KEY) {
+		if (key === "Tab") {
 			this.hide();
 			return;
 		}
 		const isInput = target.matches("input");
-		if (key === ARROW_DOWN_KEY$1 || key === ARROW_UP_KEY$1) {
+		if (key === "ArrowDown" || key === "ArrowUp") {
 			event.preventDefault();
 			const items = this._getVisibleItems();
-			if (items.length > 0) getNextActiveElement(items, target, key === ARROW_DOWN_KEY$1, !items.includes(target)).focus();
+			if (items.length > 0) getNextActiveElement(items, target, key === ARROW_DOWN_KEY, !items.includes(target)).focus();
 			return;
 		}
-		if (key === HOME_KEY$1 || key === END_KEY$1) {
+		if (key === "Home" || key === "End") {
 			event.preventDefault();
 			const items = this._getVisibleItems();
-			if (items.length > 0) (key === HOME_KEY$1 ? items[0] : items.at(-1)).focus();
+			if (items.length > 0) (key === "Home" ? items[0] : items.at(-1)).focus();
 			return;
 		}
-		if ((key === ENTER_KEY || key === SPACE_KEY) && !isInput) {
+		if ((key === "Enter" || key === " ") && !isInput) {
 			event.preventDefault();
 			const item = target.closest(SELECTOR_MENU_ITEM);
 			if (item && !isDisabled(item)) this._selectItem(item);
@@ -3205,7 +3197,7 @@ const EVENT_CHANGE = `change${EVENT_KEY$11}`;
 const EVENT_SHOW$4 = `show${EVENT_KEY$11}`;
 const EVENT_SHOWN$3 = `shown${EVENT_KEY$11}`;
 const EVENT_HIDE$3 = `hide${EVENT_KEY$11}`;
-const EVENT_HIDDEN$5 = `hidden${EVENT_KEY$11}`;
+const EVENT_HIDDEN$4 = `hidden${EVENT_KEY$11}`;
 const EVENT_CLICK_DATA_API$3 = `click${EVENT_KEY$11}${DATA_API_KEY$5}`;
 const EVENT_FOCUSIN_DATA_API = `focusin${EVENT_KEY$11}${DATA_API_KEY$5}`;
 const SELECTOR_DATA_TOGGLE$6 = "[data-cx-toggle=\"datepicker\"]";
@@ -3300,13 +3292,13 @@ var Datepicker = class extends BaseComponent {
 		return NAME$14;
 	}
 	toggle() {
-		if (!this._calendar) return;
+		if (this.isDisposed()) return;
 		if (this._config.inline) return;
 		if (this._isShown) this.hide();
 		else this.show();
 	}
 	show() {
-		if (!this._calendar) return;
+		if (this.isDisposed()) return;
 		if (this._config.inline) return;
 		if (isDisabled(this._element) || this._isShown) return;
 		if (EventHandler.trigger(this._element, EVENT_SHOW$4).defaultPrevented) return;
@@ -3315,13 +3307,13 @@ var Datepicker = class extends BaseComponent {
 		EventHandler.trigger(this._element, EVENT_SHOWN$3);
 	}
 	hide() {
-		if (!this._calendar) return;
+		if (this.isDisposed()) return;
 		if (this._config.inline) return;
 		if (!this._isShown) return;
 		if (EventHandler.trigger(this._element, EVENT_HIDE$3).defaultPrevented) return;
 		this._calendar.hide();
 		this._isShown = false;
-		EventHandler.trigger(this._element, EVENT_HIDDEN$5);
+		EventHandler.trigger(this._element, EVENT_HIDDEN$4);
 	}
 	dispose() {
 		if (this._themeObserver) {
@@ -3538,6 +3530,11 @@ var DialogBase = class extends BaseComponent {
 	static get NAME() {
 		return "dialogbase";
 	}
+	static restoreFocusOnHide(target, trigger) {
+		EventHandler.one(target, this.eventName("hidden"), () => {
+			if (isVisible(trigger)) trigger.focus();
+		});
+	}
 	dispose() {
 		if (this._element.open) this._closeAndCleanup();
 		super.dispose();
@@ -3677,7 +3674,7 @@ const NAME$13 = "dialog";
 const EVENT_KEY$10 = `.cx.dialog`;
 const DATA_API_KEY$4 = ".data-api";
 const EVENT_SHOW$3 = `show${EVENT_KEY$10}`;
-const EVENT_HIDDEN$4 = `hidden${EVENT_KEY$10}`;
+const EVENT_HIDDEN$3 = `hidden${EVENT_KEY$10}`;
 const EVENT_CANCEL = `cancel${EVENT_KEY$10}`;
 const EVENT_CLICK_DATA_API$2 = `click${EVENT_KEY$10}${DATA_API_KEY$4}`;
 const CLASS_NAME_NONMODAL = "nonmodal";
@@ -3736,9 +3733,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$2, SELECTOR_DATA_TOGGLE$5, functi
 	if (!target) return;
 	EventHandler.one(target, EVENT_SHOW$3, (showEvent) => {
 		if (showEvent.defaultPrevented) return;
-		EventHandler.one(target, EVENT_HIDDEN$4, () => {
-			if (isVisible(this)) this.focus();
-		});
+		Dialog.restoreFocusOnHide(target, this);
 	});
 	const config = Manipulator.getDataAttributes(this);
 	const currentDialog = this.closest("dialog[open]");
@@ -3752,7 +3747,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$2, SELECTOR_DATA_TOGGLE$5, functi
 		const currentInstance = Dialog.getInstance(currentDialog);
 		if (currentInstance) {
 			currentDialog.classList.add(CLASS_NAME_INSTANT);
-			EventHandler.one(currentDialog, EVENT_HIDDEN$4, () => {
+			EventHandler.one(currentDialog, EVENT_HIDDEN$3, () => {
 				currentDialog.classList.remove(CLASS_NAME_INSTANT);
 			});
 			currentInstance.hide();
@@ -3905,7 +3900,6 @@ var Swipe = class Swipe extends Config {
 const NAME$11 = "drawer";
 const EVENT_KEY$8 = `.cx.drawer`;
 const DATA_API_KEY$3 = ".data-api";
-const EVENT_HIDDEN$3 = `hidden${EVENT_KEY$8}`;
 const EVENT_RESIZE = `resize${EVENT_KEY$8}`;
 const EVENT_CLICK_DATA_API$1 = `click${EVENT_KEY$8}${DATA_API_KEY$3}`;
 const EVENT_CLICK_DISMISS = `click.dismiss${EVENT_KEY$8}`;
@@ -3977,9 +3971,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$1, SELECTOR_DATA_TOGGLE$4, functi
 	preventNavigationForAnchor(event, this);
 	if (isDisabled(this)) return;
 	if (!target) return;
-	EventHandler.one(target, EVENT_HIDDEN$3, () => {
-		if (isVisible(this)) this.focus();
-	});
+	Drawer.restoreFocusOnHide(target, this);
 	const alreadyOpen = SelectorEngine.findOne(SELECTOR_OPEN_DRAWER);
 	if (alreadyOpen && alreadyOpen !== target) Drawer.getInstance(alreadyOpen)?.hide();
 	Drawer.getOrCreateInstance(target).toggle(this);
@@ -4351,25 +4343,25 @@ var OtpInput = class extends BaseComponent {
 	_handleKeydown(event, index) {
 		const { key } = event;
 		switch (key) {
-			case "Backspace":
+			case BACKSPACE_KEY:
 				if (!this._inputs[index].value && index > 0) {
 					event.preventDefault();
 					this._inputs[index - 1].value = "";
 					this._inputs[index - 1].focus();
 				}
 				break;
-			case "Delete":
+			case DELETE_KEY:
 				event.preventDefault();
 				for (let i = index; i < this._inputs.length - 1; i++) this._inputs[i].value = this._inputs[i + 1].value;
 				this._inputs.at(-1).value = "";
 				break;
-			case "ArrowLeft":
+			case ARROW_LEFT_KEY:
 				if (index > 0) {
 					event.preventDefault();
 					this._inputs[index - 1].focus();
 				}
 				break;
-			case "ArrowRight":
+			case ARROW_RIGHT_KEY:
 				if (index < this._inputs.length - 1) {
 					event.preventDefault();
 					this._inputs[index + 1].focus();
@@ -5423,12 +5415,6 @@ const EVENT_SHOWN$1 = `shown${EVENT_KEY$2}`;
 const EVENT_CLICK_DATA_API = `click${EVENT_KEY$2}`;
 const EVENT_KEYDOWN = `keydown${EVENT_KEY$2}`;
 const EVENT_LOAD_DATA_API = `load${EVENT_KEY$2}`;
-const ARROW_LEFT_KEY = "ArrowLeft";
-const ARROW_RIGHT_KEY = "ArrowRight";
-const ARROW_UP_KEY = "ArrowUp";
-const ARROW_DOWN_KEY = "ArrowDown";
-const HOME_KEY = "Home";
-const END_KEY = "End";
 const CLASS_NAME_ACTIVE = "active";
 const CLASS_NAME_FADE$1 = "fade";
 const CLASS_NAME_SHOW$1 = "show";
@@ -5499,18 +5485,18 @@ var Tab = class Tab extends BaseComponent {
 	}
 	_keydown(event) {
 		if (![
-			ARROW_LEFT_KEY,
-			ARROW_RIGHT_KEY,
-			ARROW_UP_KEY,
-			ARROW_DOWN_KEY,
-			HOME_KEY,
-			END_KEY
+			"ArrowLeft",
+			"ArrowRight",
+			"ArrowUp",
+			"ArrowDown",
+			"Home",
+			"End"
 		].includes(event.key)) return;
 		event.stopPropagation();
 		event.preventDefault();
 		const children = this._getChildren().filter((element) => !isDisabled(element));
 		let nextActiveElement;
-		if ([HOME_KEY, END_KEY].includes(event.key)) nextActiveElement = event.key === HOME_KEY ? children[0] : children.at(-1);
+		if (["Home", "End"].includes(event.key)) nextActiveElement = event.key === "Home" ? children[0] : children.at(-1);
 		else {
 			const isNext = [ARROW_RIGHT_KEY, ARROW_DOWN_KEY].includes(event.key);
 			nextActiveElement = getNextActiveElement(children, event.target, isNext, true);

@@ -1,0 +1,46 @@
+name: JS Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: JS Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Build dist
+        run: pnpm dist
+
+      - name: Run unit tests (chromium, firefox, webkit)
+        run: pnpm js:test:unit
+
+      - name: Run e2e tests
+        run: pnpm js:test:e2e
+
+      - name: Run integration bundle checks
+        run: pnpm js:test:integration

@@ -18,6 +18,7 @@ import { executeAfterTransition, getElement } from "./util/index.js";
 * Constants
 */
 const VERSION = "0.3.5";
+const disposedInstances = /* @__PURE__ */ new WeakSet();
 /**
 * Class definition
 */
@@ -31,9 +32,13 @@ var BaseComponent = class extends Config {
 		Data.set(this._element, this.constructor.DATA_KEY, this);
 	}
 	dispose() {
+		disposedInstances.add(this);
 		Data.remove(this._element, this.constructor.DATA_KEY);
 		EventHandler.off(this._element, this.constructor.EVENT_KEY);
 		for (const propertyName of Object.getOwnPropertyNames(this)) this[propertyName] = null;
+	}
+	isDisposed() {
+		return disposedInstances.has(this);
 	}
 	_queueCallback(callback, element, isAnimated = true) {
 		executeAfterTransition(callback, element, isAnimated);

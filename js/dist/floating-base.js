@@ -103,12 +103,6 @@ var FloatingBase = class FloatingBase extends BaseComponent {
 		FloatingBase.disposeBreakpointListeners(this._mediaQueryListeners);
 		this._mediaQueryListeners = [];
 	}
-	_isShown() {
-		throw new Error("You have to implement the private method \"_isShown\", for each component!");
-	}
-	_updateFloatingPosition() {
-		throw new Error("You have to implement the private method \"_updateFloatingPosition\", for each component!");
-	}
 	_getOffset() {
 		const { offset: offsetConfig } = this._config;
 		if (typeof offsetConfig === "string") return offsetConfig.split(",").map((value) => Number.parseInt(value, 10));

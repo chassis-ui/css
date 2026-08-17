@@ -6,7 +6,7 @@
 import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
-import { getClipboardText } from "./util/index.js";
+import { ARROW_LEFT_KEY, ARROW_RIGHT_KEY, BACKSPACE_KEY, DELETE_KEY, getClipboardText } from "./util/index.js";
 //#region js/src/otp-input.ts
 /**
 * --------------------------------------------------------------------------
@@ -106,25 +106,25 @@ var OtpInput = class extends BaseComponent {
 	_handleKeydown(event, index) {
 		const { key } = event;
 		switch (key) {
-			case "Backspace":
+			case BACKSPACE_KEY:
 				if (!this._inputs[index].value && index > 0) {
 					event.preventDefault();
 					this._inputs[index - 1].value = "";
 					this._inputs[index - 1].focus();
 				}
 				break;
-			case "Delete":
+			case DELETE_KEY:
 				event.preventDefault();
 				for (let i = index; i < this._inputs.length - 1; i++) this._inputs[i].value = this._inputs[i + 1].value;
 				this._inputs.at(-1).value = "";
 				break;
-			case "ArrowLeft":
+			case ARROW_LEFT_KEY:
 				if (index > 0) {
 					event.preventDefault();
 					this._inputs[index - 1].focus();
 				}
 				break;
-			case "ArrowRight":
+			case ARROW_RIGHT_KEY:
 				if (index < this._inputs.length - 1) {
 					event.preventDefault();
 					this._inputs[index + 1].focus();

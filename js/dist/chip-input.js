@@ -7,7 +7,7 @@ import BaseComponent from "./base-component.js";
 import Chip from "./chip.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
-import { getClipboardText } from "./util/index.js";
+import { ARROW_LEFT_KEY, ARROW_RIGHT_KEY, BACKSPACE_KEY, DELETE_KEY, END_KEY, ENTER_KEY, ESCAPE_KEY, HOME_KEY, getClipboardText } from "./util/index.js";
 //#region js/src/chip-input.ts
 /**
 * --------------------------------------------------------------------------
@@ -288,12 +288,12 @@ var ChipInput = class extends BaseComponent {
 	_handleInputKeydown(event) {
 		const { key } = event;
 		switch (key) {
-			case "Enter":
+			case ENTER_KEY:
 				event.preventDefault();
 				this._createChipFromInput();
 				break;
-			case "Backspace":
-			case "Delete":
+			case BACKSPACE_KEY:
+			case DELETE_KEY:
 				if (this._input.value === "") {
 					event.preventDefault();
 					const chips = this._getChipElements();
@@ -304,7 +304,7 @@ var ChipInput = class extends BaseComponent {
 					}
 				}
 				break;
-			case "ArrowLeft":
+			case ARROW_LEFT_KEY:
 				if (this._input.selectionStart === 0 && this._input.selectionEnd === 0) {
 					event.preventDefault();
 					const chips = this._getChipElements();
@@ -316,7 +316,7 @@ var ChipInput = class extends BaseComponent {
 					}
 				}
 				break;
-			case "Escape":
+			case ESCAPE_KEY:
 				this._input.value = "";
 				this.clearSelection();
 				this._input.blur();
@@ -330,24 +330,24 @@ var ChipInput = class extends BaseComponent {
 		const chips = this._getChipElements();
 		const currentIndex = chips.indexOf(chip);
 		switch (key) {
-			case "Backspace":
-			case "Delete":
+			case BACKSPACE_KEY:
+			case DELETE_KEY:
 				event.preventDefault();
 				this._handleChipDelete(currentIndex, chips);
 				break;
-			case "ArrowLeft":
+			case ARROW_LEFT_KEY:
 				event.preventDefault();
 				this._navigateChip(chips, currentIndex, -1, event.shiftKey);
 				break;
-			case "ArrowRight":
+			case ARROW_RIGHT_KEY:
 				event.preventDefault();
 				this._navigateChip(chips, currentIndex, 1, event.shiftKey);
 				break;
-			case "Home":
+			case HOME_KEY:
 				event.preventDefault();
 				this._navigateToEdge(chips, 0, event.shiftKey);
 				break;
-			case "End":
+			case END_KEY:
 				event.preventDefault();
 				this.clearSelection();
 				this._input?.focus();
@@ -355,7 +355,7 @@ var ChipInput = class extends BaseComponent {
 			case "a":
 				this._handleSelectAll(event, chips);
 				break;
-			case "Escape":
+			case ESCAPE_KEY:
 				event.preventDefault();
 				this.clearSelection();
 				this._input?.focus();

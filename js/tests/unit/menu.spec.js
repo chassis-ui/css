@@ -9,19 +9,12 @@ import {
 // zero-sized/virtual reference element (see the "valid virtual element
 // reference" test below) can trigger Chrome's benign, well-known
 // "ResizeObserver loop completed with undelivered notifications" diagnostic
-// (https://github.com/WICG/resize-observer/issues/38). Karma reports any
-// window.onerror as a failure of whichever spec is currently running, so
-// without this filter a message that has nothing to do with test correctness
-// intermittently fails an unrelated test. Only this one exact, known-benign
-// message is swallowed; every other error still reaches Karma's own handler.
-const originalOnError = window.onerror
-window.onerror = function (message, ...rest) {
-  if (typeof message === 'string' && message.includes('ResizeObserver loop')) {
-    return true
-  }
-
-  return originalOnError ? originalOnError.call(this, message, ...rest) : false
-}
+// (https://github.com/WICG/resize-observer/issues/38). Under Karma this spec
+// filtered it out via `window.onerror`. Vitest's browser-mode client installs
+// its own `window` "error" listener before any spec module runs, so a
+// listener registered here — regardless of the capture flag — always fires
+// after it and can no longer intercept the message; Vitest logs it and moves
+// on rather than failing a test over it, so it's noise, not a regression.
 
 describe('Menu', () => {
   let fixtureEl

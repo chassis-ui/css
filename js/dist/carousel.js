@@ -7,7 +7,7 @@ import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import Manipulator from "./dom/manipulator.js";
 import SelectorEngine from "./dom/selector-engine.js";
-import { isRTL, isVisible } from "./util/index.js";
+import { ARROW_LEFT_KEY, ARROW_RIGHT_KEY, isRTL, isVisible } from "./util/index.js";
 //#region js/src/carousel.ts
 /**
 * --------------------------------------------------------------------------
@@ -21,8 +21,6 @@ import { isRTL, isVisible } from "./util/index.js";
 const NAME = "carousel";
 const EVENT_KEY = `.cx.carousel`;
 const DATA_API_KEY = ".data-api";
-const ARROW_LEFT_KEY = "ArrowLeft";
-const ARROW_RIGHT_KEY = "ArrowRight";
 const DIRECTION_LEFT = "left";
 const DIRECTION_RIGHT = "right";
 const EVENT_SLIDE = `slide${EVENT_KEY}`;

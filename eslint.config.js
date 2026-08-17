@@ -35,7 +35,7 @@ export default defineConfig([
     }
   },
   {
-    files: ['**/*.ts', '**/*.astro/*.js'],
+    files: ['**/*.{ts,mts}', '**/*.astro/*.js'],
     languageOptions: {
       globals: { ...globals.node, ...globals.browser },
       parser: tseslint.parser
@@ -84,9 +84,10 @@ export default defineConfig([
       'unicorn/better-regex': 'error'
     }
   },
-  ...tseslint.configs.recommended.map((config) => ({ ...config, files: ['js/**/*.ts'] })),
+  // js/**/*.ts — TypeScript sources, plus the .mts Vitest config
+  ...tseslint.configs.recommended.map((config) => ({ ...config, files: ['js/**/*.{ts,mts}'] })),
   {
-    files: ['js/**/*.ts'],
+    files: ['js/**/*.{ts,mts}'],
     rules: {
       // DOM/config plumbing (event registry, config merging) is inherently dynamic
       '@typescript-eslint/no-explicit-any': 'off'
@@ -123,6 +124,15 @@ export default defineConfig([
     files: ['js/tests/unit/**'],
     languageOptions: {
       globals: { ...globals.jasmine, ...globals.jquery }
+    },
+    rules: {
+      'no-console': 'off'
+    }
+  },
+  {
+    files: ['js/tests/e2e/**'],
+    languageOptions: {
+      globals: { ...globals.node }
     },
     rules: {
       'no-console': 'off'

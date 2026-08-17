@@ -119,13 +119,13 @@ var Datepicker = class extends BaseComponent {
 		return NAME;
 	}
 	toggle() {
-		if (!this._calendar) return;
+		if (this.isDisposed()) return;
 		if (this._config.inline) return;
 		if (this._isShown) this.hide();
 		else this.show();
 	}
 	show() {
-		if (!this._calendar) return;
+		if (this.isDisposed()) return;
 		if (this._config.inline) return;
 		if (isDisabled(this._element) || this._isShown) return;
 		if (EventHandler.trigger(this._element, EVENT_SHOW).defaultPrevented) return;
@@ -134,7 +134,7 @@ var Datepicker = class extends BaseComponent {
 		EventHandler.trigger(this._element, EVENT_SHOWN);
 	}
 	hide() {
-		if (!this._calendar) return;
+		if (this.isDisposed()) return;
 		if (this._config.inline) return;
 		if (!this._isShown) return;
 		if (EventHandler.trigger(this._element, EVENT_HIDE).defaultPrevented) return;

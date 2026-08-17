@@ -7,6 +7,7 @@ import BaseComponent from "./base-component.js";
 import Data from "./dom/data.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
+import { isVisible } from "./util/index.js";
 //#region js/src/dialog-base.ts
 /**
 * --------------------------------------------------------------------------
@@ -41,6 +42,11 @@ var DialogBase = class extends BaseComponent {
 	}
 	static get NAME() {
 		return "dialogbase";
+	}
+	static restoreFocusOnHide(target, trigger) {
+		EventHandler.one(target, this.eventName("hidden"), () => {
+			if (isVisible(trigger)) trigger.focus();
+		});
 	}
 	dispose() {
 		if (this._element.open) this._closeAndCleanup();

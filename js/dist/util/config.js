@@ -26,10 +26,10 @@ var Config = class {
 		throw new Error("You have to implement the static method \"NAME\", for each component!");
 	}
 	_getConfig(config) {
-		config = this._mergeConfigObj(config);
-		config = this._configAfterMerge(config);
-		this._typeCheckConfig(config);
-		return config;
+		let mergedConfig = this._mergeConfigObj(config);
+		mergedConfig = this._configAfterMerge(mergedConfig);
+		this._typeCheckConfig(mergedConfig);
+		return mergedConfig;
 	}
 	_configAfterMerge(config) {
 		return config;

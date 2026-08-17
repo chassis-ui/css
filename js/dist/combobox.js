@@ -7,7 +7,7 @@ import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import Menu from "./menu.js";
-import { getNextActiveElement, isDisabled, isVisible } from "./util/index.js";
+import { ARROW_DOWN_KEY, ARROW_UP_KEY, END_KEY, ENTER_KEY, ESCAPE_KEY, HOME_KEY, SPACE_KEY, TAB_KEY, getNextActiveElement, isDisabled, isVisible } from "./util/index.js";
 //#region js/src/combobox.ts
 /**
 * --------------------------------------------------------------------------
@@ -21,14 +21,6 @@ import { getNextActiveElement, isDisabled, isVisible } from "./util/index.js";
 const NAME = "combobox";
 const EVENT_KEY = `.cx.combobox`;
 const DATA_API_KEY = ".data-api";
-const ESCAPE_KEY = "Escape";
-const TAB_KEY = "Tab";
-const ARROW_UP_KEY = "ArrowUp";
-const ARROW_DOWN_KEY = "ArrowDown";
-const HOME_KEY = "Home";
-const END_KEY = "End";
-const ENTER_KEY = "Enter";
-const SPACE_KEY = " ";
 const EVENT_CHANGE = `change${EVENT_KEY}`;
 const EVENT_SHOW = `show${EVENT_KEY}`;
 const EVENT_SHOWN = `shown${EVENT_KEY}`;
@@ -106,12 +98,16 @@ var Combobox = class Combobox extends BaseComponent {
 		if (this._searchInput) {
 			this._searchInput.value = "";
 			this._filterItems("");
-			requestAnimationFrame(() => this._searchInput?.focus());
+			requestAnimationFrame(() => {
+				if (!this.isDisposed()) this._searchInput?.focus();
+			});
 		} else if (this._comboInput) {
 			this._filterItems("");
 			requestAnimationFrame(() => {
-				this._comboInput?.focus();
-				this._comboInput?.select();
+				if (!this.isDisposed()) {
+					this._comboInput?.focus();
+					this._comboInput?.select();
+				}
 			});
 		}
 		EventHandler.trigger(this._toggle, EVENT_SHOWN);
