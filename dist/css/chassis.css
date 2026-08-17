@@ -2003,27 +2003,27 @@
     mask-image: var(--cx-caret-icon);
     transform: var(--cx-caret-transform);
   }
-  .accordion:not(.no-transition) > details {
+  .accordion[data-cx-accordion] > details {
     transition: var(--cx-transition);
   }
   @media (prefers-reduced-motion: reduce) {
-    .accordion:not(.no-transition) > details {
+    .accordion[data-cx-accordion] > details {
       transition: none;
     }
   }
-  .accordion:not(.no-transition) > details > summary {
+  .accordion[data-cx-accordion] > details > summary {
     transition: var(--cx-title-transition);
   }
   @media (prefers-reduced-motion: reduce) {
-    .accordion:not(.no-transition) > details > summary {
+    .accordion[data-cx-accordion] > details > summary {
       transition: none;
     }
   }
-  .accordion:not(.no-transition) > details > summary > .accordion-title::before {
+  .accordion[data-cx-accordion] > details > summary > .accordion-title::before {
     transition: var(--cx-caret-transition);
   }
   @media (prefers-reduced-motion: reduce) {
-    .accordion:not(.no-transition) > details > summary > .accordion-title::before {
+    .accordion[data-cx-accordion] > details > summary > .accordion-title::before {
       transition: none;
     }
   }
@@ -4906,16 +4906,16 @@
   .ghost-input:disabled {
     color: var(--cx-form-disabled-fg-active);
   }
-  .form-input:has(.input-help) {
+  .form-input:has(.input-adorn) {
     display: flex;
     gap: var(--cx-gap);
     white-space: nowrap;
   }
-  .form-input:has(.input-help) > .ghost-input {
+  .form-input:has(.input-adorn) > .ghost-input {
     flex: 1;
     min-width: 0;
   }
-  .input-help:is(button) {
+  .input-adorn:is(button) {
     --cx-button-icon-size: var(--cx-input-icon-size, 1.25rem);
     min-width: auto;
     min-height: auto;
@@ -4924,9 +4924,9 @@
     background: none;
     border: 0;
   }
-  .input-help,
-  .input-help.valid-feedback,
-  .input-help.invalid-feedback {
+  .input-adorn,
+  .input-adorn.valid-feedback,
+  .input-adorn.invalid-feedback {
     display: flex;
     flex-shrink: 0;
     align-items: center;
