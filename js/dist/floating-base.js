@@ -138,10 +138,12 @@ var FloatingBase = class FloatingBase extends BaseComponent {
 		return middleware;
 	}
 	_getFloatingConfig(placement, middleware) {
-		const defaultConfig = {
+		return this._mergeFloatingConfig({
 			placement,
 			middleware
-		};
+		});
+	}
+	_mergeFloatingConfig(defaultConfig) {
 		return {
 			...defaultConfig,
 			...execute(this._config.floatingConfig, [void 0, defaultConfig])

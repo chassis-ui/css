@@ -677,17 +677,16 @@ describe('Tooltip', () => {
       })
     })
 
-    it('should throw an error the element is not visible', async () => {
+    it('should throw a synchronous error when the element is not visible', () => {
       fixtureEl.innerHTML = '<a href="#" style="display: none" rel="tooltip" title="Another tooltip"></a>'
 
       const tooltipEl = fixtureEl.querySelector('a')
       const tooltip = new Tooltip(tooltipEl)
 
-      try {
-        await tooltip.show()
-      } catch (error) {
-        expect(error.message).toEqual('Please use show on visible elements')
-      }
+      // Asserted without await: show() must throw synchronously here, not
+      // return a rejected promise, so a caller that doesn't await it still
+      // sees the error instead of an unhandled rejection.
+      expect(() => tooltip.show()).toThrowError('Please use show on visible elements')
     })
 
     it('should not show a tooltip if show.cx.tooltip is prevented', () => {

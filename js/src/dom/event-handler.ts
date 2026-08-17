@@ -70,9 +70,11 @@ const nativeEvents = new Set([
   'blur',
   'input',
   'change',
+  'cancel',
   'reset',
   'select',
   'submit',
+  'paste',
   'focusin',
   'focusout',
   'load',
@@ -255,7 +257,12 @@ const EventHandler = {
     }
 
     const [isDelegated, callable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction)
-    const inNamespace = typeEvent !== originalTypeEvent
+    // typeEvent can differ from originalTypeEvent for two unrelated reasons: an actual
+    // namespace suffix (click.cx.dialog -> click) or a bare customEvents remap
+    // (mouseenter -> mouseover, no namespace involved). Only the former means the
+    // caller wants namespace-scoped removal below; requiring a literal '.' excludes
+    // the remap-only case, where every handler is removed instead.
+    const inNamespace = typeEvent !== originalTypeEvent && originalTypeEvent.includes('.')
     const events = getElementEvents(element as Element)
     const storeElementEvent = events[typeEvent] || {}
     const isNamespace = originalTypeEvent.startsWith('.')

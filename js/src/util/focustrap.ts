@@ -42,14 +42,14 @@ const DefaultType = {
  * Class definition
  */
 
-class FocusTrap extends Config {
+class FocusTrap extends Config<FocusTrapConfig> {
   protected declare _config: FocusTrapConfig
   protected declare _isActive: boolean
   protected declare _lastTabNavDirection: string | null
 
   constructor(config?: Partial<FocusTrapConfig> | null) {
     super()
-    this._config = this._getConfig(config) as FocusTrapConfig
+    this._config = this._getConfig(config)
     this._isActive = false
     this._lastTabNavDirection = null
   }

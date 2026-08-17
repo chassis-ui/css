@@ -12,7 +12,7 @@ import Swipe, { type SwipeConfig } from './util/swipe.js'
 import {
   isDisabled,
   isRTL,
-  isVisible
+  preventNavigationForAnchor
 } from './util/index.js'
 
 /**
@@ -24,13 +24,11 @@ const DATA_KEY = 'cx.drawer'
 const EVENT_KEY = `.${DATA_KEY}`
 const DATA_API_KEY = '.data-api'
 
-const EVENT_HIDDEN = `hidden${EVENT_KEY}`
 const EVENT_RESIZE = `resize${EVENT_KEY}`
 const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`
 const EVENT_CLICK_DISMISS = `click.dismiss${EVENT_KEY}`
 const EVENT_LOAD_DATA_API = `load${EVENT_KEY}${DATA_API_KEY}`
 
-const CLASS_NAME_INSTANT = 'instant'
 const CLASS_NAME_STATIC = 'static'
 
 const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="drawer"]'
@@ -103,10 +101,6 @@ class Drawer extends DialogBase {
     this._initSwipe()
   }
 
-  protected override _getInstantClassName(): string {
-    return CLASS_NAME_INSTANT
-  }
-
   protected override _getStaticClassName(): string {
     return CLASS_NAME_STATIC
   }
@@ -144,19 +138,17 @@ class Drawer extends DialogBase {
 EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (event) {
   const target = SelectorEngine.getElementFromSelector(this)
 
-  if (['A', 'AREA'].includes(this.tagName)) {
-    event.preventDefault()
-  }
+  preventNavigationForAnchor(event, this)
 
   if (isDisabled(this)) {
     return
   }
 
-  EventHandler.one(target, EVENT_HIDDEN, () => {
-    if (isVisible(this)) {
-      this.focus()
-    }
-  })
+  if (!target) {
+    return
+  }
+
+  Drawer.restoreFocusOnHide(target, this)
 
   // Close any other open drawer before toggling this one
   const alreadyOpen = SelectorEngine.findOne(SELECTOR_OPEN_DRAWER)
@@ -184,9 +176,7 @@ EventHandler.on(window, EVENT_RESIZE, () => {
 // Custom dismiss handler — extends the standard pattern to also resolve
 // responsive drawer variants (e.g. .max-large:drawer) that have no .drawer class.
 EventHandler.on(document, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, function (event) {
-  if (['A', 'AREA'].includes(this.tagName)) {
-    event.preventDefault()
-  }
+  preventNavigationForAnchor(event, this)
 
   if (isDisabled(this)) {
     return

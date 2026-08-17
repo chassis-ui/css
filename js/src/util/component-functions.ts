@@ -8,7 +8,7 @@
 import type BaseComponent from '../base-component.js'
 import EventHandler, { type ChassisEvent } from '../dom/event-handler.js'
 import SelectorEngine from '../dom/selector-engine.js'
-import { isDisabled } from './index.js'
+import { isDisabled, preventNavigationForAnchor } from './index.js'
 
 interface EventActionData {
   targets: HTMLElement[]
@@ -20,15 +20,17 @@ const enableDismissTrigger = (component: typeof BaseComponent, method = 'hide'):
   const name = component.NAME
 
   EventHandler.on(document, clickEvent, `[data-cx-dismiss="${name}"]`, function (event) {
-    if (['A', 'AREA'].includes(this.tagName)) {
-      event.preventDefault()
-    }
+    preventNavigationForAnchor(event, this)
 
     if (isDisabled(this)) {
       return
     }
 
     const target = SelectorEngine.getElementFromSelector(this) || this.closest(`.${name}`)
+    if (!target) {
+      return
+    }
+
     const instance: any = component.getOrCreateInstance(target)
 
     // Method argument is left, for Alert and only, as it doesn't implement the 'hide' method
@@ -54,9 +56,7 @@ const eventActionOnPlugin = (Plugin: typeof BaseComponent, onEvent: string, stri
 const eventAction = (onEvent: string, stringSelector: string, callback: (data: EventActionData) => void): void => {
   const selector = `${stringSelector}:not(.disabled):not(:disabled)`
   EventHandler.on(document, onEvent, selector, function (event) {
-    if (['A', 'AREA'].includes(this.tagName)) {
-      event.preventDefault()
-    }
+    preventNavigationForAnchor(event, this)
 
     const selector = SelectorEngine.getSelectorFromElement(this)
     const targets = selector ? SelectorEngine.find(selector) : [this as HTMLElement]

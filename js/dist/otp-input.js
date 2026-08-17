@@ -6,6 +6,7 @@
 import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
+import { getClipboardText } from "./util/index.js";
 //#region js/src/otp-input.ts
 /**
 * --------------------------------------------------------------------------
@@ -133,7 +134,7 @@ var OtpInput = class extends BaseComponent {
 	}
 	_handlePaste(event) {
 		event.preventDefault();
-		const digits = (event.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "").slice(0, this._inputs.length);
+		const digits = getClipboardText(event).replace(/\D/g, "").slice(0, this._inputs.length);
 		if (digits) {
 			this.setValue(digits);
 			const lastIndex = Math.min(digits.length, this._inputs.length) - 1;

@@ -211,11 +211,20 @@ class Tooltip extends FloatingBase {
     super.dispose()
   }
 
-  async show(): Promise<void> {
+  show(): Promise<void> {
+    // Thrown here, before any `await`, so this stays a synchronous throw for
+    // callers that don't await — making show() `async` would silently convert
+    // it into an unhandled promise rejection instead (a throw executed during
+    // an async function's initial synchronous segment is always converted to
+    // a rejection, regardless of where it sits relative to the first `await`).
     if (this._element.style.display === 'none') {
       throw new Error('Please use show on visible elements')
     }
 
+    return this._show()
+  }
+
+  protected async _show(): Promise<void> {
     if (!(this._isWithContent() && this._isEnabled)) {
       return
     }
@@ -587,24 +596,8 @@ class Tooltip extends FloatingBase {
     return Object.values(this._activeTrigger).includes(true)
   }
 
-  protected override _getConfig(config?: ComponentConfig | null): ComponentConfig {
-    const jsonConfig = (Manipulator.getDataAttribute(this._element, 'config') || {}) as ComponentConfig
-    const dataAttributes = Manipulator.getDataAttributes(this._element)
-
-    for (const key of DISALLOWED_ATTRIBUTES) {
-      delete jsonConfig[key]
-      delete dataAttributes[key]
-    }
-
-    config = {
-      ...this.constructor.Default,
-      ...(typeof jsonConfig === 'object' ? jsonConfig : {}),
-      ...dataAttributes,
-      ...(typeof config === 'object' && config ? config : {})
-    }
-    config = this._configAfterMerge(config)
-    this._typeCheckConfig(config)
-    return config
+  protected override _excludedConfigKeys(): string[] {
+    return [...DISALLOWED_ATTRIBUTES]
   }
 
   protected override _configAfterMerge(config: ComponentConfig): ComponentConfig {

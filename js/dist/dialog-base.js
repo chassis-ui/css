@@ -42,6 +42,10 @@ var DialogBase = class extends BaseComponent {
 	static get NAME() {
 		return "dialogbase";
 	}
+	dispose() {
+		if (this._element.open) this._closeAndCleanup();
+		super.dispose();
+	}
 	toggle(relatedTarget) {
 		return this._element.open ? this.hide() : this.show(relatedTarget);
 	}
@@ -85,7 +89,7 @@ var DialogBase = class extends BaseComponent {
 		return !this._element.classList.contains(this._getInstantClassName());
 	}
 	_getInstantClassName() {
-		return "dialog-instant";
+		return "instant";
 	}
 	_getStaticClassName() {
 		return "dialog-static";
@@ -136,7 +140,7 @@ var DialogBase = class extends BaseComponent {
 	}
 	_addDialogListeners() {
 		const eventKey = this.constructor.EVENT_KEY;
-		EventHandler.on(this._element, "cancel", (event) => {
+		EventHandler.on(this._element, `cancel${eventKey}`, (event) => {
 			event.preventDefault();
 			if (!this._config.keyboard) {
 				this._triggerBackdropTransition();

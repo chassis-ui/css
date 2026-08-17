@@ -9,7 +9,19 @@ import BaseComponent from './base-component.js'
 import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
 import Menu from './menu.js'
-import { getNextActiveElement, isDisabled, isVisible } from './util/index.js'
+import {
+  ARROW_DOWN_KEY,
+  ARROW_UP_KEY,
+  END_KEY,
+  ENTER_KEY,
+  ESCAPE_KEY,
+  HOME_KEY,
+  SPACE_KEY,
+  TAB_KEY,
+  getNextActiveElement,
+  isDisabled,
+  isVisible
+} from './util/index.js'
 
 /**
  * Constants
@@ -19,15 +31,6 @@ const NAME = 'combobox'
 const DATA_KEY = 'cx.combobox'
 const EVENT_KEY = `.${DATA_KEY}`
 const DATA_API_KEY = '.data-api'
-
-const ESCAPE_KEY = 'Escape'
-const TAB_KEY = 'Tab'
-const ARROW_UP_KEY = 'ArrowUp'
-const ARROW_DOWN_KEY = 'ArrowDown'
-const HOME_KEY = 'Home'
-const END_KEY = 'End'
-const ENTER_KEY = 'Enter'
-const SPACE_KEY = ' '
 
 const EVENT_CHANGE = `change${EVENT_KEY}`
 const EVENT_SHOW = `show${EVENT_KEY}`
@@ -47,6 +50,11 @@ const SELECTOR_VISIBLE_ITEMS = '.menu-item[data-cx-value]:not(.disabled):not(:di
 const SELECTOR_VALUE = '.combobox-value'
 const SELECTOR_SEARCH_INPUT = '.combobox-search-input'
 const SELECTOR_NO_RESULTS = '.combobox-no-results'
+
+// Debounce delay for filtering as the user types, so fast typing doesn't
+// re-run a full DOM pass (querySelectorAll + per-item text scan) on every
+// keystroke.
+const FILTER_DEBOUNCE_DELAY = 150
 
 type ComboboxConfig = {
   boundary: string | Element
@@ -87,14 +95,13 @@ class Combobox extends BaseComponent {
   protected declare _toggle: HTMLElement
   protected declare _menu: HTMLElement
   protected declare _valueDisplay: HTMLElement
-  // Not `protected` — read from the data-API click handler below (a top-level
-  // function, not a class member, so it can't reach a protected field).
-  declare _comboInput: HTMLInputElement | null
+  protected declare _comboInput: HTMLInputElement | null
   protected declare _searchInput: HTMLInputElement | null
   protected declare _noResults: HTMLElement | null
   protected declare _hiddenInput: HTMLInputElement | null
   protected declare _menuInstance: Menu | null
   protected declare _ignoreNextFocus: boolean
+  protected declare _filterDebounceTimer: ReturnType<typeof setTimeout> | null
 
   constructor(element?: string | Element | null, config?: Partial<ComboboxConfig> | null) {
     super(element, config)
@@ -110,6 +117,7 @@ class Combobox extends BaseComponent {
     this._hiddenInput = null
     this._menuInstance = null
     this._ignoreNextFocus = false
+    this._filterDebounceTimer = null
 
     this._createHiddenInput()
     this._createMenuInstance()
@@ -148,17 +156,25 @@ class Combobox extends BaseComponent {
 
     this._menuInstance!.show()
 
+    // A debounced filter from the previous session could still be pending
+    // (e.g. closed mid-type); don't let it fire later and clobber this reset.
+    this._cancelFilterDebounce()
+
     if (this._searchInput) {
       this._searchInput.value = ''
       this._filterItems('')
-      // Guard against dispose between the rAF schedule and its callback —
-      // Base.dispose() nulls every instance property.
-      requestAnimationFrame(() => this._searchInput?.focus())
+      requestAnimationFrame(() => {
+        if (!this.isDisposed()) {
+          this._searchInput?.focus()
+        }
+      })
     } else if (this._comboInput) {
       this._filterItems('')
       requestAnimationFrame(() => {
-        this._comboInput?.focus()
-        this._comboInput?.select()
+        if (!this.isDisposed()) {
+          this._comboInput?.focus()
+          this._comboInput?.select()
+        }
       })
     }
 
@@ -195,6 +211,8 @@ class Combobox extends BaseComponent {
   }
 
   override dispose(): void {
+    this._cancelFilterDebounce()
+
     if (this._menuInstance) {
       this._menuInstance.dispose()
       this._menuInstance = null
@@ -298,6 +316,10 @@ class Combobox extends BaseComponent {
       return
     }
 
+    // A debounced filter from the just-closed session could still be
+    // pending; don't let it fire later and clobber this reset.
+    this._cancelFilterDebounce()
+
     // Restore all items visibility, then restore the input's displayed text.
     this._filterItems('')
     const selectedItems = this._getSelectedItems()
@@ -350,26 +372,26 @@ class Combobox extends BaseComponent {
       })
 
       EventHandler.on(this._comboInput, `input${EVENT_KEY}`, () => {
-        const visibleCount = this._filterItems(this._comboInput!.value)
-
-        // Input-trigger menu visibility tracks filter results: collapse when
-        // nothing matches the active query, reopen when matches reappear
-        // (e.g. on backspace). Routed through _menuInstance so floating
-        // positioning is set up/torn down correctly, while bypassing
-        // combobox.show()/hide() so the user's in-progress query isn't reset
-        // and the input isn't re-selected mid-type. Button-trigger menus are
-        // out of scope here — they don't have this handler.
-        if (visibleCount > 0 && !this._isShown()) {
-          this._menuInstance!.show()
-        } else if (visibleCount === 0 && this._isShown()) {
-          this._menuInstance!.hide()
-        }
+        this._scheduleFilter(this._comboInput!.value, visibleCount => {
+          // Input-trigger menu visibility tracks filter results: collapse when
+          // nothing matches the active query, reopen when matches reappear
+          // (e.g. on backspace). Routed through _menuInstance so floating
+          // positioning is set up/torn down correctly, while bypassing
+          // combobox.show()/hide() so the user's in-progress query isn't reset
+          // and the input isn't re-selected mid-type. Button-trigger menus are
+          // out of scope here — they don't have this handler.
+          if (visibleCount > 0 && !this._isShown()) {
+            this._menuInstance!.show()
+          } else if (visibleCount === 0 && this._isShown()) {
+            this._menuInstance!.hide()
+          }
+        })
       })
     }
 
     if (this._searchInput) {
       EventHandler.on(this._searchInput, `input${EVENT_KEY}`, () => {
-        this._filterItems(this._searchInput!.value)
+        this._scheduleFilter(this._searchInput!.value)
       })
 
       EventHandler.on(this._searchInput, `keydown${EVENT_KEY}`, event => {
@@ -484,6 +506,30 @@ class Combobox extends BaseComponent {
       .filter(item => isVisible(item))
   }
 
+  // Debounces `_filterItems` for the input-driven listeners (typing is the
+  // only high-frequency caller); `show()`/`_restoreAfterClose()` call
+  // `_filterItems('')` directly since they need the result synchronously.
+  protected _scheduleFilter(query: string, onFiltered?: (visibleCount: number) => void): void {
+    this._cancelFilterDebounce()
+
+    this._filterDebounceTimer = setTimeout(() => {
+      this._filterDebounceTimer = null
+      // `onFiltered?.(this._filterItems(query))` would short-circuit and skip
+      // calling `_filterItems` entirely when `onFiltered` is undefined (the
+      // searchInput call site never passes one) — optional chaining on the
+      // callee short-circuits the whole expression, including the argument.
+      const visibleCount = this._filterItems(query)
+      onFiltered?.(visibleCount)
+    }, FILTER_DEBOUNCE_DELAY)
+  }
+
+  protected _cancelFilterDebounce(): void {
+    if (this._filterDebounceTimer !== null) {
+      clearTimeout(this._filterDebounceTimer)
+      this._filterDebounceTimer = null
+    }
+  }
+
   protected _filterItems(query: string): number {
     const normalizedQuery = this._normalizeText(query.toLowerCase().trim())
     const items = SelectorEngine.find(SELECTOR_MENU_ITEM, this._menu)
@@ -585,25 +631,27 @@ class Combobox extends BaseComponent {
       }
     }
   }
+
+  static dataApiClickHandler(this: HTMLElement, event: ChassisEvent): void {
+    const instance = Combobox.getOrCreateInstance(this)
+
+    // Clicking the comboInput lets the browser handle focus natively;
+    // just ensure the menu opens without toggling it closed.
+    if (event.target === instance._comboInput) {
+      instance.show()
+      return
+    }
+
+    event.preventDefault()
+    instance.toggle()
+  }
 }
 
 /**
  * Data API implementation
  */
 
-EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (event) {
-  const instance = Combobox.getOrCreateInstance(this)
-
-  // Clicking the comboInput lets the browser handle focus natively;
-  // just ensure the menu opens without toggling it closed.
-  if (event.target === instance._comboInput) {
-    instance.show()
-    return
-  }
-
-  event.preventDefault()
-  instance.toggle()
-})
+EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, Combobox.dataApiClickHandler)
 
 EventHandler.on(document, 'DOMContentLoaded', () => {
   for (const toggle of SelectorEngine.find(SELECTOR_DATA_TOGGLE)) {

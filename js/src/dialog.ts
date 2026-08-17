@@ -10,7 +10,7 @@ import EventHandler from './dom/event-handler.js'
 import Manipulator from './dom/manipulator.js'
 import SelectorEngine from './dom/selector-engine.js'
 import { enableDismissTrigger } from './util/component-functions.js'
-import { isVisible } from './util/index.js'
+import { preventNavigationForAnchor } from './util/index.js'
 
 /**
  * Constants
@@ -108,8 +108,10 @@ class Dialog extends DialogBase {
 EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (event) {
   const target = SelectorEngine.getElementFromSelector(this)
 
-  if (['A', 'AREA'].includes(this.tagName)) {
-    event.preventDefault()
+  preventNavigationForAnchor(event, this)
+
+  if (!target) {
+    return
   }
 
   EventHandler.one(target, EVENT_SHOW, showEvent => {
@@ -117,11 +119,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (
       return
     }
 
-    EventHandler.one(target, EVENT_HIDDEN, () => {
-      if (isVisible(this)) {
-        this.focus()
-      }
-    })
+    Dialog.restoreFocusOnHide(target, this)
   })
 
   // Get config from trigger's data attributes
@@ -147,15 +145,15 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (
     //   4. Clean up the .dialog-swap-in flag once the incoming dialog
     //      finishes its entry transition.
     const newDialog = Dialog.getOrCreateInstance(target, config)
-    target!.classList.add(CLASS_NAME_SWAP_IN)
+    target.classList.add(CLASS_NAME_SWAP_IN)
     newDialog.show(this)
     EventHandler.one(target, `shown${EVENT_KEY}`, () => {
-      target!.classList.remove(CLASS_NAME_SWAP_IN)
+      target.classList.remove(CLASS_NAME_SWAP_IN)
     })
 
     const currentInstance = Dialog.getInstance(currentDialog)
     if (currentInstance) {
-      // Force synchronous close: .dialog-instant makes _isAnimated() false,
+      // Force synchronous close: .instant makes _isAnimated() false,
       // which makes _shouldDeferClose() false, so hide() calls close()
       // immediately (no deferred .hiding path). The class is removed after
       // the (now-synchronous) hidden event fires.

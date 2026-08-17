@@ -1127,12 +1127,16 @@ describe('Combobox', () => {
           inputEl.value = 'two'
           inputEl.dispatchEvent(new Event('input', { bubbles: true }))
 
-          // Only "Option two" should be visible
-          expect(items[0].style.display).toEqual('none')
-          expect(items[1].style.display).toEqual('')
-          expect(items[2].style.display).toEqual('none')
-          combobox.hide()
-          resolve()
+          // Filtering is debounced (see FILTER_DEBOUNCE_DELAY in combobox.ts) —
+          // wait it out before asserting the DOM update.
+          setTimeout(() => {
+            // Only "Option two" should be visible
+            expect(items[0].style.display).toEqual('none')
+            expect(items[1].style.display).toEqual('')
+            expect(items[2].style.display).toEqual('none')
+            combobox.hide()
+            resolve()
+          }, 200)
         })
 
         combobox.show()
@@ -1151,9 +1155,11 @@ describe('Combobox', () => {
           inputEl.value = 'zzz-no-match-zzz'
           inputEl.dispatchEvent(new Event('input', { bubbles: true }))
 
-          expect(menuEl).not.toHaveClass('show')
-          combobox.hide()
-          resolve()
+          setTimeout(() => {
+            expect(menuEl).not.toHaveClass('show')
+            combobox.hide()
+            resolve()
+          }, 200)
         })
 
         combobox.show()
@@ -1172,15 +1178,20 @@ describe('Combobox', () => {
           // First filter to no-match — menu auto-hides
           inputEl.value = 'zzz'
           inputEl.dispatchEvent(new Event('input', { bubbles: true }))
-          expect(menuEl).not.toHaveClass('show')
 
-          // Then backspace to a partial that DOES match — menu auto-reopens
-          inputEl.value = 'two'
-          inputEl.dispatchEvent(new Event('input', { bubbles: true }))
-          expect(menuEl).toHaveClass('show')
+          setTimeout(() => {
+            expect(menuEl).not.toHaveClass('show')
 
-          combobox.hide()
-          resolve()
+            // Then backspace to a partial that DOES match — menu auto-reopens
+            inputEl.value = 'two'
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }))
+
+            setTimeout(() => {
+              expect(menuEl).toHaveClass('show')
+              combobox.hide()
+              resolve()
+            }, 200)
+          }, 200)
         })
 
         combobox.show()
@@ -1251,11 +1262,14 @@ describe('Combobox', () => {
         toggleEl.addEventListener('shown.cx.combobox', () => {
           inputEl.value = 'two'
           inputEl.dispatchEvent(new Event('input', { bubbles: true }))
-          // Only 1 item visible
-          expect(items[0].style.display).toEqual('none')
-          expect(items[2].style.display).toEqual('none')
 
-          combobox.hide()
+          setTimeout(() => {
+            // Only 1 item visible
+            expect(items[0].style.display).toEqual('none')
+            expect(items[2].style.display).toEqual('none')
+
+            combobox.hide()
+          }, 200)
         })
 
         toggleEl.addEventListener('hidden.cx.combobox', () => {
@@ -1691,9 +1705,11 @@ describe('Combobox', () => {
           searchInputEl.value = 'two'
           searchInputEl.dispatchEvent(new Event('input', { bubbles: true }))
 
-          expect(items[0].style.display).toEqual('none')
-          expect(items[1].style.display).toEqual('')
-          resolve()
+          setTimeout(() => {
+            expect(items[0].style.display).toEqual('none')
+            expect(items[1].style.display).toEqual('')
+            resolve()
+          }, 200)
         })
 
         combobox.show()
@@ -1757,11 +1773,13 @@ describe('Combobox', () => {
           inputEl.value = 'cafe'  // No accent
           inputEl.dispatchEvent(new Event('input', { bubbles: true }))
 
-          // "Café" matches "cafe" because both get normalized
-          expect(items[0].style.display).toEqual('')
-          expect(items[1].style.display).toEqual('none')
-          expect(items[2].style.display).toEqual('none')
-          resolve()
+          setTimeout(() => {
+            // "Café" matches "cafe" because both get normalized
+            expect(items[0].style.display).toEqual('')
+            expect(items[1].style.display).toEqual('none')
+            expect(items[2].style.display).toEqual('none')
+            resolve()
+          }, 200)
         })
 
         combobox.show()
@@ -1780,8 +1798,10 @@ describe('Combobox', () => {
           inputEl.value = 'café'  // Query has accent too
           inputEl.dispatchEvent(new Event('input', { bubbles: true }))
 
-          expect(items[0].style.display).toEqual('')  // Still matches itself
-          resolve()
+          setTimeout(() => {
+            expect(items[0].style.display).toEqual('')  // Still matches itself
+            resolve()
+          }, 200)
         })
 
         combobox.show()

@@ -342,7 +342,9 @@ describe('Carousel', () => {
 
       carousel.next()
 
-      expect(toSpy).toHaveBeenCalledWith(carousel._getItems().length)
+      // `next()` passes its already-queried items array as `to()`'s second arg
+      // (see carousel.ts's items-threading in Phase 8).
+      expect(toSpy).toHaveBeenCalledWith(carousel._getItems().length, jasmine.any(Array))
     })
 
     it('should center the active slide when `.carousel-center` is present', () => {
@@ -593,11 +595,13 @@ describe('Carousel', () => {
       carousel.prev()
       // wraps to the last item (item3), two item-widths (200) to the right
       expect(animateScrollSpy.calls.mostRecent().args[0]).toEqual(200)
-      expect(toSpy).toHaveBeenCalledWith(-1)
+      // `next()`/`prev()` pass their already-queried items array as `to()`'s
+      // second arg (see carousel.ts's items-threading in Phase 8).
+      expect(toSpy).toHaveBeenCalledWith(-1, jasmine.any(Array))
 
       carousel._activeIndex = 2
       carousel.next()
-      expect(toSpy).toHaveBeenCalledWith(carousel._getItems().length)
+      expect(toSpy).toHaveBeenCalledWith(carousel._getItems().length, jasmine.any(Array))
     })
   })
 

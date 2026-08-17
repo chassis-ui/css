@@ -86,18 +86,23 @@ class Accordion extends BaseComponent {
 
     this._isTransitioning = true
 
+    // Captured locally so the queued callback below never has to read
+    // `this._element` — if dispose() runs mid-transition, that property is
+    // nulled out and would throw before the callback finished its cleanup.
+    const element = this._element
+
     // overflow:clip avoids a new BFC (unlike hidden), so interior margins
     // and stacking contexts are unaffected during the transition.
-    this._element.style.overflow = 'clip'
-    this._element.style.height = `${this._summary.offsetHeight}px`
-    this._element.style.height = `${this._summary.offsetHeight + this._content.offsetHeight}px`
+    element.style.overflow = 'clip'
+    element.style.height = `${this._summary.offsetHeight}px`
+    element.style.height = `${this._summary.offsetHeight + this._content.offsetHeight}px`
 
     this._queueCallback(() => {
-      this._element.style.overflow = ''
-      this._element.style.height = ''
+      element.style.overflow = ''
+      element.style.height = ''
       this._isTransitioning = false
-      EventHandler.trigger(this._element, EVENT_OPENED)
-    }, this._element, true)
+      EventHandler.trigger(element, EVENT_OPENED)
+    }, element, true)
   }
 
   close(): void {
@@ -112,19 +117,25 @@ class Accordion extends BaseComponent {
 
     this._isTransitioning = true
 
+    // Captured locally so the queued callback below never has to read
+    // `this._element` — if dispose() runs mid-transition, that property is
+    // nulled out and would throw before the callback reached clone.remove(),
+    // leaking the clone permanently.
+    const element = this._element
+
     // <details> collapses content instantly on open=false; insert a clone
     // as a visual stand-in for the duration of the height transition.
     const clone = this._createClone()
 
-    this._element.style.height = `${this._summary.offsetHeight + this._content.offsetHeight}px`
-    this._element.style.height = `${this._summary.offsetHeight}px`
+    element.style.height = `${this._summary.offsetHeight + this._content.offsetHeight}px`
+    element.style.height = `${this._summary.offsetHeight}px`
 
     this._queueCallback(() => {
-      this._element.style.height = ''
+      element.style.height = ''
       clone.remove()
       this._isTransitioning = false
-      EventHandler.trigger(this._element, EVENT_CLOSED)
-    }, this._element, true)
+      EventHandler.trigger(element, EVENT_CLOSED)
+    }, element, true)
   }
 
   override dispose(): void {
@@ -186,7 +197,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DETAILS, function () {
 
   const name = this.getAttribute('name')
   if (name) {
-    for (const sibling of SelectorEngine.find(`details[name="${name}"]`, this.parentElement!)) {
+    for (const sibling of SelectorEngine.find(`details[name="${CSS.escape(name)}"]`, this.parentElement!)) {
       Accordion.getOrCreateInstance(sibling)
     }
   }

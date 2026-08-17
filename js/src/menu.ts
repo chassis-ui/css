@@ -22,7 +22,16 @@ import Manipulator from './dom/manipulator.js'
 import SelectorEngine from './dom/selector-engine.js'
 import type { ComponentConfig } from './util/config.js'
 import {
-  execute,
+  ARROW_DOWN_KEY,
+  ARROW_LEFT_KEY,
+  ARROW_RIGHT_KEY,
+  ARROW_UP_KEY,
+  END_KEY,
+  ENTER_KEY,
+  ESCAPE_KEY,
+  HOME_KEY,
+  SPACE_KEY,
+  TAB_KEY,
   getElement,
   getNextActiveElement,
   isDisabled,
@@ -41,16 +50,6 @@ const DATA_KEY = 'cx.menu'
 const EVENT_KEY = `.${DATA_KEY}`
 const DATA_API_KEY = '.data-api'
 
-const ESCAPE_KEY = 'Escape'
-const TAB_KEY = 'Tab'
-const ARROW_UP_KEY = 'ArrowUp'
-const ARROW_DOWN_KEY = 'ArrowDown'
-const ARROW_LEFT_KEY = 'ArrowLeft'
-const ARROW_RIGHT_KEY = 'ArrowRight'
-const HOME_KEY = 'Home'
-const END_KEY = 'End'
-const ENTER_KEY = 'Enter'
-const SPACE_KEY = ' '
 const RIGHT_MOUSE_BUTTON = 2
 
 const SUBMENU_CLOSE_DELAY = 100
@@ -160,6 +159,8 @@ class Menu extends FloatingBase {
   protected declare _openSubmenus: Map<HTMLElement, () => void>
   protected declare _submenuCloseTimeouts: Map<HTMLElement, number>
   protected declare _hoverIntentSamples: Array<{ x: number, y: number, t: number }>
+  protected declare _mousemoveRAF: number | null
+  protected declare _pendingMouseEvent: ChassisEvent | null
   protected declare _menu: HTMLElement
   protected declare _menuOriginalParent: ParentNode | null
 
@@ -175,6 +176,8 @@ class Menu extends FloatingBase {
     this._openSubmenus = new Map()
     this._submenuCloseTimeouts = new Map()
     this._hoverIntentSamples = []
+    this._mousemoveRAF = null
+    this._pendingMouseEvent = null
 
     this._menu = (this._config.menu || this._findMenu()) as HTMLElement
 
@@ -255,6 +258,14 @@ class Menu extends FloatingBase {
   override dispose(): void {
     this._closeAllSubmenus()
     this._clearAllSubmenuTimeouts()
+
+    if (this._mousemoveRAF !== null) {
+      cancelAnimationFrame(this._mousemoveRAF)
+      this._mousemoveRAF = null
+    }
+
+    this._pendingMouseEvent = null
+
     this._disposeFloating()
     this._restoreMenuToOriginalParent()
     this._disposeMediaQueryListeners()
@@ -432,16 +443,7 @@ class Menu extends FloatingBase {
   }
 
   protected override _getFloatingConfig(placement: string, middleware: Middleware[]): Record<string, any> {
-    const defaultConfig = {
-      placement,
-      middleware,
-      strategy: this._config.strategy
-    }
-
-    return {
-      ...defaultConfig,
-      ...execute(this._config.floatingConfig, [undefined, defaultConfig])
-    }
+    return this._mergeFloatingConfig({ placement, middleware, strategy: this._config.strategy })
   }
 
   protected _getContainer(): HTMLElement | null {
@@ -523,7 +525,7 @@ class Menu extends FloatingBase {
       })
 
       EventHandler.on(this._menu, 'mousemove', event => {
-        this._trackMousePosition(event)
+        this._scheduleTrackMousePosition(event)
       })
     }
 
@@ -741,6 +743,23 @@ class Menu extends FloatingBase {
   // -------------------------------------------------------------------------
   // Hover intent / Safe triangle
   // -------------------------------------------------------------------------
+
+  protected _scheduleTrackMousePosition(event: ChassisEvent): void {
+    this._pendingMouseEvent = event
+
+    if (this._mousemoveRAF !== null) {
+      return
+    }
+
+    this._mousemoveRAF = requestAnimationFrame(() => {
+      this._mousemoveRAF = null
+
+      if (this._pendingMouseEvent) {
+        this._trackMousePosition(this._pendingMouseEvent)
+        this._pendingMouseEvent = null
+      }
+    })
+  }
 
   protected _trackMousePosition(event: ChassisEvent): void {
     const now = Date.now()

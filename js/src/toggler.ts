@@ -25,13 +25,12 @@ const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="toggler"]'
 
 type TogglerConfig = {
   attribute: string
-  value: string | number | boolean
+  value: string | number | boolean | null
 }
 
-// `value` is required: it's the class/attribute value every `_execute()`
-// branch acts on. The public type omits `null` because `DefaultType` rejects
-// it — `Default.value` is a not-set sentinel that must be overridden, so a
-// Toggler built without a `value` throws from `_typeCheckConfig`.
+// `value` is the class/attribute value every `_execute()` branch acts on.
+// `Default.value` is a not-set sentinel — `_execute()` no-ops when it's still
+// `null` (e.g. a Toggler built without a `data-cx-value`).
 const DefaultType = {
   attribute: 'string',
   value: '(string|number|boolean|null)'
@@ -39,7 +38,7 @@ const DefaultType = {
 
 const Default: TogglerConfig = {
   attribute: 'class',
-  value: null as unknown as TogglerConfig['value']
+  value: null
 }
 
 /**

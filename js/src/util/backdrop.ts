@@ -48,14 +48,14 @@ const DefaultType = {
  * Class definition
  */
 
-class Backdrop extends Config {
+class Backdrop extends Config<BackdropConfig> {
   protected declare _config: BackdropConfig
   protected declare _isAppended: boolean
   protected declare _element: HTMLElement | null
 
   constructor(config?: Partial<BackdropConfig> | null) {
     super()
-    this._config = this._getConfig(config) as BackdropConfig
+    this._config = this._getConfig(config)
     this._isAppended = false
     this._element = null
   }

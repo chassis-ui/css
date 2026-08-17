@@ -9,6 +9,19 @@ const MAX_UID = 1_000_000
 const MILLISECONDS_MULTIPLIER = 1000
 const TRANSITION_END = 'transitionend'
 
+const ESCAPE_KEY = 'Escape'
+const TAB_KEY = 'Tab'
+const ENTER_KEY = 'Enter'
+const SPACE_KEY = ' '
+const BACKSPACE_KEY = 'Backspace'
+const DELETE_KEY = 'Delete'
+const HOME_KEY = 'Home'
+const END_KEY = 'End'
+const ARROW_UP_KEY = 'ArrowUp'
+const ARROW_DOWN_KEY = 'ArrowDown'
+const ARROW_LEFT_KEY = 'ArrowLeft'
+const ARROW_RIGHT_KEY = 'ArrowRight'
+
 /**
  * Properly escape IDs selectors to handle weird IDs
  */
@@ -136,6 +149,21 @@ const isDisabled = (element: Element | null | undefined): boolean => {
   return element.hasAttribute('disabled') && element.getAttribute('disabled') !== 'false'
 }
 
+// <a>/<area> elements navigate on click by default. Data-API triggers reuse
+// these tags for styling (e.g. button-styled links) but drive behavior via
+// JS, so the native navigation needs to be suppressed.
+const preventNavigationForAnchor = (event: Event, element: Element): void => {
+  if (['A', 'AREA'].includes(element.tagName)) {
+    event.preventDefault()
+  }
+}
+
+// Clipboard data lives on event.clipboardData in modern browsers, falling back to
+// the legacy window.clipboardData some callers still need to support.
+const getClipboardText = (event: Event & Record<string, any>): string => {
+  return (event.clipboardData || (window as any).clipboardData).getData('text')
+}
+
 // ARIA state attributes take the strings 'true' and 'false', but we track those
 // states as booleans. This keeps the conversion in one place, so callers do not
 // have to reach for a cast to satisfy `setAttribute`.
@@ -260,9 +288,22 @@ const getNextActiveElement = <T>(list: T[], activeElement: T, shouldGetNext: boo
 }
 
 export {
+  ARROW_DOWN_KEY,
+  ARROW_LEFT_KEY,
+  ARROW_RIGHT_KEY,
+  ARROW_UP_KEY,
+  BACKSPACE_KEY,
+  DELETE_KEY,
+  END_KEY,
+  ENTER_KEY,
+  ESCAPE_KEY,
+  HOME_KEY,
+  SPACE_KEY,
+  TAB_KEY,
   execute,
   executeAfterTransition,
   findShadowRoot,
+  getClipboardText,
   getElement,
   getNextActiveElement,
   getTransitionDurationFromElement,
@@ -274,6 +315,7 @@ export {
   noop,
   onDOMContentLoaded,
   parseSelector,
+  preventNavigationForAnchor,
   reflow,
   setAriaAttribute,
   triggerTransitionEnd,

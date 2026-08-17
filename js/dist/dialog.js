@@ -8,7 +8,7 @@ import EventHandler from "./dom/event-handler.js";
 import Manipulator from "./dom/manipulator.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import { enableDismissTrigger } from "./util/component-functions.js";
-import { isVisible } from "./util/index.js";
+import { isVisible, preventNavigationForAnchor } from "./util/index.js";
 //#region js/src/dialog.ts
 /**
 * --------------------------------------------------------------------------
@@ -78,7 +78,8 @@ var Dialog = class extends DialogBase {
 */
 EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function(event) {
 	const target = SelectorEngine.getElementFromSelector(this);
-	if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
+	preventNavigationForAnchor(event, this);
+	if (!target) return;
 	EventHandler.one(target, EVENT_SHOW, (showEvent) => {
 		if (showEvent.defaultPrevented) return;
 		EventHandler.one(target, EVENT_HIDDEN, () => {

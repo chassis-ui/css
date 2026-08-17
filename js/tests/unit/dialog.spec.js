@@ -1073,10 +1073,10 @@ describe('Dialog', () => {
     })
   })
 
-  describe('dialog-instant', () => {
-    it('should show and fire shown event when dialog-instant class is present', () => {
+  describe('instant', () => {
+    it('should show and fire shown event when instant class is present', () => {
       return new Promise(resolve => {
-        fixtureEl.innerHTML = '<dialog class="dialog dialog-instant"></dialog>'
+        fixtureEl.innerHTML = '<dialog class="dialog instant"></dialog>'
 
         const dialogEl = fixtureEl.querySelector('.dialog')
         const dialog = new Dialog(dialogEl)
@@ -1091,8 +1091,8 @@ describe('Dialog', () => {
       })
     })
 
-    it('should not report as animated when dialog-instant is present', () => {
-      fixtureEl.innerHTML = '<dialog class="dialog dialog-instant"></dialog>'
+    it('should not report as animated when instant is present', () => {
+      fixtureEl.innerHTML = '<dialog class="dialog instant"></dialog>'
 
       const dialogEl = fixtureEl.querySelector('.dialog')
       const dialog = new Dialog(dialogEl)
@@ -1100,7 +1100,7 @@ describe('Dialog', () => {
       expect(dialog._isAnimated()).toBeFalse()
     })
 
-    it('should report as animated when dialog-instant is not present', () => {
+    it('should report as animated when instant is not present', () => {
       fixtureEl.innerHTML = '<dialog class="dialog"></dialog>'
 
       const dialogEl = fixtureEl.querySelector('.dialog')

@@ -8,7 +8,18 @@
 import BaseComponent from './base-component.js'
 import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
-import { getNextActiveElement, isDisabled, setAriaAttribute } from './util/index.js'
+import {
+  ARROW_DOWN_KEY,
+  ARROW_LEFT_KEY,
+  ARROW_RIGHT_KEY,
+  ARROW_UP_KEY,
+  END_KEY,
+  HOME_KEY,
+  getNextActiveElement,
+  isDisabled,
+  preventNavigationForAnchor,
+  setAriaAttribute
+} from './util/index.js'
 
 /**
  * Constants
@@ -25,13 +36,6 @@ const EVENT_SHOWN = `shown${EVENT_KEY}`
 const EVENT_CLICK_DATA_API = `click${EVENT_KEY}`
 const EVENT_KEYDOWN = `keydown${EVENT_KEY}`
 const EVENT_LOAD_DATA_API = `load${EVENT_KEY}`
-
-const ARROW_LEFT_KEY = 'ArrowLeft'
-const ARROW_RIGHT_KEY = 'ArrowRight'
-const ARROW_UP_KEY = 'ArrowUp'
-const ARROW_DOWN_KEY = 'ArrowDown'
-const HOME_KEY = 'Home'
-const END_KEY = 'End'
 
 const CLASS_NAME_ACTIVE = 'active'
 const CLASS_NAME_FADE = 'fade'
@@ -269,9 +273,7 @@ class Tab extends BaseComponent {
  */
 
 EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (event) {
-  if (['A', 'AREA'].includes(this.tagName)) {
-    event.preventDefault()
-  }
+  preventNavigationForAnchor(event, this)
 
   if (isDisabled(this)) {
     return

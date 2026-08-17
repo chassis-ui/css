@@ -49,9 +49,11 @@ const nativeEvents = /* @__PURE__ */ new Set([
 	"blur",
 	"input",
 	"change",
+	"cancel",
 	"reset",
 	"select",
 	"submit",
+	"paste",
 	"focusin",
 	"focusout",
 	"load",
@@ -170,7 +172,7 @@ const EventHandler = {
 	off(element, originalTypeEvent, handler, delegationFunction) {
 		if (typeof originalTypeEvent !== "string" || !element) return;
 		const [isDelegated, callable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction);
-		const inNamespace = typeEvent !== originalTypeEvent;
+		const inNamespace = typeEvent !== originalTypeEvent && originalTypeEvent.includes(".");
 		const events = getElementEvents(element);
 		const storeElementEvent = events[typeEvent] || {};
 		const isNamespace = originalTypeEvent.startsWith(".");

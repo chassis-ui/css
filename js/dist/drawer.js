@@ -7,7 +7,7 @@ import DialogBase from "./dialog-base.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import Swipe from "./util/swipe.js";
-import { isDisabled, isRTL, isVisible } from "./util/index.js";
+import { isDisabled, isRTL, isVisible, preventNavigationForAnchor } from "./util/index.js";
 //#region js/src/drawer.ts
 /**
 * --------------------------------------------------------------------------
@@ -26,7 +26,6 @@ const EVENT_RESIZE = `resize${EVENT_KEY}`;
 const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`;
 const EVENT_CLICK_DISMISS = `click.dismiss${EVENT_KEY}`;
 const EVENT_LOAD_DATA_API = `load${EVENT_KEY}${DATA_API_KEY}`;
-const CLASS_NAME_INSTANT = "instant";
 const CLASS_NAME_STATIC = "static";
 const SELECTOR_DATA_TOGGLE = "[data-cx-toggle=\"drawer\"]";
 const SELECTOR_DATA_DISMISS = "[data-cx-dismiss=\"drawer\"]";
@@ -72,9 +71,6 @@ var Drawer = class extends DialogBase {
 	_onBeforeShow() {
 		this._initSwipe();
 	}
-	_getInstantClassName() {
-		return CLASS_NAME_INSTANT;
-	}
 	_getStaticClassName() {
 		return CLASS_NAME_STATIC;
 	}
@@ -94,8 +90,9 @@ var Drawer = class extends DialogBase {
 */
 EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function(event) {
 	const target = SelectorEngine.getElementFromSelector(this);
-	if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
+	preventNavigationForAnchor(event, this);
 	if (isDisabled(this)) return;
+	if (!target) return;
 	EventHandler.one(target, EVENT_HIDDEN, () => {
 		if (isVisible(this)) this.focus();
 	});
@@ -110,7 +107,7 @@ EventHandler.on(window, EVENT_RESIZE, () => {
 	for (const element of SelectorEngine.find(SELECTOR_RESPONSIVE_OPEN)) if (getComputedStyle(element).position !== "fixed") Drawer.getOrCreateInstance(element).hide();
 });
 EventHandler.on(document, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, function(event) {
-	if (["A", "AREA"].includes(this.tagName)) event.preventDefault();
+	preventNavigationForAnchor(event, this);
 	if (isDisabled(this)) return;
 	const target = SelectorEngine.getElementFromSelector(this) || this.closest(".drawer") || this.closest("dialog[class*=\":drawer\"]");
 	if (!target) return;

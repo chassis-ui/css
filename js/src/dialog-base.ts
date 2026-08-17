@@ -9,6 +9,7 @@ import BaseComponent from './base-component.js'
 import Data from './dom/data.js'
 import EventHandler from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
+import { isVisible } from './util/index.js'
 
 /**
  * Constants
@@ -55,7 +56,30 @@ class DialogBase extends BaseComponent {
     return 'dialogbase'
   }
 
+  // Shared by Dialog/Drawer's top-level data-API click handlers: once `target`
+  // (the dialog/drawer element) fires its next `hidden` event, refocus
+  // `trigger` (the element that opened it) if it's still visible.
+  static restoreFocusOnHide(target: Element, trigger: HTMLElement): void {
+    EventHandler.one(target, this.eventName('hidden'), () => {
+      if (isVisible(trigger)) {
+        trigger.focus()
+      }
+    })
+  }
+
   // Public — shared lifecycle methods
+
+  override dispose(): void {
+    // Close the native <dialog> and drop the body scroll-lock class if
+    // dispose() is called directly on an open instance, bypassing hide()'s
+    // _closeAndCleanup(). _closeAndCleanup() is safe to call on an
+    // already-closed dialog — close() is a no-op in that case.
+    if (this._element.open) {
+      this._closeAndCleanup()
+    }
+
+    super.dispose()
+  }
 
   toggle(relatedTarget?: HTMLElement): void {
     return this._element.open ? this.hide() : this.show(relatedTarget)
@@ -146,7 +170,7 @@ class DialogBase extends BaseComponent {
   }
 
   protected _getInstantClassName(): string {
-    return 'dialog-instant'
+    return 'instant'
   }
 
   protected _getStaticClassName(): string {
@@ -272,7 +296,7 @@ class DialogBase extends BaseComponent {
     const eventKey = this.constructor.EVENT_KEY
 
     // Handle native cancel event (Escape key) — only fires for modal dialogs
-    EventHandler.on(this._element, 'cancel', event => {
+    EventHandler.on(this._element, `cancel${eventKey}`, event => {
       event.preventDefault()
 
       if (!this._config.keyboard) {
