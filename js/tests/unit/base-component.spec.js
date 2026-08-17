@@ -116,6 +116,22 @@ describe('Base Component', () => {
       })
     })
 
+    describe('isDisposed', () => {
+      it('should return false before dispose is called', () => {
+        createInstance()
+
+        expect(instance.isDisposed()).toBeFalse()
+      })
+
+      it('should return true after dispose is called', () => {
+        createInstance()
+
+        instance.dispose()
+
+        expect(instance.isDisposed()).toBeTrue()
+      })
+    })
+
     describe('getInstance', () => {
       it('should return an instance', () => {
         createInstance()

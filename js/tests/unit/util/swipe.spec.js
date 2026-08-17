@@ -56,6 +56,9 @@ describe('Swipe', () => {
   afterEach(() => {
     clearFixture()
     deleteDocumentElementOntouchstart()
+    // Guarantee restoration even if a test fails/times out before reaching
+    // its own restorePointerEvents() call inside a success callback
+    restorePointerEvents()
   })
 
   describe('constructor', () => {
@@ -269,15 +272,21 @@ describe('Swipe', () => {
   })
 
   describe('"isSupported" static', () => {
+    const originalMaxTouchPoints = navigator.maxTouchPoints
+
+    afterEach(() => {
+      Object.defineProperty(window.navigator, 'maxTouchPoints', { value: originalMaxTouchPoints, configurable: true })
+    })
+
     it('should return "true" if "touchstart" exists in document element)', () => {
-      Object.defineProperty(window.navigator, 'maxTouchPoints', () => 0)
+      Object.defineProperty(window.navigator, 'maxTouchPoints', { value: 0, configurable: true })
       defineDocumentElementOntouchstart()
 
       expect(Swipe.isSupported()).toBeTrue()
     })
 
     it('should return "false" if "touchstart" not exists in document element and "navigator.maxTouchPoints" are zero (0)', () => {
-      Object.defineProperty(window.navigator, 'maxTouchPoints', () => 0)
+      Object.defineProperty(window.navigator, 'maxTouchPoints', { value: 0, configurable: true })
       deleteDocumentElementOntouchstart()
 
       if ('ontouchstart' in document.documentElement) {

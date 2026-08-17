@@ -89,7 +89,10 @@ describe('Sanitizer', () => {
         '</div>'
       ].join('')
 
-      const myDefaultAllowList = DefaultAllowlist
+      // Clone (don't alias) the shared DefaultAllowlist singleton — pushing onto
+      // it directly would permanently widen sanitization for every other spec
+      // file that imports DefaultAllowlist for the rest of the test run
+      const myDefaultAllowList = { ...DefaultAllowlist, '*': [...DefaultAllowlist['*']] }
       // With the default allow list
       let result = sanitizeHtml(template, myDefaultAllowList, null)
 

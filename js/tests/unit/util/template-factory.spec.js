@@ -77,7 +77,14 @@ describe('TemplateFactory', () => {
         })
         const spy = spyOn(factory, '_maybeSanitize').and.callThrough()
 
-        expect(spy).not.toHaveBeenCalled()
+        const html = factory.toHtml().innerHTML
+
+        // _maybeSanitize is always called once for the template itself; with
+        // "html: false" the content is set via textContent, so it is not
+        // called again for the content entry, and the markup is left escaped
+        // (as an inert text node) rather than parsed into a real <a> element
+        expect(spy).toHaveBeenCalledTimes(1)
+        expect(html).toContain('&lt;a href="javascript:notification(7)"&gt;')
       })
     })
 

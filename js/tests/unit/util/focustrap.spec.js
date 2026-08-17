@@ -11,6 +11,11 @@ describe('FocusTrap', () => {
   })
 
   afterEach(() => {
+    // Most tests call activate() without a matching deactivate(), which would
+    // otherwise leave 'focusin'/'keydown.tab' listeners registered on
+    // `document` past the end of the test. Namespace-wide off() is safe to
+    // call unconditionally, whether or not a given test actually deactivated.
+    EventHandler.off(document, '.cx.focustrap')
     clearFixture()
   })
 

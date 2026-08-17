@@ -536,7 +536,7 @@ describe('Tab', () => {
       keydown.key = 'Enter'
       const spyStop = spyOn(Event.prototype, 'stopPropagation').and.callThrough()
       const spyPrevent = spyOn(Event.prototype, 'preventDefault').and.callThrough()
-      const spyKeydown = spyOn(tab, '_keydown')
+      const spyKeydown = spyOn(tab, '_keydown').and.callThrough()
       const spyGet = spyOn(tab, '_getChildren')
 
       tabEl.dispatchEvent(keydown)

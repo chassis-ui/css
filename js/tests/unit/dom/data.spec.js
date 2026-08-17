@@ -99,4 +99,22 @@ describe('Data', () => {
     expect(Data.get(div, TEST_KEY)).toEqual(data)
     expect(Data.get(div, UNKNOWN_KEY)).toEqual(copy)
   })
+
+  describe('getAny', () => {
+    it('should return null for an element with nothing stored', () => {
+      expect(Data.getAny(div)).toBeNull()
+    })
+
+    it('should return null for a null element', () => {
+      expect(Data.getAny(null)).toBeNull()
+    })
+
+    it('should return the stored instance without knowing its key', () => {
+      const data = { ...TEST_DATA }
+
+      Data.set(div, TEST_KEY, data)
+
+      expect(Data.getAny(div)).toEqual(data)
+    })
+  })
 })

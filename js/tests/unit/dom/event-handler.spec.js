@@ -158,51 +158,42 @@ describe('EventHandler', () => {
 
   describe('one', () => {
     it('should call listener just once', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div></div>'
+      fixtureEl.innerHTML = '<div></div>'
 
-        let called = 0
-        const div = fixtureEl.querySelector('div')
-        const obj = {
-          oneListener() {
-            called++
-          }
+      let called = 0
+      const div = fixtureEl.querySelector('div')
+      const obj = {
+        oneListener() {
+          called++
         }
+      }
 
-        EventHandler.one(div, 'chassis', obj.oneListener)
+      EventHandler.one(div, 'chassis', obj.oneListener)
 
-        EventHandler.trigger(div, 'chassis')
-        EventHandler.trigger(div, 'chassis')
+      // EventHandler.trigger dispatches synchronously — no need to wait
+      EventHandler.trigger(div, 'chassis')
+      EventHandler.trigger(div, 'chassis')
 
-        setTimeout(() => {
-          expect(called).toEqual(1)
-          resolve()
-        }, 20)
-      })
+      expect(called).toEqual(1)
     })
 
     it('should call delegated listener just once', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div></div>'
+      fixtureEl.innerHTML = '<div></div>'
 
-        let called = 0
-        const div = fixtureEl.querySelector('div')
-        const obj = {
-          oneListener() {
-            called++
-          }
+      let called = 0
+      const div = fixtureEl.querySelector('div')
+      const obj = {
+        oneListener() {
+          called++
         }
+      }
 
-        EventHandler.one(fixtureEl, 'chassis', 'div', obj.oneListener)
+      EventHandler.one(fixtureEl, 'chassis', 'div', obj.oneListener)
 
-        EventHandler.trigger(div, 'chassis')
-        EventHandler.trigger(div, 'chassis')
+      EventHandler.trigger(div, 'chassis')
+      EventHandler.trigger(div, 'chassis')
 
-        setTimeout(() => {
-          expect(called).toEqual(1)
-          resolve()
-        }, 20)
-      })
+      expect(called).toEqual(1)
     })
   })
 
@@ -217,179 +208,146 @@ describe('EventHandler', () => {
     })
 
     it('should remove a listener', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div></div>'
-        const div = fixtureEl.querySelector('div')
+      fixtureEl.innerHTML = '<div></div>'
+      const div = fixtureEl.querySelector('div')
 
-        let called = 0
-        const handler = () => {
-          called++
-        }
+      let called = 0
+      const handler = () => {
+        called++
+      }
 
-        EventHandler.on(div, 'foobar', handler)
-        EventHandler.trigger(div, 'foobar')
+      EventHandler.on(div, 'foobar', handler)
+      EventHandler.trigger(div, 'foobar')
 
-        EventHandler.off(div, 'foobar', handler)
-        EventHandler.trigger(div, 'foobar')
+      EventHandler.off(div, 'foobar', handler)
+      EventHandler.trigger(div, 'foobar')
 
-        setTimeout(() => {
-          expect(called).toEqual(1)
-          resolve()
-        }, 20)
-      })
+      expect(called).toEqual(1)
     })
 
     it('should remove all the events', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div></div>'
-        const div = fixtureEl.querySelector('div')
+      fixtureEl.innerHTML = '<div></div>'
+      const div = fixtureEl.querySelector('div')
 
-        let called = 0
+      let called = 0
 
-        EventHandler.on(div, 'foobar', () => {
-          called++
-        })
-        EventHandler.on(div, 'foobar', () => {
-          called++
-        })
-        EventHandler.trigger(div, 'foobar')
-
-        EventHandler.off(div, 'foobar')
-        EventHandler.trigger(div, 'foobar')
-
-        setTimeout(() => {
-          expect(called).toEqual(2)
-          resolve()
-        }, 20)
+      EventHandler.on(div, 'foobar', () => {
+        called++
       })
+      EventHandler.on(div, 'foobar', () => {
+        called++
+      })
+      EventHandler.trigger(div, 'foobar')
+
+      EventHandler.off(div, 'foobar')
+      EventHandler.trigger(div, 'foobar')
+
+      expect(called).toEqual(2)
     })
 
     it('should remove all the namespaced listeners if namespace is passed', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div></div>'
-        const div = fixtureEl.querySelector('div')
+      fixtureEl.innerHTML = '<div></div>'
+      const div = fixtureEl.querySelector('div')
 
-        let called = 0
+      let called = 0
 
-        EventHandler.on(div, 'foobar.namespace', () => {
-          called++
-        })
-        EventHandler.on(div, 'foofoo.namespace', () => {
-          called++
-        })
-        EventHandler.trigger(div, 'foobar.namespace')
-        EventHandler.trigger(div, 'foofoo.namespace')
-
-        EventHandler.off(div, '.namespace')
-        EventHandler.trigger(div, 'foobar.namespace')
-        EventHandler.trigger(div, 'foofoo.namespace')
-
-        setTimeout(() => {
-          expect(called).toEqual(2)
-          resolve()
-        }, 20)
+      EventHandler.on(div, 'foobar.namespace', () => {
+        called++
       })
+      EventHandler.on(div, 'foofoo.namespace', () => {
+        called++
+      })
+      EventHandler.trigger(div, 'foobar.namespace')
+      EventHandler.trigger(div, 'foofoo.namespace')
+
+      EventHandler.off(div, '.namespace')
+      EventHandler.trigger(div, 'foobar.namespace')
+      EventHandler.trigger(div, 'foofoo.namespace')
+
+      expect(called).toEqual(2)
     })
 
     it('should remove the namespaced listeners', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div></div>'
-        const div = fixtureEl.querySelector('div')
+      fixtureEl.innerHTML = '<div></div>'
+      const div = fixtureEl.querySelector('div')
 
-        let calledCallback1 = 0
-        let calledCallback2 = 0
+      let calledCallback1 = 0
+      let calledCallback2 = 0
 
-        EventHandler.on(div, 'foobar.namespace', () => {
-          calledCallback1++
-        })
-        EventHandler.on(div, 'foofoo.namespace', () => {
-          calledCallback2++
-        })
-
-        EventHandler.trigger(div, 'foobar.namespace')
-        EventHandler.off(div, 'foobar.namespace')
-        EventHandler.trigger(div, 'foobar.namespace')
-
-        EventHandler.trigger(div, 'foofoo.namespace')
-
-        setTimeout(() => {
-          expect(calledCallback1).toEqual(1)
-          expect(calledCallback2).toEqual(1)
-          resolve()
-        }, 20)
+      EventHandler.on(div, 'foobar.namespace', () => {
+        calledCallback1++
       })
+      EventHandler.on(div, 'foofoo.namespace', () => {
+        calledCallback2++
+      })
+
+      EventHandler.trigger(div, 'foobar.namespace')
+      EventHandler.off(div, 'foobar.namespace')
+      EventHandler.trigger(div, 'foobar.namespace')
+
+      EventHandler.trigger(div, 'foofoo.namespace')
+
+      expect(calledCallback1).toEqual(1)
+      expect(calledCallback2).toEqual(1)
     })
 
     it('should remove the all the namespaced listeners for native events', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div></div>'
-        const div = fixtureEl.querySelector('div')
+      fixtureEl.innerHTML = '<div></div>'
+      const div = fixtureEl.querySelector('div')
 
-        let called = 0
+      let called = 0
 
-        EventHandler.on(div, 'click.namespace', () => {
-          called++
-        })
-        EventHandler.on(div, 'click.namespace2', () => {
-          called++
-        })
-
-        EventHandler.trigger(div, 'click')
-        EventHandler.off(div, 'click')
-        EventHandler.trigger(div, 'click')
-
-        setTimeout(() => {
-          expect(called).toEqual(2)
-          resolve()
-        }, 20)
+      EventHandler.on(div, 'click.namespace', () => {
+        called++
       })
+      EventHandler.on(div, 'click.namespace2', () => {
+        called++
+      })
+
+      EventHandler.trigger(div, 'click')
+      EventHandler.off(div, 'click')
+      EventHandler.trigger(div, 'click')
+
+      expect(called).toEqual(2)
     })
 
     it('should remove the specified namespaced listeners for native events', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = '<div></div>'
-        const div = fixtureEl.querySelector('div')
+      fixtureEl.innerHTML = '<div></div>'
+      const div = fixtureEl.querySelector('div')
 
-        let called1 = 0
-        let called2 = 0
+      let called1 = 0
+      let called2 = 0
 
-        EventHandler.on(div, 'click.namespace', () => {
-          called1++
-        })
-        EventHandler.on(div, 'click.namespace2', () => {
-          called2++
-        })
-        EventHandler.trigger(div, 'click')
-
-        EventHandler.off(div, 'click.namespace')
-        EventHandler.trigger(div, 'click')
-
-        setTimeout(() => {
-          expect(called1).toEqual(1)
-          expect(called2).toEqual(2)
-          resolve()
-        }, 20)
+      EventHandler.on(div, 'click.namespace', () => {
+        called1++
       })
+      EventHandler.on(div, 'click.namespace2', () => {
+        called2++
+      })
+      EventHandler.trigger(div, 'click')
+
+      EventHandler.off(div, 'click.namespace')
+      EventHandler.trigger(div, 'click')
+
+      expect(called1).toEqual(1)
+      expect(called2).toEqual(2)
     })
 
     it('should remove a listener registered by .one', () => {
-      return new Promise((resolve, reject) => {
-        fixtureEl.innerHTML = '<div></div>'
+      fixtureEl.innerHTML = '<div></div>'
 
-        const div = fixtureEl.querySelector('div')
-        const handler = () => {
-          reject(new Error('called'))
-        }
+      const div = fixtureEl.querySelector('div')
+      let called = false
+      const handler = () => {
+        called = true
+      }
 
-        EventHandler.one(div, 'foobar', handler)
-        EventHandler.off(div, 'foobar', handler)
+      EventHandler.one(div, 'foobar', handler)
+      EventHandler.off(div, 'foobar', handler)
 
-        EventHandler.trigger(div, 'foobar')
-        setTimeout(() => {
-          expect().nothing()
-          resolve()
-        }, 20)
-      })
+      EventHandler.trigger(div, 'foobar')
+
+      expect(called).toBeFalse()
     })
 
     it('should remove the correct delegated event listener', () => {

@@ -409,6 +409,61 @@ describe('Accordion', () => {
     })
   })
 
+  describe('keyboard focus (regression)', () => {
+    // Guards a past WebKit bug where clicking into an accordion left
+    // <summary> unfocusable/untabbable afterward, trapping keyboard Tab
+    // navigation. The CSS half of that fix (summary uses display:list-item,
+    // not flex — flex lives on .accordion-title instead) is covered by
+    // scss/tests/components/_accordion.test.scss, since this Karma suite
+    // doesn't load stylesheets and can't exercise it here. This guards the
+    // JS half instead: the close-animation clone (see _createClone) must
+    // never become, or steal focus from, the real summary element.
+    it('should keep focus on the real summary element through the close animation, not the animation clone', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = makeAccordionHTML(true)
+
+        const detailsEl = fixtureEl.querySelector('details')
+        const summaryEl = fixtureEl.querySelector('summary')
+        // eslint-disable-next-line no-new
+        new Accordion(detailsEl)
+
+        detailsEl.addEventListener('closed.cx.accordion', () => {
+          // After the clone is inserted, animated, and removed, the real
+          // <summary> — not the clone, not document.body — still has focus
+          expect(document.activeElement).toEqual(summaryEl)
+          resolve()
+        })
+
+        // A real mouse click focuses <summary> as a side effect of its
+        // `mousedown` (not of `click` itself, which `.click()` doesn't
+        // dispatch) — focus() reproduces that starting state directly.
+        summaryEl.focus()
+        expect(document.activeElement).toEqual(summaryEl)
+
+        // .click() toggles `open` off, which the MutationObserver turns into close()
+        summaryEl.click()
+      })
+    })
+
+    it('should never clone or replace the live summary element itself', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = makeAccordionHTML(true)
+
+        const detailsEl = fixtureEl.querySelector('details')
+        const accordion = new Accordion(detailsEl)
+        const originalSummary = accordion._summary
+
+        detailsEl.addEventListener('closed.cx.accordion', () => {
+          expect(accordion._summary).toBe(originalSummary)
+          expect(fixtureEl.querySelectorAll('.accordion > details:not([data-cx-clone]) > summary')).toHaveSize(1)
+          resolve()
+        })
+
+        accordion.close()
+      })
+    })
+  })
+
   describe('dispose', () => {
     it('should destroy the accordion instance', () => {
       fixtureEl.innerHTML = makeAccordionHTML()

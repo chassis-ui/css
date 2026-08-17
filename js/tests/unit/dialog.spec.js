@@ -413,10 +413,14 @@ describe('Dialog', () => {
 
           expect(dialogEl.classList.contains('dialog-static')).toBeTrue()
 
+          // No stylesheet is loaded in this Karma suite, so the "transition"
+          // duration is 0 and executeAfterTransition's fallback fires after
+          // its fixed 5ms padding — 30ms is ample margin without the needless
+          // 300ms tax this test used to pay on every run.
           setTimeout(() => {
             expect(dialogEl.classList.contains('dialog-static')).toBeFalse()
             resolve()
-          }, 300)
+          }, 30)
         })
 
         dialog.show()

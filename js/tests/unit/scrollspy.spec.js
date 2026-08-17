@@ -272,7 +272,6 @@ describe('ScrollSpy', () => {
 
         const contentEl = fixtureEl.querySelector('.content')
         const scrollSpy = new ScrollSpy(contentEl, {
-          offset: 0,
           target: '.navbar'
         })
 
@@ -351,7 +350,6 @@ describe('ScrollSpy', () => {
 
         const contentEl = fixtureEl.querySelector('.content')
         const scrollSpy = new ScrollSpy(contentEl, {
-          offset: 0,
           target: '.navbar'
         })
 
@@ -390,7 +388,6 @@ describe('ScrollSpy', () => {
 
         const contentEl = fixtureEl.querySelector('.content')
         const scrollSpy = new ScrollSpy(contentEl, {
-          offset: 0,
           target: '.navbar'
         })
 
@@ -429,7 +426,6 @@ describe('ScrollSpy', () => {
 
         const contentEl = fixtureEl.querySelector('.content')
         const scrollSpy = new ScrollSpy(contentEl, {
-          offset: 0,
           target: '.navbar'
         })
 
@@ -473,8 +469,7 @@ describe('ScrollSpy', () => {
 
         const contentEl = fixtureEl.querySelector('#content')
         const scrollSpy = new ScrollSpy(contentEl, {
-          target: '#navigation',
-          offset: contentEl.offsetTop
+          target: '#navigation'
         })
         const spy = spyOn(scrollSpy, '_process').and.callThrough()
 
@@ -566,7 +561,6 @@ describe('ScrollSpy', () => {
 
         const contentEl = fixtureEl.querySelector('.content')
         const scrollSpy = new ScrollSpy(contentEl, {
-          offset: 0,
           target: '.navbar'
         })
 
@@ -695,11 +689,11 @@ describe('ScrollSpy', () => {
 
       expect(ScrollSpy.getInstance(div)).toBeNull()
       const scrollspy = ScrollSpy.getOrCreateInstance(div, {
-        offset: 1
+        smoothScroll: true
       })
       expect(scrollspy).toBeInstanceOf(ScrollSpy)
 
-      expect(scrollspy._config.offset).toEqual(1)
+      expect(scrollspy._config.smoothScroll).toBeTrue()
     })
 
     it('should return the instance when exists without given configuration', () => {
@@ -707,17 +701,17 @@ describe('ScrollSpy', () => {
 
       const div = fixtureEl.querySelector('.content')
       const scrollspy = new ScrollSpy(div, {
-        offset: 1
+        smoothScroll: true
       })
       expect(ScrollSpy.getInstance(div)).toEqual(scrollspy)
 
       const scrollspy2 = ScrollSpy.getOrCreateInstance(div, {
-        offset: 2
+        smoothScroll: false
       })
       expect(scrollspy).toBeInstanceOf(ScrollSpy)
       expect(scrollspy2).toEqual(scrollspy)
 
-      expect(scrollspy2._config.offset).toEqual(1)
+      expect(scrollspy2._config.smoothScroll).toBeTrue()
     })
   })
 
@@ -745,9 +739,7 @@ describe('ScrollSpy', () => {
       const div = fixtureEl.querySelector('.content')
       const target = fixtureEl.querySelector('#navBar')
       // eslint-disable-next-line no-new
-      new ScrollSpy(div, {
-        offset: 1
-      })
+      new ScrollSpy(div)
 
       expect(offSpy).not.toHaveBeenCalledWith(target, 'click.cx.scrollspy')
       expect(onSpy).not.toHaveBeenCalledWith(target, 'click.cx.scrollspy')
@@ -762,7 +754,6 @@ describe('ScrollSpy', () => {
       const target = fixtureEl.querySelector('#navBar')
       // eslint-disable-next-line no-new
       new ScrollSpy(div, {
-        offset: 1,
         smoothScroll: true
       })
 
@@ -786,7 +777,6 @@ describe('ScrollSpy', () => {
       const div = fixtureEl.querySelector('.content')
       // eslint-disable-next-line no-new
       new ScrollSpy(div, {
-        offset: 1,
         smoothScroll: true
       })
 
@@ -805,7 +795,6 @@ describe('ScrollSpy', () => {
       const clickSpy = getElementScrollSpy(div)
       // eslint-disable-next-line no-new
       new ScrollSpy(div, {
-        offset: 1,
         smoothScroll: true
       })
 
@@ -822,7 +811,6 @@ describe('ScrollSpy', () => {
       const clickSpy = getElementScrollSpy(div)
       // eslint-disable-next-line no-new
       new ScrollSpy(div, {
-        offset: 1,
         smoothScroll: true
       })
 
@@ -856,7 +844,6 @@ describe('ScrollSpy', () => {
       const clickSpy = getElementScrollSpy(div)
       // eslint-disable-next-line no-new
       new ScrollSpy(div, {
-        offset: 1,
         smoothScroll: true
       })
 

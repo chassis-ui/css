@@ -717,7 +717,9 @@ describe('Tooltip', () => {
     })
 
     it('should show tooltip if leave event hasn\'t occurred before delay expires', () => {
-      return new Promise(resolve => {
+      jasmine.clock().install()
+
+      try {
         fixtureEl.innerHTML = '<a href="#" rel="tooltip" title="Another tooltip"></a>'
 
         const tooltipEl = fixtureEl.querySelector('a')
@@ -727,21 +729,22 @@ describe('Tooltip', () => {
 
         const spy = spyOn(tooltip, 'show')
 
-        setTimeout(() => {
-          expect(spy).not.toHaveBeenCalled()
-        }, 100)
-
-        setTimeout(() => {
-          expect(spy).toHaveBeenCalled()
-          resolve()
-        }, 200)
-
         tooltipEl.dispatchEvent(createEvent('mouseover'))
-      })
+
+        jasmine.clock().tick(100)
+        expect(spy).not.toHaveBeenCalled()
+
+        jasmine.clock().tick(100)
+        expect(spy).toHaveBeenCalled()
+      } finally {
+        jasmine.clock().uninstall()
+      }
     })
 
     it('should not show tooltip if leave event occurs before delay expires', () => {
-      return new Promise(resolve => {
+      jasmine.clock().install()
+
+      try {
         fixtureEl.innerHTML = '<a href="#" rel="tooltip" title="Another tooltip"></a>'
 
         const tooltipEl = fixtureEl.querySelector('a')
@@ -751,19 +754,18 @@ describe('Tooltip', () => {
 
         const spy = spyOn(tooltip, 'show')
 
-        setTimeout(() => {
-          expect(spy).not.toHaveBeenCalled()
-          tooltipEl.dispatchEvent(createEvent('mouseover'))
-        }, 100)
-
-        setTimeout(() => {
-          expect(spy).toHaveBeenCalled()
-          expect(document.querySelectorAll('.tooltip')).toHaveSize(0)
-          resolve()
-        }, 200)
-
         tooltipEl.dispatchEvent(createEvent('mouseover'))
-      })
+
+        jasmine.clock().tick(100)
+        expect(spy).not.toHaveBeenCalled()
+        tooltipEl.dispatchEvent(createEvent('mouseover'))
+
+        jasmine.clock().tick(100)
+        expect(spy).toHaveBeenCalled()
+        expect(document.querySelectorAll('.tooltip')).toHaveSize(0)
+      } finally {
+        jasmine.clock().uninstall()
+      }
     })
 
     it('should not hide tooltip if leave event occurs and enter event occurs within the hide delay', () => {
@@ -779,16 +781,19 @@ describe('Tooltip', () => {
           expect(tooltip._getTipElement()).toHaveClass('show')
           tooltipEl.dispatchEvent(createEvent('mouseout'))
 
+          // Re-enter well before the 150ms hide delay expires, and verify well
+          // after it would have expired — a wide margin on both sides of the
+          // boundary so CI scheduling jitter can't flip either assertion
           setTimeout(() => {
             expect(tooltip._getTipElement()).toHaveClass('show')
             tooltipEl.dispatchEvent(createEvent('mouseover'))
-          }, 100)
+          }, 60)
 
           setTimeout(() => {
             expect(tooltip._getTipElement()).toHaveClass('show')
             expect(document.querySelectorAll('.tooltip')).toHaveSize(1)
             resolve()
-          }, 200)
+          }, 260)
         }, 10)
 
         tooltipEl.dispatchEvent(createEvent('mouseover'))
@@ -851,11 +856,13 @@ describe('Tooltip', () => {
             tooltipEl.dispatchEvent(createEvent('mouseover'))
           }, 100)
 
+          // Wider gap after re-entering so any async Floating UI repositioning
+          // has settled before asserting state, independent of CI scheduling jitter
           setTimeout(() => {
             expect(tooltip._floatingCleanup).not.toBeNull()
             expect(tooltip._getTipElement().getAttribute('data-cx-placement')).toEqual('top')
             resolve()
-          }, 200)
+          }, 300)
         }, 10)
 
         tooltipEl.dispatchEvent(createEvent('mouseover'))

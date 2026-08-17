@@ -632,11 +632,94 @@ describe('Util', () => {
       expect(Util.getNextActiveElement(array, 'a', false, false)).toEqual('a')
     })
 
-    it('should return next element or first, if is last and "isCycleAllowed = true"', () => {
+    it('should return previous element or last, if is first and "isCycleAllowed = true"', () => {
       const array = ['a', 'b', 'c', 'd']
 
       expect(Util.getNextActiveElement(array, 'd', false, true)).toEqual('c')
       expect(Util.getNextActiveElement(array, 'a', false, true)).toEqual('d')
+    })
+  })
+
+  describe('parseSelector', () => {
+    it('should escape IDs containing special characters when CSS.escape is available', () => {
+      expect(Util.parseSelector('#foo/bar')).toEqual(`#${CSS.escape('foo/bar')}`)
+    })
+
+    it('should leave selectors without an ID untouched', () => {
+      expect(Util.parseSelector('.foo .bar')).toEqual('.foo .bar')
+    })
+
+    it('should fall back to the raw selector when CSS.escape is unavailable', () => {
+      const originalEscape = CSS.escape
+
+      try {
+        // @ts-ignore — simulating an old browser without CSS.escape
+        delete window.CSS.escape
+
+        expect(Util.parseSelector('#foo/bar')).toEqual('#foo/bar')
+      } finally {
+        window.CSS.escape = originalEscape
+      }
+    })
+  })
+
+  describe('setAriaAttribute', () => {
+    it('should set the attribute to the string "true"', () => {
+      const div = document.createElement('div')
+
+      Util.setAriaAttribute(div, 'aria-expanded', true)
+
+      expect(div.getAttribute('aria-expanded')).toEqual('true')
+    })
+
+    it('should set the attribute to the string "false"', () => {
+      const div = document.createElement('div')
+
+      Util.setAriaAttribute(div, 'aria-expanded', false)
+
+      expect(div.getAttribute('aria-expanded')).toEqual('false')
+    })
+  })
+
+  describe('isRTL', () => {
+    const originalDir = document.documentElement.dir
+
+    afterEach(() => {
+      document.documentElement.dir = originalDir
+    })
+
+    it('should return true when the document direction is rtl', () => {
+      document.documentElement.dir = 'rtl'
+
+      expect(Util.isRTL()).toBeTrue()
+    })
+
+    it('should return false when the document direction is ltr', () => {
+      document.documentElement.dir = 'ltr'
+
+      expect(Util.isRTL()).toBeFalse()
+    })
+  })
+
+  describe('getClipboardText', () => {
+    it('should read from event.clipboardData when present', () => {
+      const getData = jasmine.createSpy('getData').and.returnValue('from event')
+      const event = { clipboardData: { getData } }
+
+      expect(Util.getClipboardText(event)).toEqual('from event')
+      expect(getData).toHaveBeenCalledWith('text')
+    })
+
+    it('should fall back to window.clipboardData when the event has none (legacy IE-style API)', () => {
+      const getData = jasmine.createSpy('getData').and.returnValue('from window')
+      window.clipboardData = { getData }
+
+      try {
+        expect(Util.getClipboardText({})).toEqual('from window')
+        expect(getData).toHaveBeenCalledWith('text')
+      } finally {
+        delete window.clipboardData
+      }
     })
   })
 })

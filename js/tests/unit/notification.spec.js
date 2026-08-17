@@ -1,5 +1,4 @@
 import Notification from '../../src/notification.js'
-import { getTransitionDurationFromElement } from '../../src/util/index.js'
 import { clearFixture, getFixture } from '../helpers/fixture.js'
 
 describe('Notification', () => {
@@ -65,7 +64,13 @@ describe('Notification', () => {
   describe('close', () => {
     it('should close an notification', () => {
       return new Promise(resolve => {
-        const spy = jasmine.createSpy('spy', getTransitionDurationFromElement)
+        // getTransitionDurationFromElement reads style via window.getComputedStyle;
+        // spying on that is the only bundler-safe way to detect whether it ran,
+        // since the ESM import binding itself can't be replaced by spyOn.
+        // Assert by argument (not just "not called") — window.getComputedStyle
+        // is global and shared across the whole Karma page, so other unrelated
+        // code can legitimately call it during this test's window.
+        const spy = spyOn(window, 'getComputedStyle').and.callThrough()
         fixtureEl.innerHTML = '<div class="notification"></div>'
 
         const notificationEl = document.querySelector('.notification')
@@ -73,7 +78,7 @@ describe('Notification', () => {
 
         notificationEl.addEventListener('closed.cx.notification', () => {
           expect(document.querySelectorAll('.notification')).toHaveSize(0)
-          expect(spy).not.toHaveBeenCalled()
+          expect(spy).not.toHaveBeenCalledWith(notificationEl)
           resolve()
         })
 

@@ -94,19 +94,26 @@ describe('Toast', () => {
   describe('Default', () => {
     it('should expose default setting to allow to override them', () => {
       const defaultDelay = 1000
+      const originalDelay = Toast.Default.delay
 
       Toast.Default.delay = defaultDelay
 
-      fixtureEl.innerHTML = [
-        '<div class="toast" data-cx-autohide="false" data-cx-animation="false">',
-        '  <button type="button" class="ms-small mb-2xsmall close-button" data-cx-dismiss="toast" aria-label="Close"></button>',
-        '</div>'
-      ].join('')
+      try {
+        fixtureEl.innerHTML = [
+          '<div class="toast" data-cx-autohide="false" data-cx-animation="false">',
+          '  <button type="button" class="ms-small mb-2xsmall close-button" data-cx-dismiss="toast" aria-label="Close"></button>',
+          '</div>'
+        ].join('')
 
-      const toastEl = fixtureEl.querySelector('div')
-      const toast = new Toast(toastEl)
+        const toastEl = fixtureEl.querySelector('div')
+        const toast = new Toast(toastEl)
 
-      expect(toast._config.delay).toEqual(defaultDelay)
+        expect(toast._config.delay).toEqual(defaultDelay)
+      } finally {
+        // Toast.Default is a shared module singleton — restore it so later
+        // specs that construct a Toast without an explicit delay aren't affected
+        Toast.Default.delay = originalDelay
+      }
     })
   })
 

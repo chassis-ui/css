@@ -5,6 +5,24 @@ import {
   clearFixture, createEvent, getFixture
 } from '../helpers/fixture.js'
 
+// Disposing a Menu whose Floating UI `autoUpdate` is still tracking a
+// zero-sized/virtual reference element (see the "valid virtual element
+// reference" test below) can trigger Chrome's benign, well-known
+// "ResizeObserver loop completed with undelivered notifications" diagnostic
+// (https://github.com/WICG/resize-observer/issues/38). Karma reports any
+// window.onerror as a failure of whichever spec is currently running, so
+// without this filter a message that has nothing to do with test correctness
+// intermittently fails an unrelated test. Only this one exact, known-benign
+// message is swallowed; every other error still reaches Karma's own handler.
+const originalOnError = window.onerror
+window.onerror = function (message, ...rest) {
+  if (typeof message === 'string' && message.includes('ResizeObserver loop')) {
+    return true
+  }
+
+  return originalOnError ? originalOnError.call(this, message, ...rest) : false
+}
+
 describe('Menu', () => {
   let fixtureEl
 
@@ -13,6 +31,19 @@ describe('Menu', () => {
   })
 
   afterEach(() => {
+    // Without explicit cleanup, a `Menu` left open by a test leaks a stale
+    // entry in the static `Menu._openInstances` Set, referencing an element
+    // that clearFixture() is about to detach. `Menu.clearMenus` is a live
+    // document-level click/keyup listener (shared across every spec file on
+    // this Karma page) that iterates that Set on every click/keyup, so a
+    // leaked entry can affect unrelated tests running later in the suite.
+    for (const toggleEl of fixtureEl.querySelectorAll('[data-cx-toggle="menu"]')) {
+      Menu.getInstance(toggleEl)?.dispose()
+    }
+
+    // Defensive: drop anything a test left behind that bypassed the toggle element
+    Menu._openInstances.clear()
+
     clearFixture()
   })
 
@@ -3952,7 +3983,7 @@ describe('Menu', () => {
       })
     })
 
-    it('should handle _isMovingTowardSubmenu when cursor is in safe triangle', () => {
+    it('should return true from _isMovingTowardSubmenu when cursor trail points at the submenu\'s safe triangle', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
           '<div class="menu" style="position: relative;">',
@@ -3974,19 +4005,36 @@ describe('Menu', () => {
         const submenuWrapper = fixtureEl.querySelector('.submenu')
         const submenu = submenuWrapper.querySelector('.menu')
 
+        // Pin the submenu's rect so the triangle geometry is deterministic,
+        // independent of the fixture's off-screen layout
+        spyOn(submenu, 'getBoundingClientRect').and.returnValue({ left: 200, right: 300, top: 50, bottom: 150 })
+
         btnMenu.addEventListener('shown.cx.menu', () => {
-          // Open submenu
           menu._openSubmenu(submenuTrigger, submenu, submenuWrapper)
 
-          // Track a mouse position
-          menu._trackMousePosition({ clientX: 50, clientY: 50 })
+          try {
+            jasmine.clock().install()
+            // _trackMousePosition/_isMovingTowardSubmenu key their sample ages off
+            // Date.now(), which install() alone does not fake — mockDate() is
+            // required so tick() actually advances what Date.now() reports
+            jasmine.clock().mockDate()
 
-          // Call isMovingTowardSubmenu
-          const mockEvent = { clientX: 75, clientY: 50 }
-          const result = menu._isMovingTowardSubmenu(mockEvent, submenu)
+            // Older sample (>=50ms old at check-time) anchors the trail's start point
+            menu._trackMousePosition({ clientX: 50, clientY: 100 })
+            jasmine.clock().tick(60)
+            // Recent sample, only needed to satisfy the "at least 2 samples" guard
+            menu._trackMousePosition({ clientX: 55, clientY: 100 })
 
-          // Result depends on geometry, just verify it returns a boolean
-          expect(typeof result).toBe('boolean')
+            // Cursor has moved from (50, 100) toward the submenu's left edge (200, 50)-(200, 150)
+            const towardResult = menu._isMovingTowardSubmenu({ clientX: 150, clientY: 100 }, submenu)
+            expect(towardResult).toBeTrue()
+
+            // Cursor moving further away from the submenu should not be "moving toward" it
+            const awayResult = menu._isMovingTowardSubmenu({ clientX: 0, clientY: 100 }, submenu)
+            expect(awayResult).toBeFalse()
+          } finally {
+            jasmine.clock().uninstall()
+          }
 
           resolve()
         })
@@ -4021,12 +4069,16 @@ describe('Menu', () => {
         const submenu = submenuWrapper.querySelector('.menu')
 
         btnMenu.addEventListener('shown.cx.menu', () => {
-          // Open submenu in RTL mode
-          menu._openSubmenu(submenuTrigger, submenu, submenuWrapper)
-          expect(submenu.classList.contains('show')).toBeTrue()
+          try {
+            // Open submenu in RTL mode
+            menu._openSubmenu(submenuTrigger, submenu, submenuWrapper)
+            expect(submenu.classList.contains('show')).toBeTrue()
+          } finally {
+            // Reset RTL unconditionally — an assertion failure above must not
+            // leave 'rtl' leaking into every other test in the suite
+            document.documentElement.dir = 'ltr'
+          }
 
-          // Reset RTL
-          document.documentElement.dir = 'ltr'
           resolve()
         })
 

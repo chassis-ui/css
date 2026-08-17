@@ -1127,8 +1127,10 @@ describe('Combobox', () => {
           inputEl.value = 'two'
           inputEl.dispatchEvent(new Event('input', { bubbles: true }))
 
-          // Filtering is debounced (see FILTER_DEBOUNCE_DELAY in combobox.ts) —
-          // wait it out before asserting the DOM update.
+          // Filtering is debounced (150ms, see FILTER_DEBOUNCE_DELAY in
+          // combobox.ts) — wait it out before asserting the DOM update. All
+          // debounce waits in this file use a 300ms margin (2x the debounce)
+          // rather than a tight one, so CI scheduling jitter can't flip them.
           setTimeout(() => {
             // Only "Option two" should be visible
             expect(items[0].style.display).toEqual('none')
@@ -1136,7 +1138,7 @@ describe('Combobox', () => {
             expect(items[2].style.display).toEqual('none')
             combobox.hide()
             resolve()
-          }, 200)
+          }, 300)
         })
 
         combobox.show()
@@ -1159,7 +1161,7 @@ describe('Combobox', () => {
             expect(menuEl).not.toHaveClass('show')
             combobox.hide()
             resolve()
-          }, 200)
+          }, 300)
         })
 
         combobox.show()
@@ -1190,8 +1192,8 @@ describe('Combobox', () => {
               expect(menuEl).toHaveClass('show')
               combobox.hide()
               resolve()
-            }, 200)
-          }, 200)
+            }, 300)
+          }, 300)
         })
 
         combobox.show()
@@ -1269,7 +1271,7 @@ describe('Combobox', () => {
             expect(items[2].style.display).toEqual('none')
 
             combobox.hide()
-          }, 200)
+          }, 300)
         })
 
         toggleEl.addEventListener('hidden.cx.combobox', () => {
@@ -1709,7 +1711,7 @@ describe('Combobox', () => {
             expect(items[0].style.display).toEqual('none')
             expect(items[1].style.display).toEqual('')
             resolve()
-          }, 200)
+          }, 300)
         })
 
         combobox.show()
@@ -1779,7 +1781,7 @@ describe('Combobox', () => {
             expect(items[1].style.display).toEqual('none')
             expect(items[2].style.display).toEqual('none')
             resolve()
-          }, 200)
+          }, 300)
         })
 
         combobox.show()
@@ -1801,7 +1803,7 @@ describe('Combobox', () => {
           setTimeout(() => {
             expect(items[0].style.display).toEqual('')  // Still matches itself
             resolve()
-          }, 200)
+          }, 300)
         })
 
         combobox.show()

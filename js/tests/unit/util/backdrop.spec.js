@@ -1,5 +1,4 @@
 import Backdrop from '../../../src/util/backdrop.js'
-import { getTransitionDurationFromElement } from '../../../src/util/index.js'
 import { clearFixture, getFixture } from '../../helpers/fixture.js'
 
 const CLASS_BACKDROP = '.modal-backdrop'
@@ -218,11 +217,18 @@ describe('Backdrop', () => {
 
       it('should show and hide backdrop without a delay if it is not animated', () => {
         return new Promise(resolve => {
-          const spy = jasmine.createSpy('spy', getTransitionDurationFromElement)
+          // getTransitionDurationFromElement reads style via window.getComputedStyle;
+          // spying on that is the only bundler-safe way to detect whether it ran,
+          // since the ESM import binding itself can't be replaced by spyOn.
+          // Assert by argument (not just "not called") — window.getComputedStyle
+          // is global and shared across the whole Karma page, so other unrelated
+          // code can legitimately call it during this test's window.
+          const spy = spyOn(window, 'getComputedStyle').and.callThrough()
           const instance = new Backdrop({
             isVisible: true,
             isAnimated: false
           })
+          const backdropEl = instance._getElement()
           const spy2 = jasmine.createSpy('spy2')
 
           instance.show(spy2)
@@ -230,7 +236,7 @@ describe('Backdrop', () => {
 
           setTimeout(() => {
             expect(spy2).toHaveBeenCalled()
-            expect(spy).not.toHaveBeenCalled()
+            expect(spy).not.toHaveBeenCalledWith(backdropEl)
             resolve()
           }, 10)
         })
@@ -242,11 +248,11 @@ describe('Backdrop', () => {
             isVisible: false,
             isAnimated: true
           })
-          const spy = jasmine.createSpy('spy', getTransitionDurationFromElement)
+          const spy = spyOn(window, 'getComputedStyle').and.callThrough()
 
           instance.show()
           instance.hide(() => {
-            expect(spy).not.toHaveBeenCalled()
+            expect(spy).not.toHaveBeenCalledWith(instance._getElement())
             resolve()
           })
         })

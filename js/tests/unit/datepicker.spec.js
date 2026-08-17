@@ -1036,7 +1036,9 @@ describe('Datepicker', () => {
     })
 
     it('should auto-hide after single date selection', () => {
-      return new Promise(resolve => {
+      jasmine.clock().install()
+
+      try {
         fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker">'
 
         const inputEl = fixtureEl.querySelector('input')
@@ -1048,15 +1050,17 @@ describe('Datepicker', () => {
           context: { selectedDates: ['2026-01-15'] }
         }, new Event('click'))
 
-        setTimeout(() => {
-          expect(hideSpy).toHaveBeenCalled()
-          resolve()
-        }, 150)
-      })
+        jasmine.clock().tick(150)
+        expect(hideSpy).toHaveBeenCalled()
+      } finally {
+        jasmine.clock().uninstall()
+      }
     })
 
     it('should auto-hide after range selection with 2 dates', () => {
-      return new Promise(resolve => {
+      jasmine.clock().install()
+
+      try {
         fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker" data-cx-selection-mode="multiple-ranged">'
 
         const inputEl = fixtureEl.querySelector('input')
@@ -1068,15 +1072,17 @@ describe('Datepicker', () => {
           context: { selectedDates: ['2026-01-15', '2026-01-20'] }
         }, new Event('click'))
 
-        setTimeout(() => {
-          expect(hideSpy).toHaveBeenCalled()
-          resolve()
-        }, 150)
-      })
+        jasmine.clock().tick(150)
+        expect(hideSpy).toHaveBeenCalled()
+      } finally {
+        jasmine.clock().uninstall()
+      }
     })
 
     it('should not auto-hide in range mode with only 1 date', () => {
-      return new Promise(resolve => {
+      jasmine.clock().install()
+
+      try {
         fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker" data-cx-selection-mode="multiple-ranged">'
 
         const inputEl = fixtureEl.querySelector('input')
@@ -1088,15 +1094,17 @@ describe('Datepicker', () => {
           context: { selectedDates: ['2026-01-15'] }
         }, new Event('click'))
 
-        setTimeout(() => {
-          expect(hideSpy).not.toHaveBeenCalled()
-          resolve()
-        }, 150)
-      })
+        jasmine.clock().tick(150)
+        expect(hideSpy).not.toHaveBeenCalled()
+      } finally {
+        jasmine.clock().uninstall()
+      }
     })
 
     it('should not auto-hide in inline mode', () => {
-      return new Promise(resolve => {
+      jasmine.clock().install()
+
+      try {
         fixtureEl.innerHTML = '<div data-cx-toggle="datepicker" data-cx-inline="true"></div>'
 
         const divEl = fixtureEl.querySelector('div')
@@ -1108,11 +1116,11 @@ describe('Datepicker', () => {
           context: { selectedDates: ['2026-01-15'] }
         }, new Event('click'))
 
-        setTimeout(() => {
-          expect(hideSpy).not.toHaveBeenCalled()
-          resolve()
-        }, 150)
-      })
+        jasmine.clock().tick(150)
+        expect(hideSpy).not.toHaveBeenCalled()
+      } finally {
+        jasmine.clock().uninstall()
+      }
     })
 
     it('should handle empty date selection', () => {
@@ -1136,7 +1144,9 @@ describe('Datepicker', () => {
 
   describe('_maybeHideAfterSelection', () => {
     it('should not hide when inline', () => {
-      return new Promise(resolve => {
+      jasmine.clock().install()
+
+      try {
         fixtureEl.innerHTML = '<div data-cx-toggle="datepicker" data-cx-inline="true"></div>'
 
         const divEl = fixtureEl.querySelector('div')
@@ -1146,11 +1156,11 @@ describe('Datepicker', () => {
 
         datepicker._maybeHideAfterSelection(['2026-01-15'])
 
-        setTimeout(() => {
-          expect(hideSpy).not.toHaveBeenCalled()
-          resolve()
-        }, 150)
-      })
+        jasmine.clock().tick(150)
+        expect(hideSpy).not.toHaveBeenCalled()
+      } finally {
+        jasmine.clock().uninstall()
+      }
     })
   })
 

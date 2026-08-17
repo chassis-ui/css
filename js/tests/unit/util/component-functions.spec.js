@@ -1,4 +1,5 @@
 import BaseComponent from '../../../src/base-component.js'
+import EventHandler from '../../../src/dom/event-handler.js'
 import { enableDismissTrigger } from '../../../src/util/component-functions.js'
 import { clearFixture, createEvent, getFixture } from '../../helpers/fixture.js'
 
@@ -24,6 +25,11 @@ describe('Plugin functions', () => {
   })
 
   afterEach(() => {
+    // Every test calls enableDismissTrigger(DummyClass2, ...), which registers
+    // a new delegated document listener without removing any prior one; without
+    // this, handlers stack up across tests (and leak past this file) and would
+    // all fire for a single click.
+    EventHandler.off(document, `click.dismiss${DummyClass2.EVENT_KEY}`)
     clearFixture()
   })
 
