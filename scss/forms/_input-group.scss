@@ -64,8 +64,8 @@
       //
       // Elements at the ends of the group display appropriate rounded corners,
       // while internal elements have flattened sides to create a unified appearance.
-      > :not(:last-child, .vertical, .menu-toggle, .menu, .form-floating),
-      > .menu-toggle:nth-last-child(n + 3),
+      > :not(:last-child, .vertical, :has(+ .menu), .menu, .form-floating),
+      > :nth-last-child(n + 3):has(+ .menu),
       > .form-floating:not(:last-child) > .form-input {
         @include border-end-radius(0);
       }

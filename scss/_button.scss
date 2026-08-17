@@ -62,10 +62,6 @@
       @extend %button-small;
     }
 
-    &.icon-only {
-      --padding-x: var(--padding-y);
-    }
-
     > .icon {
       line-height: 0;
       vertical-align: top;
@@ -82,6 +78,11 @@
       }
     }
 
+    &.icon-only {
+      --padding-x: var(--padding-y);
+      --caret-spacing: 0;
+    }
+
     //
     // Link buttons
     //
@@ -89,25 +90,20 @@
     // Make a button look and behave like a link
     &.link {
       @extend %context;
-      // --font-weight: #{$font-weight-normal};
-      // --fg-idle: #{$button-link-color};
-      // --fg-hover: #{$button-hover-color};
-      // --fg-press: #{$button-hover-color};
-      // --fg-disabled: #{$fg-subtle};
+      --fg-idle: var(--link-main);
+      --fg-hover: var(--link-hover);
+      --fg-press: var(--link-active);
+      --fg-disabled: var(--fg-slight);
       --box-shadow: 0 0 0 #000; // Can't use `none` as keyword negates all values when used with multiple shadows
       font-weight: var(--button-link-font-weight, $button-link-font-weight);
-      color: var(--link-main);
       text-decoration: var(--button-link-text-decoration, $button-link-text-decoration);
-
       background-color: transparent;
       border-color: transparent;
       @if $enable-background-gradients {
         background-image: none;
       }
 
-      &:hover,
-      &:focus-visible {
-        color: var(--link-hover);
+      &:hover {
         text-decoration: var(--button-link-hover-decoration, $button-link-hover-decoration);
         background-color: var(--button-link-bg-hover, $button-link-bg-hover);
       }
@@ -116,16 +112,7 @@
       &.disabled {
         color: var(--button-link-fg-disabled, $button-link-fg-disabled);
       }
-
-      // &:focus-visible {
-      //   color: var(--link-focus);
-      // }
-
     }
 
-    // Split menu-toggle spacing
-    &:has(.visually-hidden:only-child) {
-      --caret-spacing: calc(-1 * var(--nudge));
-    }
   }
 } // @layer components

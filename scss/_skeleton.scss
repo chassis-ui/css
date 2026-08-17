@@ -9,32 +9,37 @@
 //
 
 @layer components {
-  .skeleton {
-    // scss-docs-start skeleton-styles
+  .skeleton,
+  .skeleton-glow,
+  .skeleton-wave {
+    // scss-docs-start skeleton-variables
+    --color: var(--skeleton-color, #{$skeleton-color});
     --opacity-min: var(--skeleton-opacity-min, #{$skeleton-opacity-min});
     --opacity-max: var(--skeleton-opacity-max, #{$skeleton-opacity-max});
-    --color: var(--skeleton-color, currentcolor);
+    --opacity-wave: var(--skeleton-opacity-wave, #{$skeleton-opacity-wave});
+    // scss-docs-end skeleton-variables
+  }
+  .skeleton {
     display: inline-block;
     min-height: 1em;
     vertical-align: middle;
-  cursor: wait !important; // stylelint-disable-line
+    cursor: wait !important; // stylelint-disable-line
     opacity: var(--opacity-max);
 
-    &:not(.button) {
+    &:not(.button, .chip, .badge) {
       background-color: var(--color);
     }
 
-    &.button::before {
+    &:where(.button, .chip, .badge)::before {
       display: inline-block;
       content: "";
     }
   }
 
   // Animation
-  .skeleton-glow {
-    .skeleton {
-      animation: skeleton-glow 2s ease-in-out infinite;
-    }
+  .skeleton-glow.skeleton,
+  .skeleton-glow .skeleton {
+    animation: skeleton-glow 2s ease-in-out infinite;
   }
 
   @keyframes skeleton-glow {
@@ -44,7 +49,7 @@
   }
 
   .skeleton-wave {
-    mask-image: linear-gradient(135deg, $black 40%, #{to-opacity($black, calc((1 - var(--opacity-min))))} 50%, $black 60%);
+    mask-image: linear-gradient(135deg, var(--color) 40%, #{to-opacity(var(--color), var(--opacity-wave))} 50%, var(--color) 60%);
     mask-size: 200% 100%;
     animation: skeleton-wave 2s linear infinite;
   }

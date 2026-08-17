@@ -29,11 +29,15 @@
   }
 
   .icon-link-hover {
+    --transform: var(--icon-link-transform, #{$icon-link-icon-transform});
     &:hover,
     &:focus-visible {
       > .icon {
-        transform: var(--icon-link-transform, $icon-link-icon-transform);
+        transform: var(--transform);
       }
+    }
+    [dir="rtl"] & {
+      --icon-link-transform: #{$icon-link-icon-transform-rtl};
     }
   }
   // scss-docs-end icon-link-helper

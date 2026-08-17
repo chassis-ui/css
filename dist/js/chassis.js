@@ -942,7 +942,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$9, SELECTOR_DATA_TOGGLE$b, event 
 
 /**
  * --------------------------------------------------------------------------
- * Chassis CSS util/swipe.js
+ * Chassis CSS carousel.js
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -952,48 +952,130 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$9, SELECTOR_DATA_TOGGLE$b, event 
  * Constants
  */
 
-const NAME$k = 'swipe';
-const EVENT_KEY$h = '.cx.swipe';
-const EVENT_TOUCHSTART = `touchstart${EVENT_KEY$h}`;
-const EVENT_TOUCHMOVE = `touchmove${EVENT_KEY$h}`;
-const EVENT_TOUCHEND = `touchend${EVENT_KEY$h}`;
-const EVENT_POINTERDOWN = `pointerdown${EVENT_KEY$h}`;
-const EVENT_POINTERUP = `pointerup${EVENT_KEY$h}`;
-const POINTER_TYPE_TOUCH = 'touch';
-const POINTER_TYPE_PEN = 'pen';
-const CLASS_NAME_POINTER_EVENT = 'pointer-event';
-const SWIPE_THRESHOLD = 40;
+const NAME$k = 'carousel';
+const DATA_KEY$g = 'cx.carousel';
+const EVENT_KEY$h = `.${DATA_KEY$g}`;
+const DATA_API_KEY$b = '.data-api';
+const ARROW_LEFT_KEY$2 = 'ArrowLeft';
+const ARROW_RIGHT_KEY$2 = 'ArrowRight';
+const DIRECTION_LEFT = 'left';
+const DIRECTION_RIGHT = 'right';
+const EVENT_SLIDE = `slide${EVENT_KEY$h}`;
+const EVENT_SLID = `slid${EVENT_KEY$h}`;
+const EVENT_KEYDOWN$1 = `keydown${EVENT_KEY$h}`;
+const EVENT_MOUSEENTER$2 = `mouseenter${EVENT_KEY$h}`;
+const EVENT_MOUSELEAVE$1 = `mouseleave${EVENT_KEY$h}`;
+const EVENT_POINTERDOWN$1 = `pointerdown${EVENT_KEY$h}`;
+const EVENT_LOAD_DATA_API$3 = `load${EVENT_KEY$h}${DATA_API_KEY$b}`;
+const EVENT_CLICK_DATA_API$8 = `click${EVENT_KEY$h}${DATA_API_KEY$b}`;
+const CLASS_NAME_CAROUSEL = 'carousel';
+const CLASS_NAME_ACTIVE$4 = 'active';
+const CLASS_NAME_FADE$4 = 'carousel-fade';
+const CLASS_NAME_CENTER = 'carousel-center';
+const CLASS_NAME_AUTO = 'carousel-auto';
+const CLASS_NAME_CLONE = 'carousel-item-clone';
+const CLASS_NAME_PAUSED = 'paused';
+// Added to the root while the autoplay timer is running, so CSS can fill the
+// active indicator like a progress bar over the current slide's interval.
+const CLASS_NAME_PLAYING = 'carousel-playing';
+
+// Shipped (`--cx-`-prefixed) custom property the indicator fill animation reads
+// for its duration. The build prefixes every custom property, so the bare
+// `--carousel-interval` used in the SCSS source becomes this at runtime.
+const PROPERTY_INTERVAL = '--cx-carousel-interval';
+
+// Duration (ms) of the JS-driven slide animation used for programmatic
+// navigation (prev/next, indicators, wrap, and loop). We step `scrollLeft`
+// ourselves over this window instead of calling `scrollBy({behavior:'smooth'})`,
+// because Safari mis-scales programmatic smooth scrolls under page zoom — a
+// one-slide jump sails well past the target (by the zoom factor) and the
+// restored snap then visibly yanks the slide back. Animating by hand is immune
+// to that and gives every jump a consistent duration.
+const SCROLL_DURATION = 300;
+
+// How far below the most-visible slide a slide's IntersectionRatio can be while
+// still counting as the active (left-most) slide. After a programmatic scroll
+// the viewport rests a sub-pixel past the snap offset, leaving the intended
+// slide a hair less visible than its fully-in neighbors; the tolerance prevents
+// that rounding from skipping the active index forward.
+const ACTIVE_RATIO_TOLERANCE = 0.05;
+const SELECTOR_ACTIVE = '.active';
+// Exclude transient loop clones so index math, indicators, and active-slide
+// detection only ever see the real slides.
+const SELECTOR_ITEM = `.carousel-item:not(.${CLASS_NAME_CLONE})`;
+const SELECTOR_ACTIVE_ITEM = SELECTOR_ACTIVE + SELECTOR_ITEM;
+const SELECTOR_INNER$1 = '.carousel-inner';
+const SELECTOR_INDICATORS = '.carousel-indicators';
+const SELECTOR_PLAY_PAUSE = '.carousel-control-play-pause';
+const SELECTOR_DATA_SLIDE = '[data-cx-slide], [data-cx-slide-to]';
+const SELECTOR_DATA_SLIDE_PREV = '[data-cx-slide="prev"]';
+const SELECTOR_DATA_SLIDE_NEXT = '[data-cx-slide="next"]';
+const SELECTOR_DATA_AUTOPLAY = '[data-cx-autoplay="true"]';
+const KEY_TO_DIRECTION = {
+  [ARROW_LEFT_KEY$2]: DIRECTION_RIGHT,
+  [ARROW_RIGHT_KEY$2]: DIRECTION_LEFT
+};
+const ENDS_STOP = 'stop';
+const ENDS_WRAP = 'wrap';
+const ENDS_LOOP = 'loop';
 const Default$h = {
-  endCallback: null,
-  leftCallback: null,
-  rightCallback: null,
-  upCallback: null,
-  downCallback: null
+  autoplay: false,
+  ends: ENDS_LOOP,
+  interval: 5000,
+  keyboard: true,
+  pause: 'hover'
 };
 const DefaultType$h = {
-  endCallback: '(function|null)',
-  leftCallback: '(function|null)',
-  rightCallback: '(function|null)',
-  upCallback: '(function|null)',
-  downCallback: '(function|null)'
+  autoplay: 'boolean',
+  ends: 'string',
+  interval: 'number',
+  keyboard: 'boolean',
+  pause: '(string|boolean)'
 };
+
+// Standard ease-in-out cubic, so the JS-driven scroll accelerates and
+// decelerates like a native smooth scroll rather than moving linearly.
+const easeInOutCubic = progress => progress < 0.5 ? 4 * progress * progress * progress : 1 - (-2 * progress + 2) ** 3 / 2;
 
 /**
  * Class definition
  */
 
-class Swipe extends Config {
+class Carousel extends BaseComponent {
   constructor(element, config) {
-    super();
-    this._element = element;
-    if (!element || !Swipe.isSupported()) {
-      return;
+    super(element, config);
+
+    // The scroll viewport. The browser owns sliding, dragging, momentum, and
+    // keyboard scrolling; this controller only layers on autoplay, the
+    // prev/next/indicator controls, and active-slide syncing.
+    this._viewport = SelectorEngine.findOne(SELECTOR_INNER$1, this._element) || this._element;
+    this._indicatorsElement = SelectorEngine.findOne(SELECTOR_INDICATORS, this._element);
+    this._playPauseElement = SelectorEngine.findOne(SELECTOR_PLAY_PAUSE, this._element);
+    // Prev/next controls scoped to the carousel root (covers inline and stacked
+    // layouts). External controls placed outside `.carousel` aren't managed.
+    this._prevControls = SelectorEngine.find(SELECTOR_DATA_SLIDE_PREV, this._element);
+    this._nextControls = SelectorEngine.find(SELECTOR_DATA_SLIDE_NEXT, this._element);
+    this._interval = null;
+    this._observer = null;
+    // rAF handle for the in-flight JS-driven scroll animation (see `_animateScroll`).
+    this._scrollFrame = null;
+    // True while a seamless loop transition is animating, so the
+    // IntersectionObserver and re-entrant navigation don't interfere.
+    this._looping = false;
+    this._visibility = new Map();
+    // Runtime autoplay intent. Starts from the `autoplay` option, but is turned
+    // off once the user takes control (clicks a control, uses the keyboard,
+    // swipes/drags, or presses pause) so we don't move content out from under
+    // them (WCAG 2.2.2 Pause, Stop, Hide).
+    this._playing = this._config.autoplay;
+    this._activeIndex = this._initialActiveIndex();
+    this._addEventListeners();
+    this._observeItems();
+    this._refreshActiveState();
+    if (this._playing) {
+      this.cycle();
     }
-    this._config = this._getConfig(config);
-    this._deltaX = 0;
-    this._deltaY = 0;
-    this._supportPointerEvents = Boolean(window.PointerEvent);
-    this._initEvents();
+    this._updatePlayPauseControl();
   }
 
   // Getters
@@ -1008,246 +1090,116 @@ class Swipe extends Config {
   }
 
   // Public
-  dispose() {
-    EventHandler.off(this._element, EVENT_KEY$h);
-  }
-
-  // Private
-  _start(event) {
-    if (!this._supportPointerEvents) {
-      this._deltaX = event.touches[0].clientX;
-      this._deltaY = event.touches[0].clientY;
-      return;
-    }
-    if (this._eventIsPointerPenTouch(event)) {
-      this._deltaX = event.clientX;
-      this._deltaY = event.clientY;
-    }
-  }
-  _end(event) {
-    if (this._eventIsPointerPenTouch(event)) {
-      this._deltaX = event.clientX - this._deltaX;
-      this._deltaY = event.clientY - this._deltaY;
-    }
-    this._handleSwipe();
-    execute(this._config.endCallback);
-  }
-  _move(event) {
-    if (event.touches && event.touches.length > 1) {
-      this._deltaX = 0;
-      this._deltaY = 0;
-      return;
-    }
-    this._deltaX = event.touches[0].clientX - this._deltaX;
-    this._deltaY = event.touches[0].clientY - this._deltaY;
-  }
-  _handleSwipe() {
-    const absDeltaX = Math.abs(this._deltaX);
-    const absDeltaY = Math.abs(this._deltaY);
-
-    // Determine primary axis: whichever has greater movement wins
-    if (absDeltaY > absDeltaX && absDeltaY > SWIPE_THRESHOLD) {
-      // Vertical swipe
-      const direction = this._deltaY > 0 ? 'down' : 'up';
-      this._deltaX = 0;
-      this._deltaY = 0;
-      execute(direction === 'down' ? this._config.downCallback : this._config.upCallback);
-      return;
-    }
-    if (absDeltaX > SWIPE_THRESHOLD) {
-      // Horizontal swipe
-      const direction = absDeltaX / this._deltaX;
-      this._deltaX = 0;
-      this._deltaY = 0;
-      if (!direction) {
-        return;
-      }
-      execute(direction > 0 ? this._config.rightCallback : this._config.leftCallback);
-      return;
-    }
-    this._deltaX = 0;
-    this._deltaY = 0;
-  }
-  _initEvents() {
-    if (this._supportPointerEvents) {
-      EventHandler.on(this._element, EVENT_POINTERDOWN, event => this._start(event));
-      EventHandler.on(this._element, EVENT_POINTERUP, event => this._end(event));
-      this._element.classList.add(CLASS_NAME_POINTER_EVENT);
-    } else {
-      EventHandler.on(this._element, EVENT_TOUCHSTART, event => this._start(event));
-      EventHandler.on(this._element, EVENT_TOUCHMOVE, event => this._move(event));
-      EventHandler.on(this._element, EVENT_TOUCHEND, event => this._end(event));
-    }
-  }
-  _eventIsPointerPenTouch(event) {
-    return this._supportPointerEvents && (event.pointerType === POINTER_TYPE_PEN || event.pointerType === POINTER_TYPE_TOUCH);
-  }
-
-  // Static
-  static isSupported() {
-    return 'ontouchstart' in document.documentElement || navigator.maxTouchPoints > 0;
-  }
-}
-
-/**
- * --------------------------------------------------------------------------
- * Chassis CSS carousel.js
- * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
- * --------------------------------------------------------------------------
- */
-
-
-/**
- * Constants
- */
-
-const NAME$j = 'carousel';
-const DATA_KEY$g = 'cx.carousel';
-const EVENT_KEY$g = `.${DATA_KEY$g}`;
-const DATA_API_KEY$b = '.data-api';
-const ARROW_LEFT_KEY$2 = 'ArrowLeft';
-const ARROW_RIGHT_KEY$2 = 'ArrowRight';
-const TOUCHEVENT_COMPAT_WAIT = 500; // Time for mouse compat events to fire after touch
-
-const ORDER_NEXT = 'next';
-const ORDER_PREV = 'prev';
-const DIRECTION_LEFT = 'left';
-const DIRECTION_RIGHT = 'right';
-const EVENT_SLIDE = `slide${EVENT_KEY$g}`;
-const EVENT_SLID = `slid${EVENT_KEY$g}`;
-const EVENT_KEYDOWN$1 = `keydown${EVENT_KEY$g}`;
-const EVENT_MOUSEENTER$2 = `mouseenter${EVENT_KEY$g}`;
-const EVENT_MOUSELEAVE$1 = `mouseleave${EVENT_KEY$g}`;
-const EVENT_DRAG_START = `dragstart${EVENT_KEY$g}`;
-const EVENT_LOAD_DATA_API$3 = `load${EVENT_KEY$g}${DATA_API_KEY$b}`;
-const EVENT_CLICK_DATA_API$8 = `click${EVENT_KEY$g}${DATA_API_KEY$b}`;
-const CLASS_NAME_CAROUSEL = 'carousel';
-const CLASS_NAME_ACTIVE$4 = 'active';
-const CLASS_NAME_SLIDE = 'slide';
-const CLASS_NAME_END = 'carousel-item-end';
-const CLASS_NAME_START = 'carousel-item-start';
-const CLASS_NAME_NEXT = 'carousel-item-next';
-const CLASS_NAME_PREV = 'carousel-item-prev';
-const SELECTOR_ACTIVE = '.active';
-const SELECTOR_ITEM = '.carousel-item';
-const SELECTOR_ACTIVE_ITEM = SELECTOR_ACTIVE + SELECTOR_ITEM;
-const SELECTOR_ITEM_IMG = '.carousel-item img';
-const SELECTOR_INDICATORS = '.carousel-indicators';
-const SELECTOR_DATA_SLIDE = '[data-cx-slide], [data-cx-slide-to]';
-const SELECTOR_DATA_RIDE = '[data-cx-ride="carousel"]';
-const KEY_TO_DIRECTION = {
-  [ARROW_LEFT_KEY$2]: DIRECTION_RIGHT,
-  [ARROW_RIGHT_KEY$2]: DIRECTION_LEFT
-};
-const Default$g = {
-  interval: 5000,
-  keyboard: true,
-  pause: 'hover',
-  ride: false,
-  touch: true,
-  wrap: true
-};
-const DefaultType$g = {
-  interval: 'number',
-  keyboard: 'boolean',
-  pause: '(string|boolean)',
-  ride: '(boolean|string)',
-  touch: 'boolean',
-  wrap: 'boolean'
-};
-
-/**
- * Class definition
- */
-
-class Carousel extends BaseComponent {
-  constructor(element, config) {
-    super(element, config);
-    this._interval = null;
-    this._activeElement = null;
-    this._isSliding = false;
-    this.touchTimeout = null;
-    this._swipeHelper = null;
-    this._indicatorsElement = SelectorEngine.findOne(SELECTOR_INDICATORS, this._element);
-    this._addEventListeners();
-    if (this._config.ride === CLASS_NAME_CAROUSEL) {
-      this.cycle();
-    }
-  }
-
-  // Getters
-  static get Default() {
-    return Default$g;
-  }
-  static get DefaultType() {
-    return DefaultType$g;
-  }
-  static get NAME() {
-    return NAME$j;
-  }
-
-  // Public
   next() {
-    this._slide(ORDER_NEXT);
+    this.to(this._nextRawIndex());
   }
   nextWhenVisible() {
-    // Don't call next when the page isn't visible
-    // or the carousel or its parent isn't visible
+    // Don't advance when the page or the carousel isn't visible
     if (document.visibilityState === 'visible' && isVisible(this._element)) {
       this.next();
+      return true;
     }
+    return false;
   }
   prev() {
-    this._slide(ORDER_PREV);
+    this.to(this._navIndex() - 1);
   }
   pause() {
-    if (this._isSliding) {
-      triggerTransitionEnd(this._element);
-    }
     this._clearInterval();
+    // Freeze the indicator progress fill; it resets to empty until cycling
+    // resumes and `_scheduleAutoplay` restarts it from scratch.
+    this._element.classList.remove(CLASS_NAME_PLAYING);
   }
   cycle() {
     this._clearInterval();
-    this._updateInterval();
-    this._interval = setInterval(() => this.nextWhenVisible(), this._config.interval);
-  }
-  _maybeEnableCycle() {
-    if (!this._config.ride) {
-      return;
-    }
-    if (this._isSliding) {
-      EventHandler.one(this._element, EVENT_SLID, () => this.cycle());
-      return;
-    }
-    this.cycle();
+    this._scheduleAutoplay();
+    this._element.classList.add(CLASS_NAME_PLAYING);
   }
   to(index) {
+    // Ignore navigation while a seamless loop transition is animating
+    if (this._looping) {
+      return;
+    }
     const items = this._getItems();
-    if (index > items.length - 1 || index < 0) {
+    const rawIndex = Number.parseInt(index, 10);
+
+    // Seamless loop: continue forward/backward into a transient clone instead of
+    // the visible `wrap` jump. Only the simple single-slide scroll layout
+    // qualifies, and reduced motion falls back to the plain wrap below.
+    if (this._config.ends === ENDS_LOOP && !this._prefersReducedMotion() && this._canLoop()) {
+      if (rawIndex > items.length - 1) {
+        this._loopTransition(true);
+        return;
+      }
+      if (rawIndex < 0) {
+        this._loopTransition(false);
+        return;
+      }
+    }
+    const targetIndex = this._normalizeIndex(rawIndex, items.length);
+    // Measure "current" from the live scroll position: `_activeIndex` updates
+    // asynchronously, so an indicator/control used mid-scroll must compare
+    // against where the viewport actually rests (`_navIndex` returns the tracked
+    // active index for fade/non-scrollable layouts).
+    const currentIndex = this._navIndex();
+    if (targetIndex === null || targetIndex === currentIndex) {
       return;
     }
-    if (this._isSliding) {
-      EventHandler.one(this._element, EVENT_SLID, () => this.to(index));
+    const slideEvent = EventHandler.trigger(this._element, EVENT_SLIDE, {
+      relatedTarget: items[targetIndex],
+      direction: this._direction(currentIndex, targetIndex),
+      from: currentIndex,
+      to: targetIndex
+    });
+    if (slideEvent.defaultPrevented) {
       return;
     }
-    const activeIndex = this._getItemIndex(this._getActive());
-    if (activeIndex === index) {
+    if (this._isFade()) {
+      this._fadeTo(targetIndex);
       return;
     }
-    const order = index > activeIndex ? ORDER_NEXT : ORDER_PREV;
-    this._slide(order, items[index]);
+
+    // Scroll mode: the IntersectionObserver fires `slid` and syncs state once
+    // the new slide settles into view.
+    this._scrollToIndex(targetIndex);
   }
   dispose() {
-    if (this._swipeHelper) {
-      this._swipeHelper.dispose();
+    // Stop autoplay first: otherwise a pending timer would fire after the
+    // instance is torn down and throw on the now-null `_element`.
+    this._clearInterval();
+    if (this._observer) {
+      this._observer.disconnect();
     }
+    if (this._scrollFrame !== null) {
+      cancelAnimationFrame(this._scrollFrame);
+    }
+
+    // Tidy up any in-flight loop transition: drop a stray clone and restore
+    // native snapping, so the viewport isn't left mid-animation.
+    for (const clone of SelectorEngine.find(`.${CLASS_NAME_CLONE}`, this._viewport)) {
+      clone.remove();
+    }
+    this._viewport.style.scrollSnapType = '';
+
+    // The pointerdown listener lives on the viewport (`.carousel-inner`), which
+    // `super.dispose()` doesn't clean up—it only drops listeners on `_element`.
+    EventHandler.off(this._viewport, EVENT_KEY$h);
     super.dispose();
   }
 
   // Private
+  // Normalize an unknown `ends` value so navigation and end-control logic can't
+  // disagree about whether the carousel wraps.
   _configAfterMerge(config) {
-    config.defaultInterval = config.interval;
+    if (![ENDS_STOP, ENDS_WRAP, ENDS_LOOP].includes(config.ends)) {
+      config.ends = Default$h.ends;
+    }
     return config;
+  }
+  _initialActiveIndex() {
+    const active = SelectorEngine.findOne(SELECTOR_ACTIVE_ITEM, this._element);
+    const index = active ? this._getItems().indexOf(active) : 0;
+    return Math.max(index, 0);
   }
   _addEventListeners() {
     if (this._config.keyboard) {
@@ -1257,150 +1209,564 @@ class Carousel extends BaseComponent {
       EventHandler.on(this._element, EVENT_MOUSEENTER$2, () => this.pause());
       EventHandler.on(this._element, EVENT_MOUSELEAVE$1, () => this._maybeEnableCycle());
     }
-    if (this._config.touch && Swipe.isSupported()) {
-      this._addTouchEventListeners();
-    }
-  }
-  _addTouchEventListeners() {
-    for (const img of SelectorEngine.find(SELECTOR_ITEM_IMG, this._element)) {
-      EventHandler.on(img, EVENT_DRAG_START, event => event.preventDefault());
-    }
-    const endCallBack = () => {
-      if (this._config.pause !== 'hover') {
-        return;
-      }
 
-      // If it's a touch-enabled device, mouseenter/leave are fired as
-      // part of the mouse compatibility events on first tap - the carousel
-      // would stop cycling until user tapped out of it;
-      // here, we listen for touchend, explicitly pause the carousel
-      // (as if it's the second time we tap on it, mouseenter compat event
-      // is NOT fired) and after a timeout (to allow for mouse compatibility
-      // events to fire) we explicitly restart cycling
-
-      this.pause();
-      if (this.touchTimeout) {
-        clearTimeout(this.touchTimeout);
-      }
-      this.touchTimeout = setTimeout(() => this._maybeEnableCycle(), TOUCHEVENT_COMPAT_WAIT + this._config.interval);
-    };
-    const swipeConfig = {
-      leftCallback: () => this._slide(this._directionToOrder(DIRECTION_LEFT)),
-      rightCallback: () => this._slide(this._directionToOrder(DIRECTION_RIGHT)),
-      endCallback: endCallBack
-    };
-    this._swipeHelper = new Swipe(this._element, swipeConfig);
+    // Dragging, swiping, or tapping the track is an explicit interaction
+    EventHandler.on(this._viewport, EVENT_POINTERDOWN$1, () => this._pauseFromInteraction());
   }
   _keydown(event) {
-    if (/input|textarea/i.test(event.target.tagName)) {
+    // Don't hijack arrow keys native to a form control or editable content
+    // living inside a slide (a `<select>`'s value, a text caret, etc).
+    if (event.target.closest('input, textarea, select, [contenteditable="true"]')) {
       return;
     }
     const direction = KEY_TO_DIRECTION[event.key];
     if (direction) {
       event.preventDefault();
-      this._slide(this._directionToOrder(direction));
+      this._pauseFromInteraction();
+      if (direction === DIRECTION_RIGHT) {
+        this.prev();
+      } else {
+        this.next();
+      }
     }
   }
-  _getItemIndex(element) {
-    return this._getItems().indexOf(element);
+  _observeItems() {
+    // Fade mode stacks slides instead of scrolling, so there's nothing to observe
+    if (this._isFade() || typeof IntersectionObserver === 'undefined') {
+      return;
+    }
+    this._observer = new IntersectionObserver(entries => this._handleIntersection(entries), {
+      root: this._viewport,
+      threshold: [0, 0.25, 0.5, 0.75, 1]
+    });
+    for (const item of this._getItems()) {
+      this._observer.observe(item);
+    }
+  }
+  _handleIntersection(entries) {
+    // A loop transition deliberately scrolls onto a transient clone; ignore the
+    // visibility churn so it doesn't move the active index mid-animation.
+    if (this._looping) {
+      return;
+    }
+    for (const entry of entries) {
+      this._visibility.set(entry.target, entry.isIntersecting ? entry.intersectionRatio : 0);
+    }
+    const items = this._getItems();
+    const ratios = items.map(item => this._visibility.get(item) ?? 0);
+    const maxRatio = Math.max(...ratios);
+
+    // Pick the left-most slide that's *near* fully visible rather than the strict
+    // global maximum. After a programmatic scroll the viewport rests ~1px past
+    // the target snap offset, so the intended left-most slide reports a ratio a
+    // hair below the deeper, fully-visible ones (e.g. 0.997 vs 1.0). A strict max
+    // would skip past it and inflate the active index by one, which breaks
+    // multi-item next/prev. The tolerance keeps the intended slide active while
+    // peeking slivers (well below the max) are still ignored.
+    let bestIndex = this._activeIndex;
+    if (maxRatio > 0) {
+      bestIndex = ratios.findIndex(ratio => ratio >= maxRatio - ACTIVE_RATIO_TOLERANCE);
+    }
+    this._setActive(bestIndex);
+    // Keep the end controls in sync with the scroll position even when the
+    // active index doesn't change (e.g. the final stretch of a multi-item
+    // scroll, where the left-most slide is already the last reachable one).
+    this._updateEndControls();
+  }
+
+  // The index a `next()`/`prev()` step is measured from. Scroll layouts read it
+  // from the live scroll position instead of `this._activeIndex`, because the
+  // IntersectionObserver updates that asynchronously: after one step the index
+  // can still be stale, so the next step would compute the same target and
+  // silently no-op (the "the button does nothing / can't reach the end slide"
+  // symptom). Fade and non-scrollable layouts have no scroll position to read,
+  // so they keep using the tracked active index (also what the unit tests rely
+  // on when there's no real layout).
+  _navIndex() {
+    if (this._isFade() || this._viewport.scrollWidth - this._viewport.clientWidth <= 0) {
+      return this._activeIndex;
+    }
+    let index = this._activeIndex;
+    let smallestDelta = Number.POSITIVE_INFINITY;
+    for (const [itemIndex, item] of this._getItems().entries()) {
+      // The slide currently resting at the active position has ~zero delta.
+      const delta = Math.abs(this._scrollDelta(item));
+      if (delta < smallestDelta) {
+        smallestDelta = delta;
+        index = itemIndex;
+      }
+    }
+    return index;
+  }
+  _scrollToIndex(index) {
+    const item = this._getItems()[index];
+    if (!item) {
+      return;
+    }
+    const left = this._scrollDelta(item);
+    if (Math.abs(left) < 1) {
+      return;
+    }
+
+    // `scroll-snap-stop: always` would clamp a programmatic scroll to a single
+    // snap point, breaking multi-slide jumps (an indicator click, `to()`, or
+    // wrapping from the last slide back to the first). Suspend snapping while we
+    // animate, then restore it once we arrive so the slide rests precisely on the
+    // snap point (honouring peek/gap).
+    const targetLeft = this._viewport.scrollLeft + left;
+    this._viewport.style.scrollSnapType = 'none';
+    this._animateScroll(targetLeft, () => {
+      this._viewport.style.scrollSnapType = '';
+      // Without IntersectionObserver nothing else fires `slid`/updates the active
+      // slide after a programmatic scroll, so do it here. With the observer
+      // present this is a no-op (it already moved the active index to `index`).
+      if (!this._observer) {
+        this._setActive(index);
+      }
+
+      // The IntersectionObserver doesn't fire once the viewport has stopped, so
+      // refresh the end controls here to catch the final settle landing exactly
+      // on the scroll extent (e.g. disabling `next` at the last view).
+      this._updateEndControls();
+    });
+  }
+
+  // Animate `this._viewport.scrollLeft` to `targetLeft` over `SCROLL_DURATION`,
+  // stepping the position ourselves each frame (the caller suspends snapping
+  // first and restores it in `onComplete`). This replaces
+  // `scrollBy({behavior:'smooth'})`, whose Safari page-zoom bug made programmatic
+  // jumps overshoot the target and snap back. Because we set every frame's
+  // absolute position with an instant scroll, the animation can't overshoot and
+  // every jump takes the same time, in every browser.
+  _animateScroll(targetLeft, onComplete) {
+    if (this._scrollFrame !== null) {
+      cancelAnimationFrame(this._scrollFrame);
+      this._scrollFrame = null;
+    }
+    const startLeft = this._viewport.scrollLeft;
+    const distance = targetLeft - startLeft;
+
+    // Reduced motion (or no rAF, e.g. unit tests): jump straight to the target.
+    if (this._prefersReducedMotion() || typeof requestAnimationFrame === 'undefined') {
+      this._viewport.scrollTo({
+        left: targetLeft,
+        behavior: 'instant'
+      });
+      onComplete();
+      return;
+    }
+    let startTime = null;
+    const step = now => {
+      if (startTime === null) {
+        startTime = now;
+      }
+      const progress = Math.min((now - startTime) / SCROLL_DURATION, 1);
+      // `'instant'` (not the default) because the viewport sets
+      // `scroll-behavior: smooth` in CSS; without it each step would itself
+      // animate and fight this loop.
+      this._viewport.scrollTo({
+        left: startLeft + distance * easeInOutCubic(progress),
+        behavior: 'instant'
+      });
+      if (progress < 1) {
+        this._scrollFrame = requestAnimationFrame(step);
+        return;
+      }
+
+      // Land exactly on target, guarding against floating-point drift.
+      this._viewport.scrollTo({
+        left: targetLeft,
+        behavior: 'instant'
+      });
+      this._scrollFrame = null;
+      onComplete();
+    };
+    this._scrollFrame = requestAnimationFrame(step);
+  }
+
+  // Horizontal distance to scroll the viewport so `element` rests where the
+  // active slide should sit. Scroll the viewport itself rather than calling
+  // `element.scrollIntoView()`: the latter scrolls *every* scrollable ancestor
+  // (including the page), so an autoplaying carousel below the fold would yank
+  // the whole page to itself on each tick. Using bounding rects keeps it
+  // direction-agnostic (works in RTL).
+  _scrollDelta(element) {
+    const viewportRect = this._viewport.getBoundingClientRect();
+    const rect = element.getBoundingClientRect();
+    if (this._element.classList.contains(CLASS_NAME_CENTER)) {
+      return rect.left + rect.width / 2 - (viewportRect.left + viewportRect.width / 2);
+    }
+
+    // Start alignment: rest the slide at the scroll-padding (peek) offset, which
+    // is exactly where scroll-snap will settle. Aligning flush to the edge
+    // instead would make the browser re-snap by `peek` once snapping is restored,
+    // producing a visible secondary nudge after the programmatic scroll.
+    const padStart = Number.parseFloat(getComputedStyle(this._viewport).scrollPaddingInlineStart) || 0;
+    return isRTL() ? rect.right - (viewportRect.right - padStart) : rect.left - (viewportRect.left + padStart);
+  }
+
+  // Seamless loop: continue past an end into a one-off clone of the destination
+  // slide, then teleport to the real slide so there's no visible backward jump.
+  _loopTransition(isNext) {
+    const items = this._getItems();
+    const last = items.length - 1;
+    const fromIndex = this._activeIndex;
+    const toIndex = isNext ? 0 : last;
+    const direction = this._loopDirection(isNext);
+    const slideEvent = EventHandler.trigger(this._element, EVENT_SLIDE, {
+      relatedTarget: items[toIndex],
+      direction,
+      from: fromIndex,
+      to: toIndex
+    });
+    if (slideEvent.defaultPrevented) {
+      return;
+    }
+    this._looping = true;
+    const clone = (isNext ? items[0] : items[last]).cloneNode(true);
+    clone.classList.add(CLASS_NAME_CLONE);
+    clone.classList.remove(CLASS_NAME_ACTIVE$4);
+    clone.removeAttribute('id');
+    // Also strip ids from the cloned subtree to avoid duplicate ids while the
+    // clone is on screen.
+    for (const node of SelectorEngine.find('[id]', clone)) {
+      node.removeAttribute('id');
+    }
+    clone.setAttribute('aria-hidden', 'true');
+    clone.inert = true;
+    this._viewport.style.scrollSnapType = 'none';
+    if (isNext) {
+      this._viewport.append(clone);
+    } else {
+      this._viewport.prepend(clone);
+      // Prepending shifts the real slides to the right; instantly re-align the
+      // current slide so the insertion doesn't flash before we animate.
+      this._jumpScroll(this._scrollDelta(items[fromIndex]));
+    }
+    this._animateScroll(this._viewport.scrollLeft + this._scrollDelta(clone), () => {
+      // Teleport to the real destination without animation. JS runs to
+      // completion before the browser paints, so removing the clone and the
+      // compensating scroll land in a single frame (no visible flash).
+      clone.remove();
+      this._jumpScroll(this._scrollDelta(items[toIndex]));
+      this._activeIndex = toIndex;
+      this._refreshActiveState();
+      EventHandler.trigger(this._element, EVENT_SLID, {
+        relatedTarget: items[toIndex],
+        direction,
+        from: fromIndex,
+        to: toIndex
+      });
+      this._viewport.style.scrollSnapType = '';
+      this._looping = false;
+    });
+  }
+  _loopDirection(isNext) {
+    if (isRTL()) {
+      return isNext ? DIRECTION_RIGHT : DIRECTION_LEFT;
+    }
+    return isNext ? DIRECTION_LEFT : DIRECTION_RIGHT;
+  }
+
+  // Instant (non-animated) scroll with snapping suspended, used to teleport the
+  // viewport during a loop transition. `behavior: 'instant'` is required because
+  // the viewport sets `scroll-behavior: smooth` in CSS, and `'auto'` would defer
+  // to it and animate the teleport (a visible backward slide).
+  _jumpScroll(delta) {
+    this._viewport.style.scrollSnapType = 'none';
+    this._viewport.scrollBy({
+      left: delta,
+      top: 0,
+      behavior: 'instant'
+    });
+  }
+
+  // Fade mode just swaps the active class; the CSS opacity transition on
+  // `.carousel-item` performs the crossfade over `--carousel-fade-duration` (and
+  // collapses to an instant swap under reduced motion, via the `transition`
+  // mixin). It deliberately avoids the View Transition API: a view transition
+  // crossfades a page snapshot over its own (shorter) duration while this CSS
+  // fade also runs underneath, so the two animations overlap and visibly stutter.
+  _fadeTo(index) {
+    this._setActive(index);
+  }
+  _setActive(index) {
+    const items = this._getItems();
+    if (index === this._activeIndex || !items[index]) {
+      return;
+    }
+    const from = this._activeIndex;
+    this._activeIndex = index;
+    this._refreshActiveState();
+    EventHandler.trigger(this._element, EVENT_SLID, {
+      relatedTarget: items[index],
+      direction: this._direction(from, index),
+      from,
+      to: index
+    });
+  }
+  _refreshActiveState() {
+    const items = this._getItems();
+    for (const [index, item] of items.entries()) {
+      item.classList.toggle(CLASS_NAME_ACTIVE$4, index === this._activeIndex);
+    }
+    this._setActiveIndicatorElement(this._activeIndex);
+    this._updateEndControls();
+  }
+  _updateEndControls() {
+    // Only `ends: 'stop'` has real ends; under `wrap`/`loop` you can always
+    // advance, so disabling end controls would be meaningless. When stopping,
+    // disable the prev control at the start of the scroll range and the next
+    // control at the end so there are no dead end-buttons.
+    if (this._config.ends !== ENDS_STOP) {
+      return;
+    }
+    const {
+      atStart,
+      atEnd
+    } = this._scrollEdges();
+
+    // Decide where focus should land, if it needs to move, before either
+    // side is actually disabled below — otherwise disabling prev first can
+    // "move" focus to a next control that's about to be disabled too (a
+    // single-slide carousel disables both ends in the same pass).
+    this._preserveFocus(atStart, atEnd);
+    this._setControlsDisabled(this._prevControls, atStart);
+    this._setControlsDisabled(this._nextControls, atEnd);
+  }
+
+  // Whether the viewport is resting at either scroll extent. Used both to drive
+  // `ends: 'stop'`'s end controls and to detect when a forward step under
+  // `wrap`/`loop` has nowhere left to scroll to (see `_nextRawIndex`).
+  _scrollEdges() {
+    const viewport = this._viewport;
+    const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+    if (maxScroll > 0) {
+      // Scrollable: measure the real scroll extent so this works for multi-item,
+      // peek, and variable-width layouts where the last slide can never become
+      // the left-most (active) one. `Math.abs` keeps it correct in RTL, where
+      // `scrollLeft` runs from 0 down to negative.
+      const progress = Math.abs(viewport.scrollLeft);
+      return {
+        atStart: progress <= 1,
+        atEnd: progress >= maxScroll - 1
+      };
+    }
+
+    // Not scrollable (or no layout yet, e.g. in unit tests): fall back to the
+    // active index for the single-slide case.
+    const last = this._getItems().length - 1;
+    return {
+      atStart: this._activeIndex <= 0,
+      atEnd: this._activeIndex >= last
+    };
+  }
+
+  // a11y: if the currently-focused control is about to be disabled, move
+  // focus somewhere that isn't. Prefers the opposite control, but only if it
+  // isn't *also* about to be disabled in this same pass; otherwise falls back
+  // to the viewport.
+  _preserveFocus(atStart, atEnd) {
+    const focused = document.activeElement;
+    const focusedIsPrev = atStart && this._prevControls.includes(focused);
+    const focusedIsNext = atEnd && this._nextControls.includes(focused);
+    if (!focusedIsPrev && !focusedIsNext) {
+      return;
+    }
+    const opposite = focusedIsPrev ? this._nextControls : this._prevControls;
+    const oppositeStaysEnabled = focusedIsPrev ? !atEnd : !atStart;
+    const fallback = oppositeStaysEnabled ? opposite[0] : null;
+    if (fallback) {
+      // `preventScroll` so moving focus doesn't yank the page/viewport to the
+      // newly-focused control mid-navigation.
+      fallback.focus({
+        preventScroll: true
+      });
+      return;
+    }
+
+    // No control to fall back to. Not every browser makes a scrollable region
+    // programmatically focusable on its own, so make sure this one is before
+    // trying — done lazily, here, so carousels that never hit this edge case
+    // keep the viewport's default focus behavior (Chrome's native
+    // auto-focusable scroller).
+    if (!this._viewport.hasAttribute('tabindex')) {
+      this._viewport.setAttribute('tabindex', '-1');
+    }
+    this._viewport.focus({
+      preventScroll: true
+    });
+  }
+  _setControlsDisabled(controls, disabled) {
+    for (const control of controls) {
+      // Native form controls (`<button>`, etc.) reflect `disabled` themselves —
+      // the browser blocks their clicks and drops them from the tab order.
+      // Anything else used as a control (e.g. an `<a>`) has no such IDL
+      // property to set, so fall back to `aria-disabled`; the data-api click
+      // handler checks for it since the browser won't block the click itself.
+      if ('disabled' in control) {
+        control.disabled = disabled;
+      } else {
+        control.setAttribute('aria-disabled', String(disabled));
+      }
+    }
   }
   _setActiveIndicatorElement(index) {
     if (!this._indicatorsElement) {
       return;
     }
-    const activeIndicator = SelectorEngine.findOne(SELECTOR_ACTIVE, this._indicatorsElement);
-    activeIndicator.classList.remove(CLASS_NAME_ACTIVE$4);
-    activeIndicator.removeAttribute('aria-current');
-    const newActiveIndicator = SelectorEngine.findOne(`[data-cx-slide-to="${index}"]`, this._indicatorsElement);
-    if (newActiveIndicator) {
-      newActiveIndicator.classList.add(CLASS_NAME_ACTIVE$4);
-      newActiveIndicator.setAttribute('aria-current', 'true');
+    const active = SelectorEngine.findOne(SELECTOR_ACTIVE, this._indicatorsElement);
+    if (active) {
+      active.classList.remove(CLASS_NAME_ACTIVE$4);
+      active.removeAttribute('aria-current');
+    }
+    const newActive = SelectorEngine.findOne(`[data-cx-slide-to="${index}"]`, this._indicatorsElement);
+    if (newActive) {
+      newActive.classList.add(CLASS_NAME_ACTIVE$4);
+      newActive.setAttribute('aria-current', 'true');
     }
   }
-  _updateInterval() {
-    const element = this._activeElement || this._getActive();
-    if (!element) {
-      return;
+  _normalizeIndex(index, length) {
+    if (Number.isNaN(index) || length === 0) {
+      return null;
     }
-    const elementInterval = Number.parseInt(element.getAttribute('data-cx-interval'), 10);
-    this._config.interval = elementInterval || this._config.defaultInterval;
+    if (index < 0) {
+      return this._wrapsAround() ? length - 1 : null;
+    }
+    if (index > length - 1) {
+      return this._wrapsAround() ? 0 : null;
+    }
+    return index;
   }
-  _slide(order, element = null) {
-    if (this._isSliding) {
+
+  // Whether navigating past an end wraps to the other end. `loop` continues
+  // seamlessly where it can (see `_canLoop`) and otherwise behaves like `wrap`.
+  _wrapsAround() {
+    return this._config.ends === ENDS_WRAP || this._config.ends === ENDS_LOOP;
+  }
+
+  // Seamless looping is only supported for the simple single-slide scroll
+  // layout. Multi-item, peek, center, and variable-width layouts fall back to
+  // the plain `wrap` jump.
+  _canLoop() {
+    if (this._isFade() || this._getItems().length < 2) {
+      return false;
+    }
+    const styles = getComputedStyle(this._element);
+    const num = name => Number.parseFloat(styles.getPropertyValue(name)) || 0;
+
+    // These are the shipped, `--cx-`-prefixed custom properties (the build
+    // prefixes every custom property), not the bare names used in the SCSS source.
+    return (num('--cx-carousel-items') || 1) === 1 && num('--cx-carousel-items-peek') === 0 && !this._element.classList.contains(CLASS_NAME_CENTER) && !this._element.classList.contains(CLASS_NAME_AUTO);
+  }
+  _direction(from, to) {
+    const isNext = to > from;
+    if (isRTL()) {
+      return isNext ? DIRECTION_RIGHT : DIRECTION_LEFT;
+    }
+    return isNext ? DIRECTION_LEFT : DIRECTION_RIGHT;
+  }
+  _scheduleAutoplay(index = this._activeIndex) {
+    const interval = this._itemInterval(index);
+    // Expose the wait so the active indicator's CSS fill matches it.
+    this._element.style.setProperty(PROPERTY_INTERVAL, `${interval}ms`);
+    this._interval = setTimeout(() => {
+      // Capture the slide the advance lands on *before* navigating: the active
+      // index only updates once the scroll settles (asynchronously), so reading
+      // it after `nextWhenVisible()` would schedule the next wait from the slide
+      // we're leaving — making per-item `data-cx-interval`s lag by one slide.
+      const upcoming = this._upcomingIndex();
+      const advanced = this.nextWhenVisible();
+
+      // The page or carousel wasn't visible, so nothing actually moved: retry
+      // with the same slide's interval instead of adopting `upcoming`'s, or
+      // the progress fill and wait would jump ahead of the real active slide.
+      if (!advanced) {
+        this._scheduleAutoplay(index);
+        return;
+      }
+
+      // Nothing comes after the last slide when `ends: 'stop'`; stop cycling
+      // instead of re-arming a timer that can never advance.
+      if (upcoming === null) {
+        this.pause();
+        return;
+      }
+      this._scheduleAutoplay(upcoming);
+    }, interval);
+  }
+
+  // The slide the next autoplay tick will rest on, derived from the live scroll
+  // position (which still reflects the current slide when the timer fires).
+  // Returns `null` when there's nowhere left to advance (`ends: stop` at the end).
+  _upcomingIndex() {
+    return this._normalizeIndex(this._nextRawIndex(), this._getItems().length);
+  }
+
+  // The raw (pre-normalize) index a forward step targets. Ordinarily that's just
+  // one past `_navIndex()`, but multi-item, peek, and variable-width layouts can
+  // rest at the far scroll edge while `_navIndex()` still reports an index short
+  // of `length - 1` (the last slide(s) can never become the left-most one), so
+  // `+ 1` alone never crosses the `_normalizeIndex` wrap threshold. Once the
+  // viewport has actually run out of room to scroll, treat it as past the last
+  // slide so `wrap`/`loop` can wrap back to the start.
+  _nextRawIndex() {
+    if (this._wrapsAround() && this._scrollEdges().atEnd) {
+      return this._getItems().length;
+    }
+    return this._navIndex() + 1;
+  }
+  _itemInterval(index = this._activeIndex) {
+    const item = this._getItems()[index];
+    const interval = item ? Number.parseInt(item.getAttribute('data-cx-interval'), 10) : Number.NaN;
+    return Number.isNaN(interval) ? this._config.interval : interval;
+  }
+  _maybeEnableCycle() {
+    if (!this._playing) {
       return;
     }
-    const activeElement = this._getActive();
-    const isNext = order === ORDER_NEXT;
-    const nextElement = element || getNextActiveElement(this._getItems(), activeElement, isNext, this._config.wrap);
-    if (nextElement === activeElement) {
-      return;
-    }
-    const nextElementIndex = this._getItemIndex(nextElement);
-    const triggerEvent = eventName => {
-      return EventHandler.trigger(this._element, eventName, {
-        relatedTarget: nextElement,
-        direction: this._orderToDirection(order),
-        from: this._getItemIndex(activeElement),
-        to: nextElementIndex
-      });
-    };
-    const slideEvent = triggerEvent(EVENT_SLIDE);
-    if (slideEvent.defaultPrevented) {
-      return;
-    }
-    if (!activeElement || !nextElement) {
-      // Some weirdness is happening, so we bail
-      return;
-    }
-    const isCycling = Boolean(this._interval);
+    this.cycle();
+  }
+
+  // Turn autoplay off for good once the user interacts with the carousel
+  _pauseFromInteraction() {
+    this._playing = false;
     this.pause();
-    this._isSliding = true;
-    this._setActiveIndicatorElement(nextElementIndex);
-    this._activeElement = nextElement;
-    const directionalClassName = isNext ? CLASS_NAME_START : CLASS_NAME_END;
-    const orderClassName = isNext ? CLASS_NAME_NEXT : CLASS_NAME_PREV;
-    nextElement.classList.add(orderClassName);
-    reflow(nextElement);
-    activeElement.classList.add(directionalClassName);
-    nextElement.classList.add(directionalClassName);
-    const completeCallBack = () => {
-      nextElement.classList.remove(directionalClassName, orderClassName);
-      nextElement.classList.add(CLASS_NAME_ACTIVE$4);
-      activeElement.classList.remove(CLASS_NAME_ACTIVE$4, orderClassName, directionalClassName);
-      this._isSliding = false;
-      triggerEvent(EVENT_SLID);
-    };
-    this._queueCallback(completeCallBack, activeElement, this._isAnimated());
-    if (isCycling) {
-      this.cycle();
+    this._updatePlayPauseControl();
+  }
+  _togglePlayPause() {
+    if (this._playing) {
+      this._pauseFromInteraction();
+      return;
+    }
+    this._playing = true;
+    this.cycle();
+    this._updatePlayPauseControl();
+  }
+  _updatePlayPauseControl() {
+    if (!this._playPauseElement) {
+      return;
+    }
+    this._playPauseElement.classList.toggle(CLASS_NAME_PAUSED, !this._playing);
+    const label = this._playPauseElement.getAttribute(this._playing ? 'data-cx-pause-label' : 'data-cx-play-label');
+    if (label) {
+      this._playPauseElement.setAttribute('aria-label', label);
     }
   }
-  _isAnimated() {
-    return this._element.classList.contains(CLASS_NAME_SLIDE);
+  _isFade() {
+    return this._element.classList.contains(CLASS_NAME_FADE$4);
   }
-  _getActive() {
-    return SelectorEngine.findOne(SELECTOR_ACTIVE_ITEM, this._element);
+  _prefersReducedMotion() {
+    return typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
   _getItems() {
     return SelectorEngine.find(SELECTOR_ITEM, this._element);
   }
   _clearInterval() {
     if (this._interval) {
-      clearInterval(this._interval);
+      clearTimeout(this._interval);
       this._interval = null;
     }
-  }
-  _directionToOrder(direction) {
-    if (isRTL()) {
-      return direction === DIRECTION_LEFT ? ORDER_PREV : ORDER_NEXT;
-    }
-    return direction === DIRECTION_LEFT ? ORDER_NEXT : ORDER_PREV;
-  }
-  _orderToDirection(order) {
-    if (isRTL()) {
-      return order === ORDER_PREV ? DIRECTION_LEFT : DIRECTION_RIGHT;
-    }
-    return order === ORDER_PREV ? DIRECTION_RIGHT : DIRECTION_LEFT;
   }
 }
 
@@ -1414,23 +1780,38 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$8, SELECTOR_DATA_SLIDE, function 
     return;
   }
   event.preventDefault();
+
+  // A real `<button disabled>` never dispatches this click at all; this only
+  // catches controls with no native disabled state to block it with (e.g. an
+  // `<a>`), which `_setControlsDisabled` marks via `aria-disabled` instead.
+  if (this.getAttribute('aria-disabled') === 'true') {
+    return;
+  }
   const carousel = Carousel.getOrCreateInstance(target);
+
+  // Manually cycling the carousel is an explicit interaction, so stop autoplay
+  carousel._pauseFromInteraction();
   const slideIndex = this.getAttribute('data-cx-slide-to');
   if (slideIndex) {
     carousel.to(slideIndex);
-    carousel._maybeEnableCycle();
     return;
   }
   if (Manipulator.getDataAttribute(this, 'slide') === 'next') {
     carousel.next();
-    carousel._maybeEnableCycle();
     return;
   }
   carousel.prev();
-  carousel._maybeEnableCycle();
+});
+EventHandler.on(document, EVENT_CLICK_DATA_API$8, SELECTOR_PLAY_PAUSE, function (event) {
+  const target = SelectorEngine.getElementFromSelector(this);
+  if (!target || !target.classList.contains(CLASS_NAME_CAROUSEL)) {
+    return;
+  }
+  event.preventDefault();
+  Carousel.getOrCreateInstance(target)._togglePlayPause();
 });
 EventHandler.on(window, EVENT_LOAD_DATA_API$3, () => {
-  const carousels = SelectorEngine.find(SELECTOR_DATA_RIDE);
+  const carousels = SelectorEngine.find(SELECTOR_DATA_AUTOPLAY);
   for (const carousel of carousels) {
     Carousel.getOrCreateInstance(carousel);
   }
@@ -1501,15 +1882,15 @@ const eventAction = (onEvent, stringSelector, callback) => {
  * Constants
  */
 
-const NAME$i = 'chip';
+const NAME$j = 'chip';
 const DATA_KEY$f = 'cx.chip';
-const EVENT_KEY$f = `.${DATA_KEY$f}`;
+const EVENT_KEY$g = `.${DATA_KEY$f}`;
 const DATA_API_KEY$a = '.data-api';
 const CLASS_NAME_ACTIVE$3 = 'active';
 const SELECTOR_DATA_TOGGLE$a = '[data-cx-toggle="chip"]';
-const EVENT_CLICK_DATA_API$7 = `click${EVENT_KEY$f}${DATA_API_KEY$a}`;
-const EVENT_CLOSE$1 = `close${EVENT_KEY$f}`;
-const EVENT_TOGGLE$1 = `toggle${EVENT_KEY$f}`;
+const EVENT_CLICK_DATA_API$7 = `click${EVENT_KEY$g}${DATA_API_KEY$a}`;
+const EVENT_CLOSE$1 = `close${EVENT_KEY$g}`;
+const EVENT_TOGGLE$1 = `toggle${EVENT_KEY$g}`;
 
 /**
  * Class definition
@@ -1518,7 +1899,7 @@ const EVENT_TOGGLE$1 = `toggle${EVENT_KEY$f}`;
 class Chip extends BaseComponent {
   // Getters
   static get NAME() {
-    return NAME$i;
+    return NAME$j;
   }
 
   // Public
@@ -1563,14 +1944,14 @@ enableDismissTrigger(Chip, 'close');
  * Constants
  */
 
-const NAME$h = 'chip-input';
+const NAME$i = 'chip-input';
 const DATA_KEY$e = 'cx.chip-input';
-const EVENT_KEY$e = `.${DATA_KEY$e}`;
+const EVENT_KEY$f = `.${DATA_KEY$e}`;
 const DATA_API_KEY$9 = '.data-api';
-const EVENT_ADD = `add${EVENT_KEY$e}`;
-const EVENT_REMOVE = `remove${EVENT_KEY$e}`;
-const EVENT_CHANGE$2 = `change${EVENT_KEY$e}`;
-const EVENT_SELECT = `select${EVENT_KEY$e}`;
+const EVENT_ADD = `add${EVENT_KEY$f}`;
+const EVENT_REMOVE = `remove${EVENT_KEY$f}`;
+const EVENT_CHANGE$2 = `change${EVENT_KEY$f}`;
+const EVENT_SELECT = `select${EVENT_KEY$f}`;
 const SELECTOR_DATA_CHIP_INPUT = '[data-cx-chips]';
 const SELECTOR_GHOST_INPUT = '.ghost-input';
 const SELECTOR_CHIP = '.chip';
@@ -1579,7 +1960,7 @@ const CLASS_NAME_CHIP = 'chip';
 const CLASS_NAME_CHIP_DISMISS = 'close-button';
 const CLASS_NAME_ACTIVE$2 = 'active';
 const DEFAULT_DISMISS_TEXT = '×';
-const Default$f = {
+const Default$g = {
   separator: ',',
   allowDuplicates: false,
   maxChips: null,
@@ -1589,7 +1970,7 @@ const Default$f = {
   chipClass: 'default',
   dismissText: DEFAULT_DISMISS_TEXT
 };
-const DefaultType$f = {
+const DefaultType$g = {
   separator: '(string|null)',
   allowDuplicates: 'boolean',
   maxChips: '(number|null)',
@@ -1627,13 +2008,13 @@ class ChipInput extends BaseComponent {
 
   // Getters
   static get Default() {
-    return Default$f;
+    return Default$g;
   }
   static get DefaultType() {
-    return DefaultType$f;
+    return DefaultType$g;
   }
   static get NAME() {
-    return NAME$h;
+    return NAME$i;
   }
 
   // Public
@@ -1807,7 +2188,7 @@ class ChipInput extends BaseComponent {
       Chip.getInstance(chip)?.dispose();
     }
     if (this._input) {
-      EventHandler.off(this._input, EVENT_KEY$e);
+      EventHandler.off(this._input, EVENT_KEY$f);
     }
     super.dispose();
   }
@@ -2167,7 +2548,7 @@ class ChipInput extends BaseComponent {
  * Data API implementation
  */
 
-EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$e}${DATA_API_KEY$9}`, () => {
+EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$f}${DATA_API_KEY$9}`, () => {
   for (const element of SelectorEngine.find(SELECTOR_DATA_CHIP_INPUT)) {
     ChipInput.getOrCreateInstance(element);
   }
@@ -2185,15 +2566,15 @@ EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$e}${DATA_API_KEY$9}`, () 
  * Constants
  */
 
-const NAME$g = 'collapse';
+const NAME$h = 'collapse';
 const DATA_KEY$d = 'cx.collapse';
-const EVENT_KEY$d = `.${DATA_KEY$d}`;
+const EVENT_KEY$e = `.${DATA_KEY$d}`;
 const DATA_API_KEY$8 = '.data-api';
-const EVENT_SHOW$7 = `show${EVENT_KEY$d}`;
-const EVENT_SHOWN$6 = `shown${EVENT_KEY$d}`;
-const EVENT_HIDE$6 = `hide${EVENT_KEY$d}`;
-const EVENT_HIDDEN$8 = `hidden${EVENT_KEY$d}`;
-const EVENT_CLICK_DATA_API$6 = `click${EVENT_KEY$d}${DATA_API_KEY$8}`;
+const EVENT_SHOW$7 = `show${EVENT_KEY$e}`;
+const EVENT_SHOWN$6 = `shown${EVENT_KEY$e}`;
+const EVENT_HIDE$6 = `hide${EVENT_KEY$e}`;
+const EVENT_HIDDEN$8 = `hidden${EVENT_KEY$e}`;
+const EVENT_CLICK_DATA_API$6 = `click${EVENT_KEY$e}${DATA_API_KEY$8}`;
 const CLASS_NAME_SHOW$6 = 'show';
 const CLASS_NAME_COLLAPSE = 'collapse';
 const CLASS_NAME_COLLAPSING = 'collapsing';
@@ -2204,11 +2585,11 @@ const WIDTH = 'width';
 const HEIGHT = 'height';
 const SELECTOR_ACTIVES = '.collapse.show, .collapse.collapsing';
 const SELECTOR_DATA_TOGGLE$9 = '[data-cx-toggle="collapse"]';
-const Default$e = {
+const Default$f = {
   parent: null,
   toggle: true
 };
-const DefaultType$e = {
+const DefaultType$f = {
   parent: '(null|element)',
   toggle: 'boolean'
 };
@@ -2241,13 +2622,13 @@ class Collapse extends BaseComponent {
 
   // Getters
   static get Default() {
-    return Default$e;
+    return Default$f;
   }
   static get DefaultType() {
-    return DefaultType$e;
+    return DefaultType$f;
   }
   static get NAME() {
-    return NAME$g;
+    return NAME$h;
   }
 
   // Public
@@ -2590,9 +2971,9 @@ class FloatingBase extends BaseComponent {
  * Constants
  */
 
-const NAME$f = 'menu';
+const NAME$g = 'menu';
 const DATA_KEY$c = 'cx.menu';
-const EVENT_KEY$c = `.${DATA_KEY$c}`;
+const EVENT_KEY$d = `.${DATA_KEY$c}`;
 const DATA_API_KEY$7 = '.data-api';
 const ESCAPE_KEY$1 = 'Escape';
 const TAB_KEY$1 = 'Tab';
@@ -2606,13 +2987,13 @@ const ENTER_KEY$1 = 'Enter';
 const SPACE_KEY$1 = ' ';
 const RIGHT_MOUSE_BUTTON = 2;
 const SUBMENU_CLOSE_DELAY = 100;
-const EVENT_HIDE$5 = `hide${EVENT_KEY$c}`;
-const EVENT_HIDDEN$7 = `hidden${EVENT_KEY$c}`;
-const EVENT_SHOW$6 = `show${EVENT_KEY$c}`;
-const EVENT_SHOWN$5 = `shown${EVENT_KEY$c}`;
-const EVENT_CLICK_DATA_API$5 = `click${EVENT_KEY$c}${DATA_API_KEY$7}`;
-const EVENT_KEYDOWN_DATA_API = `keydown${EVENT_KEY$c}${DATA_API_KEY$7}`;
-const EVENT_KEYUP_DATA_API = `keyup${EVENT_KEY$c}${DATA_API_KEY$7}`;
+const EVENT_HIDE$5 = `hide${EVENT_KEY$d}`;
+const EVENT_HIDDEN$7 = `hidden${EVENT_KEY$d}`;
+const EVENT_SHOW$6 = `show${EVENT_KEY$d}`;
+const EVENT_SHOWN$5 = `shown${EVENT_KEY$d}`;
+const EVENT_CLICK_DATA_API$5 = `click${EVENT_KEY$d}${DATA_API_KEY$7}`;
+const EVENT_KEYDOWN_DATA_API = `keydown${EVENT_KEY$d}${DATA_API_KEY$7}`;
+const EVENT_KEYUP_DATA_API = `keyup${EVENT_KEY$d}${DATA_API_KEY$7}`;
 const CLASS_NAME_SHOW$5 = 'show';
 const CLASS_NAME_STACKED = 'submenu-stacked';
 const SELECTOR_DATA_TOGGLE$8 = '[data-cx-toggle="menu"]:not(.disabled):not(:disabled)';
@@ -2639,7 +3020,7 @@ const resolveLogicalPlacement = placement => {
   return placement.replace(/^start(?=-|$)/, 'left').replace(/^end(?=-|$)/, 'right');
 };
 const triangleSign = (p1, p2, p3) => (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
-const Default$d = {
+const Default$e = {
   autoClose: true,
   boundary: 'clippingParents',
   container: false,
@@ -2653,7 +3034,7 @@ const Default$d = {
   submenuTrigger: 'both',
   submenuDelay: SUBMENU_CLOSE_DELAY
 };
-const DefaultType$d = {
+const DefaultType$e = {
   autoClose: '(boolean|string)',
   boundary: '(string|element)',
   container: '(string|element|boolean)',
@@ -2692,13 +3073,13 @@ class Menu extends FloatingBase {
 
   // Getters
   static get Default() {
-    return Default$d;
+    return Default$e;
   }
   static get DefaultType() {
-    return DefaultType$d;
+    return DefaultType$e;
   }
   static get NAME() {
-    return NAME$f;
+    return NAME$g;
   }
 
   // Public
@@ -2807,7 +3188,7 @@ class Menu extends FloatingBase {
   _getConfig(config) {
     config = super._getConfig(config);
     if (typeof config.reference === 'object' && !isElement(config.reference) && typeof config.reference.getBoundingClientRect !== 'function') {
-      throw new TypeError(`${NAME$f.toUpperCase()}: Option "reference" provided type "object" without a required "getBoundingClientRect" method.`);
+      throw new TypeError(`${NAME$g.toUpperCase()}: Option "reference" provided type "object" without a required "getBoundingClientRect" method.`);
     }
     return config;
   }
@@ -3391,9 +3772,9 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$5, SELECTOR_DATA_TOGGLE$8, functi
  * Constants
  */
 
-const NAME$e = 'combobox';
+const NAME$f = 'combobox';
 const DATA_KEY$b = 'cx.combobox';
-const EVENT_KEY$b = `.${DATA_KEY$b}`;
+const EVENT_KEY$c = `.${DATA_KEY$b}`;
 const DATA_API_KEY$6 = '.data-api';
 const ESCAPE_KEY = 'Escape';
 const TAB_KEY = 'Tab';
@@ -3403,12 +3784,12 @@ const HOME_KEY$1 = 'Home';
 const END_KEY$1 = 'End';
 const ENTER_KEY = 'Enter';
 const SPACE_KEY = ' ';
-const EVENT_CHANGE$1 = `change${EVENT_KEY$b}`;
-const EVENT_SHOW$5 = `show${EVENT_KEY$b}`;
-const EVENT_SHOWN$4 = `shown${EVENT_KEY$b}`;
-const EVENT_HIDE$4 = `hide${EVENT_KEY$b}`;
-const EVENT_HIDDEN$6 = `hidden${EVENT_KEY$b}`;
-const EVENT_CLICK_DATA_API$4 = `click${EVENT_KEY$b}${DATA_API_KEY$6}`;
+const EVENT_CHANGE$1 = `change${EVENT_KEY$c}`;
+const EVENT_SHOW$5 = `show${EVENT_KEY$c}`;
+const EVENT_SHOWN$4 = `shown${EVENT_KEY$c}`;
+const EVENT_HIDE$4 = `hide${EVENT_KEY$c}`;
+const EVENT_HIDDEN$6 = `hidden${EVENT_KEY$c}`;
+const EVENT_CLICK_DATA_API$4 = `click${EVENT_KEY$c}${DATA_API_KEY$6}`;
 const CLASS_NAME_SHOW$4 = 'show';
 const CLASS_NAME_SELECTED = 'selected';
 const CLASS_NAME_PLACEHOLDER = 'combobox-placeholder';
@@ -3419,7 +3800,7 @@ const SELECTOR_VISIBLE_ITEMS = '.menu-item[data-cx-value]:not(.disabled):not(:di
 const SELECTOR_VALUE = '.combobox-value';
 const SELECTOR_SEARCH_INPUT = '.combobox-search-input';
 const SELECTOR_NO_RESULTS = '.combobox-no-results';
-const Default$c = {
+const Default$d = {
   boundary: 'clippingParents',
   multiple: false,
   name: null,
@@ -3428,7 +3809,7 @@ const Default$c = {
   placement: 'bottom-start',
   searchNormalize: false
 };
-const DefaultType$c = {
+const DefaultType$d = {
   boundary: '(string|element)',
   multiple: 'boolean',
   name: '(string|null)',
@@ -3465,13 +3846,13 @@ class Combobox extends BaseComponent {
 
   // Getters
   static get Default() {
-    return Default$c;
+    return Default$d;
   }
   static get DefaultType() {
-    return DefaultType$c;
+    return DefaultType$d;
   }
   static get NAME() {
-    return NAME$e;
+    return NAME$f;
   }
 
   // Public
@@ -3535,13 +3916,13 @@ class Combobox extends BaseComponent {
       this._hiddenInput.remove();
       this._hiddenInput = null;
     }
-    EventHandler.off(this._menu, EVENT_KEY$b);
-    EventHandler.off(this._toggle, EVENT_KEY$b);
+    EventHandler.off(this._menu, EVENT_KEY$c);
+    EventHandler.off(this._toggle, EVENT_KEY$c);
     if (this._comboInput) {
-      EventHandler.off(this._comboInput, EVENT_KEY$b);
+      EventHandler.off(this._comboInput, EVENT_KEY$c);
     }
     if (this._searchInput) {
-      EventHandler.off(this._searchInput, EVENT_KEY$b);
+      EventHandler.off(this._searchInput, EVENT_KEY$c);
     }
     super.dispose();
   }
@@ -3633,7 +4014,7 @@ class Combobox extends BaseComponent {
     EventHandler.on(this._toggle, 'hidden.cx.menu', () => {
       this._restoreAfterClose();
     });
-    EventHandler.on(this._menu, `click${EVENT_KEY$b}`, SELECTOR_MENU_ITEM, event => {
+    EventHandler.on(this._menu, `click${EVENT_KEY$c}`, SELECTOR_MENU_ITEM, event => {
       const item = event.target.closest(SELECTOR_MENU_ITEM);
       if (!item || isDisabled(item)) {
         return;
@@ -3642,17 +4023,17 @@ class Combobox extends BaseComponent {
       event.stopPropagation();
       this._selectItem(item);
     });
-    EventHandler.on(this._toggle, `keydown${EVENT_KEY$b}`, event => {
+    EventHandler.on(this._toggle, `keydown${EVENT_KEY$c}`, event => {
       this._handleToggleKeydown(event);
     });
-    EventHandler.on(this._menu, `keydown${EVENT_KEY$b}`, event => {
+    EventHandler.on(this._menu, `keydown${EVENT_KEY$c}`, event => {
       this._handleMenuKeydown(event);
     });
     if (this._comboInput) {
       // Open the menu when the comboInput receives focus.
       // Ignore programmatic refocus after selection/Escape — the flag is set
       // before each return-focus call to suppress the reopen.
-      EventHandler.on(this._comboInput, `focus${EVENT_KEY$b}`, () => {
+      EventHandler.on(this._comboInput, `focus${EVENT_KEY$c}`, () => {
         if (this._ignoreNextFocus) {
           this._ignoreNextFocus = false;
           return;
@@ -3661,7 +4042,7 @@ class Combobox extends BaseComponent {
           this.show();
         }
       });
-      EventHandler.on(this._comboInput, `input${EVENT_KEY$b}`, () => {
+      EventHandler.on(this._comboInput, `input${EVENT_KEY$c}`, () => {
         const visibleCount = this._filterItems(this._comboInput.value);
 
         // Input-trigger menu visibility tracks filter results: collapse when
@@ -3679,10 +4060,10 @@ class Combobox extends BaseComponent {
       });
     }
     if (this._searchInput) {
-      EventHandler.on(this._searchInput, `input${EVENT_KEY$b}`, () => {
+      EventHandler.on(this._searchInput, `input${EVENT_KEY$c}`, () => {
         this._filterItems(this._searchInput.value);
       });
-      EventHandler.on(this._searchInput, `keydown${EVENT_KEY$b}`, event => {
+      EventHandler.on(this._searchInput, `keydown${EVENT_KEY$c}`, event => {
         if (event.key === ARROW_DOWN_KEY$1) {
           event.preventDefault();
           event.stopPropagation(); // Prevent the menu keydown handler from also processing this
@@ -3898,17 +4279,17 @@ EventHandler.on(document, 'DOMContentLoaded', () => {
  * Constants
  */
 
-const NAME$d = 'datepicker';
+const NAME$e = 'datepicker';
 const DATA_KEY$a = 'cx.datepicker';
-const EVENT_KEY$a = `.${DATA_KEY$a}`;
+const EVENT_KEY$b = `.${DATA_KEY$a}`;
 const DATA_API_KEY$5 = '.data-api';
-const EVENT_CHANGE = `change${EVENT_KEY$a}`;
-const EVENT_SHOW$4 = `show${EVENT_KEY$a}`;
-const EVENT_SHOWN$3 = `shown${EVENT_KEY$a}`;
-const EVENT_HIDE$3 = `hide${EVENT_KEY$a}`;
-const EVENT_HIDDEN$5 = `hidden${EVENT_KEY$a}`;
-const EVENT_CLICK_DATA_API$3 = `click${EVENT_KEY$a}${DATA_API_KEY$5}`;
-const EVENT_FOCUSIN_DATA_API = `focusin${EVENT_KEY$a}${DATA_API_KEY$5}`;
+const EVENT_CHANGE = `change${EVENT_KEY$b}`;
+const EVENT_SHOW$4 = `show${EVENT_KEY$b}`;
+const EVENT_SHOWN$3 = `shown${EVENT_KEY$b}`;
+const EVENT_HIDE$3 = `hide${EVENT_KEY$b}`;
+const EVENT_HIDDEN$5 = `hidden${EVENT_KEY$b}`;
+const EVENT_CLICK_DATA_API$3 = `click${EVENT_KEY$b}${DATA_API_KEY$5}`;
+const EVENT_FOCUSIN_DATA_API = `focusin${EVENT_KEY$b}${DATA_API_KEY$5}`;
 const SELECTOR_DATA_TOGGLE$6 = '[data-cx-toggle="datepicker"]';
 const HIDE_DELAY = 100; // ms delay before hiding after selection
 
@@ -3949,7 +4330,7 @@ const styles = {
   timeRanges: 'datepicker-time-ranges',
   timeRange: 'datepicker-time-range'
 };
-const Default$b = {
+const Default$c = {
   datepickerTheme: null,
   // 'light', 'dark', 'auto' - explicit theme for datepicker popover only
   dateMin: null,
@@ -3977,7 +4358,7 @@ const Default$b = {
   // Pass-through for any VCP option
   styles: styles // Pass-through for any VCP style class overrides
 };
-const DefaultType$b = {
+const DefaultType$c = {
   datepickerTheme: '(null|string)',
   dateMin: '(null|string|number|object)',
   dateMax: '(null|string|number|object)',
@@ -4009,13 +4390,13 @@ class Datepicker extends BaseComponent {
 
   // Getters
   static get Default() {
-    return Default$b;
+    return Default$c;
   }
   static get DefaultType() {
-    return DefaultType$b;
+    return DefaultType$c;
   }
   static get NAME() {
-    return NAME$d;
+    return NAME$e;
   }
 
   // Public
@@ -4369,7 +4750,7 @@ EventHandler.on(document, EVENT_FOCUSIN_DATA_API, SELECTOR_DATA_TOGGLE$6, functi
 });
 
 // Auto-initialize inline datepickers on DOMContentLoaded
-EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$a}${DATA_API_KEY$5}`, () => {
+EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$b}${DATA_API_KEY$5}`, () => {
   for (const element of document.querySelectorAll(`${SELECTOR_DATA_TOGGLE$6}[data-cx-inline="true"]`)) {
     Datepicker.getOrCreateInstance(element);
   }
@@ -4561,11 +4942,13 @@ class DialogBase extends BaseComponent {
     }
   }
 
-  // Hook: return true to keep the dialog in the top layer (i.e., delay
-  // calling close()) until the exit transition completes. The base class
-  // closes synchronously; Dialog overrides this for animated modal cases.
+  // Keep the dialog in the top layer until the exit transition ends. Both the native
+  // ::backdrop and (for subclasses whose positioning relies on it, e.g. Dialog's centering)
+  // the browser's own top-layer placement disappear synchronously the moment close() is
+  // called — closing immediately would cut those off while the rest of the element is still
+  // visibly animating out. Only skipped when there's no transition to protect (`.instant`).
   _shouldDeferClose() {
-    return false;
+    return this._isAnimated();
   }
   _triggerBackdropTransition() {
     const hidePreventedEvent = EventHandler.trigger(this._element, this.constructor.eventName('hidePrevented'));
@@ -4655,24 +5038,24 @@ class DialogBase extends BaseComponent {
  * Constants
  */
 
-const NAME$c = 'dialog';
+const NAME$d = 'dialog';
 const DATA_KEY$9 = 'cx.dialog';
-const EVENT_KEY$9 = `.${DATA_KEY$9}`;
+const EVENT_KEY$a = `.${DATA_KEY$9}`;
 const DATA_API_KEY$4 = '.data-api';
-const EVENT_SHOW$3 = `show${EVENT_KEY$9}`;
-const EVENT_HIDDEN$4 = `hidden${EVENT_KEY$9}`;
-const EVENT_CANCEL = `cancel${EVENT_KEY$9}`;
-const EVENT_CLICK_DATA_API$2 = `click${EVENT_KEY$9}${DATA_API_KEY$4}`;
+const EVENT_SHOW$3 = `show${EVENT_KEY$a}`;
+const EVENT_HIDDEN$4 = `hidden${EVENT_KEY$a}`;
+const EVENT_CANCEL = `cancel${EVENT_KEY$a}`;
+const EVENT_CLICK_DATA_API$2 = `click${EVENT_KEY$a}${DATA_API_KEY$4}`;
 const CLASS_NAME_NONMODAL = 'nonmodal';
 const CLASS_NAME_INSTANT$1 = 'instant';
 const CLASS_NAME_SWAP_IN = 'swap-in';
 const SELECTOR_DATA_TOGGLE$5 = '[data-cx-toggle="dialog"]';
-const Default$a = {
+const Default$b = {
   backdrop: true,
   keyboard: true,
   modal: true
 };
-const DefaultType$a = {
+const DefaultType$b = {
   backdrop: '(boolean|string)',
   keyboard: 'boolean',
   modal: 'boolean'
@@ -4685,13 +5068,13 @@ const DefaultType$a = {
 class Dialog extends DialogBase {
   // Getters
   static get Default() {
-    return Default$a;
+    return Default$b;
   }
   static get DefaultType() {
-    return DefaultType$a;
+    return DefaultType$b;
   }
   static get NAME() {
-    return NAME$c;
+    return NAME$d;
   }
 
   // Public
@@ -4714,16 +5097,6 @@ class Dialog extends DialogBase {
   }
   _onAfterHide() {
     this._element.classList.remove(CLASS_NAME_NONMODAL);
-  }
-
-  // Keep the dialog in the top layer until the exit transition ends. This
-  // preserves the browser's modal centering and the native ::backdrop, both
-  // of which disappear synchronously the moment close() is called. Without
-  // this, the dialog would jump to the top of the page and the backdrop
-  // blur would vanish instantly while the dialog faded — making the exit
-  // animation appear to skip entirely.
-  _shouldDeferClose() {
-    return this._isAnimated();
   }
   _onCancel() {
     EventHandler.trigger(this._element, EVENT_CANCEL);
@@ -4774,7 +5147,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$2, SELECTOR_DATA_TOGGLE$5, functi
     const newDialog = Dialog.getOrCreateInstance(target, config);
     target.classList.add(CLASS_NAME_SWAP_IN);
     newDialog.show(this);
-    EventHandler.one(target, `shown${EVENT_KEY$9}`, () => {
+    EventHandler.one(target, `shown${EVENT_KEY$a}`, () => {
       target.classList.remove(CLASS_NAME_SWAP_IN);
     });
     const currentInstance = Dialog.getInstance(currentDialog);
@@ -4795,6 +5168,155 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$2, SELECTOR_DATA_TOGGLE$5, functi
   data.toggle(this);
 });
 enableDismissTrigger(Dialog);
+
+/**
+ * --------------------------------------------------------------------------
+ * Chassis CSS util/swipe.js
+ * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$c = 'swipe';
+const EVENT_KEY$9 = '.cx.swipe';
+const EVENT_TOUCHSTART = `touchstart${EVENT_KEY$9}`;
+const EVENT_TOUCHMOVE = `touchmove${EVENT_KEY$9}`;
+const EVENT_TOUCHEND = `touchend${EVENT_KEY$9}`;
+const EVENT_POINTERDOWN = `pointerdown${EVENT_KEY$9}`;
+const EVENT_POINTERUP = `pointerup${EVENT_KEY$9}`;
+const POINTER_TYPE_TOUCH = 'touch';
+const POINTER_TYPE_PEN = 'pen';
+const CLASS_NAME_POINTER_EVENT = 'pointer-event';
+const SWIPE_THRESHOLD = 40;
+const Default$a = {
+  endCallback: null,
+  leftCallback: null,
+  rightCallback: null,
+  upCallback: null,
+  downCallback: null
+};
+const DefaultType$a = {
+  endCallback: '(function|null)',
+  leftCallback: '(function|null)',
+  rightCallback: '(function|null)',
+  upCallback: '(function|null)',
+  downCallback: '(function|null)'
+};
+
+/**
+ * Class definition
+ */
+
+class Swipe extends Config {
+  constructor(element, config) {
+    super();
+    this._element = element;
+    if (!element || !Swipe.isSupported()) {
+      return;
+    }
+    this._config = this._getConfig(config);
+    this._deltaX = 0;
+    this._deltaY = 0;
+    this._supportPointerEvents = Boolean(window.PointerEvent);
+    this._initEvents();
+  }
+
+  // Getters
+  static get Default() {
+    return Default$a;
+  }
+  static get DefaultType() {
+    return DefaultType$a;
+  }
+  static get NAME() {
+    return NAME$c;
+  }
+
+  // Public
+  dispose() {
+    EventHandler.off(this._element, EVENT_KEY$9);
+  }
+
+  // Private
+  _start(event) {
+    if (!this._supportPointerEvents) {
+      this._deltaX = event.touches[0].clientX;
+      this._deltaY = event.touches[0].clientY;
+      return;
+    }
+    if (this._eventIsPointerPenTouch(event)) {
+      this._deltaX = event.clientX;
+      this._deltaY = event.clientY;
+    }
+  }
+  _end(event) {
+    if (this._eventIsPointerPenTouch(event)) {
+      this._deltaX = event.clientX - this._deltaX;
+      this._deltaY = event.clientY - this._deltaY;
+    }
+    this._handleSwipe();
+    execute(this._config.endCallback);
+  }
+  _move(event) {
+    if (event.touches && event.touches.length > 1) {
+      this._deltaX = 0;
+      this._deltaY = 0;
+      return;
+    }
+    this._deltaX = event.touches[0].clientX - this._deltaX;
+    this._deltaY = event.touches[0].clientY - this._deltaY;
+  }
+  _handleSwipe() {
+    const absDeltaX = Math.abs(this._deltaX);
+    const absDeltaY = Math.abs(this._deltaY);
+
+    // Determine primary axis: whichever has greater movement wins
+    if (absDeltaY > absDeltaX && absDeltaY > SWIPE_THRESHOLD) {
+      // Vertical swipe
+      const direction = this._deltaY > 0 ? 'down' : 'up';
+      this._deltaX = 0;
+      this._deltaY = 0;
+      execute(direction === 'down' ? this._config.downCallback : this._config.upCallback);
+      return;
+    }
+    if (absDeltaX > SWIPE_THRESHOLD) {
+      // Horizontal swipe
+      const direction = absDeltaX / this._deltaX;
+      this._deltaX = 0;
+      this._deltaY = 0;
+      if (!direction) {
+        return;
+      }
+      execute(direction > 0 ? this._config.rightCallback : this._config.leftCallback);
+      return;
+    }
+    this._deltaX = 0;
+    this._deltaY = 0;
+  }
+  _initEvents() {
+    if (this._supportPointerEvents) {
+      EventHandler.on(this._element, EVENT_POINTERDOWN, event => this._start(event));
+      EventHandler.on(this._element, EVENT_POINTERUP, event => this._end(event));
+      this._element.classList.add(CLASS_NAME_POINTER_EVENT);
+    } else {
+      EventHandler.on(this._element, EVENT_TOUCHSTART, event => this._start(event));
+      EventHandler.on(this._element, EVENT_TOUCHMOVE, event => this._move(event));
+      EventHandler.on(this._element, EVENT_TOUCHEND, event => this._end(event));
+    }
+  }
+  _eventIsPointerPenTouch(event) {
+    return this._supportPointerEvents && (event.pointerType === POINTER_TYPE_PEN || event.pointerType === POINTER_TYPE_TOUCH);
+  }
+
+  // Static
+  static isSupported() {
+    return 'ontouchstart' in document.documentElement || navigator.maxTouchPoints > 0;
+  }
+}
 
 /**
  * --------------------------------------------------------------------------

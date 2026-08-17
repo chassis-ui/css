@@ -231,13 +231,22 @@ File inputs with addons create clear upload interfaces while maintaining browser
 Create rich, contextual inputs by combining input groups with Chassis CSS's dropdown component for additional options or actions.
 
 <Example code={`<div class="input-group">
-    <button class="button outline secondary menu-toggle" type="button" data-cx-toggle="menu" aria-expanded="false">Options</button>
+    <button class="button outline secondary caret" type="button" data-cx-toggle="menu" aria-expanded="false">Options</button>
     <ul class="menu">
       <li><a class="menu-item" href="#">Action</a></li>
       <li><a class="menu-item" href="#">Another action</a></li>
       <li><a class="menu-item" href="#">Something else</a></li>
     </ul>
     <input type="text" class="form-input" aria-label="Text input with dropdown">
+  </div>
+  <div class="input-group">
+    <input type="text" class="form-input" aria-label="Text input with dropdown">
+    <button class="button outline secondary caret" type="button" data-cx-toggle="menu" aria-expanded="false">Options</button>
+    <ul class="menu">
+      <li><a class="menu-item" href="#">Action</a></li>
+      <li><a class="menu-item" href="#">Another action</a></li>
+      <li><a class="menu-item" href="#">Something else</a></li>
+    </ul>
   </div>`} />
 
 Dropdowns within input groups maintain proper z-indexing to ensure menus appear above other form elements. The border radius is automatically managed to create a seamless visual connection.

@@ -4,6 +4,8 @@ description: How right-to-left layout works in Chassis CSS — logical propertie
 toc: true
 ---
 
+import RTLSwitch from '@components/RTLSwitch.astro'
+
 ## How it works
 
 Chassis CSS uses **CSS logical properties** throughout the framework. Instead of physical directions like `left` and `right`, the compiled CSS uses directional concepts that adapt to the writing mode of the document:
@@ -35,38 +37,9 @@ That single change is enough for layouts, spacing, and most components to render
 The toggle switches `dir` and `lang` on the `<html>` element, showing how logical properties adapt without any stylesheet change.
 
 <div class="cxd-example">
-
-  <div class="form-check">
-    <span class="check-input">
-      <input type="checkbox" value="" id="rtlSwitch" role="switch" />
-    </span>
-    <label for="rtlSwitch">Enable RTL mode</label>
-  </div>
-
+  <RTLSwitch />
 </div>
 
-<script>
-{`
-(function() {
-  const rtlSwitch = document.getElementById('rtlSwitch');
-  const htmlElement = document.documentElement;
-
-  if (htmlElement.getAttribute('dir') === 'rtl') {
-    rtlSwitch.checked = true;
-  }
-
-  rtlSwitch.addEventListener('change', function() {
-    if (this.checked) {
-      htmlElement.setAttribute('dir', 'rtl');
-      htmlElement.setAttribute('lang', 'ar');
-    } else {
-      htmlElement.setAttribute('dir', 'ltr');
-      htmlElement.setAttribute('lang', 'en');
-    }
-  });
-})();
-`}
-</script>
 
 ## Explicit RTL overrides
 

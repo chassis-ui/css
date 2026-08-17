@@ -16,6 +16,15 @@
 @layer components {
 
   %button {
+    // Set body colors for no-context buttons
+    --bg-idle: var(--bg-main);
+    --bg-hover: var(--bg-even);
+    --bg-press: var(--bg-evident);
+    --bg-disabled: var(--bg-main);
+    --fg-idle: var(--fg-main);
+    --fg-hover: var(--fg-main);
+    --fg-press: var(--fg-main);
+    --fg-disabled: var(--fg-slight);
     // scss-docs-start button-idle-css-vars
     --fg-color: var(--button-idle-fg-color, var(--fg-idle));
     --bg-color: var(--button-idle-bg-color, var(--bg-idle));
@@ -46,9 +55,6 @@
 
     &:focus-visible,
     &.button-check:has(> input:focus-visible) {
-      --fg-color: var(--fg-hover);
-      --bg-color: var(--bg-hover);
-      --border-color: var(--border-hover);
       --focus-ring-color: var(--button-focus-ring-color, #{$button-focus-ring-color});
       --focus-ring-offset: #{$button-focus-ring-offset};
       @include gradient();
@@ -207,10 +213,10 @@
     --bg-idle: var(--button-smooth-bg-idle, var(--context-bg-even));
     --border-idle: var(--button-smooth-border-idle, transparent);
     --fg-hover: var(--button-smooth-fg-hover, var(--context-fg-main));
-    --bg-hover: var(--button-smooth-bg-hover, var(--context-bg-main));
+    --bg-hover: var(--button-smooth-bg-hover, var(--context-bg-evident));
     --border-hover: var(--button-smooth-border-hover, transparent);
     --fg-press: var(--button-smooth-fg-press, var(--context-fg-main));
-    --bg-press: var(--button-smooth-bg-press, var(--context-bg-evident));
+    --bg-press: var(--button-smooth-bg-press, var(--context-bg-even));
     --border-press: var(--button-smooth-border-press, transparent);
     --fg-disabled: var(--button-smooth-fg-disabled, var(--context-fg-slight));
     --bg-disabled: var(--button-smooth-bg-disabled, var(--context-bg-main));

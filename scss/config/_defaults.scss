@@ -85,7 +85,8 @@ $position-values: (
   25: 25%,
   50: 50%,
   75: 75%,
-  100: 100%
+  100: 100%,
+  auto: auto
 ) !default;
 // scss-docs-end position-map
 
@@ -366,11 +367,12 @@ $stretched-link-z-index:                  1 !default;
 
 // Icon links
 // scss-docs-start icon-link-variables
-$icon-link-gap:               .375rem !default;
-$icon-text-underline-offset:  .25em !default;
-$icon-link-icon-size:         1em !default;
-$icon-link-icon-transition:   .2s ease-in-out transform !default;
-$icon-link-icon-transform:    translate3d(.25em, 0, 0) !default;
+$icon-link-gap:                 .375rem !default;
+$icon-text-underline-offset:    .25em !default;
+$icon-link-icon-size:           1em !default;
+$icon-link-icon-transition:     .2s ease-in-out transform !default;
+$icon-link-icon-transform:      translate3d(.25em, 0, 0) !default;
+$icon-link-icon-transform-rtl:  translate3d(-.25em, 0, 0) !default;
 // scss-docs-end icon-link-variables
 
 
@@ -1000,31 +1002,29 @@ $menu-item-disabled-icon-context:   var(--icon-slight) !default;
 //
 
 // scss-docs-start pagination-variables
-$pagination-padding-y:                  $button-medium-padding-y !default;
-$pagination-padding-x:                  $button-medium-padding-x !default;
 $pagination-border-radius:              $button-medium-border-radius !default;
 $pagination-font:                       $button-medium-font !default;
+$pagination-min-size:                   $button-medium-min-size !default;
 
-$pagination-large-padding-y:            $button-large-padding-y !default;
-$pagination-large-padding-x:            $button-large-padding-x !default;
 $pagination-large-border-radius:        $button-large-border-radius !default;
 $pagination-large-font:                 $button-large-font !default;
+$pagination-large-min-size:             $button-large-min-size !default;
 
-$pagination-small-padding-y:            $button-small-padding-y !default;
-$pagination-small-padding-x:            $button-small-padding-x !default;
 $pagination-small-border-radius:        $button-small-border-radius !default;
 $pagination-small-font:                 $button-small-font !default;
+$pagination-small-min-size:             $button-small-min-size !default;
 
+$pagination-padding-y:                  var(--space-2xsmall) !default;
+$pagination-padding-x:                  var(--space-2xsmall) !default;
+$pagination-gap:                        var(--space-xsmall) !default;
 $pagination-border-width:               var(--border-width-medium) !default;
-$pagination-margin-start:               calc(#{$pagination-border-width} * -1) !default;
-$pagination-border-color:               var(--border-main) !default;
+$pagination-border-color:               var(--border-subtle) !default;
+$pagination-icon-size:                  1.125em !default;
 
 $pagination-idle-fg-color:              var(--fg-main) !default;
 $pagination-idle-bg-color:              var(--bg-main) !default;
-$pagination-focus-fg-color:             var(--fg-main) !default;
-$pagination-focus-bg-color:             var(--bg-main) !default;
-$pagination-hover-fg-color:             var(--fg-hover) !default;
-$pagination-hover-bg-color:             var(--bg-hover) !default;
+$pagination-hover-fg-color:             var(--fg-main) !default;
+$pagination-hover-bg-color:             var(--bg-even) !default;
 $pagination-active-fg-color:            var(--fg-active) !default;
 $pagination-active-bg-color:            var(--bg-active) !default;
 $pagination-active-border-color:        var(--bg-active) !default;
@@ -1032,7 +1032,6 @@ $pagination-disabled-fg-color:          var(--fg-slight) !default;
 $pagination-disabled-bg-color:          var(--bg-main) !default;
 $pagination-disabled-border-color:      $pagination-border-color !default;
 
-$pagination-icon-size:                  var(--icon-small) !default;
 $pagination-focus-ring-offset:          0px !default;
 
 $pagination-transition:                 color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out !default;
@@ -1044,8 +1043,10 @@ $pagination-transition:                 color .15s ease-in-out, background-color
 //
 
 // scss-docs-start skeletons
-$skeleton-opacity-max:           .3 !default;
+$skeleton-opacity-max:           .25 !default;
 $skeleton-opacity-min:           .15 !default;
+$skeleton-color:                 var(--fg-color) !default;
+$skeleton-opacity-wave:          .75 !default;
 // scss-docs-end skeletons
 
 
@@ -1377,44 +1378,29 @@ $breadcrumb-link-hover-color:   inherit !default;
 //
 
 // scss-docs-start carousel-variables
-$carousel-control-color:              var(--white-fg-main) !default;
-$carousel-control-size:               15% !default;
-$carousel-control-opacity:            .5 !default;
-$carousel-control-hover-opacity:      .9 !default;
-$carousel-control-transition:         opacity .15s ease !default;
-// hit zone = size + padding * 2
-$carousel-indicator-width:            2rem !default; //determines hit zone
-$carousel-indicator-height:           .5rem !default; //determines hit zone
-$carousel-indicator-padding-y:        .5rem !default; //determines hit zone
-$carousel-indicator-padding-x:        .25rem !default; //determines hit zone
-$carousel-indicator-border-radius:    .5rem !default;
-$carousel-indicator-margin:           0 !default;
-$carousel-indicator-opacity:          .5 !default;
-$carousel-indicator-color:            var(--white-fg-main) !default;
-$carousel-indicator-active-opacity:   1 !default;
-$carousel-indicator-transition:       opacity .6s ease !default;
+$carousel-gap:                        var(--space-medium) !default;
 
-$carousel-caption-width:              70% !default;
-$carousel-caption-color:              var(--white-fg-main) !default;
-$carousel-caption-padding-y:          1.25rem !default;
-$carousel-caption-spacer:             1.25rem !default;
+$carousel-items:                      1 !default;
+$carousel-items-gap:                  0px !default;
+$carousel-items-peek:                 0px !default;
 
-$carousel-control-icon-size:          2rem !default;
+$carousel-indicator-idle-width:       $pagination-dot-idle-width * 1.5 !default; //determines hit zone
+$carousel-indicator-idle-height:      $pagination-dot-idle-height * 1.5 !default; //determines hit zone
+$carousel-indicator-idle-radius:      $pagination-dot-idle-radius !default; //determines hit zone
+$carousel-indicator-active-width:     $pagination-dot-active-width * 1.5 !default; //determines hit zone
+$carousel-indicator-active-height:    $pagination-dot-active-height * 1.5 !default; //determines hit zone
+$carousel-indicator-active-radius:    $pagination-dot-active-radius !default; //determines hit zone
+$carousel-indicator-gap:              $pagination-dot-gap !default;
+$carousel-indicator-idle-color:       $pagination-dot-idle-color !default;
+$carousel-indicator-active-color:     $pagination-dot-active-color !default;
+$carousel-indicator-transition:       opacity .6s ease, width .3s ease !default;
 
-$carousel-control-prev-icon:          "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor'><path d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0'/></svg>" !default;
-$carousel-control-next-icon:          "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor'><path d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708'/></svg>" !default;
+$carousel-overlay-inset:              auto 1rem 1rem !default;
+$carousel-overlay-color:              var(--white) !default;
 
-$carousel-control-prev-bg:            linear-gradient(var(--logical-angle-90, 90deg), #{to-opacity($black, .25)}, #{to-opacity($black, .001)}) !default;
-$carousel-control-next-bg:            linear-gradient(var(--logical-angle-270, 270deg), #{to-opacity($black, .25)}, #{to-opacity($black, .001)}) !default;
-
-$carousel-transition-duration:        .6s !default;
-$carousel-transition:                 transform $carousel-transition-duration ease-in-out !default; // Define transform transition first if using multiple transitions (e.g., `transform 2s ease, opacity .5s ease-out`)
+$carousel-fade-duration:              .6s !default;
+$carousel-fade-timing:                ease !default;
 // scss-docs-end carousel-variables
-
-// scss-docs-start carousel-dark-variables
-// $carousel-dark-caption-color:        $black !default;
-// $carousel-dark-control-icon-filter:  invert(1) grayscale(100) !default;
-// scss-docs-end carousel-dark-variables
 
 
 //
@@ -1426,7 +1412,7 @@ $carousel-transition:                 transform $carousel-transition-duration ea
 $default-spinner:           spinner-border !default; // or spinner-grow
 // These variables are also reserved as CSS variables.
 $spinner-color:             var(--icon-color) !default;
-$spinner-size:              1.6rem !default;
+$spinner-size:              var(--icon-size) !default;
 $spinner-vertical-align:    -.125em !default;
 $spinner-border-width:      calc(var(--size) / 6) !default;
 $spinner-animation-speed:   .75s !default;
