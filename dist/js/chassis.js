@@ -3912,6 +3912,43 @@ const EVENT_FOCUSIN_DATA_API = `focusin${EVENT_KEY$a}${DATA_API_KEY$5}`;
 const SELECTOR_DATA_TOGGLE$6 = '[data-cx-toggle="datepicker"]';
 const HIDE_DELAY = 100; // ms delay before hiding after selection
 
+const styles = {
+  calendar: 'datepicker',
+  controls: 'datepicker-controls',
+  grid: 'datepicker-grid',
+  column: 'datepicker-column',
+  header: 'datepicker-header',
+  headerContent: 'datepicker-header-content',
+  month: 'datepicker-month',
+  year: 'datepicker-year',
+  arrowPrev: 'datepicker-arrow datepicker-arrow-prev',
+  arrowNext: 'datepicker-arrow datepicker-arrow-next',
+  wrapper: 'datepicker-wrapper',
+  content: 'datepicker-content',
+  months: 'datepicker-months',
+  monthsMonth: 'datepicker-months-month',
+  years: 'datepicker-years',
+  yearsYear: 'datepicker-years-year',
+  week: 'datepicker-week',
+  weekDay: 'datepicker-week-day',
+  weekNumbers: 'datepicker-week-numbers',
+  weekNumbersTitle: 'datepicker-week-numbers-title',
+  weekNumbersContent: 'datepicker-week-numbers-content',
+  weekNumber: 'datepicker-week-number',
+  dates: 'datepicker-dates',
+  datesRow: 'datepicker-dates-row',
+  date: 'datepicker-date',
+  dateBtn: 'datepicker-date-btn',
+  datePopup: 'datepicker-date-popup',
+  dateRangeTooltip: 'datepicker-date-range-tooltip',
+  time: 'datepicker-time',
+  timeContent: 'datepicker-time-content',
+  timeHour: 'datepicker-time-hour',
+  timeMinute: 'datepicker-time-minute',
+  timeKeeping: 'datepicker-time-keeping',
+  timeRanges: 'datepicker-time-ranges',
+  timeRange: 'datepicker-time-range'
+};
 const Default$b = {
   datepickerTheme: null,
   // 'light', 'dark', 'auto' - explicit theme for datepicker popover only
@@ -3936,7 +3973,9 @@ const Default$b = {
   // 'single', 'multiple', 'multiple-ranged'
   placement: 'left',
   // 'left', 'center', 'right', 'auto'
-  vcpOptions: {} // Pass-through for any VCP option
+  vcpOptions: {},
+  // Pass-through for any VCP option
+  styles: styles // Pass-through for any VCP style class overrides
 };
 const DefaultType$b = {
   datepickerTheme: '(null|string)',
@@ -3952,7 +3991,8 @@ const DefaultType$b = {
   selectedDates: 'array',
   selectionMode: 'string',
   placement: 'string',
-  vcpOptions: 'object'
+  vcpOptions: 'object',
+  styles: 'object'
 };
 
 /**
@@ -3980,16 +4020,25 @@ class Datepicker extends BaseComponent {
 
   // Public
   toggle() {
+    // Check _calendar first: dispose() nulls every instance property
+    // (including _config), and a deferred hide() (see _maybeHideAfterSelection)
+    // can still fire after dispose.
+    if (!this._calendar) {
+      return;
+    }
     if (this._config.inline) {
       return; // Inline calendars are always visible
     }
     return this._isShown ? this.hide() : this.show();
   }
   show() {
+    if (!this._calendar) {
+      return;
+    }
     if (this._config.inline) {
       return; // Inline calendars are always visible
     }
-    if (!this._calendar || isDisabled(this._element) || this._isShown) {
+    if (isDisabled(this._element) || this._isShown) {
       return;
     }
     const showEvent = EventHandler.trigger(this._element, EVENT_SHOW$4);
@@ -4001,10 +4050,13 @@ class Datepicker extends BaseComponent {
     EventHandler.trigger(this._element, EVENT_SHOWN$3);
   }
   hide() {
+    if (!this._calendar) {
+      return;
+    }
     if (this._config.inline) {
       return; // Inline calendars are always visible
     }
-    if (!this._calendar || !this._isShown) {
+    if (!this._isShown) {
       return;
     }
     const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE$3);
@@ -4039,6 +4091,19 @@ class Datepicker extends BaseComponent {
   }
 
   // Private
+  _configAfterMerge(config) {
+    // Default.selectedDates/vcpOptions/styles are shared, mutable objects.
+    // Clone them per instance so one datepicker can't leak state (or have
+    // a third-party library mutate them) into another's config.
+    config.selectedDates = [...config.selectedDates];
+    config.vcpOptions = {
+      ...config.vcpOptions
+    };
+    config.styles = {
+      ...config.styles
+    };
+    return config;
+  }
   _initCalendar() {
     this._isInput = this._element.tagName === 'INPUT';
     this._isInline = this._config.inline;
@@ -4074,6 +4139,9 @@ class Datepicker extends BaseComponent {
     if (!selectedDates || selectedDates.length === 0) {
       return;
     }
+    this._updateOutputs(selectedDates);
+  }
+  _updateOutputs(selectedDates) {
     const formattedDate = this._formatDateForInput(selectedDates);
     if (this._isInput) {
       this._element.value = formattedDate;
@@ -4170,6 +4238,7 @@ class Datepicker extends BaseComponent {
       positionToInput: this._config.placement,
       firstWeekday: this._config.firstWeekday,
       locale: this._config.locale,
+      styles: this._config.styles,
       selectionDatesMode: this._config.selectionMode,
       selectedDates: this._config.selectedDates,
       displayMonthsCount: this._config.displayMonthsCount,
@@ -4206,16 +4275,7 @@ class Datepicker extends BaseComponent {
   _handleDateClick(self, event) {
     const selectedDates = [...self.context.selectedDates];
     if (selectedDates.length > 0) {
-      const formattedDate = this._formatDateForInput(selectedDates);
-      if (this._isInput) {
-        this._element.value = formattedDate;
-      }
-      if (this._boundInput) {
-        this._boundInput.value = selectedDates.join(',');
-      }
-      if (this._displayElement) {
-        this._displayElement.textContent = formattedDate;
-      }
+      this._updateOutputs(selectedDates);
     }
     EventHandler.trigger(this._element, EVENT_CHANGE, {
       dates: selectedDates,
