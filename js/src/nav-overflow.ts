@@ -9,6 +9,7 @@ import BaseComponent from './base-component.js'
 import EventHandler from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
 import { isDisabled } from './util/index.js'
+import { DefaultIconAllowlist, sanitizeHtml } from './util/sanitizer.js'
 
 /**
  * Constants
@@ -20,32 +21,37 @@ const EVENT_KEY = `.${DATA_KEY}`
 
 const EVENT_UPDATE = `update${EVENT_KEY}`
 const EVENT_OVERFLOW = `overflow${EVENT_KEY}`
+const EVENT_RESIZE = `resize${EVENT_KEY}`
 
 const CLASS_NAME_OVERFLOW = 'nav-overflow'
 const CLASS_NAME_OVERFLOW_MENU = 'nav-overflow-menu'
 const CLASS_NAME_HIDDEN = 'd-none'
+const CLASS_NAME_KEEP = 'nav-overflow-keep'
 
+const SELECTOR_NAV = '.nav'
 const SELECTOR_NAV_ITEM = '.nav-item'
 const SELECTOR_NAV_LINK = '.nav-link'
 const SELECTOR_OVERFLOW_TOGGLE = '.nav-overflow-toggle'
 const SELECTOR_OVERFLOW_MENU = '.nav-overflow-menu'
 const SELECTOR_CUSTOM_ICON = '[data-cx-overflow-icon]'
-const CLASS_NAME_KEEP = 'nav-overflow-keep'
 
 type NavOverflowConfig = {
   collapseBelow: number | string
   iconPlacement: string
   menuPlacement: string
-  moreText: string
+  moreText: string | false
   moreIcon: string
   threshold: number
 }
+
+// Also names an icon-only toggle, which has no text to name it
+const DEFAULT_TEXT = 'More'
 
 const Default: NavOverflowConfig = {
   collapseBelow: 0,
   iconPlacement: 'start',
   menuPlacement: 'bottom-end',
-  moreText: 'More',
+  moreText: DEFAULT_TEXT,
   moreIcon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/></svg>',
   threshold: 0 // Minimum items to keep visible before showing overflow
 }
@@ -54,7 +60,7 @@ const DefaultType = {
   collapseBelow: '(number|string)',
   iconPlacement: 'string',
   menuPlacement: 'string',
-  moreText: 'string',
+  moreText: '(string|boolean)',
   moreIcon: 'string',
   threshold: 'number'
 }
@@ -65,22 +71,32 @@ const DefaultType = {
 
 class NavOverflow extends BaseComponent {
   protected declare _config: NavOverflowConfig
+  protected declare _nav: HTMLElement
   protected declare _items: HTMLElement[]
   protected declare _overflowItems: HTMLElement[]
   protected declare _overflowMenu: HTMLElement | null
   protected declare _overflowToggle: HTMLElement | null
   protected declare _resizeObserver: ResizeObserver | null
+  protected declare _resizeHandler: (() => void) | null
   protected declare _collapseBelow: number
   protected declare _resizeRAF: number | null
 
   constructor(element?: string | Element | null, config?: Partial<NavOverflowConfig> | null) {
     super(element, config)
 
+    const nav = SelectorEngine.findOne(SELECTOR_NAV, this._element)
+
+    if (!nav) {
+      throw new TypeError(`${this._element.outerHTML} has no child ${SELECTOR_NAV} to collapse`)
+    }
+
+    this._nav = nav
     this._items = []
     this._overflowItems = []
     this._overflowMenu = null
     this._overflowToggle = null
     this._resizeObserver = null
+    this._resizeHandler = null
     this._collapseBelow = 0
     this._resizeRAF = null
 
@@ -111,6 +127,11 @@ class NavOverflow extends BaseComponent {
       this._resizeObserver.disconnect()
     }
 
+    // Remove this instance's fallback resize listener from window
+    if (this._resizeHandler) {
+      EventHandler.off(window, EVENT_RESIZE, this._resizeHandler)
+    }
+
     if (this._resizeRAF !== null) {
       cancelAnimationFrame(this._resizeRAF)
     }
@@ -128,11 +149,12 @@ class NavOverflow extends BaseComponent {
 
   // Private
   protected _init(): void {
-    // Add overflow class to nav
+    // Mark the wrapper so its nav stops wrapping and starts collapsing
     this._element.classList.add(CLASS_NAME_OVERFLOW)
 
-    // Get all nav items
-    this._items = [...SelectorEngine.find(SELECTOR_NAV_ITEM, this._element)]
+    // Get all nav items, minus a toggle the author already wrote
+    this._items = SelectorEngine.find(SELECTOR_NAV_ITEM, this._nav)
+      .filter(item => !item.querySelector(SELECTOR_OVERFLOW_TOGGLE))
 
     // Store original order data
     for (const [index, item] of this._items.entries()) {
@@ -161,25 +183,53 @@ class NavOverflow extends BaseComponent {
       return
     }
 
-    const iconHtml = this._resolveIcon()
-    const iconSpan = `<span class="nav-overflow-icon">${iconHtml}</span>`
-    const textSpan = `<span class="nav-overflow-text">${this._config.moreText}</span>`
-    const toggleContent = this._config.iconPlacement === 'end' ?
-      `${textSpan}${iconSpan}` :
-      `${iconSpan}${textSpan}`
+    // Build with DOM APIs instead of string templates so user-supplied
+    // moreText / menuPlacement / moreIcon cannot break out of their slots.
+    const { moreText } = this._config
+    const label = typeof moreText === 'string' ? moreText : ''
 
     const overflowItem = document.createElement('li')
     overflowItem.className = 'nav-item nav-overflow-item'
-    overflowItem.innerHTML = `
-      <button class="nav-link nav-overflow-toggle" type="button" data-cx-toggle="menu" data-cx-placement="${this._config.menuPlacement}" aria-expanded="false">
-        ${toggleContent}
-      </button>
-      <div class="${CLASS_NAME_OVERFLOW_MENU} menu"></div>
-    `
 
-    this._element.append(overflowItem)
-    this._overflowToggle = overflowItem.querySelector(SELECTOR_OVERFLOW_TOGGLE)
-    this._overflowMenu = overflowItem.querySelector(SELECTOR_OVERFLOW_MENU)
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'nav-link nav-overflow-toggle'
+    button.setAttribute('data-cx-toggle', 'menu')
+    button.setAttribute('data-cx-placement', this._config.menuPlacement)
+    button.setAttribute('aria-expanded', 'false')
+
+    // An icon-only toggle still needs a name. Fall back to the default text,
+    // and let authors who need another one write their own toggle.
+    if (label === '') {
+      button.setAttribute('aria-label', DEFAULT_TEXT)
+    }
+
+    const iconSpan = document.createElement('span')
+    iconSpan.className = 'nav-overflow-icon'
+    iconSpan.innerHTML = sanitizeHtml(this._resolveIcon(), DefaultIconAllowlist)
+
+    if (label === '') {
+      button.append(iconSpan)
+    } else {
+      const textSpan = document.createElement('span')
+      textSpan.className = 'nav-overflow-text'
+      textSpan.textContent = label
+
+      if (this._config.iconPlacement === 'end') {
+        button.append(textSpan, iconSpan)
+      } else {
+        button.append(iconSpan, textSpan)
+      }
+    }
+
+    const menu = document.createElement('div')
+    menu.className = `${CLASS_NAME_OVERFLOW_MENU} menu`
+
+    overflowItem.append(button, menu)
+    this._nav.append(overflowItem)
+
+    this._overflowToggle = button
+    this._overflowMenu = menu
   }
 
   protected _resolveIcon(): string {
@@ -195,6 +245,7 @@ class NavOverflow extends BaseComponent {
 
     customIconElement.remove()
 
+    // Returned HTML is sanitized in `_createOverflowMenu` before insertion.
     return iconHtml
   }
 
@@ -216,11 +267,16 @@ class NavOverflow extends BaseComponent {
 
   protected _setupResizeObserver(): void {
     if (typeof ResizeObserver === 'undefined') {
-      // Fallback for older browsers
-      EventHandler.on(window, 'resize', () => this._scheduleCalculateOverflow())
+      // Fallback for older browsers. Keep a per-instance handler so dispose()
+      // removes only this instance's window listener, not every instance's.
+      this._resizeHandler = () => this._scheduleCalculateOverflow()
+      EventHandler.on(window, EVENT_RESIZE, this._resizeHandler)
       return
     }
 
+    // Observe the wrapper, never the nav. Collapsing items changes the nav's
+    // width, so observing the nav would feed this component's own output back
+    // in as its input and loop forever.
     this._resizeObserver = new ResizeObserver(() => {
       this._scheduleCalculateOverflow()
     })
@@ -241,65 +297,52 @@ class NavOverflow extends BaseComponent {
     })
   }
 
-  protected _getOverflowNavItem(): HTMLElement | null {
-    return (this._overflowToggle?.closest(SELECTOR_NAV_ITEM) as HTMLElement | null) ?? null
+  // Space the nav has to work with, taken from the wrapper's content box
+  protected _availableWidth(): number {
+    const { paddingInlineStart, paddingInlineEnd } = getComputedStyle(this._element)
+    const padding = (Number.parseFloat(paddingInlineStart) || 0) + (Number.parseFloat(paddingInlineEnd) || 0)
+
+    return this._element.clientWidth - padding
+  }
+
+  protected _navGap(): number {
+    return Number.parseFloat(getComputedStyle(this._nav).columnGap) || 0
   }
 
   protected _calculateOverflow(): void {
-    // First, restore all items to measure properly
+    // Measure with every item shown, so widths never depend on the last pass.
+    // Restoring and re-collapsing within one callback is a net-zero change, so
+    // it does not notify the observer again.
     this._restoreItems()
 
-    const navWidth = this._element.offsetWidth
-    const overflowItem = this._getOverflowNavItem()
+    const availableWidth = this._availableWidth()
+    const overflowItem = this._overflowToggle?.closest<HTMLElement>(SELECTOR_NAV_ITEM) ?? null
+    const candidates = this._items.filter(item => !item.classList.contains(CLASS_NAME_KEEP))
 
-    // When below the collapseBelow threshold, force all items into overflow
-    if (this._collapseBelow > 0 && navWidth < this._collapseBelow) {
-      const itemsToOverflow = this._items.filter(
-        item => !item.classList.contains(CLASS_NAME_KEEP)
-      )
-
-      this._moveToOverflow(itemsToOverflow)
-
-      if (overflowItem) {
-        if (itemsToOverflow.length > 0) {
-          overflowItem.classList.remove(CLASS_NAME_HIDDEN)
-        } else {
-          overflowItem.classList.add(CLASS_NAME_HIDDEN)
-        }
-      }
-
-      if (itemsToOverflow.length > 0) {
-        EventHandler.trigger(this._element, EVENT_OVERFLOW, {
-          overflowCount: itemsToOverflow.length,
-          visibleCount: this._items.length - itemsToOverflow.length
-        })
-      }
-
+    // Below the collapseBelow threshold, everything goes into the menu
+    if (this._collapseBelow > 0 && availableWidth < this._collapseBelow) {
+      this._applyOverflow(candidates, overflowItem)
       return
     }
 
-    const overflowWidth = overflowItem?.offsetWidth || 0
+    const gap = this._navGap()
 
-    // Keep items are always visible; subtract their widths so the threshold
-    // reflects actual available space for non-keep items.
+    // Keep items and the toggle are always visible, so their widths come off
+    // the space left for the rest
     const keepWidth = this._items
       .filter(item => item.classList.contains(CLASS_NAME_KEEP))
-      .reduce((sum, item) => sum + item.offsetWidth, 0)
+      .reduce((sum, item) => sum + item.offsetWidth + gap, 0)
+    const overflowWidth = overflowItem ? overflowItem.offsetWidth + gap : 0
+    const limit = availableWidth - keepWidth - overflowWidth
 
     let usedWidth = 0
-    const itemsToOverflow: HTMLElement[] = []
-    const overflowThreshold = navWidth - overflowWidth - keepWidth - 10 // 10px buffer
+    let itemsToOverflow: HTMLElement[] = []
 
-    // Calculate which items need to overflow (skip items with keep class)
-    for (const item of this._items) {
-      // Never overflow items with the keep class
-      if (item.classList.contains(CLASS_NAME_KEEP)) {
-        continue
-      }
+    for (const item of candidates) {
+      usedWidth += item.offsetWidth + gap
 
-      usedWidth += item.offsetWidth
-
-      if (usedWidth > overflowThreshold) {
+      // Allow a pixel of slack for sub-pixel layout rounding
+      if (usedWidth > limit + 1) {
         itemsToOverflow.push(item)
       }
     }
@@ -307,29 +350,24 @@ class NavOverflow extends BaseComponent {
     // Check if we need threshold minimum visible
     const visibleCount = this._items.length - itemsToOverflow.length
     if (visibleCount < this._config.threshold && this._items.length > this._config.threshold) {
-      // Add more items to overflow until we reach threshold (but not keep items)
-      const toMove = this._items.slice(this._config.threshold).filter(item => !item.classList.contains(CLASS_NAME_KEEP))
-      itemsToOverflow.length = 0
-      itemsToOverflow.push(...toMove)
+      // Move everything past the threshold instead, minus the keep items
+      itemsToOverflow = this._items
+        .slice(this._config.threshold)
+        .filter(item => !item.classList.contains(CLASS_NAME_KEEP))
     }
 
-    // Move items to overflow menu
-    this._moveToOverflow(itemsToOverflow)
+    this._applyOverflow(itemsToOverflow, overflowItem)
+  }
 
-    // Show/hide overflow toggle
-    if (overflowItem) {
-      if (itemsToOverflow.length > 0) {
-        overflowItem.classList.remove(CLASS_NAME_HIDDEN)
-      } else {
-        overflowItem.classList.add(CLASS_NAME_HIDDEN)
-      }
-    }
+  protected _applyOverflow(items: HTMLElement[], overflowItem: HTMLElement | null): void {
+    this._moveToOverflow(items)
 
-    // Trigger overflow event if items changed
-    if (itemsToOverflow.length > 0) {
+    overflowItem?.classList.toggle(CLASS_NAME_HIDDEN, items.length === 0)
+
+    if (items.length > 0) {
       EventHandler.trigger(this._element, EVENT_OVERFLOW, {
-        overflowCount: itemsToOverflow.length,
-        visibleCount: this._items.length - itemsToOverflow.length
+        overflowCount: items.length,
+        visibleCount: this._items.length - items.length
       })
     }
   }
@@ -376,7 +414,8 @@ class NavOverflow extends BaseComponent {
       delete item.dataset.cxNavOverflow
     }
 
-    this._getOverflowNavItem()?.classList.remove(CLASS_NAME_HIDDEN)
+    // Show the toggle too, so it is measured at its real width and not zero
+    this._overflowToggle?.closest(SELECTOR_NAV_ITEM)?.classList.remove(CLASS_NAME_HIDDEN)
 
     if (this._overflowMenu) {
       this._overflowMenu.innerHTML = ''

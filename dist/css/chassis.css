@@ -7265,24 +7265,23 @@
     }
   }
   .nav-overflow {
+    container-type: inline-size;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .nav-overflow > .nav {
+    display: flex;
     flex-wrap: nowrap;
     min-width: 0;
   }
-  .nav-pills.nav-overflow {
-    display: flex;
-  }
-  .navbar-nav.nav-overflow {
-    flex: 1 1 0;
+  .nav-overflow > .nav > .nav-item {
+    flex-shrink: 0;
   }
   .nav-overflow-item {
-    flex-shrink: 0;
     margin-inline-start: auto;
   }
   .nav-overflow [data-cx-nav-overflow=true] {
     display: none;
-  }
-  .nav-overflow-keep {
-    flex-shrink: 0;
   }
   .notification {
     --cx-fg-color: var(--cx-notification-fg-color, var(--cx-fg-main));

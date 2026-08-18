@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- **Breaking:** `NavOverflow` now requires the `.nav` to be wrapped in a `.nav-overflow` element, with `data-cx-toggle="nav-overflow"` moved from the `.nav` to that wrapper. The component previously measured, observed, and collapsed the same `.nav` element it was mutating — collapsing items changed the nav's own width, so on nav styles/layouts where that width wasn't otherwise pinned (e.g. `.nav-pills`, or a `.nav` whose flex ancestor let its min-content width leak through), the ResizeObserver could fire repeatedly and either never settle on a stable collapsed state or flicker on load. The wrapper is measured/observed instead, with `container-type: inline-size` closing off the remaining path for the nav's content width to affect the wrapper's own size. Ported from upstream Bootstrap's nav-overflow rewrite. Existing markup needs the extra wrapper element; see `site/content/docs/components/nav-overflow.mdx`
+- `NavOverflow`: nav items now keep `flex-shrink: 0` by default (previously only `.nav-overflow-keep` items did), so items are measured at their natural width instead of visually compressing under space pressure before the component gets a chance to collapse them
+- `NavOverflow`: the overflow threshold now accounts for the nav's actual `column-gap` instead of a fixed 10px buffer
+- `NavOverflow`: `moreText` now accepts `false` for an icon-only toggle; an empty string is treated the same way. Both fall back to `aria-label="More"` so the toggle keeps an accessible name instead of losing it to an empty label element
+- `NavOverflow`: the overflow toggle's icon/text are now built with DOM APIs instead of an HTML template string, and icon markup (`moreIcon` and `[data-cx-overflow-icon]`) is now run through a new `DefaultIconAllowlist` sanitizer before insertion, closing an XSS gap where a configured `moreText`/`moreIcon`/`menuPlacement` value could break out of its slot
+
+### Fixed
+- `NavOverflow`: fixed a memory/listener leak in the no-`ResizeObserver` fallback path — disposing one instance now removes only that instance's `window` resize listener instead of leaking every disposed instance's listener for the lifetime of the page
+- Fixed the nav overflow docs incorrectly referencing `update.bs.navoverflow`/`overflow.bs.navoverflow` event names (leftover from the upstream port); they are `update.cx.navoverflow`/`overflow.cx.navoverflow`
+
 ## [0.3.5] - 2026-07-25
 
 ### Changed

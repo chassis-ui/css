@@ -48,6 +48,27 @@ export const DefaultAllowlist: SanitizerAllowList = {
 }
 // js-docs-end allow-list
 
+// Allowlist for icon markup inserted via component config (e.g. NavOverflow's
+// moreIcon / data-cx-overflow-icon). Narrower than DefaultAllowlist since icons
+// are SVGs, not rich content.
+export const DefaultIconAllowlist: SanitizerAllowList = {
+  '*': ['class', 'role', ARIA_ATTRIBUTE_PATTERN],
+  // Attribute names are matched lowercased (see allowedAttribute). `viewBox` is
+  // listed as `viewbox` so the default SVG icons keep their coordinate system.
+  svg: ['xmlns', 'width', 'height', 'viewbox', 'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'focusable'],
+  path: ['d', 'fill', 'stroke', 'stroke-width', 'fill-rule', 'clip-rule'],
+  line: ['x1', 'y1', 'x2', 'y2', 'stroke', 'stroke-width', 'stroke-linecap'],
+  circle: ['cx', 'cy', 'r', 'fill', 'stroke', 'stroke-width'],
+  rect: ['x', 'y', 'width', 'height', 'rx', 'ry', 'fill', 'stroke', 'stroke-width'],
+  polyline: ['points', 'fill', 'stroke', 'stroke-width'],
+  polygon: ['points', 'fill', 'stroke', 'stroke-width'],
+  g: ['fill', 'stroke', 'stroke-width', 'transform'],
+  // No `use` here: `href` / `xlink:href` on <use> can load external SVG
+  // fragments. Apps that need sprites can extend this allowlist deliberately.
+  span: [],
+  i: []
+}
+
 const uriAttributes = new Set([
   'background',
   'cite',

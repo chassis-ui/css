@@ -3,6 +3,8 @@
 * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
 * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
 */
+//#region js/src/util/sanitizer.ts
+const ARIA_ATTRIBUTE_PATTERN = /^aria-[\w-]*$/i;
 const DefaultAllowlist = {
 	"*": [
 		"class",
@@ -10,7 +12,7 @@ const DefaultAllowlist = {
 		"id",
 		"lang",
 		"role",
-		/^aria-[\w-]*$/i
+		ARIA_ATTRIBUTE_PATTERN
 	],
 	a: [
 		"target",
@@ -56,6 +58,81 @@ const DefaultAllowlist = {
 	strong: [],
 	u: [],
 	ul: []
+};
+const DefaultIconAllowlist = {
+	"*": [
+		"class",
+		"role",
+		ARIA_ATTRIBUTE_PATTERN
+	],
+	svg: [
+		"xmlns",
+		"width",
+		"height",
+		"viewbox",
+		"fill",
+		"stroke",
+		"stroke-width",
+		"stroke-linecap",
+		"stroke-linejoin",
+		"focusable"
+	],
+	path: [
+		"d",
+		"fill",
+		"stroke",
+		"stroke-width",
+		"fill-rule",
+		"clip-rule"
+	],
+	line: [
+		"x1",
+		"y1",
+		"x2",
+		"y2",
+		"stroke",
+		"stroke-width",
+		"stroke-linecap"
+	],
+	circle: [
+		"cx",
+		"cy",
+		"r",
+		"fill",
+		"stroke",
+		"stroke-width"
+	],
+	rect: [
+		"x",
+		"y",
+		"width",
+		"height",
+		"rx",
+		"ry",
+		"fill",
+		"stroke",
+		"stroke-width"
+	],
+	polyline: [
+		"points",
+		"fill",
+		"stroke",
+		"stroke-width"
+	],
+	polygon: [
+		"points",
+		"fill",
+		"stroke",
+		"stroke-width"
+	],
+	g: [
+		"fill",
+		"stroke",
+		"stroke-width",
+		"transform"
+	],
+	span: [],
+	i: []
 };
 const uriAttributes = /* @__PURE__ */ new Set([
 	"background",
@@ -107,6 +184,6 @@ function sanitizeHtml(unsafeHtml, allowList, sanitizeFunction) {
 	return createdDocument.body.innerHTML;
 }
 //#endregion
-export { DefaultAllowlist, sanitizeHtml };
+export { DefaultAllowlist, DefaultIconAllowlist, sanitizeHtml };
 
 //# sourceMappingURL=sanitizer.js.map

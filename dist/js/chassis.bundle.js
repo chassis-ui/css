@@ -6279,7 +6279,7 @@ var Swipe = class Swipe extends Config {
 const NAME$11 = "drawer";
 const EVENT_KEY$8 = `.cx.drawer`;
 const DATA_API_KEY$3 = ".data-api";
-const EVENT_RESIZE = `resize${EVENT_KEY$8}`;
+const EVENT_RESIZE$1 = `resize${EVENT_KEY$8}`;
 const EVENT_CLICK_DATA_API$1 = `click${EVENT_KEY$8}${DATA_API_KEY$3}`;
 const EVENT_CLICK_DISMISS = `click.dismiss${EVENT_KEY$8}`;
 const EVENT_LOAD_DATA_API$2 = `load${EVENT_KEY$8}${DATA_API_KEY$3}`;
@@ -6358,7 +6358,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$1, SELECTOR_DATA_TOGGLE$4, functi
 EventHandler.on(window, EVENT_LOAD_DATA_API$2, () => {
 	for (const element of SelectorEngine.find(SELECTOR_OPEN_DRAWER)) Drawer.getOrCreateInstance(element).show();
 });
-EventHandler.on(window, EVENT_RESIZE, () => {
+EventHandler.on(window, EVENT_RESIZE$1, () => {
 	for (const element of SelectorEngine.find(SELECTOR_RESPONSIVE_OPEN)) if (getComputedStyle(element).position !== "fixed") Drawer.getOrCreateInstance(element).hide();
 });
 EventHandler.on(document, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, function(event) {
@@ -6368,6 +6368,187 @@ EventHandler.on(document, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, function(e
 	if (!target) return;
 	Drawer.getOrCreateInstance(target).hide();
 });
+//#endregion
+//#region js/src/util/sanitizer.ts
+const ARIA_ATTRIBUTE_PATTERN = /^aria-[\w-]*$/i;
+const DefaultAllowlist = {
+	"*": [
+		"class",
+		"dir",
+		"id",
+		"lang",
+		"role",
+		ARIA_ATTRIBUTE_PATTERN
+	],
+	a: [
+		"target",
+		"href",
+		"title",
+		"rel"
+	],
+	area: [],
+	b: [],
+	br: [],
+	col: [],
+	code: [],
+	dd: [],
+	div: [],
+	dl: [],
+	dt: [],
+	em: [],
+	hr: [],
+	h1: [],
+	h2: [],
+	h3: [],
+	h4: [],
+	h5: [],
+	h6: [],
+	i: [],
+	img: [
+		"src",
+		"srcset",
+		"alt",
+		"title",
+		"width",
+		"height"
+	],
+	li: [],
+	ol: [],
+	p: [],
+	pre: [],
+	s: [],
+	small: [],
+	span: [],
+	sub: [],
+	sup: [],
+	strong: [],
+	u: [],
+	ul: []
+};
+const DefaultIconAllowlist = {
+	"*": [
+		"class",
+		"role",
+		ARIA_ATTRIBUTE_PATTERN
+	],
+	svg: [
+		"xmlns",
+		"width",
+		"height",
+		"viewbox",
+		"fill",
+		"stroke",
+		"stroke-width",
+		"stroke-linecap",
+		"stroke-linejoin",
+		"focusable"
+	],
+	path: [
+		"d",
+		"fill",
+		"stroke",
+		"stroke-width",
+		"fill-rule",
+		"clip-rule"
+	],
+	line: [
+		"x1",
+		"y1",
+		"x2",
+		"y2",
+		"stroke",
+		"stroke-width",
+		"stroke-linecap"
+	],
+	circle: [
+		"cx",
+		"cy",
+		"r",
+		"fill",
+		"stroke",
+		"stroke-width"
+	],
+	rect: [
+		"x",
+		"y",
+		"width",
+		"height",
+		"rx",
+		"ry",
+		"fill",
+		"stroke",
+		"stroke-width"
+	],
+	polyline: [
+		"points",
+		"fill",
+		"stroke",
+		"stroke-width"
+	],
+	polygon: [
+		"points",
+		"fill",
+		"stroke",
+		"stroke-width"
+	],
+	g: [
+		"fill",
+		"stroke",
+		"stroke-width",
+		"transform"
+	],
+	span: [],
+	i: []
+};
+const uriAttributes = /* @__PURE__ */ new Set([
+	"background",
+	"cite",
+	"href",
+	"itemtype",
+	"longdesc",
+	"poster",
+	"src",
+	"xlink:href"
+]);
+/**
+* A pattern that recognizes URLs that are safe wrt. XSS in URL navigation
+* contexts.
+*
+* Shout-out to Angular https://github.com/angular/angular/blob/15.2.8/packages/core/src/sanitization/url_sanitizer.ts#L38
+*/
+const SAFE_URL_PATTERN = /^(?!(?:javascript|data|vbscript):)(?:[a-z0-9+.-]+:|[^&:/?#]*(?:[/?#]|$))/i;
+/**
+* A pattern that matches safe data URLs. Only matches image, video and audio
+* types — notably NOT `data:text/html`, which is an XSS vector.
+*
+* Shout-out to Angular https://github.com/angular/angular/blob/15.2.8/packages/core/src/sanitization/url_sanitizer.ts#L49
+*/
+const DATA_URL_PATTERN = /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:mp3|oga|ogg|opus));base64,[\d+/a-z=]+$/i;
+const allowedAttribute = (attribute, allowedAttributeList) => {
+	const attributeName = attribute.nodeName.toLowerCase();
+	if (allowedAttributeList.includes(attributeName)) {
+		if (uriAttributes.has(attributeName)) return Boolean(SAFE_URL_PATTERN.test(attribute.nodeValue) || DATA_URL_PATTERN.test(attribute.nodeValue));
+		return true;
+	}
+	return allowedAttributeList.filter((attributeRegex) => attributeRegex instanceof RegExp).some((regex) => regex.test(attributeName));
+};
+function sanitizeHtml(unsafeHtml, allowList, sanitizeFunction) {
+	if (!unsafeHtml.length) return unsafeHtml;
+	if (sanitizeFunction && typeof sanitizeFunction === "function") return sanitizeFunction(unsafeHtml);
+	const createdDocument = new window.DOMParser().parseFromString(unsafeHtml, "text/html");
+	const elements = [...createdDocument.body.querySelectorAll("*")];
+	for (const element of elements) {
+		const elementName = element.nodeName.toLowerCase();
+		if (!Object.keys(allowList).includes(elementName)) {
+			element.remove();
+			continue;
+		}
+		const attributeList = [...element.attributes];
+		const allowedAttributes = [...allowList["*"] || [], ...allowList[elementName] || []];
+		for (const attribute of attributeList) if (!allowedAttribute(attribute, allowedAttributes)) element.removeAttribute(attribute.nodeName);
+	}
+	return createdDocument.body.innerHTML;
+}
 //#endregion
 //#region js/src/nav-overflow.ts
 /**
@@ -6383,20 +6564,23 @@ const NAME$10 = "navoverflow";
 const EVENT_KEY$7 = `.cx.navoverflow`;
 const EVENT_UPDATE = `update${EVENT_KEY$7}`;
 const EVENT_OVERFLOW = `overflow${EVENT_KEY$7}`;
+const EVENT_RESIZE = `resize${EVENT_KEY$7}`;
 const CLASS_NAME_OVERFLOW = "nav-overflow";
 const CLASS_NAME_OVERFLOW_MENU = "nav-overflow-menu";
 const CLASS_NAME_HIDDEN = "d-none";
+const CLASS_NAME_KEEP = "nav-overflow-keep";
+const SELECTOR_NAV = ".nav";
 const SELECTOR_NAV_ITEM = ".nav-item";
 const SELECTOR_NAV_LINK = ".nav-link";
 const SELECTOR_OVERFLOW_TOGGLE = ".nav-overflow-toggle";
 const SELECTOR_OVERFLOW_MENU = ".nav-overflow-menu";
 const SELECTOR_CUSTOM_ICON = "[data-cx-overflow-icon]";
-const CLASS_NAME_KEEP = "nav-overflow-keep";
+const DEFAULT_TEXT = "More";
 const Default$8 = {
 	collapseBelow: 0,
 	iconPlacement: "start",
 	menuPlacement: "bottom-end",
-	moreText: "More",
+	moreText: DEFAULT_TEXT,
 	moreIcon: "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" viewBox=\"0 0 16 16\"><path d=\"M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3\"/></svg>",
 	threshold: 0
 };
@@ -6404,7 +6588,7 @@ const DefaultType$8 = {
 	collapseBelow: "(number|string)",
 	iconPlacement: "string",
 	menuPlacement: "string",
-	moreText: "string",
+	moreText: "(string|boolean)",
 	moreIcon: "string",
 	threshold: "number"
 };
@@ -6414,11 +6598,15 @@ const DefaultType$8 = {
 var NavOverflow = class extends BaseComponent {
 	constructor(element, config) {
 		super(element, config);
+		const nav = SelectorEngine.findOne(SELECTOR_NAV, this._element);
+		if (!nav) throw new TypeError(`${this._element.outerHTML} has no child ${SELECTOR_NAV} to collapse`);
+		this._nav = nav;
 		this._items = [];
 		this._overflowItems = [];
 		this._overflowMenu = null;
 		this._overflowToggle = null;
 		this._resizeObserver = null;
+		this._resizeHandler = null;
 		this._collapseBelow = 0;
 		this._resizeRAF = null;
 		this._init();
@@ -6438,6 +6626,7 @@ var NavOverflow = class extends BaseComponent {
 	}
 	dispose() {
 		if (this._resizeObserver) this._resizeObserver.disconnect();
+		if (this._resizeHandler) EventHandler.off(window, EVENT_RESIZE, this._resizeHandler);
 		if (this._resizeRAF !== null) cancelAnimationFrame(this._resizeRAF);
 		this._restoreItems();
 		if (this._overflowToggle && this._overflowToggle.parentElement) this._overflowToggle.parentElement.remove();
@@ -6445,7 +6634,7 @@ var NavOverflow = class extends BaseComponent {
 	}
 	_init() {
 		this._element.classList.add(CLASS_NAME_OVERFLOW);
-		this._items = [...SelectorEngine.find(SELECTOR_NAV_ITEM, this._element)];
+		this._items = SelectorEngine.find(SELECTOR_NAV_ITEM, this._nav).filter((item) => !item.querySelector(SELECTOR_OVERFLOW_TOGGLE));
 		for (const [index, item] of this._items.entries()) item.dataset.cxNavOrder = String(index);
 		this._collapseBelow = this._resolveCollapseBelow();
 		this._createOverflowMenu();
@@ -6458,20 +6647,34 @@ var NavOverflow = class extends BaseComponent {
 			this._overflowMenu = SelectorEngine.findOne(SELECTOR_OVERFLOW_MENU, this._element);
 			return;
 		}
-		const iconSpan = `<span class="nav-overflow-icon">${this._resolveIcon()}</span>`;
-		const textSpan = `<span class="nav-overflow-text">${this._config.moreText}</span>`;
-		const toggleContent = this._config.iconPlacement === "end" ? `${textSpan}${iconSpan}` : `${iconSpan}${textSpan}`;
+		const { moreText } = this._config;
+		const label = typeof moreText === "string" ? moreText : "";
 		const overflowItem = document.createElement("li");
 		overflowItem.className = "nav-item nav-overflow-item";
-		overflowItem.innerHTML = `
-      <button class="nav-link nav-overflow-toggle" type="button" data-cx-toggle="menu" data-cx-placement="${this._config.menuPlacement}" aria-expanded="false">
-        ${toggleContent}
-      </button>
-      <div class="${CLASS_NAME_OVERFLOW_MENU} menu"></div>
-    `;
-		this._element.append(overflowItem);
-		this._overflowToggle = overflowItem.querySelector(SELECTOR_OVERFLOW_TOGGLE);
-		this._overflowMenu = overflowItem.querySelector(SELECTOR_OVERFLOW_MENU);
+		const button = document.createElement("button");
+		button.type = "button";
+		button.className = "nav-link nav-overflow-toggle";
+		button.setAttribute("data-cx-toggle", "menu");
+		button.setAttribute("data-cx-placement", this._config.menuPlacement);
+		button.setAttribute("aria-expanded", "false");
+		if (label === "") button.setAttribute("aria-label", DEFAULT_TEXT);
+		const iconSpan = document.createElement("span");
+		iconSpan.className = "nav-overflow-icon";
+		iconSpan.innerHTML = sanitizeHtml(this._resolveIcon(), DefaultIconAllowlist);
+		if (label === "") button.append(iconSpan);
+		else {
+			const textSpan = document.createElement("span");
+			textSpan.className = "nav-overflow-text";
+			textSpan.textContent = label;
+			if (this._config.iconPlacement === "end") button.append(textSpan, iconSpan);
+			else button.append(iconSpan, textSpan);
+		}
+		const menu = document.createElement("div");
+		menu.className = `${CLASS_NAME_OVERFLOW_MENU} menu`;
+		overflowItem.append(button, menu);
+		this._nav.append(overflowItem);
+		this._overflowToggle = button;
+		this._overflowMenu = menu;
 	}
 	_resolveIcon() {
 		const customIconElement = SelectorEngine.findOne(SELECTOR_CUSTOM_ICON, this._element);
@@ -6493,7 +6696,8 @@ var NavOverflow = class extends BaseComponent {
 	}
 	_setupResizeObserver() {
 		if (typeof ResizeObserver === "undefined") {
-			EventHandler.on(window, "resize", () => this._scheduleCalculateOverflow());
+			this._resizeHandler = () => this._scheduleCalculateOverflow();
+			EventHandler.on(window, EVENT_RESIZE, this._resizeHandler);
 			return;
 		}
 		this._resizeObserver = new ResizeObserver(() => {
@@ -6508,45 +6712,42 @@ var NavOverflow = class extends BaseComponent {
 			this._calculateOverflow();
 		});
 	}
-	_getOverflowNavItem() {
-		return this._overflowToggle?.closest(SELECTOR_NAV_ITEM) ?? null;
+	_availableWidth() {
+		const { paddingInlineStart, paddingInlineEnd } = getComputedStyle(this._element);
+		const padding = (Number.parseFloat(paddingInlineStart) || 0) + (Number.parseFloat(paddingInlineEnd) || 0);
+		return this._element.clientWidth - padding;
+	}
+	_navGap() {
+		return Number.parseFloat(getComputedStyle(this._nav).columnGap) || 0;
 	}
 	_calculateOverflow() {
 		this._restoreItems();
-		const navWidth = this._element.offsetWidth;
-		const overflowItem = this._getOverflowNavItem();
-		if (this._collapseBelow > 0 && navWidth < this._collapseBelow) {
-			const itemsToOverflow = this._items.filter((item) => !item.classList.contains(CLASS_NAME_KEEP));
-			this._moveToOverflow(itemsToOverflow);
-			if (overflowItem) if (itemsToOverflow.length > 0) overflowItem.classList.remove(CLASS_NAME_HIDDEN);
-			else overflowItem.classList.add(CLASS_NAME_HIDDEN);
-			if (itemsToOverflow.length > 0) EventHandler.trigger(this._element, EVENT_OVERFLOW, {
-				overflowCount: itemsToOverflow.length,
-				visibleCount: this._items.length - itemsToOverflow.length
-			});
+		const availableWidth = this._availableWidth();
+		const overflowItem = this._overflowToggle?.closest(SELECTOR_NAV_ITEM) ?? null;
+		const candidates = this._items.filter((item) => !item.classList.contains(CLASS_NAME_KEEP));
+		if (this._collapseBelow > 0 && availableWidth < this._collapseBelow) {
+			this._applyOverflow(candidates, overflowItem);
 			return;
 		}
-		const overflowWidth = overflowItem?.offsetWidth || 0;
-		const keepWidth = this._items.filter((item) => item.classList.contains(CLASS_NAME_KEEP)).reduce((sum, item) => sum + item.offsetWidth, 0);
+		const gap = this._navGap();
+		const keepWidth = this._items.filter((item) => item.classList.contains(CLASS_NAME_KEEP)).reduce((sum, item) => sum + item.offsetWidth + gap, 0);
+		const overflowWidth = overflowItem ? overflowItem.offsetWidth + gap : 0;
+		const limit = availableWidth - keepWidth - overflowWidth;
 		let usedWidth = 0;
-		const itemsToOverflow = [];
-		const overflowThreshold = navWidth - overflowWidth - keepWidth - 10;
-		for (const item of this._items) {
-			if (item.classList.contains(CLASS_NAME_KEEP)) continue;
-			usedWidth += item.offsetWidth;
-			if (usedWidth > overflowThreshold) itemsToOverflow.push(item);
+		let itemsToOverflow = [];
+		for (const item of candidates) {
+			usedWidth += item.offsetWidth + gap;
+			if (usedWidth > limit + 1) itemsToOverflow.push(item);
 		}
-		if (this._items.length - itemsToOverflow.length < this._config.threshold && this._items.length > this._config.threshold) {
-			const toMove = this._items.slice(this._config.threshold).filter((item) => !item.classList.contains(CLASS_NAME_KEEP));
-			itemsToOverflow.length = 0;
-			itemsToOverflow.push(...toMove);
-		}
-		this._moveToOverflow(itemsToOverflow);
-		if (overflowItem) if (itemsToOverflow.length > 0) overflowItem.classList.remove(CLASS_NAME_HIDDEN);
-		else overflowItem.classList.add(CLASS_NAME_HIDDEN);
-		if (itemsToOverflow.length > 0) EventHandler.trigger(this._element, EVENT_OVERFLOW, {
-			overflowCount: itemsToOverflow.length,
-			visibleCount: this._items.length - itemsToOverflow.length
+		if (this._items.length - itemsToOverflow.length < this._config.threshold && this._items.length > this._config.threshold) itemsToOverflow = this._items.slice(this._config.threshold).filter((item) => !item.classList.contains(CLASS_NAME_KEEP));
+		this._applyOverflow(itemsToOverflow, overflowItem);
+	}
+	_applyOverflow(items, overflowItem) {
+		this._moveToOverflow(items);
+		overflowItem?.classList.toggle(CLASS_NAME_HIDDEN, items.length === 0);
+		if (items.length > 0) EventHandler.trigger(this._element, EVENT_OVERFLOW, {
+			overflowCount: items.length,
+			visibleCount: this._items.length - items.length
 		});
 	}
 	_moveToOverflow(items) {
@@ -6571,7 +6772,7 @@ var NavOverflow = class extends BaseComponent {
 			item.classList.remove(CLASS_NAME_HIDDEN);
 			delete item.dataset.cxNavOverflow;
 		}
-		this._getOverflowNavItem()?.classList.remove(CLASS_NAME_HIDDEN);
+		this._overflowToggle?.closest(SELECTOR_NAV_ITEM)?.classList.remove(CLASS_NAME_HIDDEN);
 		if (this._overflowMenu) this._overflowMenu.innerHTML = "";
 		this._overflowItems = [];
 	}
@@ -6771,109 +6972,6 @@ var OtpInput = class extends BaseComponent {
 EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$5}${DATA_API_KEY$2}`, () => {
 	for (const element of SelectorEngine.find(SELECTOR_DATA_OTP)) OtpInput.getOrCreateInstance(element);
 });
-const DefaultAllowlist = {
-	"*": [
-		"class",
-		"dir",
-		"id",
-		"lang",
-		"role",
-		/^aria-[\w-]*$/i
-	],
-	a: [
-		"target",
-		"href",
-		"title",
-		"rel"
-	],
-	area: [],
-	b: [],
-	br: [],
-	col: [],
-	code: [],
-	dd: [],
-	div: [],
-	dl: [],
-	dt: [],
-	em: [],
-	hr: [],
-	h1: [],
-	h2: [],
-	h3: [],
-	h4: [],
-	h5: [],
-	h6: [],
-	i: [],
-	img: [
-		"src",
-		"srcset",
-		"alt",
-		"title",
-		"width",
-		"height"
-	],
-	li: [],
-	ol: [],
-	p: [],
-	pre: [],
-	s: [],
-	small: [],
-	span: [],
-	sub: [],
-	sup: [],
-	strong: [],
-	u: [],
-	ul: []
-};
-const uriAttributes = /* @__PURE__ */ new Set([
-	"background",
-	"cite",
-	"href",
-	"itemtype",
-	"longdesc",
-	"poster",
-	"src",
-	"xlink:href"
-]);
-/**
-* A pattern that recognizes URLs that are safe wrt. XSS in URL navigation
-* contexts.
-*
-* Shout-out to Angular https://github.com/angular/angular/blob/15.2.8/packages/core/src/sanitization/url_sanitizer.ts#L38
-*/
-const SAFE_URL_PATTERN = /^(?!(?:javascript|data|vbscript):)(?:[a-z0-9+.-]+:|[^&:/?#]*(?:[/?#]|$))/i;
-/**
-* A pattern that matches safe data URLs. Only matches image, video and audio
-* types — notably NOT `data:text/html`, which is an XSS vector.
-*
-* Shout-out to Angular https://github.com/angular/angular/blob/15.2.8/packages/core/src/sanitization/url_sanitizer.ts#L49
-*/
-const DATA_URL_PATTERN = /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:mp3|oga|ogg|opus));base64,[\d+/a-z=]+$/i;
-const allowedAttribute = (attribute, allowedAttributeList) => {
-	const attributeName = attribute.nodeName.toLowerCase();
-	if (allowedAttributeList.includes(attributeName)) {
-		if (uriAttributes.has(attributeName)) return Boolean(SAFE_URL_PATTERN.test(attribute.nodeValue) || DATA_URL_PATTERN.test(attribute.nodeValue));
-		return true;
-	}
-	return allowedAttributeList.filter((attributeRegex) => attributeRegex instanceof RegExp).some((regex) => regex.test(attributeName));
-};
-function sanitizeHtml(unsafeHtml, allowList, sanitizeFunction) {
-	if (!unsafeHtml.length) return unsafeHtml;
-	if (sanitizeFunction && typeof sanitizeFunction === "function") return sanitizeFunction(unsafeHtml);
-	const createdDocument = new window.DOMParser().parseFromString(unsafeHtml, "text/html");
-	const elements = [...createdDocument.body.querySelectorAll("*")];
-	for (const element of elements) {
-		const elementName = element.nodeName.toLowerCase();
-		if (!Object.keys(allowList).includes(elementName)) {
-			element.remove();
-			continue;
-		}
-		const attributeList = [...element.attributes];
-		const allowedAttributes = [...allowList["*"] || [], ...allowList[elementName] || []];
-		for (const attribute of attributeList) if (!allowedAttribute(attribute, allowedAttributes)) element.removeAttribute(attribute.nodeName);
-	}
-	return createdDocument.body.innerHTML;
-}
 //#endregion
 //#region js/src/util/template-factory.ts
 /**
