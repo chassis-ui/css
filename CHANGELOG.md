@@ -53,6 +53,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed a memory/listener leak in `NavOverflow`'s no-`ResizeObserver` fallback path — disposing one instance now removes only that instance's `window` resize listener instead of leaking every disposed instance's listener for the lifetime of the page
 - Fixed the nav overflow docs incorrectly referencing `update.bs.navoverflow`/`overflow.bs.navoverflow` event names (leftover from the upstream port); they are `update.cx.navoverflow`/`overflow.cx.navoverflow`
 
+### Removed
+- Deleted `js/src/util/backdrop.ts`, `focustrap.ts`, and `scrollbar.ts` — no source file imported them, artifacts of old js plugins.
+
 ## [0.3.5] - 2026-07-25
 
 ### Changed
