@@ -63,7 +63,6 @@
     "css:minify": "node build/css-minify.js",
     "css:prefix": "postcss --config build/postcss.config.js --replace \"dist/css/*.css\" \"!dist/css/*.min.css\"",
     "css:test": "jasmine --config=scss/tests/jasmine.cjs",
-    "css:test:legacy": "node scss/tests/runner.js",
     "js": "pnpm js:compile && pnpm js:minify",
     "js:compile": "run-p js:compile:standalone js:compile:bundle js:compile:plugins",
     "js:compile:standalone": "rolldown --environment BUNDLE:false --config build/rolldown.config.js --sourcemap",
@@ -120,7 +119,6 @@
   },
   "peerDependencies": {
     "@floating-ui/dom": "^1.7.6",
-    "postcss-prefix-custom-properties": "^0.1.0",
     "vanilla-calendar-pro": "^3.1.0"
   },
   "devDependencies": {
@@ -130,7 +128,7 @@
     "@astrojs/sitemap": "^3.7.3",
     "@chassis-ui/docs": "^0.3.10",
     "@chassis-ui/icons": "^0.3.1",
-    "@chassis-ui/tokens": "^0.3.0",
+    "@chassis-ui/tokens": "^0.4.0",
     "@eslint/js": "^10.0.1",
     "@eslint/markdown": "^8.0.3",
     "@floating-ui/dom": "^1.7.6",
@@ -211,29 +209,11 @@
   },
   "files": [
     "dist/{css,js}/*.{css,js,map}",
-    "js/src/**/*.ts",
-    "js/dist/**/*.{js,map,d.ts}",
+    "js/{src,dist}/**/*.{js,map,ts}",
     "js/index.ts",
     "scss/**/*.scss",
-    "!scss/tests/**"
+    "!scss/tests/**",
+    ".browserslistrc"
   ],
-  "jspm": {
-    "registry": "npm",
-    "main": "js/chassis",
-    "directories": {
-      "lib": "dist"
-    },
-    "shim": {
-      "js/chassis": {
-        "deps": [
-          "@floating-ui/dom"
-        ]
-      }
-    },
-    "dependencies": {},
-    "peerDependencies": {
-      "@floating-ui/dom": "^1.7.6"
-    }
-  },
   "packageManager": "pnpm@10.33.2+sha512.a90faf6feeab71ad6c6e57f94e0fe1a12f5dcc22cd754db40ae9593eb6a3e0b6b12e3540218bb37ae083404b1f2ce6db2a4121e979829b4aff94b99f49da1cf8"
 }

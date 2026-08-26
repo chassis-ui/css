@@ -7,15 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **TypeScript:** `js/src/**` and the `js/index` entry point are now fully TypeScript instead of plain JS. The package ships real `.d.ts` declarations (emitted alongside each `js/dist/*.js`) instead of requiring a separate `@types` package; a compile-time-only `js/tests/types/api.ts` contract test locks in the public API shape
+- **Build:** the production JS build now compiles through Rolldown's native TypeScript support instead of Rollup + Babel, producing smaller output across all four JS artifacts (`chassis.js`, `chassis.bundle.js`, and their minified builds); a new `build/browser-targets.js` resolves `.browserslistrc` into Rolldown/oxc target strings
+- **Testing:** unit tests migrated from Karma/Jasmine to Vitest
+- Added `bundlewatch` scripts (`build/bundlewatch-fix.mjs`, `build/bundlewatch-table.mjs`) for tracking bundle-size regressions
+- All components now expose a public `isDisposed()` instance method
+- `Pagination`: new bordered and grouped display modes
+- `Button`: no-context (default, no color-context class) buttons now get body foreground/background colors instead of resolving to unset/transparent values
+- `Carousel`: reworked layout; indicators are now rendered as an `<ol>` instead of a bare collection of buttons, and previous/next controls get new directional icons
+- New `.directional-icon` helper class that horizontally mirrors an icon in `[dir="rtl"]` contexts; `.icon-link-hover`'s hover/focus transform is likewise RTL-aware
+- `Table`: sticky headers and sticky columns
+- New `.border-transparent` utility and `auto` value for position utilities (`top`/`end`/`bottom`/`start`)
+- `Datepicker`: styling reworked to be fully class-based instead of relying on `vanilla-calendar-pro`'s inline styles, with renamed design tokens to match
+- Added `AGENTS.md` and `WRITING.md` (replacing `.github/DOCUMENTATION_STYLEGUIDE.md`) documenting repo conventions and the docs writing style guide
+
 ### Changed
+- **Breaking:** `Pagination` sub-classes renamed from `page-*` to `pagination-*`
+- **Breaking:** `.input-help` renamed to `.input-adorn`, and the `Form Help` component/class renamed to `Form Adorn` to match
 - **Breaking:** `NavOverflow` now requires the `.nav` to be wrapped in a `.nav-overflow` element, with `data-cx-toggle="nav-overflow"` moved from the `.nav` to that wrapper. The component previously measured, observed, and collapsed the same `.nav` element it was mutating — collapsing items changed the nav's own width, so on nav styles/layouts where that width wasn't otherwise pinned (e.g. `.nav-pills`, or a `.nav` whose flex ancestor let its min-content width leak through), the ResizeObserver could fire repeatedly and either never settle on a stable collapsed state or flicker on load. The wrapper is measured/observed instead, with `container-type: inline-size` closing off the remaining path for the nav's content width to affect the wrapper's own size. Ported from upstream Bootstrap's nav-overflow rewrite. Existing markup needs the extra wrapper element; see `site/content/docs/components/nav-overflow.mdx`
 - `NavOverflow`: nav items now keep `flex-shrink: 0` by default (previously only `.nav-overflow-keep` items did), so items are measured at their natural width instead of visually compressing under space pressure before the component gets a chance to collapse them
 - `NavOverflow`: the overflow threshold now accounts for the nav's actual `column-gap` instead of a fixed 10px buffer
 - `NavOverflow`: `moreText` now accepts `false` for an icon-only toggle; an empty string is treated the same way. Both fall back to `aria-label="More"` so the toggle keeps an accessible name instead of losing it to an empty label element
 - `NavOverflow`: the overflow toggle's icon/text are now built with DOM APIs instead of an HTML template string, and icon markup (`moreIcon` and `[data-cx-overflow-icon]`) is now run through a new `DefaultIconAllowlist` sanitizer before insertion, closing an XSS gap where a configured `moreText`/`moreIcon`/`menuPlacement` value could break out of its slot
+- `Menu`: the toggle now reuses the shared `.caret` helper instead of a component-specific `.menu-toggle` class
+- `Button`: the `.smooth` variant's hover background now resolves from `--context-bg-evident` (previously `--context-bg-main`) and its press background from `--context-bg-even` (previously `--context-bg-evident`); all buttons no longer swap foreground/background/border color on `:focus-visible` (focus is now indicated by the focus ring alone)
+- `Button`: `.link` buttons' text/icon color now derives from `--fg-idle`/`--fg-hover`/`--fg-press`/`--fg-disabled` (mapped to the link color tokens) instead of a separate hardcoded `color` declaration, and no longer changes color on `:focus-visible` (hover only)
+- Sanitizer: adopted a hardened `SAFE_URL_PATTERN` that also blocks `data:`/`vbscript:` URI schemes (previously only `javascript:`), plus a `DATA_URL_PATTERN` allowlist for safe image/video/audio data URIs
 
 ### Fixed
-- `NavOverflow`: fixed a memory/listener leak in the no-`ResizeObserver` fallback path — disposing one instance now removes only that instance's `window` resize listener instead of leaking every disposed instance's listener for the lifetime of the page
+- `border()` mixin: the border color custom property now falls back to `transparent` when unset, instead of resolving to an empty/invalid value
+- `Accordion`: the open/close CSS transition is now scoped by the `[data-cx-accordion]` attribute selector instead of `:not(.no-transition)`, matching the `data-cx-accordion` JS init trigger introduced in 0.3.5
+- `Chip`: removed a `>` direct-child combinator from icon/avatar/close-button selectors so nested markup still matches
+- `Badge`: default border color is now `transparent` instead of unset
+- `Skeleton`: fixed incorrect color and animation
+- `Spinner`: default size now matches the icon size
+- `Carousel`: fixed items wrapping incorrectly at the end when more than one item is shown per slide; focus is now preserved across transitions, and disabled navigation controls get `aria-disabled`
+- `Dialog`: the dialog now stays in the top layer (keeping the native `::backdrop` and browser centering) until its exit transition actually finishes, instead of closing synchronously and cutting the animation off
+- `Dialog`/`Drawer`: `dispose()` now closes an open `<dialog>` and releases the body scroll lock instead of leaving both dangling; the native `cancel` event listener is now correctly removed on dispose
+- `Toggler`: constructing with no explicit `value` no longer throws a `TypeError`
+- `Tooltip`: calling `show()` on a `display: none` reference element now throws synchronously again instead of surfacing as a silent unhandled promise rejection
+- `Combobox`: the default search input's filtering (the common, callback-less usage) was being silently skipped entirely; it now runs correctly, debounced to 150ms per keystroke
+- `Menu`: fixed a submenu `mouseenter` listener leak on every open/close cycle (an `EventHandler.off()` bug meant bare `mouseenter`/`mouseleave` removals silently did nothing), and throttled the submenu hover-tracking `mousemove` handler to one update per animation frame
+- `Chip Input`: fixed a dispose leak where listeners registered without a namespace weren't removed on teardown; fixed `paste` events breaking once namespaced by adding `paste` to the native-event allowlist
+- Fixed a memory/listener leak in `NavOverflow`'s no-`ResizeObserver` fallback path — disposing one instance now removes only that instance's `window` resize listener instead of leaking every disposed instance's listener for the lifetime of the page
 - Fixed the nav overflow docs incorrectly referencing `update.bs.navoverflow`/`overflow.bs.navoverflow` event names (leftover from the upstream port); they are `update.cx.navoverflow`/`overflow.cx.navoverflow`
 
 ## [0.3.5] - 2026-07-25
