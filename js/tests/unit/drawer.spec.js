@@ -194,7 +194,7 @@ describe('Drawer', () => {
 
     it('should call `hide` on resize, if element\'s position is not fixed any more', () => {
       return new Promise(resolve => {
-        fixtureEl.innerHTML = '<dialog class="max-large:drawer"></dialog>'
+        fixtureEl.innerHTML = '<dialog class="max-lg:drawer"></dialog>'
 
         const drawerEl = fixtureEl.querySelector('dialog')
         const drawer = new Drawer(drawerEl)
@@ -1091,7 +1091,7 @@ describe('Drawer', () => {
     it('should hide a responsive drawer when data-cx-dismiss="drawer" is clicked', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = `
-          <dialog class="max-large:drawer" id="responsiveDrawer">
+          <dialog class="max-lg:drawer" id="responsiveDrawer">
             <button type="button" data-cx-dismiss="drawer">Close</button>
           </dialog>`
 
@@ -1116,7 +1116,7 @@ describe('Drawer', () => {
   describe('resize negative path', () => {
     it('should not hide drawer on resize when position is still fixed', () => {
       return new Promise(resolve => {
-        fixtureEl.innerHTML = '<dialog class="max-large:drawer"></dialog>'
+        fixtureEl.innerHTML = '<dialog class="max-lg:drawer"></dialog>'
 
         const drawerEl = fixtureEl.querySelector('dialog')
         const drawer = new Drawer(drawerEl)

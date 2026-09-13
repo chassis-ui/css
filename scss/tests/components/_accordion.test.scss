@@ -3,21 +3,21 @@
 // stylelint-disable custom-property-pattern
 
 @include describe("$enable-accordion-sizes") {
-  @include it("outputs .large and .small size variants when enabled") {
+  @include it("outputs .lg and .sm size variants when enabled") {
     $enable-accordion-sizes: true !global;
 
     @include assert() {
       @include output() {
         .accordion {
           @if $enable-accordion-sizes {
-            &.large { --accordion-caret-size: #{$accordion-large-caret-size}; }
-            &.small { --accordion-caret-size: #{$accordion-small-caret-size}; }
+            &.lg { --accordion-caret-size: #{$accordion-large-caret-size}; }
+            &.sm { --accordion-caret-size: #{$accordion-small-caret-size}; }
           }
         }
       }
       @include expect() {
-        .accordion.large { --accordion-caret-size: #{$accordion-large-caret-size}; }
-        .accordion.small { --accordion-caret-size: #{$accordion-small-caret-size}; }
+        .accordion.lg { --accordion-caret-size: #{$accordion-large-caret-size}; }
+        .accordion.sm { --accordion-caret-size: #{$accordion-small-caret-size}; }
       }
     }
   }
@@ -28,8 +28,8 @@
     @include assert() {
       @include output() {
         @if $enable-accordion-sizes {
-          .accordion.large { --accordion-caret-size: #{$accordion-large-caret-size}; }
-          .accordion.small { --accordion-caret-size: #{$accordion-small-caret-size}; }
+          .accordion.lg { --accordion-caret-size: #{$accordion-large-caret-size}; }
+          .accordion.sm { --accordion-caret-size: #{$accordion-small-caret-size}; }
         }
       }
       @include expect() {

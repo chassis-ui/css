@@ -2,18 +2,18 @@
 @use "../../mixins/breakpoints" as *;
 
 // Minimal 3-breakpoint map used throughout — avoids coupling to global defaults.
-$bp: (xsmall: 0, medium: 768px, large: 992px);
+$bp: (xs: 0, md: 768px, lg: 992px);
 
 // ─── breakpoint-next ─────────────────────────────────────────────────────────
 
 @include describe("breakpoint-next") {
   @include it("returns the next breakpoint name") {
-    @include assert-equal(breakpoint-next(xsmall, $bp), medium);
-    @include assert-equal(breakpoint-next(medium, $bp), large);
+    @include assert-equal(breakpoint-next(xs, $bp), md);
+    @include assert-equal(breakpoint-next(md, $bp), lg);
   }
 
   @include it("returns null for the last breakpoint") {
-    @include assert-equal(breakpoint-next(large, $bp), null);
+    @include assert-equal(breakpoint-next(lg, $bp), null);
   }
 }
 
@@ -21,12 +21,12 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
 
 @include describe("breakpoint-min") {
   @include it("returns null for the smallest breakpoint (value 0)") {
-    @include assert-equal(breakpoint-min(xsmall, $bp), null);
+    @include assert-equal(breakpoint-min(xs, $bp), null);
   }
 
   @include it("returns the breakpoint width for non-zero breakpoints") {
-    @include assert-equal(breakpoint-min(medium, $bp), 768px);
-    @include assert-equal(breakpoint-min(large, $bp), 992px);
+    @include assert-equal(breakpoint-min(md, $bp), 768px);
+    @include assert-equal(breakpoint-min(lg, $bp), 992px);
   }
 }
 
@@ -38,12 +38,12 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
   }
 
   @include it("returns null for the smallest breakpoint (value 0)") {
-    @include assert-equal(breakpoint-max(xsmall, $bp), null);
+    @include assert-equal(breakpoint-max(xs, $bp), null);
   }
 
   @include it("returns the raw breakpoint value without 0.02px subtraction") {
-    @include assert-equal(breakpoint-max(medium, $bp), 768px);
-    @include assert-equal(breakpoint-max(large, $bp), 992px);
+    @include assert-equal(breakpoint-max(md, $bp), 768px);
+    @include assert-equal(breakpoint-max(lg, $bp), 992px);
   }
 }
 
@@ -51,11 +51,11 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
 
 @include describe("css-escape-ident") {
   @include it("returns plain names unchanged") {
-    @include assert-equal(css-escape-ident(medium), "medium");
+    @include assert-equal(css-escape-ident(md), "md");
   }
 
   @include it("hex-escapes a leading digit") {
-    @include assert-equal(css-escape-ident(2xlarge), "\\32 xlarge");
+    @include assert-equal(css-escape-ident(2xl), "\\32 xl");
   }
 }
 
@@ -63,11 +63,11 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
 
 @include describe("breakpoint-prefix") {
   @include it("returns an empty string for the smallest breakpoint") {
-    @include assert-equal(breakpoint-prefix(xsmall, $bp), "");
+    @include assert-equal(breakpoint-prefix(xs, $bp), "");
   }
 
   @include it("returns a Tailwind-style colon prefix for other breakpoints") {
-    @include assert-equal(breakpoint-prefix(medium, $bp), "medium\\:");
+    @include assert-equal(breakpoint-prefix(md, $bp), "md\\:");
   }
 }
 
@@ -77,7 +77,7 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
   @include it("emits a width >= range query") {
     @include assert() {
       @include output() {
-        @include media-breakpoint-up(medium, $bp) {
+        @include media-breakpoint-up(md, $bp) {
           .a { color: red; }
         }
       }
@@ -92,7 +92,7 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
   @include it("emits no query for the smallest breakpoint") {
     @include assert() {
       @include output() {
-        @include media-breakpoint-up(xsmall, $bp) {
+        @include media-breakpoint-up(xs, $bp) {
           .a { color: red; }
         }
       }
@@ -109,7 +109,7 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
   @include it("emits a width < range query") {
     @include assert() {
       @include output() {
-        @include media-breakpoint-down(medium, $bp) {
+        @include media-breakpoint-down(md, $bp) {
           .a { color: red; }
         }
       }
@@ -121,10 +121,10 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
     }
   }
 
-  @include it("emits no query for the smallest breakpoint (xsmall/value 0)") {
+  @include it("emits no query for the smallest breakpoint (xs/value 0)") {
     @include assert() {
       @include output() {
-        @include media-breakpoint-down(xsmall, $bp) {
+        @include media-breakpoint-down(xs, $bp) {
           .a { color: red; }
         }
       }
@@ -141,7 +141,7 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
   @include it("emits a range query between two breakpoints") {
     @include assert() {
       @include output() {
-        @include media-breakpoint-between(medium, large, $bp) {
+        @include media-breakpoint-between(md, lg, $bp) {
           .a { color: red; }
         }
       }
@@ -156,7 +156,7 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
   @include it("falls back to up when upper bound has no max (last breakpoint)") {
     @include assert() {
       @include output() {
-        @include media-breakpoint-between(medium, large, $bp) {
+        @include media-breakpoint-between(md, lg, $bp) {
           .a { color: red; }
         }
       }
@@ -168,10 +168,10 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
     }
   }
 
-  @include it("falls back to down when lower bound has no min (xsmall)") {
+  @include it("falls back to down when lower bound has no min (xs)") {
     @include assert() {
       @include output() {
-        @include media-breakpoint-between(xsmall, medium, $bp) {
+        @include media-breakpoint-between(xs, md, $bp) {
           .a { color: red; }
         }
       }
@@ -190,7 +190,7 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
   @include it("emits a bounded range query for a middle breakpoint") {
     @include assert() {
       @include output() {
-        @include media-breakpoint-only(medium, $bp) {
+        @include media-breakpoint-only(md, $bp) {
           .a { color: red; }
         }
       }
@@ -205,7 +205,7 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
   @include it("falls back to up for the largest breakpoint") {
     @include assert() {
       @include output() {
-        @include media-breakpoint-only(large, $bp) {
+        @include media-breakpoint-only(lg, $bp) {
           .a { color: red; }
         }
       }
@@ -220,7 +220,7 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
   @include it("falls back to down for the smallest breakpoint") {
     @include assert() {
       @include output() {
-        @include media-breakpoint-only(xsmall, $bp) {
+        @include media-breakpoint-only(xs, $bp) {
           .a { color: red; }
         }
       }
@@ -239,7 +239,7 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
   @include it("emits an anonymous container width >= query") {
     @include assert() {
       @include output() {
-        @include container-breakpoint-up(medium, $breakpoints: $bp) {
+        @include container-breakpoint-up(md, $breakpoints: $bp) {
           .a { color: red; }
         }
       }
@@ -254,7 +254,7 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
   @include it("emits a named container query") {
     @include assert() {
       @include output() {
-        @include container-breakpoint-up(medium, sidebar, $bp) {
+        @include container-breakpoint-up(md, sidebar, $bp) {
           .a { color: red; }
         }
       }
@@ -273,7 +273,7 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
   @include it("emits an anonymous container width < query") {
     @include assert() {
       @include output() {
-        @include container-breakpoint-down(medium, $breakpoints: $bp) {
+        @include container-breakpoint-down(md, $breakpoints: $bp) {
           .a { color: red; }
         }
       }
@@ -288,7 +288,7 @@ $bp: (xsmall: 0, medium: 768px, large: 992px);
   @include it("emits a named container query") {
     @include assert() {
       @include output() {
-        @include container-breakpoint-down(medium, sidebar, $bp) {
+        @include container-breakpoint-down(md, sidebar, $bp) {
           .a { color: red; }
         }
       }
