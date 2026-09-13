@@ -15,10 +15,10 @@
   .button {
     // Inherit core button behaviors from placeholders
     // - %button: Core button styles with state handling (hover, focus, active, disabled)
-    // - %button-medium: Default size configuration (padding, font, border-radius)
+    // - %button-md: Default size configuration (padding, font, border-radius)
     // - %solid-button: Applies contextual solid background style variants
     // - %component: Base component styling (typography, colors, borders)
-    @extend %button, %button-medium, %solid-button, %component;
+    @extend %button, %button-md, %solid-button, %component;
     // scss-docs-start button-css-vars
     --border-width: var(--button-border-width, #{$button-border-width});
     --transition: var(--button-transition, #{$button-transition});
@@ -54,12 +54,12 @@
       @extend %context, %smooth-button;
     }
 
-    &.large {
-      @extend %button-large;
+    &.lg {
+      @extend %button-lg;
     }
 
-    &.small {
-      @extend %button-small;
+    &.sm {
+      @extend %button-sm;
     }
 
     > .icon {
