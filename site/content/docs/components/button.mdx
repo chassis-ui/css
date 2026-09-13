@@ -104,53 +104,53 @@ For buttons that consist solely of an icon, Chassis CSS provides built-in suppor
   <button type="button" class="button primary icon-only" aria-label="Info">
     <Icon name="info-circle-solid" role="img" />
   </button>
-  <button type="button" class="button small default icon-only" aria-label="Info">
+  <button type="button" class="button sm default icon-only" aria-label="Info">
     <Icon name="info-circle-solid" font />
   </button>
-  <button type="button" class="button small primary icon-only" aria-label="Info">
+  <button type="button" class="button sm primary icon-only" aria-label="Info">
     <Icon name="info-circle-solid" font />
   </button>
-  <button type="button" class="button large default icon-only" aria-label="Info">
+  <button type="button" class="button lg default icon-only" aria-label="Info">
     <Icon name="info-circle-solid" font />
   </button>
-  <button type="button" class="button default large icon-only" aria-label="Info">
+  <button type="button" class="button default lg icon-only" aria-label="Info">
     <Icon name="info-circle-solid" role="img" />
   </button>
-  <button type="button" class="button large primary icon-only" aria-label="Info">
+  <button type="button" class="button lg primary icon-only" aria-label="Info">
     <Icon name="info-circle-solid" font />
   </button>`} />
 
 
 ## Size variants
 
-Chassis provides three predefined size variants through the `.large` and `.small` modifier classes, with the default size applied when no modifier is present.
+Chassis provides three predefined size variants through the `.lg` and `.sm` modifier classes, with the default size applied when no modifier is present.
 
-<Example class="button-examples" code={`<button type="button" class="button default large">
+<Example class="button-examples" code={`<button type="button" class="button default lg">
     Default
   </button>
-  <button type="button" class="button default large">
+  <button type="button" class="button default lg">
     <Icon name="info-circle-solid" role="img" />
     <span>Default</span>
   </button>
-  <button type="button" class="button primary large">
+  <button type="button" class="button primary lg">
     Primary
   </button>
-  <button type="button" class="button primary large">
+  <button type="button" class="button primary lg">
     <Icon name="info-circle-solid" role="img" />
     <span>Primary</span>
   </button>`} />
 
-<Example class="button-examples" code={`<button type="button" class="button default small">
+<Example class="button-examples" code={`<button type="button" class="button default sm">
     Default
   </button>
-  <button type="button" class="button default small">
+  <button type="button" class="button default sm">
     <Icon name="info-circle-solid" role="img" />
     <span>Default</span>
   </button>
-  <button type="button" class="button primary small">
+  <button type="button" class="button primary sm">
     Primary
   </button>
-  <button type="button" class="button primary small">
+  <button type="button" class="button primary sm">
     <Icon name="info-circle-solid" role="img" />
     <span>Primary</span>
   </button>`} />
@@ -223,7 +223,7 @@ Chassis CSS leverages its utility system for flexible button layouts rather than
 
 Create responsive stacks of full-width buttons using Chassis's grid utilities:
 
-<Example class="button-examples" code={`<div class="d-grid gap-xsmall">
+<Example class="button-examples" code={`<div class="d-grid gap-xs">
     <button class="button default" type="button">Default</button>
     <button class="button primary" type="button">Primary</button>
   </div>`} />
@@ -232,7 +232,7 @@ Create responsive stacks of full-width buttons using Chassis's grid utilities:
 
 Transform button layouts at different breakpoints using Chassis's responsive utilities:
 
-<Example class="button-examples" code={`<div class="d-grid gap-xsmall medium:d-block">
+<Example class="button-examples" code={`<div class="d-grid gap-xs md:d-block">
     <button class="button default" type="button">Default</button>
     <button class="button primary" type="button">Primary</button>
   </div>`} />
@@ -241,7 +241,7 @@ Transform button layouts at different breakpoints using Chassis's responsive uti
 
 Apply grid column utilities to control button width precisely:
 
-<Example class="button-examples" code={`<div class="d-grid gap-xsmall col-6 mx-auto">
+<Example class="button-examples" code={`<div class="d-grid gap-xs col-6 mx-auto">
     <button class="button default" type="button">Default</button>
     <button class="button primary" type="button">Primary</button>
   </div>`} />
@@ -250,7 +250,7 @@ Apply grid column utilities to control button width precisely:
 
 Use flex utilities to control button alignment within groups:
 
-<Example class="button-examples" code={`<div class="d-grid gap-xsmall medium:d-flex medium:justify-content-end">
+<Example class="button-examples" code={`<div class="d-grid gap-xs md:d-flex md:justify-content-end">
     <button class="button default" type="button">Default</button>
     <button class="button primary" type="button">Primary</button>
   </div>`} />
@@ -272,13 +272,13 @@ Chassis includes a toggle button plugin for implementing stateful buttons. These
 
 Add `data-cx-toggle="button"` to enable toggle functionality. For pre-toggled buttons, add both the `.active` class and `aria-pressed="true"` attribute:
 
-<Example class="button-examples" code={`<p class="d-inline-flex gap-xsmall">
+<Example class="button-examples" code={`<p class="d-inline-flex gap-xs">
     <button type="button" class="button default" data-cx-toggle="button" aria-pressed="false">Toggle button</button>
     <button type="button" class="button default active" data-cx-toggle="button" aria-pressed="true">Active toggle</button>
     <button type="button" class="button default" disabled data-cx-toggle="button" aria-pressed="false">Disabled toggle</button>
     <button type="button" class="button default active" disabled data-cx-toggle="button" aria-pressed="true">Disabled active</button>
   </p>
-  <p class="d-inline-flex gap-xsmall">
+  <p class="d-inline-flex gap-xs">
     <button type="button" class="button primary" data-cx-toggle="button" aria-pressed="false">Toggle button</button>
     <button type="button" class="button primary active" data-cx-toggle="button" aria-pressed="true">Active toggle</button>
     <button type="button" class="button primary" disabled data-cx-toggle="button" aria-pressed="false">Disabled toggle</button>
@@ -287,13 +287,13 @@ Add `data-cx-toggle="button"` to enable toggle functionality. For pre-toggled bu
 
 Toggle functionality is also available for link buttons:
 
-<Example class="button-examples" code={`<p class="d-inline-flex gap-xsmall">
+<Example class="button-examples" code={`<p class="d-inline-flex gap-xs">
     <a href="#" class="button default" role="button" data-cx-toggle="button" aria-pressed="false">Toggle link</a>
     <a href="#" class="button default active" role="button" data-cx-toggle="button" aria-pressed="true">Active toggle</a>
     <a href="#" class="button default disabled" aria-disabled="true" role="button" data-cx-toggle="button" aria-pressed="false">Disabled toggle</a>
     <a href="#" class="button default active disabled" aria-disabled="true" role="button" data-cx-toggle="button" aria-pressed="true">Disabled active</a>
   </p>
-  <p class="d-inline-flex gap-xsmall">
+  <p class="d-inline-flex gap-xs">
     <a href="#" class="button primary" role="button" data-cx-toggle="button" aria-pressed="false">Toggle link</a>
     <a href="#" class="button primary active" role="button" data-cx-toggle="button" aria-pressed="true">Active toggle</a>
     <a href="#" class="button primary disabled" aria-disabled="true" role="button" data-cx-toggle="button" aria-pressed="false">Disabled toggle</a>

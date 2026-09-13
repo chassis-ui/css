@@ -18,7 +18,7 @@ Contrast colors come from the token system: each context exposes a `--{context}-
 
 `.fg-contrast` applies the token-defined contrast foreground color for the active background context. It requires a `.bg-{context}` class on the same element to match the compound selector.
 
-<Example code={[...getData('context-colors').map((color) => `<p class="bg-${color.name} fg-contrast p-xsmall">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} background with contrast color text.</p>`)]} />
+<Example code={[...getData('context-colors').map((color) => `<p class="bg-${color.name} fg-contrast p-xs">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} background with contrast color text.</p>`)]} />
 
 <Callout name="warning-color-assistive-technologies" />
 
@@ -26,7 +26,7 @@ Contrast colors come from the token system: each context exposes a `--{context}-
 
 `.bg-contrast` applies the token-defined contrast background color for the active foreground context. It requires a `.fg-{context}` class on the same element.
 
-<Example code={[...getData('context-colors').map((color) => `<p class="fg-${color.name} bg-contrast p-xsmall">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} text with contrast color background.</p>`)]} />
+<Example code={[...getData('context-colors').map((color) => `<p class="fg-${color.name} bg-contrast p-xs">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} text with contrast color background.</p>`)]} />
 
 ## Accessible colors
 
@@ -40,13 +40,13 @@ CSS-native `color-contrast()` is not yet supported in browsers. Chassis CSS comp
 
 `.fg-a11y` applies the WCAG-computed foreground color (white or black) for the active background context. It requires a `.bg-{context}` class on the same element.
 
-<Example code={[...getData('context-colors').map((color) => `<p class="bg-${color.name} fg-a11y p-xsmall">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} background with accessible color text.</p>`)]} />
+<Example code={[...getData('context-colors').map((color) => `<p class="bg-${color.name} fg-a11y p-xs">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} background with accessible color text.</p>`)]} />
 
 ### Accessible background
 
 `.bg-a11y` applies the WCAG-computed background color (white or black) for the active foreground context. It requires a `.fg-{context}` class on the same element.
 
-<Example code={[...getData('context-colors').map((color) => `<p class="fg-${color.name} bg-a11y p-xsmall">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} text with accessible color background.</p>`)]} />
+<Example code={[...getData('context-colors').map((color) => `<p class="fg-${color.name} bg-a11y p-xs">${color.name.charAt(0).toUpperCase() + color.name.slice(1)} text with accessible color background.</p>`)]} />
 
 ## With components
 
@@ -58,7 +58,7 @@ Both families compose directly with component context classes. The examples belo
 
 On [cards]([[docsref:/components/card#background-and-color]]):
 
-<Example class="d-flex flex-column large:flex-row gap-medium" code={`<div class="card bg-primary fg-contrast">
+<Example class="d-flex flex-column lg:flex-row gap-md" code={`<div class="card bg-primary fg-contrast">
     <div class="card-header">Contrast text</div>
     <div class="card-body">
       <p>Some quick example text to demonstrate the difference between contrast and accessible text.</p>

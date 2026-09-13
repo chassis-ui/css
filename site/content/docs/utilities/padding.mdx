@@ -19,7 +19,7 @@ Padding utilities apply the CSS `padding` property and its logical shorthand var
 
 Padding classes that apply at all breakpoints have no breakpoint prefix — they start from `min-width: 0` and are not media-query-bound. Breakpoint-prefixed classes apply at that breakpoint and above.
 
-The classes are named using the format `p{sides}-{size}` for `xsmall` and `{breakpoint}:p{sides}-{size}` for `small`, `medium`, `large`, `xlarge`, and `2xlarge`.
+The classes are named using the format `p{sides}-{size}` for `xs` and `{breakpoint}:p{sides}-{size}` for `sm`, `md`, `lg`, `xl`, and `2xl`.
 
 Where *sides* is one of:
 
@@ -47,32 +47,32 @@ Additional sizes can be added by adding entries to the `$spaces` Sass map.
 
 `.p-{size}` sets `padding` on all four sides of an element at once.
 
-<Example class="cxd-example-spacing vstack gap-medium" code={`<div class="p-xsmall">p-xsmall</div>
-  <div class="p-small">p-small</div>
-  <div class="p-medium">p-medium</div>
-  <div class="p-large">p-large</div>`} />
+<Example class="cxd-example-spacing vstack gap-md" code={`<div class="p-xs">p-xs</div>
+  <div class="p-sm">p-sm</div>
+  <div class="p-md">p-md</div>
+  <div class="p-lg">p-lg</div>`} />
 
 ## Axes
 
 Axis utilities apply padding to two opposite edges simultaneously. `.px-{size}` targets both inline edges; `.py-{size}` targets both block edges.
 
-<Example class="cxd-example-spacing vstack gap-medium" code={`<div class="px-large py-xsmall">px-large, py-xsmall</div>
-  <div class="px-xsmall py-large">px-xsmall, py-large</div>`} />
+<Example class="cxd-example-spacing vstack gap-md" code={`<div class="px-lg py-xs">px-lg, py-xs</div>
+  <div class="px-xs py-lg">px-xs, py-lg</div>`} />
 
 ## Individual edges
 
 Single-edge utilities set padding on one edge without affecting the others.
 
-<Example class="cxd-example-spacing vstack gap-medium" code={`<div class="pt-large">pt-large</div>
-  <div class="pb-large">pb-large</div>
-  <div class="ps-large">ps-large</div>
-  <div class="pe-large text-end">pe-large</div>`} />
+<Example class="cxd-example-spacing vstack gap-md" code={`<div class="pt-lg">pt-lg</div>
+  <div class="pb-lg">pb-lg</div>
+  <div class="ps-lg">ps-lg</div>
+  <div class="pe-lg text-end">pe-lg</div>`} />
 
 ## Responsive padding
 
-Prefix any padding class with a breakpoint to apply it at that breakpoint and above. Unprefixed classes apply from `xsmall` up.
+Prefix any padding class with a breakpoint to apply it at that breakpoint and above. Unprefixed classes apply from `xs` up.
 
-<Example class="cxd-example-spacing vstack gap-medium" code={`<div class="p-xsmall medium:p-large">p-xsmall, then p-large from medium up</div>`} />
+<Example class="cxd-example-spacing vstack gap-md" code={`<div class="p-xs md:p-lg">p-xs, then p-lg from md up</div>`} />
 
 ## CSS
 

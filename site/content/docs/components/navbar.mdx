@@ -32,7 +32,7 @@ A complete navbar combines five elements: the `.navbar` wrapper, an inner contai
 
 Resize the example below to preview the transition between drawer and inline modes.
 
-<ResizableExample code={`<nav class="navbar medium:navbar-expand bg-even" aria-label="Main navigation">
+<ResizableExample code={`<nav class="navbar md:navbar-expand bg-even" aria-label="Main navigation">
     <div class="container fluid">
       <a class="navbar-brand" href="#">Navbar</a>
       <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarDrawer" aria-controls="navbarDrawer" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@ Resize the example below to preview the transition between drawer and inline mod
 
           <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
         </div>
-        <div class="drawer-body mb-small medium:mb-0">
+        <div class="drawer-body mb-sm md:mb-0">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="#">Home</a>
@@ -67,7 +67,7 @@ Resize the example below to preview the transition between drawer and inline mod
               <a class="nav-link disabled" aria-disabled="true">Disabled</a>
             </li>
           </ul>
-          <form class="hstack gap-small" role="search">
+          <form class="hstack gap-sm" role="search">
             <input class="form-input" type="search" placeholder="Search" aria-label="Search"/>
             <button class="button neutral smooth icon-only" type="submit" aria-label="Search">
               <Icon name="search-solid" />
@@ -116,7 +116,7 @@ Combine an image and text in the same brand element. The `.d-inline-block` and `
     <div class="container fluid">
       <a class="navbar-brand" href="#">
         <img src="/static/images/site-logo.svg" alt="Logo" height="24" class="d-inline-block align-text-top">
-        <span class="ms-xsmall font-strong">CSS</span>
+        <span class="ms-xs font-strong">CSS</span>
       </a>
     </div>
   </nav>`} />
@@ -127,7 +127,7 @@ Navbar navigation uses `.nav-link` inside a `.navbar-nav` container. The contain
 
 Mark the current link with `.active` and `aria-current="page"`.
 
-<ResizableExample code={`<nav class="navbar small:navbar-expand bg-even" aria-label="Main navigation">
+<ResizableExample code={`<nav class="navbar sm:navbar-expand bg-even" aria-label="Main navigation">
     <div class="container fluid">
       <a class="navbar-brand" href="#">Navbar</a>
       <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -163,7 +163,7 @@ Mark the current link with `.active` and `aria-current="page"`.
 
 The `<ul>` / `<li>` structure is optional. A plain `<div class="navbar-nav">` containing direct `<a class="nav-link">` children produces the same result, and pairs naturally with `.nav-pills` or other nav variants.
 
-<ResizableExample code={`<nav class="navbar small:navbar-expand bg-even" aria-label="Main navigation">
+<ResizableExample code={`<nav class="navbar sm:navbar-expand bg-even" aria-label="Main navigation">
     <div class="container fluid">
       <a class="navbar-brand" href="#">Navbar</a>
       <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -191,7 +191,7 @@ The `<ul>` / `<li>` structure is optional. A plain `<div class="navbar-nav">` co
 
 The Menu plugin nests inside a `.nav-item`, with the trigger marked by `data-cx-toggle="menu"`. The wrapping `.nav-item` is required so the menu positions correctly relative to its trigger.
 
-<ResizableExample code={`<nav class="navbar medium:navbar-expand bg-even" aria-label="Main navigation">
+<ResizableExample code={`<nav class="navbar md:navbar-expand bg-even" aria-label="Main navigation">
     <div class="container fluid">
       <a class="navbar-brand" href="#">Navbar</a>
       <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarNavMenu" aria-controls="navbarNavMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -239,7 +239,7 @@ A standalone search form:
 <Example code={`<nav class="navbar bg-even" aria-label="Main navigation">
     <div class="container fluid">
       <form class="d-flex" role="search">
-        <input class="form-input me-small" type="search" placeholder="Search" aria-label="Search"/>
+        <input class="form-input me-sm" type="search" placeholder="Search" aria-label="Search"/>
         <button class="button primary outline" type="submit">Search</button>
       </form>
     </div>
@@ -251,7 +251,7 @@ The same form alongside a brand — the flex layout pushes the form to the oppos
     <div class="container fluid">
       <a class="navbar-brand">Navbar</a>
       <form class="d-flex" role="search">
-        <input class="form-input me-small" type="search" placeholder="Search" aria-label="Search"/>
+        <input class="form-input me-sm" type="search" placeholder="Search" aria-label="Search"/>
         <button class="button primary outline" type="submit">Search</button>
       </form>
     </div>
@@ -273,8 +273,8 @@ Mixed button sizes inside a navbar form align via the same flex layout, with ver
 
 <Example code={`<nav class="navbar bg-even" aria-label="Main navigation">
     <form class="container fluid justify-content-start">
-      <button class="button primary outline me-small" type="button">Main button</button>
-      <button class="button small secondary outline" type="button">Smaller button</button>
+      <button class="button primary outline me-sm" type="button">Main button</button>
+      <button class="button sm secondary outline" type="button">Smaller button</button>
       <button type="submit" hidden>Submit</button>
     </form>
   </nav>`} />
@@ -293,7 +293,7 @@ The `.navbar-text` class adjusts vertical alignment and horizontal spacing for i
 
 Text combines naturally with other navbar components inside the drawer body.
 
-<ResizableExample code={`<nav class="navbar medium:navbar-expand bg-even" aria-label="Main navigation">
+<ResizableExample code={`<nav class="navbar md:navbar-expand bg-even" aria-label="Main navigation">
     <div class="container fluid">
       <a class="navbar-brand" href="#">Navbar w/ text</a>
       <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -306,7 +306,7 @@ Text combines naturally with other navbar components inside the drawer body.
           <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
         </div>
         <div class="drawer-body">
-          <ul class="navbar-nav me-auto mb-small medium:mb-0">
+          <ul class="navbar-nav me-auto mb-sm md:mb-0">
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="#">Home</a>
             </li>
@@ -333,7 +333,7 @@ The navbar inherits Chassis's full theming system — dark mode toggles, context
 
 Apply `data-cx-theme="dark"` directly to the `.navbar` element to opt a single navbar into the dark theme regardless of the page's color scheme.
 
-<ResizableExample code={`<nav class="navbar medium:navbar-expand bg-even" data-cx-theme="dark" aria-label="Main navigation">
+<ResizableExample code={`<nav class="navbar md:navbar-expand bg-even" data-cx-theme="dark" aria-label="Main navigation">
     <div class="container fluid">
       <a class="navbar-brand" href="#">Dark navbar</a>
       <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarDarkDrawer" aria-controls="navbarDarkDrawer" aria-expanded="false" aria-label="Toggle navigation">
@@ -345,7 +345,7 @@ Apply `data-cx-theme="dark"` directly to the `.navbar` element to opt a single n
 
           <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
         </div>
-        <div class="drawer-body mb-small medium:mb-0">
+        <div class="drawer-body mb-sm md:mb-0">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="#">Home</a>
@@ -368,7 +368,7 @@ Apply `data-cx-theme="dark"` directly to the `.navbar` element to opt a single n
               <a class="nav-link disabled" aria-disabled="true">Disabled</a>
             </li>
           </ul>
-          <form class="hstack gap-small" role="search">
+          <form class="hstack gap-sm" role="search">
             <input class="form-input" type="search" placeholder="Search" aria-label="Search"/>
             <button class="button primary outline icon-only" type="submit" aria-label="Search">
               <Icon name="search-solid" />
@@ -383,8 +383,8 @@ Apply `data-cx-theme="dark"` directly to the `.navbar` element to opt a single n
 
 The `.context.<color>` modifier swaps the navbar's color palette to a semantic context. Combine with `.solid` for a saturated fill, with `bg-*` utilities for custom backgrounds, or with `data-cx-theme` to mix theme and context independently.
 
-<ResizableExample containerClass="d-flex flex-column gap-small" showMarkup={false} code={`
-<nav class="navbar medium:navbar-expand context primary solid" aria-label="Main navigation">
+<ResizableExample containerClass="d-flex flex-column gap-sm" showMarkup={false} code={`
+<nav class="navbar md:navbar-expand context primary solid" aria-label="Main navigation">
   <div class="container fluid">
     <a class="navbar-brand" href="#">Navbar</a>
     <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
@@ -397,7 +397,7 @@ The `.context.<color>` modifier swaps the navbar's color palette to a semantic c
         <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
       </div>
       <div class="drawer-body">
-        <ul class="navbar-nav me-auto mb-small medium:mb-0">
+        <ul class="navbar-nav me-auto mb-sm md:mb-0">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li>
@@ -412,7 +412,7 @@ The `.context.<color>` modifier swaps the navbar's color palette to a semantic c
           </li>
         </ul>
         <form class="d-flex" role="search">
-          <input class="form-control me-small" type="search" placeholder="Search" aria-label="Search"/>
+          <input class="form-control me-sm" type="search" placeholder="Search" aria-label="Search"/>
           <button class="button default" type="submit">Search</button>
         </form>
       </div>
@@ -420,7 +420,7 @@ The `.context.<color>` modifier swaps the navbar's color palette to a semantic c
   </div>
 </nav>
 
-<nav class="navbar medium:navbar-expand context primary bg-even" data-cx-theme="dark" aria-label="Main navigation">
+<nav class="navbar md:navbar-expand context primary bg-even" data-cx-theme="dark" aria-label="Main navigation">
   <div class="container fluid">
     <a class="navbar-brand" href="#">Navbar</a>
     <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
@@ -433,7 +433,7 @@ The `.context.<color>` modifier swaps the navbar's color palette to a semantic c
         <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
       </div>
       <div class="drawer-body">
-        <ul class="navbar-nav me-auto mb-small medium:mb-0">
+        <ul class="navbar-nav me-auto mb-sm md:mb-0">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li>
@@ -448,7 +448,7 @@ The `.context.<color>` modifier swaps the navbar's color palette to a semantic c
           </li>
         </ul>
         <form class="d-flex" role="search">
-          <input class="form-control me-small" data-cx-theme="light" type="search" placeholder="Search" aria-label="Search"/>
+          <input class="form-control me-sm" data-cx-theme="light" type="search" placeholder="Search" aria-label="Search"/>
           <button class="button default" type="submit">Search</button>
         </form>
       </div>
@@ -456,7 +456,7 @@ The `.context.<color>` modifier swaps the navbar's color palette to a semantic c
   </div>
 </nav>
 
-<nav class="navbar medium:navbar-expand context primary bg-even" data-cx-theme="light" aria-label="Main navigation">
+<nav class="navbar md:navbar-expand context primary bg-even" data-cx-theme="light" aria-label="Main navigation">
   <div class="container fluid">
     <a class="navbar-brand" href="#">Navbar</a>
     <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
@@ -469,7 +469,7 @@ The `.context.<color>` modifier swaps the navbar's color palette to a semantic c
         <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
       </div>
       <div class="drawer-body">
-        <ul class="navbar-nav me-auto mb-small medium:mb-0">
+        <ul class="navbar-nav me-auto mb-sm md:mb-0">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li>
@@ -484,7 +484,7 @@ The `.context.<color>` modifier swaps the navbar's color palette to a semantic c
           </li>
         </ul>
         <form class="d-flex" role="search">
-          <input class="form-control me-small" type="search" placeholder="Search" aria-label="Search"/>
+          <input class="form-control me-sm" type="search" placeholder="Search" aria-label="Search"/>
           <button class="button outline primary" type="submit">Search</button>
         </form>
       </div>
@@ -511,7 +511,7 @@ The `.context.<color>` modifier swaps the navbar's color palette to a semantic c
 
 The `.translucent` modifier blurs and saturates whatever sits behind the navbar — useful when the navbar is positioned over a hero image, video, or scrollable content.
 
-<Example class="cxd-pattern-dots z-0 primary-bg-even" code={`<nav class="navbar translucent medium:navbar-expand" aria-label="Main navigation">
+<Example class="cxd-pattern-dots z-0 primary-bg-even" code={`<nav class="navbar translucent md:navbar-expand" aria-label="Main navigation">
     <div class="container fluid">
       <a class="navbar-brand" href="#">Navbar</a>
       <ul class="navbar-nav">
@@ -537,7 +537,7 @@ The navbar can be wrapped in a container, hold its own container, sit fixed at t
 A navbar wrapped in a `.container` is centered on the page; the inner container is still required for the navbar's own padding. Placing the inner container directly inside `.navbar` instead centers only the navbar's contents while keeping its background full-width.
 
 <Example code={`<div class="container">
-    <nav class="navbar large:navbar-expand bg-even" aria-label="Main navigation">
+    <nav class="navbar lg:navbar-expand bg-even" aria-label="Main navigation">
       <div class="container fluid">
         <a class="navbar-brand" href="#">Navbar</a>
       </div>
@@ -546,8 +546,8 @@ A navbar wrapped in a `.container` is centered on the page; the inner container 
 
 Any responsive container variant is available to control how wide the navbar's contents appear.
 
-<Example code={`<nav class="navbar large:navbar-expand bg-even" aria-label="Main navigation">
-    <div class="container medium">
+<Example code={`<nav class="navbar lg:navbar-expand bg-even" aria-label="Main navigation">
+    <div class="container md">
       <a class="navbar-brand" href="#">Navbar</a>
     </div>
   </nav>`} />
@@ -566,11 +566,11 @@ Beyond the basic structure, the navbar exposes controls for tuning its responsiv
 
 The `.{breakpoint}:navbar-expand` modifier controls when the navbar transitions between drawer mode and inline mode:
 
-- `.small:navbar-expand` — drawer below the small breakpoint, inline at small and above
-- `.medium:navbar-expand` — drawer below medium, inline at medium and above
-- `.large:navbar-expand` — drawer below large, inline at large and above
-- `.xlarge:navbar-expand` — drawer below xlarge, inline at xlarge and above
-- `.2xlarge:navbar-expand` — drawer below 2xlarge, inline at 2xlarge and above
+- `.sm:navbar-expand` — drawer below the sm breakpoint, inline at sm and above
+- `.md:navbar-expand` — drawer below md, inline at md and above
+- `.lg:navbar-expand` — drawer below lg, inline at lg and above
+- `.xl:navbar-expand` — drawer below xl, inline at xl and above
+- `.2xl:navbar-expand` — drawer below 2xl, inline at 2xl and above
 - `.navbar-expand` — inline at all widths (toggler hidden, drawer markup renders flat inside the navbar)
 - No `.navbar-expand` class — drawer at all widths (toggler always visible, the drawer must be opened to access the nav)
 
@@ -587,7 +587,7 @@ The drawer slides in from any side via the `.drawer-{position}` classes:
 
 The examples below omit the `.{breakpoint}:navbar-expand` class so the drawer is always visible regardless of viewport width.
 
-<ResizableExample code={`<nav class="navbar medium:navbar-expand bg-even" aria-label="Main navigation">
+<ResizableExample code={`<nav class="navbar md:navbar-expand bg-even" aria-label="Main navigation">
     <div class="container fluid">
       <a class="navbar-brand" href="#">Left Drawer</a>
       <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarLeftDrawer" aria-controls="navbarLeftDrawer" aria-expanded="false" aria-label="Toggle navigation">
@@ -600,7 +600,7 @@ The examples below omit the `.{breakpoint}:navbar-expand` class so the drawer is
           <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
         </div>
         <div class="drawer-body">
-          <ul class="navbar-nav me-auto mb-small medium:mb-0">
+          <ul class="navbar-nav me-auto mb-sm md:mb-0">
             <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
             <li class="nav-item"><a class="nav-link disabled" aria-disabled="true">Disabled</a></li>
@@ -610,7 +610,7 @@ The examples below omit the `.{breakpoint}:navbar-expand` class so the drawer is
     </div>
   </nav>`} />
 
-<ResizableExample code={`<nav class="navbar medium:navbar-expand bg-even" aria-label="Main navigation">
+<ResizableExample code={`<nav class="navbar md:navbar-expand bg-even" aria-label="Main navigation">
     <div class="container fluid">
       <a class="navbar-brand" href="#">Top Drawer</a>
       <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarTopDrawer" aria-controls="navbarTopDrawer" aria-expanded="false" aria-label="Toggle navigation">
@@ -623,7 +623,7 @@ The examples below omit the `.{breakpoint}:navbar-expand` class so the drawer is
           <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
         </div>
         <div class="drawer-body">
-          <ul class="navbar-nav me-auto mb-small medium:mb-0">
+          <ul class="navbar-nav me-auto mb-sm md:mb-0">
             <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
             <li class="nav-item"><a class="nav-link disabled" aria-disabled="true">Disabled</a></li>
@@ -639,7 +639,7 @@ The `.navbar-toggler` has no fixed position — its location within the navbar i
 
 With no `.navbar-brand` visible (the brand lives inside the drawer):
 
-<ResizableExample code={`<nav class="navbar medium:navbar-expand bg-even" aria-label="Main navigation">
+<ResizableExample code={`<nav class="navbar md:navbar-expand bg-even" aria-label="Main navigation">
     <div class="container fluid">
       <button class="button icon-only navbar-toggler" type="button" data-cx-toggle="drawer" data-cx-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
         <Icon name="bars-outline" class="navbar-toggler-icon" />
@@ -652,13 +652,13 @@ With no `.navbar-brand` visible (the brand lives inside the drawer):
         </div>
         <div class="drawer-body">
           <a class="navbar-brand" href="#">Hidden brand</a>
-          <ul class="navbar-nav me-auto mb-small medium:mb-0">
+          <ul class="navbar-nav me-auto mb-sm md:mb-0">
             <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
             <li class="nav-item"><a class="nav-link disabled" aria-disabled="true">Disabled</a></li>
           </ul>
           <form class="d-flex" role="search">
-            <input class="form-control me-small" type="search" placeholder="Search" aria-label="Search"/>
+            <input class="form-control me-sm" type="search" placeholder="Search" aria-label="Search"/>
             <button class="button outline success" type="submit">Search</button>
           </form>
         </div>

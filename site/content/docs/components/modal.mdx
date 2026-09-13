@@ -18,7 +18,7 @@ A modal is a `<dialog>` element styled with `.modal` and activated by the `.dial
 - **`.modal`** — visual style: colors, borders, shadows, and layout of the header, body, and footer regions.
 
 <Example lang="html"
-  class="bg-evident d-flex justify-content-center py-4xlarge"
+  class="bg-evident d-flex justify-content-center py-4xl"
   code={`<dialog class="modal dialog position-relative" id="exampleModalIntro" aria-labelledby="exampleModalIntroLabel" open>
     <div class="modal-header position-relative">
       <h2 class="modal-title" id="exampleModalIntroLabel">Modal title</h2>
@@ -86,20 +86,20 @@ The classes below control the dimensions and scroll behavior of the modal window
 
 ### Sizes
 
-Add a size modifier to change the modal width. Without a size modifier the modal renders at <code>{sassModalSize('medium')}</code>.
+Add a size modifier to change the modal width. Without a size modifier the modal renders at <code>{sassModalSize('md')}</code>.
 
 <Example showMarkup={false} class="button-examples" code={`<button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#modalSmall">Small</button>
   <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#modalDefault">Default</button>
   <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#modalLarge">Large</button>
   <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#modalXlarge">Extra large</button>
   <!-- Small -->
-  <dialog class="modal dialog small" id="modalSmall" aria-labelledby="modalSmallLabel">
+  <dialog class="modal dialog sm" id="modalSmall" aria-labelledby="modalSmallLabel">
     <div class="modal-header">
       <h2 class="modal-title" id="modalSmallLabel">Small modal</h2>
       <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-      <p>${sassModalSize('small')}</p>
+      <p>${sassModalSize('sm')}</p>
     </div>
     <div class="modal-footer">
       <button type="button" class="button default" data-cx-dismiss="dialog">Close</button>
@@ -112,33 +112,33 @@ Add a size modifier to change the modal width. Without a size modifier the modal
       <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-      <p>${sassModalSize('medium')}</p>
+      <p>${sassModalSize('md')}</p>
     </div>
     <div class="modal-footer">
       <button type="button" class="button default" data-cx-dismiss="dialog">Close</button>
     </div>
   </dialog>
   <!-- Large -->
-  <dialog class="modal dialog large" id="modalLarge" aria-labelledby="modalLargeLabel">
+  <dialog class="modal dialog lg" id="modalLarge" aria-labelledby="modalLargeLabel">
     <div class="modal-header">
       <h2 class="modal-title" id="modalLargeLabel">Large modal</h2>
       <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-      <p>${sassModalSize('large')}</p>
+      <p>${sassModalSize('lg')}</p>
     </div>
     <div class="modal-footer">
       <button type="button" class="button default" data-cx-dismiss="dialog">Close</button>
     </div>
   </dialog>
   <!-- Extra large -->
-  <dialog class="modal dialog xlarge" id="modalXlarge" aria-labelledby="modalXlargeLabel">
+  <dialog class="modal dialog xl" id="modalXlarge" aria-labelledby="modalXlargeLabel">
     <div class="modal-header">
       <h2 class="modal-title" id="modalXlargeLabel">Extra large modal</h2>
       <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-      <p>${sassModalSize('xlarge')}</p>
+      <p>${sassModalSize('xl')}</p>
     </div>
     <div class="modal-footer">
       <button type="button" class="button default" data-cx-dismiss="dialog">Close</button>
@@ -148,10 +148,10 @@ Add a size modifier to change the modal width. Without a size modifier the modal
 <CxTable>
 | Class | Width |
 | --- | --- |
-| `.modal.small` | {sassModalSize('small')} |
-| `.modal` *(no modifier)* | {sassModalSize('medium')} |
-| `.modal.large` | {sassModalSize('large')} |
-| `.modal.xlarge` | {sassModalSize('xlarge')} |
+| `.modal.sm` | {sassModalSize('sm')} |
+| `.modal` *(no modifier)* | {sassModalSize('md')} |
+| `.modal.lg` | {sassModalSize('lg')} |
+| `.modal.xl` | {sassModalSize('xl')} |
 </CxTable>
 
 ### Fullscreen
@@ -159,11 +159,11 @@ Add a size modifier to change the modal width. Without a size modifier the modal
 Add `.fullscreen` to expand the modal to the full viewport. The responsive `max-{breakpoint}:fullscreen` variants go fullscreen only below the named breakpoint — above it the modal renders at its normal size.
 
 <Example showMarkup={false} class="button-examples" code={`<button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#fsAlways">Always fullscreen</button>
-  <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#fsSmall">max-small</button>
-  <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#fsMedium">max-medium</button>
-  <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#fsLarge">max-large</button>
-  <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#fsXlarge">max-xlarge</button>
-  <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#fs2xlarge">max-2xlarge</button>
+  <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#fsSmall">max-sm</button>
+  <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#fsMedium">max-md</button>
+  <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#fsLarge">max-lg</button>
+  <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#fsXlarge">max-xl</button>
+  <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#fs2xlarge">max-2xl</button>
   <!-- Always fullscreen -->
   <dialog class="modal dialog fullscreen" id="fsAlways" aria-labelledby="fsAlwaysLabel">
     <div class="modal-header">
@@ -177,66 +177,66 @@ Add `.fullscreen` to expand the modal to the full viewport. The responsive `max-
       <button type="button" class="button default" data-cx-dismiss="dialog">Close</button>
     </div>
   </dialog>
-  <!-- Fullscreen below small -->
-  <dialog class="modal dialog max-small:fullscreen" id="fsSmall" aria-labelledby="fsSmallLabel">
+  <!-- Fullscreen below sm -->
+  <dialog class="modal dialog max-sm:fullscreen" id="fsSmall" aria-labelledby="fsSmallLabel">
     <div class="modal-header">
-      <h2 class="modal-title" id="fsSmallLabel">Fullscreen below small</h2>
+      <h2 class="modal-title" id="fsSmallLabel">Fullscreen below sm</h2>
       <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-      <p>Fullscreen below <code>${sassBreakpointSize('small')}</code>. Normal size above.</p>
+      <p>Fullscreen below <code>${sassBreakpointSize('sm')}</code>. Normal size above.</p>
     </div>
     <div class="modal-footer">
       <button type="button" class="button default" data-cx-dismiss="dialog">Close</button>
     </div>
   </dialog>
-  <!-- Fullscreen below medium -->
-  <dialog class="modal dialog max-medium:fullscreen" id="fsMedium" aria-labelledby="fsMediumLabel">
+  <!-- Fullscreen below md -->
+  <dialog class="modal dialog max-md:fullscreen" id="fsMedium" aria-labelledby="fsMediumLabel">
     <div class="modal-header">
-      <h2 class="modal-title" id="fsMediumLabel">Fullscreen below medium</h2>
+      <h2 class="modal-title" id="fsMediumLabel">Fullscreen below md</h2>
       <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-      <p>Fullscreen below <code>${sassBreakpointSize('medium')}</code>. Normal size above.</p>
+      <p>Fullscreen below <code>${sassBreakpointSize('md')}</code>. Normal size above.</p>
     </div>
     <div class="modal-footer">
       <button type="button" class="button default" data-cx-dismiss="dialog">Close</button>
     </div>
   </dialog>
-  <!-- Fullscreen below large -->
-  <dialog class="modal dialog max-large:fullscreen" id="fsLarge" aria-labelledby="fsLargeLabel">
+  <!-- Fullscreen below lg -->
+  <dialog class="modal dialog max-lg:fullscreen" id="fsLarge" aria-labelledby="fsLargeLabel">
     <div class="modal-header">
-      <h2 class="modal-title" id="fsLargeLabel">Fullscreen below large</h2>
+      <h2 class="modal-title" id="fsLargeLabel">Fullscreen below lg</h2>
       <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-      <p>Fullscreen below <code>${sassBreakpointSize('large')}</code>. Normal size above.</p>
+      <p>Fullscreen below <code>${sassBreakpointSize('lg')}</code>. Normal size above.</p>
     </div>
     <div class="modal-footer">
       <button type="button" class="button default" data-cx-dismiss="dialog">Close</button>
     </div>
   </dialog>
-  <!-- Fullscreen below xlarge -->
-  <dialog class="modal dialog max-xlarge:fullscreen" id="fsXlarge" aria-labelledby="fsXlargeLabel">
+  <!-- Fullscreen below xl -->
+  <dialog class="modal dialog max-xl:fullscreen" id="fsXlarge" aria-labelledby="fsXlargeLabel">
     <div class="modal-header">
-      <h2 class="modal-title" id="fsXlargeLabel">Fullscreen below xlarge</h2>
+      <h2 class="modal-title" id="fsXlargeLabel">Fullscreen below xl</h2>
       <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-      <p>Fullscreen below <code>${sassBreakpointSize('xlarge')}</code>. Normal size above.</p>
+      <p>Fullscreen below <code>${sassBreakpointSize('xl')}</code>. Normal size above.</p>
     </div>
     <div class="modal-footer">
       <button type="button" class="button default" data-cx-dismiss="dialog">Close</button>
     </div>
   </dialog>
-  <!-- Fullscreen below 2xlarge -->
-  <dialog class="modal dialog max-2xlarge:fullscreen" id="fs2xlarge" aria-labelledby="fs2xlargeLabel">
+  <!-- Fullscreen below 2xl -->
+  <dialog class="modal dialog max-2xl:fullscreen" id="fs2xlarge" aria-labelledby="fs2xlargeLabel">
     <div class="modal-header">
-      <h2 class="modal-title" id="fs2xlargeLabel">Fullscreen below 2xlarge</h2>
+      <h2 class="modal-title" id="fs2xlargeLabel">Fullscreen below 2xl</h2>
       <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-      <p>Fullscreen below <code>${sassBreakpointSize('2xlarge')}</code>. Normal size above.</p>
+      <p>Fullscreen below <code>${sassBreakpointSize('2xl')}</code>. Normal size above.</p>
     </div>
     <div class="modal-footer">
       <button type="button" class="button default" data-cx-dismiss="dialog">Close</button>
@@ -247,11 +247,11 @@ Add `.fullscreen` to expand the modal to the full viewport. The responsive `max-
 | Class | Behavior |
 | --- | --- |
 | `.modal.fullscreen` | Always fullscreen |
-| `.modal.max-small:fullscreen` | Fullscreen below `small` ({sassBreakpointSize('small')}) |
-| `.modal.max-medium:fullscreen` | Fullscreen below `medium` ({sassBreakpointSize('medium')}) |
-| `.modal.max-large:fullscreen` | Fullscreen below `large` ({sassBreakpointSize('large')}) |
-| `.modal.max-xlarge:fullscreen` | Fullscreen below `xlarge` ({sassBreakpointSize('xlarge')}) |
-| `.modal.max-2xlarge:fullscreen` | Fullscreen below `2xlarge` ({sassBreakpointSize('2xlarge')}) |
+| `.modal.max-sm:fullscreen` | Fullscreen below `sm` ({sassBreakpointSize('sm')}) |
+| `.modal.max-md:fullscreen` | Fullscreen below `md` ({sassBreakpointSize('md')}) |
+| `.modal.max-lg:fullscreen` | Fullscreen below `lg` ({sassBreakpointSize('lg')}) |
+| `.modal.max-xl:fullscreen` | Fullscreen below `xl` ({sassBreakpointSize('xl')}) |
+| `.modal.max-2xl:fullscreen` | Fullscreen below `2xl` ({sassBreakpointSize('2xl')}) |
 </CxTable>
 
 ### Scrollable
@@ -260,7 +260,7 @@ By default a modal that is taller than the viewport extends the page and scrolls
 
 <Example style="height: 256px;" class="button-examples" code={`<button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#scrollableModal">Scrollable body</button>
 
-  <dialog class="modal dialog large scrollable max-medium:fullscreen" id="scrollableModal" aria-labelledby="scrollableModalLabel">
+  <dialog class="modal dialog lg scrollable max-md:fullscreen" id="scrollableModal" aria-labelledby="scrollableModalLabel">
     <div class="modal-header">
       <h2 class="modal-title" id="scrollableModalLabel">Scrollable modal</h2>
       <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>
@@ -280,9 +280,9 @@ By default a modal that is taller than the viewport extends the page and scrolls
 
 ### Footer layout
 
-The `.modal-footer` uses `flex-direction: row-reverse`, so buttons are right-aligned without `justify-content` — write the **primary action first** in source, it renders on the right. At the small breakpoint, buttons stretch to equal widths (`flex: 1`). Add `.stacked` to stack them as full-width columns instead.
+The `.modal-footer` uses `flex-direction: row-reverse`, so buttons are right-aligned without `justify-content` — write the **primary action first** in source, it renders on the right. At the sm breakpoint, buttons stretch to equal widths (`flex: 1`). Add `.stacked` to stack them as full-width columns instead.
 
-For a third action that should be visually separated — such as a destructive option — add `.me-auto` (or a responsive variant like `.small:me-auto`) to push it to the opposite end.
+For a third action that should be visually separated — such as a destructive option — add `.me-auto` (or a responsive variant like `.sm:me-auto`) to push it to the opposite end.
 
 <Example lang="html" code={`<button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#exampleModalFooter">
   Open modal
@@ -294,12 +294,12 @@ For a third action that should be visually separated — such as a destructive o
       <button type="button" class="close-button" data-cx-dismiss="dialog" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-      <p>A modal with multiple footer actions, stacking full-width at the small breakpoint.</p>
+      <p>A modal with multiple footer actions, stacking full-width at the sm breakpoint.</p>
     </div>
     <div class="modal-footer stacked"><!-- [!code highlight] -->
       <button type="button" class="button primary">Take action</button>
       <button type="button" class="button default" data-cx-dismiss="dialog">Close</button>
-      <button type="button" class="button danger outline small:me-auto">Destructive</button>
+      <button type="button" class="button danger outline sm:me-auto">Destructive</button>
     </div>
   </dialog>`} />
 
@@ -483,7 +483,7 @@ Opening a modal from within an open one performs a seamless **dialog swap**: the
     <div class="modal-footer stacked">
       <button type="button" class="button primary">Take action</button>
       <button type="button" class="button default" data-cx-dismiss="dialog">Close</button>
-      <button type="button" class="button neutral small:me-auto" data-cx-toggle="dialog" data-cx-target="#firstStep">Back to step 1</button>
+      <button type="button" class="button neutral sm:me-auto" data-cx-toggle="dialog" data-cx-target="#firstStep">Back to step 1</button>
     </div>
   </dialog>`} />
 
@@ -502,11 +502,11 @@ The `show.cx.dialog` event receives `event.relatedTarget` — the element that t
     </div>
     <div class="modal-body">
       <form>
-        <div class="mb-medium">
+        <div class="mb-md">
           <label for="recipient-name" class="col-form-label">Recipient:</label>
           <input type="text" class="form-input" id="recipient-name" />
         </div>
-        <div class="mb-medium">
+        <div class="mb-md">
           <label for="message-text" class="col-form-label">Message:</label>
           <textarea class="form-input" id="message-text"></textarea>
         </div>
@@ -534,7 +534,7 @@ Tooltips, popovers, toasts, and menus all work inside modal dialogs and are dism
     </div>
     <div class="modal-body">
       <p>These components work inside modal dialogs.</p>
-      <div class="d-flex gap-small flex-wrap">
+      <div class="d-flex gap-sm flex-wrap">
         <button type="button" class="button default" data-cx-toggle="tooltip" data-cx-title="Tooltip inside a dialog!">Tooltip</button>
         <button type="button" class="button default" data-cx-toggle="popover" data-cx-title="Popover title" data-cx-content="This popover is inside a dialog and renders in the top layer. We include some longer content here to demonstrate the placement and wrapping behavior." data-cx-placement="top">Popover</button>
         <button type="button" class="button default" id="dialogToastButton">Show toast</button>
@@ -566,12 +566,12 @@ Tooltips, popovers, toasts, and menus all work inside modal dialogs and are dism
       <button type="button" class="button neutral" data-cx-dismiss="dialog">Close</button>
     </div>
     <!-- Toast container is placed inside the dialog so toasts render above the backdrop and are scoped to the dialog for positioning. -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-medium">
+    <div class="toast-container position-fixed bottom-0 end-0 p-md">
       <div class="toast" id="dialogToast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-body">
           Toast inside a dialog!
-          <div class="mt-small pt-small border-top">
-            <button type="button" class="button primary small" data-cx-dismiss="toast">Close</button>
+          <div class="mt-sm pt-sm border-top">
+            <button type="button" class="button primary sm" data-cx-dismiss="toast">Close</button>
           </div>
         </div>
       </div>

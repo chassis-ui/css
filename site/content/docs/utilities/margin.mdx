@@ -23,7 +23,7 @@ For flex and grid layouts, [gap utilities]([[docsref:/utilities/gap]]) are more 
 
 Margin classes that apply at all breakpoints have no breakpoint prefix — they start from `min-width: 0` and are not media-query-bound. Breakpoint-prefixed classes apply at that breakpoint and above.
 
-The classes are named using the format `m{sides}-{size}` for `xsmall` and `{breakpoint}:m{sides}-{size}` for `small`, `medium`, `large`, `xlarge`, and `2xlarge`.
+The classes are named using the format `m{sides}-{size}` for `xs` and `{breakpoint}:m{sides}-{size}` for `sm`, `md`, `lg`, `xl`, and `2xl`.
 
 Where *sides* is one of:
 
@@ -53,10 +53,10 @@ Additional sizes can be added by adding entries to the `$spaces` Sass map.
 `.m-{size}` sets `margin` on all four sides of an element at once.
 
 <Example class="cxd-example-spacing" code={`<div class="overflow-auto">
-    <div class="m-xsmall">m-xsmall</div>
-    <div class="m-small">m-small</div>
-    <div class="m-medium">m-medium</div>
-    <div class="m-large">m-large</div>
+    <div class="m-xs">m-xs</div>
+    <div class="m-sm">m-sm</div>
+    <div class="m-md">m-md</div>
+    <div class="m-lg">m-lg</div>
   </div>`} />
 
 ## Axes
@@ -64,8 +64,8 @@ Additional sizes can be added by adding entries to the `$spaces` Sass map.
 Axis utilities apply margin to two opposite edges simultaneously. `.mx-{size}` targets both inline edges; `.my-{size}` targets both block edges.
 
 <Example class="cxd-example-spacing" code={`<div class="overflow-auto">
-    <div class="my-large">my-large</div>
-    <div class="mx-large">mx-large</div>
+    <div class="my-lg">my-lg</div>
+    <div class="mx-lg">mx-lg</div>
   </div>`} />
 
 ## Individual edges
@@ -73,10 +73,10 @@ Axis utilities apply margin to two opposite edges simultaneously. `.mx-{size}` t
 Single-edge utilities set margin on one edge without affecting the others.
 
 <Example class="cxd-example-spacing" code={`<div class="overflow-auto">
-    <div class="mt-large">mt-large</div>
-    <div class="mb-large">mb-large</div>
-    <div class="ms-large">ms-large</div>
-    <div class="me-large">me-large</div>
+    <div class="mt-lg">mt-lg</div>
+    <div class="mb-lg">mb-lg</div>
+    <div class="ms-lg">ms-lg</div>
+    <div class="me-lg">me-lg</div>
   </div>`} />
 
 ## Horizontal centering
@@ -91,11 +91,11 @@ Single-edge utilities set margin on one edge without affecting the others.
 
 Negative margin utilities mirror the positive spacing scale and are enabled by default. Setting `$enable-negative-margins: false` in Sass removes them from the compiled output.
 
-Negative classes follow the same sides notation, prefixed with `-`. `-mt-medium` is the inverse of `mt-medium`, and `-mx-small` is the inverse of `mx-small`. All negative utilities are responsive and support the same breakpoint prefixes as their positive counterparts.
+Negative classes follow the same sides notation, prefixed with `-`. `-mt-md` is the inverse of `mt-md`, and `-mx-sm` is the inverse of `mx-sm`. All negative utilities are responsive and support the same breakpoint prefixes as their positive counterparts.
 
-<Example class="cxd-example-spacing" code={`<div class="p-medium">
-    <div class="-mx-medium">-mx-medium</div>
-    <div class="-my-medium">-my-medium</div>
+<Example class="cxd-example-spacing" code={`<div class="p-md">
+    <div class="-mx-md">-mx-md</div>
+    <div class="-my-md">-my-md</div>
   </div>`} />
 
 ## CSS

@@ -15,16 +15,16 @@ If you're not using a component, comment it out or delete it entirely. For examp
 
 ### Trim unused breakpoints
 
-Chassis CSS generates responsive surfaces — utility prefixes (`small:d-flex`, `large:m-medium`), grid columns (`.col-large-6`), container query loops, and the `--breakpoint-*` CSS custom properties — from a single `$breakpoints` map. Projects that don't need every breakpoint can shrink the compiled CSS substantially by overriding the map before importing Chassis:
+Chassis CSS generates responsive surfaces — utility prefixes (`sm:d-flex`, `lg:m-md`), grid columns (`.col-lg-6`), container query loops, and the `--breakpoint-*` CSS custom properties — from a single `$breakpoints` map. Projects that don't need every breakpoint can shrink the compiled CSS substantially by overriding the map before importing Chassis:
 
 ```scss
 // custom.scss
 @use "@chassis-ui/css/scss/config/defaults" with (
   $breakpoints: (
-    xsmall:   0,
-    small:    36rem,
-    medium:   48rem,
-    large:    62rem,
+    xs:   0,
+    sm:    36rem,
+    md:   48rem,
+    lg:    62rem,
   )
 );
 
@@ -35,8 +35,8 @@ Each breakpoint dropped from the map removes its prefixed utility classes (rough
 
 Two constraints apply:
 
-- The `xsmall` breakpoint must remain. It carries the unprefixed mobile-first base classes that every responsive utility builds on.
-- Several Chassis components hardcode `small`, `medium`, and `large` in their internal responsive logic. Removing any of those three breaks those components. The `xlarge` and `2xlarge` breakpoints are not hardcoded anywhere internal and are safe to remove.
+- The `xs` breakpoint must remain. It carries the unprefixed mobile-first base classes that every responsive utility builds on.
+- Several Chassis components hardcode `sm`, `md`, and `lg` in their internal responsive logic. Removing any of those three breaks those components. The `xl` and `2xl` breakpoints are not hardcoded anywhere internal and are safe to remove.
 
 ## Lean JavaScript
 
@@ -105,7 +105,7 @@ export default {
 
 Three Chassis-specific gotchas the default PurgeCSS config will miss:
 
-- **Responsive prefix classes (`small:d-flex`, `large:m-medium`) contain a colon.** The default extractor strips everything after a colon, treating these as pseudo-selectors. The custom `defaultExtractor` above (`[\w/:-]+(?<!:)`) preserves internal colons while still rejecting trailing ones, so responsive utilities survive the purge.
+- **Responsive prefix classes (`sm:d-flex`, `lg:m-md`) contain a colon.** The default extractor strips everything after a colon, treating these as pseudo-selectors. The custom `defaultExtractor` above (`[\w/:-]+(?<!:)`) preserves internal colons while still rejecting trailing ones, so responsive utilities survive the purge.
 - **JavaScript-toggled state classes never appear in source markup.** Classes such as `.active`, `.show`, `.fade`, `.collapsing`, `.hiding`, and `.dialog-open` are added by Chassis JS in response to user interaction. They must be safelisted explicitly or they get stripped.
 - **`:has()`, sibling, and attribute selectors reference classes the extractor never sees.** A rule like `.stepper-item:has(~ .stepper-item.active)` depends on `.active` being preserved on `.stepper-item`, even though no static markup carries it. When a component relies on such selectors, safelist the relevant modifier classes.
 

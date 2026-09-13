@@ -146,21 +146,21 @@ These work great with custom content as well.
 
 <Example code={`<ol class="list numbered">
     <li class="list-item d-flex justify-content-between align-items-start">
-      <div class="ms-xsmall me-auto">
+      <div class="ms-xs me-auto">
         <div class="font-strong">Subheading</div>
         Content for list item
       </div>
       <span class="badge primary">14</span>
     </li>
     <li class="list-item d-flex justify-content-between align-items-start">
-      <div class="ms-xsmall me-auto">
+      <div class="ms-xs me-auto">
         <div class="font-strong">Subheading</div>
         Content for list item
       </div>
       <span class="badge primary">14</span>
     </li>
     <li class="list-item d-flex justify-content-between align-items-start">
-      <div class="ms-xsmall me-auto">
+      <div class="ms-xs me-auto">
         <div class="font-strong">Subheading</div>
         Content for list item
       </div>
@@ -179,8 +179,8 @@ Responsive variants use [container queries]([[docsref:/layout/breakpoints#contai
 </Callout>
 
 <ResizableExample code={[`<div class="contains-inline">`, 
-  ...getData('breakpoints').filter($breakpoint => !['xlarge:', '2xlarge:']
-    .includes($breakpoint.abbr)).map((breakpoint) => `  <ul class="list ${breakpoint.abbr}horizontal mb-medium">
+  ...getData('breakpoints').filter($breakpoint => !['xl:', '2xl:']
+    .includes($breakpoint.abbr)).map((breakpoint) => `  <ul class="list ${breakpoint.abbr}horizontal mb-md">
       <li class="list-item">An item</li>
       <li class="list-item">A second item</li>
       <li class="list-item">A third item</li>
@@ -191,7 +191,7 @@ Apply `.flex-fill` or `.flex-grow-1` to list items to stretch them across the fu
 - `.flex-fill` — items share the available width equally, regardless of content length
 - `.flex-grow-1` — items grow from their natural content width; items with longer content end up wider
 
-<Example code={`<ul class="list horizontal mb-medium">
+<Example code={`<ul class="list horizontal mb-md">
     <li class="list-item flex-fill">An item</li>
     <li class="list-item flex-fill">Second item</li>
     <li class="list-item flex-fill">And the longer third item</li>
@@ -230,7 +230,7 @@ Apply the `.active` class to indicate the currently selected item within a conte
 
 Contextual styles are applied to lists or items using `.solid`, `.outline`, or `.smooth` classes. These classes apply the appropriate background, border, and text colors based on your design system's color palette.
 
-<Example code={`<div class="row medium:row-cols-2 g-large">
+<Example code={`<div class="row md:row-cols-2 g-lg">
     <div class="col">
       <ul class="list context primary">
         <li class="list-item">An item</li>
@@ -300,26 +300,26 @@ Lists can accommodate complex content structures while maintaining design consis
 <Example code={`<div class="list">
     <a href="#" class="list-item list-action active" aria-current="true">
       <div class="d-flex w-100 justify-content-between">
-        <h4 class="font-large mb-2xsmall">List item heading</h4>
+        <h4 class="font-lg mb-2xs">List item heading</h4>
         <small>3 days ago</small>
       </div>
-      <p class="mb-2xsmall">Some placeholder content in a paragraph.</p>
+      <p class="mb-2xs">Some placeholder content in a paragraph.</p>
       <small>And some small print.</small>
     </a>
     <a href="#" class="list-item list-action">
       <div class="d-flex w-100 justify-content-between">
-        <h4 class="font-large mb-2xsmall">List item heading</h4>
+        <h4 class="font-lg mb-2xs">List item heading</h4>
         <small class="fg-subtle">3 days ago</small>
       </div>
-      <p class="mb-2xsmall">Some placeholder content in a paragraph.</p>
+      <p class="mb-2xs">Some placeholder content in a paragraph.</p>
       <small class="fg-subtle">And some muted small print.</small>
     </a>
     <a href="#" class="list-item list-action">
       <div class="d-flex w-100 justify-content-between">
-        <h4 class="font-large mb-2xsmall">List item heading</h4>
+        <h4 class="font-lg mb-2xs">List item heading</h4>
         <small class="fg-subtle">3 days ago</small>
       </div>
-      <p class="mb-2xsmall">Some placeholder content in a paragraph.</p>
+      <p class="mb-2xs">Some placeholder content in a paragraph.</p>
       <small class="fg-subtle">And some muted small print.</small>
     </a>
   </div>`} />
@@ -334,15 +334,15 @@ Lists seamlessly integrate with Chassis's form controls to create selectable lis
 
 <Example code={`<ul class="list">
     <li class="list-item">
-      <input class="check-input me-xsmall" type="checkbox" value="" id="firstCheckbox">
+      <input class="check-input me-xs" type="checkbox" value="" id="firstCheckbox">
       <label class="check-label" for="firstCheckbox">First checkbox</label>
     </li>
     <li class="list-item">
-      <input class="check-input me-xsmall" type="checkbox" value="" id="secondCheckbox">
+      <input class="check-input me-xs" type="checkbox" value="" id="secondCheckbox">
       <label class="check-label" for="secondCheckbox">Second checkbox</label>
     </li>
     <li class="list-item">
-      <input class="check-input me-xsmall" type="checkbox" value="" id="thirdCheckbox">
+      <input class="check-input me-xs" type="checkbox" value="" id="thirdCheckbox">
       <label class="check-label" for="thirdCheckbox">Third checkbox</label>
     </li>
   </ul>`} />
@@ -353,15 +353,15 @@ Apply the `.stretched-link` utility to `<label>` elements to expand the clickabl
 
 <Example code={`<ul class="list">
     <li class="list-item">
-      <input class="check-input me-xsmall" type="checkbox" value="" id="firstCheckboxStretched">
+      <input class="check-input me-xs" type="checkbox" value="" id="firstCheckboxStretched">
       <label class="check-label stretched-link" for="firstCheckboxStretched">First checkbox</label>
     </li>
     <li class="list-item">
-      <input class="check-input me-xsmall" type="checkbox" value="" id="secondCheckboxStretched">
+      <input class="check-input me-xs" type="checkbox" value="" id="secondCheckboxStretched">
       <label class="check-label stretched-link" for="secondCheckboxStretched">Second checkbox</label>
     </li>
     <li class="list-item">
-      <input class="check-input me-xsmall" type="checkbox" value="" id="thirdCheckboxStretched">
+      <input class="check-input me-xs" type="checkbox" value="" id="thirdCheckboxStretched">
       <label class="check-label stretched-link" for="thirdCheckboxStretched">Third checkbox</label>
     </li>
   </ul>`} />

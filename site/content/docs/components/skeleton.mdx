@@ -44,7 +44,7 @@ Explore practical skeleton implementations demonstrating loading patterns, anima
 
 This foundational example demonstrates essential skeleton structure with proper accessibility attributes. Skeletons replace content during loading while maintaining visual hierarchy and spacing relationships.
 
-<Example class="d-flex flex-wrap gap-medium" code={`<div class="card" style="width: 18rem;">
+<Example class="d-flex flex-wrap gap-md" code={`<div class="card" style="width: 18rem;">
     <Placeholder width="100%" height="180" class="card-img-top" text={false} background="#20c997" />
     <div class="card-body">
       <h4 class="card-title">Card title</h4>
@@ -105,14 +105,14 @@ By default, skeletons inherit `currentColor` for seamless integration with your 
 
 Skeleton dimensions automatically inherit from parent element typography. Apply [typography classes]([[docsref:/content/typography#font-size]]) or [text utilities]([[docsref:/utilities/text#font-size]]) to create skeleton variations that match your content hierarchy.
 
-<Example code={`<span class="skeleton col-12 font-xlarge"></span>
+<Example code={`<span class="skeleton col-12 font-xl"></span>
   <span class="skeleton col-12"></span>
-  <span class="skeleton col-12 font-xsmall"></span>
+  <span class="skeleton col-12 font-xs"></span>
 
-  <p class="font-small">
+  <p class="font-sm">
     <span class="skeleton col-5"></span>
-    <span class="skeleton col-3 text-small"></span>
-    <span class="skeleton col-3 text-large"></span>
+    <span class="skeleton col-3 text-sm"></span>
+    <span class="skeleton col-3 text-lg"></span>
   </p>`} />
 
 ### Animation effects
@@ -132,11 +132,11 @@ Enhance skeleton loading feedback with animation patterns that convey active loa
 Build sophisticated loading states by combining multiple skeleton elements within structured layouts. This approach maintains visual hierarchy while providing comprehensive loading feedback for complex interface sections.
 
 <Example code={`<div class="row skeleton-glow" aria-hidden="true">
-    <div class="medium:col-3">
-      <span class="skeleton col-12 skeleton-large" style="height: 8rem;"></span>
+    <div class="md:col-3">
+      <span class="skeleton col-12 skeleton-lg" style="height: 8rem;"></span>
     </div>
-    <div class="medium:col-9">
-      <span class="skeleton col-8 skeleton-large"></span>
+    <div class="md:col-9">
+      <span class="skeleton col-8 skeleton-lg"></span>
       <span class="skeleton col-12"></span>
       <span class="skeleton col-10"></span>
       <span class="skeleton col-6"></span>
@@ -147,7 +147,7 @@ Build sophisticated loading states by combining multiple skeleton elements withi
 
 For interactive elements like buttons, combine skeleton classes with disabled states to maintain proper spacing and interaction feedback. Additional styling ensures height preservation when text content is absent.
 
-<Example code={`<div class="d-flex gap-medium">
+<Example code={`<div class="d-flex gap-md">
     <button type="button" class="button disabled skeleton col-3" aria-disabled="true" aria-label="Loading"></button>
     <button type="button" class="button primary disabled skeleton col-3" aria-disabled="true" aria-label="Loading"></button>
     <button type="button" class="button secondary disabled skeleton col-3" aria-disabled="true" aria-label="Loading"></button>

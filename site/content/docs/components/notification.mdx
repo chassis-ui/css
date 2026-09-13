@@ -23,7 +23,7 @@ The base `.notification` class sets typography, padding, border, and default col
 
 Chassis ships a notification variant for each context color in the design system. Apply a context class — `.primary`, `.success`, `.warning`, and so on — alongside `.notification` to swap foreground, background, and border tokens to match the message intent.
 
-<Example class="vstack gap-medium" code={getData('context-colors').map((contextColor) => `<div class="notification ${contextColor.name}" role="status">
+<Example class="vstack gap-md" code={getData('context-colors').map((contextColor) => `<div class="notification ${contextColor.name}" role="status">
     <p>A ${contextColor.name} notification with an <a href="#">example link</a>.</p>
   </div>`)} />
 
@@ -35,7 +35,7 @@ See [ARIA roles](#aria-roles) for picking a live-region role that matches each v
 
 Add the `.solid` modifier alongside a context class for a filled, higher-emphasis treatment that swaps the soft background for the context's full color. Use the solid variant when the notification needs to stand out against a busy surrounding layout.
 
-<Example class="vstack gap-medium" code={getData('context-colors').map((contextColor) => `<div class="notification ${contextColor.name} solid" role="status">
+<Example class="vstack gap-md" code={getData('context-colors').map((contextColor) => `<div class="notification ${contextColor.name} solid" role="status">
     <p>A ${contextColor.name} notification with an <a href="#">example link</a>.</p>
   </div>`)} />
 
@@ -43,7 +43,7 @@ Add the `.solid` modifier alongside a context class for a filled, higher-emphasi
 
 Notifications are commonly created at runtime in response to user actions rather than written into the page's initial markup. The example below shows that pattern: a button injects a fresh `.notification` into a stacking region. The injected element carries `role="status"` from the moment it enters the DOM — a requirement for screen readers to announce it, covered in detail under [Dynamic notifications](#dynamic-notifications). To make injected notifications dismissible, see [Dismissing](#dismissing) below.
 
-<Example addStackblitzJs code={`<div id="notificationStack" role="region" aria-label="Notifications" class="vstack gap-small mb-medium"></div>
+<Example addStackblitzJs code={`<div id="notificationStack" role="region" aria-label="Notifications" class="vstack gap-sm mb-md"></div>
 <button type="button" class="button primary" id="notificationButton">Show notification</button>`} />
 
 <JsDocs name="live-notification" file="site/src/assets/snippets.js" />
@@ -59,13 +59,13 @@ The Notification plugin closes a notification when a descendant control with `da
 
 Add `.fade` and `.show` to the notification element to opt into a fade-out transition before removal.
 
-<Example class="vstack gap-medium" code={`<div class="notification primary fade show" role="status">
+<Example class="vstack gap-md" code={`<div class="notification primary fade show" role="status">
     <p>A dismissible notification with a fade transition.</p>
     <button type="button" class="close-button" data-cx-dismiss="notification" aria-label="Close notification"></button>
   </div>`} />
 
 <Callout type="info" title="Close-button spacing">
-  When `.close-button` sits as a direct child of `.notification`, a `:has()` rule extends the inline-end padding so the message text doesn't run under the button. Wrapping the button breaks the selector — reserve the space manually with a utility like `pe-medium`.
+  When `.close-button` sits as a direct child of `.notification`, a `:has()` rule extends the inline-end padding so the message text doesn't run under the button. Wrapping the button breaks the selector — reserve the space manually with a utility like `pe-md`.
 </Callout>
 
 ## Additional content
@@ -76,7 +76,7 @@ A notification's body can hold more than a single line of text. The classes belo
 
 Apply `.notification-icon` to an inline SVG inside a notification to size and color it from the component's design tokens. The presence of the icon — matched via `:has()` — switches the notification to a two-column grid: the icon takes the first column, the message takes the second. The grid centers its rows vertically; for multi-line messages, add `align-self-start` to the icon so it aligns with the first line of text.
 
-<Example class="vstack gap-medium" code={`<div class="notification info" role="status">
+<Example class="vstack gap-md" code={`<div class="notification info" role="status">
     <Icon name="info-circle-solid" class="notification-icon" />
     <p>An example notification with an icon and <a href="#">a link</a>.</p>
   </div>
@@ -90,7 +90,7 @@ Apply `.notification-icon` to an inline SVG inside a notification to size and co
 
 Wrap longer messages in a heading and one or more paragraphs to give them structure. Apply `.notification-title` to the heading element to pick up its typographic scale and color from the component's design tokens. The notification lays out its children on a grid — both the title and paragraphs have no margin; spacing between elements is controlled by `--notification-text-gap`.
 
-<Example class="vstack gap-medium" code={`<div class="notification success fade show" role="status">
+<Example class="vstack gap-md" code={`<div class="notification success fade show" role="status">
     <Icon name="check-solid" class="notification-icon align-self-start" />
     <h4 class="notification-title">A notification with a title</h4>
     <p>Body paragraphs have no margin — spacing between the title and paragraphs comes from the grid gap.</p>
@@ -100,15 +100,15 @@ Wrap longer messages in a heading and one or more paragraphs to give them struct
 
 ### Actions buttons
 
-When a notification carries action buttons, use flex utilities to compose them with the message and adapt across breakpoints. The example below stacks the message above the actions on narrow viewports and lays them side-by-side from `xlarge` upward.
+When a notification carries action buttons, use flex utilities to compose them with the message and adapt across breakpoints. The example below stacks the message above the actions on narrow viewports and lays them side-by-side from `xl` upward.
 
-<Example class="vstack gap-medium" code={`<div class="notification danger fade show" role="status">
-    <Icon name="exclamation-triangle-solid" class="notification-icon align-self-start xlarge:align-self-center" />
-    <div class="d-flex flex-column xlarge:flex-row gap-medium">
-      <p class="m-0">A dismissible notification with inline actions — stacked on narrow viewports, side-by-side from xlarge up.</p>
-      <div class="hstack gap-small align-items-center justify-content-end">
-        <button type="button" class="button danger outline small" data-cx-dismiss="notification" aria-label="Close notification">Dismiss</button>
-        <button type="button" class="button danger small">Take Action</button>
+<Example class="vstack gap-md" code={`<div class="notification danger fade show" role="status">
+    <Icon name="exclamation-triangle-solid" class="notification-icon align-self-start xl:align-self-center" />
+    <div class="d-flex flex-column xl:flex-row gap-md">
+      <p class="m-0">A dismissible notification with inline actions — stacked on narrow viewports, side-by-side from xl up.</p>
+      <div class="hstack gap-sm align-items-center justify-content-end">
+        <button type="button" class="button danger outline sm" data-cx-dismiss="notification" aria-label="Close notification">Dismiss</button>
+        <button type="button" class="button danger sm">Take Action</button>
       </div>
     </div>
   </div>`} />
