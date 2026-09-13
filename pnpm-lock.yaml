@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@chassis-ui/tokens': link:../chassis-tokens
+
 importers:
 
   .:
@@ -31,8 +34,8 @@ importers:
         specifier: ^0.3.1
         version: 0.3.1
       '@chassis-ui/tokens':
-        specifier: ^0.4.0
-        version: 0.4.0
+        specifier: link:../chassis-tokens
+        version: link:../chassis-tokens
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.6.0)
@@ -541,9 +544,6 @@ packages:
   '@chassis-ui/icons@0.3.1':
     resolution: {integrity: sha512-u940omGLvaDqQWzkLDiXXACs3UiEGgZeESbDM+7mB9Dd/L2QKkCk0XQE6sVRv3Tb4+eXDmJOLNd63scZgAKS+Q==}
     engines: {node: '>=18.0.0', pnpm: '>=9.0.0'}
-
-  '@chassis-ui/tokens@0.4.0':
-    resolution: {integrity: sha512-bASGmtd/7VAu63PGw4Ba6q9fG9rYp9iwUHZj5pz43aTADhPCuZW5LfV7PRiRQKxcCb6Zf3jiaQ8iAteXzXPEew==}
 
   '@clack/core@1.4.3':
     resolution: {integrity: sha512-/kr3UWNtdJfxZtPgDqUOmG2pvwlmcLGheex5yiZKdwbzZJxhV+HMNR9QNmyY5cGwTNV6LrR7Jtp+KjhUAP1qBQ==}
@@ -6013,8 +6013,6 @@ snapshots:
       - supports-color
 
   '@chassis-ui/icons@0.3.1': {}
-
-  '@chassis-ui/tokens@0.4.0': {}
 
   '@clack/core@1.4.3':
     dependencies:
