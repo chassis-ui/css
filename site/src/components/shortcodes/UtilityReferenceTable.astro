@@ -15,7 +15,7 @@ interface Props {
    */
   exclude?: string | string[]
   /**
-   * When true, includes responsive breakpoint variants (small:, medium:, etc.).
+   * When true, includes responsive breakpoint variants (sm:, md:, etc.).
    * @default false
    */
   breakpoints?: boolean
@@ -26,7 +26,7 @@ const { utility, exclude, breakpoints = false } = Astro.props
 const prefixes = Array.isArray(utility) ? utility : [utility]
 const excludePrefixes = exclude ? (Array.isArray(exclude) ? exclude : [exclude]) : []
 
-const BREAKPOINT_PREFIXES = ['small', 'medium', 'large', 'xlarge', '2xlarge', 'print']
+const BREAKPOINT_PREFIXES = ['sm', 'md', 'lg', 'xl', '2xl', 'print']
 const BREAKPOINT_REGEX = new RegExp(`^(${BREAKPOINT_PREFIXES.join('|')}):`)
 
 function parseUtilityCSS(
@@ -37,7 +37,7 @@ function parseUtilityCSS(
   const cssPath = join(process.cwd(), 'dist/css/chassis-utilities.css')
   const rawCss = readFileSync(cssPath, 'utf-8')
 
-  // Normalize \32 xlarge (CSS numeric escape for "2") so the regex can match it
+  // Normalize \32 xl (CSS numeric escape for "2") so the regex can match it
   const css = rawCss.replace(/\\32 /g, '2')
 
   // Use a Map to preserve CSS source order while allowing single-selector rules
@@ -66,7 +66,7 @@ function parseUtilityCSS(
     const rawDeclarations = match[3]
 
     // Unescape to get the real class name
-    // e.g. ".small\:d-block" → "small:d-block"
+    // e.g. ".sm\:d-block" → "sm:d-block"
     const className = rawSelector.slice(1).replace(/\\/g, '')
 
     if (!includeBreakpoints && BREAKPOINT_REGEX.test(className)) continue
