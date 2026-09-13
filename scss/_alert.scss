@@ -69,7 +69,7 @@
         grid-column: 2;
       }
 
-      @include media-breakpoint-up(small) {
+      @include media-breakpoint-up(sm) {
         align-items: start;
       }
     }
@@ -82,9 +82,9 @@
 
     // Small breakpoint: centered stacked layout.
     // Switches icon+content back to flex column; `align-items: center` from
-    // the grid rule is not active here (it is inside media-breakpoint-up(small))
+    // the grid rule is not active here (it is inside media-breakpoint-up(sm))
     // so only the icon needs `align-self: center`.
-    @include media-breakpoint-down(small) {
+    @include media-breakpoint-down(sm) {
       --padding-y: var(--alert-small-padding-y, #{$alert-small-padding-y});
       --padding-x: var(--alert-small-padding-x, #{$alert-small-padding-x});
       --gap: var(--alert-small-gap, #{$alert-small-main-gap});

@@ -106,7 +106,7 @@
     background-clip: border-box;
     @include box-shadow(var(--box-shadow));
 
-    &.large {
+    &.lg {
       // scss-docs-start card-large-css-vars
       --padding-y: var(--card-large-padding-y, #{$card-large-padding-y});
       --padding-x: var(--card-large-padding-x, #{$card-large-padding-x});
@@ -121,13 +121,13 @@
       @include map-font($card-large-body-font, card-large);
       // scss-docs-end card-large-css-vars
 
-      .button:not(.small):not(.medium) {
-        @extend %button-large;
+      .button:not(.sm):not(.md) {
+        @extend %button-lg;
       }
 
     }
 
-    &.small {
+    &.sm {
       // scss-docs-start card-small-css-vars
       --padding-y: var(--card-small-padding-y, #{$card-small-padding-y});
       --padding-x: var(--card-small-padding-x, #{$card-small-padding-x});
@@ -142,8 +142,8 @@
       @include map-font($card-small-body-font, card-small);
       // scss-docs-end card-small-css-vars
 
-      .button:not(.large):not(.medium) {
-        @extend %button-small;
+      .button:not(.lg):not(.md) {
+        @extend %button-sm;
       }
 
     }
@@ -359,7 +359,7 @@
       margin-block-end: var(--group-margin);
     }
 
-    @include container-breakpoint-up(small) {
+    @include container-breakpoint-up(sm) {
       display: flex;
       flex-flow: row wrap;
       // The child selector allows nested `.card` within `.card-group`
