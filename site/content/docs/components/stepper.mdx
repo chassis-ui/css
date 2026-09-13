@@ -40,7 +40,7 @@ Apply the `.horizontal` modifier to display steps side-by-side. The layout switc
 Responsive `.{breakpoint}:horizontal` classes switch a vertical stepper into the horizontal layout at a given breakpoint. The stepper must be placed inside a container query context — typically a parent element carrying the `.contains-inline` utility — because the modifier relies on container queries rather than viewport media queries.
 
 <ResizableExample code={`<div class="contains-inline">
-    <ol class="stepper small:horizontal">
+    <ol class="stepper sm:horizontal">
       <li class="stepper-item">First Step</li>
       <li class="stepper-item">Past Step</li>
       <li class="stepper-item active" aria-current="step">Current Step</li>
@@ -52,11 +52,11 @@ Responsive `.{breakpoint}:horizontal` classes switch a vertical stepper into the
 Hide labels on narrow viewports.
 
 <Example code={`<ol class="stepper horizontal">
-      <li class="stepper-item"><span class="d-none large:d-block">First Step</span></li>
-      <li class="stepper-item"><span class="d-none large:d-block">Past Step</span></li>
-      <li class="stepper-item active" aria-current="step"><span class="d-none large:d-block">Current Step</span></li>
-      <li class="stepper-item"><span class="d-none large:d-block">Next Step</span></li>
-      <li class="stepper-item"><span class="d-none large:d-block">Last Step</span></li>
+      <li class="stepper-item"><span class="d-none lg:d-block">First Step</span></li>
+      <li class="stepper-item"><span class="d-none lg:d-block">Past Step</span></li>
+      <li class="stepper-item active" aria-current="step"><span class="d-none lg:d-block">Current Step</span></li>
+      <li class="stepper-item"><span class="d-none lg:d-block">Next Step</span></li>
+      <li class="stepper-item"><span class="d-none lg:d-block">Last Step</span></li>
     </ol>`} />
 
 ## Gap
@@ -103,7 +103,7 @@ Applying `.context.<name>` to the `.stepper` element propagates the same color p
 Context variants compose with foreground, background, padding, and border-radius utilities, allowing a fully themed stepper panel to be assembled without writing additional CSS.
 
 <Example code={`<ol class="stepper horizontal context secondary 
-      fg-main bg-main p-medium rounded">
+      fg-main bg-main p-md rounded">
     <li class="stepper-item">First Step</li>
     <li class="stepper-item">Past Step</li>
     <li class="stepper-item active" aria-current="step">Current Step</li>

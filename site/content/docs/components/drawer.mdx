@@ -244,7 +244,7 @@ Drawers animate in and out by default. Add `.instant` to skip all transitions.
 
 ### Footer layout
 
-The `.drawer-footer` uses `flex-direction: row-reverse`, so buttons are right-aligned without `justify-content` — write the **primary action first** in source, it renders on the right. At the small breakpoint, buttons stretch to equal widths (`flex: 1`). Add `.stacked` to stack them as full-width columns instead.
+The `.drawer-footer` uses `flex-direction: row-reverse`, so buttons are right-aligned without `justify-content` — write the **primary action first** in source, it renders on the right. At the sm breakpoint, buttons stretch to equal widths (`flex: 1`). Add `.stacked` to stack them as full-width columns instead.
 
 <Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#exampleDrawerFooter">Open drawer</button>
 
@@ -254,7 +254,7 @@ The `.drawer-footer` uses `flex-direction: row-reverse`, so buttons are right-al
     <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
   </div>
   <div class="drawer-body">
-    <p>A drawer with multiple footer actions, stacking full-width at the small breakpoint.</p>
+    <p>A drawer with multiple footer actions, stacking full-width at the sm breakpoint.</p>
   </div>
   <div class="drawer-footer stacked"><!-- [!code highlight] -->
     <button type="button" class="button primary">Take action</button>
@@ -270,24 +270,24 @@ Responsive drawer classes behave as drawers below the named breakpoint and displ
 | Class | Behavior |
 | --- | --- |
 | `.drawer` | Always a drawer |
-| `.max-small:drawer` | Drawer below `small`, inline above |
-| `.max-medium:drawer` | Drawer below `medium`, inline above |
-| `.max-large:drawer` | Drawer below `large`, inline above |
-| `.max-xlarge:drawer` | Drawer below `xlarge`, inline above |
-| `.max-2xlarge:drawer` | Drawer below `2xlarge`, inline above |
+| `.max-sm:drawer` | Drawer below `sm`, inline above |
+| `.max-md:drawer` | Drawer below `md`, inline above |
+| `.max-lg:drawer` | Drawer below `lg`, inline above |
+| `.max-xl:drawer` | Drawer below `xl`, inline above |
+| `.max-2xl:drawer` | Drawer below `2xl`, inline above |
 </CxTable>
 
 Above the breakpoint the element resets to a flex container: `.drawer-header` is hidden (the trigger button is typically hidden with a matching utility class) and `.drawer-body` renders as a flex row within the parent layout.
 
-<Example code={`<button class="button primary large:d-none" type="button" data-cx-toggle="drawer" data-cx-target="#responsiveDrawer">Open drawer</button>
+<Example code={`<button class="button primary lg:d-none" type="button" data-cx-toggle="drawer" data-cx-target="#responsiveDrawer">Open drawer</button>
 
-<dialog class="max-large:drawer drawer-end" id="responsiveDrawer" aria-labelledby="responsiveDrawerLabel">
+<dialog class="max-lg:drawer drawer-end" id="responsiveDrawer" aria-labelledby="responsiveDrawerLabel">
   <div class="drawer-header">
     <h2 class="drawer-title" id="responsiveDrawerLabel">Navigation</h2>
     <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
   </div>
   <div class="drawer-body">
-    <p>This is a <code>.max-large:drawer</code> — a drawer on small screens, inline content on large screens.</p>
+    <p>This is a <code>.max-lg:drawer</code> — a drawer on small screens, inline content on large screens.</p>
   </div>
 </dialog>`} />
 

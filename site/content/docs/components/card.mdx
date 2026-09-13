@@ -51,7 +51,7 @@ The `.card-title`, `.card-subtitle`, and `.card-link` classes apply card-scoped 
 - `.card-subtitle` — secondary label or description
 - `.card-link` — action link; consecutive `.card-link` elements receive horizontal spacing between them
 
-<Example class="d-flex flex-wrap gap-medium" code={`<div class="card" style="width: 18rem;">
+<Example class="d-flex flex-wrap gap-md" code={`<div class="card" style="width: 18rem;">
     <div class="card-body">
       <h4 class="card-title">Card title</h4>
       <p class="card-subtitle">Card subtitle</p>
@@ -75,7 +75,7 @@ The `.card-title`, `.card-subtitle`, and `.card-link` classes apply card-scoped 
 
 The `.card-header` and `.card-footer` regions are separated from the body by a border.
 
-<Example class="d-flex flex-wrap gap-medium" code={`<div class="card" style="width: 18rem;">
+<Example class="d-flex flex-wrap gap-md" code={`<div class="card" style="width: 18rem;">
     <div class="card-header">
       Featured
     </div>
@@ -100,7 +100,7 @@ The `.card-header` and `.card-footer` regions are separated from the body by a b
 
 The `.card-image-top` class rounds the top two corners; `.card-image-bottom` rounds the bottom two corners. Place either class directly on the `<img>` as a direct child of `.card`.
 
-<Example class="d-flex flex-wrap gap-medium" code={`<div class="card" style="width: 18rem;">
+<Example class="d-flex flex-wrap gap-md" code={`<div class="card" style="width: 18rem;">
     <Placeholder width="100%" height="180" class="card-image-top" text="Image cap" aria-hidden="true" /><!-- [!code highlight] -->
     <div class="card-body">
       <p>Some quick example text to build on the card title and make up the bulk of the card's content.</p>
@@ -117,7 +117,7 @@ The `.card-image-top` class rounds the top two corners; `.card-image-bottom` rou
 
 The `.card-image` class rounds all four corners. Use it for images inside `.card-body`. When `.card-body` contains only a `.card-image`, adjacent body padding collapses so two stacked body regions share no gap between their images.
 
-<Example class="d-flex flex-wrap gap-medium" code={`<div class="card" style="width: 18rem;">
+<Example class="d-flex flex-wrap gap-md" code={`<div class="card" style="width: 18rem;">
     <div class="card-body">
       <Placeholder width="100%" height="180" class="card-image" text="Image content" aria-hidden="true" /><!-- [!code highlight] -->
     </div>
@@ -143,7 +143,7 @@ The `.card-image` class rounds all four corners. Use it for images inside `.card
 The `.card-overlay` class fills the entire card surface. Place the background image as a direct `.card` child before `.card-overlay` in source order; the overlay renders on top of it.
 
 <Example code={`<div class="card">
-    <Placeholder width="100%" height="270" class="cxd-placeholder-image-large card-image" text="Card image" aria-hidden="true" />
+    <Placeholder width="100%" height="270" class="cxd-placeholder-image-lg card-image" text="Card image" aria-hidden="true" />
     <div class="card-overlay"><!-- [!code highlight] -->
       <h4 class="card-title">Card title</h4>
       <p>This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
@@ -157,9 +157,9 @@ Content that exceeds the image height will be clipped. Since `.card-overlay` use
 
 ## Size variants
 
-The `.small` and `.large` modifiers re-declare the padding, gap, and typography CSS custom properties for the card and all sub-elements. A `.button` inside a `.large` card without an explicit `.small` or `.medium` modifier is promoted to the large button size; inside `.small`, it is demoted to small.
+The `.sm` and `.lg` modifiers re-declare the padding, gap, and typography CSS custom properties for the card and all sub-elements. A `.button` inside a `.lg` card without an explicit `.sm` or `.md` modifier is promoted to the lg button size; inside `.sm`, it is demoted to sm.
 
-<Example class="d-flex flex-wrap gap-medium align-items-start" code={`<div class="card small" style="width: 16rem;">
+<Example class="d-flex flex-wrap gap-md align-items-start" code={`<div class="card sm" style="width: 16rem;">
     <Placeholder width="100%" height="180" class="card-image-top" text="Image cap" aria-hidden="true" />
     <div class="card-body">
       <h3 class="card-title">Card title</h3>
@@ -168,7 +168,7 @@ The `.small` and `.large` modifiers re-declare the padding, gap, and typography 
       <a href="#" class="button primary me-auto">Go somewhere</a>
     </div>
   </div>
-  <div class="card large" style="width: 22rem;">
+  <div class="card lg" style="width: 22rem;">
     <Placeholder width="100%" height="180" class="card-image-top" text="Image cap" aria-hidden="true" />
     <div class="card-body">
       <h3 class="card-title">Card title</h3>
@@ -189,7 +189,7 @@ Cards expand to 100% of their container. Three patterns control width:
 **Grid columns.** Wrap each card in a column inside a `.row`. Breakpoint column classes control how many cards appear per row.
 
 <Example code={`<div class="row">
-    <div class="small:col-6 mb-medium mb-xsmall-0">
+    <div class="sm:col-6 mb-md mb-xs-0">
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">Special title treatment</h4>
@@ -198,7 +198,7 @@ Cards expand to 100% of their container. Three patterns control width:
         </div>
       </div>
     </div>
-    <div class="small:col-6">
+    <div class="sm:col-6">
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">Special title treatment</h4>
@@ -211,7 +211,7 @@ Cards expand to 100% of their container. Three patterns control width:
 
 **Sizing utilities.** Apply `.w-75`, `.w-50`, or any sizing utility directly to `.card`.
 
-<Example code={`<div class="card w-75 mb-medium">
+<Example code={`<div class="card w-75 mb-md">
     <div class="card-body">
       <h4 class="card-title">Card title</h4>
       <p>With supporting text below as a natural lead-in to additional content.</p>
@@ -241,7 +241,7 @@ Cards expand to 100% of their container. Three patterns control width:
 Apply `.text-center` or `.text-end` to `.card` to align all content uniformly, or scope the class to an individual sub-element.
 
 <Example code={`<div class="row">
-    <div class="medium:col-6 mb-medium small:mb-0">
+    <div class="md:col-6 mb-md sm:mb-0">
       <div class="card text-center"><!-- [!code highlight] -->
         <div class="card-header">
           Featured
@@ -256,7 +256,7 @@ Apply `.text-center` or `.text-end` to `.card` to align all content uniformly, o
         </div>
       </div>
     </div>
-    <div class="medium:col-6">
+    <div class="md:col-6">
       <div class="card text-end"><!-- [!code highlight] -->
         <div class="card-header">
           Featured
@@ -275,13 +275,13 @@ Apply `.text-center` or `.text-end` to `.card` to align all content uniformly, o
 
 ### Horizontal layout
 
-Apply a responsive flex-row utility (e.g. `large:flex-row`) directly to `.card` to switch from a stacked to a side-by-side layout at a breakpoint. Pair responsive image classes on the image to match: `.card-image-top` rounds the top corners at narrow viewports; `.{breakpoint}:card-image-start` (or `.card-image-end`) takes over at wider viewports, rounding the start-side corners.
+Apply a responsive flex-row utility (e.g. `lg:flex-row`) directly to `.card` to switch from a stacked to a side-by-side layout at a breakpoint. Pair responsive image classes on the image to match: `.card-image-top` rounds the top corners at narrow viewports; `.{breakpoint}:card-image-start` (or `.card-image-end`) takes over at wider viewports, rounding the start-side corners.
 
-<Example code={`<div class="card large:flex-row">
-      <div class="large:col-4">
-        <Placeholder width="100%" height="100%" class="card-image-top large:card-image-start" text="Card image" aria-hidden="true" /><!-- [!code highlight] -->
+<Example code={`<div class="card lg:flex-row">
+      <div class="lg:col-4">
+        <Placeholder width="100%" height="100%" class="card-image-top lg:card-image-start" text="Card image" aria-hidden="true" /><!-- [!code highlight] -->
       </div>
-      <div class="card-body large:col-8">
+      <div class="card-body lg:col-8">
         <h4 class="card-title">Card title</h4>
         <p>This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
         <p><small class="fg-subtle">Last updated 3 mins ago</small></p>
@@ -292,11 +292,11 @@ Apply a responsive flex-row utility (e.g. `large:flex-row`) directly to `.card` 
 To place the image inside the body region with padding, apply both `.card-body` and a `.{breakpoint}:flex-row` utility to the same wrapper element. Nest another `.card-body` with `.p-0` for the content. Adjust the gap between columns with `.gap-*` utilities.
 
 <Example code={`<div class="card">
-    <div class="card-body large:flex-row gap-medium"><!-- [!code highlight] -->
-      <div class="large:col-4">
+    <div class="card-body lg:flex-row gap-md"><!-- [!code highlight] -->
+      <div class="lg:col-4">
         <Placeholder width="100%" height="100%" class="card-image" text="Card image" aria-hidden="true" />
       </div>
-      <div class="large:col-8 card-body p-0"><!-- [!code highlight] -->
+      <div class="lg:col-8 card-body p-0"><!-- [!code highlight] -->
         <h4 class="card-title">Card title</h4>
         <p>This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
         <p class="mb-0"><small class="fg-subtle">Last updated 3 mins ago</small></p>
@@ -308,7 +308,7 @@ To place the image inside the body region with padding, apply both `.card-body` 
 
 The `.row-cols-*` classes on the row control how many `.col`-wrapped cards appear per row at each breakpoint. `.g-*` gutter classes control spacing between cards.
 
-<Example code={`<div class="row row-cols-1 medium:row-cols-2 g-large">
+<Example code={`<div class="row row-cols-1 md:row-cols-2 g-lg">
     <div class="col">
       <div class="card">
         <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" aria-hidden="true" />
@@ -351,7 +351,7 @@ The `.row-cols-*` classes on the row control how many `.col`-wrapped cards appea
 
 Add `.h-100` to each card inside a grid row. The grid column stretches to fill the row height; `.card-body`'s `flex: 1 1 auto` grows the body to fill the remaining space, which pins `.card-footer` to the bottom.
 
-<Example code={`<div class="row row-cols-1 medium:row-cols-3 g-4">
+<Example code={`<div class="row row-cols-1 md:row-cols-3 g-4">
     <div class="col">
       <div class="card h-100">
         <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" aria-hidden="true" />
@@ -383,7 +383,7 @@ Add `.h-100` to each card inside a grid row. The grid column stretches to fill t
 
 With footers, `.card-footer` aligns to the bottom of each card regardless of body content length.
 
-<Example code={`<div class="row row-cols-1 medium:row-cols-3 g-large">
+<Example code={`<div class="row row-cols-1 md:row-cols-3 g-lg">
     <div class="col">
       <div class="card h-100">
         <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" aria-hidden="true" />
@@ -424,7 +424,7 @@ With footers, `.card-footer` aligns to the bottom of each card regardless of bod
 
 ### Card groups
 
-`.card-group` arranges its direct-child cards as an equal-width flexbox row. Adjacent cards share a single border edge and inner corners are squared off. The row layout activates at the small container breakpoint — wrap `.card-group` in `.contains-inline` to provide the required container context. Without it, cards stack vertically with spacing controlled by `--cx-group-margin`. Resize the example below to preview the transition.
+`.card-group` arranges its direct-child cards as an equal-width flexbox row. Adjacent cards share a single border edge and inner corners are squared off. The row layout activates at the sm container breakpoint — wrap `.card-group` in `.contains-inline` to provide the required container context. Without it, cards stack vertically with spacing controlled by `--cx-group-margin`. Resize the example below to preview the transition.
 
 <ResizableExample code={`<div class="contains-inline">
     <div class="card-group">
@@ -474,7 +474,7 @@ Embed a `.list.flush` as a direct child of `.card` — not inside `.card-body`.
 
 The card manages borders and rounded corners automatically when the list follows a header or precedes a footer.
 
-<Example class="d-flex flex-wrap gap-medium" code={`<div class="card" style="width: 18rem;">
+<Example class="d-flex flex-wrap gap-md" code={`<div class="card" style="width: 18rem;">
     <div class="card-header">
       Card header
     </div>
@@ -568,7 +568,7 @@ Cards support the Chassis context color system. Individual regions can also be s
 
 Add `.context` and a contextual modifier — `.primary`, `.secondary`, etc. — along with an intensity class (`.solid`, `.smooth`, `.outline`, or none for the default) to theme the entire card.
 
-<Example code={`<div class="row row-cols-1 medium:row-cols-2 g-large">
+<Example code={`<div class="row row-cols-1 md:row-cols-2 g-lg">
     <div class="col">
       <div class="card context primary h-100">
         <div class="card-header">Header</div>
@@ -613,7 +613,7 @@ Add `.context` and a contextual modifier — `.primary`, `.secondary`, etc. — 
 
 Background-color, foreground-color, and border utility classes target individual card regions independently.
 
-<Example code={`<div class="row row-cols-1 medium:row-cols-2 g-large">
+<Example code={`<div class="row row-cols-1 md:row-cols-2 g-lg">
     <div class="col">
       <div class="card border-primary h-100">
         <div class="card-header primary-bg-evident">Header</div>

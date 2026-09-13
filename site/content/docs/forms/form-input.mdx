@@ -12,7 +12,7 @@ export const _pad = n => String(n).padStart(2, '0')
 export const _date = `${_now.getFullYear()}-${_pad(_now.getMonth() + 1)}-${_pad(_now.getDate())}`
 export const _time = `${_pad(_now.getHours())}:${_pad(_now.getMinutes())}`
 
-<Callout type="warning" class="-my-xsmall">
+<Callout type="warning" class="-my-xs">
   Examples in this documentation kept simple to focus on the core concepts. In production, always pair form inputs with appropriate labels and ARIA attributes to ensure accessibility and usability for all users.
 </Callout>
 
@@ -20,7 +20,7 @@ export const _time = `${_pad(_now.getHours())}:${_pad(_now.getMinutes())}`
 
 Use the `.form-input` class to style `<input>`, `<select>`, and `<textarea>` elements with a consistent appearance, sizing, and states.
 
-<Example class="vstack gap-xsmall" code={`<input class="form-input" type="text" placeholder="Example text input">
+<Example class="vstack gap-xs" code={`<input class="form-input" type="text" placeholder="Example text input">
   <select class="form-input">
     <option value="">Example select</option>
     <option value="option1">Option one</option>
@@ -36,7 +36,7 @@ Use the `.form-input` class to style `<input>`, `<select>`, and `<textarea>` ele
 
 Use the `multiple` attribute to allow multiple selections.
 
-<Example class="vstack gap-xsmall" code={`<select class="form-input" multiple>
+<Example class="vstack gap-xs" code={`<select class="form-input" multiple>
     <option value="option1">Option one</option>
     <option value="option2">Option two</option>
     <option value="option3">Option three</option>
@@ -44,7 +44,7 @@ Use the `multiple` attribute to allow multiple selections.
 
 Use the `size` attribute to control the number of visible options.
 
-<Example class="vstack gap-xsmall" code={`<select class="form-input" size="3">
+<Example class="vstack gap-xs" code={`<select class="form-input" size="3">
     <option value="option1">Option one</option>
     <option value="option2">Option two</option>
     <option value="option3">Option three</option>
@@ -54,15 +54,15 @@ Use the `size` attribute to control the number of visible options.
 
 Use the `rows` attribute to control the height of the textarea.
 
-<Example class="vstack gap-xsmall" code={`<textarea class="form-input" placeholder="Example textarea with rows attribute" rows="4"></textarea>`} />
+<Example class="vstack gap-xs" code={`<textarea class="form-input" placeholder="Example textarea with rows attribute" rows="4"></textarea>`} />
 
 ## Sizing
 
-Modify input sizes with the `.small` and `.large` modifier classes to maintain consistent component dimensions throughout your interface.
+Modify input sizes with the `.sm` and `.lg` modifier classes to maintain consistent component dimensions throughout your interface.
 
-<Example class="vstack gap-xsmall" code={`<input class="form-input large" type="text" placeholder="Large input">
+<Example class="vstack gap-xs" code={`<input class="form-input lg" type="text" placeholder="Large input">
 <input class="form-input" type="text" placeholder="Default input">
-<input class="form-input small" type="text" placeholder="Small input">`} />
+<input class="form-input sm" type="text" placeholder="Small input">`} />
 
 ## States
 
@@ -75,7 +75,7 @@ Apply the HTML `disabled` attribute to inputs to indicate they're not interactiv
 - Removal of pointer events
 - Prevention of focus and keyboard interaction
 
-<Example class="vstack gap-xsmall" code={`<input class="form-input" type="text" placeholder="Disabled input" disabled>
+<Example class="vstack gap-xs" code={`<input class="form-input" type="text" placeholder="Disabled input" disabled>
   <input class="form-input" type="text" value="Disabled input with value" disabled>
   <select class="form-input" disabled>
     <option value="">Disabled select</option>
@@ -87,17 +87,17 @@ Apply the HTML `disabled` attribute to inputs to indicate they're not interactiv
 
 Use the `readonly` attribute to prevent users from changing an input's value while keeping it selectable. Unlike disabled inputs, readonly inputs remain focusable for easier form navigation.
 
-<Example class="vstack gap-xsmall" code={`<input class="form-input" type="text" value="Readonly input" readonly>
+<Example class="vstack gap-xs" code={`<input class="form-input" type="text" value="Readonly input" readonly>
 <input class="form-input" type="text" value="Readonly disabled input" readonly disabled>`} />
 
 ## Plaintext inputs
 
 For displaying non-editable data blending in your design, use the combination of `readonly` and the `.plaintext` class to remove form styling while preserving proper spacing within your form layout.
 
-<Example class="vstack gap-xsmall" code={`<input class="form-input plaintext" readonly type="text" value="email@example.com">
+<Example class="vstack gap-xs" code={`<input class="form-input plaintext" readonly type="text" value="email@example.com">
   <input class="form-input" type="password" autocomplete="current-password" placeholder="Password">`} />
 
-<Example class="vstack gap-xsmall" code={`<form class="row g-medium">
+<Example class="vstack gap-xs" code={`<form class="row g-md">
     <div class="col-auto">
       <input class="form-input plaintext" readonly type="text" value="email@example.com">
     </div>
@@ -117,7 +117,7 @@ Chassis CSS supports all standard HTML input types, including text, password, em
 
 Chassis CSS enhances HTML file inputs with consistent styling while maintaining browser-specific file selection functionality. Apply the `.form-input` class to `<input type="file">` elements for standardized appearance.
 
-<Example class="vstack gap-xsmall" code={`<input class="form-input" type="file">
+<Example class="vstack gap-xs" code={`<input class="form-input" type="file">
   <input class="form-input" type="file" multiple>
   <input class="form-input" type="file" disabled>`} />
 
@@ -129,7 +129,7 @@ Use `type="color"` with the `.form-input` class to create a consistent color pic
 
 Use [`display`]([[docsref:utilities/display]]) and [`sizing`]([[docsref:utilities/sizing]]) utilities to control the width and layout of color inputs within your forms.
 
-<Example code={`<input class="form-input d-inline-flex w-25 me-medium" type="color" value="${formatHex(parse(sassVars('color')['primary']))}">
+<Example code={`<input class="form-input d-inline-flex w-25 me-md" type="color" value="${formatHex(parse(sassVars('color')['primary']))}">
 <input class="form-input d-inline-flex w-25" type="color" value="${formatHex(parse(sassVars('color')['secondary']))}">`} />
 
 ### Date & time
@@ -157,22 +157,22 @@ Ghost inputs are a special type of input, that leaves styling to a wrapper eleme
 
 Since `.ghost-input` removes the input’s focus outline, so consider using `:focus-within` on a parent element to provide a visible focus indicator.
 
-<Example class="vstack gap-xsmall" code={`<input class="ghost-input" type="search" placeholder="Search items">`} />
+<Example class="vstack gap-xs" code={`<input class="ghost-input" type="search" placeholder="Search items">`} />
 
 ### Form input wrapper
 
 Use `.form-input` wrapper to provide consistent sizing and spacing for ghost inputs.
 
-<Example class="vstack gap-xsmall" code={`<div class="form-input">
+<Example class="vstack gap-xs" code={`<div class="form-input">
     <input class="ghost-input" type="search" placeholder="Search items">
   </div>
   <div class="form-input">
     <input class="ghost-input" type="search" placeholder="Search items" disabled>
   </div>
-  <div class="form-input large">
+  <div class="form-input lg">
     <input class="ghost-input" type="search" placeholder="Search items">
   </div>
-  <div class="form-input small">
+  <div class="form-input sm">
     <input class="ghost-input" type="search" placeholder="Search items">
   </div>`} />
 

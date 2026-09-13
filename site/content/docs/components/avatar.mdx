@@ -21,16 +21,16 @@ Use the `.avatar` class to create an avatar. The `.avatar-image` class is used f
 
 Use the <Fragment set:html={ getData('sizes').map((size) => `<code>${size}</code>`).join(', ') } /> classes to set the size of the avatar. You can also use the `--cx-avatar-size` CSS variable to set a custom size.
 
-<Example class="d-flex align-items-center gap-small" code={[
+<Example class="d-flex align-items-center gap-sm" code={[
   ...getData('sizes').map((size) => `<span class="avatar ${size}">CX</span>`),
-  `<span class="vr mx-medium"></span>`,
+  `<span class="vr mx-md"></span>`,
   `<span class="avatar" style="--cx-avatar-size: 1.75rem;">CX</span>
   <span class="avatar" style="--cx-avatar-size: 4.25rem;">CX</span>`
 ]} />
 
-<Example class="d-flex align-items-center gap-small" code={[
+<Example class="d-flex align-items-center gap-sm" code={[
   ...getData('sizes').map((size) => `<span class="avatar ${size}"><img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture"/></span>`),
-  `<span class="vr mx-medium"></span>`,
+  `<span class="vr mx-md"></span>`,
   `<span class="avatar" style="--cx-avatar-size: 1.75rem;"><img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture"/></span>
   <span class="avatar" style="--cx-avatar-size: 4.25rem;"><img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture"/></span>`
 ]} />
@@ -39,7 +39,7 @@ Use the <Fragment set:html={ getData('sizes').map((size) => `<code>${size}</code
 
 Use the button tag with `.avatar` class to create an avatar button.
 
-<Example class="d-flex align-items-center gap-small" code={`<button class="avatar" type="button">CX</button>
+<Example class="d-flex align-items-center gap-sm" code={`<button class="avatar" type="button">CX</button>
   <button class="avatar" type="button">
     <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture"/>
   </button>`} />
@@ -48,7 +48,7 @@ Use the button tag with `.avatar` class to create an avatar button.
 
 Use the anchor tag with `.avatar` class to create an avatar link.
 
-<Example class="d-flex align-items-center gap-small" code={`<a class="avatar" href="#">CX</a>
+<Example class="d-flex align-items-center gap-sm" code={`<a class="avatar" href="#">CX</a>
   <a class="avatar" href="#">
     <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture"/>
   </a>`} />
@@ -57,15 +57,15 @@ Use the anchor tag with `.avatar` class to create an avatar link.
 
 Use with a context color class to create an avatar with a background color.
 
-<Example class="d-flex align-items-center gap-small" code={getData('context-colors').map((color) => `<button class="avatar ${color.name}" type="button">CX</button>`)} />
+<Example class="d-flex align-items-center gap-sm" code={getData('context-colors').map((color) => `<button class="avatar ${color.name}" type="button">CX</button>`)} />
 
-<Example class="d-flex align-items-center gap-small" code={getData('context-colors').map((color) => `<button class="avatar smooth ${color.name}" type="button">CX</button>`)} />
+<Example class="d-flex align-items-center gap-sm" code={getData('context-colors').map((color) => `<button class="avatar smooth ${color.name}" type="button">CX</button>`)} />
 
 ## Badges
 
 Use the `.badge` class to create a badge on top of the avatar. Use position utilities to position the badge.
 
-<Example class="d-flex align-items-center gap-small" code={`<button class="avatar" type="button">
+<Example class="d-flex align-items-center gap-sm" code={`<button class="avatar" type="button">
     <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture"/>
     <span class="badge success circle"><span class="visually-hidden">Online</span></span>
   </button>
@@ -84,7 +84,7 @@ Use the `.badge` class to create a badge on top of the avatar. Use position util
 
 Badge size scales with the avatar size, so you can use badges on different sized avatars.
 
-<Example class="d-flex align-items-center gap-small" code={[
+<Example class="d-flex align-items-center gap-sm" code={[
   ...getData('sizes').map((size) => `<button class="avatar ${size}" type="button">
     <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture"/>
     <span class="badge success circle"><span class="visually-hidden">Online</span></span>
@@ -105,7 +105,7 @@ Use the `.avatar-stack` class to create a group of avatars. Use the `.avatar` cl
 
 Use size classes on the stack to set the size of all avatars in the stack.
 
-<Example class="vstack gap-small" code={[
+<Example class="vstack gap-sm" code={[
   ...getData('sizes').map((size) => `<div class="avatar-stack ${size}">
     ${[...Array.from({ length: 4 }, (_, i) => {
       const value = Math.floor(Math.random() * 64); // Generates 10, 20, ..., 90

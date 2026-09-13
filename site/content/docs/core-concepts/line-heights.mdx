@@ -8,7 +8,7 @@ Most CSS frameworks assign one line height to all body text, another to headings
 
 This matters for two reasons:
 
-1. **Larger text needs tighter line spacing.** A `1.5` ratio that reads well at `16px` looks awkward at `32px`; a `1.2` ratio that suits a 32-pixel heading turns small body text into a wall.
+1. **Larger text needs tighter line spacing.** A `1.5` ratio that reads well at `16px` looks awkward at `32px`; a `1.2` ratio that suits a 32-pixel heading turns sm body text into a wall.
 2. **Pixel alignment with Figma.** Percentage-based or unitless line heights cause Figma layers to misalign and separators to land on sub-pixel boundaries, breaking the pixel-perfect match between design and code.
 
 With per-size line-height tokens, designers control the exact value for each size, each font-family variant, and each platform — and the CSS reflects those decisions without any developer intervention.
@@ -26,9 +26,9 @@ At heading sizes the difference is clear: the token-driven heading maintains des
 Token-driven line heights are the right default; the `lh-*` [utilities]([[docsref:/utilities/text#line-height]]) override the token on a per-element basis:
 
 <Example code={`<p class="lh-1">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
-<p class="lh-small">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
+<p class="lh-sm">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
 <p class="lh-base">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>
-<p class="lh-large">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>`} />
+<p class="lh-lg">The line-height CSS property sets the height of a line box. It's commonly used to set the distance between lines of text. On block-level elements, it specifies the minimum height of line boxes within the element.</p>`} />
 
 ## See also
 

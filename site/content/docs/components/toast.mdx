@@ -23,10 +23,10 @@ The Toast plugin manages visibility through CSS classes. Toasts start hidden and
 
 Clicking the button below instantiates a Toast and calls `.show()`. The toast auto-hides after 5 seconds (the default `delay`).
 
-<div class="toast-container position-fixed bottom-0 end-0 p-medium">
+<div class="toast-container position-fixed bottom-0 end-0 p-md">
   <div id="liveToast" class="toast" role="status">
     <div class="toast-header">
-      <Placeholder width="20" height="20" background="#007aff" class="rounded me-xsmall" text={false} title={false} />
+      <Placeholder width="20" height="20" background="#007aff" class="rounded me-xs" text={false} title={false} />
       <strong class="me-auto">Chassis</strong>
       <small>11 mins ago</small>
       <button type="button" class="close-button" data-cx-dismiss="toast" aria-label="Close"></button>
@@ -49,7 +49,7 @@ A toast consists of a `.toast` element wrapping any combination of `.toast-heade
 
 <Example code={`<div class="toast" role="status">
     <div class="toast-header">
-      <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xsmall" text={false} title={false} />
+      <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xs" text={false} title={false} />
       <strong class="me-auto">Chassis</strong>
       <small>11 mins ago</small>
       <button type="button" class="close-button" data-cx-dismiss="toast" aria-label="Close"></button>
@@ -72,8 +72,8 @@ A toast consists of a `.toast` element wrapping any combination of `.toast-heade
       Hello, world! This is a toast message.
     </div>
     <div class="toast-footer">
-      <button type="button" class="button primary small">Take action</button>
-      <button type="button" class="button secondary small" data-cx-dismiss="toast">Close</button>
+      <button type="button" class="button primary sm">Take action</button>
+      <button type="button" class="button secondary sm" data-cx-dismiss="toast">Close</button>
     </div>
   </div>`} />
 
@@ -86,7 +86,7 @@ Remove `.toast-header` and apply flexbox utilities directly to `.toast` for a co
       <div class="toast-body">
         Hello, world! This is a toast message.
       </div>
-      <button type="button" class="close-button m-small ms-auto" data-cx-dismiss="toast" aria-label="Close"></button>
+      <button type="button" class="close-button m-sm ms-auto" data-cx-dismiss="toast" aria-label="Close"></button>
     </div>
   </div>`} />
 
@@ -103,7 +103,7 @@ Toasts inside a `.toast-container` stack vertically, separated by `--toast-spaci
 <Example code={`<div class="toast-container position-static">
     <div class="toast" role="status">
       <div class="toast-header">
-        <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xsmall" text={false} title={false} />
+        <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xs" text={false} title={false} />
         <strong class="me-auto">Chassis</strong>
         <small class="fg-subtle">just now</small>
         <button type="button" class="close-button" data-cx-dismiss="toast" aria-label="Close"></button>
@@ -115,7 +115,7 @@ Toasts inside a `.toast-container` stack vertically, separated by `--toast-spaci
 
     <div class="toast" role="status">
       <div class="toast-header">
-        <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xsmall" text={false} title={false} />
+        <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xs" text={false} title={false} />
         <strong class="me-auto">Chassis</strong>
         <small class="fg-subtle">2 seconds ago</small>
         <button type="button" class="close-button" data-cx-dismiss="toast" aria-label="Close"></button>
@@ -131,10 +131,10 @@ Toasts inside a `.toast-container` stack vertically, separated by `--toast-spaci
 For UIs that generate multiple notifications, wrap `.toast-container` in an `aria-live` region and position the container with inset utilities. The container sits outside normal document flow, so toasts append without shifting page content.
 
 <Example class="cxd-example-toasts p-0" code={`<div aria-live="polite" aria-atomic="true" class="position-relative">
-    <div class="toast-container top-0 end-0 p-medium">
+    <div class="toast-container top-0 end-0 p-md">
       <div class="toast" role="status">
         <div class="toast-header">
-          <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xsmall" text={false} title={false} />
+          <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xs" text={false} title={false} />
           <strong class="me-auto">Chassis</strong>
           <small class="fg-subtle">just now</small>
           <button type="button" class="close-button" data-cx-dismiss="toast" aria-label="Close"></button>
@@ -146,7 +146,7 @@ For UIs that generate multiple notifications, wrap `.toast-container` in an `ari
 
       <div class="toast" role="status">
         <div class="toast-header">
-          <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xsmall" text={false} title={false} />
+          <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xs" text={false} title={false} />
           <strong class="me-auto">Chassis</strong>
           <small class="fg-subtle">2 seconds ago</small>
           <button type="button" class="close-button" data-cx-dismiss="toast" aria-label="Close"></button>
@@ -169,7 +169,7 @@ Apply `.context` and a context color class to tint the toast. Add `.solid` for f
 <Example code={`<div class="toast-container position-static">
     <div class="toast context primary" role="status">
       <div class="toast-header">
-        <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xsmall" text={false} title={false} />
+        <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xs" text={false} title={false} />
         <strong class="me-auto">Chassis</strong>
         <small class="fg-main">just now</small>
         <button type="button" class="close-button" data-cx-dismiss="toast" aria-label="Close"></button>
@@ -181,7 +181,7 @@ Apply `.context` and a context color class to tint the toast. Add `.solid` for f
 
     <div class="toast context primary solid" role="status">
       <div class="toast-header">
-        <Placeholder width="20" height="20" background="${colors.white}" class="rounded me-xsmall" text={false} title={false} />
+        <Placeholder width="20" height="20" background="${colors.white}" class="rounded me-xs" text={false} title={false} />
         <strong class="me-auto">Chassis</strong>
         <small class="fg-main">2 seconds ago</small>
         <button type="button" class="close-button" data-cx-dismiss="toast" aria-label="Close"></button>
@@ -198,7 +198,7 @@ Apply `.context` and a context color class to tint the toast. Add `.solid` for f
 
 <Example class="primary-bg-even cxd-pattern-dots" code={`<div class="toast translucent" role="status">
     <div class="toast-header">
-      <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xsmall" text={false} title={false} />
+      <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xs" text={false} title={false} />
       <strong class="me-auto">Chassis</strong>
       <small class="fg-subtle">11 mins ago</small>
       <button type="button" class="close-button" data-cx-dismiss="toast" aria-label="Close"></button>
@@ -219,7 +219,7 @@ Chassis color and background utilities apply directly to `.toast`. Pair a border
       <div class="toast-body">
         Hello, world! This is a toast message.
       </div>
-      <button type="button" class="close-button fg-black m-small ms-auto" data-cx-dismiss="toast" aria-label="Close"></button>
+      <button type="button" class="close-button fg-black m-sm ms-auto" data-cx-dismiss="toast" aria-label="Close"></button>
     </div>
   </div>`} />
 
@@ -239,7 +239,7 @@ The autohide timer starts after the show transition completes and pauses wheneve
 
 <Example code={`<div class="toast" role="status" data-cx-autohide="false">
     <div class="toast-header">
-      <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xsmall" text={false} title={false} />
+      <Placeholder width="20" height="20" background="${colors.primary}" class="rounded me-xs" text={false} title={false} />
       <strong class="me-auto">Chassis</strong>
       <small>11 mins ago</small>
       <button type="button" class="close-button" data-cx-dismiss="toast" aria-label="Close"></button>

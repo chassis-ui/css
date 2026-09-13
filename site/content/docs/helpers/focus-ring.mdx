@@ -10,7 +10,7 @@ import { getData } from '@libs/data'
 
 `.focus-ring` applies an `outline` on `:focus-visible`, replacing the browser's unstyled default indicator. The ring reads its width, color, and offset from CSS custom properties set at `:root`, so overriding those properties on any ancestor element scopes the change to that subtree. Because the selector targets `:focus-visible`, the ring appears during keyboard navigation and stays hidden on pointer focus.
 
-<Example code={`<a href="#" class="d-inline-flex focus-ring py-2xsmall px-xsmall text-decoration-none border rounded">
+<Example code={`<a href="#" class="d-inline-flex focus-ring py-2xs px-xs text-decoration-none border rounded">
     Custom focus ring
   </a>`} />
 
@@ -18,13 +18,13 @@ import { getData } from '@libs/data'
 
 `.focus-ring` derives its color from `--focus-ring-color`, which reads `--cue-color` from the cascade. Placing `.focus-ring` inside a context class automatically shifts the ring to that context's cue color.
 
-<Example code={getData('context-colors').map((contextColor) => `<p><a href="#" class="focus-ring context ${contextColor.name} py-2xsmall px-xsmall text-decoration-none border rounded">${contextColor.title} focus</a></p>`)} />
+<Example code={getData('context-colors').map((contextColor) => `<p><a href="#" class="focus-ring context ${contextColor.name} py-2xs px-xs text-decoration-none border rounded">${contextColor.title} focus</a></p>`)} />
 
 ## Customization
 
 Override `--focus-ring-*` properties inline or on a parent element to adjust the ring for a specific component without changing the global defaults.
 
-<Example code={`<a href="#" class="d-inline-flex focus-ring py-2xsmall px-xsmall text-decoration-none border rounded" style="
+<Example code={`<a href="#" class="d-inline-flex focus-ring py-2xs px-xs text-decoration-none border rounded" style="
       --cx-focus-ring-color: color-mix(in oklch, var(--cx-primary) 50%, var(--cx-secondary));
       --cx-focus-ring-width: .25rem;
       --cx-focus-ring-offset: .125rem;
