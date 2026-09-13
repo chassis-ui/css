@@ -30,8 +30,8 @@
     @include map-font($alert-code-font, alert, code);
     --code-color: var(--alert-code-color, #{$alert-code-color});
     --body-gap: var(--alert-body-gap, #{$alert-large-body-gap});
-    --footer-large-gap: var(--alert-footer-large-gap, #{$alert-footer-large-gap});
-    --footer-small-gap: var(--alert-footer-small-gap, #{$alert-footer-small-gap});
+    --footer-lg-gap: var(--alert-footer-lg-gap, #{$alert-footer-lg-gap});
+    --footer-sm-gap: var(--alert-footer-sm-gap, #{$alert-footer-sm-gap});
     --close-button-size: var(--alert-close-button-size, #{$alert-close-button-size});
     --close-button-inset: var(--alert-close-button-inset, #{$alert-close-button-inset});
     // scss-docs-end alert-css-vars
@@ -85,10 +85,10 @@
     // the grid rule is not active here (it is inside media-breakpoint-up(sm))
     // so only the icon needs `align-self: center`.
     @include media-breakpoint-down(sm) {
-      --padding-y: var(--alert-small-padding-y, #{$alert-small-padding-y});
-      --padding-x: var(--alert-small-padding-x, #{$alert-small-padding-x});
-      --gap: var(--alert-small-gap, #{$alert-small-main-gap});
-      --body-gap: var(--alert-small-body-gap, #{$alert-small-body-gap});
+      --padding-y: var(--alert-sm-padding-y, #{$alert-small-padding-y});
+      --padding-x: var(--alert-sm-padding-x, #{$alert-small-padding-x});
+      --gap: var(--alert-sm-gap, #{$alert-small-main-gap});
+      --body-gap: var(--alert-sm-body-gap, #{$alert-small-body-gap});
       @include map-font($alert-small-font-body, alert-message);
       @include map-font($alert-small-font-title, alert, title);
       text-align: center;
