@@ -3143,35 +3143,35 @@ var FloatingBase = class FloatingBase extends BaseComponent {
 			return /r?em$/.test(raw) ? value * rootFontSize : value;
 		};
 		return {
-			small: toPx("--breakpoint-small", 576),
-			medium: toPx("--breakpoint-medium", 768),
-			large: toPx("--breakpoint-large", 1024),
-			xlarge: toPx("--breakpoint-xlarge", 1280),
-			"2xlarge": toPx("--breakpoint-2xlarge", 1536)
+			sm: toPx("--breakpoint-sm", 576),
+			md: toPx("--breakpoint-md", 768),
+			lg: toPx("--breakpoint-lg", 1024),
+			xl: toPx("--breakpoint-xl", 1280),
+			"2xl": toPx("--breakpoint-2xl", 1536)
 		};
 	}
 	static parseResponsivePlacement(placementString, defaultPlacement = "bottom") {
 		if (!placementString || !placementString.includes(":")) return null;
 		const parts = placementString.split(/\s+/);
-		const placements = { xsmall: defaultPlacement };
+		const placements = { xs: defaultPlacement };
 		const breakpoints = FloatingBase.BREAKPOINTS;
 		for (const part of parts) if (part.includes(":")) {
 			const [breakpoint, placement] = part.split(":");
 			if (breakpoints[breakpoint] !== void 0) placements[breakpoint] = placement;
-		} else placements.xsmall = part;
+		} else placements.xs = part;
 		return placements;
 	}
 	static getResponsivePlacement(responsivePlacements, defaultPlacement = "bottom") {
 		if (!responsivePlacements) return defaultPlacement;
 		const viewportWidth = window.innerWidth;
 		const breakpoints = FloatingBase.BREAKPOINTS;
-		let activePlacement = responsivePlacements.xsmall || defaultPlacement;
+		let activePlacement = responsivePlacements.xs || defaultPlacement;
 		for (const breakpoint of [
-			"small",
-			"medium",
-			"large",
-			"xlarge",
-			"2xlarge"
+			"sm",
+			"md",
+			"lg",
+			"xl",
+			"2xl"
 		]) if (viewportWidth >= breakpoints[breakpoint] && responsivePlacements[breakpoint]) activePlacement = responsivePlacements[breakpoint];
 		return activePlacement;
 	}
