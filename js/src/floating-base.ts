@@ -53,11 +53,11 @@ abstract class FloatingBase extends BaseComponent {
     }
 
     return {
-      small: toPx('--breakpoint-small', 576),
-      medium: toPx('--breakpoint-medium', 768),
-      large: toPx('--breakpoint-large', 1024),
-      xlarge: toPx('--breakpoint-xlarge', 1280),
-      '2xlarge': toPx('--breakpoint-2xlarge', 1536)
+      sm: toPx('--breakpoint-sm', 576),
+      md: toPx('--breakpoint-md', 768),
+      lg: toPx('--breakpoint-lg', 1024),
+      xl: toPx('--breakpoint-xl', 1280),
+      '2xl': toPx('--breakpoint-2xl', 1536)
     }
   }
 
@@ -67,7 +67,7 @@ abstract class FloatingBase extends BaseComponent {
     }
 
     const parts = placementString.split(/\s+/)
-    const placements: ResponsivePlacements = { xsmall: defaultPlacement }
+    const placements: ResponsivePlacements = { xs: defaultPlacement }
     const breakpoints = FloatingBase.BREAKPOINTS
 
     for (const part of parts) {
@@ -77,7 +77,7 @@ abstract class FloatingBase extends BaseComponent {
           placements[breakpoint] = placement
         }
       } else {
-        placements.xsmall = part
+        placements.xs = part
       }
     }
 
@@ -91,9 +91,9 @@ abstract class FloatingBase extends BaseComponent {
 
     const viewportWidth = window.innerWidth
     const breakpoints = FloatingBase.BREAKPOINTS
-    let activePlacement = responsivePlacements.xsmall || defaultPlacement
+    let activePlacement = responsivePlacements.xs || defaultPlacement
 
-    for (const breakpoint of ['small', 'medium', 'large', 'xlarge', '2xlarge']) {
+    for (const breakpoint of ['sm', 'md', 'lg', 'xl', '2xl']) {
       const minWidth = breakpoints[breakpoint]
       if (viewportWidth >= minWidth && responsivePlacements[breakpoint]) {
         activePlacement = responsivePlacements[breakpoint]
