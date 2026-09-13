@@ -66,7 +66,7 @@ describe('Toast', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
           '<div class="toast" data-cx-delay="1" data-cx-autohide="false" data-cx-animation="false">',
-          '  <button type="button" class="ms-small mb-2xsmall close-button" data-cx-dismiss="toast" aria-label="Close"></button>',
+          '  <button type="button" class="ms-sm mb-2xs close-button" data-cx-dismiss="toast" aria-label="Close"></button>',
           '</div>'
         ].join('')
 
@@ -101,7 +101,7 @@ describe('Toast', () => {
       try {
         fixtureEl.innerHTML = [
           '<div class="toast" data-cx-autohide="false" data-cx-animation="false">',
-          '  <button type="button" class="ms-small mb-2xsmall close-button" data-cx-dismiss="toast" aria-label="Close"></button>',
+          '  <button type="button" class="ms-sm mb-2xs close-button" data-cx-dismiss="toast" aria-label="Close"></button>',
           '</div>'
         ].join('')
 
