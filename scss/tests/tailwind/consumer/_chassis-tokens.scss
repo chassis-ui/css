@@ -1,0 +1,18 @@
+//
+// Consumer fixture — custom chassis-tokens (Phase 10d)
+//
+// A drop-in replacement for scss/vendor/_chassis-tokens.scss, resolved via
+// an earlier `loadPaths` entry (see scss/config/_vendor.scss's own
+// "Token sources" comment) — the same mechanism a real project's own
+// Figma-exported token package uses. Re-forwards the real
+// @chassis-ui/tokens default set with one override: a distinct brand
+// primary color (both light and dark context variants), so
+// test-consumer.mjs can assert the BRAND color — not Chassis's own
+// docs-site default, #00A4CC — reaches :root.
+//
+
+@forward "@chassis-ui/tokens/dist/web/docs/chassis/main" hide $prefix
+with (
+  $cx-color-base-context-light-primary-base-color: #ff6b35,
+  $cx-color-base-context-dark-primary-base-color: #ff6b35
+);
