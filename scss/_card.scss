@@ -116,9 +116,9 @@
       --footer-padding-x: var(--card-lg-footer-padding-x, #{$card-lg-footer-padding-x});
       --gap-y: var(--card-lg-gap-y, #{$card-lg-gap-y});
       --gap-x: var(--card-lg-gap-x, #{$card-lg-gap-x});
-      @include map-font($card-lg-title-font, card-large, title);
-      @include map-font($card-lg-subtitle-font, card-large, subtitle);
-      @include map-font($card-lg-body-font, card-large);
+      @include map-font($card-lg-title-font, card-lg, title);
+      @include map-font($card-lg-subtitle-font, card-lg, subtitle);
+      @include map-font($card-lg-body-font, card-lg);
       // scss-docs-end card-large-css-vars
 
       .button:not(.sm):not(.md) {
@@ -137,9 +137,9 @@
       --footer-padding-x: var(--card-sm-footer-padding-x, #{$card-sm-footer-padding-x});
       --gap-y: var(--card-sm-gap-y, #{$card-sm-gap-y});
       --gap-x: var(--card-sm-gap-x, #{$card-sm-gap-x});
-      @include map-font($card-sm-title-font, card-small, title);
-      @include map-font($card-sm-subtitle-font, card-small, subtitle);
-      @include map-font($card-sm-body-font, card-small);
+      @include map-font($card-sm-title-font, card-sm, title);
+      @include map-font($card-sm-subtitle-font, card-sm, subtitle);
+      @include map-font($card-sm-body-font, card-sm);
       // scss-docs-end card-small-css-vars
 
       .button:not(.lg):not(.md) {
@@ -323,7 +323,7 @@
   }
 
   // Responsive card-image-start/end via media queries.
-  // Usage: <img class="card-image-top medium:card-image-start" ...>
+  // Usage: <img class="card-image-top md:card-image-start" ...>
   // Border-radius and layout switch are coupled — both fire at the same viewport breakpoint.
   @include loop-breakpoints-up() using ($breakpoint, $prefix) {
     @if $prefix != "" {
