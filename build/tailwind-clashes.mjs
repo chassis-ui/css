@@ -252,7 +252,7 @@ export async function run() {
 // blocks (child-selector / dotted-compound forms) are stripped before
 // parsing, since every entry in the utility-clash policy is a simple
 // single-level utility.
-function parseChassisUtilityBlocks(css) {
+export function parseChassisUtilityBlocks(css) {
   const map = new Map()
   const re = /@utility\s+(\S+)\s*\{/g
   let m
@@ -297,17 +297,39 @@ function parseDecls(body) {
 // on the `.divide-x` substring inside that selector and grab the wrong
 // declarations entirely (caught by the reset-remedy self-verification
 // failing in a way that made no sense until this was traced back).
-function extractOrderedDecls(css, candidate) {
+//
+// Brace-depth-aware (not a naive `[^}]*` capture): some Tailwind core
+// utilities nest a `@supports (...) { ... }` fallback inside the rule body
+// (every color-driven `shadow-<color>` utility does, for its `color-mix`
+// alpha fallback, regardless of whether an opacity modifier is present) --
+// a naive capture would stop at the `@supports` block's own closing brace
+// and mis-split its content as if it were a flat declaration. The body is
+// flattened the same way `parseChassisUtilityBlocks` flattens Chassis's own
+// blocks: one level of nested `selector { ... }` is stripped (its
+// declarations discarded, matching how a `--tw-*` runtime variable set only
+// inside that fallback is inert for clash-detection purposes anyway).
+export function extractOrderedDecls(css, candidate) {
   const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const rule = new RegExp(`(?<=^|[{}])\\s*\\.${escaped}(?:[^\\n{]*)\\{([^}]*)\\}`)
-  const m = css.match(rule)
-  return m ? parseDecls(m[1]) : null
+  const openRe = new RegExp(`(?<=^|[{}])\\s*\\.${escaped}(?:[^\\n{]*)\\{`)
+  const m = openRe.exec(css)
+  if (!m) return null
+  let depth = 1
+  let i = m.index + m[0].length
+  const start = i
+  while (depth > 0 && i < css.length) {
+    if (css[i] === '{') depth++
+    else if (css[i] === '}') depth--
+    i++
+  }
+  const rawBody = css.slice(start, i - 1)
+  const flatBody = rawBody.replace(/[^{;]*\{[^{}]*\}/g, '')
+  return parseDecls(flatBody)
 }
 
 // !important-aware: an !important declaration beats a later plain one for
 // the same property; otherwise later wins, matching normal same-rule
 // cascade order.
-function winningValues(decls) {
+export function winningValues(decls) {
   const state = new Map()
   for (const [prop, rawValue] of decls ?? []) {
     const important = /!important\s*$/i.test(rawValue.trim())
@@ -321,7 +343,7 @@ function winningValues(decls) {
   return flat
 }
 
-async function coreUtilityAfterReset(candidate, themeCss) {
+export async function coreUtilityAfterReset(candidate, themeCss) {
   const css = [
     '@import "tailwindcss/theme.css" layer(theme);',
     '@import "tailwindcss/utilities.css" layer(utilities);',
@@ -379,7 +401,7 @@ async function detectUtilityNameClashes(themeCss, utilitiesCssText) {
 // identically to `utilities.css` and `index.css` -- they hold independent
 // Sass compiles of the same source, not an import of one by the other (see
 // build-tailwind.mjs).
-function applyUtilityClashRemedies(css, policy) {
+export function applyUtilityClashRemedies(css, policy) {
   const blocks = parseChassisUtilityBlocks(css)
   const edits = []
 
