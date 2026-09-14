@@ -34,6 +34,20 @@ import { fileURLToPath } from 'node:url'
 const root = path.resolve(fileURLToPath(import.meta.url), '../..')
 const outDir = path.join(root, 'dist/tailwind')
 const sourceExclusionsPath = path.join(root, 'scss/tailwind/_source-exclusions.scss')
+const clashPolicyPath = path.join(root, 'scss/tailwind/_clash-policy.scss')
+
+// Undoes the compiled-in `!important` remedy (scss/tailwind/_clash-policy.scss,
+// applied by the Sass emitter at compile time) so clash DETECTION can probe
+// the merge as if unremedied. Without this, an already-remedied name's
+// Chassis declaration -- now genuinely `!important` in the real compiled
+// output -- always wins the merge regardless of source order, which would
+// reclassify it "equal" and hide whether the underlying same-name clash still
+// exists. The only source of `!important` in dist/tailwind/utilities.css is
+// this remedy (no `$utilities` entry sets `important: true`), so a blanket
+// strip is safe.
+export function stripImportant(css) {
+  return css.replace(/\s*!important(?=\s*;)/g, '')
+}
 
 // Loads Tailwind core the same way `scss/tailwind/_layer-order.scss` does for
 // consumers: no `tailwindcss/theme.css`, whose values the reset discards.
@@ -463,20 +477,15 @@ async function detectUtilityNameClashes(themeCss, utilitiesCssText) {
   return results
 }
 
-// Patches the compiled `@utility` blocks for every policy entry with an
-// "important" remedy ("documented" entries are left untouched). Applied
-// identically to `utilities.css` and `index.css` -- they hold independent
-// Sass compiles of the same source, not an import of one by the other (see
-// build-tailwind.mjs).
-export function applyUtilityClashRemedies(css, policy) {
-  const blocks = parseChassisUtilityBlocks(css)
-  const edits = []
+// Re-detects clashes against the (already-remedied) compiled utilities.css
+// and asserts each "important" remedy actually makes Chassis's declared
+// value win the merged rule -- against the real compiled output, not the
+// policy's own claim.
+async function verifyUtilityClashRemedies(themeCss, utilitiesCssText, policy) {
+  const blocks = parseChassisUtilityBlocks(utilitiesCssText)
 
   for (const entry of policy.differs) {
     if (entry.remedy === 'documented') continue
-    if (entry.remedy !== 'important') {
-      throw new Error(`tailwind-clashes: unknown remedy "${entry.remedy}" for "${entry.name}"`)
-    }
     const block = blocks.get(entry.name)
     if (!block) {
       throw new Error(
@@ -484,36 +493,7 @@ export function applyUtilityClashRemedies(css, policy) {
           `@utility block in the compiled output -- was it renamed or removed?`
       )
     }
-    let body = css.slice(block.start, block.end)
-
-    for (const property of entry.properties) {
-      const escaped = property.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      const declRe = new RegExp(`(^\\s*|[;{]\\s*)(${escaped})(\\s*:\\s*)([^;]+?)(\\s*;)`)
-      if (!declRe.test(body)) {
-        throw new Error(`tailwind-clashes: expected property "${property}" in @utility ${entry.name}, not found`)
-      }
-      body = body.replace(declRe, (_m, pre, prop, colon, value, semi) => `${pre}${prop}${colon}${value.trimEnd()} !important${semi}`)
-    }
-
-    edits.push({ start: block.start, end: block.end, body })
-  }
-
-  edits.sort((a, b) => b.start - a.start)
-  let out = css
-  for (const { start, end, body } of edits) out = out.slice(0, start) + body + out.slice(end)
-  return out
-}
-
-// Re-detects clashes against the PATCHED utilities.css and asserts each
-// "important" remedy actually made Chassis's declared value win the merged
-// rule.
-async function verifyUtilityClashRemedies(themeCss, patchedUtilitiesCssText, policy) {
-  const patchedBlocks = parseChassisUtilityBlocks(patchedUtilitiesCssText)
-
-  for (const entry of policy.differs) {
-    if (entry.remedy === 'documented') continue
-    const block = patchedBlocks.get(entry.name)
-    const mergedCss = await mergedUtility(entry.name, themeCss, patchedUtilitiesCssText)
+    const mergedCss = await mergedUtility(entry.name, themeCss, utilitiesCssText)
     const mergedWinners = winningValues(extractOrderedDecls(mergedCss, entry.name) ?? [])
     const chassisOwnWinners = winningValues(block.decls)
 
@@ -535,7 +515,7 @@ export async function checkUtilityNameClashes() {
   const utilitiesCssText = readFileSync(path.join(outDir, 'utilities.css'), 'utf8')
   const policy = JSON.parse(readFileSync(path.join(root, 'build/tailwind-utility-clashes.json'), 'utf8'))
 
-  const live = await detectUtilityNameClashes(themeCss, utilitiesCssText)
+  const live = await detectUtilityNameClashes(themeCss, stripImportant(utilitiesCssText))
 
   const knownNames = new Set([...policy.equal, ...policy.differs.map((d) => d.name)])
   const liveDiffers = new Set(policy.differs.map((d) => d.name))
@@ -560,13 +540,7 @@ export async function checkUtilityNameClashes() {
     )
   }
 
-  const patchedUtilities = applyUtilityClashRemedies(utilitiesCssText, policy)
-  writeFileSync(path.join(outDir, 'utilities.css'), patchedUtilities)
-
-  const indexCss = readFileSync(path.join(outDir, 'index.css'), 'utf8')
-  writeFileSync(path.join(outDir, 'index.css'), applyUtilityClashRemedies(indexCss, policy))
-
-  await verifyUtilityClashRemedies(themeCss, patchedUtilities, policy)
+  await verifyUtilityClashRemedies(themeCss, utilitiesCssText, policy)
 
   writeFileSync(
     path.join(outDir, 'utility-clashes.json'),
@@ -583,13 +557,129 @@ export async function checkUtilityNameClashes() {
 
   console.log(
     `tailwind-utility-clashes: ${live.size} same-name clash(es) checked against policy, ` +
-      `${policy.differs.filter((d) => d.remedy === 'important').length} patched with !important, ` +
+      `${policy.differs.filter((d) => d.remedy === 'important').length} remedied with !important, ` +
       `${policy.differs.filter((d) => d.remedy === 'documented').length} documented-only.`
   )
 }
 
+// ---------------------------------------------------------------------------
+// scss/tailwind/_clash-policy.scss (generated file): merges every
+// "important"-remedy entry from BOTH policy JSON files into one Sass map,
+// $important-properties, consumed by scss/mixins/_utilities-tailwind.scss's
+// emitter. The JSON files stay the reviewed source of truth (edited by hand
+// after re-running the Phase 5/9 analysis, then checked by
+// checkUtilityNameClashes()/checkBridgeClashes() above); this is a pure,
+// mechanical re-derivation of them, so its own check is a straight
+// re-derive-and-compare, not a live Tailwind-compile probe. "documented"
+// entries need no remedy and aren't listed.
+// ---------------------------------------------------------------------------
+
+function buildImportantPropertiesPolicy() {
+  const utilityPolicy = JSON.parse(
+    readFileSync(path.join(root, 'build/tailwind-utility-clashes.json'), 'utf8')
+  )
+  const bridgePolicy = JSON.parse(
+    readFileSync(path.join(root, 'build/tailwind-bridge-clashes.json'), 'utf8')
+  )
+
+  const entries = new Map()
+  for (const policy of [utilityPolicy, bridgePolicy]) {
+    for (const entry of policy.differs) {
+      if (entry.remedy !== 'important') continue
+      if (entries.has(entry.name)) {
+        throw new Error(
+          `tailwind-clashes: "${entry.name}" has an "important" remedy in both policy files`
+        )
+      }
+      entries.set(entry.name, entry.properties)
+    }
+  }
+  return entries
+}
+
+function sortedEntries(map) {
+  return [...map.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+}
+
+function parseClashPolicySass(source) {
+  const match = source.match(/\$important-properties:\s*\(([\s\S]*?)\)\s*!default\s*;/)
+  if (!match) {
+    throw new Error(`tailwind-clashes: could not find $important-properties in ${clashPolicyPath}`)
+  }
+  const entries = new Map()
+  for (const m of match[1].matchAll(/"([^"]+)":\s*\(([^)]*)\)/g)) {
+    entries.set(
+      m[1],
+      [...m[2].matchAll(/"([^"]*)"/g)].map((p) => p[1])
+    )
+  }
+  return entries
+}
+
+function formatClashPolicyFile(policy) {
+  const lines = sortedEntries(policy)
+    .map(([name, properties]) => `  "${name}": (${properties.map((p) => `"${p}"`).join(', ')})`)
+    .join(',\n')
+  return `//
+// Chassis CSS — Tailwind Clash Policy (generated, do not hand-edit)
+//
+// Forces \`!important\` on specific properties of specific same-name-clash
+// utilities (fact 6 / Phase 5) so Chassis's own value always wins Tailwind's
+// same-name \`@utility\` merge -- consumed by
+// \`scss/mixins/_utilities-tailwind.scss\`'s emitter, so it's scoped to the
+// Tailwind build only; \`dist/css\` never sees this.
+//
+// Merges the "important"-remedy entries from BOTH
+// \`build/tailwind-utility-clashes.json\` (clashes with Tailwind core) and
+// \`build/tailwind-bridge-clashes.json\` (clashes the opt-in token bridge
+// creates, applied unconditionally here whether or not \`bridge.css\` is
+// imported -- see the Tailwind docs guide's "Token bridge" section).
+// "documented" entries in either policy file need no remedy and aren't
+// listed here.
+//
+// Regenerated by \`build/tailwind-clashes.mjs\` (checked on every
+// \`pnpm css:tailwind\`) from those two JSON files -- never hand-edit. A
+// drift error means one of the JSON policy files changed; after confirming
+// that's deliberate, run \`pnpm css:tailwind:update-clash-policy\` to
+// regenerate this file.
+//
+
+$important-properties: (
+${lines}
+) !default;
+`
+}
+
+export function checkClashPolicy() {
+  const live = buildImportantPropertiesPolicy()
+  const committed = parseClashPolicySass(readFileSync(clashPolicyPath, 'utf8'))
+
+  const liveSorted = sortedEntries(live)
+  const committedSorted = sortedEntries(committed)
+  if (JSON.stringify(liveSorted) !== JSON.stringify(committedSorted)) {
+    throw new Error(
+      `tailwind-clashes: scss/tailwind/_clash-policy.scss has drifted from the JSON policy files ` +
+        `(after confirming this is deliberate, run \`pnpm css:tailwind:update-clash-policy\` to regenerate it):\n` +
+        `  live: ${JSON.stringify(liveSorted)}\n  committed: ${JSON.stringify(committedSorted)}`
+    )
+  }
+
+  console.log(
+    `tailwind-clashes: ${live.size} important-property remedy(ies), matches scss/tailwind/_clash-policy.scss.`
+  )
+}
+
+// Regenerates scss/tailwind/_clash-policy.scss unconditionally (no drift
+// check) -- run explicitly via `pnpm css:tailwind:update-clash-policy` after
+// editing either JSON policy file.
+export function updateClashPolicy() {
+  writeFileSync(clashPolicyPath, formatClashPolicyFile(buildImportantPropertiesPolicy()))
+  console.log('tailwind-clashes: wrote scss/tailwind/_clash-policy.scss.')
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
   run()
+    .then(() => checkClashPolicy())
     .then(checkUtilityNameClashes)
     .catch((error) => {
       console.error(error)

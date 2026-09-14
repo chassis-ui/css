@@ -5,8 +5,15 @@
 // (or, for attribute-selector utilities, plain CSS in `@layer utilities`).
 // See `scss/mixins/_utilities-tailwind.scss` for the emitter.
 //
+// `./_clash-policy.scss` (generated, checked by `build/tailwind-clashes.mjs`)
+// forces `!important` on specific properties of specific same-name-clash
+// utilities — applied unconditionally here, including its bridge-only
+// entries, so `bg-primary`/`border-primary` keep their full Chassis
+// behavior whether or not `bridge.css` is separately imported.
+//
 
 @use "../utilities" as *;
 @use "../mixins" as *;
+@use "./clash-policy" as clash-policy;
 
-@include generate-tailwind-utilities($utilities);
+@include generate-tailwind-utilities($utilities, clash-policy.$important-properties);

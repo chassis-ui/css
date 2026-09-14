@@ -29,15 +29,19 @@
 
 // Generates every enabled utility in `$utilities` as a Tailwind `@utility`
 // rule (or, for attribute-selector utilities, plain CSS in `@layer utilities`).
-@mixin generate-tailwind-utilities($utilities) {
+// $important-properties (Phase 10c): a map of generated utility name ->
+// list of its properties that must win a same-name Tailwind-core merge
+// (scss/tailwind/_clash-policy.scss) — forces `!important` on exactly those
+// declarations, scoped to this Tailwind emitter only.
+@mixin generate-tailwind-utilities($utilities, $important-properties: ()) {
   @each $key, $utility in $utilities {
     @if meta.type-of($utility) == "map" and map.get($utility, enabled) != false {
-      @include generate-tailwind-utility($utility);
+      @include generate-tailwind-utility($utility, $important-properties);
     }
   }
 }
 
-@mixin generate-tailwind-utility($utility) {
+@mixin generate-tailwind-utility($utility, $important-properties: ()) {
   // Validate required keys (same contract as generate-utility)
   @if not map.has-key($utility, property) {
     @error "Utility is missing required `property` key: #{$utility}";
@@ -99,13 +103,22 @@
           $utility-name: string.slice($class-name, $dot-index + 1);
         }
 
+        // Looked up by the final @utility rule name, not the $utilities map
+        // key — the clash policy is keyed by generated class name (e.g.
+        // "opacity-50", "rounded-full"), since a policy entry can single out
+        // one value of a multi-value utility.
+        $force-important: map.get($important-properties, $utility-name);
+        @if $force-important == null {
+          $force-important: ();
+        }
+
         @utility #{$utility-name} {
           @if $companion-class {
             &.#{$companion-class} {
-              @include tailwind-utility-body($utility, $property-map, $properties, $value, $child-sel);
+              @include tailwind-utility-body($utility, $property-map, $properties, $value, $child-sel, $force-important);
             }
           } @else {
-            @include tailwind-utility-body($utility, $property-map, $properties, $value, $child-sel);
+            @include tailwind-utility-body($utility, $property-map, $properties, $value, $child-sel, $force-important);
           }
         }
       }
@@ -195,14 +208,14 @@
 
 // Emits the declaration body for one utility + value, wrapped in the
 // `child-selector` (if present) or emitted directly at the current nesting.
-@mixin tailwind-utility-body($utility, $property-map, $properties, $value, $child-sel) {
+@mixin tailwind-utility-body($utility, $property-map, $properties, $value, $child-sel, $force-important: ()) {
   @if $child-sel {
     :where(& #{$child-sel}) {
       @include api.generate-variables($utility, $value);
-      @include api.generate-properties($utility, $property-map, $properties, $value);
+      @include api.generate-properties($utility, $property-map, $properties, $value, false, $force-important);
     }
   } @else {
     @include api.generate-variables($utility, $value);
-    @include api.generate-properties($utility, $property-map, $properties, $value);
+    @include api.generate-properties($utility, $property-map, $properties, $value, false, $force-important);
   }
 }
