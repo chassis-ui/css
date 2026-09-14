@@ -1,15 +1,15 @@
 //
 // Chassis CSS — Tailwind Entry Point
 //
-// Full-bundle entry point for Tailwind CSS v4 users. Compiles to the theme
-// bridge, tokens, reboot, components, and utilities in order; `./layers.css`
-// (static, not Sass — see `build/build-tailwind.mjs`) is prepended ahead of
-// this file's own output. See `.claude/tailwind-integration-plan.md` for the
-// target architecture.
+// Full-bundle entry point for Tailwind CSS v4 users. Compiles to the layer
+// order, theme bridge, tokens, reboot, components, and utilities in order.
+// Projects with their own chassis-tokens compile this file with Sass; the
+// layer order must stay first and `@import`-free (see `./_layer-order.scss`).
 //
 
 @forward "../mixins/banner";
 
+@forward "./layer-order";
 @forward "./theme";
 @forward "../root";
 @forward "../reboot";

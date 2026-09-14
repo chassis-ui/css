@@ -1,0 +1,24 @@
+//
+// Chassis CSS — Tailwind Layer Order
+//
+// Declares the combined Chassis + Tailwind cascade layer order, then loads
+// Tailwind's own utilities into the last layer. This must be the first
+// statement any Tailwind build sees: anything loaded before it that also
+// declares `@layer` order (e.g. a consumer's own `@import "tailwindcss";`)
+// breaks the order below.
+//
+// No `@import` on purpose. Dart Sass hoists plain `@import` rules to the top
+// of its output, ahead of the `@layer` statement, which would put Tailwind's
+// `utilities` layer before Chassis's own layers. `tailwindcss/utilities.css`
+// is exactly the `@tailwind utilities;` rule below, so inlining it keeps a
+// consumer's own Sass compile (custom chassis-tokens) in the right order.
+// `tailwindcss/theme.css` is not loaded: its `@theme default` values are
+// discarded by the `--*: initial` reset in `./theme` anyway. No Preflight —
+// Chassis ships its own reboot instead, see `./reboot.scss`.
+//
+
+@layer theme, colors, config, root, base, reboot, layout, content, components, custom, helpers, utilities;
+
+@layer utilities {
+  @tailwind utilities;
+}

@@ -22,6 +22,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { before, describe, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
+import * as sass from 'sass'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '../../..')
@@ -151,6 +152,51 @@ describe('tailwind fixture build', () => {
       layerIndex < firstUtilityRuleIndex,
       'the layer statement must precede generated rules'
     )
+  })
+
+  test('a direct Sass compile of the Tailwind entry starts with the layer order (custom-token consumer path)', () => {
+    // Consumers with their own chassis-tokens compile `scss/tailwind/index.scss`
+    // themselves, without build-tailwind.mjs. Sass hoists any `@import` above
+    // the `@layer` statement, so the entry must not contain one.
+    const { css } = sass.compile(path.join(root, 'scss/tailwind/index.scss'), {
+      loadPaths: [path.join(root, 'scss/vendor'), path.join(root, 'node_modules')]
+    })
+    assert.doesNotMatch(
+      css,
+      /@import\b/,
+      'the Sass-compiled Tailwind entry must not contain @import'
+    )
+    const firstStatement = css
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/^\s*@charset "[^"]*";/, '')
+      .trim()
+      .split(';')[0]
+    assert.equal(
+      `${firstStatement};`,
+      '@layer theme, colors, config, root, base, reboot, layout, content, components, custom, helpers, utilities;'
+    )
+  })
+
+  test("the Tailwind layer order keeps Chassis's own layers in their regular-build order", () => {
+    const layerList = (css) => css.match(/@layer ([\w-]+(?:\s*,\s*[\w-]+)+);/)?.[1].split(/\s*,\s*/)
+    const tailwindLayers = layerList(
+      readFileSync(path.join(root, 'dist/tailwind/layers.css'), 'utf8')
+    )
+    const chassisLayers = layerList(readFileSync(path.join(root, 'dist/css/chassis.css'), 'utf8'))
+    assert.ok(tailwindLayers && chassisLayers, 'expected a layer-order statement in both builds')
+    // `theme` is shared with Tailwind's own theme layer, which the Tailwind
+    // build places first; `base` is Tailwind-only.
+    const shared = (layers) =>
+      layers.filter((name) => name !== 'theme' && chassisLayers.includes(name))
+    assert.deepEqual(shared(tailwindLayers), shared(chassisLayers))
+    assert.equal(tailwindLayers.at(-1), 'utilities')
+  })
+
+  test('theme variables are emitted inside the theme layer, not unlayered', () => {
+    // Unlayered custom properties would outrank every Chassis layer. Tailwind
+    // only emits the theme variables the candidates use.
+    assert.match(built, /@layer theme\s*\{\s*:root, :host\s*\{[^}]*--container-[a-z0-9]+:/)
+    assert.doesNotMatch(built, /^:root, :host\s*\{/m)
   })
 
   test('the theme reset survives the --cx- custom-property prefixer untouched', () => {

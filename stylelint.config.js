@@ -105,9 +105,7 @@ export default {
     {
       // Tailwind CSS v4 at-rules: `@theme`, `@utility`, `@custom-variant`,
       // `@source`, `@slot`. Neither stylelint core nor
-      // stylelint-config-twbs-bootstrap know about them yet. The `scss/`
-      // namespaced rule only exists for `.scss` syntax; plain `.css` files
-      // (e.g. `layers.css`) use the un-namespaced core rule instead.
+      // stylelint-config-twbs-bootstrap know about them yet.
       files: ['scss/tailwind/**/*.scss', 'scss/mixins/_utilities-tailwind.scss'],
       rules: {
         'scss/at-rule-no-unknown': null,
@@ -117,17 +115,6 @@ export default {
         // stylelint can't see through the interpolation to know `&` isn't
         // redundant here.
         'scss/selector-no-redundant-nesting-selector': null
-      }
-    },
-    {
-      files: ['scss/tailwind/**/*.css'],
-      rules: {
-        'at-rule-no-unknown': null,
-        // `@tailwindcss/node` only resolves the string-import form of
-        // `@import "…" layer(…);` — wrapping it in `url()` (the style this
-        // config otherwise prefers) makes Tailwind treat it as an opaque
-        // browser import and never load its theme or utilities.
-        'import-notation': null
       }
     }
   ]
