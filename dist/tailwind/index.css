@@ -162,7 +162,7 @@
   &[data-cx-theme=dark] {
     @slot;
   }
-  &:where([data-cx-theme=dark] *):not(:where([data-cx-theme=dark] [data-cx-theme] *)) {
+  &:where([data-cx-theme=dark] *):not(:where([data-cx-theme=dark] [data-cx-theme=light] *)) {
     @slot;
   }
   @media (prefers-color-scheme: dark) {
@@ -175,7 +175,7 @@
   &[data-cx-theme=light] {
     @slot;
   }
-  &:where([data-cx-theme=light] *):not(:where([data-cx-theme=light] [data-cx-theme] *)) {
+  &:where([data-cx-theme=light] *):not(:where([data-cx-theme=light] [data-cx-theme=dark] *)) {
     @slot;
   }
   @media (prefers-color-scheme: light) {

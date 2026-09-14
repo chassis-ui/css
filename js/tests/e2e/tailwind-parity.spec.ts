@@ -186,3 +186,39 @@ test('dark:d-none matches via prefers-color-scheme, the one dark: mechanism both
   expect(tailwind['dark-d-none']).toEqual(chassis['dark-d-none'])
   expect(chassis['dark-d-none'].display).toEqual('none')
 })
+
+// Tailwind-only: Chassis's own CSS has no attribute-aware dark:/light:
+// utilities to compare against, so this checks the custom variants directly
+// on nested markup. A same-value nested attribute (a dark navbar inside a
+// dark page) must not count as an override; an opposite-value one must.
+test('dark:/light: follow the nearest data-cx-theme, ignoring same-value nesting', async ({ page }) => {
+  const compiler = await compile('@import "@chassis-ui/css/tailwind";', {
+    base: root,
+    onDependency: () => {}
+  })
+  const css = compiler.build(['dark:d-none', 'light:d-none'])
+  await page.setContent(`<style>${css}</style>
+    <div data-cx-theme="dark">
+      <div data-cx-theme="dark"><p data-testid="dark-in-dark" class="dark:d-none">x</p></div>
+      <div data-cx-theme="light">
+        <p data-testid="dark-in-light" class="dark:d-none">x</p>
+        <p data-testid="light-in-dark" class="light:d-none">x</p>
+      </div>
+    </div>
+    <div data-cx-theme="light">
+      <div data-cx-theme="light"><p data-testid="light-in-light" class="light:d-none">x</p></div>
+    </div>`)
+
+  const display = (testid: string) =>
+    page.getByTestId(testid).evaluate((el) => getComputedStyle(el).display)
+
+  // The OS scheme is the opposite of each tested attribute, so only the
+  // attribute branches can match.
+  await page.emulateMedia({ colorScheme: 'light' })
+  expect(await display('dark-in-dark')).toBe('none')
+  expect(await display('dark-in-light')).toBe('block')
+
+  await page.emulateMedia({ colorScheme: 'dark' })
+  expect(await display('light-in-dark')).toBe('none')
+  expect(await display('light-in-light')).toBe('none')
+})

@@ -149,7 +149,11 @@ export default {
 }
 ```
 
-The preset also writes the prefix into a `--chassis-prefix` property on `:root`. The JS plugins read that property at runtime, so the prebuilt Chassis JS works with a renamed namespace without a rebuild.
+The prefix must start with a letter and end in `-` or `_`. It renames CSS custom properties only: `data-cx-*` attributes such as `data-cx-theme` and `data-cx-toggle` keep their names.
+
+The preset also writes the prefix into a `--chassis-prefix` property on `:root`, in every stylesheet it prefixes. The JS plugins read that property at runtime, so the prebuilt Chassis JS works with a renamed namespace without a rebuild.
+
+The preset renames every custom property in the CSS it processes, including your own. If your own stylesheets run through the same PostCSS config, reference their properties with the prefix (`var(--cx-my-color)`) in HTML and JavaScript.
 
 ### Without a prefix
 
