@@ -20,6 +20,45 @@
   * Copyright 2026 Ozgur Gunes
   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
   */
+@theme {
+  --*: initial;
+  --breakpoint-sm: 36rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+  --container-sm: 36rem;
+  --container-md: 48rem;
+  --container-lg: 64rem;
+  --container-xl: 80rem;
+  --container-2xl: 96rem;
+}
+@custom-variant dark {
+  &[data-cx-theme=dark] {
+    @slot;
+  }
+  &:where([data-cx-theme=dark] *):not(:where([data-cx-theme=dark] [data-cx-theme] *)) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:not(:where([data-cx-theme=light], [data-cx-theme=light] *)) {
+      @slot;
+    }
+  }
+}
+@custom-variant light {
+  &[data-cx-theme=light] {
+    @slot;
+  }
+  &:where([data-cx-theme=light] *):not(:where([data-cx-theme=light] [data-cx-theme] *)) {
+    @slot;
+  }
+  @media (prefers-color-scheme: light) {
+    &:not(:where([data-cx-theme=dark], [data-cx-theme=dark] *)) {
+      @slot;
+    }
+  }
+}
 @layer colors, theme, config, root, reboot, layout, content, components, custom, helpers, utilities;
 :root {
   color-scheme: light dark;
