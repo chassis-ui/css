@@ -106,7 +106,11 @@ export default {
       // Tailwind CSS v4 at-rules: `@theme`, `@utility`, `@custom-variant`,
       // `@source`, `@slot`. Neither stylelint core nor
       // stylelint-config-twbs-bootstrap know about them yet.
-      files: ['scss/tailwind/**/*.scss', 'scss/mixins/_utilities-tailwind.scss'],
+      files: [
+        'scss/tailwind/**/*.scss',
+        'scss/mixins/_utilities-tailwind.scss',
+        'scss/mixins/_tailwind-source.scss'
+      ],
       rules: {
         'scss/at-rule-no-unknown': null,
         // `:where(& #{$child-selector})` nests the literal `&` alongside an

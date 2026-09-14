@@ -13,14 +13,15 @@
 // either — it's a Tailwind built-in.
 //
 // Finally emits the fact-9 `@source not inline(...)` component-clash
-// exclusions and the fact-15 JS-toggled-class safelist, from
+// exclusions and the fact-15 JS-toggled-class safelist
+// (`emit-source-config`, `scss/mixins/_tailwind-source.scss`) from
 // `./_source-exclusions.scss` (generated, checked by
 // `build/tailwind-clashes.mjs`) and `./_source-safelist.scss`
 // (hand-maintained) respectively.
 //
 
-@use "sass:list";
 @use "../config" as *;
+@use "../mixins" as *;
 @use "./source-exclusions" as clashes;
 @use "./source-safelist" as safelist;
 
@@ -87,38 +88,4 @@
   }
 }
 
-// Fact 9: the brace-expansion group covering the unprefixed candidate and
-// every non-xs breakpoint prefix, e.g. `{,sm:,md:,lg:,xl:,2xl:}` for the
-// default `$breakpoints` map — built here instead of hard-coded so a
-// project's own custom `$breakpoints` stays correct.
-@function breakpoint-source-group($breakpoints) {
-  $group: "";
-  @each $name, $value in $breakpoints {
-    @if $name != xs {
-      @if $group == "" {
-        $group: "#{$name}:";
-      } @else {
-        $group: "#{$group},#{$name}:";
-      }
-    }
-  }
-  @return "{,#{$group}}";
-}
-
-@mixin emit-source-config($breakpoints) {
-  $breakpoint-source-group: breakpoint-source-group($breakpoints);
-
-  @each $name in clashes.$bare-clashes {
-    @source not inline("#{$name}");
-  }
-
-  @each $name in clashes.$breakpoint-clashes {
-    @source not inline("#{$breakpoint-source-group}#{$name}");
-  }
-
-  @each $entry in safelist.$safelist {
-    @source inline("#{list.nth($entry, 1)}"); /* #{list.nth($entry, 2)} */
-  }
-}
-
-@include emit-source-config($breakpoints);
+@include emit-source-config($breakpoints, clashes.$bare-clashes, clashes.$breakpoint-clashes, safelist.$safelist);
