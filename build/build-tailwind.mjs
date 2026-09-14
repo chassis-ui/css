@@ -19,10 +19,12 @@
  * `build/postcss.config.js` instead.
  *
  * Finally, three checks run against the final compiled output, in order:
- *  1. `tailwind-clashes.mjs`'s `run()` finds Chassis component/reboot class
- *     names Tailwind core would also generate and appends
- *     `@source not inline(...)` exclusions (plus the JS-toggled-class
- *     safelist) to `theme.css` and `index.css`.
+ *  1. `tailwind-clashes.mjs`'s `run()` re-detects Chassis component/reboot
+ *     class names that clash with Tailwind core and fails loudly if that
+ *     set has drifted from the committed
+ *     `scss/tailwind/_source-exclusions.scss` — the `@source not
+ *     inline(...)` exclusions themselves are emitted by `theme.scss` at
+ *     Sass-compile time, not written here.
  *  2. `tailwind-clashes.mjs`'s `checkUtilityNameClashes()` finds Chassis
  *     utility names Tailwind core ALSO generates even after the theme reset
  *     (a same-name `@utility` merge, not an exclusion candidate —
@@ -50,7 +52,7 @@ import postcss from 'postcss'
 import * as sass from 'sass'
 import tailwindConfig from './postcss.tailwind.config.js'
 import { checkBridgeClashes } from './tailwind-bridge-clashes.mjs'
-import { checkUtilityNameClashes, run as writeClashExclusions } from './tailwind-clashes.mjs'
+import { checkUtilityNameClashes, run as checkSourceExclusions } from './tailwind-clashes.mjs'
 
 const root = path.resolve(fileURLToPath(import.meta.url), '../..')
 const srcDir = path.join(root, 'scss/tailwind')
@@ -67,27 +69,40 @@ const entries = [
   'bridge.scss'
 ]
 
-mkdirSync(outDir, { recursive: true })
+// The Sass + prefix compile pass, exported so
+// `update-tailwind-source-exclusions.mjs` can produce a fresh
+// `dist/tailwind/` build without running the checks below (which would
+// throw on the very drift that script exists to resolve).
+export async function compileTailwindDist() {
+  mkdirSync(outDir, { recursive: true })
 
-for (const entry of entries) {
-  const result = sass.compile(path.join(srcDir, entry), {
-    loadPaths: [path.join(root, 'scss/vendor'), path.join(root, 'node_modules')],
-    style: 'expanded'
-  })
-  const outFile = path.join(outDir, entry.replace(/\.scss$/, '.css'))
-  writeFileSync(outFile, result.css)
+  for (const entry of entries) {
+    const result = sass.compile(path.join(srcDir, entry), {
+      loadPaths: [path.join(root, 'scss/vendor'), path.join(root, 'node_modules')],
+      style: 'expanded'
+    })
+    const outFile = path.join(outDir, entry.replace(/\.scss$/, '.css'))
+    writeFileSync(outFile, result.css)
+  }
+
+  const { plugins } = tailwindConfig({})
+  const processor = postcss(plugins)
+
+  for (const file of readdirSync(outDir)) {
+    if (!file.endsWith('.css')) continue
+    const filePath = path.join(outDir, file)
+    const result = await processor.process(readFileSync(filePath, 'utf8'), {
+      from: filePath,
+      to: filePath,
+      map: false
+    })
+    writeFileSync(filePath, result.css)
+  }
 }
 
-const { plugins } = tailwindConfig({})
-const processor = postcss(plugins)
-
-for (const file of readdirSync(outDir)) {
-  if (!file.endsWith('.css')) continue
-  const filePath = path.join(outDir, file)
-  const result = await processor.process(readFileSync(filePath, 'utf8'), { from: filePath, to: filePath, map: false })
-  writeFileSync(filePath, result.css)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  await compileTailwindDist()
+  await checkSourceExclusions()
+  await checkUtilityNameClashes()
+  await checkBridgeClashes()
 }
-
-await writeClashExclusions()
-await checkUtilityNameClashes()
-await checkBridgeClashes()

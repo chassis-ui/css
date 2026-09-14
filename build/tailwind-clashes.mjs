@@ -2,20 +2,25 @@
 
 /*!
  * tailwind-clashes.mjs — finds Chassis component/reboot class names that
- * Tailwind core would also generate, and excludes them from Tailwind's own
- * generation via `@source not inline(...)` (fact 9). Without this, a
- * candidate like `outline` or `lg:container` would get BOTH Chassis's
- * component rule (`components`/`reboot` layer) and Tailwind's own utility
- * rule (`utilities` layer) — and the utilities layer always wins the
+ * Tailwind core would also generate, which would otherwise need excluding
+ * from Tailwind's own generation via `@source not inline(...)` (fact 9).
+ * Without that, a candidate like `outline` or `lg:container` would get BOTH
+ * Chassis's component rule (`components`/`reboot` layer) and Tailwind's own
+ * utility rule (`utilities` layer) — and the utilities layer always wins the
  * cascade, silently breaking the Chassis component.
+ *
+ * The exclusions themselves are committed Sass data
+ * (`scss/tailwind/_source-exclusions.scss`), emitted by `theme.scss` at
+ * compile time — so a project compiling `scss/tailwind/index.scss` with its
+ * own chassis-tokens gets them too, not only the prebuilt `dist/tailwind/`.
+ * This module only CHECKS that the committed lists still match live
+ * detection (`run()`, wired into `css:tailwind`, throws on drift) and
+ * regenerates them on request (`updateSourceExclusions()`, wired into
+ * `css:tailwind:update-clashes`) — it never edits `dist/tailwind/*.css`.
  *
  * Runs inside `css:tailwind`, after `build-tailwind.mjs`'s Sass + prefix
  * pass, so `dist/tailwind/components.css` / `reboot.css` / `utilities.css`
- * already hold their final class names.
- *
- * Also writes the JS-toggled-class safelist (fact 15) from
- * `build/tailwind-safelist.json` as `@source inline(...)`, and a
- * `dist/tailwind/clashes.json` report.
+ * / `theme.css` already hold their final content.
  *
  * Copyright 2026 Ozgur Gunes
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
@@ -28,8 +33,7 @@ import { fileURLToPath } from 'node:url'
 
 const root = path.resolve(fileURLToPath(import.meta.url), '../..')
 const outDir = path.join(root, 'dist/tailwind')
-
-const BREAKPOINT_PREFIXES = ['', 'sm:', 'md:', 'lg:', 'xl:', '2xl:']
+const sourceExclusionsPath = path.join(root, 'scss/tailwind/_source-exclusions.scss')
 
 // Loads Tailwind core the same way `scss/tailwind/_layer-order.scss` does for
 // consumers: no `tailwindcss/theme.css`, whose values the reset discards.
@@ -92,78 +96,111 @@ async function findClashes(candidates, themeAndLayersCss) {
 }
 
 // ---------------------------------------------------------------------------
-// Brace compression
+// Breakpoint prefixes and clash classification
 // ---------------------------------------------------------------------------
 
-// Groups clash candidates into `@source not inline("…")` strings, exploiting
-// Tailwind's brace-expansion (fact 9) where it helps: same base name clashing
-// under several breakpoint prefixes (`{,sm:,md:,lg:}container`), or several
-// bare candidates sharing a `stem-<token>` shape (`col-{1,2,…,12,auto}`).
-// Falls back to one plain string per candidate — always correct, just less
-// compact. (Tailwind's `@source not inline()` does NOT support `{1..12}`
-// numeric-range syntax, despite reading like it might; confirmed empirically
-// against @tailwindcss/node — every value has to be spelled out.)
-function compressCandidates(candidates) {
+// Reads the actual configured breakpoint names back out of the compiled
+// theme.css (`--breakpoint-<name>: …`, emitted by theme.scss from
+// `$breakpoints`, in map order, `xs` already skipped) instead of a
+// hard-coded list — so a project with its own custom breakpoints still
+// classifies and compresses clashes correctly.
+function readBreakpointPrefixes(themeCss) {
+  const names = [...themeCss.matchAll(/--breakpoint-([a-zA-Z0-9]+):/g)].map((m) => m[1])
+  return ['', ...names.map((name) => `${name}:`)]
+}
+
+// Splits clash candidates into base names that clash unprefixed only
+// (`$bare-clashes`) vs. base names that clash at every breakpoint prefix
+// (`$breakpoint-clashes`, exploiting Tailwind's brace-expansion — fact 9).
+// Throws on a base name clashing at only SOME prefixes: `theme.scss`'s
+// emitter has no representation for that shape, and it has never occurred
+// in practice (every real breakpoint-clashing name, `container`/`col-*`,
+// clashes at all of them) — surface it for manual investigation rather than
+// silently under- or over-excluding.
+function classifyClashes(clashes, breakpointPrefixes) {
   const byBase = new Map()
-  for (const candidate of candidates) {
-    const prefixMatch = BREAKPOINT_PREFIXES.slice(1).find((p) => candidate.startsWith(p))
+  for (const candidate of clashes) {
+    const prefixMatch = breakpointPrefixes.slice(1).find((p) => candidate.startsWith(p))
     const prefix = prefixMatch ?? ''
     const base = prefix ? candidate.slice(prefix.length) : candidate
     if (!byBase.has(base)) byBase.set(base, new Set())
     byBase.get(base).add(prefix)
   }
 
-  const output = []
-  const stemPool = []
-
+  const bare = []
+  const responsive = []
+  const partial = []
   for (const [base, prefixes] of byBase) {
-    if (prefixes.size > 1) {
-      const ordered = BREAKPOINT_PREFIXES.filter((p) => prefixes.has(p))
-      output.push(`{${ordered.join(',')}}${base}`)
+    if (prefixes.size === 1 && prefixes.has('')) {
+      bare.push(base)
+    } else if (prefixes.size === breakpointPrefixes.length) {
+      responsive.push(base)
     } else {
-      const [prefix] = prefixes
-      if (prefix === '') {
-        stemPool.push(base)
-      } else {
-        output.push(`${prefix}${base}`)
-      }
+      partial.push({ base, prefixes: [...prefixes] })
     }
   }
 
-  const byStem = new Map()
-  for (const base of stemPool) {
-    const dashIndex = base.lastIndexOf('-')
-    if (dashIndex === -1) {
-      if (!byStem.has(base)) byStem.set(base, [])
-      byStem.get(base).push('')
-      continue
-    }
-    const stem = base.slice(0, dashIndex)
-    const token = base.slice(dashIndex + 1)
-    if (!byStem.has(stem)) byStem.set(stem, [])
-    byStem.get(stem).push(token)
+  if (partial.length > 0) {
+    throw new Error(
+      `tailwind-clashes: found component clash(es) with a partial breakpoint-prefix set, which ` +
+        `theme.scss's emitter can't express (only "unprefixed only" or "every prefix" are handled): ` +
+        `${JSON.stringify(partial)}. Investigate manually before updating scss/tailwind/_source-exclusions.scss.`
+    )
   }
 
-  for (const [stem, tokens] of byStem) {
-    if (tokens.length === 1 && tokens[0] !== '') {
-      output.push(`${stem}-${tokens[0]}`)
-    } else if (tokens.length === 1) {
-      output.push(stem)
-    } else {
-      const numeric = tokens.filter((t) => /^\d+$/.test(t)).sort((a, b) => Number(a) - Number(b))
-      const rest = tokens.filter((t) => !/^\d+$/.test(t)).sort()
-      output.push(`${stem}-{${[...numeric, ...rest].join(',')}}`)
-    }
-  }
-
-  return output.sort()
+  return { bare: bare.sort(), responsive: responsive.sort() }
 }
 
 // ---------------------------------------------------------------------------
-// Orchestration
+// scss/tailwind/_source-exclusions.scss (generated file) parsing/formatting
 // ---------------------------------------------------------------------------
 
-export async function run() {
+function parseSassStringList(source, varName) {
+  const match = source.match(new RegExp(`\\$${varName}:\\s*\\(([\\s\\S]*?)\\)\\s*!default\\s*;`))
+  if (!match) {
+    throw new Error(`tailwind-clashes: could not find $${varName} in ${sourceExclusionsPath}`)
+  }
+  return [...match[1].matchAll(/"([^"]*)"/g)].map((m) => m[1])
+}
+
+function formatSassStringList(values) {
+  return values.map((value) => `  "${value}"`).join(',\n')
+}
+
+function formatSourceExclusionsFile({ bare, responsive }) {
+  return `//
+// Chassis CSS — Tailwind Source Exclusions (generated, do not hand-edit)
+//
+// Component/reboot/grid class names that would otherwise clash with a
+// Tailwind core utility of the same name (fact 9) — excluding them from
+// Tailwind's own generation via \`@source not inline(...)\`, emitted by
+// \`./theme.scss\`. \`$bare-clashes\` clash unprefixed only; \`$breakpoint-clashes\`
+// clash at every breakpoint prefix too (\`sm:container\`, \`lg:container\`, …),
+// so \`./theme.scss\` wraps each one in the brace-expansion group built from
+// \`$breakpoints\`.
+//
+// Regenerated by \`build/tailwind-clashes.mjs\` (checked on every
+// \`pnpm css:tailwind\`) from the compiled \`dist/tailwind/\` output — never
+// hand-edit. A drift error means a component, grid, or reboot class was
+// added, renamed, or removed; after confirming that's deliberate, run
+// \`pnpm css:tailwind:update-clashes\` to regenerate this file.
+//
+
+$bare-clashes: (
+${formatSassStringList(bare)}
+) !default;
+
+$breakpoint-clashes: (
+${formatSassStringList(responsive)}
+) !default;
+`
+}
+
+// ---------------------------------------------------------------------------
+// Shared detection
+// ---------------------------------------------------------------------------
+
+async function detectSourceExclusions() {
   const componentsCss = readFileSync(path.join(outDir, 'components.css'), 'utf8')
   const rebootCss = readFileSync(path.join(outDir, 'reboot.css'), 'utf8')
   const utilitiesCss = readFileSync(path.join(outDir, 'utilities.css'), 'utf8')
@@ -172,15 +209,12 @@ export async function run() {
   const candidateNames = [...new Set([...extractClassNames(componentsCss), ...extractClassNames(rebootCss)])].sort()
   const chassisUtilityNames = extractUtilityNames(utilitiesCss)
 
-  // theme.css minus any exclusion block from a previous run (idempotent
-  // re-runs: build-tailwind.mjs recompiles theme.css fresh from Sass before
-  // this runs, so today there's nothing to strip, but strip defensively).
-  const cleanThemeCss = themeCss.replace(/\n\/\* Generated by build\/tailwind-clashes\.mjs[\s\S]*$/, '')
-  const probeCss = [
-    TAILWIND_UTILITIES_PROBE,
-    cleanThemeCss,
-    '@source not "..";'
-  ].join('\n')
+  // Probe against the theme + variants BEFORE this build's own committed
+  // @source exclusions -- an already-excluded name never registers as
+  // clashing with core (that's what the exclusion does), which would hide a
+  // name that no longer needs excluding instead of catching the drift.
+  const probeThemeCss = themeCss.replace(/^@source .*$/gm, '')
+  const probeCss = [TAILWIND_UTILITIES_PROBE, probeThemeCss, '@source not "..";'].join('\n')
 
   const clashes = await findClashes(candidateNames, probeCss)
 
@@ -192,31 +226,49 @@ export async function run() {
     )
   }
 
-  const compressed = compressCandidates(clashes)
-  const safelist = JSON.parse(readFileSync(path.join(root, 'build/tailwind-safelist.json'), 'utf8'))
+  const breakpointPrefixes = readBreakpointPrefixes(themeCss)
+  const { bare, responsive } = classifyClashes(clashes, breakpointPrefixes)
 
-  const generatedLines = [
-    '',
-    '/* Generated by build/tailwind-clashes.mjs. Do not edit directly — re-run `pnpm css:tailwind`. */',
-    ...compressed.map((entry) => `@source not inline("${entry}");`),
-    ...safelist.map((entry) => `@source inline("${entry.class}"); /* ${entry.reason} */`)
-  ]
-  const generatedBlock = generatedLines.join('\n')
+  return { candidateNames, clashes, bare, responsive }
+}
 
-  writeFileSync(path.join(outDir, 'theme.css'), `${cleanThemeCss}${generatedBlock}\n`)
+// ---------------------------------------------------------------------------
+// Orchestration
+// ---------------------------------------------------------------------------
 
-  const indexCss = readFileSync(path.join(outDir, 'index.css'), 'utf8')
-  const cleanIndexCss = indexCss.replace(/\n\/\* Generated by build\/tailwind-clashes\.mjs[\s\S]*$/, '')
-  writeFileSync(path.join(outDir, 'index.css'), `${cleanIndexCss}${generatedBlock}\n`)
+export async function run() {
+  const { candidateNames, clashes, bare, responsive } = await detectSourceExclusions()
+
+  const committedSource = readFileSync(sourceExclusionsPath, 'utf8')
+  const committedBare = parseSassStringList(committedSource, 'bare-clashes')
+  const committedResponsive = parseSassStringList(committedSource, 'breakpoint-clashes')
+
+  const drift = []
+  if (JSON.stringify(bare) !== JSON.stringify(committedBare)) {
+    drift.push(
+      `$bare-clashes: live [${bare.join(', ')}] vs. committed [${committedBare.join(', ')}]`
+    )
+  }
+  if (JSON.stringify(responsive) !== JSON.stringify(committedResponsive)) {
+    drift.push(
+      `$breakpoint-clashes: live [${responsive.join(', ')}] vs. committed [${committedResponsive.join(', ')}]`
+    )
+  }
+  if (drift.length > 0) {
+    throw new Error(
+      `tailwind-clashes: component source-exclusion set has drifted from ` +
+        `scss/tailwind/_source-exclusions.scss (after confirming this is deliberate, run ` +
+        `\`pnpm css:tailwind:update-clashes\` to regenerate it):\n  ${drift.join('\n  ')}`
+    )
+  }
 
   writeFileSync(
     path.join(outDir, 'clashes.json'),
     JSON.stringify(
       {
         candidatesChecked: candidateNames.length,
-        clashes,
-        compressed,
-        safelist: safelist.map((entry) => entry.class)
+        bareClashes: bare,
+        breakpointClashes: responsive
       },
       null,
       2
@@ -224,8 +276,22 @@ export async function run() {
   )
 
   console.log(
-    `tailwind-clashes: ${clashes.length} clash(es) found among ${candidateNames.length} candidates, ` +
-      `compressed to ${compressed.length} @source not inline() entries.`
+    `tailwind-clashes: ${clashes.length} clash(es) found among ${candidateNames.length} candidates ` +
+      `(${bare.length} bare, ${responsive.length} breakpoint-responsive), matches ` +
+      `scss/tailwind/_source-exclusions.scss.`
+  )
+}
+
+// Regenerates scss/tailwind/_source-exclusions.scss from live detection,
+// unconditionally (no drift check) -- run explicitly via
+// `pnpm css:tailwind:update-clashes` after confirming a reported drift is a
+// deliberate source change, not a detection bug.
+export async function updateSourceExclusions() {
+  const { bare, responsive } = await detectSourceExclusions()
+  writeFileSync(sourceExclusionsPath, formatSourceExclusionsFile({ bare, responsive }))
+  console.log(
+    `tailwind-clashes: wrote scss/tailwind/_source-exclusions.scss ` +
+      `(${bare.length} bare, ${responsive.length} breakpoint-responsive).`
   )
 }
 
