@@ -290,6 +290,149 @@
   }
 }
 
+// Phase 10c: $important-properties (scss/tailwind/_clash-policy.scss) forces
+// `!important` on specific properties of specific generated utility names —
+// the Tailwind-clash remedy, scoped to this emitter only.
+@include describe("generate-tailwind-utilities($important-properties)") {
+  @include it("forces !important only on the listed property, leaving a sibling property untouched") {
+    @include assert() {
+      @include output() {
+        @include generate-tailwind-utilities(
+          (
+            "opacity": (
+              property: opacity,
+              values: (50: .5)
+            )
+          ),
+          ("opacity-50": ("opacity"))
+        );
+      }
+
+      @include expect() {
+        @utility opacity-50 {
+          opacity: .5 !important;
+        }
+      }
+    }
+  }
+
+  @include it("looks up the policy by the generated @utility name, not the $utilities map key") {
+    @include assert() {
+      @include output() {
+        @include generate-tailwind-utilities(
+          (
+            "my-opacity-key": (
+              property: opacity,
+              class: opacity,
+              values: (50: .5)
+            )
+          ),
+          ("opacity-50": ("opacity"))
+        );
+      }
+
+      @include expect() {
+        @utility opacity-50 {
+          opacity: .5 !important;
+        }
+      }
+    }
+  }
+
+  @include it("only remedies the properties actually listed, not every property on the same utility") {
+    @include assert() {
+      @include output() {
+        @include generate-tailwind-utilities(
+          (
+            "border": (
+              property: (
+                "border-color": null,
+                "border-width": 1px
+              ),
+              class: border,
+              values: (primary: var(--primary))
+            )
+          ),
+          ("border-primary": ("border-color"))
+        );
+      }
+
+      @include expect() {
+        @utility border-primary {
+          border-color: var(--primary) !important;
+          border-width: 1px;
+        }
+      }
+    }
+  }
+
+  @include it("does not force !important on a name the policy doesn't list") {
+    @include assert() {
+      @include output() {
+        @include generate-tailwind-utilities(
+          (
+            "opacity": (
+              property: opacity,
+              values: (50: .5)
+            )
+          ),
+          ("opacity-90": ("opacity"))
+        );
+      }
+
+      @include expect() {
+        @utility opacity-50 {
+          opacity: .5;
+        }
+      }
+    }
+  }
+
+  @include it("combines with the utility's own important: true flag without emitting !important twice") {
+    @include assert() {
+      @include output() {
+        @include generate-tailwind-utilities(
+          (
+            "opacity": (
+              property: opacity,
+              important: true,
+              values: (50: .5)
+            )
+          ),
+          ("opacity-50": ("opacity"))
+        );
+      }
+
+      @include expect() {
+        @utility opacity-50 {
+          opacity: .5 !important;
+        }
+      }
+    }
+  }
+
+  @include it("defaults to () (no remedy) when the caller passes no policy at all") {
+    @include assert() {
+      @include output() {
+        @include generate-tailwind-utilities(
+          (
+            "opacity": (
+              property: opacity,
+              values: (50: .5)
+            )
+          )
+        );
+      }
+
+      @include expect() {
+        @utility opacity-50 {
+          opacity: .5;
+        }
+      }
+    }
+  }
+}
+
 @include describe(generate-tailwind-merge-manifest) {
   @include it("emits one marker comment per generated class name, grouped by map key") {
     @include assert() {

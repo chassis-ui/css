@@ -13,15 +13,15 @@
  * Scoped to ONLY the names that clash BECAUSE of the bridge: a Chassis
  * utility name that already clashes with plain Tailwind core is already
  * covered by build/tailwind-utility-clashes.json and is skipped here, so
- * the two policy files never overlap and applyUtilityClashRemedies never
- * double-patches one @utility block.
+ * the two policy files never overlap and scss/tailwind/_clash-policy.scss
+ * (which merges both) never double-remedies one @utility block.
  *
- * Runs inside `css:tailwind`, after build-tailwind.mjs's Sass + prefix pass
- * and after tailwind-clashes.mjs's own checks, so dist/tailwind/utilities.css
- * / index.css / bridge.css already hold their final content. The !important
- * patch is baked into utilities.css / index.css UNCONDITIONALLY — it's a
- * no-op for consumers who never import bridge.css, and protects the ones
- * who do.
+ * Runs inside `css:tailwind`, after build-tailwind.mjs's Sass + prefix pass,
+ * so dist/tailwind/utilities.css / index.css / bridge.css already hold their
+ * final content -- the !important remedy is baked into utilities.css /
+ * index.css UNCONDITIONALLY by the Sass emitter (scss/tailwind/_clash-policy.scss),
+ * not written here. It's a no-op for consumers who never import bridge.css,
+ * and protects the ones who do.
  *
  * Copyright 2026 Ozgur Gunes
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
@@ -32,10 +32,10 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
-  applyUtilityClashRemedies,
   coreUtilityAfterReset,
   extractOrderedDecls,
   parseChassisUtilityBlocks,
+  stripImportant,
   TAILWIND_UTILITIES_PROBE,
   winningValues
 } from './tailwind-clashes.mjs'
@@ -100,20 +100,21 @@ async function detectBridgeClashes(themeCss, bridgeCss, utilitiesCssText) {
   return results
 }
 
-// Re-detects against the PATCHED utilities.css (with the bridge loaded) and
-// asserts each "important" remedy actually made Chassis's declared value
-// win the merged rule.
-async function verifyBridgeClashRemedies(themeCss, bridgeCss, patchedUtilitiesCssText, policy) {
-  const patchedBlocks = parseChassisUtilityBlocks(patchedUtilitiesCssText)
+// Re-detects against the (already-remedied) compiled utilities.css, with
+// the bridge loaded, and asserts each "important" remedy actually makes
+// Chassis's declared value win the merged rule -- against the real compiled
+// output, not the policy's own claim.
+async function verifyBridgeClashRemedies(themeCss, bridgeCss, utilitiesCssText, policy) {
+  const blocks = parseChassisUtilityBlocks(utilitiesCssText)
 
   for (const entry of policy.differs) {
     if (entry.remedy === 'documented') continue
-    const block = patchedBlocks.get(entry.name)
+    const block = blocks.get(entry.name)
     const mergedCss = await mergedUtilityWithBridge(
       entry.name,
       themeCss,
       bridgeCss,
-      patchedUtilitiesCssText
+      utilitiesCssText
     )
     const mergedWinners = winningValues(extractOrderedDecls(mergedCss, entry.name) ?? [])
     const chassisOwnWinners = winningValues(block.decls)
@@ -139,7 +140,7 @@ export async function checkBridgeClashes() {
     readFileSync(path.join(root, 'build/tailwind-bridge-clashes.json'), 'utf8')
   )
 
-  const live = await detectBridgeClashes(themeCss, bridgeCss, utilitiesCssText)
+  const live = await detectBridgeClashes(themeCss, bridgeCss, stripImportant(utilitiesCssText))
 
   const knownNames = new Set([...policy.equal, ...policy.differs.map((d) => d.name)])
   const liveDiffers = new Set(policy.differs.map((d) => d.name))
@@ -169,13 +170,7 @@ export async function checkBridgeClashes() {
     )
   }
 
-  const patchedUtilities = applyUtilityClashRemedies(utilitiesCssText, policy)
-  writeFileSync(path.join(outDir, 'utilities.css'), patchedUtilities)
-
-  const indexCss = readFileSync(path.join(outDir, 'index.css'), 'utf8')
-  writeFileSync(path.join(outDir, 'index.css'), applyUtilityClashRemedies(indexCss, policy))
-
-  await verifyBridgeClashRemedies(themeCss, bridgeCss, patchedUtilities, policy)
+  await verifyBridgeClashRemedies(themeCss, bridgeCss, utilitiesCssText, policy)
 
   writeFileSync(
     path.join(outDir, 'bridge-clashes.json'),
@@ -192,7 +187,7 @@ export async function checkBridgeClashes() {
 
   console.log(
     `tailwind-bridge-clashes: ${live.size} bridge-only clash(es) checked against policy, ` +
-      `${policy.differs.filter((d) => d.remedy === 'important').length} patched with !important, ` +
+      `${policy.differs.filter((d) => d.remedy === 'important').length} remedied with !important, ` +
       `${policy.differs.filter((d) => d.remedy === 'documented').length} documented-only.`
   )
 }

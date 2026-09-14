@@ -18,28 +18,34 @@
  * pointing it at a custom-named file in `build/` silently loads the sibling
  * `build/postcss.config.js` instead.
  *
- * Finally, three checks run against the final compiled output, in order:
+ * Finally, four checks run against the final compiled output, in order:
  *  1. `tailwind-clashes.mjs`'s `run()` re-detects Chassis component/reboot
  *     class names that clash with Tailwind core and fails loudly if that
  *     set has drifted from the committed
  *     `scss/tailwind/_source-exclusions.scss` — the `@source not
  *     inline(...)` exclusions themselves are emitted by `theme.scss` at
  *     Sass-compile time, not written here.
- *  2. `tailwind-clashes.mjs`'s `checkUtilityNameClashes()` finds Chassis
+ *  2. `tailwind-clashes.mjs`'s `checkClashPolicy()` re-derives
+ *     `scss/tailwind/_clash-policy.scss` from `build/tailwind-utility-clashes.json`
+ *     and `build/tailwind-bridge-clashes.json` and fails loudly if it has
+ *     drifted — a pure JSON→Sass re-derivation, not a live Tailwind-compile
+ *     probe, since those two JSON files stay the reviewed source of truth.
+ *  3. `tailwind-clashes.mjs`'s `checkUtilityNameClashes()` finds Chassis
  *     utility names Tailwind core ALSO generates even after the theme reset
  *     (a same-name `@utility` merge, not an exclusion candidate —
- *     `@source not inline()` would drop Chassis's own utility too). It
- *     patches the compiled `@utility` blocks per
- *     `build/tailwind-utility-clashes.json` so Chassis's declared value
- *     always wins, and fails loudly if the live clash set drifts from that
- *     committed policy file.
- *  3. `tailwind-bridge-clashes.mjs`'s `checkBridgeClashes()` reruns the same
+ *     `@source not inline()` would drop Chassis's own utility too), and
+ *     fails loudly if the live clash set drifts from
+ *     `build/tailwind-utility-clashes.json`. The `!important` remedy itself
+ *     is applied by the Sass emitter (`scss/tailwind/_clash-policy.scss`),
+ *     not written here — this only verifies it actually made Chassis's
+ *     declared value win the real compiled merge.
+ *  4. `tailwind-bridge-clashes.mjs`'s `checkBridgeClashes()` reruns the same
  *     analysis with the opt-in `bridge.scss` token bridge's `--color-*`
  *     theme keys loaded, since bridging Chassis's palette re-enables native
  *     Tailwind color utilities (`bg-*`, `border-*`, ...) that clash with
- *     Chassis's own same-named ones. Patches `build/tailwind-bridge-clashes.json`'s
- *     entries the same way — unconditionally, so it's a no-op for consumers
- *     who never import bridge.css and a real fix for the ones who do.
+ *     Chassis's own same-named ones. Its remedy is unconditional in
+ *     `_clash-policy.scss` too, so it's a no-op for consumers who never
+ *     import bridge.css and a real fix for the ones who do.
  *
  * Copyright 2026 Ozgur Gunes
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
@@ -52,7 +58,11 @@ import postcss from 'postcss'
 import * as sass from 'sass'
 import tailwindConfig from './postcss.tailwind.config.js'
 import { checkBridgeClashes } from './tailwind-bridge-clashes.mjs'
-import { checkUtilityNameClashes, run as checkSourceExclusions } from './tailwind-clashes.mjs'
+import {
+  checkClashPolicy,
+  checkUtilityNameClashes,
+  run as checkSourceExclusions
+} from './tailwind-clashes.mjs'
 
 const root = path.resolve(fileURLToPath(import.meta.url), '../..')
 const srcDir = path.join(root, 'scss/tailwind')
@@ -103,6 +113,7 @@ export async function compileTailwindDist() {
 if (import.meta.url === `file://${process.argv[1]}`) {
   await compileTailwindDist()
   await checkSourceExclusions()
+  checkClashPolicy()
   await checkUtilityNameClashes()
   await checkBridgeClashes()
 }

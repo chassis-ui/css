@@ -81,7 +81,11 @@
 // Helper mixin to generate CSS properties for both legacy and property map approaches.
 // $dynamic-only: when true (group mode), skip property-map entries with a non-null default
 // value — those static properties are already emitted in the shared group selector rule.
-@mixin generate-properties($utility, $property-map, $properties, $value, $dynamic-only: false) {
+// $force-important: property names (from generate-tailwind-utility, Phase 10c) that always
+// get `!important` regardless of the utility's own `important` flag — the Tailwind-clash
+// remedy (scss/tailwind/_clash-policy.scss). Every legacy caller leaves this at its default
+// `()`, so dist/css is unaffected.
+@mixin generate-properties($utility, $property-map, $properties, $value, $dynamic-only: false, $force-important: ()) {
   @if $property-map != null {
     // Property-Value Mapping approach
     @each $property, $default-value in $property-map {
@@ -95,7 +99,7 @@
         } @else if $default-value == null {
           $actual-value: $value;
         }
-        @if map.get($utility, important) {
+        @if map.get($utility, important) or list.index($force-important, $property) {
           #{$property}: $actual-value !important; // stylelint-disable-line declaration-no-important
         } @else {
           #{$property}: $actual-value;
@@ -105,7 +109,7 @@
   } @else {
     // Legacy approach
     @each $property in $properties {
-      @if map.get($utility, important) {
+      @if map.get($utility, important) or list.index($force-important, $property) {
         #{$property}: $value !important; // stylelint-disable-line declaration-no-important
       } @else {
         #{$property}: $value;
