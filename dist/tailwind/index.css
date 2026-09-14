@@ -1,38 +1,162 @@
-/*!
- * Chassis CSS — Tailwind Layer Order
- *
- * Declares the combined Chassis + Tailwind cascade layer order, then imports
- * Tailwind's own theme and utilities layers (no Preflight — Chassis ships its
- * own reboot instead, see `./reboot.scss`). This must be the first statement
- * any Tailwind build sees: anything imported before it that also declares
- * `@layer` order (e.g. a consumer's own `@import "tailwindcss";`) breaks the
- * order below.
- *
- * This file is static CSS, not Sass — see `build/build-tailwind.mjs`.
- */
-
-@layer theme, colors, config, root, base, reboot, layout, content, components, custom, helpers, utilities;
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities);
-
 @charset "UTF-8";
 /*!
   * Chassis CSS -  v0.3.5 (https://chassis-ui.com/)
   * Copyright 2026 Ozgur Gunes
   * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
   */
-@theme {
-  --*: initial;
-  --breakpoint-sm: 36rem;
-  --breakpoint-md: 48rem;
-  --breakpoint-lg: 64rem;
-  --breakpoint-xl: 80rem;
-  --breakpoint-2xl: 96rem;
-  --container-sm: 36rem;
-  --container-md: 48rem;
-  --container-lg: 64rem;
-  --container-xl: 80rem;
-  --container-2xl: 96rem;
+@layer theme, colors, config, root, base, reboot, layout, content, components, custom, helpers, utilities;
+@layer utilities {
+  @tailwind utilities;
+  .bg-default.fg-contrast {
+    color: oklch(from var(--cx-default-contrast) l c h / var(--cx-fg-opacity, 1));
+  }
+  .fg-default.bg-contrast {
+    background-color: oklch(from var(--cx-default-contrast) l c h / var(--cx-bg-opacity, 1));
+  }
+  .bg-alternate.fg-contrast {
+    color: oklch(from var(--cx-alternate-contrast) l c h / var(--cx-fg-opacity, 1));
+  }
+  .fg-alternate.bg-contrast {
+    background-color: oklch(from var(--cx-alternate-contrast) l c h / var(--cx-bg-opacity, 1));
+  }
+  .bg-primary.fg-contrast {
+    color: oklch(from var(--cx-primary-contrast) l c h / var(--cx-fg-opacity, 1));
+  }
+  .fg-primary.bg-contrast {
+    background-color: oklch(from var(--cx-primary-contrast) l c h / var(--cx-bg-opacity, 1));
+  }
+  .bg-secondary.fg-contrast {
+    color: oklch(from var(--cx-secondary-contrast) l c h / var(--cx-fg-opacity, 1));
+  }
+  .fg-secondary.bg-contrast {
+    background-color: oklch(from var(--cx-secondary-contrast) l c h / var(--cx-bg-opacity, 1));
+  }
+  .bg-neutral.fg-contrast {
+    color: oklch(from var(--cx-neutral-contrast) l c h / var(--cx-fg-opacity, 1));
+  }
+  .fg-neutral.bg-contrast {
+    background-color: oklch(from var(--cx-neutral-contrast) l c h / var(--cx-bg-opacity, 1));
+  }
+  .bg-warning.fg-contrast {
+    color: oklch(from var(--cx-warning-contrast) l c h / var(--cx-fg-opacity, 1));
+  }
+  .fg-warning.bg-contrast {
+    background-color: oklch(from var(--cx-warning-contrast) l c h / var(--cx-bg-opacity, 1));
+  }
+  .bg-success.fg-contrast {
+    color: oklch(from var(--cx-success-contrast) l c h / var(--cx-fg-opacity, 1));
+  }
+  .fg-success.bg-contrast {
+    background-color: oklch(from var(--cx-success-contrast) l c h / var(--cx-bg-opacity, 1));
+  }
+  .bg-danger.fg-contrast {
+    color: oklch(from var(--cx-danger-contrast) l c h / var(--cx-fg-opacity, 1));
+  }
+  .fg-danger.bg-contrast {
+    background-color: oklch(from var(--cx-danger-contrast) l c h / var(--cx-bg-opacity, 1));
+  }
+  .bg-info.fg-contrast {
+    color: oklch(from var(--cx-info-contrast) l c h / var(--cx-fg-opacity, 1));
+  }
+  .fg-info.bg-contrast {
+    background-color: oklch(from var(--cx-info-contrast) l c h / var(--cx-bg-opacity, 1));
+  }
+  .bg-black.fg-contrast {
+    color: oklch(from var(--cx-black-contrast) l c h / var(--cx-fg-opacity, 1));
+  }
+  .fg-black.bg-contrast {
+    background-color: oklch(from var(--cx-black-contrast) l c h / var(--cx-bg-opacity, 1));
+  }
+  .bg-white.fg-contrast {
+    color: oklch(from var(--cx-white-contrast) l c h / var(--cx-fg-opacity, 1));
+  }
+  .fg-white.bg-contrast {
+    background-color: oklch(from var(--cx-white-contrast) l c h / var(--cx-bg-opacity, 1));
+  }
+  .bg-default.fg-a11y {
+    color: light-dark(oklch(from #fff l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
+  }
+  .fg-default.bg-a11y {
+    background-color: light-dark(oklch(from #fff l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
+  }
+  .bg-alternate.fg-a11y {
+    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
+  }
+  .fg-alternate.bg-a11y {
+    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
+  }
+  .bg-primary.fg-a11y {
+    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
+  }
+  .fg-primary.bg-a11y {
+    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
+  }
+  .bg-secondary.fg-a11y {
+    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
+  }
+  .fg-secondary.bg-a11y {
+    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
+  }
+  .bg-neutral.fg-a11y {
+    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
+  }
+  .fg-neutral.bg-a11y {
+    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
+  }
+  .bg-warning.fg-a11y {
+    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
+  }
+  .fg-warning.bg-a11y {
+    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
+  }
+  .bg-success.fg-a11y {
+    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
+  }
+  .fg-success.bg-a11y {
+    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
+  }
+  .bg-danger.fg-a11y {
+    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
+  }
+  .fg-danger.bg-a11y {
+    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
+  }
+  .bg-info.fg-a11y {
+    color: light-dark(oklch(from #fff l c h / var(--cx-fg-opacity, 1)), oklch(from #fff l c h / var(--cx-fg-opacity, 1)));
+  }
+  .fg-info.bg-a11y {
+    background-color: light-dark(oklch(from #fff l c h / var(--cx-bg-opacity, 1)), oklch(from #fff l c h / var(--cx-bg-opacity, 1)));
+  }
+  .bg-black.fg-a11y {
+    color: light-dark(oklch(from #fff l c h / var(--cx-fg-opacity, 1)), oklch(from #fff l c h / var(--cx-fg-opacity, 1)));
+  }
+  .fg-black.bg-a11y {
+    background-color: light-dark(oklch(from #fff l c h / var(--cx-bg-opacity, 1)), oklch(from #fff l c h / var(--cx-bg-opacity, 1)));
+  }
+  .bg-white.fg-a11y {
+    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
+  }
+  .fg-white.bg-a11y {
+    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
+  }
+  [class*=ratio-] {
+    aspect-ratio: var(--cx-aspect-ratio);
+  }
+}
+@layer theme {
+  @theme {
+    --*: initial;
+    --breakpoint-sm: 36rem;
+    --breakpoint-md: 48rem;
+    --breakpoint-lg: 64rem;
+    --breakpoint-xl: 80rem;
+    --breakpoint-2xl: 96rem;
+    --container-sm: 36rem;
+    --container-md: 48rem;
+    --container-lg: 64rem;
+    --container-xl: 80rem;
+    --container-2xl: 96rem;
+  }
 }
 @custom-variant dark {
   &[data-cx-theme=dark] {
@@ -11469,143 +11593,6 @@
     grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
     grid-auto-flow: row;
     gap: var(--cx-gap);
-  }
-}
-@layer utilities {
-  .bg-default.fg-contrast {
-    color: oklch(from var(--cx-default-contrast) l c h / var(--cx-fg-opacity, 1));
-  }
-  .fg-default.bg-contrast {
-    background-color: oklch(from var(--cx-default-contrast) l c h / var(--cx-bg-opacity, 1));
-  }
-  .bg-alternate.fg-contrast {
-    color: oklch(from var(--cx-alternate-contrast) l c h / var(--cx-fg-opacity, 1));
-  }
-  .fg-alternate.bg-contrast {
-    background-color: oklch(from var(--cx-alternate-contrast) l c h / var(--cx-bg-opacity, 1));
-  }
-  .bg-primary.fg-contrast {
-    color: oklch(from var(--cx-primary-contrast) l c h / var(--cx-fg-opacity, 1));
-  }
-  .fg-primary.bg-contrast {
-    background-color: oklch(from var(--cx-primary-contrast) l c h / var(--cx-bg-opacity, 1));
-  }
-  .bg-secondary.fg-contrast {
-    color: oklch(from var(--cx-secondary-contrast) l c h / var(--cx-fg-opacity, 1));
-  }
-  .fg-secondary.bg-contrast {
-    background-color: oklch(from var(--cx-secondary-contrast) l c h / var(--cx-bg-opacity, 1));
-  }
-  .bg-neutral.fg-contrast {
-    color: oklch(from var(--cx-neutral-contrast) l c h / var(--cx-fg-opacity, 1));
-  }
-  .fg-neutral.bg-contrast {
-    background-color: oklch(from var(--cx-neutral-contrast) l c h / var(--cx-bg-opacity, 1));
-  }
-  .bg-warning.fg-contrast {
-    color: oklch(from var(--cx-warning-contrast) l c h / var(--cx-fg-opacity, 1));
-  }
-  .fg-warning.bg-contrast {
-    background-color: oklch(from var(--cx-warning-contrast) l c h / var(--cx-bg-opacity, 1));
-  }
-  .bg-success.fg-contrast {
-    color: oklch(from var(--cx-success-contrast) l c h / var(--cx-fg-opacity, 1));
-  }
-  .fg-success.bg-contrast {
-    background-color: oklch(from var(--cx-success-contrast) l c h / var(--cx-bg-opacity, 1));
-  }
-  .bg-danger.fg-contrast {
-    color: oklch(from var(--cx-danger-contrast) l c h / var(--cx-fg-opacity, 1));
-  }
-  .fg-danger.bg-contrast {
-    background-color: oklch(from var(--cx-danger-contrast) l c h / var(--cx-bg-opacity, 1));
-  }
-  .bg-info.fg-contrast {
-    color: oklch(from var(--cx-info-contrast) l c h / var(--cx-fg-opacity, 1));
-  }
-  .fg-info.bg-contrast {
-    background-color: oklch(from var(--cx-info-contrast) l c h / var(--cx-bg-opacity, 1));
-  }
-  .bg-black.fg-contrast {
-    color: oklch(from var(--cx-black-contrast) l c h / var(--cx-fg-opacity, 1));
-  }
-  .fg-black.bg-contrast {
-    background-color: oklch(from var(--cx-black-contrast) l c h / var(--cx-bg-opacity, 1));
-  }
-  .bg-white.fg-contrast {
-    color: oklch(from var(--cx-white-contrast) l c h / var(--cx-fg-opacity, 1));
-  }
-  .fg-white.bg-contrast {
-    background-color: oklch(from var(--cx-white-contrast) l c h / var(--cx-bg-opacity, 1));
-  }
-  .bg-default.fg-a11y {
-    color: light-dark(oklch(from #fff l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
-  }
-  .fg-default.bg-a11y {
-    background-color: light-dark(oklch(from #fff l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
-  }
-  .bg-alternate.fg-a11y {
-    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
-  }
-  .fg-alternate.bg-a11y {
-    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
-  }
-  .bg-primary.fg-a11y {
-    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
-  }
-  .fg-primary.bg-a11y {
-    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
-  }
-  .bg-secondary.fg-a11y {
-    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
-  }
-  .fg-secondary.bg-a11y {
-    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
-  }
-  .bg-neutral.fg-a11y {
-    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
-  }
-  .fg-neutral.bg-a11y {
-    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
-  }
-  .bg-warning.fg-a11y {
-    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
-  }
-  .fg-warning.bg-a11y {
-    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
-  }
-  .bg-success.fg-a11y {
-    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
-  }
-  .fg-success.bg-a11y {
-    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
-  }
-  .bg-danger.fg-a11y {
-    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
-  }
-  .fg-danger.bg-a11y {
-    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
-  }
-  .bg-info.fg-a11y {
-    color: light-dark(oklch(from #fff l c h / var(--cx-fg-opacity, 1)), oklch(from #fff l c h / var(--cx-fg-opacity, 1)));
-  }
-  .fg-info.bg-a11y {
-    background-color: light-dark(oklch(from #fff l c h / var(--cx-bg-opacity, 1)), oklch(from #fff l c h / var(--cx-bg-opacity, 1)));
-  }
-  .bg-black.fg-a11y {
-    color: light-dark(oklch(from #fff l c h / var(--cx-fg-opacity, 1)), oklch(from #fff l c h / var(--cx-fg-opacity, 1)));
-  }
-  .fg-black.bg-a11y {
-    background-color: light-dark(oklch(from #fff l c h / var(--cx-bg-opacity, 1)), oklch(from #fff l c h / var(--cx-bg-opacity, 1)));
-  }
-  .bg-white.fg-a11y {
-    color: light-dark(oklch(from #000 l c h / var(--cx-fg-opacity, 1)), oklch(from #000 l c h / var(--cx-fg-opacity, 1)));
-  }
-  .fg-white.bg-a11y {
-    background-color: light-dark(oklch(from #000 l c h / var(--cx-bg-opacity, 1)), oklch(from #000 l c h / var(--cx-bg-opacity, 1)));
-  }
-  [class*=ratio-] {
-    aspect-ratio: var(--cx-aspect-ratio);
   }
 }
 @utility border {

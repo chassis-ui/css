@@ -36,6 +36,7 @@ import {
   coreUtilityAfterReset,
   extractOrderedDecls,
   parseChassisUtilityBlocks,
+  TAILWIND_UTILITIES_PROBE,
   winningValues
 } from './tailwind-clashes.mjs'
 
@@ -43,13 +44,7 @@ const root = path.resolve(fileURLToPath(import.meta.url), '../..')
 const outDir = path.join(root, 'dist/tailwind')
 
 async function coreUtilityWithBridge(candidate, themeCss, bridgeCss) {
-  const css = [
-    '@import "tailwindcss/theme.css" layer(theme);',
-    '@import "tailwindcss/utilities.css" layer(utilities);',
-    themeCss,
-    bridgeCss,
-    '@source not "..";'
-  ].join('\n')
+  const css = [TAILWIND_UTILITIES_PROBE, themeCss, bridgeCss, '@source not "..";'].join('\n')
   const compiler = await compile(css, { base: outDir, onDependency: () => {} })
   const built = compiler.build([candidate])
   return /@layer utilities\s*\{/.test(built) ? built : null
@@ -57,8 +52,7 @@ async function coreUtilityWithBridge(candidate, themeCss, bridgeCss) {
 
 async function mergedUtilityWithBridge(candidate, themeCss, bridgeCss, utilitiesCssText) {
   const css = [
-    '@import "tailwindcss/theme.css" layer(theme);',
-    '@import "tailwindcss/utilities.css" layer(utilities);',
+    TAILWIND_UTILITIES_PROBE,
     themeCss,
     bridgeCss,
     utilitiesCssText,
