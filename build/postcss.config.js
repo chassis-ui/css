@@ -38,7 +38,7 @@ const removeRedundantPrefixes = {
 // the same name into a single block. The CSS cascade is unaffected because
 // the spec already treats multiple same-named layer blocks as one layer;
 // this just makes the output cleaner and smaller.
-const mergeLayerBlocks = {
+export const mergeLayerBlocks = {
   postcssPlugin: 'postcss-merge-layer-blocks',
   OnceExit(root) {
     const seen = new Map()

@@ -46,7 +46,12 @@
     "./js/dist/*": "./js/dist/*",
     "./dist/js/*": "./dist/js/*",
     "./dist/css/*": "./dist/css/*",
-    "./scss/*": "./scss/*"
+    "./scss/*": "./scss/*",
+    "./tailwind": {
+      "style": "./dist/tailwind/index.css",
+      "default": "./dist/tailwind/index.css"
+    },
+    "./tailwind/*": "./dist/tailwind/*"
   },
   "scripts": {
     "build": "pnpm dist && pnpm site:build",
@@ -54,14 +59,15 @@
     "dev": "run-p watch astro:dev",
     "dist": "run-p css js",
     "test": "pnpm check:code && pnpm dist && pnpm css:test && pnpm js:test && pnpm site:build && pnpm site:lint",
-    "css": "pnpm css:compile && pnpm css:prefix && pnpm css:minify",
-    "css:compile": "sass --load-path scss/vendor/ --load-path node_modules --style expanded --source-map --embed-sources scss/:dist/css/",
+    "css": "pnpm css:compile && pnpm css:prefix && pnpm css:minify && pnpm css:tailwind",
+    "css:compile": "sass --load-path scss/vendor/ --load-path node_modules --style expanded --source-map --embed-sources scss/chassis.scss:dist/css/chassis.css scss/chassis-grid.scss:dist/css/chassis-grid.css scss/chassis-reboot.scss:dist/css/chassis-reboot.css scss/chassis-utilities.scss:dist/css/chassis-utilities.css",
     "css:lint": "run-p css:lint:stylelint css:lint:vars",
     "css:lint:imports": "node build/check-imports.js scss/ site/src/scss/",
     "css:lint:stylelint": "stylelint \"**/*.{css,scss}\" \"!vendor/**\" --cache --cache-location .cache/.stylelintcache",
     "css:lint:vars": "fusv scss/ site/src/scss/ || true",
     "css:minify": "node build/css-minify.js",
     "css:prefix": "postcss --config build/postcss.config.js --replace \"dist/css/*.css\" \"!dist/css/*.min.css\"",
+    "css:tailwind": "node build/build-tailwind.mjs",
     "css:test": "jasmine --config=scss/tests/jasmine.cjs",
     "js": "pnpm js:compile && pnpm js:minify",
     "js:compile": "run-p js:compile:standalone js:compile:bundle js:compile:plugins",
@@ -100,7 +106,7 @@
     "release:zip": "cross-env-shell \"rm -rf chassis-$npm_package_version-dist chassis-$npm_package_version-dist.zip && cp -r dist/ chassis-$npm_package_version-dist && zip -qr9 chassis-$npm_package_version-dist.zip chassis-$npm_package_version-dist && rm -rf chassis-$npm_package_version-dist\"",
     "watch": "run-p watch:css:main watch:css:site watch:css:test watch:js:main watch:js:site",
     "watch:css:dist": "nodemon --watch dist/css/ --ext css",
-    "watch:css:main": "nodemon --watch scss/ --ext scss --exec \"pnpm css:lint; pnpm css:compile && pnpm css:prefix\"",
+    "watch:css:main": "nodemon --watch scss/ --ext scss --exec \"pnpm css:lint; pnpm css:compile && pnpm css:prefix && pnpm css:tailwind\"",
     "watch:css:site": "nodemon --watch site/src/scss/ --ext scss --exec \"pnpm css:lint\"",
     "watch:css:test": "nodemon --watch scss/ --ext scss,js --exec \"pnpm css:test\"",
     "watch:js:main": "nodemon --watch js/src/ --ext ts --exec \"pnpm js:lint && pnpm js:compile\"",
@@ -211,9 +217,11 @@
   },
   "files": [
     "dist/{css,js}/*.{css,js,map}",
+    "dist/tailwind/*.css",
     "js/{src,dist}/**/*.{js,map,ts}",
     "js/index.ts",
     "scss/**/*.scss",
+    "scss/tailwind/*.css",
     "!scss/tests/**",
     ".browserslistrc"
   ],
