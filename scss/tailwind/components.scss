@@ -1,7 +1,11 @@
 //
 // Chassis CSS — Tailwind Components Bundle
 //
-// Placeholder. Phase 4 of the Tailwind integration plan fills this in with
-// the same component/type/layout/helpers stack as `../chassis`, minus root,
-// reboot, and the utilities-api.
+// Standalone entry point forwarding the same component/type/layout/helpers
+// stack as `../chassis`, minus root, reboot, and the utilities-api, for
+// à-la-carte Tailwind imports. See `./_components-list.scss`.
 //
+
+@use "../mixins/banner" with ($file: "Tailwind Components");
+
+@forward "./components-list";
