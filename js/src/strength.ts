@@ -8,6 +8,7 @@
 import BaseComponent from './base-component.js'
 import EventHandler from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
+import { cssVar } from './util/index.js'
 
 /**
  * Constants
@@ -254,7 +255,7 @@ class Strength extends BaseComponent {
           good: 'info',
           strong: 'success'
         }
-        this._textElement.style.setProperty('--cx-strength-color', `var(--cx-${colorMap[strength]}-fg-main)`)
+        this._textElement.style.setProperty(cssVar('strength-color'), `var(${cssVar(`${colorMap[strength]}-fg-main`)})`)
       } else {
         this._textElement.textContent = ''
         delete this._textElement.dataset.cxStrength

@@ -10,10 +10,12 @@
  * — with or without the Tailwind entry point — needs the same step, so it's
  * published as `@chassis-ui/css/postcss`.
  *
- * Without this step, the JS plugins that read `--cx-*` custom properties at
+ * Without this step, the JS plugins that read prefixed custom properties at
  * runtime (js/src/carousel.ts's `--cx-carousel-interval`,
  * js/src/nav-overflow.ts's `--cx-breakpoint-*`, js/src/strength.ts's
- * `--cx-strength-color`) silently read nothing.
+ * `--cx-strength-color`) silently read nothing. They resolve those names
+ * through the `--chassis-prefix` marker this preset writes, so a custom
+ * `prefix` needs no matching change on the JS side.
  *
  * Copyright 2026 Ozgur Gunes
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
@@ -100,6 +102,51 @@ const unshieldTailwindThemeNames = {
   }
 }
 
+// The one custom property the prefixer never renames. `writePrefixMarker`
+// adds it to the stylesheet's first plain `:root` rule, set to this preset's
+// own `prefix` — the Sass source never declares it, so the prefix lives in
+// exactly one place. The JS plugins read it at runtime
+// (js/src/util/index.ts's `cssVar()`), so they find
+// `--<prefix>carousel-interval` and friends under whatever prefix this preset
+// was given — including prebuilt `dist/js` paired with a custom-prefix CSS
+// build, which can't be rebuilt to match.
+const PREFIX_MARKER = '--chassis-prefix'
+
+// A custom-property name segment: a letter, then letters, digits, `-` or `_`.
+// Checked up front because the prefix is also interpolated into a RegExp and
+// written verbatim as a CSS value.
+const VALID_PREFIX = /^[a-z][\w-]*$/i
+
+// Stylesheets without a plain `:root` rule (e.g. a component-only file) get
+// no marker; the runtime properties the JS reads all live in one that does.
+// An existing marker is updated in place, so a second pass never duplicates it.
+function writePrefixMarker(prefix) {
+  return {
+    postcssPlugin: 'chassis-prefix-marker',
+    Once(root, { Declaration }) {
+      let found = false
+      root.walkDecls(PREFIX_MARKER, (decl) => {
+        decl.value = prefix
+        found = true
+      })
+      if (found) return
+
+      root.walkRules((rule) => {
+        if (rule.selector.trim() !== ':root') return
+        rule.prepend(new Declaration({ prop: PREFIX_MARKER, value: prefix }))
+        return false
+      })
+    }
+  }
+}
+
+// `prefix` renames the namespace (default `cx-`, so `--primary` becomes
+// `--cx-primary`). `prefix: ''` keeps Sass's plain names and writes no marker
+// (removing any stale one), so the JS plugins read the plain names too — the
+// same result as skipping this preset. Not allowed with `tailwind: true`:
+// Chassis's plain `--breakpoint-*`/`--container-*`/`--color-*` would share
+// names with Tailwind's own theme keys.
+//
 // `tailwind: true` also protects Tailwind's own theme namespaces —
 // `@theme { --*: initial; --breakpoint-*; --container-*; }`, `--tw-*`
 // runtime variables, and (for the opt-in token bridge,
@@ -111,24 +158,66 @@ const unshieldTailwindThemeNames = {
 // Tailwind's own compiler (see the Tailwind docs guide's "Build" step);
 // prefer running it BEFORE, matching how Chassis's own prebuilt
 // `dist/tailwind/*.css` is produced.
-export function chassisPrefix({ tailwind = false } = {}) {
+export function chassisPrefix({ prefix = 'cx-', tailwind = false } = {}) {
+  if (prefix === '') {
+    if (tailwind) {
+      throw new Error(
+        "chassisPrefix: `prefix: ''` can't be used with `tailwind: true` — Chassis's plain " +
+          "--breakpoint-*, --container-* and --color-* names collide with Tailwind's theme keys"
+      )
+    }
+    return {
+      postcssPlugin: 'chassis-prefix',
+      plugins: [
+        {
+          postcssPlugin: 'chassis-prefix-marker-remove',
+          Once(root) {
+            root.walkDecls(PREFIX_MARKER, (decl) => {
+              decl.remove()
+            })
+          }
+        }
+      ]
+    }
+  }
+  if (typeof prefix !== 'string' || !VALID_PREFIX.test(prefix)) {
+    throw new TypeError(
+      `chassisPrefix: invalid prefix ${JSON.stringify(prefix)} — use letters, digits, "-" or "_", ` +
+        'starting with a letter (e.g. "cx-")'
+    )
+  }
+  // Names already carrying the prefix are skipped, so running the preset
+  // twice over the same CSS is a no-op.
+  const ownPrefix = new RegExp(`^--${prefix}`)
+  const marker = new RegExp(`^${PREFIX_MARKER}$`)
+
   if (!tailwind) {
-    return postcssPrefixCustomProperties({ prefix: 'cx-', ignore: [/^--cx-/] })
+    // A "plugin pack" (postcssPlugin + a plugins array) so this composes as
+    // a single array entry wherever chassisPrefix() is used.
+    return {
+      postcssPlugin: 'chassis-prefix',
+      plugins: [
+        postcssPrefixCustomProperties({ prefix, ignore: [ownPrefix, marker] }),
+        writePrefixMarker(prefix)
+      ]
+    }
   }
   // `breakpoint`/`container` are deliberately NOT in this ignore list: the
   // shield above already renamed the two real Tailwind-theme instances out
   // of reach, so a blanket ignore here would otherwise also spare Chassis's
   // own same-named `:root` declaration (the bug this preset exists to fix).
   const prefixer = postcssPrefixCustomProperties({
-    prefix: 'cx-',
-    ignore: [/^--cx-/, /^--(tw|color)-/, /^--\*$/]
+    prefix,
+    ignore: [ownPrefix, marker, /^--(tw|color)-/, /^--\*$/]
   })
-  // A "plugin pack" (postcssPlugin + a plugins array) so this composes as a
-  // single array entry wherever chassisPrefix() is used, the same as the
-  // non-Tailwind branch's single plugin.
   return {
     postcssPlugin: 'chassis-prefix-tailwind',
-    plugins: [shieldTailwindThemeNames, prefixer, unshieldTailwindThemeNames]
+    plugins: [
+      shieldTailwindThemeNames,
+      prefixer,
+      unshieldTailwindThemeNames,
+      writePrefixMarker(prefix)
+    ]
   }
 }
 
@@ -139,6 +228,6 @@ export function chassisPrefix({ tailwind = false } = {}) {
 // Tailwind entry, Lightning CSS handles vendor prefixes in the consumer's
 // own build) — see build/postcss.config.js for where Chassis's own
 // non-Tailwind build adds it.
-export function chassisPostcss({ tailwind = false } = {}) {
-  return [chassisPrefix({ tailwind }), mergeLayerBlocks]
+export function chassisPostcss({ prefix, tailwind = false } = {}) {
+  return [chassisPrefix({ prefix, tailwind }), mergeLayerBlocks]
 }

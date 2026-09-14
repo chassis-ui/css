@@ -24,10 +24,13 @@ import { describe, test } from 'node:test'
 import postcss from 'postcss'
 import { chassisPostcss, chassisPrefix, mergeLayerBlocks } from '../../../postcss/index.js'
 
-async function run(css, { tailwind } = {}) {
-  const result = await postcss([chassisPrefix({ tailwind }), mergeLayerBlocks]).process(css, {
-    from: undefined
-  })
+async function run(css, { tailwind, prefix } = {}) {
+  const result = await postcss([chassisPrefix({ tailwind, prefix }), mergeLayerBlocks]).process(
+    css,
+    {
+      from: undefined
+    }
+  )
   return result.css
 }
 
@@ -96,6 +99,81 @@ describe('chassisPrefix()', () => {
   test("the opt-in bridge's --color-* theme keys stay unprefixed, their var() values do not", async () => {
     const out = await run('@theme { --color-primary: var(--primary); }', { tailwind: true })
     assert.match(out, /--color-primary: var\(--cx-primary\)/)
+  })
+})
+
+describe('chassisPrefix({ prefix })', () => {
+  for (const tailwind of [false, true]) {
+    test(`{ tailwind: ${tailwind} } renames the namespace, including var() references`, async () => {
+      const out = await run(':root { --primary: #06c; } .button { color: var(--primary); }', {
+        tailwind,
+        prefix: 'acme-'
+      })
+      assert.match(out, /--acme-primary: #06c/)
+      assert.match(out, /color: var\(--acme-primary\)/)
+      assert.doesNotMatch(out, /--cx-/)
+    })
+
+    test(`{ tailwind: ${tailwind} } adds --chassis-prefix to the first plain :root rule`, async () => {
+      const out = await run(':root { --primary: #06c; } :root { --secondary: #333; }', {
+        tailwind,
+        prefix: 'acme-'
+      })
+      assert.match(out, /^:root \{\s*--chassis-prefix: acme-;\s*--acme-primary: #06c;/)
+      assert.equal((out.match(/--chassis-prefix/g) ?? []).length, 1)
+    })
+  }
+
+  test('defaults the marker to cx-', async () => {
+    const out = await run(':root { --primary: #06c; }')
+    assert.match(out, /--chassis-prefix: cx-/)
+    assert.match(out, /--cx-primary: #06c/)
+  })
+
+  test('adds no marker to a stylesheet without a plain :root rule', async () => {
+    const out = await run('.button { color: var(--primary); } :root, :host { --tw-x: 1; }')
+    assert.doesNotMatch(out, /--chassis-prefix/)
+  })
+
+  test('skips names already carrying the custom prefix, so a second pass is a no-op', async () => {
+    const once = await run(':root { --primary: #06c; }', { prefix: 'acme-' })
+    const twice = await run(once, { prefix: 'acme-' })
+    assert.equal(twice, once)
+  })
+
+  test('rejects a prefix that is not a valid custom-property name segment', () => {
+    for (const prefix of ['1cx-', 'a b', 'cx.', '--cx-', 42]) {
+      assert.throws(() => chassisPrefix({ prefix }), TypeError)
+    }
+  })
+})
+
+describe("chassisPrefix({ prefix: '' })", () => {
+  test('keeps plain names and var() references, and writes no marker', async () => {
+    const css = ':root { --primary: #06c; } .button { color: var(--primary); }'
+    const out = await run(css, { prefix: '' })
+    assert.equal(out, css)
+    assert.doesNotMatch(out, /--chassis-prefix/)
+  })
+
+  test('removes a stale marker left by an earlier prefixed pass', async () => {
+    const out = await run(':root { --chassis-prefix: cx-; --primary: #06c; }', { prefix: '' })
+    assert.doesNotMatch(out, /--chassis-prefix/)
+    assert.match(out, /--primary: #06c/)
+  })
+
+  test('chassisPostcss() still merges @layer blocks', async () => {
+    const out = (
+      await postcss(chassisPostcss({ prefix: '' })).process(
+        '@layer components { .a { color: red; } } @layer components { .b { color: blue; } }',
+        { from: undefined }
+      )
+    ).css
+    assert.equal((out.match(/@layer components/g) ?? []).length, 1)
+  })
+
+  test('throws with { tailwind: true }, whose theme keys would collide with plain Chassis names', () => {
+    assert.throws(() => chassisPrefix({ prefix: '', tailwind: true }), /Tailwind/)
   })
 })
 
