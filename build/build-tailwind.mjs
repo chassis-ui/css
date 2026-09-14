@@ -22,6 +22,12 @@
  * pointing it at a custom-named file in `build/` silently loads the sibling
  * `build/postcss.config.js` instead.
  *
+ * Finally, `build/tailwind-clashes.mjs` finds Chassis component/reboot class
+ * names Tailwind core would also generate and appends `@source not
+ * inline(...)` exclusions (plus the JS-toggled-class safelist) to `theme.css`
+ * and `index.css` — it needs the final compiled `components.css`/`reboot.css`
+ * text, so it has to run last.
+ *
  * Copyright 2026 Ozgur Gunes
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  */
@@ -32,6 +38,7 @@ import { fileURLToPath } from 'node:url'
 import postcss from 'postcss'
 import * as sass from 'sass'
 import tailwindConfig from './postcss.tailwind.config.js'
+import { run as writeClashExclusions } from './tailwind-clashes.mjs'
 
 const root = path.resolve(fileURLToPath(import.meta.url), '../..')
 const srcDir = path.join(root, 'scss/tailwind')
@@ -65,3 +72,5 @@ for (const file of readdirSync(outDir)) {
   const result = await processor.process(readFileSync(filePath, 'utf8'), { from: filePath, to: filePath, map: false })
   writeFileSync(filePath, result.css)
 }
+
+await writeClashExclusions()
