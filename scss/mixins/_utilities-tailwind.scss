@@ -130,6 +130,69 @@
   }
 }
 
+// Build-time-only manifest for `build/build-tailwind-merge.mjs`: emits one
+// `/* MERGE|<utility-map-key>|<class-name> */` marker comment per generated
+// class-selector utility name, grouped by the utility's own top-level
+// `$utilities` map key (e.g. "fg-color", "margin") — the merge groups the
+// generated `dist/tailwind/merge.js` config exposes for tailwind-merge's
+// `extendTailwindMerge`. Not part of the public Tailwind entry point.
+//
+// Reuses `api.utility-class-name()` so listed names can't drift from what
+// `generate-tailwind-utility` above actually emits, but duplicates its
+// (small) values-map normalization and dotted-compound split since neither
+// is exposed as a standalone function — keep the two in sync by hand if
+// either changes. Attribute-selector utilities (`selector: attr-starts` /
+// `attr-includes`, e.g. `ratio-*`) have no enumerable per-value class name
+// and are skipped.
+//
+// Known imprecision, accepted by design (group = utility map key, not the
+// underlying CSS property): a handful of Chassis utilities split one
+// conflict domain across multiple map keys — e.g. `base-shadow`,
+// `elevation-shadow`, and `shadow-color` all set `box-shadow`/
+// `--shadow-color` under the shared `shadow` class prefix, but land in three
+// separate tailwind-merge groups here, so conflicts between them (e.g. a
+// base shadow vs. a hover elevation shadow) aren't detected. Resolving this
+// would need grouping by property instead of by map key — out of scope for
+// this generator.
+@mixin generate-tailwind-merge-manifest($utilities) {
+  @each $key, $utility in $utilities {
+    @if meta.type-of($utility) == "map" and map.get($utility, enabled) != false {
+      $selector-type: "class";
+      @if map.has-key($utility, selector) {
+        $selector-type: map.get($utility, selector);
+      }
+
+      @if $selector-type == "class" {
+        $values: map.get($utility, values);
+        @if meta.type-of($values) != "map" {
+          @if meta.type-of($values) == "list" {
+            $list: ();
+            @each $value in $values {
+              $list: map.merge($list, ($value: $value));
+            }
+            $values: $list;
+          } @else {
+            $values: (null: $values);
+          }
+        }
+
+        @each $value-key, $value in $values {
+          @if $value != null {
+            $class-name: api.utility-class-name($utility, $value-key);
+            $utility-name: $class-name;
+            $dot-index: string.index($class-name, ".");
+            @if $dot-index {
+              $utility-name: string.slice($class-name, $dot-index + 1);
+            }
+
+            /* MERGE|#{$key}|#{$utility-name} */
+          }
+        }
+      }
+    }
+  }
+}
+
 // Emits the declaration body for one utility + value, wrapped in the
 // `child-selector` (if present) or emitted directly at the current nesting.
 @mixin tailwind-utility-body($utility, $property-map, $properties, $value, $child-sel) {

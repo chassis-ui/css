@@ -289,3 +289,108 @@
     }
   }
 }
+
+@include describe(generate-tailwind-merge-manifest) {
+  @include it("emits one marker comment per generated class name, grouped by map key") {
+    @include assert() {
+      @include output() {
+        @include generate-tailwind-merge-manifest(
+          (
+            "padding": (
+              property: padding,
+              values: (sm: .5rem, lg: 2rem)
+            )
+          )
+        );
+      }
+
+      @include expect() {
+        /* MERGE|padding|padding-sm */
+        /* MERGE|padding|padding-lg */
+      }
+    }
+  }
+
+  @include it("skips enabled: false entries") {
+    @include assert() {
+      @include output() {
+        @include generate-tailwind-merge-manifest(
+          (
+            "padding": (
+              property: padding,
+              enabled: false,
+              values: (sm: .5rem)
+            ),
+            "margin": (
+              property: margin,
+              values: (sm: .5rem)
+            )
+          )
+        );
+      }
+
+      @include expect() {
+        /* MERGE|margin|margin-sm */
+      }
+    }
+  }
+
+  @include it("skips null values") {
+    @include assert() {
+      @include output() {
+        @include generate-tailwind-merge-manifest(
+          (
+            "padding": (
+              property: padding,
+              values: (sm: null, lg: 2rem)
+            )
+          )
+        );
+      }
+
+      @include expect() {
+        /* MERGE|padding|padding-lg */
+      }
+    }
+  }
+
+  @include it("skips attribute-selector utilities (no enumerable per-value class name)") {
+    @include assert() {
+      @include output() {
+        @include generate-tailwind-merge-manifest(
+          (
+            "aspect-ratio-attr": (
+              selector: "attr-includes",
+              class: "ratio-",
+              property: aspect-ratio,
+              values: var(--aspect-ratio)
+            )
+          )
+        );
+      }
+
+      @include expect() {
+      }
+    }
+  }
+
+  @include it("uses the base utility name (after the dot) for a dotted-compound class") {
+    @include assert() {
+      @include output() {
+        @include generate-tailwind-merge-manifest(
+          (
+            "font-display-weight": (
+              property: font-weight,
+              class: "font-display.font",
+              values: (strong: 700)
+            )
+          )
+        );
+      }
+
+      @include expect() {
+        /* MERGE|font-display-weight|font-strong */
+      }
+    }
+  }
+}

@@ -128,6 +128,24 @@ import * as chassis from '@chassis-ui/css'
 
 See [JavaScript]([[docsref:/getting-started/javascript]]) for the full plugin list, events, and the data-attribute API.
 
+## Merging classes with tailwind-merge
+
+[tailwind-merge](https://github.com/dcastil/tailwind-merge) resolves conflicting classes when building a class string at runtime — for example when a component accepts a `className` prop that should override a default. It needs to know which classes belong to the same conflict group; Tailwind's own utilities are built in, but a project's custom `@utility` rules (Chassis's included) aren't, by default.
+
+`@chassis-ui/css/tailwind/merge.js` ships a ready-made `classGroups` config, generated from the same utility map the Tailwind entry point itself uses, so every Chassis utility name is covered:
+
+```js
+import { extendTailwindMerge } from 'tailwind-merge'
+import { classGroups } from '@chassis-ui/css/tailwind/merge.js'
+
+const twMerge = extendTailwindMerge({ extend: { classGroups } })
+
+twMerge('fg-primary', 'fg-danger') // -> 'fg-danger'
+twMerge('m-sm', 'm-lg')            // -> 'm-lg'
+```
+
+Groups are keyed by Chassis's own utility names, not by CSS property — a handful of related utilities that happen to live under separate names (for example the base, hover-elevation, and hover-color shadow utilities, which all set `box-shadow` but come from three separate entries) land in separate groups and don't conflict-resolve against each other. Attribute-selector utilities like `ratio-16x9` have no fixed set of class names to enumerate and aren't included.
+
 ## Next steps
 
 - [Color modes]([[docsref:/customize/color-modes]]) — how `data-cx-theme` and `prefers-color-scheme` combine, the same logic the `dark:`/`light:` variants follow here.
