@@ -124,7 +124,7 @@ You can now run `pnpm start` to launch the dev server, but the page won't be sty
 
 ## Import Chassis
 
-Webpack needs the Sass loaders from the previous step and a Sass entry point. The sass-loader requires a `loadPaths` entry pointing to the project's Sass directory so token overrides can be resolved.
+Webpack needs the Sass loaders from the previous step and a Sass entry point. The sass-loader requires `loadPaths` entries pointing to the project's Sass directory and to `node_modules`, so both token overrides and the framework's own default tokens can be resolved — the project directory must come first so an override wins.
 
 1. **Add the loader rules to `webpack.config.js`.** Replace the existing `module.exports` with the version below — the new piece is the `module.rules` block. `postcss-loader` is left without inline options here — see the next step for the config file it auto-loads.
 
@@ -162,7 +162,9 @@ Webpack needs the Sass loaders from the previous step and a Sass entry point. Th
                options: {
                  sassOptions: {
                    loadPaths: [
-                     path.resolve(__dirname, 'src/scss')  // project token override
+                     path.resolve(__dirname, 'src/scss'),                                    // project token override
+                     path.resolve(__dirname, 'node_modules/@chassis-ui/css/scss/vendor'),    // framework's default tokens
+                     path.resolve(__dirname, 'node_modules')                                 // bare package specifiers (@chassis-ui/tokens/…)
                    ]
                  }
                }
@@ -201,7 +203,7 @@ Webpack needs the Sass loaders from the previous step and a Sass entry point. Th
    // );
    ```
 
-   The default token build (`chassis/docs`) is resolved via the `loadPaths` entry above. To switch to a custom token set, place a `_chassis-tokens.scss` on an earlier `loadPaths` entry — see [Customize → Sass → Token sources]([[docsref:/customize/sass#token-sources]]) for details.
+   The default token build (`chassis/docs`) is resolved via the `loadPaths` entries above. To switch to a custom token set, place a `_chassis-tokens.scss` on an earlier `loadPaths` entry — see [Customize → Sass → Token sources]([[docsref:/customize/sass#token-sources]]) for details.
 
 4. **Import the JavaScript and load the stylesheet from `src/js/main.js`.**
 

@@ -103,7 +103,7 @@ Parcel itself needs no configuration file. The HTML page is the entry point, and
 
 ## Import Chassis
 
-Parcel needs a Sass entry point and a `.sassrc.js` config file that sets `loadPaths` so Sass can resolve token overrides from `src/scss`.
+Parcel needs a Sass entry point and a `.sassrc.js` config file that sets `loadPaths` so Sass can resolve token overrides from `src/scss`, plus the framework's own default tokens and bare package specifiers under `node_modules` — unlike Vite, Webpack, and Astro, Parcel doesn't resolve `node_modules` for Sass automatically.
 
 1. **Create `.sassrc.js` in the project root.** Parcel passes these options directly to Dart Sass.
 
@@ -111,7 +111,11 @@ Parcel needs a Sass entry point and a `.sassrc.js` config file that sets `loadPa
    const path = require('path')
 
    module.exports = {
-     loadPaths: [path.resolve(__dirname, 'src/scss')]  // project token override
+     loadPaths: [
+       path.resolve(__dirname, 'src/scss'),                                    // project token override
+       path.resolve(__dirname, 'node_modules/@chassis-ui/css/scss/vendor'),    // framework's default tokens
+       path.resolve(__dirname, 'node_modules')                                 // bare package specifiers (@chassis-ui/tokens/…)
+     ]
    }
    ```
 
