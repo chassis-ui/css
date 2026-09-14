@@ -10,7 +10,7 @@ import EventHandler, { type ChassisEvent } from './dom/event-handler.js'
 import Manipulator from './dom/manipulator.js'
 import SelectorEngine from './dom/selector-engine.js'
 import type { ComponentConfig } from './util/config.js'
-import { ARROW_LEFT_KEY, ARROW_RIGHT_KEY, isRTL, isVisible } from './util/index.js'
+import { ARROW_LEFT_KEY, ARROW_RIGHT_KEY, cssVar, isRTL, isVisible } from './util/index.js'
 
 /**
  * Constants
@@ -44,10 +44,10 @@ const CLASS_NAME_PAUSED = 'paused'
 // active indicator like a progress bar over the current slide's interval.
 const CLASS_NAME_PLAYING = 'carousel-playing'
 
-// Shipped (`--cx-`-prefixed) custom property the indicator fill animation reads
-// for its duration. The build prefixes every custom property, so the bare
-// `--carousel-interval` used in the SCSS source becomes this at runtime.
-const PROPERTY_INTERVAL = '--cx-carousel-interval'
+// Custom property the indicator fill animation reads for its duration. The
+// build prefixes every custom property, so resolve the shipped name through
+// `cssVar()` (`--cx-carousel-interval` by default) rather than hardcoding it.
+const PROPERTY_INTERVAL = 'carousel-interval'
 
 // Duration (ms) of the JS-driven slide animation used for programmatic
 // navigation (prev/next, indicators, wrap, and loop). We step `scrollLeft`
@@ -815,10 +815,10 @@ class Carousel extends BaseComponent {
     const styles = getComputedStyle(this._element)
     const num = (name: string): number => Number.parseFloat(styles.getPropertyValue(name)) || 0
 
-    // These are the shipped, `--cx-`-prefixed custom properties (the build
-    // prefixes every custom property), not the bare names used in the SCSS source.
-    return (num('--cx-carousel-items') || 1) === 1 &&
-      num('--cx-carousel-items-peek') === 0 &&
+    // The build prefixes every custom property, so resolve the shipped names
+    // through `cssVar()` rather than the bare names used in the SCSS source.
+    return (num(cssVar('carousel-items')) || 1) === 1 &&
+      num(cssVar('carousel-items-peek')) === 0 &&
       !this._element.classList.contains(CLASS_NAME_CENTER) &&
       !this._element.classList.contains(CLASS_NAME_AUTO)
   }
@@ -835,7 +835,7 @@ class Carousel extends BaseComponent {
   protected _scheduleAutoplay(index: number = this._activeIndex): void {
     const interval = this._itemInterval(index)
     // Expose the wait so the active indicator's CSS fill matches it.
-    this._element.style.setProperty(PROPERTY_INTERVAL, `${interval}ms`)
+    this._element.style.setProperty(cssVar(PROPERTY_INTERVAL), `${interval}ms`)
     this._interval = setTimeout(() => {
       // Capture the slide the advance lands on *before* navigating: the active
       // index only updates once the scroll settles (asynchronously), so reading

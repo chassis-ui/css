@@ -15,7 +15,7 @@ import {
   type Placement
 } from '@floating-ui/dom'
 import BaseComponent from './base-component.js'
-import { execute } from './util/index.js'
+import { cssVar, execute } from './util/index.js'
 import type { ComponentConfig } from './util/config.js'
 
 type Breakpoints = Record<string, number>
@@ -53,11 +53,11 @@ abstract class FloatingBase extends BaseComponent {
     }
 
     return {
-      sm: toPx('--breakpoint-sm', 576),
-      md: toPx('--breakpoint-md', 768),
-      lg: toPx('--breakpoint-lg', 1024),
-      xl: toPx('--breakpoint-xl', 1280),
-      '2xl': toPx('--breakpoint-2xl', 1536)
+      sm: toPx(cssVar('breakpoint-sm'), 576),
+      md: toPx(cssVar('breakpoint-md'), 768),
+      lg: toPx(cssVar('breakpoint-lg'), 1024),
+      xl: toPx(cssVar('breakpoint-xl'), 1280),
+      '2xl': toPx(cssVar('breakpoint-2xl'), 1536)
     }
   }
 

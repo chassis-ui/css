@@ -12,7 +12,7 @@
  * --------------------------------------------------------------------------
  */
 
-import { afterEach, expect, vi } from 'vitest'
+import { afterEach, beforeEach, expect, vi } from 'vitest'
 import hammerSimulatorSource from 'hammer-simulator/index.js?raw'
 
 /**
@@ -159,6 +159,16 @@ expect.extend({
   nothing() {
     return result(true, '')
   }
+})
+
+/**
+ * The specs load no stylesheet, but the plugins resolve custom property names
+ * through the `--chassis-prefix` marker the PostCSS preset writes on `:root`
+ * (see `cssVar()` in js/src/util/index.ts). Declare it as the built CSS would,
+ * fresh before each spec so one that changes or removes it can't leak.
+ */
+beforeEach(() => {
+  document.documentElement.style.setProperty('--chassis-prefix', 'cx-')
 })
 
 /**

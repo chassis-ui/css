@@ -127,6 +127,10 @@ describe('a consumer with their own chassis-tokens and $breakpoints', () => {
     assert.match(built, /--cx-breakpoint-lg: 72rem/)
   })
 
+  test('--chassis-prefix survives Sass, the preset, and Tailwind with the real prefix — the marker js/src/util/index.ts cssVar() reads', () => {
+    assert.match(built, /--chassis-prefix: cx-/)
+  })
+
   test('the Chassis + Tailwind layer order is first, ahead of any generated rule', () => {
     const chassisLayerStatement =
       '@layer theme, colors, config, root, base, reboot, layout, content, components, custom, helpers, utilities;'
