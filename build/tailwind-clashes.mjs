@@ -226,9 +226,284 @@ export async function run() {
   )
 }
 
+// ---------------------------------------------------------------------------
+// Utility-name clash policy (Phase 5 / fact 7): Chassis utility names that
+// Tailwind CORE also generates, even after the `--*: initial` theme reset.
+// Distinct from the component-clash check above (which EXCLUDES Chassis
+// component/reboot names from Tailwind's own generation): here both
+// Chassis's own `@utility` and Tailwind's core utility register for the same
+// name, and Tailwind's same-name merge (fact 5/6) concatenates their
+// declarations into one rule. Measured empirically: which side's declaration
+// ends up textually last - and therefore wins any property both sides set -
+// is an internal Tailwind ordering detail that does NOT reliably favor
+// Chassis, contrary to fact 6's original "custom declarations come last"
+// read (true for some utility shapes, false for others). `@source not
+// inline()` is not usable as a remedy here (unlike the component-clash
+// case): it suppresses a candidate string from being treated as a utility
+// candidate at all, so excluding e.g. "opacity-10" would also kill Chassis's
+// own `@utility opacity-10`, not just Tailwind's core one - confirmed
+// empirically. The remedies below patch the compiled `@utility` output
+// directly instead.
+// ---------------------------------------------------------------------------
+
+// name -> { start, end, decls: [[prop, value]] }. start/end are character
+// offsets of the block BODY (just after "{" .. the matching "}") in the
+// given css text. decls are the TOP-LEVEL declarations only; nested rule
+// blocks (child-selector / dotted-compound forms) are stripped before
+// parsing, since every entry in the utility-clash policy is a simple
+// single-level utility.
+function parseChassisUtilityBlocks(css) {
+  const map = new Map()
+  const re = /@utility\s+(\S+)\s*\{/g
+  let m
+  while ((m = re.exec(css))) {
+    const name = m[1]
+    let depth = 1
+    let i = re.lastIndex
+    const start = i
+    while (depth > 0 && i < css.length) {
+      if (css[i] === '{') depth++
+      else if (css[i] === '}') depth--
+      i++
+    }
+    const end = i - 1
+    const rawBody = css.slice(start, end)
+    const flatBody = rawBody.replace(/[^{;]*\{[^{}]*\}/g, '')
+    const decls = parseDecls(flatBody)
+    if (!map.has(name)) map.set(name, { start, end, decls })
+    else map.get(name).decls.push(...decls)
+    re.lastIndex = i
+  }
+  return map
+}
+
+function parseDecls(body) {
+  const decls = []
+  for (const decl of body.split(';')) {
+    const t = decl.trim()
+    if (!t) continue
+    const colon = t.indexOf(':')
+    if (colon === -1) continue
+    decls.push([t.slice(0, colon).trim(), t.slice(colon + 1).trim()])
+  }
+  return decls
+}
+
+// Matches only a TOP-LEVEL `.name { ... }` rule: the lookbehind requires the
+// class token to open a new selector (right after `{`, `}`, or the start of
+// the string), not sit inside a larger one. Without it, a Tailwind utility
+// like `divide-x` -- whose real rule is `:where(.divide-x > :not(:last-child))
+// { ... }`, styling children, not the classed element -- would false-match
+// on the `.divide-x` substring inside that selector and grab the wrong
+// declarations entirely (caught by the reset-remedy self-verification
+// failing in a way that made no sense until this was traced back).
+function extractOrderedDecls(css, candidate) {
+  const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const rule = new RegExp(`(?<=^|[{}])\\s*\\.${escaped}(?:[^\\n{]*)\\{([^}]*)\\}`)
+  const m = css.match(rule)
+  return m ? parseDecls(m[1]) : null
+}
+
+// !important-aware: an !important declaration beats a later plain one for
+// the same property; otherwise later wins, matching normal same-rule
+// cascade order.
+function winningValues(decls) {
+  const state = new Map()
+  for (const [prop, rawValue] of decls ?? []) {
+    const important = /!important\s*$/i.test(rawValue.trim())
+    const value = rawValue.replace(/!important\s*$/i, '').trim()
+    const existing = state.get(prop)
+    if (existing?.important && !important) continue
+    state.set(prop, { value, important })
+  }
+  const flat = new Map()
+  for (const [prop, { value }] of state) flat.set(prop, value)
+  return flat
+}
+
+async function coreUtilityAfterReset(candidate, themeCss) {
+  const css = [
+    '@import "tailwindcss/theme.css" layer(theme);',
+    '@import "tailwindcss/utilities.css" layer(utilities);',
+    themeCss,
+    '@source not "..";'
+  ].join('\n')
+  const compiler = await compile(css, { base: outDir, onDependency: () => {} })
+  const built = compiler.build([candidate])
+  return /@layer utilities\s*\{/.test(built) ? built : null
+}
+
+async function mergedUtility(candidate, themeCss, utilitiesCssText) {
+  const css = [
+    '@import "tailwindcss/theme.css" layer(theme);',
+    '@import "tailwindcss/utilities.css" layer(utilities);',
+    themeCss,
+    utilitiesCssText,
+    '@source not "..";'
+  ].join('\n')
+  const compiler = await compile(css, { base: outDir, onDependency: () => {} })
+  return compiler.build([candidate])
+}
+
+// For every Chassis utility name that Tailwind core ALSO generates after the
+// theme reset, classify as "equal" (Chassis's own declared properties all
+// win, or the only extra Tailwind properties are functionally inert) or
+// "differs" (Tailwind either overrides a property Chassis sets, or adds a
+// property Chassis never touches at all).
+async function detectUtilityNameClashes(themeCss, utilitiesCssText) {
+  const chassisBlocks = parseChassisUtilityBlocks(utilitiesCssText)
+  const results = new Map()
+  for (const [name, block] of chassisBlocks) {
+    const coreCss = await coreUtilityAfterReset(name, themeCss)
+    if (!coreCss) continue
+    const coreDecls = extractOrderedDecls(coreCss, name)
+    if (!coreDecls || coreDecls.length === 0) continue
+
+    const mergedCss = await mergedUtility(name, themeCss, utilitiesCssText)
+    const mergedWinners = winningValues(extractOrderedDecls(mergedCss, name) ?? [])
+    const chassisOwnWinners = winningValues(block.decls)
+
+    const realCoreProps = [...new Set(coreDecls.map(([p]) => p))].filter((p) => !p.startsWith('--tw-'))
+    const leaked = realCoreProps.filter((p) => !chassisOwnWinners.has(p))
+    const overridden = [...chassisOwnWinners.entries()].filter(
+      ([prop, value]) => mergedWinners.has(prop) && mergedWinners.get(prop) !== value
+    )
+
+    results.set(name, { classification: leaked.length > 0 || overridden.length > 0 ? 'differs' : 'equal' })
+  }
+  return results
+}
+
+// Patches the compiled `@utility` blocks for every policy entry with an
+// "important" remedy ("documented" entries are left untouched). Applied
+// identically to `utilities.css` and `index.css` -- they hold independent
+// Sass compiles of the same source, not an import of one by the other (see
+// build-tailwind.mjs).
+function applyUtilityClashRemedies(css, policy) {
+  const blocks = parseChassisUtilityBlocks(css)
+  const edits = []
+
+  for (const entry of policy.differs) {
+    if (entry.remedy === 'documented') continue
+    if (entry.remedy !== 'important') {
+      throw new Error(`tailwind-clashes: unknown remedy "${entry.remedy}" for "${entry.name}"`)
+    }
+    const block = blocks.get(entry.name)
+    if (!block) {
+      throw new Error(
+        `tailwind-clashes: utility-clash policy entry "${entry.name}" (${entry.remedy}) has no matching ` +
+          `@utility block in the compiled output -- was it renamed or removed?`
+      )
+    }
+    let body = css.slice(block.start, block.end)
+
+    for (const property of entry.properties) {
+      const escaped = property.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const declRe = new RegExp(`(^\\s*|[;{]\\s*)(${escaped})(\\s*:\\s*)([^;]+?)(\\s*;)`)
+      if (!declRe.test(body)) {
+        throw new Error(`tailwind-clashes: expected property "${property}" in @utility ${entry.name}, not found`)
+      }
+      body = body.replace(declRe, (_m, pre, prop, colon, value, semi) => `${pre}${prop}${colon}${value.trimEnd()} !important${semi}`)
+    }
+
+    edits.push({ start: block.start, end: block.end, body })
+  }
+
+  edits.sort((a, b) => b.start - a.start)
+  let out = css
+  for (const { start, end, body } of edits) out = out.slice(0, start) + body + out.slice(end)
+  return out
+}
+
+// Re-detects clashes against the PATCHED utilities.css and asserts each
+// "important" remedy actually made Chassis's declared value win the merged
+// rule.
+async function verifyUtilityClashRemedies(themeCss, patchedUtilitiesCssText, policy) {
+  const patchedBlocks = parseChassisUtilityBlocks(patchedUtilitiesCssText)
+
+  for (const entry of policy.differs) {
+    if (entry.remedy === 'documented') continue
+    const block = patchedBlocks.get(entry.name)
+    const mergedCss = await mergedUtility(entry.name, themeCss, patchedUtilitiesCssText)
+    const mergedWinners = winningValues(extractOrderedDecls(mergedCss, entry.name) ?? [])
+    const chassisOwnWinners = winningValues(block.decls)
+
+    for (const property of entry.properties) {
+      const expected = chassisOwnWinners.get(property)
+      const actual = mergedWinners.get(property)
+      if (actual !== expected) {
+        throw new Error(
+          `tailwind-clashes: !important remedy for "${entry.name}" failed to win "${property}" ` +
+            `(expected "${expected}", got "${actual}")`
+        )
+      }
+    }
+  }
+}
+
+export async function checkUtilityNameClashes() {
+  const themeCss = readFileSync(path.join(outDir, 'theme.css'), 'utf8')
+  const utilitiesCssText = readFileSync(path.join(outDir, 'utilities.css'), 'utf8')
+  const policy = JSON.parse(readFileSync(path.join(root, 'build/tailwind-utility-clashes.json'), 'utf8'))
+
+  const live = await detectUtilityNameClashes(themeCss, utilitiesCssText)
+
+  const knownNames = new Set([...policy.equal, ...policy.differs.map((d) => d.name)])
+  const liveDiffers = new Set(policy.differs.map((d) => d.name))
+  const drift = []
+  for (const [name, { classification }] of live) {
+    if (!knownNames.has(name)) {
+      drift.push(`new clash "${name}" (${classification}) is not in build/tailwind-utility-clashes.json`)
+      continue
+    }
+    const expected = liveDiffers.has(name) ? 'differs' : 'equal'
+    if (expected !== classification) {
+      drift.push(`"${name}" is now "${classification}" but the policy file says "${expected}"`)
+    }
+  }
+  for (const name of knownNames) {
+    if (!live.has(name)) drift.push(`"${name}" is in the policy file but is no longer a same-name clash at all`)
+  }
+  if (drift.length > 0) {
+    throw new Error(
+      `tailwind-clashes: utility-name clash set has drifted from build/tailwind-utility-clashes.json ` +
+        `(re-run the Phase 5 analysis and update the policy file deliberately):\n  ${drift.join('\n  ')}`
+    )
+  }
+
+  const patchedUtilities = applyUtilityClashRemedies(utilitiesCssText, policy)
+  writeFileSync(path.join(outDir, 'utilities.css'), patchedUtilities)
+
+  const indexCss = readFileSync(path.join(outDir, 'index.css'), 'utf8')
+  writeFileSync(path.join(outDir, 'index.css'), applyUtilityClashRemedies(indexCss, policy))
+
+  await verifyUtilityClashRemedies(themeCss, patchedUtilities, policy)
+
+  writeFileSync(
+    path.join(outDir, 'utility-clashes.json'),
+    JSON.stringify(
+      {
+        sameNameClashesChecked: live.size,
+        equal: policy.equal.length,
+        differs: policy.differs.map(({ name, remedy }) => ({ name, remedy }))
+      },
+      null,
+      2
+    )
+  )
+
+  console.log(
+    `tailwind-utility-clashes: ${live.size} same-name clash(es) checked against policy, ` +
+      `${policy.differs.filter((d) => d.remedy === 'important').length} patched with !important, ` +
+      `${policy.differs.filter((d) => d.remedy === 'documented').length} documented-only.`
+  )
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
-  run().catch((error) => {
-    console.error(error)
-    process.exit(1)
-  })
+  run()
+    .then(checkUtilityNameClashes)
+    .catch((error) => {
+      console.error(error)
+      process.exit(1)
+    })
 }

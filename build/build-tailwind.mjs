@@ -22,11 +22,18 @@
  * pointing it at a custom-named file in `build/` silently loads the sibling
  * `build/postcss.config.js` instead.
  *
- * Finally, `build/tailwind-clashes.mjs` finds Chassis component/reboot class
- * names Tailwind core would also generate and appends `@source not
- * inline(...)` exclusions (plus the JS-toggled-class safelist) to `theme.css`
- * and `index.css` — it needs the final compiled `components.css`/`reboot.css`
- * text, so it has to run last.
+ * Finally, `build/tailwind-clashes.mjs` runs two checks that both need the
+ * final compiled output, so they run last, in order:
+ *  1. `run()` finds Chassis component/reboot class names Tailwind core would
+ *     also generate and appends `@source not inline(...)` exclusions (plus
+ *     the JS-toggled-class safelist) to `theme.css` and `index.css`.
+ *  2. `checkUtilityNameClashes()` finds Chassis utility names Tailwind core
+ *     ALSO generates even after the theme reset (a same-name `@utility`
+ *     merge, not an exclusion candidate — `@source not inline()` would drop
+ *     Chassis's own utility too). It patches the compiled `@utility` blocks
+ *     per `build/tailwind-utility-clashes.json` so Chassis's declared value
+ *     always wins, and fails loudly if the live clash set drifts from that
+ *     committed policy file.
  *
  * Copyright 2026 Ozgur Gunes
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
@@ -38,7 +45,7 @@ import { fileURLToPath } from 'node:url'
 import postcss from 'postcss'
 import * as sass from 'sass'
 import tailwindConfig from './postcss.tailwind.config.js'
-import { run as writeClashExclusions } from './tailwind-clashes.mjs'
+import { checkUtilityNameClashes, run as writeClashExclusions } from './tailwind-clashes.mjs'
 
 const root = path.resolve(fileURLToPath(import.meta.url), '../..')
 const srcDir = path.join(root, 'scss/tailwind')
@@ -74,3 +81,4 @@ for (const file of readdirSync(outDir)) {
 }
 
 await writeClashExclusions()
+await checkUtilityNameClashes()
