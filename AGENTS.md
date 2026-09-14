@@ -21,7 +21,9 @@ Package manager is **pnpm** (pinned in `package.json`). Run `pnpm install` first
 - `pnpm css` / `pnpm js` — compile + prefix + minify CSS, or compile + minify JS
 - `pnpm css:lint` / `pnpm js:lint` / `pnpm site:lint` — lint (or `pnpm check:code` for all three)
 - `pnpm css:test` / `pnpm js:test:karma` — Sass (Jasmine) / JS (Karma) unit tests
-- `pnpm test` — full suite: lint + dist + css/js tests + site build + site lint
+- `pnpm css:test:tailwind` — Node-only regression test for the Tailwind build (`dist/tailwind/`); needs `pnpm dist` run first
+- `pnpm js:test:e2e:tailwind-parity` — Playwright project comparing computed styles between `dist/css/chassis.css` and a fresh Tailwind build; opt-in (excluded from `pnpm js:test:e2e` and `pnpm test`) because it's slower than the rest of the e2e suite — run it after touching `scss/tailwind/` or the utility/component clash policies
+- `pnpm test` — full suite: lint + dist + css/js tests (including `css:test:tailwind`) + site build + site lint
 
 Run the narrowest relevant command while iterating; run `pnpm test` (or at least `pnpm check:code`) before considering a change complete.
 
@@ -34,7 +36,7 @@ Run the narrowest relevant command while iterating; run `pnpm test` (or at least
 - `--fg-color` / `--bg-color` custom properties look unused component-locally but are consumed by the context utility classes — don't remove them during cleanup without checking `scss/_context.scss` and `scss/utilities/`.
 - Component selectors may not use certain "generic" modifier class names (`small`, `large`, `primary`, `outline`, `solid`, `horizontal`, etc. — see `forbiddenGenericClasses` in [stylelint.config.js](stylelint.config.js)), enforced by stylelint.
 - Doc markers `// scss-docs-start name` / `// scss-docs-end name` mark regions extracted into the docs site.
-- Run `pnpm css:lint && pnpm css:test` after editing `scss/`.
+- Run `pnpm css:lint && pnpm css:test` after editing `scss/`. After editing `scss/tailwind/` specifically, also run `pnpm css:tailwind && pnpm css:test:tailwind` (needs a fresh `dist/tailwind/` build), and `pnpm js:test:e2e:tailwind-parity` for anything that could change computed styles.
 
 ## JavaScript conventions
 
