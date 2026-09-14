@@ -1,0 +1,291 @@
+@use "../../mixins/utilities-tailwind" as *;
+
+@mixin test-generate-tailwind-utility($params...) {
+  @include assert() {
+    @include output() {
+      @include generate-tailwind-utility($params...);
+    }
+
+    @include expect() {
+      @content;
+    }
+  }
+}
+
+@include describe(generate-tailwind-utility) {
+  @include it("generates one @utility rule per value") {
+    @include test-generate-tailwind-utility(
+      (
+        property: "padding",
+        values: (sm: .5rem, lg: 2rem)
+      )
+    ) {
+      @utility padding-sm {
+        padding: .5rem;
+      }
+
+      @utility padding-lg {
+        padding: 2rem;
+      }
+    }
+  }
+
+  @include describe("$utility") {
+    @include describe("values") {
+      @include it("supports null keys (no dangling dash)") {
+        @include test-generate-tailwind-utility(
+          (
+            property: "padding",
+            values: (null: 1rem, sm: .5rem)
+          )
+        ) {
+          @utility padding {
+            padding: 1rem;
+          }
+
+          @utility padding-sm {
+            padding: .5rem;
+          }
+        }
+      }
+
+      @include it("ignores null values") {
+        @include test-generate-tailwind-utility(
+          (
+            property: "padding",
+            values: (sm: null, lg: 2rem)
+          )
+        ) {
+          @utility padding-lg {
+            padding: 2rem;
+          }
+        }
+      }
+    }
+
+    @include describe("class & property") {
+      @include it("supports a map of properties") {
+        @include test-generate-tailwind-utility(
+          (
+            property: ("--fg-color": null, "color": var(--fg-color)),
+            class: text,
+            values: (
+              primary: red,
+              danger: green,
+            )
+          )
+        ) {
+          @utility text-primary {
+            --fg-color: red;
+            color: var(--fg-color);
+          }
+
+          @utility text-danger {
+            --fg-color: green;
+            color: var(--fg-color);
+          }
+        }
+      }
+
+      @include it("supports a null class to create utility names straight from the values") {
+        @include test-generate-tailwind-utility(
+          (
+            property: visibility,
+            class: null,
+            values: (
+              visible: visible,
+              invisible: hidden,
+            )
+          )
+        ) {
+          @utility visible {
+            visibility: visible;
+          }
+
+          @utility invisible {
+            visibility: hidden;
+          }
+        }
+      }
+    }
+
+    @include describe("important: true") {
+      @include it("keeps !important") {
+        @include test-generate-tailwind-utility(
+          (
+            property: "padding",
+            important: true,
+            values: (sm: .5rem)
+          )
+        ) {
+          @utility padding-sm {
+            padding: .5rem !important;
+          }
+        }
+      }
+    }
+
+    @include describe("variables") {
+      @include it("sets a CSS variable alongside the property (list form)") {
+        @include test-generate-tailwind-utility(
+          (
+            property: padding,
+            variables: padding,
+            values: (sm: 1rem)
+          )
+        ) {
+          @utility padding-sm {
+            --padding: 1rem;
+            padding: 1rem;
+          }
+        }
+      }
+
+      @include it("sets static CSS variables alongside the property (map form)") {
+        @include test-generate-tailwind-utility(
+          (
+            property: color,
+            class: desaturated-color,
+            variables: (
+              color-opacity: 1
+            ),
+            values: (
+              blue: hsl(210deg 50% 50%)
+            )
+          )
+        ) {
+          @utility desaturated-color-blue {
+            --color-opacity: 1;
+            color: hsl(210deg 50% 50%);
+          }
+        }
+      }
+    }
+
+    @include describe("group") {
+      @include it("emits static and dynamic declarations in each utility (no shared rule)") {
+        @include test-generate-tailwind-utility(
+          (
+            property: ("--fg-color": null, "color": var(--fg-color)),
+            class: text,
+            group: true,
+            values: (primary: red, secondary: blue)
+          )
+        ) {
+          @utility text-primary {
+            --fg-color: red;
+            color: var(--fg-color);
+          }
+
+          @utility text-secondary {
+            --fg-color: blue;
+            color: var(--fg-color);
+          }
+        }
+      }
+    }
+
+    @include describe("child-selector") {
+      @include it("wraps the declaration body in :where(& child-selector)") {
+        @include test-generate-tailwind-utility(
+          (
+            property: margin-inline-end,
+            class: space-x,
+            child-selector: "> :not(:last-child)",
+            values: (md: 1rem)
+          )
+        ) {
+          @utility space-x-md {
+            :where(& > :not(:last-child)) {
+              margin-inline-end: 1rem;
+            }
+          }
+        }
+      }
+    }
+
+    @include describe("dotted compound class") {
+      @include it("splits on the last dot into a companion class and the utility name") {
+        @include test-generate-tailwind-utility(
+          (
+            property: font-weight,
+            class: "font-display.font",
+            values: (strong: 700)
+          )
+        ) {
+          @utility font-strong {
+            &.font-display {
+              font-weight: 700;
+            }
+          }
+        }
+      }
+    }
+
+    @include describe("responsive, print, dark, state") {
+      @include it("ignores those keys — Tailwind supplies every variant") {
+        @include test-generate-tailwind-utility(
+          (
+            property: "padding",
+            responsive: true,
+            print: true,
+            dark: true,
+            state: hover focus,
+            values: (sm: .5rem)
+          )
+        ) {
+          @utility padding-sm {
+            padding: .5rem;
+          }
+        }
+      }
+    }
+
+    @include describe("selector: attr-includes") {
+      @include it("emits plain CSS in @layer utilities instead of @utility") {
+        @include test-generate-tailwind-utility(
+          (
+            selector: "attr-includes",
+            class: "ratio-",
+            property: aspect-ratio,
+            values: var(--aspect-ratio)
+          )
+        ) {
+          @layer utilities {
+            [class*="ratio-"] {
+              aspect-ratio: var(--aspect-ratio);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@include describe(generate-tailwind-utilities) {
+  @include it("skips enabled: false entries") {
+    @include assert() {
+      @include output() {
+        @include generate-tailwind-utilities(
+          (
+            "padding": (
+              property: padding,
+              enabled: false,
+              values: (sm: .5rem)
+            ),
+            "margin": (
+              property: margin,
+              values: (sm: .5rem)
+            )
+          )
+        );
+      }
+
+      @include expect() {
+        @utility margin-sm {
+          margin: .5rem;
+        }
+      }
+    }
+  }
+}

@@ -108,9 +108,15 @@ export default {
       // stylelint-config-twbs-bootstrap know about them yet. The `scss/`
       // namespaced rule only exists for `.scss` syntax; plain `.css` files
       // (e.g. `layers.css`) use the un-namespaced core rule instead.
-      files: ['scss/tailwind/**/*.scss'],
+      files: ['scss/tailwind/**/*.scss', 'scss/mixins/_utilities-tailwind.scss'],
       rules: {
-        'scss/at-rule-no-unknown': null
+        'scss/at-rule-no-unknown': null,
+        // `:where(& #{$child-selector})` nests the literal `&` alongside an
+        // interpolated child selector to build the Tailwind `@utility`
+        // equivalent of the legacy generator's `:where(<selector> <child>)`.
+        // stylelint can't see through the interpolation to know `&` isn't
+        // redundant here.
+        'scss/selector-no-redundant-nesting-selector': null
       }
     },
     {
