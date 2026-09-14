@@ -49,6 +49,7 @@
     "./dist/js/*": "./dist/js/*",
     "./dist/css/*": "./dist/css/*",
     "./scss/*": "./scss/*",
+    "./postcss": "./postcss/index.js",
     "./tailwind": {
       "style": "./dist/tailwind/index.css",
       "default": "./dist/tailwind/index.css"
@@ -74,7 +75,7 @@
     "css:tailwind:update-clashes": "node build/update-tailwind-source-exclusions.mjs",
     "css:tailwind:update-clash-policy": "node build/update-tailwind-clash-policy.mjs",
     "css:test": "jasmine --config=scss/tests/jasmine.cjs",
-    "css:test:tailwind": "node --test scss/tests/tailwind/test-build.mjs scss/tests/tailwind/test-merge.mjs scss/tests/tailwind/test-bridge.mjs",
+    "css:test:tailwind": "node --test scss/tests/tailwind/test-build.mjs scss/tests/tailwind/test-merge.mjs scss/tests/tailwind/test-bridge.mjs scss/tests/tailwind/test-postcss.mjs scss/tests/tailwind/test-consumer.mjs",
     "js": "pnpm js:compile && pnpm js:minify",
     "js:compile": "run-p js:compile:standalone js:compile:bundle js:compile:plugins",
     "js:compile:standalone": "rolldown --environment BUNDLE:false --config build/rolldown.config.js --sourcemap",
@@ -132,10 +133,14 @@
   },
   "peerDependencies": {
     "@floating-ui/dom": "^1.7.6",
+    "postcss-prefix-custom-properties": "^0.1.0",
     "tailwindcss": ">=4.1.0",
     "vanilla-calendar-pro": "^3.1.0"
   },
   "peerDependenciesMeta": {
+    "postcss-prefix-custom-properties": {
+      "optional": true
+    },
     "tailwindcss": {
       "optional": true
     }
@@ -235,6 +240,7 @@
     "dist/tailwind/*.js",
     "js/{src,dist}/**/*.{js,map,ts}",
     "js/index.ts",
+    "postcss/*.js",
     "scss/**/*.scss",
     "!scss/tests/**",
     ".browserslistrc"
