@@ -30,7 +30,7 @@
 import { compile } from '@tailwindcss/node'
 import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import {
   coreUtilityAfterReset,
   extractOrderedDecls,
@@ -192,7 +192,7 @@ export async function checkBridgeClashes() {
   )
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   checkBridgeClashes().catch((error) => {
     console.error(error)
     process.exit(1)

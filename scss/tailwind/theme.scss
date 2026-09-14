@@ -51,20 +51,21 @@
   }
 }
 
-// D4: match `[data-cx-theme]` directly, or `prefers-color-scheme` unless a
-// nearer `[data-cx-theme]` override (either value) exists between the
-// matched ancestor and the element. Scoped to a single level of override —
-// `[data-cx-theme=dark] *` alone matches *any* descendant of a dark
-// ancestor no matter how deep, so an element nested inside a nearer
-// `[data-cx-theme=light]` subtree would otherwise match both variants at
-// once; CSS selectors can't express "closest matching ancestor" for
-// arbitrarily-alternating nesting, so this supports one override boundary
-// (the documented, tested case) and no more.
+// D4: match `[data-cx-theme]` directly, or a descendant of it unless a nearer
+// opposite-value override sits between the two, or `prefers-color-scheme`
+// unless an opposite-value `[data-cx-theme]` ancestor exists. A same-value
+// nested attribute (a dark navbar inside a dark page) is not an override.
+// Scoped to a single level of override — `[data-cx-theme=dark] *` alone
+// matches *any* descendant of a dark ancestor no matter how deep, so an
+// element nested inside a nearer `[data-cx-theme=light]` subtree would
+// otherwise match both variants at once; CSS selectors can't express "closest
+// matching ancestor" for arbitrarily-alternating nesting, so this supports
+// one override boundary (the documented, tested case) and no more.
 @custom-variant dark {
   &[data-cx-theme="dark"] {
     @slot;
   }
-  &:where([data-cx-theme="dark"] *):not(:where([data-cx-theme="dark"] [data-cx-theme] *)) {
+  &:where([data-cx-theme="dark"] *):not(:where([data-cx-theme="dark"] [data-cx-theme="light"] *)) {
     @slot;
   }
   @media (prefers-color-scheme: dark) {
@@ -78,7 +79,7 @@
   &[data-cx-theme="light"] {
     @slot;
   }
-  &:where([data-cx-theme="light"] *):not(:where([data-cx-theme="light"] [data-cx-theme] *)) {
+  &:where([data-cx-theme="light"] *):not(:where([data-cx-theme="light"] [data-cx-theme="dark"] *)) {
     @slot;
   }
   @media (prefers-color-scheme: light) {

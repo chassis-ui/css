@@ -129,7 +129,7 @@ export default defineConfig({
 import '../scss/tailwind-entry.scss'
 ```
 
-The preset and `@tailwindcss/postcss` can go in either order in the `plugins` array — verified to produce byte-identical output either way.
+Keep the preset before `@tailwindcss/postcss` in the `plugins` array. Vite runs this pipeline over every CSS file in your project, so the preset renames your own custom properties too. It leaves Tailwind's names alone: `--tw-*`, `--color-*`, and every key you declare in an `@theme` block, along with `var()` references to those keys.
 
 ### Webpack, with `sass-loader` → `postcss-loader`
 
