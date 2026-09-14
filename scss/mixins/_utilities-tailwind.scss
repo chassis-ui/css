@@ -1,0 +1,145 @@
+@use "sass:map";
+@use "sass:list";
+@use "sass:meta";
+@use "sass:string";
+@use "./utilities-api" as api;
+
+//
+// Tailwind Utilities API
+//
+// Walks the same `$utilities` map as `generate-utilities-loop`
+// (scss/mixins/_utilities-api.scss) but emits Tailwind `@utility` rules
+// instead of plain CSS. Tailwind's own variant engine supplies every
+// responsive/dark/print/state variant for every `@utility`, so the
+// `responsive`, `print`, `dark`, and `state` map keys are ignored here —
+// there is no per-breakpoint loop and no state-variant selector building.
+// `group: true` is ignored too: the legacy generator's shared-static-rule
+// optimization only exists to avoid repeating static declarations across a
+// breakpoint x state-variant matrix that Tailwind's `@utility` doesn't have —
+// every value gets a fully self-contained `@utility` block instead.
+//
+// Class-name construction (custom class, null keys, modifier dash) is shared
+// with the legacy generator via `utility-class-name()`. A dotted compound
+// class (`class: "font-display.font"`) is split here on its last `.`: the
+// tail becomes the `@utility` name and the head becomes a `&.<head>` nested
+// selector — Tailwind merges same-named `@utility` blocks (including ones
+// declared separately for the plain vs. compound entry), so this reproduces
+// the legacy generator's compound selector (`.font-display.font-5xl`) as
+// `@utility font-5xl { &.font-display { … } }`.
+
+// Generates every enabled utility in `$utilities` as a Tailwind `@utility`
+// rule (or, for attribute-selector utilities, plain CSS in `@layer utilities`).
+@mixin generate-tailwind-utilities($utilities) {
+  @each $key, $utility in $utilities {
+    @if meta.type-of($utility) == "map" and map.get($utility, enabled) != false {
+      @include generate-tailwind-utility($utility);
+    }
+  }
+}
+
+@mixin generate-tailwind-utility($utility) {
+  // Validate required keys (same contract as generate-utility)
+  @if not map.has-key($utility, property) {
+    @error "Utility is missing required `property` key: #{$utility}";
+  }
+  @if not map.has-key($utility, values) {
+    @error "Utility is missing required `values` key: #{$utility}";
+  }
+
+  $selector-type: "class";
+  @if map.has-key($utility, selector) {
+    $selector-type: map.get($utility, selector);
+  }
+
+  @if $selector-type != "class" and not map.has-key($utility, class) {
+    @error "Utility with `selector: #{$selector-type}` requires a `class` key.";
+  }
+
+  $properties: map.get($utility, property);
+  $property-map: null;
+  @if meta.type-of($properties) == "map" {
+    $property-map: $properties;
+  } @else if meta.type-of($properties) == "string" {
+    $properties: list.append((), $properties);
+  }
+
+  // Get the list or map of values and ensure it's a map (same as generate-utility)
+  $values: map.get($utility, values);
+  @if meta.type-of($values) != "map" {
+    @if meta.type-of($values) == "list" {
+      $list: ();
+      @each $value in $values {
+        $list: map.merge($list, ($value: $value));
+      }
+      $values: $list;
+    } @else {
+      $values: (null: $values);
+    }
+  }
+
+  $child-sel: null;
+  @if map.has-key($utility, child-selector) {
+    $child-sel: map.get($utility, child-selector);
+  }
+
+  @if $selector-type == "class" {
+    @each $key, $value in $values {
+      // Dart Sass drops a style rule once every declaration inside it
+      // evaluates to null, but an `@utility` block isn't a style rule, so it
+      // would otherwise emit as an empty (but present) at-rule instead of
+      // being omitted — skip null values explicitly to match.
+      @if $value != null {
+        $class-name: api.utility-class-name($utility, $key);
+
+        $companion-class: null;
+        $utility-name: $class-name;
+        $dot-index: string.index($class-name, ".");
+        @if $dot-index {
+          $companion-class: string.slice($class-name, 1, $dot-index - 1);
+          $utility-name: string.slice($class-name, $dot-index + 1);
+        }
+
+        @utility #{$utility-name} {
+          @if $companion-class {
+            &.#{$companion-class} {
+              @include tailwind-utility-body($utility, $property-map, $properties, $value, $child-sel);
+            }
+          } @else {
+            @include tailwind-utility-body($utility, $property-map, $properties, $value, $child-sel);
+          }
+        }
+      }
+    }
+  } @else {
+    $selector-class: map.get($utility, class);
+    $attr-selector: "";
+    @if $selector-type == "attr-starts" {
+      $attr-selector: "[class^=\"#{$selector-class}\"]";
+    } @else if $selector-type == "attr-includes" {
+      $attr-selector: "[class*=\"#{$selector-class}\"]";
+    }
+
+    @layer utilities {
+      #{$attr-selector} {
+        @each $key, $value in $values {
+          @include api.generate-variables($utility, $value);
+          @include api.generate-properties($utility, $property-map, $properties, $value);
+        }
+      }
+    }
+  }
+}
+
+// Emits the declaration body for one utility + value, wrapped in the
+// `child-selector` (if present) or emitted directly at the current nesting.
+@mixin tailwind-utility-body($utility, $property-map, $properties, $value, $child-sel) {
+  @if $child-sel {
+    :where(& #{$child-sel}) {
+      @include api.generate-variables($utility, $value);
+      @include api.generate-properties($utility, $property-map, $properties, $value);
+    }
+  } @else {
+    @include api.generate-variables($utility, $value);
+    @include api.generate-properties($utility, $property-map, $properties, $value);
+  }
+}
