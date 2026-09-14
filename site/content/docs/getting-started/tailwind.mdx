@@ -98,6 +98,26 @@ A smaller set of utility names exist in both Chassis and Tailwind core with the 
 
 A few names differ in the property they set but not in visible effect, and are left as-is: `border` and `border-0` (Chassis's shorthand naturally wins over Tailwind's `border-style`/`border-width`), `top-auto`/`bottom-auto`/`mt-auto`/`mb-auto` (Tailwind sets a physical inset property alongside Chassis's logical one, both resolving to the same `auto`), and `text-wrap`/`text-nowrap` (Tailwind sets `text-wrap`, Chassis sets `white-space`, same rendered effect).
 
+## Token bridge
+
+`@chassis-ui/css/tailwind/bridge.css` is a separate, opt-in stylesheet that maps Chassis's context color palette into Tailwind's own `--color-*` theme namespace. Import it after the main entry:
+
+```css
+@import "@chassis-ui/css/tailwind";
+@import "@chassis-ui/css/tailwind/bridge.css";
+```
+
+Chassis's own utilities don't cover every Tailwind color-driven utility group — there's no Chassis equivalent for `ring-*`, `outline-*`, `decoration-*`, `caret-*`, `accent-*`, `fill-*`, `stroke-*`, gradient stops (`from-*`/`via-*`/`to-*`), or `placeholder-*`, and no support for the `/<opacity>` modifier (`bg-primary/50`) on any color utility. The bridge makes all of these work with Chassis's palette — the 11 context colors (`default`, `alternate`, `primary`, `secondary`, `neutral`, `warning`, `success`, `danger`, `info`, `black`, `white`) plus the full shade ramp for the seven tinted ones (`primary-05` through `primary-95`, and likewise for `secondary`, `neutral`, `warning`, `success`, `danger`, `info`):
+
+```html
+<button class="button primary ring-2 ring-primary/50">Focus ring from the Chassis palette</button>
+<div class="bg-primary-70">A shade the bg-color utility doesn't expose directly</div>
+```
+
+Loading the bridge re-enables Tailwind's own native `bg-*` and `border-*` utilities for these same 11 color names — both of which Chassis's own utility generator already produces (`bg-primary`, `border-primary`). Same name, same property, both declared: without a fix, Tailwind's plain bridged value would win the cascade and silently drop Chassis's `--cx-bg-opacity`/`--cx-border-opacity` support. The bridge's own `@utility bg-*`/`border-*` declarations are patched with `!important` — the same fix, and the same reasoning, as [utility-name clashes](#utility-name-clashes) above — so `bg-primary`/`border-primary` keep their full Chassis behavior whether or not the bridge is loaded. `shadow-<color>` also becomes a same-name match, but the two sides set different custom properties (Tailwind's `--tw-shadow-color`, Chassis's `--cx-shadow-color`) and don't actually conflict — no patch needed there.
+
+Font families, border radius, and shadow-size scales are deliberately not bridged: Chassis's own utility generator already produces `font-display`, `rounded-lg`, and `shadow-lg`-style classes from the same underlying values, so bridging those namespaces would only recreate more same-name clashes for no new capability, unlike colors.
+
 ## Sass customization
 
 The Tailwind entry point has a Sass source too, for projects that need setting overrides (a custom `$breakpoints` map, disabled features) before compiling to CSS:

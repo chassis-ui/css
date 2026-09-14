@@ -72,7 +72,7 @@
     "css:prefix": "postcss --config build/postcss.config.js --replace \"dist/css/*.css\" \"!dist/css/*.min.css\"",
     "css:tailwind": "node build/build-tailwind.mjs && node build/build-tailwind-merge.mjs",
     "css:test": "jasmine --config=scss/tests/jasmine.cjs",
-    "css:test:tailwind": "node --test scss/tests/tailwind/test-build.mjs scss/tests/tailwind/test-merge.mjs",
+    "css:test:tailwind": "node --test scss/tests/tailwind/test-build.mjs scss/tests/tailwind/test-merge.mjs scss/tests/tailwind/test-bridge.mjs",
     "js": "pnpm js:compile && pnpm js:minify",
     "js:compile": "run-p js:compile:standalone js:compile:bundle js:compile:plugins",
     "js:compile:standalone": "rolldown --environment BUNDLE:false --config build/rolldown.config.js --sourcemap",

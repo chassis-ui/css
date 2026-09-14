@@ -1,0 +1,40 @@
+//
+// Chassis CSS — Tailwind Token Bridge (opt-in)
+//
+// Maps Chassis's context color palette into Tailwind's own `--color-*`
+// theme namespace, so Tailwind's native color-driven utilities that Chassis
+// doesn't generate itself — `ring-*`, `outline-*`, `decoration-*`,
+// `caret-*`, `accent-*`, `fill-*`, `stroke-*`, gradient stops, and the
+// `/<opacity>` modifier on every color utility (`bg-primary/50`) — work
+// with Chassis's palette. Not part of the default
+// `@chassis-ui/css/tailwind` entry point: opt in by importing this file
+// after it. See the Tailwind docs guide's "Token bridge" section.
+//
+// Scoped to colors only. Font families and the border-radius/shadow-size
+// scales are deliberately NOT bridged: Chassis's own utility generator
+// already produces `font-display`/`rounded-lg`/`shadow-lg`-style classes
+// from the same values, so bridging those namespaces would only recreate
+// same-name clashes for zero net new capability, unlike colors, which gain
+// entire utility groups Chassis has no equivalent for.
+//
+// References the runtime `--<name>` custom properties (not compile-time
+// Sass values) so the bridge stays reactive to dark mode / [data-cx-theme]
+// overrides / any runtime customization, the same way Chassis's own
+// `@utility` declarations do. The postcss prefixer step (see
+// build/postcss.tailwind.config.js) rewrites `var(--primary)` to
+// `var(--cx-primary)` here exactly like it does for every other Tailwind
+// entry, while leaving the `--color-*` declaration names themselves
+// unprefixed so Tailwind's compiler still recognizes them as theme keys.
+//
+
+@use "../maps" as *;
+
+@theme {
+  @each $name, $value in $context-colors {
+    --color-#{$name}: var(--#{$name});
+  }
+
+  @each $name, $value in $base-palette {
+    --color-#{$name}: var(--#{$name});
+  }
+}

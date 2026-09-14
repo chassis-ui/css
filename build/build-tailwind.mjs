@@ -22,18 +22,26 @@
  * pointing it at a custom-named file in `build/` silently loads the sibling
  * `build/postcss.config.js` instead.
  *
- * Finally, `build/tailwind-clashes.mjs` runs two checks that both need the
- * final compiled output, so they run last, in order:
- *  1. `run()` finds Chassis component/reboot class names Tailwind core would
- *     also generate and appends `@source not inline(...)` exclusions (plus
- *     the JS-toggled-class safelist) to `theme.css` and `index.css`.
- *  2. `checkUtilityNameClashes()` finds Chassis utility names Tailwind core
- *     ALSO generates even after the theme reset (a same-name `@utility`
- *     merge, not an exclusion candidate — `@source not inline()` would drop
- *     Chassis's own utility too). It patches the compiled `@utility` blocks
- *     per `build/tailwind-utility-clashes.json` so Chassis's declared value
+ * Finally, three checks run against the final compiled output, in order:
+ *  1. `tailwind-clashes.mjs`'s `run()` finds Chassis component/reboot class
+ *     names Tailwind core would also generate and appends
+ *     `@source not inline(...)` exclusions (plus the JS-toggled-class
+ *     safelist) to `theme.css` and `index.css`.
+ *  2. `tailwind-clashes.mjs`'s `checkUtilityNameClashes()` finds Chassis
+ *     utility names Tailwind core ALSO generates even after the theme reset
+ *     (a same-name `@utility` merge, not an exclusion candidate —
+ *     `@source not inline()` would drop Chassis's own utility too). It
+ *     patches the compiled `@utility` blocks per
+ *     `build/tailwind-utility-clashes.json` so Chassis's declared value
  *     always wins, and fails loudly if the live clash set drifts from that
  *     committed policy file.
+ *  3. `tailwind-bridge-clashes.mjs`'s `checkBridgeClashes()` reruns the same
+ *     analysis with the opt-in `bridge.scss` token bridge's `--color-*`
+ *     theme keys loaded, since bridging Chassis's palette re-enables native
+ *     Tailwind color utilities (`bg-*`, `border-*`, ...) that clash with
+ *     Chassis's own same-named ones. Patches `build/tailwind-bridge-clashes.json`'s
+ *     entries the same way — unconditionally, so it's a no-op for consumers
+ *     who never import bridge.css and a real fix for the ones who do.
  *
  * Copyright 2026 Ozgur Gunes
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
@@ -45,13 +53,22 @@ import { fileURLToPath } from 'node:url'
 import postcss from 'postcss'
 import * as sass from 'sass'
 import tailwindConfig from './postcss.tailwind.config.js'
+import { checkBridgeClashes } from './tailwind-bridge-clashes.mjs'
 import { checkUtilityNameClashes, run as writeClashExclusions } from './tailwind-clashes.mjs'
 
 const root = path.resolve(fileURLToPath(import.meta.url), '../..')
 const srcDir = path.join(root, 'scss/tailwind')
 const outDir = path.join(root, 'dist/tailwind')
 
-const entries = ['theme.scss', 'root.scss', 'reboot.scss', 'components.scss', 'utilities.scss', 'index.scss']
+const entries = [
+  'theme.scss',
+  'root.scss',
+  'reboot.scss',
+  'components.scss',
+  'utilities.scss',
+  'index.scss',
+  'bridge.scss'
+]
 
 mkdirSync(outDir, { recursive: true })
 
@@ -82,3 +99,4 @@ for (const file of readdirSync(outDir)) {
 
 await writeClashExclusions()
 await checkUtilityNameClashes()
+await checkBridgeClashes()
