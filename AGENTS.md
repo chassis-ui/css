@@ -37,6 +37,8 @@ Run the narrowest relevant command while iterating; run `pnpm test` (or at least
 - Component selectors may not use certain "generic" modifier class names (`small`, `large`, `primary`, `outline`, `solid`, `horizontal`, etc. — see `forbiddenGenericClasses` in [stylelint.config.js](stylelint.config.js)), enforced by stylelint.
 - Doc markers `// scss-docs-start name` / `// scss-docs-end name` mark regions extracted into the docs site.
 - Run `pnpm css:lint && pnpm css:test` after editing `scss/`. After editing `scss/tailwind/` specifically, also run `pnpm css:tailwind && pnpm css:test:tailwind` (needs a fresh `dist/tailwind/` build), and `pnpm js:test:e2e:tailwind-parity` for anything that could change computed styles.
+- `scss/tailwind/_source-exclusions.scss` and `scss/tailwind/_clash-policy.scss` are generated, checked-in files (`pnpm css:tailwind:update-clashes` / `pnpm css:tailwind:update-clash-policy` regenerate them from `build/tailwind-*-clashes.json`) — don't hand-edit; `build/build-tailwind.mjs` fails the build if either has drifted from what it re-derives. `scss/tailwind/_source-safelist.scss` is hand-maintained, not generated.
+- The `--cx-` custom-property prefix is applied by PostCSS, not Sass (`postcss/index.js`, published as `@chassis-ui/css/postcss`) — `build/postcss.config.js` and `build/postcss.tailwind.config.js` both import it rather than duplicating the plugin.
 
 ## JavaScript conventions
 

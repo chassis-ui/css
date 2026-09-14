@@ -32,10 +32,10 @@ This guide assumes Node.js is installed and you're comfortable in a terminal.
    pnpm add @floating-ui/dom vanilla-calendar-pro   # optional
    ```
 
-4. **Install Sass tooling.** Webpack needs loaders to handle Sass and to add vendor prefixes via PostCSS.
+4. **Install Sass tooling.** Webpack needs loaders to handle Sass and to run PostCSS — for vendor prefixes, and for the `--cx-` custom-property prefix Chassis's own components and JS plugins read at runtime.
 
    ```bash
-   pnpm add -D autoprefixer css-loader postcss-loader sass sass-loader style-loader
+   pnpm add -D autoprefixer css-loader postcss-loader postcss-prefix-custom-properties sass sass-loader style-loader
    ```
 
 ## Project structure
@@ -126,13 +126,12 @@ You can now run `pnpm start` to launch the dev server, but the page won't be sty
 
 Webpack needs the Sass loaders from the previous step and a Sass entry point. The sass-loader requires a `loadPaths` entry pointing to the project's Sass directory so token overrides can be resolved.
 
-1. **Add the loader rules to `webpack.config.js`.** Replace the existing `module.exports` with the version below — the new piece is the `module.rules` block.
+1. **Add the loader rules to `webpack.config.js`.** Replace the existing `module.exports` with the version below — the new piece is the `module.rules` block. `postcss-loader` is left without inline options here — see the next step for the config file it auto-loads.
 
    ```js
    'use strict'
 
    const path = require('path')
-   const autoprefixer = require('autoprefixer')
    const HtmlWebpackPlugin = require('html-webpack-plugin')
 
    module.exports = {
@@ -157,10 +156,7 @@ Webpack needs the Sass loaders from the previous step and a Sass entry point. Th
            use: [
              'style-loader',     // Injects CSS into a <style> tag
              'css-loader',       // Resolves @import and url()
-             {
-               loader: 'postcss-loader',
-               options: { postcssOptions: { plugins: [autoprefixer] } }
-             },
+             'postcss-loader',   // Runs postcss.config.mjs (next step)
              {
                loader: 'sass-loader',
                options: {
@@ -178,7 +174,21 @@ Webpack needs the Sass loaders from the previous step and a Sass entry point. Th
    }
    ```
 
-2. **Fill in `src/scss/styles.scss`.** The token source resolves through `_vendor.scss` before the rest of Chassis processes its variables, so a single `@use` directive is all that's needed.
+2. **Add `postcss.config.mjs`.** `postcss-loader` auto-loads it. The `.mjs` extension keeps it an ES module regardless of `package.json`'s own `"type"` field, since `@chassis-ui/css/postcss` is ESM-only.
+
+   ```js
+   // postcss.config.mjs
+   import autoprefixer from 'autoprefixer'
+   import { chassisPrefix } from '@chassis-ui/css/postcss'
+
+   export default {
+     plugins: [chassisPrefix(), autoprefixer]
+   }
+   ```
+
+   `chassisPrefix()` adds the `--cx-` prefix some Chassis components and JS plugins read at runtime (`--cx-carousel-interval`, `--cx-breakpoint-*`) — Sass only ever writes the unprefixed name.
+
+3. **Fill in `src/scss/styles.scss`.** The token source resolves through `_vendor.scss` before the rest of Chassis processes its variables, so a single `@use` directive is all that's needed.
 
    ```scss
    // 1. Chassis CSS — token source resolves via the loadPaths entry in webpack.config.js
@@ -191,9 +201,9 @@ Webpack needs the Sass loaders from the previous step and a Sass entry point. Th
    // );
    ```
 
-   The default token build (`chassis/docs`) is resolved via the `loadPaths` entry above. To switch to a custom token set, place a `_chassis-tokens.scss` on an earlier `loadPaths` entry — see [Customize → Sass]([[docsref:/customize/sass#switching-to-a-different-token-set-recommended]]) for details.
+   The default token build (`chassis/docs`) is resolved via the `loadPaths` entry above. To switch to a custom token set, place a `_chassis-tokens.scss` on an earlier `loadPaths` entry — see [Customize → Sass → Token sources]([[docsref:/customize/sass#token-sources]]) for details.
 
-3. **Import the JavaScript and load the stylesheet from `src/js/main.js`.**
+4. **Import the JavaScript and load the stylesheet from `src/js/main.js`.**
 
    ```js
    import '../scss/styles.scss'
@@ -206,7 +216,7 @@ Webpack needs the Sass loaders from the previous step and a Sass entry point. Th
    import { Modal, Tooltip } from '@chassis-ui/css'
    ```
 
-4. **Run the dev server.**
+5. **Run the dev server.**
 
    ```bash
    pnpm start
@@ -230,7 +240,6 @@ Wire it into the config in place of `style-loader`:
 
 ```diff
  const path = require('path')
- const autoprefixer = require('autoprefixer')
  const HtmlWebpackPlugin = require('html-webpack-plugin')
 +const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
