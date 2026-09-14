@@ -13,6 +13,8 @@ When using Sass in your asset pipeline, optimize Chassis CSS by only `@use`-ing 
 
 If you're not using a component, comment it out or delete it entirely. For example, if you're not using the carousel, remove that import to save some file size in your compiled CSS. Keep in mind there are some dependencies across Sass imports that may make it more difficult to omit a file.
 
+This applies to [the Tailwind entry point]([[docsref:/getting-started/tailwind]]) too, and matters more there: Tailwind's own build only tree-shakes the `@utility` rules it generates from classes it finds in your markup, not the plain component CSS Chassis ships in the `components` layer. An unused component still needs to be trimmed at the Sass level, the same way as shown here.
+
 ### Trim unused breakpoints
 
 Chassis CSS generates responsive surfaces — utility prefixes (`sm:d-flex`, `lg:m-md`), grid columns (`.col-lg-6`), container query loops, and the `--breakpoint-*` CSS custom properties — from a single `$breakpoints` map. Projects that don't need every breakpoint can shrink the compiled CSS substantially by overriding the map before importing Chassis:
