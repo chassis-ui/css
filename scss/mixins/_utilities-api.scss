@@ -81,7 +81,11 @@
 // Helper mixin to generate CSS properties for both legacy and property map approaches.
 // $dynamic-only: when true (group mode), skip property-map entries with a non-null default
 // value — those static properties are already emitted in the shared group selector rule.
-@mixin generate-properties($utility, $property-map, $properties, $value, $dynamic-only: false) {
+// $force-important: property names (from generate-tailwind-utility, Phase 10c) that always
+// get `!important` regardless of the utility's own `important` flag — the Tailwind-clash
+// remedy (scss/tailwind/_clash-policy.scss). Every legacy caller leaves this at its default
+// `()`, so dist/css is unaffected.
+@mixin generate-properties($utility, $property-map, $properties, $value, $dynamic-only: false, $force-important: ()) {
   @if $property-map != null {
     // Property-Value Mapping approach
     @each $property, $default-value in $property-map {
@@ -95,7 +99,7 @@
         } @else if $default-value == null {
           $actual-value: $value;
         }
-        @if map.get($utility, important) {
+        @if map.get($utility, important) or list.index($force-important, $property) {
           #{$property}: $actual-value !important; // stylelint-disable-line declaration-no-important
         } @else {
           #{$property}: $actual-value;
@@ -105,12 +109,63 @@
   } @else {
     // Legacy approach
     @each $property in $properties {
-      @if map.get($utility, important) {
+      @if map.get($utility, important) or list.index($force-important, $property) {
         #{$property}: $value !important; // stylelint-disable-line declaration-no-important
       } @else {
         #{$property}: $value;
       }
     }
+  }
+}
+
+// Computes the class-name fragment (without prefix or leading dot) for a
+// single utility + value-key pair: the custom class (or, lacking one, the
+// first property name as a legacy fallback), the modifier dash before the
+// value key (skipped when the key is null), and any dot embedded in a
+// compound `class: "companion.root"` value, passed through unsplit — the
+// legacy generator below relies on that embedded dot to build a compound
+// selector (`.companion.root-key`); the Tailwind emitter (Phase 2) splits it
+// itself to build `&.companion` nesting.
+@function utility-class-name($utility, $key) {
+  $properties: map.get($utility, property);
+  $custom-class: "";
+
+  @if meta.type-of($properties) == "map" {
+    @if map.has-key($utility, class) {
+      $custom-class: map.get($utility, class);
+    }
+  } @else {
+    @if meta.type-of($properties) == "string" {
+      $properties: list.append((), $properties);
+    }
+    // Use custom class if present, otherwise use the first value from the list of properties
+    @if map.has-key($utility, class) {
+      $custom-class: map.get($utility, class);
+    } @else {
+      $custom-class: list.nth($properties, 1);
+    }
+  }
+  @if $custom-class == null {
+    $custom-class: "";
+  }
+
+  // Don't add a dash before value key if value key is null (e.g. with shadow class)
+  $custom-class-modifier: "";
+  @if $key {
+    @if $custom-class == "" {
+      $custom-class-modifier: $key;
+    } @else {
+      $custom-class-modifier: "-" + $key;
+    }
+  }
+
+  $selector-class: map.get($utility, class);
+  @if $custom-class != "" {
+    @return $custom-class + $custom-class-modifier;
+  } @else if $selector-class != null and $selector-class != "" {
+    @return $selector-class + $custom-class-modifier;
+  } @else {
+    @return $custom-class-modifier;
   }
 }
 
@@ -252,31 +307,13 @@
   @each $key, $value in $values {
     $properties: map.get($utility, property);
     $property-map: null;
-    $custom-class: "";
 
     // Check if property is a map (Property-Value Mapping approach)
     @if meta.type-of($properties) == "map" {
       $property-map: $properties;
-      @if map.has-key($utility, class) {
-        $custom-class: map.get($utility, class);
-      }
-      @if $custom-class == null {
-        $custom-class: "";
-      }
-    } @else {
+    } @else if meta.type-of($properties) == "string" {
       // Legacy approach: multiple properties are possible, for example with vertical or horizontal margins or paddings
-      @if meta.type-of($properties) == "string" {
-        $properties: list.append((), $properties);
-      }
-      // Use custom class if present, otherwise use the first value from the list of properties
-      @if map.has-key($utility, class) {
-        $custom-class: map.get($utility, class);
-      } @else {
-        $custom-class: list.nth($properties, 1);
-      }
-      @if $custom-class == null {
-        $custom-class: "";
-      }
+      $properties: list.append((), $properties);
     }
 
     // State params to generate state variants
@@ -285,26 +322,10 @@
       $state: map.get($utility, state);
     }
 
-    // Don't add a dash before value key if value key is null (e.g. with shadow class)
-    $custom-class-modifier: "";
-    @if $key {
-      @if $custom-class == "" {
-        $custom-class-modifier: $key;
-      } @else {
-        $custom-class-modifier: "-" + $key;
-      }
-    }
-
     // Build the class name fragment (without prefix or dot) for reuse in state variants
     $class-name: "";
     @if $selector-type == "class" {
-      @if $custom-class != "" {
-        $class-name: $custom-class + $custom-class-modifier;
-      } @else if $selector-class != null and $selector-class != "" {
-        $class-name: $selector-class + $custom-class-modifier;
-      } @else {
-        $class-name: $custom-class-modifier;
-      }
+      $class-name: utility-class-name($utility, $key);
     }
 
     $selector: "";

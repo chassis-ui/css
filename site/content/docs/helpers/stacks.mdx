@@ -12,45 +12,45 @@ Stack helpers compose flexbox properties into two layout primitives: `.vstack` f
 
 `.vstack` arranges children in a column. Items stretch to full width by default; gap utilities control the spacing between them.
 
-<Example class="cxd-example-flex" code={`<div class="vstack gap-medium">
-    <div class="p-xsmall">First item</div>
-    <div class="p-xsmall">Second item</div>
-    <div class="p-xsmall">Third item</div>
+<Example class="cxd-example-flex" code={`<div class="vstack gap-md">
+    <div class="p-xs">First item</div>
+    <div class="p-xs">Second item</div>
+    <div class="p-xs">Third item</div>
   </div>`} />
 
 ## Horizontal
 
 `.hstack` arranges children in a row, aligned to the start of the cross axis. Items take only their natural width; gap utilities control the spacing between them.
 
-<Example class="cxd-example-flex" code={`<div class="hstack gap-medium">
-    <div class="p-xsmall">First item</div>
-    <div class="p-xsmall">Second item</div>
-    <div class="p-xsmall">Third item</div>
+<Example class="cxd-example-flex" code={`<div class="hstack gap-md">
+    <div class="p-xs">First item</div>
+    <div class="p-xs">Second item</div>
+    <div class="p-xs">Third item</div>
   </div>`} />
 
 `.ms-auto` acts as a spacer, pushing following items to the far end:
 
-<Example class="cxd-example-flex" code={`<div class="hstack gap-medium">
-    <div class="p-xsmall">First item</div>
-    <div class="p-xsmall ms-auto">Second item</div>
-    <div class="p-xsmall">Third item</div>
+<Example class="cxd-example-flex" code={`<div class="hstack gap-md">
+    <div class="p-xs">First item</div>
+    <div class="p-xs ms-auto">Second item</div>
+    <div class="p-xs">Third item</div>
   </div>`} />
 
 With a [vertical rule]([[docsref:/helpers/vertical-rule]]) separator:
 
-<Example class="cxd-example-flex" code={`<div class="hstack gap-medium">
-    <div class="p-xsmall">First item</div>
-    <div class="p-xsmall ms-auto">Second item</div>
+<Example class="cxd-example-flex" code={`<div class="hstack gap-md">
+    <div class="p-xs">First item</div>
+    <div class="p-xs ms-auto">Second item</div>
     <div class="vr"></div>
-    <div class="p-xsmall">Third item</div>
+    <div class="p-xs">Third item</div>
   </div>`} />
 
 ## Responsive stacks
 
-Responsive variants use [container queries]([[docsref:/layout/breakpoints#container-queries]]) to switch direction — each `{breakpoint}:vstack` and `{breakpoint}:hstack` class activates at or above the specified container width. Wrap the stack in a `.contains-inline` parent to provide the container context, then pair a base direction class with a breakpoint-prefixed variant: `.vstack` with `.small:hstack` stacks vertically at narrow containers and switches to a row at the small breakpoint. Resize the example below to preview the transition between column and row layouts.
+Responsive variants use [container queries]([[docsref:/layout/breakpoints#container-queries]]) to switch direction — each `{breakpoint}:vstack` and `{breakpoint}:hstack` class activates at or above the specified container width. Wrap the stack in a `.contains-inline` parent to provide the container context, then pair a base direction class with a breakpoint-prefixed variant: `.vstack` with `.sm:hstack` stacks vertically at narrow containers and switches to a row at the sm breakpoint. Resize the example below to preview the transition between column and row layouts.
 
 <ResizableExample code={`<div class="contains-inline">
-    <div class="vstack small:hstack gap-medium">
+    <div class="vstack sm:hstack gap-md">
       <button type="button" class="button primary">Primary action</button>
       <button type="button" class="button primary outline">Cancel</button>
     </div>

@@ -1,5 +1,5 @@
-import postcssPrefixCustomProperties from 'postcss-prefix-custom-properties'
 import autoprefixer from 'autoprefixer'
+import { chassisPrefix, mergeLayerBlocks } from '../postcss/index.js'
 
 const mapConfig = {
   inline: false,
@@ -34,36 +34,11 @@ const removeRedundantPrefixes = {
   }
 }
 
-// Merge consecutive (and non-consecutive) top-level @layer blocks that share
-// the same name into a single block. The CSS cascade is unaffected because
-// the spec already treats multiple same-named layer blocks as one layer;
-// this just makes the output cleaner and smaller.
-const mergeLayerBlocks = {
-  postcssPlugin: 'postcss-merge-layer-blocks',
-  OnceExit(root) {
-    const seen = new Map()
-    for (const node of [...root.nodes]) {
-      if (node.type !== 'atrule' || node.name !== 'layer' || !node.nodes) continue
-      const key = node.params
-      if (seen.has(key)) {
-        const first = seen.get(key)
-        node.each((child) => first.append(child.clone()))
-        node.remove()
-      } else {
-        seen.set(key, node)
-      }
-    }
-  }
-}
-
 export default (context) => {
   return {
     map: mapConfig,
     plugins: [
-      postcssPrefixCustomProperties({
-        prefix: 'cx-',
-        ignore: [/^--cx-/]
-      }),
+      chassisPrefix(),
       autoprefixer({ cascade: false }),
       removeRedundantPrefixes,
       mergeLayerBlocks

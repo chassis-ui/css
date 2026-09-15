@@ -5,20 +5,18 @@ import Icon from '@chassis-ui/docs/shortcodes/Icon.astro'
 import { getChassisDocsPath } from '@libs/path'
 ---
 
-<div class="home-section py-3xlarge medium:py-6xlarge">
-  <div class="container 2xlarge section-content py-3xlarge medium:py-6xlarge">
-    <div class="row justify-content-center mb-3xlarge medium:mb-6xlarge">
-      <header class="col xlarge:col-10 text-center">
-        <p
-          class="module-title fg-primary medium:font-xlarge font-mass text-uppercase mb-xsmall medium:mb-small"
-        >
+<div class="home-section py-3xl md:py-6xl">
+  <div class="container 2xl section-content py-3xl md:py-6xl">
+    <div class="row justify-content-center mb-3xl md:mb-6xl">
+      <header class="col xl:col-10 text-center">
+        <p class="module-title fg-primary md:font-xl font-mass text-uppercase mb-xs md:mb-sm">
           CHASSIS CSS
         </p>
-        <h1 class="font-hero mb-small medium:mb-medium large:mb-large">
+        <h1 class="font-hero mb-sm md:mb-md lg:mb-lg">
           <span class="font-normal">Token-Driven CSS Framework</span>
           <span class="d-block">for Multi-Brand Design Systems</span>
         </h1>
-        <p class="font-lead mb-medium medium:mb-large">
+        <p class="font-lead mb-md md:mb-lg">
           Complete CSS framework built on Chassis Tokens. Automatic Figma Variable sync, responsive
           grid system, 50+ accessible components, and utilities for rapid development across
           multiple brands and themes.
@@ -26,32 +24,30 @@ import { getChassisDocsPath } from '@libs/path'
       </header>
     </div>
 
-    <div
-      class="section-features d-flex flex-column gap-medium mb-medium medium:mb-large col large:col-6 large:offset-3"
-    >
+    <div class="section-features d-flex flex-column gap-md mb-md md:mb-lg col lg:col-6 lg:offset-3">
       <!-- Code snippet -->
       <Code
         noToolbar
         lang="bash"
         code="git clone git@github.com:chassis-ui/css.git"
-        containerClass="medium:mx-auto"
+        containerClass="md:mx-auto"
       />
       <!-- Buttons -->
-      <div class="d-grid medium:d-flex gap-medium medium:justify-content-center flex-wrap">
-        <a href={getChassisDocsPath('')} class="button primary large">
+      <div class="d-grid md:d-flex gap-md md:justify-content-center flex-wrap">
+        <a href={getChassisDocsPath('')} class="button primary lg">
           <Icon name="book-open-outline" />
           <span>Get Started</span>
         </a>
-        <a href={getConfig().repo} class="button default large" target="_blank" rel="noopener">
+        <a href={getConfig().repo} class="button default lg" target="_blank" rel="noopener">
           <Icon name="github-brand" />
           <span>View on GitHub</span>
         </a>
       </div>
 
       <!-- Version info -->
-      <p class="fg-subtle mb-0 text-center font-medium">
+      <p class="fg-subtle mb-0 text-center font-md">
         Currently <strong>v{getConfig().current_version}</strong>
-        <span class="px-2xsmall">&middot;</span>
+        <span class="px-2xs">&middot;</span>
         <a href={getConfig().repo + '/blob/main/CHANGELOG.md'} class="link-secondary text-nowrap"
           >Changes</a
         >

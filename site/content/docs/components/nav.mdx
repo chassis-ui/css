@@ -183,7 +183,7 @@ Right-aligned with `.justify-content-end`:
 
 ### Vertical
 
-Stack your navigation by changing the flex item direction with the `.flex-column` utility. Need to stack them on some viewports but not others? Use the responsive versions (e.g., `.small:flex-column`).
+Stack your navigation by changing the flex item direction with the `.flex-column` utility. Need to stack them on some viewports but not others? Use the responsive versions (e.g., `.sm:flex-column`).
 
 <Example code={`<ul class="nav flex-column">
     <li class="nav-item">
@@ -215,7 +215,7 @@ As always, vertical navigation is possible without `<ul>`s, too.
 
 Force your `.nav`'s contents to extend the full available width with one of two modifier classes. To proportionately fill all available space with your `.nav-item`s, use `.nav-fill`. Notice that all horizontal space is occupied, but not every nav item has the same width.
 
-<Example code={`<ul class="nav nav-pills d-flex nav-fill flex-column small:flex-row rounded-3xlarge">
+<Example code={`<ul class="nav nav-pills d-flex nav-fill flex-column sm:flex-row rounded-3xl">
     <li class="nav-item">
       <a class="nav-link active" aria-current="page" href="#">Active</a>
     </li>
@@ -232,7 +232,7 @@ Force your `.nav`'s contents to extend the full available width with one of two 
 
 When using a `<nav>`-based navigation, you can safely omit `.nav-item` as only `.nav-link` is required for styling `<a>` elements.
 
-<Example code={`<nav class="nav nav-pills d-flex nav-fill flex-column small:flex-row rounded-3xlarge" aria-label="Fill navigation">
+<Example code={`<nav class="nav nav-pills d-flex nav-fill flex-column sm:flex-row rounded-3xl" aria-label="Fill navigation">
     <a class="nav-link active" aria-current="page" href="#">Active</a>
     <a class="nav-link" href="#">Much longer nav link</a>
     <a class="nav-link" href="#">Link</a>
@@ -241,7 +241,7 @@ When using a `<nav>`-based navigation, you can safely omit `.nav-item` as only `
 
 For equal-width elements, use `.nav-justified`. All horizontal space will be occupied by nav links, but unlike the `.nav-fill` above, every nav item will be the same width.
 
-<Example code={`<ul class="nav nav-pills d-flex nav-justified flex-column medium:flex-row rounded-3xlarge">
+<Example code={`<ul class="nav nav-pills d-flex nav-justified flex-column md:flex-row rounded-3xl">
     <li class="nav-item">
       <a class="nav-link active" aria-current="page" href="#">Active</a>
     </li>
@@ -258,7 +258,7 @@ For equal-width elements, use `.nav-justified`. All horizontal space will be occ
 
 Similar to the `.nav-fill` example using a `<nav>`-based navigation.
 
-<Example code={`<nav class="nav nav-pills d-flex nav-justified flex-column medium:flex-row rounded-3xlarge" aria-label="Justified navigation">
+<Example code={`<nav class="nav nav-pills d-flex nav-justified flex-column md:flex-row rounded-3xl" aria-label="Justified navigation">
     <a class="nav-link active" aria-current="page" href="#">Active</a>
     <a class="nav-link" href="#">Much longer nav link</a>
     <a class="nav-link" href="#">Link</a>
@@ -327,7 +327,7 @@ Use `data-cx-toggle="collapse"` with the target selector to create the interacti
     <li class="nav-item collapsible border-bottom">
       <a class="nav-link" href="#navCollapse1" data-cx-toggle="collapse" aria-expanded="false" aria-controls="navCollapse1">Collapsed Item</a>
       <div class="collapse" id="navCollapse1">
-        <nav class="nav flex-column ps-medium" aria-label="Collapsed Item submenu">
+        <nav class="nav flex-column ps-md" aria-label="Collapsed Item submenu">
           <a class="nav-link" href="#">Child item 1</a>
           <a class="nav-link" href="#">Child item 2</a>
           <a class="nav-link" href="#">Child item 3</a>
@@ -337,7 +337,7 @@ Use `data-cx-toggle="collapse"` with the target selector to create the interacti
     <li class="nav-item collapsible">
       <a class="nav-link" href="#navCollapse2" data-cx-toggle="collapse" aria-expanded="true" aria-controls="navCollapse2">Collapsible Item</a>
       <div class="collapse show" id="navCollapse2">
-        <nav class="nav flex-column ps-medium" aria-label="Collapsible Item submenu">
+        <nav class="nav flex-column ps-md" aria-label="Collapsible Item submenu">
           <a class="nav-link" href="#">Child item 1</a>
           <a class="nav-link" href="#">Child item 2</a>
           <a class="nav-link" href="#">Child item 3</a>
@@ -352,7 +352,7 @@ For mutually exclusive expandable sections, implement accordion behavior by addi
     <li class="nav-item collapsible border-bottom">
       <a class="nav-link" href="#navCollapse3" data-cx-toggle="collapse" aria-expanded="true" aria-controls="navCollapse3">Collapsible Item</a>
       <div class="collapse show" id="navCollapse3" data-cx-parent="#navAccordion">
-        <nav class="nav flex-column ps-medium" aria-label="First accordion submenu">
+        <nav class="nav flex-column ps-md" aria-label="First accordion submenu">
           <a class="nav-link" href="#">Child item 1</a>
           <a class="nav-link" href="#">Child item 2</a>
           <a class="nav-link" href="#">Child item 3</a>
@@ -362,7 +362,7 @@ For mutually exclusive expandable sections, implement accordion behavior by addi
     <li class="nav-item collapsible collapsed border-bottom">
       <a class="nav-link" href="#navCollapse4" data-cx-toggle="collapse" aria-expanded="false" aria-controls="navCollapse4">Collapsible Item</a>
       <div class="collapse" id="navCollapse4" data-cx-parent="#navAccordion">
-        <nav class="nav flex-column ps-medium" aria-label="Second accordion submenu">
+        <nav class="nav flex-column ps-md" aria-label="Second accordion submenu">
           <a class="nav-link" href="#">Child item 1</a>
           <a class="nav-link" href="#">Child item 2</a>
           <a class="nav-link" href="#">Child item 3</a>
@@ -372,7 +372,7 @@ For mutually exclusive expandable sections, implement accordion behavior by addi
     <li class="nav-item collapsible collapsed">
       <a class="nav-link nav-collapse" href="#navCollapse5" data-cx-toggle="collapse" aria-expanded="false" aria-controls="navCollapse5">Collapsible Item</a>
       <div class="collapse" id="navCollapse5" data-cx-parent="#navAccordion">
-        <nav class="nav flex-column ps-medium" aria-label="Third accordion submenu">
+        <nav class="nav flex-column ps-md" aria-label="Third accordion submenu">
           <a class="nav-link" href="#">Child item 1</a>
           <a class="nav-link" href="#">Child item 2</a>
           <a class="nav-link" href="#">Child item 3</a>

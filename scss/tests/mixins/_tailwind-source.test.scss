@@ -1,0 +1,94 @@
+@use "../../mixins/tailwind-source" as *;
+
+// Minimal breakpoint maps used throughout — avoids coupling to global
+// defaults, and specifically covers a project with a custom $breakpoints
+// map (a 3xl added, 2xl dropped) per Phase 10's D8/fact-18 requirement.
+$bp: (xs: 0, sm: 36rem, md: 48rem, lg: 64rem, xl: 80rem, "2xl": 96rem);
+$custom-bp: (xs: 0, sm: 36rem, md: 48rem, lg: 64rem, "3xl": 120rem);
+
+// ─── breakpoint-source-group ─────────────────────────────────────────────────
+
+@include describe("breakpoint-source-group") {
+  @include it("builds the brace group from the default breakpoints, skipping xs") {
+    @include assert-equal(
+      breakpoint-source-group($bp),
+      "{,sm:,md:,lg:,xl:,2xl:}"
+    );
+  }
+
+  @include it("follows a project's own custom breakpoints (an added 3xl, a dropped 2xl)") {
+    @include assert-equal(
+      breakpoint-source-group($custom-bp),
+      "{,sm:,md:,lg:,3xl:}"
+    );
+  }
+
+  @include it("still returns the leading unprefixed slot for a single non-xs breakpoint") {
+    @include assert-equal(
+      breakpoint-source-group((xs: 0, sm: 36rem)),
+      "{,sm:}"
+    );
+  }
+}
+
+// ─── emit-source-config ──────────────────────────────────────────────────────
+
+@include describe("emit-source-config") {
+  @include it("excludes bare names unprefixed and responsive names at every breakpoint prefix") {
+    @include assert() {
+      @include output() {
+        @include emit-source-config($bp, ("outline", "grid"), ("container"), ());
+      }
+
+      @include expect() {
+        @source not inline("outline");
+        @source not inline("grid");
+        @source not inline("{,sm:,md:,lg:,xl:,2xl:}container");
+      }
+    }
+  }
+
+  @include it("follows a project's own custom breakpoints for responsive names") {
+    @include assert() {
+      @include output() {
+        @include emit-source-config($custom-bp, (), ("container"), ());
+      }
+
+      @include expect() {
+        @source not inline("{,sm:,md:,lg:,3xl:}container");
+      }
+    }
+  }
+
+  @include it("emits a safelist entry with its reason as a trailing comment") {
+    @include assert() {
+      @include output() {
+        // The trailing comma is required: a single-element list of a
+        // bracketed pair otherwise collapses to the pair itself.
+        @include emit-source-config($bp, (), (), (["d-none", "toggled by JS"],));
+      }
+
+      @include expect() {
+        @source inline("d-none"); /* toggled by JS */
+      }
+    }
+  }
+
+  @include it("emits every safelist entry when there are several") {
+    @include assert() {
+      @include output() {
+        @include emit-source-config(
+          $bp,
+          (),
+          (),
+          (["d-none", "reason one"], ["d-flex", "reason two"])
+        );
+      }
+
+      @include expect() {
+        @source inline("d-none"); /* reason one */
+        @source inline("d-flex"); /* reason two */
+      }
+    }
+  }
+}

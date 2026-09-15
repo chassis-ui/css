@@ -22,14 +22,14 @@
     @include test-generate-utility(
       (
         property: "padding",
-        values: (small: .5rem, large: 2rem)
+        values: (sm: .5rem, lg: 2rem)
       )
     ) {
-      .padding-small {
+      .padding-sm {
         padding: .5rem;
       }
 
-      .padding-large {
+      .padding-lg {
         padding: 2rem;
       }
     }
@@ -41,14 +41,14 @@
         (
           property: "padding",
           important: true,
-          values: (small: .5rem, large: 2rem)
+          values: (sm: .5rem, lg: 2rem)
         )
       ) {
-        .padding-small {
+        .padding-sm {
           padding: .5rem !important;
         }
 
-        .padding-large {
+        .padding-lg {
           padding: 2rem !important;
         }
       }
@@ -61,18 +61,18 @@
         @include test-generate-utility(
           (
             property: "padding",
-            values: (null: 1rem, small: .5rem, large: 2rem)
+            values: (null: 1rem, sm: .5rem, lg: 2rem)
           ),
         ) {
           .padding {
             padding: 1rem;
           }
 
-          .padding-small {
+          .padding-sm {
             padding: .5rem;
           }
 
-          .padding-large {
+          .padding-lg {
             padding: 2rem;
           }
         }
@@ -82,10 +82,10 @@
         @include test-generate-utility(
           (
             property: "padding",
-            values: (small: null, large: 2rem)
+            values: (sm: null, lg: 2rem)
           )
         ) {
-          .padding-large {
+          .padding-lg {
             padding: 2rem;
           }
         }
@@ -365,20 +365,20 @@
             class: gap,
             group: true,
             child-selector: "> *",
-            values: (small: .5rem, large: 1rem)
+            values: (sm: .5rem, lg: 1rem)
           )
         ) {
-          :where(.gap-small > *),
-          :where(.gap-large > *) {
+          :where(.gap-sm > *),
+          :where(.gap-lg > *) {
             gap: var(--gap);
           }
 
-          :where(.gap-small > *) {
+          :where(.gap-sm > *) {
             // stylelint-disable-next-line @stylistic/number-leading-zero
             --gap: 0.5rem;
           }
 
-          :where(.gap-large > *) {
+          :where(.gap-lg > *) {
             --gap: 1rem;
           }
         }
@@ -417,19 +417,19 @@
       @include test-generate-utility(
         (
           property: "padding",
-          values: (null: 1rem, small: .5rem, large: 2rem)
+          values: (null: 1rem, sm: .5rem, lg: 2rem)
         ),
-        $prefix: 'small\\:'
+        $prefix: 'sm\\:'
       ) {
-        .small\:padding {
+        .sm\:padding {
           padding: 1rem;
         }
 
-        .small\:padding-small {
+        .sm\:padding-sm {
           padding: .5rem;
         }
 
-        .small\:padding-large {
+        .sm\:padding-lg {
           padding: 2rem;
         }
       }
@@ -445,12 +445,12 @@
             invisible: hidden,
           )
         ),
-        'small\\:'
+        'sm\\:'
       ) {
-        .small\:visible {
+        .sm\:visible {
           visibility: visible;
         }
-        .small\:invisible {
+        .sm\:invisible {
           visibility: hidden;
         }
       }

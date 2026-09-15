@@ -113,66 +113,66 @@
   // a more maintainable and consistent design system.
   //
   // Three size variants are provided:
-  // - %form-size-medium: Default size for form elements
-  // - %form-size-small: Smaller, more compact size
-  // - %form-size-large: Larger, more prominent size
+  // - %form-size-md: Default size for form elements
+  // - %form-size-sm: Smaller, more compact size
+  // - %form-size-lg: Larger, more prominent size
   //
   // Usage example:
   // ```scss
   // .custom-field {
   //   @extend %form-input;
-  //   @extend %form-size-small; // Apply small size variant
+  //   @extend %form-size-sm; // Apply sm size variant
   // }
   // ```
   //
   // These can also be applied with modifier classes:
   // ```html
-  // <input class="form-input small">
-  // <input class="form-input large">
+  // <input class="form-input sm">
+  // <input class="form-input lg">
   // ```
   //
 
 
   // Medium size variant - used as the default size
   // Sets standard typography, sizing, and spacing
-  %form-size-medium {
+  %form-size-md {
     // scss-docs-start form-sizing-properties
-    @include map-font($form-medium-text-font, input);
-    --padding-x: var(--input-padding-x, #{$form-medium-padding-x});
-    --padding-y: var(--input-padding-y, #{$form-medium-padding-y});
-    --gap: var(--input-gap, #{$form-medium-gap});
+    @include map-font($form-md-text-font, input);
+    --padding-x: var(--input-padding-x, #{$form-md-padding-x});
+    --padding-y: var(--input-padding-y, #{$form-md-padding-y});
+    --gap: var(--input-gap, #{$form-md-gap});
     --min-height: var(--input-min-height, #{$form-input-min-height});
     --border-width: var(--input-border-width, #{$form-regular-border-width});
-    --border-radius: var(--input-border-radius, #{$form-medium-border-radius});
-    --caret-size: var(--input-caret-size, #{$form-medium-caret-size});
-    --icon-size: var(--input-icon-size, #{$form-medium-icon-size});
+    --border-radius: var(--input-border-radius, #{$form-md-border-radius});
+    --caret-size: var(--input-caret-size, #{$form-md-caret-size});
+    --icon-size: var(--input-icon-size, #{$form-md-icon-size});
     // scss-docs-end form-sizing-properties
   }
 
   // Small size variant - for compact UIs and dense layouts
   // Reduces sizing and spacing for a more compact appearance
-  %form-size-small {
-    @include map-font-size($form-small-text-font, null, input);
-    @include map-line-height($form-small-text-font, null, input);
-    --input-padding-x: #{$form-small-padding-x};
-    --input-padding-y: #{$form-small-padding-y};
-    --input-gap: #{$form-small-gap};
-    --input-border-radius: #{$form-small-border-radius};
-    --input-caret-size: #{$form-small-caret-size};
-    --input-icon-size: #{$form-small-icon-size};
+  %form-size-sm {
+    @include map-font-size($form-sm-text-font, null, input);
+    @include map-line-height($form-sm-text-font, null, input);
+    --input-padding-x: #{$form-sm-padding-x};
+    --input-padding-y: #{$form-sm-padding-y};
+    --input-gap: #{$form-sm-gap};
+    --input-border-radius: #{$form-sm-border-radius};
+    --input-caret-size: #{$form-sm-caret-size};
+    --input-icon-size: #{$form-sm-icon-size};
   }
 
   // Large size variant - for prominent form controls
   // Increases sizing and spacing for greater visibility
-  %form-size-large {
-    @include map-font-size($form-large-text-font, null, input);
-    @include map-line-height($form-large-text-font, null, input);
-    --input-padding-x: #{$form-large-padding-x};
-    --input-padding-y: #{$form-large-padding-y};
-    --input-gap: #{$form-large-gap};
-    --input-border-radius: #{$form-large-border-radius};
-    --input-caret-size: #{$form-large-caret-size};
-    --input-icon-size: #{$form-large-icon-size};
+  %form-size-lg {
+    @include map-font-size($form-lg-text-font, null, input);
+    @include map-line-height($form-lg-text-font, null, input);
+    --input-padding-x: #{$form-lg-padding-x};
+    --input-padding-y: #{$form-lg-padding-y};
+    --input-gap: #{$form-lg-gap};
+    --input-border-radius: #{$form-lg-border-radius};
+    --input-caret-size: #{$form-lg-caret-size};
+    --input-icon-size: #{$form-lg-icon-size};
   }
 
   //
@@ -187,9 +187,9 @@
   // Features:
   // - Applies base component styles through %component
   // - Sets color scheme with %form-colors
-  // - Sets default size with %form-size-medium
+  // - Sets default size with %form-size-md
   // - Handles focus, disabled, and other states
-  // - Provides size variant support through .small and .large modifiers
+  // - Provides size variant support through .sm and .lg modifiers
   //
   // Usage example:
   // ```scss
@@ -200,7 +200,7 @@
   //
   %form-input {
     // Extend `%component` to assign the default component properties
-    @extend %component, %form-colors, %form-size-medium;
+    @extend %component, %form-colors, %form-size-md;
     // scss-docs-start form-input-color-properties
     --fg-color: var(--input-fg-color, var(--form-idle-fg-active));
     --bg-color: var(--input-bg-color, var(--form-idle-bg-regular));
@@ -220,17 +220,17 @@
     @include transition($form-input-transition);
 
     // Size variants applied through class modifiers
-    &.small {
-      @extend %form-size-small;
+    &.sm {
+      @extend %form-size-sm;
     }
 
-    &.large {
-      @extend %form-size-large;
+    &.lg {
+      @extend %form-size-lg;
     }
 
     // Focus state styling
     // Changes colors and adds focus indication
-    &:is(:focus-visible, :focus-within) {
+    &:is(:focus, :focus-visible, :focus-within) {
       --fg-color: var(--form-focus-fg-active);
       --bg-color: var(--form-focus-bg-regular);
       --border-color: var(--form-focus-border-color);

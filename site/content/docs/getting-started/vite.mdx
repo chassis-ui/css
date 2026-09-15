@@ -66,7 +66,7 @@ my-project/
 
 The steps below fill in `vite.config.js`, the starter HTML, and the npm scripts needed to run and build the project.
 
-1. **Fill in `vite.config.js`.** This config tells Vite where the source lives, where to emit the build, and which port the dev server should use. The `loadPaths` entry lets Sass resolve token overrides placed in `src/scss`.
+1. **Fill in `vite.config.js`.** This config tells Vite where the source lives, where to emit the build, and which port the dev server should use. The `loadPaths` entries let Sass resolve token overrides placed in `src/scss`, then fall back to the packages under `node_modules` — `src/scss` must come first so a project override wins over the framework default.
 
    ```js
    import { resolve } from 'path'
@@ -82,7 +82,11 @@ The steps below fill in `vite.config.js`, the starter HTML, and the npm scripts 
      css: {
        preprocessorOptions: {
          scss: {
-           loadPaths: [resolve(__dirname, 'src/scss')]  // project token override
+           loadPaths: [
+             resolve(__dirname, 'src/scss'),                                    // project token override
+             resolve(__dirname, 'node_modules/@chassis-ui/css/scss/vendor'),    // framework's default tokens
+             resolve(__dirname, 'node_modules')                                 // bare package specifiers (@chassis-ui/tokens/…)
+           ]
          }
        }
      }
@@ -101,7 +105,7 @@ The steps below fill in `vite.config.js`, the starter HTML, and the npm scripts 
        <script type="module" src="./js/main.js"></script>
      </head>
      <body>
-       <div class="container py-large px-medium mx-auto">
+       <div class="container py-lg px-md mx-auto">
          <h1>Hello, Chassis CSS and Vite!</h1>
          <button class="button primary">Primary button</button>
        </div>
@@ -130,7 +134,7 @@ The steps below fill in `vite.config.js`, the starter HTML, and the npm scripts 
 
 ## Import Chassis
 
-Vite needs a Sass entry point that imports Chassis. The `loadPaths` entry in `vite.config.js` ensures Sass can resolve token overrides from `src/scss`.
+Vite needs a Sass entry point that imports Chassis. The `loadPaths` entries in `vite.config.js` ensure Sass can resolve token overrides from `src/scss`, plus the framework's own default tokens and bare package specifiers under `node_modules`.
 
 1. **Fill in `src/scss/styles.scss`.** The token source resolves through `_vendor.scss` before the rest of Chassis processes its variables, so a single `@use` directive is all that's needed.
 
@@ -145,7 +149,7 @@ Vite needs a Sass entry point that imports Chassis. The `loadPaths` entry in `vi
    // );
    ```
 
-   The default token build (`chassis/docs`) is resolved automatically. To switch to a custom token set, place a `_chassis-tokens.scss` on an earlier `loadPaths` entry — see [Customize → Sass]([[docsref:/customize/sass#switching-to-a-different-token-set-recommended]]) for details.
+   The default token build (`chassis/docs`) is resolved automatically. To switch to a custom token set, place a `_chassis-tokens.scss` on an earlier `loadPaths` entry — see [Customize → Sass → Token sources]([[docsref:/customize/sass#token-sources]]) for details.
 
 2. **Import the stylesheet and Chassis JS in `src/js/main.js`.** Floating UI and vanilla-calendar-pro are resolved through the bundler when needed.
 
@@ -161,6 +165,25 @@ Vite needs a Sass entry point that imports Chassis. The `loadPaths` entry in `vi
    ```
 
 3. **Reload.** With both files filled in, Vite hot-reloads the page — the heading and button should now render with Chassis styling.
+
+## Apply the `--cx-` prefix
+
+Chassis's own components and JS plugins read some CSS custom properties with a `--cx-` prefix (`--cx-carousel-interval`, `--cx-breakpoint-*`) — Sass only ever writes the unprefixed name (`--carousel-interval`), so a separate PostCSS step adds the prefix. Install the plugin and add a `postcss.config.mjs` (the `.mjs` extension keeps it an ES module regardless of `package.json`'s own `"type"` field, since `@chassis-ui/css/postcss` is ESM-only):
+
+```bash
+pnpm add -D postcss-prefix-custom-properties
+```
+
+```js
+// postcss.config.mjs
+import { chassisPrefix } from '@chassis-ui/css/postcss'
+
+export default {
+  plugins: [chassisPrefix()]
+}
+```
+
+Vite picks this up automatically — reload the page, and `getComputedStyle` on any Chassis component now shows its `--cx-`-prefixed properties.
 
 ## Build optimizations
 

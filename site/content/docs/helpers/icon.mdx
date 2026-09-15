@@ -39,7 +39,7 @@ Context color classes — `.icon-main`, `.icon-subtle`, `.icon-slight` — follo
 <Icon name="info-circle-solid" class="secondary-icon-subtle" />
 <Icon name="info-circle-solid" class="secondary-icon-slight" />
 
-<span class="vr mx-medium"></span>
+<span class="vr mx-md"></span>
 
 <Icon name="info-circle-solid" font class="icon-main" />
 <Icon name="info-circle-solid" font class="icon-subtle" />
@@ -71,85 +71,85 @@ A color class on a parent element sets `--cx-icon-color` for all descendant `.ic
 
 Size modifier classes set `--cx-icon-size` on the target. Like color classes, they can be applied to any ancestor element to uniformly size all descendant icons.
 
-<Example code={`<Icon name="info-circle-solid" class="icon-2xsmall" />
-<Icon name="info-circle-solid" class="icon-xsmall" />
-<Icon name="info-circle-solid" class="icon-small" />
-<Icon name="info-circle-solid" class="icon-medium" />
-<Icon name="info-circle-solid" class="icon-large" />
-<Icon name="info-circle-solid" class="icon-xlarge" />
-<Icon name="info-circle-solid" class="icon-2xlarge" />
-<Icon name="info-circle-solid" class="icon-3xlarge" />
-<Icon name="info-circle-solid" class="icon-4xlarge" />`} />
+<Example code={`<Icon name="info-circle-solid" class="icon-2xs" />
+<Icon name="info-circle-solid" class="icon-xs" />
+<Icon name="info-circle-solid" class="icon-sm" />
+<Icon name="info-circle-solid" class="icon-md" />
+<Icon name="info-circle-solid" class="icon-lg" />
+<Icon name="info-circle-solid" class="icon-xl" />
+<Icon name="info-circle-solid" class="icon-2xl" />
+<Icon name="info-circle-solid" class="icon-3xl" />
+<Icon name="info-circle-solid" class="icon-4xl" />`} />
 
-<Example code={`<Icon name="info-circle-solid" font class="icon-2xsmall" />
-<Icon name="info-circle-solid" font class="icon-xsmall" />
-<Icon name="info-circle-solid" font class="icon-small" />
-<Icon name="info-circle-solid" font class="icon-medium" />
-<Icon name="info-circle-solid" font class="icon-large" />
-<Icon name="info-circle-solid" font class="icon-xlarge" />
-<Icon name="info-circle-solid" font class="icon-2xlarge" />
-<Icon name="info-circle-solid" font class="icon-3xlarge" />
-<Icon name="info-circle-solid" font class="icon-4xlarge" />`} />
+<Example code={`<Icon name="info-circle-solid" font class="icon-2xs" />
+<Icon name="info-circle-solid" font class="icon-xs" />
+<Icon name="info-circle-solid" font class="icon-sm" />
+<Icon name="info-circle-solid" font class="icon-md" />
+<Icon name="info-circle-solid" font class="icon-lg" />
+<Icon name="info-circle-solid" font class="icon-xl" />
+<Icon name="info-circle-solid" font class="icon-2xl" />
+<Icon name="info-circle-solid" font class="icon-3xl" />
+<Icon name="info-circle-solid" font class="icon-4xl" />`} />
 
 ### Responsive sizes
 
 Responsive size classes follow the format `{breakpoint}:icon-{size}` and require the `$enable-responsive-font-sizes` variable to be enabled. Classes stack using a mobile-first approach — each breakpoint class overrides the previous size at that breakpoint and wider.
 
-<Example code={`<Icon name="info-circle-solid" class="icon-small medium:icon-large xlarge:icon-4xlarge" />
-<Icon name="info-circle-solid" font class="icon-small medium:icon-large xlarge:icon-4xlarge" />`} />
+<Example code={`<Icon name="info-circle-solid" class="icon-sm md:icon-lg xl:icon-4xl" />
+<Icon name="info-circle-solid" font class="icon-sm md:icon-lg xl:icon-4xl" />`} />
 
 ### Parent cascade
 
 A size class on a parent element sizes all descendant icons uniformly. Individual icons can still override with their own size modifier.
 
-<Example code={`<div class="icon-large">
+<Example code={`<div class="icon-lg">
     <Icon name="info-circle-solid" />
     <Icon name="info-circle-solid" />
-    <Icon name="info-circle-solid" class="icon-small" />
+    <Icon name="info-circle-solid" class="icon-sm" />
   </div>`} />
 
 ## With text
 
 Icons sized with an explicit `.icon-{size}` class align properly alongside text at the matching `.font-{size}` scale. `.icon-adaptive` scales the icon relative to its parent's `font-size` — `1.125em` for SVG icons, `1.25em` for font icons — so no manual size class is needed when the icon sits inline with text.
 
-<Example code={`<div class="font-small">
-    <Icon name="info-circle-solid" class="icon-small" />
+<Example code={`<div class="font-sm">
+    <Icon name="info-circle-solid" class="icon-sm" />
     Text with a leading SVG icon.
   </div>
-  <div class="font-small">
-    <Icon name="info-circle-solid" font class="icon-small" />
+  <div class="font-sm">
+    <Icon name="info-circle-solid" font class="icon-sm" />
     Text with a leading font icon.
   </div>
-  <div class="font-2xlarge">
-    <Icon name="info-circle-solid" class="icon-2xlarge" />
+  <div class="font-2xl">
+    <Icon name="info-circle-solid" class="icon-2xl" />
     Text with a leading SVG icon.
   </div>
-  <div class="font-2xlarge">
-    <Icon name="info-circle-solid" font class="icon-2xlarge" />
+  <div class="font-2xl">
+    <Icon name="info-circle-solid" font class="icon-2xl" />
     Text with a leading font icon.
   </div>
-  <div class="font-4xlarge">
-    <Icon name="info-circle-solid" class="icon-4xlarge" />
+  <div class="font-4xl">
+    <Icon name="info-circle-solid" class="icon-4xl" />
     Text with a leading SVG icon.
   </div>
-  <div class="font-4xlarge">
-    <Icon name="info-circle-solid" font class="icon-4xlarge" />
+  <div class="font-4xl">
+    <Icon name="info-circle-solid" font class="icon-4xl" />
     Text with a leading font icon.
   </div>`} />
 
-<Example code={`<div class="font-small">
+<Example code={`<div class="font-sm">
     <Icon name="info-circle-solid" class="icon-adaptive" />
     Text with a leading SVG icon.
   </div>
-  <div class="font-small">
+  <div class="font-sm">
     <Icon name="info-circle-solid" font class="icon-adaptive" />
     Text with a leading font icon.
   </div>
-  <div class="font-2xlarge">
+  <div class="font-2xl">
     <Icon name="info-circle-solid" class="icon-adaptive" />
     Text with a leading SVG icon.
   </div>
-  <div class="font-2xlarge">
+  <div class="font-2xl">
     <Icon name="info-circle-solid" font class="icon-adaptive" />
     Text with a leading font icon.
   </div>`} />
@@ -203,7 +203,7 @@ Override `--cx-icon-opacity` with an inline style or choose from the `.icon-opac
 <Example code={[`<Icon name="info-circle-solid" class="icon-secondary" />
 <Icon name="info-circle-solid" style="--cx-icon-opacity: .6;" class="icon-secondary" />
 
-<span class="vr mx-medium"></span>
+<span class="vr mx-md"></span>
 `].concat(getData('basic-opacities').map((opacity) => `<Icon name="info-circle-solid" class="icon-secondary icon-opacity-${opacity.name}" />`))} />
 
 ### Context opacity
@@ -214,7 +214,7 @@ Context opacity classes — `.icon-opacity-subtle` and `.icon-opacity-slight` �
 <Icon name="info-circle-solid" class="icon-secondary icon-opacity-subtle" />
 <Icon name="info-circle-solid" class="icon-secondary icon-opacity-slight" />
 
-<span class="vr mx-medium"></span>
+<span class="vr mx-md"></span>
 
 <Icon name="info-circle-solid" font class="icon-secondary" />
 <Icon name="info-circle-solid" font class="icon-secondary icon-opacity-subtle" />
@@ -230,7 +230,7 @@ Context opacity classes — `.icon-opacity-subtle` and `.icon-opacity-slight` �
 
 ```css
 --cx-icon-color: var(--cx-context-icon-main, var(--cx-icon-main));
---cx-icon-size: var(--cx-icon-medium);
+--cx-icon-size: var(--cx-icon-md);
 ```
 
 ### Sass variables

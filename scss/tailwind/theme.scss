@@ -1,0 +1,91 @@
+//
+// Chassis CSS — Tailwind Theme Bridge
+//
+// Resets Tailwind's own default theme (`--*: initial`) so nothing but
+// Chassis tokens leak into utility values, then re-derives the two things
+// Tailwind's own engine reads at build time: `--breakpoint-*` /
+// `--container-*` (for `sm:`/`md:`/… and `@sm:`/`@md:`/… variants) from
+// `$breakpoints`, and the `dark:`/`light:` custom variants (D4: match both
+// `prefers-color-scheme` and `[data-cx-theme]`, nearest override wins —
+// mirrors how Chassis's own `light-dark()` token system already behaves).
+// `hover:` needs no override (D3: Tailwind's own default `@media
+// (hover: hover)` wrapping is used as-is). `print:` needs no override
+// either — it's a Tailwind built-in.
+//
+// Finally emits the fact-9 `@source not inline(...)` component-clash
+// exclusions and the fact-15 JS-toggled-class safelist
+// (`emit-source-config`, `scss/mixins/_tailwind-source.scss`) from
+// `./_source-exclusions.scss` (generated, checked by
+// `build/tailwind-clashes.mjs`) and `./_source-safelist.scss`
+// (hand-maintained) respectively.
+//
+
+@use "../config" as *;
+@use "../mixins" as *;
+@use "./source-exclusions" as clashes;
+@use "./source-safelist" as safelist;
+
+// Tailwind emits the `:root, :host { … }` theme variables where its first
+// `@theme` sits. Wrapping it in `@layer theme` keeps them in the theme layer
+// (as `tailwindcss/index.css` does); a top-level `@theme` would emit them
+// unlayered, above every Chassis layer.
+@layer theme {
+  @theme {
+    // Sass's declaration parser chokes on a literal `--*` property name
+    // (`expected "{"`.); interpolating it bypasses that parse path.
+    #{"--*"}: initial;
+
+    // xs is 0-width; a `--breakpoint-xs`/`--container-xs` variant would
+    // always match, so it's skipped.
+    @each $name, $value in $breakpoints {
+      @if $name != xs {
+        --breakpoint-#{$name}: #{$value};
+      }
+    }
+
+    @each $name, $value in $breakpoints {
+      @if $name != xs {
+        --container-#{$name}: #{$value};
+      }
+    }
+  }
+}
+
+// D4: match `[data-cx-theme]` directly, or `prefers-color-scheme` unless a
+// nearer `[data-cx-theme]` override (either value) exists between the
+// matched ancestor and the element. Scoped to a single level of override —
+// `[data-cx-theme=dark] *` alone matches *any* descendant of a dark
+// ancestor no matter how deep, so an element nested inside a nearer
+// `[data-cx-theme=light]` subtree would otherwise match both variants at
+// once; CSS selectors can't express "closest matching ancestor" for
+// arbitrarily-alternating nesting, so this supports one override boundary
+// (the documented, tested case) and no more.
+@custom-variant dark {
+  &[data-cx-theme="dark"] {
+    @slot;
+  }
+  &:where([data-cx-theme="dark"] *):not(:where([data-cx-theme="dark"] [data-cx-theme] *)) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:not(:where([data-cx-theme="light"], [data-cx-theme="light"] *)) {
+      @slot;
+    }
+  }
+}
+
+@custom-variant light {
+  &[data-cx-theme="light"] {
+    @slot;
+  }
+  &:where([data-cx-theme="light"] *):not(:where([data-cx-theme="light"] [data-cx-theme] *)) {
+    @slot;
+  }
+  @media (prefers-color-scheme: light) {
+    &:not(:where([data-cx-theme="dark"], [data-cx-theme="dark"] *)) {
+      @slot;
+    }
+  }
+}
+
+@include emit-source-config($breakpoints, clashes.$bare-clashes, clashes.$breakpoint-clashes, safelist.$safelist);

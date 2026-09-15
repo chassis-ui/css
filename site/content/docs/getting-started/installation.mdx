@@ -115,6 +115,29 @@ If you're using a bundler, follow the bundler-specific guide:
 - [Webpack]([[docsref:/getting-started/webpack]]) — Sass + PostCSS loaders, CSS extraction.
 - [Parcel]([[docsref:/getting-started/parcel]]) — Parcel auto-detects Sass; very little configuration needed.
 
+## Apply the `--cx-` prefix
+
+Some Chassis components and JS plugins read CSS custom properties with a `--cx-` prefix at runtime (`--cx-carousel-interval`, `--cx-breakpoint-*`) — Sass only ever writes the unprefixed name (`--carousel-interval`). A separate PostCSS step adds the prefix; install the plugin and add a config file next to `package.json` (the `.mjs` extension keeps it an ES module regardless of `package.json`'s own `"type"` field, since `@chassis-ui/css/postcss` is ESM-only):
+
+```bash
+npm install -D postcss-cli postcss-prefix-custom-properties
+```
+
+```js
+// postcss.config.mjs
+import { chassisPrefix } from '@chassis-ui/css/postcss'
+
+export default {
+  plugins: [chassisPrefix()]
+}
+```
+
+```bash
+npx postcss dist/styles.css -o dist/styles.css
+```
+
+Run this after every Sass compile. The bundler guides wire the same plugin into the bundler's own PostCSS step instead of a separate CLI call.
+
 ## Include the JavaScript
 
 Chassis JS is optional — only needed for components with interactive behaviour (dropdowns, modals, accordions, etc.). Two ways to include it depending on your setup:
@@ -153,7 +176,7 @@ A minimal HTML page that pulls in your compiled CSS should look like this:
     <link rel="stylesheet" href="/dist/styles.css">
   </head>
   <body>
-    <div class="container py-large">
+    <div class="container py-lg">
       <button class="button primary">It works</button>
     </div>
   </body>

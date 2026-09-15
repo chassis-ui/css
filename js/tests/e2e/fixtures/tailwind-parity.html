@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tailwind parity fixture</title>
+    <style>
+      /* Buttons (and other components) transition background-color/color on
+         load -- an unlayered !important here beats it regardless of layer
+         order, so getComputedStyle reads the settled value immediately
+         instead of racing a transition (confirmed: the two builds already
+         agree exactly once a transition finishes; the race was the only
+         source of difference). */
+      *, ::before, ::after {
+        transition: none !important;
+        animation: none !important;
+      }
+    </style>
+    <script>
+      // Loaded twice by js/tests/e2e/tailwind-parity.spec.ts, once per
+      // `?mode=` value, against the exact same markup below -- so a computed
+      // style difference between the two runs can only come from the
+      // stylesheet, not from the DOM.
+      const mode = new URLSearchParams(location.search).get('mode') || 'chassis'
+      // dist/css/chassis.css, not chassis.min.css: Lightning CSS's
+      // minification pass re-serializes relative-color (`oklch(from ...)`)
+      // values with slightly different rounding, which the Tailwind
+      // pipeline's own prefixer/layer-merge pass never touches -- confirmed
+      // by comparing dist/css/chassis.css against chassis.min.css directly
+      // (same colors, different getComputedStyle output). Not a Tailwind
+      // integration difference, so it doesn't belong in this comparison.
+      const href = mode === 'tailwind' ? '/js/tests/e2e/generated/tailwind-parity.css' : '/dist/css/chassis.css'
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = href
+      link.addEventListener('load', () => document.documentElement.setAttribute('data-css-loaded', 'true'))
+      document.head.appendChild(link)
+    </script>
+  </head>
+  <body style="container-type: inline-size;">
+    <button type="button" class="button primary" data-testid="btn-primary">Primary</button>
+    <button type="button" class="button primary outline" data-testid="btn-primary-outline">Primary outline</button>
+    <button type="button" class="button secondary" data-testid="btn-secondary">Secondary</button>
+    <button type="button" class="button danger" data-testid="btn-danger">Danger</button>
+
+    <div class="card" data-testid="card">
+      <div class="card-body">Card body</div>
+    </div>
+
+    <nav class="navbar lg:navbar-expand" data-testid="navbar">
+      <a class="navbar-brand" href="#">Brand</a>
+      <button type="button" class="navbar-toggler" data-testid="navbar-toggler">Toggle</button>
+    </nav>
+
+    <table class="table" data-testid="table">
+      <thead>
+        <tr>
+          <th>Column</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Cell</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="row" data-testid="row">
+      <div class="col-6" data-testid="col-6">Half</div>
+    </div>
+
+    <div class="d-grid grid-cols-2" data-testid="grid-cols-2">
+      <div>a</div>
+      <div>b</div>
+    </div>
+
+    <div class="vstack md:hstack" data-testid="stack">
+      <span>a</span>
+      <span>b</span>
+    </div>
+
+    <div class="fg-primary" data-testid="fg-primary">Text</div>
+    <div class="dark:d-none" data-testid="dark-d-none">Text</div>
+    <div class="lg:font-xl" data-testid="lg-font-xl">Text</div>
+    <div class="opacity-10" data-testid="opacity-10">Text</div>
+    <div class="border" data-testid="border">Text</div>
+    <div class="rounded-full" data-testid="rounded-full">Text</div>
+  </body>
+</html>

@@ -24,7 +24,7 @@ The `.form-check` component creates controls that look consistent across browser
 
 Use `.check-input` class on the `<input type="checkbox">` element and wrap it with a `.form-check` container for proper spacing and alignment.
 
-<Example class="vstack gap-xsmall" code={`<!-- Sibling markup pattern -->
+<Example class="vstack gap-xs" code={`<!-- Sibling markup pattern -->
   <div class="form-check">
     <input class="check-input" type="checkbox" id="checkSibling">
     <label for="checkSibling">Sibling checkbox</label>
@@ -40,7 +40,7 @@ Use `.check-input` class on the `<input type="checkbox">` element and wrap it wi
 
 Using `type="radio"` creates radio buttons, which allow users to select only one option from a group. Like checkboxes, radio buttons can be styled with Chassis CSS for a consistent look and feel.
 
-<Example class="vstack gap-xsmall" code={`<label class="form-check">
+<Example class="vstack gap-xs" code={`<label class="form-check">
     <input class="check-input" type="radio" name="radioExample">
     Option one
   </label>
@@ -53,7 +53,7 @@ Using `type="radio"` creates radio buttons, which allow users to select only one
 
 The indeterminate state provides a third visual state for checkboxes, useful for indicating partially selected options or group selections. Since HTML has no attribute for this state, it must be set via JavaScript using the `indeterminate` property.
 
-<Example addStackblitzJs class="cxd-example-indeterminate vstack gap-xsmall" code={`<label class="form-check">
+<Example addStackblitzJs class="cxd-example-indeterminate vstack gap-xs" code={`<label class="form-check">
     <input class="check-input" type="checkbox" value="" id="checkIndeterminate">
     Indeterminate checkbox
   </label>`} />
@@ -62,7 +62,7 @@ The indeterminate state provides a third visual state for checkboxes, useful for
 
 Apply the HTML `disabled` attribute to indicate that a checkbox is unavailable for interaction. Chassis CSS automatically styles both the checkbox and its label with visual cues to indicate the disabled state.
 
-<Example addStackblitzJs class="cxd-example-indeterminate vstack gap-xsmall" code={`<label class="form-check">
+<Example addStackblitzJs class="cxd-example-indeterminate vstack gap-xs" code={`<label class="form-check">
     <input class="check-input" type="checkbox" value="" id="checkDisabled" disabled>
     Disabled checkbox
   </label>
@@ -88,7 +88,7 @@ Chassis CSS offers toggle switches as an alternative UI for boolean (on/off) sel
 
 Adding the `role="switch"` attribute improves accessibility by correctly communicating the control's purpose to assistive technologies that support this role. In older assistive technologies, it will simply be announced as a regular checkbox as a fallback. Switches also support the `disabled` attribute.
 
-<Example class="vstack gap-xsmall" code={`<label class="form-check form-switch">
+<Example class="vstack gap-xs" code={`<label class="form-check form-switch">
     <input class="check-input" type="checkbox" role="switch" id="switchCheckDefault">
     Default switch checkbox input
   </label>
@@ -109,7 +109,7 @@ Adding the `role="switch"` attribute improves accessibility by correctly communi
 
 For interface designs that require controls without visible text labels, omit the wrapping `.form-check` container. While this creates a visually minimal control, remember that all form elements must still have an accessible name for screen reader users (see [forms overview accessibility]([[docsref:/forms/overview/#accessibility]])).
 
-<Example class="vstack gap-xsmall" code={`<label class="form-check">
+<Example class="vstack gap-xs" code={`<label class="form-check">
     <input class="check-input" type="checkbox">
     Checkbox with description
     <small class="form-help">
@@ -128,15 +128,15 @@ For interface designs that require controls without visible text labels, omit th
 
 For interface designs that require controls without visible text labels, omit the wrapping `.form-check` container. While this creates a visually minimal control, remember that all form elements must still have an accessible name for screen reader users (see [forms overview accessibility]([[docsref:/forms/overview/#accessibility]])).
 
-<Example class="hstack gap-xsmall" code={`<input class="check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="Subscribe to newsletter">
+<Example class="hstack gap-xs" code={`<input class="check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="Subscribe to newsletter">
   <input class="check-input" type="radio" name="radioNoLabel" id="radioNoLabel1" value="1" aria-label="Select first option">
   <input class="check-input" type="radio" name="radioNoLabel" id="radioNoLabel2" value="2" aria-label="Select second option">`} />
 
 ## Sizing options
 
-Add `.small` or `.large` classes to change the size of form check.
+Add `.sm` or `.lg` classes to change the size of form check.
 
-<Example class="vstack gap-xsmall" code={`<div class="form-check large">
+<Example class="vstack gap-xs" code={`<div class="form-check lg">
     <input class="check-input" type="checkbox" id="checkLarge">
     <label class="check-label" for="checkLarge">
       Large checkbox
@@ -148,16 +148,16 @@ Add `.small` or `.large` classes to change the size of form check.
       Default checkbox
     </label>
   </div>
-  <div class="form-check small">
+  <div class="form-check sm">
     <input class="check-input" type="checkbox" id="checkSmall">
     <label class="check-label" for="checkSmall">
       Small checkbox
     </label>
   </div>`} />
 
-Sizing also works on switches. Add `.small` or `.large` classes to the `.form-check.form-switch` container to adjust the size of the switch and its label together.
+Sizing also works on switches. Add `.sm` or `.lg` classes to the `.form-check.form-switch` container to adjust the size of the switch and its label together.
 
-<Example class="vstack gap-xsmall" code={`<label class="form-check form-switch large">
+<Example class="vstack gap-xs" code={`<label class="form-check form-switch lg">
     <input class="check-input" type="radio" name="radioSize" id="switchLarge">
       Large switch
   </label>
@@ -165,26 +165,26 @@ Sizing also works on switches. Add `.small` or `.large` classes to the `.form-ch
     <input class="check-input" type="radio" name="radioSize" id="switchMedium" checked>
     Default switch
   </label>
-  <label class="form-check form-switch small">
+  <label class="form-check form-switch sm">
     <input class="check-input" type="radio" name="radioSize" id="switchSmall">
     Small switch
   </label>`} />
 
 ### Sizing without labels
 
-When using checkboxes or radios without visible labels, you can apply `.small` or `.large` classes directly to the input element to adjust the size of the control itself.
+When using checkboxes or radios without visible labels, you can apply `.sm` or `.lg` classes directly to the input element to adjust the size of the control itself.
 
-<Example code={`<input class="check-input large" type="checkbox">
+<Example code={`<input class="check-input lg" type="checkbox">
   <input class="check-input" type="checkbox">
-  <input class="check-input small" type="checkbox">
-    <span class="vr mx-medium"></span>
-  <input class="check-input large" name="radioSizeInput" type="radio">
+  <input class="check-input sm" type="checkbox">
+    <span class="vr mx-md"></span>
+  <input class="check-input lg" name="radioSizeInput" type="radio">
   <input class="check-input" name="radioSizeInput" type="radio">
-  <input class="check-input small" name="radioSizeInput" type="radio">
-    <span class="vr mx-medium"></span>
-  <input class="check-input large" role="switch" name="switchSizeInputLarge" type="checkbox">
+  <input class="check-input sm" name="radioSizeInput" type="radio">
+    <span class="vr mx-md"></span>
+  <input class="check-input lg" role="switch" name="switchSizeInputLarge" type="checkbox">
   <input class="check-input" role="switch" name="switchSizeInputMedium" type="checkbox">
-  <input class="check-input small" role="switch" name="switchSizeInputSmall" type="checkbox">`} />
+  <input class="check-input sm" role="switch" name="switchSizeInputSmall" type="checkbox">`} />
 
 ## Layout options
 
@@ -194,7 +194,7 @@ By default, `.form-check` elements stack vertically with appropriate spacing, cr
 
 Use `flex` utilities to create inline layouts for checkboxes and radio buttons when you want to save vertical space or create a more compact form design. This allows multiple controls to be displayed on the same line while maintaining proper spacing and alignment.
 
-<Example code={`<div class="d-flex gap-medium">
+<Example code={`<div class="d-flex gap-md">
     <label class="form-check">
       <input class="check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
       Option one
@@ -310,7 +310,7 @@ By default; both `$enable-form-check-legacy` and `$enable-form-check-modern` are
 
 Wrap the `<input>` element with a `.check-input` container and apply the desired context color class to the container. This pattern works with both nested and sibling markup structures, giving you flexibility in how you structure your form controls.
 
-<Example class="vstack gap-xsmall" code={`<!-- Nested input pattern -->
+<Example class="vstack gap-xs" code={`<!-- Nested input pattern -->
   <label class="form-check">
     <span class="check-input secondary">
       <input type="checkbox" id="checkNestedModern" checked>
@@ -330,7 +330,7 @@ Wrap the `<input>` element with a `.check-input` container and apply the desired
 
 Use any of the available context color classes to create custom-styled checkboxes and radio buttons that fit your design. This allows you to maintain the same structure and accessibility while applying different visual styles to the controls.
 
-<Example class="vstack gap-xsmall" code={getData('context-colors').map((contextColor) => `<label class="form-check">
+<Example class="vstack gap-xs" code={getData('context-colors').map((contextColor) => `<label class="form-check">
     <span class="check-input ${contextColor.name}"><input type="checkbox" checked></span>
     ${contextColor.title} checkbox
   </label>`)} />
@@ -339,23 +339,23 @@ Use any of the available context color classes to create custom-styled checkboxe
 
 Disabled state styling also works with custom context colors. Apply the `disabled` attribute to the `<input>` element, and Chassis CSS will automatically adjust the styles of both the checkbox/radio and its label to indicate the disabled state while maintaining the chosen context color.
 
-<Example class="hstack gap-xsmall" code={getData('context-colors').map((contextColor) => `<span class="check-input ${contextColor.name}">
+<Example class="hstack gap-xs" code={getData('context-colors').map((contextColor) => `<span class="check-input ${contextColor.name}">
     <input type="checkbox" checked disabled>
   </span>`)} />
 
 ### Radio buttons
 
-<Example class="hstack gap-xsmall" code={getData('context-colors').map((contextColor) => `<span class="check-input ${contextColor.name}">
+<Example class="hstack gap-xs" code={getData('context-colors').map((contextColor) => `<span class="check-input ${contextColor.name}">
       <input type="radio" name="radioContext">
     </span>`)} />
 
 ### Indeterminate checks
-<Example class="hstack gap-xsmall cxd-example-indeterminate" code={getData('context-colors').map((contextColor) => `<span class="check-input ${contextColor.name}">
+<Example class="hstack gap-xs cxd-example-indeterminate" code={getData('context-colors').map((contextColor) => `<span class="check-input ${contextColor.name}">
     <input type="checkbox" id="check${contextColor.name}Indeterminate">
   </span>`)} />
 
 ### Switch role
-<Example class="vstack gap-xsmall" code={getData('context-colors').map((contextColor) => `<label class="form-check form-switch">
+<Example class="vstack gap-xs" code={getData('context-colors').map((contextColor) => `<label class="form-check form-switch">
     <span class="check-input ${contextColor.name}">
       <input type="checkbox" role="switch" checked>
     </span>
@@ -364,9 +364,9 @@ Disabled state styling also works with custom context colors. Apply the `disable
 
 ### Sizing
 
-Apply `.small` or `.large` classes to the `.form-check` container to adjust the size of the checkbox or radio button while maintaining the same context color styling.
+Apply `.sm` or `.lg` classes to the `.form-check` container to adjust the size of the checkbox or radio button while maintaining the same context color styling.
 
-<Example class="vstack gap-xsmall" code={`<label class="form-check large">
+<Example class="vstack gap-xs" code={`<label class="form-check lg">
     <span class="check-input secondary">
       <input type="checkbox" checked>
     </span>
@@ -378,13 +378,13 @@ Apply `.small` or `.large` classes to the `.form-check` container to adjust the 
     </span>
     Default checkbox
   </label>
-  <label class="form-check small">
+  <label class="form-check sm">
     <span class="check-input secondary">
       <input type="checkbox" checked>
     </span>
     Small checkbox
   </label>
-  <label class="form-check large">
+  <label class="form-check lg">
     <span class="check-input secondary">
       <input type="checkbox" role="switch" checked>
     </span>
@@ -396,40 +396,40 @@ Apply `.small` or `.large` classes to the `.form-check` container to adjust the 
     </span>
     Default switch
   </label>
-  <label class="form-check small">
+  <label class="form-check sm">
     <span class="check-input secondary">
       <input type="checkbox" role="switch" checked>
     </span>
     Small switch
   </label>`} />
 
-<Example class="hstack gap-xsmall" code={`<span class="check-input secondary small">
+<Example class="hstack gap-xs" code={`<span class="check-input secondary sm">
     <input type="checkbox" name="checkContextSizeSmall">
   </span>
   <span class="check-input secondary">
     <input type="checkbox" name="checkContextSizeMedium">
   </span>
-  <span class="check-input secondary large">
+  <span class="check-input secondary lg">
     <input type="checkbox" name="checkContextSizeLarge">
   </span>
-    <span class="vr mx-medium"></span>
-  <span class="check-input secondary small">
+    <span class="vr mx-md"></span>
+  <span class="check-input secondary sm">
     <input type="radio" name="radioContextSize">
   </span>
   <span class="check-input secondary">
     <input type="radio" name="radioContextSize">
   </span>
-  <span class="check-input secondary large">
+  <span class="check-input secondary lg">
     <input type="radio" name="radioContextSize">
   </span>
-    <span class="vr mx-medium"></span>
-  <span class="check-input secondary small">
+    <span class="vr mx-md"></span>
+  <span class="check-input secondary sm">
     <input type="checkbox" role="switch" name="switchContextSizeSmall">
   </span>
   <span class="check-input secondary">
     <input type="checkbox" role="switch" name="switchContextSizeMedium">
   </span>
-  <span class="check-input secondary large">
+  <span class="check-input secondary lg">
     <input type="checkbox" role="switch" name="switchContextSizeLarge">
 </span>`} />
 

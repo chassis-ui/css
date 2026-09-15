@@ -101,7 +101,7 @@ Add a removal action to chips with the `.close-button` component, which automati
 
 ## Size variants
 
-Chassis provides three size variants for chips: default (medium), large, and small. Use the `.large` or `.small` modifier classes to adjust chip dimensions based on context and available space.
+Chassis provides three size variants for chips: default (md), lg, and sm. Use the `.lg` or `.sm` modifier classes to adjust chip dimensions based on context and available space.
 
 <Example class="button-examples" code={`<span class="chip default">
     Medium
@@ -110,17 +110,17 @@ Chassis provides three size variants for chips: default (medium), large, and sma
     <Icon name="info-circle-solid" role="img" />
     <span>Medium</span>
   </span>
-  <span class="chip default large">
+  <span class="chip default lg">
     Large
   </span>
-  <span class="chip default large">
+  <span class="chip default lg">
     <Icon name="info-circle-solid" role="img" />
     <span>Large</span>
   </span>
-  <span class="chip default small">
+  <span class="chip default sm">
     Small
   </span>
-  <span class="chip default small">
+  <span class="chip default sm">
     <Icon name="info-circle-solid" role="img" />
     <span>Small</span>
   </span>`} />
@@ -136,14 +136,14 @@ Enhance chips with user avatars by incorporating the `.avatar` component. The av
     Medium
     <button type="button" class="close-button" aria-label="Remove"></button>
   </span>
-  <span class="chip large default">
+  <span class="chip lg default">
     <span class="avatar">
       <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture" />
     </span>
     Large
     <button type="button" class="close-button" aria-label="Remove"></button>
   </span>
-  <span class="chip small default">
+  <span class="chip sm default">
     <span class="avatar">
       <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture" />
     </span>
@@ -162,14 +162,14 @@ Make chips appear inactive by adding the `disabled` attribute to `<button>` elem
     Medium
     <button type="button" class="close-button" aria-label="Remove"></button>
   </span>
-  <span class="chip large default disabled">
+  <span class="chip lg default disabled">
     <span class="avatar">
       <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture" />
     </span>
     Large
     <button type="button" class="close-button" aria-label="Remove"></button>
   </span>
-  <span class="chip small default disabled">
+  <span class="chip sm default disabled">
     <span class="avatar">
       <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture" />
     </span>
@@ -182,14 +182,14 @@ Make chips appear inactive by adding the `disabled` attribute to `<button>` elem
 Chips support toggle functionality similar to buttons, enabling them to function as selection controls. Add the `data-cx-toggle="chip"` attribute to enable automatic state management. The JavaScript manages `aria-pressed` automatically on each toggle. For pre-toggled chips, include both the `.active` class and `aria-pressed="true"` attribute to ensure proper visual styling and accessibility states.
 
 <Example class="button-examples" code={`<!-- Buttons -->
-  <p class="d-inline-flex gap-xsmall">
+  <p class="d-inline-flex gap-xs">
     <button type="button" class="chip default" data-cx-toggle="chip" aria-pressed="false">Toggle button</button>
     <button type="button" class="chip default active" data-cx-toggle="chip" aria-pressed="true">Active toggle</button>
     <button type="button" class="chip default" disabled data-cx-toggle="chip" aria-pressed="false">Disabled toggle</button>
     <button type="button" class="chip default active" disabled data-cx-toggle="chip" aria-pressed="true">Disabled active</button>
   </p>
   <!-- Links -->
-  <p class="d-inline-flex gap-xsmall">
+  <p class="d-inline-flex gap-xs">
     <a href="#" class="chip primary" role="button" data-cx-toggle="chip" aria-pressed="false">Toggle link</a>
     <a href="#" class="chip primary active" role="button" data-cx-toggle="chip" aria-pressed="true">Active toggle</a>
     <a href="#" class="chip primary disabled" aria-disabled="true" role="button" data-cx-toggle="chip" aria-pressed="false">Disabled toggle</a>

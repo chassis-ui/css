@@ -2,14 +2,14 @@
 import { getData } from '@libs/data'
 ---
 
-<div class="mb-medium overflow-scroll">
+<div class="mb-md overflow-scroll">
   <div class="grid context-palette-grid" style="--cx-grid-columns: 11; --cx-grid-rows: 38;">
     <!--// DESCRIPTION COLUMN -->
     <div class="grid-col description-col">
       <div class="header grid-item"><div>Description</div></div>
       <div class="grid-item g-rowspan-3">
         <h4 class="mb-0">Base Colors</h4>
-        <p class="font-small">
+        <p class="font-sm">
           The base color for the context, its contrast counterpart, and a fully transparent variant.
           Contrast colors are intended for design use and may not meet <a
             href={`/docs/core-concepts/accessibility`}>accessibility</a
@@ -18,7 +18,7 @@ import { getData } from '@libs/data'
       </div>
       <div class="grid-item g-rowspan-7">
         <h4 class="mb-0">Foreground Colors</h4>
-        <p class="font-small">
+        <p class="font-sm">
           Text colors named by priority or function. Used for the <code>color</code> property. Following
           abstraction principles, these tokens are not limited to text — they apply to any foreground
           element.
@@ -26,7 +26,7 @@ import { getData } from '@libs/data'
       </div>
       <div class="grid-item g-rowspan-7">
         <h4 class="mb-0">Background Colors</h4>
-        <p class="font-small">
+        <p class="font-sm">
           Solid surface colors named by priority and function. Used for the <code
             >background-color</code
           > property.
@@ -34,20 +34,20 @@ import { getData } from '@libs/data'
       </div>
       <div class="grid-item g-rowspan-2">
         <h4 class="mb-0">Border Colors</h4>
-        <p class="font-small">
+        <p class="font-sm">
           Colors for borders and separator lines. Used for the <code>border-color</code> property.
         </p>
       </div>
       <div class="grid-item g-rowspan-3">
         <h4 class="mb-0">Icon Colors</h4>
-        <p class="font-small">
+        <p class="font-sm">
           Colors for symbolic elements such as icons, list bullets, and disclosure arrows. Used for
           the <code>color</code> and <code>fill</code> properties.
         </p>
       </div>
       <div class="grid-item g-rowspan-2">
         <h4 class="mb-0">Cue Colors</h4>
-        <p class="font-small">
+        <p class="font-sm">
           Colors for activity indicators and selection marks. Used for the <code>fill</code> and <code
             >accent-color</code
           > properties.
@@ -55,7 +55,7 @@ import { getData } from '@libs/data'
       </div>
       <div class="grid-item g-rowspan-3">
         <h4 class="mb-0">Dim Colors</h4>
-        <p class="font-small">
+        <p class="font-sm">
           Semi-transparent surface colors named by function. Used for the <code
             >background-color</code
           > property. Suitable for overlays and layered UI surfaces.
@@ -63,13 +63,13 @@ import { getData } from '@libs/data'
       </div>
       <div class="grid-item g-rowspan-4">
         <h4 class="mb-0">Link Colors</h4>
-        <p class="font-small">
+        <p class="font-sm">
           Colors for anchor elements across all states. Used for the <code>color</code> property.
         </p>
       </div>
       <div class="grid-item g-rowspan-8">
         <h4 class="mb-0">Interaction Colors</h4>
-        <p class="font-small">
+        <p class="font-sm">
           State colors for interactive elements such as buttons. Available as CSS variables only —
           not exposed as utility classes.
         </p>
@@ -88,7 +88,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-contrast-color);`}
               >
                 &nbsp;
@@ -96,7 +96,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-transparent-color);`}
               >
                 &nbsp;
@@ -104,7 +104,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-fg-main);`}
               >
                 &nbsp;
@@ -112,7 +112,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-fg-subtle);`}
               >
                 &nbsp;
@@ -120,7 +120,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-fg-slight);`}
               >
                 &nbsp;
@@ -128,7 +128,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-fg-active);`}
               >
                 &nbsp;
@@ -136,7 +136,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-fg-inverse);`}
               >
                 &nbsp;
@@ -144,7 +144,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-fg-solid);`}
               >
                 &nbsp;
@@ -152,7 +152,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-fg-highlight);`}
               >
                 &nbsp;
@@ -160,7 +160,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-bg-main);`}
               >
                 &nbsp;
@@ -168,7 +168,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-bg-even);`}
               >
                 &nbsp;
@@ -176,7 +176,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-bg-evident);`}
               >
                 &nbsp;
@@ -184,7 +184,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-bg-active);`}
               >
                 &nbsp;
@@ -192,7 +192,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-bg-inverse);`}
               >
                 &nbsp;
@@ -200,7 +200,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-bg-solid);`}
               >
                 &nbsp;
@@ -208,7 +208,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-bg-highlight);`}
               >
                 &nbsp;
@@ -216,7 +216,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-border-main);`}
               >
                 &nbsp;
@@ -224,7 +224,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-border-subtle);`}
               >
                 &nbsp;
@@ -232,7 +232,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-icon-main);`}
               >
                 &nbsp;
@@ -240,7 +240,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-icon-subtle);`}
               >
                 &nbsp;
@@ -248,7 +248,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-icon-slight);`}
               >
                 &nbsp;
@@ -256,7 +256,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-cue-main);`}
               >
                 &nbsp;
@@ -264,7 +264,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-cue-slight);`}
               >
                 &nbsp;
@@ -272,7 +272,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-dim-slight);`}
               >
                 &nbsp;
@@ -280,7 +280,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-dim-main);`}
               >
                 &nbsp;
@@ -288,7 +288,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-dim-subtle);`}
               >
                 &nbsp;
@@ -296,7 +296,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-link-main);`}
               >
                 &nbsp;
@@ -304,7 +304,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-link-hover);`}
               >
                 &nbsp;
@@ -312,7 +312,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-link-active);`}
               >
                 &nbsp;
@@ -320,7 +320,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-link-visited);`}
               >
                 &nbsp;
@@ -328,7 +328,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-fg-idle);`}
               >
                 &nbsp;
@@ -336,7 +336,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-bg-idle);`}
               >
                 &nbsp;
@@ -344,7 +344,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-fg-hover);`}
               >
                 &nbsp;
@@ -352,7 +352,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-bg-hover);`}
               >
                 &nbsp;
@@ -360,7 +360,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-fg-press);`}
               >
                 &nbsp;
@@ -368,7 +368,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-bg-press);`}
               >
                 &nbsp;
@@ -376,7 +376,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-fg-disabled);`}
               >
                 &nbsp;
@@ -384,7 +384,7 @@ import { getData } from '@libs/data'
             </div>
             <div class="grid-item">
               <div
-                class="h-100 w-100 rounded-medium"
+                class="h-100 w-100 rounded-md"
                 style={`background-color: var(--cx-${contextColor.name}-bg-disabled);`}
               >
                 &nbsp;

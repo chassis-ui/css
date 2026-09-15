@@ -1303,7 +1303,7 @@ describe('Menu', () => {
     it('should use Floating UI positioning in navbar', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
-          '<nav class="navbar medium:navbar-expand bg-light">',
+          '<nav class="navbar md:navbar-expand bg-light">',
           '  <div>',
           '    <button class="button" data-cx-toggle="menu" aria-expanded="false">Menu</button>',
           '    <div class="menu">',
@@ -2479,7 +2479,7 @@ describe('Menu', () => {
     it('should parse responsive placement string and create instance', () => {
       fixtureEl.innerHTML = [
         '<div>',
-        '  <button class="button" data-cx-toggle="menu" data-cx-placement="bottom-start medium:top-end">Menu</button>',
+        '  <button class="button" data-cx-toggle="menu" data-cx-placement="bottom-start md:top-end">Menu</button>',
         '  <div class="menu">',
         '    <a class="menu-item" href="#">Link</a>',
         '  </div>',
@@ -2491,8 +2491,8 @@ describe('Menu', () => {
 
       // Menu should have parsed responsive placements
       expect(menu._responsivePlacements).not.toBeNull()
-      expect(menu._responsivePlacements.xsmall).toEqual('bottom-start')
-      expect(menu._responsivePlacements.medium).toEqual('top-end')
+      expect(menu._responsivePlacements.xs).toEqual('bottom-start')
+      expect(menu._responsivePlacements.md).toEqual('top-end')
     })
 
     it('should return null for non-responsive placement', () => {

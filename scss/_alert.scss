@@ -30,8 +30,8 @@
     @include map-font($alert-code-font, alert, code);
     --code-color: var(--alert-code-color, #{$alert-code-color});
     --body-gap: var(--alert-body-gap, #{$alert-large-body-gap});
-    --footer-large-gap: var(--alert-footer-large-gap, #{$alert-footer-large-gap});
-    --footer-small-gap: var(--alert-footer-small-gap, #{$alert-footer-small-gap});
+    --footer-lg-gap: var(--alert-footer-lg-gap, #{$alert-footer-lg-gap});
+    --footer-sm-gap: var(--alert-footer-sm-gap, #{$alert-footer-sm-gap});
     --close-button-size: var(--alert-close-button-size, #{$alert-close-button-size});
     --close-button-inset: var(--alert-close-button-inset, #{$alert-close-button-inset});
     // scss-docs-end alert-css-vars
@@ -46,9 +46,9 @@
     @include exclude-strokes(alert);
 
     // Grid layout when icon is present.
-    // Center-align rows (icon + adjacent text on same row) above the small
-    // breakpoint. `align-items` is scoped to medium+ via media-breakpoint-up
-    // so it does not leak into the small-bp flex override below.
+    // Center-align rows (icon + adjacent text on same row) above the sm
+    // breakpoint. `align-items` is scoped to md+ via media-breakpoint-up
+    // so it does not leak into the sm-breakpoint flex override below.
     // Footer spans both columns so it always renders at full alert width.
     &:has(> .alert-icon) {
       display: grid;
@@ -69,7 +69,7 @@
         grid-column: 2;
       }
 
-      @include media-breakpoint-up(small) {
+      @include media-breakpoint-up(sm) {
         align-items: start;
       }
     }
@@ -82,13 +82,13 @@
 
     // Small breakpoint: centered stacked layout.
     // Switches icon+content back to flex column; `align-items: center` from
-    // the grid rule is not active here (it is inside media-breakpoint-up(small))
+    // the grid rule is not active here (it is inside media-breakpoint-up(sm))
     // so only the icon needs `align-self: center`.
-    @include media-breakpoint-down(small) {
-      --padding-y: var(--alert-small-padding-y, #{$alert-small-padding-y});
-      --padding-x: var(--alert-small-padding-x, #{$alert-small-padding-x});
-      --gap: var(--alert-small-gap, #{$alert-small-main-gap});
-      --body-gap: var(--alert-small-body-gap, #{$alert-small-body-gap});
+    @include media-breakpoint-down(sm) {
+      --padding-y: var(--alert-sm-padding-y, #{$alert-small-padding-y});
+      --padding-x: var(--alert-sm-padding-x, #{$alert-small-padding-x});
+      --gap: var(--alert-sm-gap, #{$alert-small-main-gap});
+      --body-gap: var(--alert-sm-body-gap, #{$alert-small-body-gap});
       @include map-font($alert-small-font-body, alert-message);
       @include map-font($alert-small-font-title, alert, title);
       text-align: center;

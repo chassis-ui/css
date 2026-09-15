@@ -14,12 +14,12 @@ import { getData } from '@libs/data'
 
 Shadow utilities add or remove `box-shadow` using a scale of elevation levels. The `$enable-component-shadows` Sass variable controls whether component shadows are enabled globally; utility classes apply shadows independently of that setting.
 
-<Example class="overflow-hidden" code={`<div class="shadow-none rounded p-medium mb-xlarge">No shadow</div>
-<div class="shadow-small rounded p-medium mb-xlarge">Small shadow</div>
-<div class="shadow rounded p-medium mb-xlarge">Medium shadow</div>
-<div class="shadow-large rounded p-medium mb-xlarge">Large shadow</div>
-<div class="shadow-inset rounded p-medium mb-medium">Inset shadow</div>
-<div class="shadow-emboss rounded p-medium">Emboss shadow</div>`} />
+<Example class="overflow-hidden" code={`<div class="shadow-none rounded p-md mb-xl">No shadow</div>
+<div class="shadow-sm rounded p-md mb-xl">Small shadow</div>
+<div class="shadow rounded p-md mb-xl">Medium shadow</div>
+<div class="shadow-lg rounded p-md mb-xl">Large shadow</div>
+<div class="shadow-inset rounded p-md mb-md">Inset shadow</div>
+<div class="shadow-emboss rounded p-md">Emboss shadow</div>`} />
 
 
 ### Elevation scale
@@ -29,7 +29,7 @@ Elevation utilities map to design token names.
 <div class="cxd-example">
   {
     getData('color-values').map((value, index) => {
-      return <p class={`shadow-${value.name} p-medium rounded`} style={`margin-bottom: calc(1rem + (.25rem * ${index}))`}>This is <code>$cx-shadow-elevation-default-{value.name}</code> shadow.</p>
+      return <p class={`shadow-${value.name} p-md rounded`} style={`margin-bottom: calc(1rem + (.25rem * ${index}))`}>This is <code>$cx-shadow-elevation-default-{value.name}</code> shadow.</p>
     })
   }
 </div>
@@ -65,7 +65,7 @@ Color tinting is applied by combining an elevation class with a context color sh
 <div class="cxd-example">
   {
     getData('color-values').map((value, index) => {
-      return <p class={`shadow-primary shadow-${value.name} p-medium rounded`} style={`margin-bottom: calc(1rem + (.25rem * ${index}))`}>This is <code>$cx-shadow-elevation-primary-{value.name}</code> shadow.</p>
+      return <p class={`shadow-primary shadow-${value.name} p-md rounded`} style={`margin-bottom: calc(1rem + (.25rem * ${index}))`}>This is <code>$cx-shadow-elevation-primary-{value.name}</code> shadow.</p>
     })
   }
 </div>
@@ -76,8 +76,8 @@ Color tinting is applied by combining an elevation class with a context color sh
 
 Appending `-hover` to any shadow class applies the shadow only on `:hover`.
 
-<Example code={`<p class="shadow-30-hover p-medium rounded">This is a hover shadow.</p>
-<p class="shadow-primary-hover shadow-50 p-medium rounded">This is a shadow with primary hover.</p>`} />
+<Example code={`<p class="shadow-30-hover p-md rounded">This is a hover shadow.</p>
+<p class="shadow-primary-hover shadow-50 p-md rounded">This is a shadow with primary hover.</p>`} />
 
 ## CSS
 

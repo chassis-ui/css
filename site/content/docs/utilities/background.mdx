@@ -19,7 +19,7 @@ Background utilities set `background-color` using the Chassis context color pale
 
 Body background classes draw from the `default` context palette.
 
-<Example code={`<p class="bg-main p-2xsmall">.bg-main</p>
+<Example code={`<p class="bg-main p-2xs">.bg-main</p>
 <p class="bg-even">.bg-even</p>
 <p class="bg-evident">.bg-evident</p>
 <p class="bg-highlight">.bg-highlight</p>
@@ -30,7 +30,7 @@ Body background classes draw from the `default` context palette.
 
 Context color backgrounds follow the `.bg-{context}` class pattern, where `{context}` is any registered context color.
 
-<Example code={getData('context-colors').map((contextColor) => `<p class="bg-${contextColor.name } fg-contrast p-2xsmall">.bg-${contextColor.name}</p>`)} />
+<Example code={getData('context-colors').map((contextColor) => `<p class="bg-${contextColor.name } fg-contrast p-2xs">.bg-${contextColor.name}</p>`)} />
 
 ### Palette backgrounds
 
@@ -61,7 +61,7 @@ Dim classes apply semi-transparent background colors from the context palette. T
 
 The gradient is also available in custom CSS via `background-image: var(--cx-bg-gradient)`.
 
-<Example code={getData('context-colors').map((contextColor) => `<p class="bg-${contextColor.name } bg-gradient fg-contrast p-xsmall">.bg-${contextColor.name}.bg-gradient</p>`)} />
+<Example code={getData('context-colors').map((contextColor) => `<p class="bg-${contextColor.name } bg-gradient fg-contrast p-xs">.bg-${contextColor.name}.bg-gradient</p>`)} />
 
 ## Opacity
 
@@ -90,22 +90,22 @@ Each `.bg-{context}` class writes an OKLCH relative color expression into `--cx-
 
 Override `--cx-bg-opacity` with an inline style or a `.bg-opacity-*` utility.
 
-<Example class="cxd-pattern-dots" code={`<div class="bg-primary p-2xsmall primary-contrast-color">
+<Example class="cxd-pattern-dots" code={`<div class="bg-primary p-2xs primary-contrast-color">
   This is default primary background</div>
-<div style="--cx-bg-opacity: .4;" class="bg-primary p-2xsmall">
+<div style="--cx-bg-opacity: .4;" class="bg-primary p-2xs">
   This is 40% opacity primary background</div>`} />
 
 Or, choose from any of the `.bg-opacity-*` utilities:
 
-<Example class="cxd-pattern-dots" code={getData('token-opacities').map((opacity) => `<div class="bg-primary bg-opacity-${opacity.name } p-2xsmall">This is <code>bg-opacity-${opacity.name}</code> background</div>`)} />
+<Example class="cxd-pattern-dots" code={getData('token-opacities').map((opacity) => `<div class="bg-primary bg-opacity-${opacity.name } p-2xs">This is <code>bg-opacity-${opacity.name}</code> background</div>`)} />
 
 ### Context opacities
 
 The three dim opacity levels (`main`, `subtle`, `slight`) are also available as `.bg-opacity-main`, `.bg-opacity-subtle`, and `.bg-opacity-slight`, and can be applied to any background color.
 
-<Example class="cxd-pattern-dots" code={`<div class="bg-primary bg-opacity-main p-2xsmall">This is <code>dim-main</code> opacity primary background</div>
-<div class="bg-primary bg-opacity-subtle p-2xsmall">This is <code>dim-subtle</code> opacity primary background</div>
-<div class="bg-primary bg-opacity-slight p-2xsmall">This is <code>dim-slight</code> opacity primary background</div>`} />
+<Example class="cxd-pattern-dots" code={`<div class="bg-primary bg-opacity-main p-2xs">This is <code>dim-main</code> opacity primary background</div>
+<div class="bg-primary bg-opacity-subtle p-2xs">This is <code>dim-subtle</code> opacity primary background</div>
+<div class="bg-primary bg-opacity-slight p-2xs">This is <code>dim-slight</code> opacity primary background</div>`} />
 
 ## CSS
 

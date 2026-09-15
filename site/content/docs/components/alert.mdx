@@ -8,7 +8,7 @@ css_media: viewport
 js: required
 ---
 
-<Callout type="info" class="mt-3xlarge -mb-medium">
+<Callout type="info" class="mt-3xl -mb-md">
   **Looking for status banners?** Unlike many design systems, Chassis calls inline status messages [Notifications]([[docsref:/components/notification]]). This page covers the **alert dialog** — a `<dialog>` that blocks the current flow to require an explicit decision.
 </Callout>
 
@@ -21,8 +21,8 @@ An alert is a `<dialog>` element styled with `.alert` and activated by the `.dia
 
 Alerts are appropriate for destructive-action confirmations (delete, remove, revoke), security verifications before sensitive operations, and error notifications that require acknowledgment before the current flow continues. For informational overlays that do not demand a decision, use [Modal]([[docsref:/components/modal]]). For non-blocking status messages that do not interrupt the current flow, use [Notification]([[docsref:/components/notification]]).
 
-<Example lang="html" containerClass="bg-even py-4xlarge"
-  class="bg-evident d-flex justify-content-center py-4xlarge"
+<Example lang="html" containerClass="bg-even py-4xl"
+  class="bg-evident d-flex justify-content-center py-4xl"
   code={`<dialog class="alert dialog position-relative" id="exampleAlertIntro" role="alertdialog" 
       aria-labelledby="exampleAlertIntroLabel" aria-describedby="exampleAlertIntroBody" open>
     <Icon name="exclamation-triangle-solid" class="icon-danger alert-icon" />
@@ -56,7 +56,7 @@ Alerts are appropriate for destructive-action confirmations (delete, remove, rev
 
 An alert dialog has up to four direct children:
 
-- **`.alert-icon`** — optional icon preceding the body. When present, switches the layout from flex column to a two-column grid (`auto 1fr`) so the icon and body align side-by-side at medium+. At the small breakpoint the grid reverts to a centered flex column with the icon self-aligned to center.
+- **`.alert-icon`** — optional icon preceding the body. When present, switches the layout from flex column to a two-column grid (`auto 1fr`) so the icon and body align side-by-side at md+. At the sm breakpoint the grid reverts to a centered flex column with the icon self-aligned to center.
 - **`.alert-body`** — flex column wrapping the title and message text.
   - **`.alert-title`** — heading element referenced by `aria-labelledby`; screen readers announce it when the alert opens.
   - **`.alert-code`** — optional `<code>` element displaying a machine-readable reference string (e.g. an error code) below the title in subdued type (see [Error codes](#error-codes)).
@@ -87,7 +87,7 @@ To open an alert, add `data-cx-toggle="dialog"` to any trigger element. For butt
     <div class="alert-footer stacked">
       <button type="button" class="button primary">Save Changes</button>
       <button type="button" class="button default" data-cx-dismiss="dialog">Cancel</button>
-      <button type="button" class="button danger outline small:me-auto">Discard</button>
+      <button type="button" class="button danger outline sm:me-auto">Discard</button>
     </div>
   </dialog>`} />
 
@@ -100,7 +100,7 @@ Alert dialogs support additional layout patterns for error codes, close buttons,
 The `.alert-code` class renders a code or reference string below the title in subdued type. Use a `<code>` element inside `.alert-body` — the value is a machine-readable identifier and `<code>` carries the correct semantic.
 
 <Example lang="html"
-  class="bg-evident d-flex justify-content-center py-4xlarge"
+  class="bg-evident d-flex justify-content-center py-4xl"
   code={`<dialog class="alert dialog position-relative" id="exampleAlertCodePreview" role="alertdialog"
       aria-labelledby="exampleAlertCodePreviewLabel" 
       aria-describedby="exampleAlertCodePreviewId exampleAlertCodePreviewBody" open>
@@ -135,7 +135,7 @@ The `.alert-code` class renders a code or reference string below the title in su
 Alert dialogs typically do not include a close button — the footer actions are the only exit paths, requiring an explicit choice. When an escape path is needed without a footer action, add a `.close-button` with `data-cx-dismiss="dialog"` as a direct child of `<dialog>`.
 
 <Example lang="html"
-  class="bg-evident d-flex justify-content-center py-4xlarge"
+  class="bg-evident d-flex justify-content-center py-4xl"
   code={`<dialog class="alert dialog position-relative" id="exampleAlertClosePreview" role="alertdialog"
       aria-labelledby="exampleAlertClosePreviewLabel" aria-describedby="exampleAlertClosePreviewBody" open>
     <div class="alert-body">
@@ -163,34 +163,34 @@ Alert dialogs typically do not include a close button — the footer actions are
 
 ### Footer layout
 
-The `.alert-footer` uses `flex-direction: row-reverse`, so buttons are right-aligned without `justify-content` — write the **primary action first** in source, it renders on the right. At the small breakpoint, buttons stretch to equal widths (`flex: 1`). Add `.stacked` to stack them as full-width columns instead.
+The `.alert-footer` uses `flex-direction: row-reverse`, so buttons are right-aligned without `justify-content` — write the **primary action first** in source, it renders on the right. At the sm breakpoint, buttons stretch to equal widths (`flex: 1`). Add `.stacked` to stack them as full-width columns instead.
 
-For a third action that should be visually separated — such as a destructive option — add `.me-auto` (or a responsive variant like `.small:me-auto`) to push it to the opposite end.
+For a third action that should be visually separated — such as a destructive option — add `.me-auto` (or a responsive variant like `.sm:me-auto`) to push it to the opposite end.
 
 <Example lang="html"
-  class="bg-evident d-flex justify-content-center py-4xlarge"
+  class="bg-evident d-flex justify-content-center py-4xl"
   code={`<dialog class="alert dialog position-relative" id="exampleAlertFooterPreview" role="alertdialog"
       aria-labelledby="exampleAlertFooterPreviewLabel" aria-describedby="exampleAlertFooterPreviewBody" open>
     <div class="alert-body">
       <h2 class="alert-title" id="exampleAlertFooterPreviewLabel">Alert with stacked actions</h2>
-      <p id="exampleAlertFooterPreviewBody">An alert with multiple footer actions, stacking full-width at the small breakpoint.</p>
+      <p id="exampleAlertFooterPreviewBody">An alert with multiple footer actions, stacking full-width at the sm breakpoint.</p>
     </div>
     <div class="alert-footer stacked">
       <button type="button" class="button primary">Take Action</button>
       <button type="button" class="button default" data-cx-dismiss="dialog">Cancel</button>
-      <button type="button" class="button danger outline small:me-auto">Destructive</button>
+      <button type="button" class="button danger outline sm:me-auto">Destructive</button>
     </div>
   </dialog>`}
   customMarkup={`<dialog class="alert dialog" id="exampleAlertFooter" role="alertdialog"
       aria-labelledby="exampleAlertFooterLabel" aria-describedby="exampleAlertFooterBody">
     <div class="alert-body">
       <h2 class="alert-title" id="exampleAlertFooterLabel">Alert with stacked actions</h2>
-      <p id="exampleAlertFooterBody">An alert with multiple footer actions, stacking full-width at the small breakpoint.</p>
+      <p id="exampleAlertFooterBody">An alert with multiple footer actions, stacking full-width at the sm breakpoint.</p>
     </div>
     <div class="alert-footer stacked"><!-- [!code highlight] -->
       <button type="button" class="button primary">Take Action</button>
       <button type="button" class="button default" data-cx-dismiss="dialog">Cancel</button>
-      <button type="button" class="button danger outline small:me-auto">Destructive</button>
+      <button type="button" class="button danger outline sm:me-auto">Destructive</button>
     </div>
   </dialog>`} />
 
@@ -226,7 +226,7 @@ Multiple alert dialogs can be chained by triggering the next dialog from an acti
     <div class="alert-footer">
       <button type="button" class="button danger" disabled>Confirm Delete</button>
       <button type="button" class="button default" data-cx-dismiss="dialog">Cancel</button>
-      <button type="button" class="button link small:me-auto" data-cx-toggle="dialog" data-cx-target="#exampleAlertSequential">Go Back</button>
+      <button type="button" class="button link sm:me-auto" data-cx-toggle="dialog" data-cx-target="#exampleAlertSequential">Go Back</button>
     </div>
   </dialog>`} />
 

@@ -12,32 +12,32 @@
 //
 
 $-form-check-sizes: (
-  medium: (
-    size: $form-check-medium-size,
-    gap: $form-check-medium-gap,
-    font: $form-medium-text-font,
-    switch-width: $form-switch-medium-width,
-    switch-height: $form-switch-medium-height,
-    toggle-width: $form-switch-medium-toggle-width,
-    toggle-height: $form-switch-medium-toggle-height,
+  md: (
+    size: $form-check-md-size,
+    gap: $form-check-md-gap,
+    font: $form-md-text-font,
+    switch-width: $form-switch-md-width,
+    switch-height: $form-switch-md-height,
+    toggle-width: $form-switch-md-toggle-width,
+    toggle-height: $form-switch-md-toggle-height,
   ),
-  small: (
-    size: $form-check-small-size,
-    gap: $form-check-small-gap,
-    font: $form-small-text-font,
-    switch-width: $form-switch-small-width,
-    switch-height: $form-switch-small-height,
-    toggle-width: $form-switch-small-toggle-width,
-    toggle-height: $form-switch-small-toggle-height,
+  sm: (
+    size: $form-check-sm-size,
+    gap: $form-check-sm-gap,
+    font: $form-sm-text-font,
+    switch-width: $form-switch-sm-width,
+    switch-height: $form-switch-sm-height,
+    toggle-width: $form-switch-sm-toggle-width,
+    toggle-height: $form-switch-sm-toggle-height,
   ),
-  large: (
-    size: $form-check-large-size,
-    gap: $form-check-large-gap,
-    font: $form-large-text-font,
-    switch-width: $form-switch-large-width,
-    switch-height: $form-switch-large-height,
-    toggle-width: $form-switch-large-toggle-width,
-    toggle-height: $form-switch-large-toggle-height,
+  lg: (
+    size: $form-check-lg-size,
+    gap: $form-check-lg-gap,
+    font: $form-lg-text-font,
+    switch-width: $form-switch-lg-width,
+    switch-height: $form-switch-lg-height,
+    toggle-width: $form-switch-lg-toggle-width,
+    toggle-height: $form-switch-lg-toggle-height,
   ),
 ) !default;
 
@@ -69,7 +69,7 @@ $-form-check-sizes: (
     @include line-height();
 
     @each $name, $tokens in $-form-check-sizes {
-      @if $name == medium {
+      @if $name == md {
         @include _form-check-size($tokens);
       } @else {
         &.#{$name} {
@@ -103,7 +103,7 @@ $-form-check-sizes: (
   }
 
   @each $name, $tokens in $-form-check-sizes {
-    @if $name == medium {
+    @if $name == md {
       .check-input:not([role="switch"], :has([role="switch"])) {
         --input-width: #{map.get($tokens, size)};
         --input-height: #{map.get($tokens, size)};

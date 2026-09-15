@@ -10,19 +10,19 @@ import { sassVars } from '@libs/sass'
 
 Gutters are the gaps between column content. `.row` sets two CSS custom properties — `--gutter-x` and `--gutter-y` — that columns consume: `--gutter-x` drives `padding-inline` on each column, and `--gutter-y` drives `margin-block-start`. Gutter classes override these properties at the row level without touching the column structure.
 
-Suffixes follow the same naming scale as [padding]([[docsref:/utilities/padding]]) and [margin]([[docsref:/utilities/margin]]) utilities (`xsmall`, `small`, `medium`, `large`, …) so gutter widths stay on-scale with the rest of the layout. The default horizontal gutter is <code>{sassVars('grid').gutter}</code> (`$grid-gutter-x`); the vertical gutter defaults to `0` (`$grid-gutter-y`).
+Suffixes follow the same naming scale as [padding]([[docsref:/utilities/padding]]) and [margin]([[docsref:/utilities/margin]]) utilities (`xs`, `sm`, `md`, `lg`, …) so gutter widths stay on-scale with the rest of the layout. The default horizontal gutter is <code>{sassVars('grid').gutter}</code> (`$grid-gutter-x`); the vertical gutter defaults to `0` (`$grid-gutter-y`).
 
 ## Horizontal gutters
 
 `.gx-{size}` overrides `--gutter-x` on a `.row` to change horizontal column spacing.
 
 <Example class="cxd-example-cols" code={`<div class="container text-center">
-    <div class="row gx-medium">
+    <div class="row gx-md">
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
     </div>
   </div>`} />
@@ -30,25 +30,25 @@ Suffixes follow the same naming scale as [padding]([[docsref:/utilities/padding]
 When the gutter is wider than the container's horizontal padding, the row's negative inline margins bleed outside the container edge.
 
 <Example class="cxd-example-cols" code={`<div class="container bg-even text-center">
-    <div class="row gx-6xlarge cxd-pattern-diagonal"><!-- [!code highlight] -->
+    <div class="row gx-6xl cxd-pattern-diagonal"><!-- [!code highlight] -->
       <div class="col dim-slight">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
     </div>
   </div>`} />
 
 Add a matching padding utility to the `.container` to contain it:
 
-<Example class="cxd-example-cols" code={`<div class="container px-xlarge bg-even text-center"><!-- [!code highlight] -->
-    <div class="row gx-6xlarge cxd-pattern-diagonal">
+<Example class="cxd-example-cols" code={`<div class="container px-xl bg-even text-center"><!-- [!code highlight] -->
+    <div class="row gx-6xl cxd-pattern-diagonal">
       <div class="col dim-slight">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
     </div>
   </div>`} />
@@ -56,12 +56,12 @@ Add a matching padding utility to the `.container` to contain it:
 Alternatively, add `.overflow-hidden` to the `.container` to clip the bleed without extra padding:
 
 <Example class="cxd-example-cols" code={`<div class="container overflow-hidden bg-even text-center"><!-- [!code highlight] -->
-    <div class="row gx-6xlarge cxd-pattern-diagonal">
+    <div class="row gx-6xl cxd-pattern-diagonal">
       <div class="col dim-slight">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
     </div>
   </div>`} />
@@ -71,18 +71,18 @@ Alternatively, add `.overflow-hidden` to the `.container` to clip the bleed with
 `.gy-{size}` overrides `--gutter-y` to add top spacing between rows of columns when they wrap. The `.row` applies an equal negative `margin-block-start` to cancel the gap before the first row, but this negative margin bleeds above the container boundary. Add `.overflow-hidden` to the `.container` to clip the bleed without extra padding:
 
 <Example class="cxd-example-cols" code={`<div class="container overflow-hidden text-center">
-    <div class="row gy-medium">
+    <div class="row gy-md">
       <div class="col-6">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col-6">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col-6">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col-6">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
     </div>
   </div>`} />
@@ -92,57 +92,57 @@ Alternatively, add `.overflow-hidden` to the `.container` to clip the bleed with
 `.g-{size}` sets `--gutter-x` and `--gutter-y` simultaneously. At smaller values, the negative top-margin bleed is typically small enough that a container wrapper is not needed:
 
 <Example class="cxd-example-cols" code={`<div class="container overflow-hidden text-center">
-    <div class="row g-xsmall">
+    <div class="row g-xs">
       <div class="col-6">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col-6">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col-6">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col-6">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
     </div>
   </div>`} />
 
 ## Responsive gutters
 
-All three class families accept breakpoint prefixes — `.{breakpoint}:g-{size}`, `.{breakpoint}:gx-{size}`, `.{breakpoint}:gy-{size}` — so gutter width can change at specific viewport widths. Gutter classes work with [row columns]([[docsref:/layout/grid#row-columns]]) as well as explicit column spans. The example below uses a narrow two-column layout with small gutters, switching to five columns with larger gutters at the `large` breakpoint:
+All three class families accept breakpoint prefixes — `.{breakpoint}:g-{size}`, `.{breakpoint}:gx-{size}`, `.{breakpoint}:gy-{size}` — so gutter width can change at specific viewport widths. Gutter classes work with [row columns]([[docsref:/layout/grid#row-columns]]) as well as explicit column spans. The example below uses a narrow two-column layout with sm gutters, switching to five columns with larger gutters at the `lg` breakpoint:
 
 <Example class="cxd-example-cols" code={`<div class="container overflow-hidden text-center">
-    <div class="row row-cols-2 large:row-cols-5 g-xsmall large:g-medium">
+    <div class="row row-cols-2 lg:row-cols-5 g-xs lg:g-md">
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
       <div class="col">
-        <div class="p-medium">Column content</div>
+        <div class="p-md">Column content</div>
       </div>
     </div>
   </div>`} />
@@ -154,8 +154,8 @@ All three class families accept breakpoint prefixes — `.{breakpoint}:g-{size}`
 For an edge-to-edge layout, drop the `.container` wrapper and add `.mx-0` to the `.row` to prevent inline overflow.
 
 <Example class="cxd-example-row" code={`<div class="row g-0 text-center">
-    <div class="small:col-6 medium:col-8">.small:col-6 .medium:col-8</div>
-    <div class="col-6 medium:col-4">.col-6 .medium:col-4</div>
+    <div class="sm:col-6 md:col-8">.sm:col-6 .md:col-8</div>
+    <div class="col-6 md:col-4">.col-6 .md:col-4</div>
   </div>`} />
 
 ## CSS

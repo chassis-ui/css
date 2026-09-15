@@ -25,12 +25,12 @@ To implement floating labels, wrap a `<label>` and a form control (with the `.fo
 3. Each label **must be properly associated** with its form control using the `for` attribute
 
 <Callout type="warning" title="Sizing">
-  `.form-floating` does not respond to the `.small` and `.large` size modifiers. Floating inputs always render at the fixed height defined by `$form-floating-height`.
+  `.form-floating` does not respond to the `.sm` and `.lg` size modifiers. Floating inputs always render at the fixed height defined by `$form-floating-height`.
 </Callout>
 
 ### Example
 
-<Example code={`<div class="form-floating mb-medium">
+<Example code={`<div class="form-floating mb-md">
     <label for="floatingEmail">Email address</label>
     <input type="email" class="form-input" id="floatingEmail" placeholder="name@example.com">
   </div>
@@ -72,7 +72,7 @@ Without a `rows` attribute, a `<textarea>` defaults to two native rows and rende
 
 Set either the `rows` attribute or an explicit `height` (inline style or custom CSS) for a custom `<textarea>` height; `rows="1"` matches an `<input>`'s height.
 
-<Example class="vstack gap-medium" code={`<div class="form-floating">
+<Example class="vstack gap-md" code={`<div class="form-floating">
     <label for="floatingTextareaRows1">Comments</label>
     <textarea class="form-input" rows="1" placeholder="Share your thoughts here" id="floatingTextareaRows1"></textarea>
   </div>
@@ -116,15 +116,15 @@ File inputs can also be used with floating labels, though the visual appearance 
 
 Add the `disabled` boolean attribute to inputs, textareas, or selects to apply the disabled state styling—grayed out appearance, no pointer events, and focus prevention.
 
-<Example code={`<div class="form-floating mb-medium">
+<Example code={`<div class="form-floating mb-md">
     <label for="floatingInputDisabled">Email address</label>
     <input type="email" class="form-input" id="floatingInputDisabled" placeholder="name@example.com" disabled>
   </div>
-  <div class="form-floating mb-medium">
+  <div class="form-floating mb-md">
     <label for="floatingTextareaDisabled">Comments</label>
     <textarea class="form-input" placeholder="Share your thoughts here" id="floatingTextareaDisabled" disabled></textarea>
   </div>
-  <div class="form-floating mb-medium">
+  <div class="form-floating mb-md">
     <label for="floatingTextarea2Disabled">Comments</label>
     <textarea class="form-input" placeholder="Share your thoughts here" id="floatingTextarea2Disabled" style="height: 100px" disabled>This textarea is disabled with existing content</textarea>
   </div>
@@ -142,11 +142,11 @@ Add the `disabled` boolean attribute to inputs, textareas, or selects to apply t
 
 Combine the `readonly` attribute with the `.plaintext` class on `.form-input` to display a value as static text without changing the surrounding layout. Because `.plaintext` is included directly in the label's `:has()` selector, the label always renders in its floated position, even when the control is empty.
 
-<Example code={`<div class="form-floating mb-medium">
+<Example code={`<div class="form-floating mb-md">
     <label for="floatingEmptyPlaintextInput">Empty input</label>
     <input type="email" readonly class="form-input plaintext" id="floatingEmptyPlaintextInput" placeholder="name@example.com">
   </div>
-  <div class="form-floating mb-medium">
+  <div class="form-floating mb-md">
     <label for="floatingPlaintextInput">Input with value</label>
     <input type="email" readonly class="form-input plaintext" id="floatingPlaintextInput" placeholder="name@example.com" value="user@chassis.css">
   </div>`} />
@@ -157,7 +157,7 @@ Floating labels compose with `.input-group` and the grid system for more complex
 
 ### Input groups
 
-<Example code={`<div class="input-group mb-medium">
+<Example code={`<div class="input-group mb-md">
     <span class="input-addon">@</span>
     <div class="form-floating">
       <label for="floatingInputGroup">Username</label>
@@ -204,14 +204,14 @@ See the [input group]([[docsref:/forms/input-group]]) page for the full set of a
 
 Combine `.form-floating` containers with Chassis CSS's grid system by placing them within column classes:
 
-<Example code={`<div class="row g-medium">
-    <div class="medium:col">
+<Example code={`<div class="row g-md">
+    <div class="md:col">
       <div class="form-floating">
         <label for="floatingInputGrid">Email address</label>
         <input type="email" class="form-input" id="floatingInputGrid" placeholder="name@example.com" value="user@chassis.css">
       </div>
     </div>
-    <div class="medium:col">
+    <div class="md:col">
       <div class="form-floating">
         <label for="floatingSelectGrid">Preferences</label>
         <select class="form-input" id="floatingSelectGrid">

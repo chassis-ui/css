@@ -25,12 +25,12 @@
 
 // scss-docs-start breakpoints
 $breakpoints: (
-  xsmall:       0,
-  small:        $breakpoint-small,
-  medium:       $breakpoint-medium,
-  large:        $breakpoint-large,
-  xlarge:       $breakpoint-xlarge,
-  2xlarge:      $breakpoint-2xlarge
+  xs:           0,
+  sm:           $breakpoint-small,
+  md:           $breakpoint-medium,
+  lg:           $breakpoint-large,
+  xl:           $breakpoint-xlarge,
+  2xl:          $breakpoint-2xlarge
 ) !default;
 // scss-docs-end breakpoints
 
@@ -45,11 +45,11 @@ $breakpoints: (
 
 // scss-docs-start container-max-widths
 $container-max-widths: (
-  small:        $container-small,
-  medium:       $container-medium,
-  large:        $container-large,
-  xlarge:       $container-xlarge,
-  2xlarge:      $container-2xlarge
+  sm:           $container-small,
+  md:           $container-medium,
+  lg:           $container-large,
+  xl:           $container-xlarge,
+  2xl:          $container-2xlarge
 ) !default;
 // scss-docs-end container-max-widths
 
@@ -176,23 +176,23 @@ $spacer:              $space-medium !default;
 // scss-docs-start font-variables
 // $font-size-root affects the value of `rem`, which is used for as well font sizes, paddings, and margins
 $font-size-root:            null !default; // 2vw !default;
-$font-size-root-large:      $font-size-root !default; // 1vw !default; // for media-breakpoint-up(large)
-$font-size-root-small:      $font-size-root !default; // 4vw !default; // for media-breakpoint-down(small)
+$font-size-root-lg:      $font-size-root !default; // 1vw !default; // for media-breakpoint-up(lg)
+$font-size-root-sm:      $font-size-root !default; // 4vw !default; // for media-breakpoint-down(sm)
 
 $text-align:                null !default;
 
 // $font-size-base affects the font size of the body text
-$font-size-base:            var(--font-size-medium) !default; // Assumes the browser default, typically `16px`
+$font-size-base:            var(--font-size-md) !default; // Assumes the browser default, typically `16px`
 $font-family-base:          var(--font-family-text) !default;
 $font-weight-base:          var(--font-weight-normal) !default;
-$line-height-base:          var(--line-height-medium) !default;
+$line-height-base:          var(--line-height-md) !default;
 
 $small-font-size:           .875em !default;
-$large-font-size:           1.25em !default;
+$lg-font-size:              1.25em !default;
 
 $small-line-height:         1.25em !default;
-$medium-line-height:        1.5em !default;
-$large-line-height:         2em !default;
+$md-line-height:            1.5em !default;
+$lg-line-height:            2em !default;
 
 $sub-sup-font-size:         .75em !default;
 
@@ -221,32 +221,32 @@ $heading-font-weight:       var(--font-weight-html-heading) !default;
 $heading-font-style:        null !default;
 $heading-color:             null !default; // var(--heading-color, #{$fg-color}) !default;
 
-$font-size-5xlarge:         var(--font-size-text-5xlarge) !default;
-$font-size-4xlarge:         var(--font-size-text-4xlarge) !default;
-$font-size-3xlarge:         var(--font-size-text-3xlarge) !default;
-$font-size-2xlarge:         var(--font-size-text-2xlarge) !default;
-$font-size-xlarge:          var(--font-size-text-xlarge) !default;
-$font-size-large:           var(--font-size-text-large) !default;
-$font-size-medium:          var(--font-size-text-medium) !default;
-$font-size-small:           var(--font-size-text-small) !default;
-$font-size-xsmall:          var(--font-size-text-xsmall) !default;
-$font-size-2xsmall:         var(--font-size-text-2xsmall) !default;
+$font-size-5xl:         var(--font-size-text-5xl) !default;
+$font-size-4xl:         var(--font-size-text-4xl) !default;
+$font-size-3xl:         var(--font-size-text-3xl) !default;
+$font-size-2xl:         var(--font-size-text-2xl) !default;
+$font-size-xl:          var(--font-size-text-xl) !default;
+$font-size-lg:           var(--font-size-text-lg) !default;
+$font-size-md:          var(--font-size-text-md) !default;
+$font-size-sm:           var(--font-size-text-sm) !default;
+$font-size-xs:          var(--font-size-text-xs) !default;
+$font-size-2xs:         var(--font-size-text-2xs) !default;
 
 $font-weight-normal:        var(--font-weight-text-normal) !default;
 $font-weight-strong:        var(--font-weight-text-strong) !default;
 $font-weight-mass:          var(--font-weight-text-mass) !default;
 $font-weight-elegant:       var(--font-weight-text-elegant) !default;
 
-$line-height-5xlarge:       var(--line-height-text-5xlarge) !default;
-$line-height-4xlarge:       var(--line-height-text-4xlarge) !default;
-$line-height-3xlarge:       var(--line-height-text-3xlarge) !default;
-$line-height-2xlarge:       var(--line-height-text-2xlarge) !default;
-$line-height-xlarge:        var(--line-height-text-xlarge) !default;
-$line-height-large:         var(--line-height-text-large) !default;
-$line-height-medium:        var(--line-height-text-medium) !default;
-$line-height-small:         var(--line-height-text-small) !default;
-$line-height-xsmall:        var(--line-height-text-xsmall) !default;
-$line-height-2xsmall:       var(--line-height-text-2xsmall) !default;
+$line-height-5xl:       var(--line-height-text-5xl) !default;
+$line-height-4xl:       var(--line-height-text-4xl) !default;
+$line-height-3xl:       var(--line-height-text-3xl) !default;
+$line-height-2xl:       var(--line-height-text-2xl) !default;
+$line-height-xl:        var(--line-height-text-xl) !default;
+$line-height-lg:         var(--line-height-text-lg) !default;
+$line-height-md:        var(--line-height-text-md) !default;
+$line-height-sm:         var(--line-height-text-sm) !default;
+$line-height-xs:        var(--line-height-text-xs) !default;
+$line-height-2xs:       var(--line-height-text-2xs) !default;
 
 $h1-font-size:              var(--font-size-html-h1) !default;
 $h2-font-size:              var(--font-size-html-h2) !default;
@@ -284,8 +284,8 @@ $mark-bg-color:             $bg-highlight !default;
 
 // scss-docs-start hr-variables
 $hr-color:                  var(--border-subtle) !default;
-$hr-size:                   var(--border-width-medium) !default;
-$hr-margin:                 var(--space-medium) !default;
+$hr-size:                   var(--border-width-md) !default;
+$hr-margin:                 var(--space-md) !default;
 $hr-opacity:                var(--opacity-solid) !default;
 // scss-docs-end hr-variables
 
@@ -309,8 +309,8 @@ $code-color:                inherit !default;
 // scss-docs-start kbd-variables
 $kbd-padding-y:             .125rem !default;
 $kbd-padding-x:             .25rem !default;
-$kbd-font-size:             var(--font-size-code-small) !default;
-$kbd-line-height:           var(--line-height-code-small) !default;
+$kbd-font-size:             var(--font-size-code-sm) !default;
+$kbd-line-height:           var(--line-height-code-sm) !default;
 $kbd-color:                 var(--fg-main) !default;
 $kbd-bg:                    var(--bg-evident) !default;
 $nested-kbd-font-weight:    null !default;
@@ -327,7 +327,7 @@ $pre-color:                         null !default;
 // Adjust to vertically align icons with text. The default is set to
 // align with the x-height of the font, which is typically around -0.225em.
 // Adjust as needed for your specific font and design.
-$icon-size:                 var(--icon-medium) !default;
+$icon-size:                 var(--icon-md) !default;
 $icon-vertical-align:       -.225em !default;
 
 
@@ -337,16 +337,16 @@ $icon-vertical-align:       -.225em !default;
 // scss-docs-start thumbnail-variables
 $thumbnail-padding:           .25rem !default;
 $thumbnail-bg-color:          var(--bg-main) !default;
-$thumbnail-border-width:      var(--border-width-medium) !default;
+$thumbnail-border-width:      var(--border-width-md) !default;
 $thumbnail-border-style:      solid !default;
 $thumbnail-border-color:      var(--border-subtle) !default;
-$thumbnail-border-radius:     var(--border-radius-medium) !default;
-$thumbnail-box-shadow:        var(--box-shadow-small) !default;
+$thumbnail-border-radius:     var(--border-radius-md) !default;
+$thumbnail-box-shadow:        var(--box-shadow-sm) !default;
 // scss-docs-end thumbnail-variables
 // scss-docs-start figure-variables
-$figure-gap:                  calc(var(--space-medium) * .5) !default;
-$figure-caption-font-size:    var(--font-size-small) !default;
-$figure-caption-line-height:  var(--line-height-small) !default;
+$figure-gap:                  calc(var(--space-md) * .5) !default;
+$figure-caption-font-size:    var(--font-size-sm) !default;
+$figure-caption-line-height:  var(--line-height-sm) !default;
 $figure-caption-fg-color:     var(--fg-subtle) !default;
 // scss-docs-end figure-variables
 
@@ -382,19 +382,19 @@ $icon-link-icon-transform-rtl:  translate3d(-.25em, 0, 0) !default;
 // Define common padding and border radius sizes and more.
 
 // scss-docs-start border-variables
-$border-width:                var(--border-width-medium) !default;
+$border-width:                var(--border-width-md) !default;
 $border-color:                var(--border-main) !default;
 $border-style:                solid !default;
-$border-radius:               var(--border-radius-medium) !default;
+$border-radius:               var(--border-radius-md) !default;
 // scss-docs-end border-variables
 
 // scss-docs-start base-shadow-variables
-$box-shadow-medium:         $shadow-default-20 !default;
-$box-shadow-small:          $shadow-default-05 !default;
-$box-shadow-large:          $shadow-default-50 !default;
+$box-shadow-md:         $shadow-default-20 !default;
+$box-shadow-sm:          $shadow-default-05 !default;
+$box-shadow-lg:          $shadow-default-50 !default;
 $box-shadow-inset:          inset 0 .125rem .25rem #{to-opacity($black, .125)} !default;
 $box-shadow-emboss:         inset 0 .0625rem 0 #{to-opacity($white, .15)} !default;
-// $box-shadow:                $box-shadow-medium !default;
+// $box-shadow:                $box-shadow-md !default;
 // scss-docs-end base-shadow-variables
 
 // scss-docs-start focus-ring-variables
@@ -507,7 +507,7 @@ $outline-bg-active:             var(--context-base-color) !default;
 $outline-border-color:          $outline-fg-color !default;
 $outline-icon-color:            $outline-fg-color !default;
 $outline-cue-color:             var(--context-cue-main) !default;
-$outline-border-width:          var(--border-width-large) !default;
+$outline-border-width:          var(--border-width-lg) !default;
 
 
 //
@@ -524,12 +524,12 @@ $avatar-size: 2.5rem !default;
 $avatar-fg-color: var(--fg-solid) !default;
 $avatar-bg-color: var(--bg-solid) !default;
 $avatar-border-color: var(--border-subtle) !default;
-$avatar-border-width: var(--border-width-medium) !default;
+$avatar-border-width: var(--border-width-md) !default;
 $avatar-border-radius: var(--border-radius-full) !default;
 $avatar-font-family: var(--font-family-text) !default;
 $avatar-font-weight: var(--font-weight-strong) !default;
 $avatar-font-scale: .4 !default;
-$avatar-badge-border-width: var(--border-width-xlarge) !default;
+$avatar-badge-border-width: var(--border-width-xl) !default;
 $avatar-badge-border-color: var(--bg-main) !default;
 $avatar-stack-spacing: -.25 !default;
 $avatar-focus-ring-offset: 0px !default;
@@ -602,7 +602,7 @@ $form-help-range-spacing:               $space-zero !default;
 // scss-docs-end form-help-variables
 
 // scss-docs-start form-label-variables
-$form-label-font:                       $form-medium-label-font !default;
+$form-label-font:                       $form-md-label-font !default;
 $form-label-color:                      var(--fg-main) !default;
 $form-label-margin-bottom:              $form-field-gap !default;
 // scss-docs-end form-label-variables
@@ -635,13 +635,13 @@ $form-select-caret-position:            var(--logical-position-end, right) var(-
 // scss-docs-end form-select-variables
 
 // scss-docs-start form-check-variables
-$form-check-medium-size:                $icon-small !default;
-$form-check-large-size:                 $icon-medium !default;
-$form-check-small-size:                 $icon-xsmall !default;
+$form-check-md-size:                $icon-small !default;
+$form-check-lg-size:                 $icon-medium !default;
+$form-check-sm-size:                 $icon-xsmall !default;
 
-$form-check-medium-gap:                 $space-xsmall !default;
-$form-check-large-gap:                  $space-small !default;
-$form-check-small-gap:                  $space-2xsmall !default;
+$form-check-md-gap:                 $space-xsmall !default;
+$form-check-lg-gap:                  $space-small !default;
+$form-check-sm-gap:                  $space-2xsmall !default;
 
 $form-check-border-width:               $form-regular-border-width !default;
 $form-check-checkbox-border-radius:     $border-radius-small !default;
@@ -664,20 +664,20 @@ $form-switch-disabled-color:            $form-disabled-fg-inactive !default;
 $form-switch-focus-color:               $form-idle-fg-active !default;
 $form-switch-checked-color:             $form-check-checked-fg-color !default;
 
-$form-switch-medium-width:                     2rem !default;
-$form-switch-medium-height:                    1.25rem !default;
-$form-switch-medium-toggle-width:              1rem !default;
-$form-switch-medium-toggle-height:             1rem !default;
+$form-switch-md-width:                     2rem !default;
+$form-switch-md-height:                    1.25rem !default;
+$form-switch-md-toggle-width:              1rem !default;
+$form-switch-md-toggle-height:             1rem !default;
 
-$form-switch-small-width:                     1.5rem !default;
-$form-switch-small-height:                    1rem !default;
-$form-switch-small-toggle-width:              .75rem !default;
-$form-switch-small-toggle-height:             .75rem !default;
+$form-switch-sm-width:                     1.5rem !default;
+$form-switch-sm-height:                    1rem !default;
+$form-switch-sm-toggle-width:              .75rem !default;
+$form-switch-sm-toggle-height:             .75rem !default;
 
-$form-switch-large-width:                     2.5rem !default;
-$form-switch-large-height:                    1.5rem !default;
-$form-switch-large-toggle-width:              1.25rem !default;
-$form-switch-large-toggle-height:             1.25rem !default;
+$form-switch-lg-width:                     2.5rem !default;
+$form-switch-lg-height:                    1.5rem !default;
+$form-switch-lg-toggle-width:              1.25rem !default;
+$form-switch-lg-toggle-height:             1.25rem !default;
 
 
 $form-switch-toggle-border-radius:      var(--border-radius-full) !default;
@@ -704,14 +704,14 @@ $form-range-thumb-width:                    1rem !default;
 $form-range-thumb-height:                   $form-range-thumb-width !default;
 $form-range-thumb-border:                   0 !default;
 $form-range-thumb-border-radius:            1rem !default;
-$form-range-thumb-box-shadow:               var(--box-shadow-small) !default;
+$form-range-thumb-box-shadow:               var(--box-shadow-sm) !default;
 $form-range-focus-ring-offset:              1px !default;
 $form-range-thumb-transition:               background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out !default;
 // scss-docs-end form-range-variables
 
 // scss-docs-start form-floating-variables
 $form-floating-height:                      3.5rem !default;
-$form-floating-input-padding-x:             $form-medium-padding-x !default;
+$form-floating-input-padding-x:             $form-md-padding-x !default;
 $form-floating-inactive-padding-y:          1rem !default;
 $form-floating-active-padding-t:            1.5rem !default;
 $form-floating-active-padding-b:            .5rem !default;
@@ -722,16 +722,16 @@ $form-floating-transition:                  opacity .1s ease-in-out, transform .
 // scss-docs-end form-floating-variables
 
 // scss-docs-start form-otp-sizes
-$form-otp-input-w: var(--size-medium) !default;
-$form-otp-input-h: var(--size-large) !default;
-$form-otp-gap: var(--space-xsmall) !default;
-$form-otp-font-size: var(--font-size-xlarge) !default;
+$form-otp-input-w: var(--size-md) !default;
+$form-otp-input-h: var(--size-lg) !default;
+$form-otp-gap: var(--space-xs) !default;
+$form-otp-font-size: var(--font-size-xl) !default;
 $form-otp-font-weight: var(--font-weight-strong) !default;
 $form-otp-separator-color: var(--fg-subtle) !default;
 // scss-docs-end form-otp-sizes
 // scss-docs-start form-chip-input-variables
-$form-chip-input-padding-y: $form-medium-padding-y !default;
-$form-chip-input-padding-x: $form-medium-padding-x !default;
+$form-chip-input-padding-y: $form-md-padding-y !default;
+$form-chip-input-padding-x: $form-md-padding-x !default;
 $form-chip-input-gap: .375rem !default;
 $form-chip-input-min-width: 5rem !default;
 $form-chip-input-min-height: 2rem !default;
@@ -741,7 +741,7 @@ $form-password-strength-height:             .375rem !default;
 $form-password-strength-gap:                .25rem !default;
 $form-password-strength-margin-top:         .5rem !default;
 $form-password-strength-border-radius:      var(--border-radius-full) !default;
-$form-password-strength-font-size:          var(--font-size-small) !default;
+$form-password-strength-font-size:          var(--font-size-sm) !default;
 $form-password-strength-bg:                 var(--bg-evident) !default;
 $form-password-strength-color:              var(--bg-evident) !default;
 $form-password-strength-weak-color:         var(--cx-danger) !default;
@@ -855,10 +855,10 @@ $accordion-border-color-context:        var(--border-subtle) !default;
 //
 
 // scss-docs-start nav-variables
-$nav-link-padding-y:                  var(--space-xsmall) !default;
-$nav-link-padding-x:                  var(--space-small) !default;
+$nav-link-padding-y:                  var(--space-xs) !default;
+$nav-link-padding-x:                  var(--space-sm) !default;
 $nav-link-font:                       null !default;
-$nav-link-border-radius:              var(--border-radius-medium) !default;
+$nav-link-border-radius:              var(--border-radius-md) !default;
 $nav-link-main-color:                 var(--fg-main) !default;
 $nav-link-hover-color:                var(--link-main) !default;
 $nav-link-hover-bg:                   var(--bg-even) !default;
@@ -870,15 +870,15 @@ $nav-link-focus-ring-color:           $focus-ring-color !default;
 $nav-link-focus-ring-offset:          1px !default;
 
 $nav-tabs-border-color:               var(--border-subtle) !default;
-$nav-tabs-border-width:               var(--border-width-medium) !default;
-$nav-tabs-border-radius:              var(--border-radius-medium) !default;
+$nav-tabs-border-width:               var(--border-width-md) !default;
+$nav-tabs-border-radius:              var(--border-radius-md) !default;
 $nav-tabs-active-fg-color:            var(--fg-main) !default;
 $nav-tabs-active-bg-color:            var(--bg-main) !default;
-$nav-tabs-active-border-top-width:    var(--border-width-2xlarge) !default; // or $nav-tabs-border-width
+$nav-tabs-active-border-top-width:    var(--border-width-2xl) !default; // or $nav-tabs-border-width
 $nav-tabs-active-border-top-color:    var(--primary) !default; // or $nav-tabs-border-color
 
 $nav-pills-bg-color:                  var(--bg-evident) !default;
-$nav-pills-padding:                   var(--space-2xsmall) !default;
+$nav-pills-padding:                   var(--space-2xs) !default;
 $nav-pills-border-radius:             var(--border-radius-full) !default;
 $nav-pills-link-border-radius:        var(--border-radius-full) !default;
 $nav-pills-active-fg-color:           var(--fg-active) !default;
@@ -888,7 +888,7 @@ $nav-pills-active-box-shadow:         none !default; // $box-shadow-emboss !defa
 $nav-underline-gap:                   1rem !default;
 $nav-underline-link-padding-x:        0 !default;
 $nav-underline-border-color:          var(--border-subtle) !default;
-$nav-underline-border-width:          var(--border-width-medium) !default;
+$nav-underline-border-width:          var(--border-width-md) !default;
 $nav-underline-active-fg-color:       var(--fg-main) !default;
 $nav-underline-active-bg-color:       transparent !default;
 $nav-underline-active-border-width:   .25rem !default;
@@ -910,15 +910,15 @@ $navbar-breakpoints:                  $breakpoints !default;
 // scss-docs-end navbar-breakpoints
 
 // scss-docs-start navbar-variables
-$navbar-padding-y:                    var(--space-xsmall) !default;
+$navbar-padding-y:                    var(--space-xs) !default;
 $navbar-padding-x:                    0 !default;
 $navbar-fg-color:                     #{to-opacity(var(--fg-main), .65)} !default;
 $navbar-bg-color:                     var(--bg-main) !default;
 
 $navbar-nav-gap:                      0 !default;
 
-$navbar-link-padding-x:               var(--space-small) !default;
-$navbar-link-padding-y:               var(--space-xsmall) !default;
+$navbar-link-padding-x:               var(--space-sm) !default;
+$navbar-link-padding-y:               var(--space-xs) !default;
 $navbar-link-font:                    null !default;
 $navbar-link-main-color:              $navbar-fg-color !default;
 $navbar-link-hover-color:             #{to-opacity(var(--fg-main), .85)} !default;
@@ -926,7 +926,7 @@ $navbar-link-active-color:            #{to-opacity(var(--fg-main), 1)} !default;
 $navbar-link-disabled-color:          #{to-opacity(var(--fg-main), var(--opacity-fg-slight))} !default;
 
 $navbar-brand-font:                   $font-text-xlarge-normal !default;
-$navbar-brand-padding-y:              var(--space-2xsmall) !default;
+$navbar-brand-padding-y:              var(--space-2xs) !default;
 $navbar-brand-margin-end:             1rem !default;
 $navbar-brand-fg-color:               var(--fg-main) !default;
 $navbar-brand-hover-color:            $navbar-brand-fg-color !default;
@@ -937,7 +937,7 @@ $navbar-toggler-icon-color:           $navbar-fg-color !default;
 $navbar-toggler-icon-size:            $icon-medium !default;
 
 $navbar-translucent-opacity:          $translucent-opacity !default;
-$navbar-translucent-blur:             var(--size-2xsmall) !default;
+$navbar-translucent-blur:             var(--size-2xs) !default;
 $navbar-translucent-saturation:       $translucent-saturation !default;
 // scss-docs-end navbar-variables
 
@@ -960,21 +960,21 @@ $menu-gap:                          0 !default;
 $menu-transition-duration:          .15s !default;
 $menu-transition-timing:            ease-in-out !default;
 
-$menu-image-size:                   var(--size-small) !default;
-$menu-avatar-size:                  var(--size-small) !default;
+$menu-image-size:                   var(--size-sm) !default;
+$menu-avatar-size:                  var(--size-sm) !default;
 $menu-check-color:                  var(--icon-color) !default;
 $menu-caret-icon:                   $caret-icon !default;
 $menu-caret-spacing:                0 calc(var(--padding-x) * -1) !default;
 
 $menu-divider-margin:               $menu-item-padding-y 0 !default;
 $menu-selected-font-weight:         var(--font-weight-strong) !default;
-$menu-description-font-size:        var(--font-size-small) !default;
+$menu-description-font-size:        var(--font-size-sm) !default;
 $menu-description-fg-color:         to-opacity(currentcolor, var(--opacity-fg-subtle)) !default;
 
 // $menu-box-shadow:                   var(--box-shadow) !default;
 // menu header
 $menu-header-padding-x:             $menu-item-padding-x !default;
-$menu-header-padding-y:             var(--space-2xsmall) !default;
+$menu-header-padding-y:             var(--space-2xs) !default;
 
 // Menu context variables
 $menu-fg-context:                   var(--fg-main) !default;
@@ -1006,18 +1006,18 @@ $pagination-border-radius:              $button-medium-border-radius !default;
 $pagination-font:                       $button-medium-font !default;
 $pagination-min-size:                   $button-medium-min-size !default;
 
-$pagination-large-border-radius:        $button-large-border-radius !default;
-$pagination-large-font:                 $button-large-font !default;
-$pagination-large-min-size:             $button-large-min-size !default;
+$pagination-lg-border-radius:        $button-large-border-radius !default;
+$pagination-lg-font:                 $button-large-font !default;
+$pagination-lg-min-size:             $button-large-min-size !default;
 
-$pagination-small-border-radius:        $button-small-border-radius !default;
-$pagination-small-font:                 $button-small-font !default;
-$pagination-small-min-size:             $button-small-min-size !default;
+$pagination-sm-border-radius:        $button-small-border-radius !default;
+$pagination-sm-font:                 $button-small-font !default;
+$pagination-sm-min-size:             $button-small-min-size !default;
 
-$pagination-padding-y:                  var(--space-2xsmall) !default;
-$pagination-padding-x:                  var(--space-2xsmall) !default;
-$pagination-gap:                        var(--space-xsmall) !default;
-$pagination-border-width:               var(--border-width-medium) !default;
+$pagination-padding-y:                  var(--space-2xs) !default;
+$pagination-padding-x:                  var(--space-2xs) !default;
+$pagination-gap:                        var(--space-xs) !default;
+$pagination-border-width:               var(--border-width-md) !default;
 $pagination-border-color:               var(--border-subtle) !default;
 $pagination-icon-size:                  1.125em !default;
 
@@ -1055,50 +1055,50 @@ $skeleton-opacity-wave:          .75 !default;
 //
 
 // scss-docs-start card-variables
-$card-padding-y:                    var(--space-medium) !default;
-$card-padding-x:                    var(--space-medium) !default;
-$card-header-padding-y:             var(--space-small) !default;
+$card-padding-y:                    var(--space-md) !default;
+$card-padding-x:                    var(--space-md) !default;
+$card-header-padding-y:             var(--space-sm) !default;
 $card-header-padding-x:             var(--padding-x) !default; // card padding-x is used for header
-$card-footer-padding-y:             var(--space-small) !default;
+$card-footer-padding-y:             var(--space-sm) !default;
 $card-footer-padding-x:             var(--padding-x) !default; // card padding-x is used for footer
-$card-gap-y:                        var(--space-small) !default; // Space between title and body.
-$card-gap-x:                        var(--space-small) !default; // Space between links & buttons.
+$card-gap-y:                        var(--space-sm) !default; // Space between title and body.
+$card-gap-x:                        var(--space-sm) !default; // Space between links & buttons.
 
-$card-large-padding-y:              var(--space-large) !default;
-$card-large-padding-x:              var(--space-large) !default;
-$card-large-header-padding-y:       var(--space-medium) !default;
-$card-large-header-padding-x:       var(--padding-x) !default; // card padding-x is used for header
-$card-large-footer-padding-y:       var(--space-medium) !default;
-$card-large-footer-padding-x:       var(--padding-x) !default; // card padding-x is used for footer
-$card-large-gap-y:                  var(--space-medium) !default; // Space between title and body.
-$card-large-gap-x:                  var(--space-medium) !default; // Space between links & buttons.
+$card-lg-padding-y:              var(--space-lg) !default;
+$card-lg-padding-x:              var(--space-lg) !default;
+$card-lg-header-padding-y:       var(--space-md) !default;
+$card-lg-header-padding-x:       var(--padding-x) !default; // card padding-x is used for header
+$card-lg-footer-padding-y:       var(--space-md) !default;
+$card-lg-footer-padding-x:       var(--padding-x) !default; // card padding-x is used for footer
+$card-lg-gap-y:                  var(--space-md) !default; // Space between title and body.
+$card-lg-gap-x:                  var(--space-md) !default; // Space between links & buttons.
 
-$card-small-padding-y:              var(--space-small) !default;
-$card-small-padding-x:              var(--space-small) !default;
-$card-small-header-padding-y:       var(--space-xsmall) !default;
-$card-small-header-padding-x:       var(--padding-x) !default; // card padding-x is used for header
-$card-small-footer-padding-y:       var(--space-xsmall) !default;
-$card-small-footer-padding-x:       var(--padding-x) !default; // card padding-x is used for footer
-$card-small-gap-y:                  var(--space-xsmall) !default; // Space between title and body.
-$card-small-gap-x:                  var(--space-xsmall) !default; // Space between links & buttons.
+$card-sm-padding-y:              var(--space-sm) !default;
+$card-sm-padding-x:              var(--space-sm) !default;
+$card-sm-header-padding-y:       var(--space-xs) !default;
+$card-sm-header-padding-x:       var(--padding-x) !default; // card padding-x is used for header
+$card-sm-footer-padding-y:       var(--space-xs) !default;
+$card-sm-footer-padding-x:       var(--padding-x) !default; // card padding-x is used for footer
+$card-sm-gap-y:                  var(--space-xs) !default; // Space between title and body.
+$card-sm-gap-x:                  var(--space-xs) !default; // Space between links & buttons.
 
-$card-border-width:                 var(--border-width-medium) !default;
+$card-border-width:                 var(--border-width-md) !default;
 $card-border-color:                 var(--border-subtle) !default;
-$card-border-radius:                var(--border-radius-medium) !default;
+$card-border-radius:                var(--border-radius-md) !default;
 $card-inner-border-radius:          calc($card-border-radius - $card-border-width) !default;
 $card-box-shadow:                   none !default;
 
-$card-medium-title-font:            $font-context-title-medium !default;
-$card-medium-subtitle-font:         $font-context-label-medium !default;
-$card-medium-body-font:             $font-context-body-medium !default;
+$card-md-title-font:            $font-context-title-medium !default;
+$card-md-subtitle-font:         $font-context-label-medium !default;
+$card-md-body-font:             $font-context-body-medium !default;
 
-$card-large-title-font:             $font-context-title-large !default;
-$card-large-subtitle-font:          $font-context-label-large !default;
-$card-large-body-font:              $font-context-body-large !default;
+$card-lg-title-font:             $font-context-title-large !default;
+$card-lg-subtitle-font:          $font-context-label-large !default;
+$card-lg-body-font:              $font-context-body-large !default;
 
-$card-small-title-font:             $font-context-title-small !default;
-$card-small-subtitle-font:          $font-context-label-small !default;
-$card-small-body-font:              $font-context-body-small !default;
+$card-sm-title-font:             $font-context-title-small !default;
+$card-sm-subtitle-font:          $font-context-label-small !default;
+$card-sm-body-font:              $font-context-body-small !default;
 
 $card-header-font-weight:           var(--font-weight-strong) !default;
 
@@ -1125,7 +1125,7 @@ $tooltip-font:                      $font-text-small-normal !default;
 $tooltip-max-width:                 12.5rem !default; //200px !default;
 $tooltip-fg-color:                  var(--fg-inverse) !default;
 $tooltip-bg-color:                  var(--bg-inverse) !default;
-$tooltip-border-radius:             var(--border-radius-medium) !default;
+$tooltip-border-radius:             var(--border-radius-md) !default;
 $tooltip-opacity:                   .9 !default;
 $tooltip-padding-y:                 $spacer * .25 !default;
 $tooltip-padding-x:                 $spacer * .5 !default;
@@ -1155,21 +1155,21 @@ $popover-font:                      $font-text-medium-normal !default;
 $popover-fg-color:                  var(--fg-main) !default;
 $popover-bg-color:                  var(--bg-main) !default;
 $popover-max-width:                 17.25rem !default; //276px !default;
-$popover-border-width:              var(--border-width-medium) !default;
+$popover-border-width:              var(--border-width-md) !default;
 $popover-border-color:              var(--border-subtle) !default;
-$popover-border-radius:             var(--border-radius-medium) !default;
+$popover-border-radius:             var(--border-radius-md) !default;
 $popover-inner-border-radius:       calc(#{$popover-border-radius} - #{$popover-border-width}) !default;
-$popover-box-shadow:                var(--box-shadow-medium) !default;
+$popover-box-shadow:                var(--box-shadow-md) !default;
 
 $popover-header-font:               $font-text-medium-strong !default;
 $popover-header-fg-color:           var(--fg-main) !default;
 $popover-header-bg-color:           var(--bg-even) !default;
-$popover-header-padding-y:          var(--space-xsmall) !default;
-$popover-header-padding-x:          var(--space-medium) !default;
+$popover-header-padding-y:          var(--space-xs) !default;
+$popover-header-padding-x:          var(--space-md) !default;
 
 $popover-body-color:                var(--fg-color) !default;
-$popover-body-padding-y:            var(--space-small) !default;
-$popover-body-padding-x:            var(--space-medium) !default;
+$popover-body-padding-y:            var(--space-sm) !default;
+$popover-body-padding-x:            var(--space-md) !default;
 
 $popover-arrow-width:               1rem !default;
 $popover-arrow-height:              .5rem !default;
@@ -1188,10 +1188,10 @@ $toast-font-size:                   .875rem !default;
 $toast-fg-color:                    var(--fg-main) !default;
 // $toast-bg-color:                    #{to-opacity(var(--bg-main), var(--opacity-dim-main))} !default;
 $toast-bg-color:                    var(--bg-main) !default;
-$toast-border-width:                var(--border-width-medium) !default;
+$toast-border-width:                var(--border-width-md) !default;
 $toast-border-color:                var(--border-subtle) !default;
-$toast-border-radius:               var(--border-radius-medium) !default;
-$toast-box-shadow:                  var(--box-shadow-medium) !default;
+$toast-border-radius:               var(--border-radius-md) !default;
+$toast-box-shadow:                  var(--box-shadow-md) !default;
 $toast-spacing:                     $container-padding-x !default;
 
 $toast-header-fg-color:             var(--fg-main) !default;
@@ -1206,7 +1206,7 @@ $toast-header-border-color:         $toast-border-color !default;
 
 // scss-docs-start dialog-variables
 $dialog-margin:                     2rem !default;
-$dialog-margin-small:               1rem !default; // Margin applied on smaller viewports (e.g. mobile).
+$dialog-margin-sm:               1rem !default; // Margin applied on smaller viewports (e.g. mobile).
 $dialog-backdrop-bg:                var(--black-dim-main) !default;
 $dialog-backdrop-blur:              8px !default;
 $dialog-transition-transform:       scale(1.05) !default;
@@ -1225,18 +1225,18 @@ $dialog-transition-timing:          cubic-bezier(.22, 1, .36, 1) !default;
 $modal-fg-color:                    var(--fg-main) !default;
 $modal-bg-color:                    var(--bg-main) !default;
 $modal-border-color:                var(--border-subtle) !default;
-$modal-border-width:                var(--border-width-medium) !default;
-$modal-border-radius:               var(--border-radius-xlarge) !default;
-$modal-footer-large-gap:            var(--space-medium) !default;
-$modal-footer-small-gap:            var(--space-small) !default;
-$modal-close-button-size:           var(--icon-medium) !default;
+$modal-border-width:                var(--border-width-md) !default;
+$modal-border-radius:               var(--border-radius-xl) !default;
+$modal-footer-lg-gap:            var(--space-md) !default;
+$modal-footer-sm-gap:            var(--space-sm) !default;
+$modal-close-button-size:           var(--icon-md) !default;
 // scss-docs-end modal-variables
 // scss-docs-start modal-size-map
 $modal-sizes: (
-  small: $modal-small-width,
-  medium: $modal-medium-width,
-  large: $modal-large-width,
-  xlarge: $modal-xlarge-width,
+  sm: $modal-small-width,
+  md: $modal-medium-width,
+  lg: $modal-large-width,
+  xl: $modal-xlarge-width,
 ) !default;
 // scss-docs-end modal-size-map
 
@@ -1247,12 +1247,12 @@ $modal-sizes: (
 
 // scss-docs-start drawer-variables
 // $drawer-z-index:                $zindex-drawer !default;
-$drawer-inset:                      var(--space-medium) !default;
+$drawer-inset:                      var(--space-md) !default;
 $drawer-padding-y:                  $modal-medium-padding-y !default;
 $drawer-padding-x:                  $modal-medium-padding-x !default;
 $drawer-gap:                        $modal-medium-gap !default;
-$drawer-footer-large-gap:           $modal-footer-large-gap !default;
-$drawer-footer-small-gap:           $modal-footer-small-gap !default;
+$drawer-footer-lg-gap:           $modal-footer-lg-gap !default;
+$drawer-footer-sm-gap:           $modal-footer-sm-gap !default;
 $drawer-width:                      25rem !default;
 $drawer-height:                     30vh !default;
 $drawer-transition-duration:        .3s !default;
@@ -1283,10 +1283,10 @@ $alert-code-color:                  var(--fg-subtle) !default;
 $alert-fg-color:                    $modal-fg-color !default;
 $alert-bg-color:                    $modal-bg-color !default;
 $alert-border-color:                $modal-border-color !default;
-$alert-footer-large-gap:            $modal-footer-large-gap !default;
-$alert-footer-small-gap:            $modal-footer-small-gap !default;
-$alert-close-button-size:           var(--icon-small) !default;
-$alert-close-button-inset:          var(--space-medium) !default;
+$alert-footer-lg-gap:            $modal-footer-lg-gap !default;
+$alert-footer-sm-gap:            $modal-footer-sm-gap !default;
+$alert-close-button-size:           var(--icon-sm) !default;
+$alert-close-button-inset:          var(--space-md) !default;
 // scss-docs-end alert-variables
 
 
@@ -1300,7 +1300,7 @@ $alert-close-button-inset:          var(--space-medium) !default;
 $notification-fg-color:           var(--fg-main) !default;
 $notification-bg-color:           var(--bg-main) !default;
 $notification-icon-color:         var(--fg-main) !default;
-$notification-text-gap:           var(--space-xsmall) !default;
+$notification-text-gap:           var(--space-xs) !default;
 $notification-close-button-size:  1.25rem !default;
 // scss-docs-end notification-variables
 
@@ -1314,7 +1314,7 @@ $progress-height:                   1rem !default;
 $progress-font-size:                calc(#{$font-size-base} * .75) !default;
 $progress-line-height:              calc(#{$line-height-base} * .75) !default;
 $progress-bg-color:                 var(--bg-even) !default;
-$progress-border-radius:            var(--border-radius-medium) !default;
+$progress-border-radius:            var(--border-radius-md) !default;
 $progress-box-shadow:               none !default; // var(--box-shadow-inset) !default;
 $progress-bar-fg-color:             $white !default;
 $progress-bar-bg-color:             $primary !default;
@@ -1329,13 +1329,13 @@ $progress-bar-transition:           width .6s ease !default;
 //
 
 // scss-docs-start list-variables
-$list-padding-y:              var(--space-xsmall) !default;
-$list-padding-x:              var(--space-medium) !default;
+$list-padding-y:              var(--space-xs) !default;
+$list-padding-x:              var(--space-md) !default;
 $list-fg-color:               var(--fg-main) !default;
 $list-bg-color:               var(--bg-main) !default;
 $list-border-color:           var(--border-subtle) !default;
-$list-border-width:           var(--border-width-medium) !default;
-$list-border-radius:          var(--border-radius-medium) !default;
+$list-border-width:           var(--border-width-md) !default;
+$list-border-radius:          var(--border-radius-md) !default;
 $list-active-fg-color:        var(--fg-active) !default;
 $list-active-bg-color:        var(--bg-active) !default;
 $list-active-border-color:    transparent !default;
@@ -1378,7 +1378,7 @@ $breadcrumb-link-hover-color:   inherit !default;
 //
 
 // scss-docs-start carousel-variables
-$carousel-gap:                        var(--space-medium) !default;
+$carousel-gap:                        var(--space-md) !default;
 
 $carousel-items:                      1 !default;
 $carousel-items-gap:                  0px !default;
@@ -1425,9 +1425,9 @@ $spinner-animation-speed:   .75s !default;
 //
 
 // scss-docs-start close-button-variables
-$close-button-medium-size:        1.25rem !default;
-$close-button-large-size:         1.5rem !default;
-$close-button-small-size:         1rem !default;
+$close-button-md-size:        1.25rem !default;
+$close-button-lg-size:         1.5rem !default;
+$close-button-sm-size:         1rem !default;
 $close-button-fg-color:           var(--fg-color) !default;
 $close-button-bg-color:           transparent !default;
 $close-button-fg-hover:           var(--fg-color) !default;
@@ -1482,5 +1482,5 @@ $stepper-status-icon-next:                  "\F17A" !default;
 
 // scss-docs-start datepicker-variables
 $datepicker-arrow-icon:               "<svg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 24 24'><path d='M12 16c-.3 0-.5-.1-.7-.3l-6-6c-.4-.4-.4-1 0-1.4s1-.4 1.4 0l5.3 5.3 5.3-5.3c.4-.4 1-.4 1.4 0s.4 1 0 1.4l-6 6c-.2.2-.4.3-.7.3'/></svg>" !default;
-$datepicker-weekday-font-size:        $font-size-xsmall !default;
+$datepicker-weekday-font-size:        $font-size-xs !default;
 // scss-docs-end datepicker-variables
