@@ -63,10 +63,12 @@ for (let i = 0; i < maxLength; i++) {
 
 if (!ok) {
   console.error(
-    '\nscss/tailwind/_components-list.scss has drifted from scss/chassis.scss\'s import stack ' +
+    "\nscss/tailwind/_components-list.scss has drifted from scss/chassis.scss's import stack " +
       '(excluding root, reboot, utilities-api). Update scss/tailwind/_components-list.scss to match.'
   )
   process.exit(1)
 }
 
-console.log(`scss/tailwind/_components-list.scss matches scss/chassis.scss (${actual.length} entries).`)
+console.log(
+  `scss/tailwind/_components-list.scss matches scss/chassis.scss (${actual.length} entries).`
+)
