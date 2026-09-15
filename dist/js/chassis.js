@@ -427,6 +427,21 @@ const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed
 	if (isCycleAllowed) index = (index + listLength) % listLength;
 	return list[Math.max(0, Math.min(index, listLength - 1))];
 };
+/**
+* Resolve a Chassis custom property name under the prefix the stylesheet was
+* built with. The PostCSS preset (postcss/index.js) writes that prefix into
+* `--chassis-prefix` on `:root`, so a project that renames the namespace keeps
+* working without rebuilding the JS. With no marker (no prefixed stylesheet
+* loaded) the name comes back unprefixed, matching the raw Sass output. Not
+* cached: a stylesheet can load (or change) after the first read, and every
+* call site is already a style read or write.
+*
+* @param name  The unprefixed property name, e.g. `carousel-interval`
+* @return The full property name, e.g. `--cx-carousel-interval`
+*/
+const cssVar = (name) => {
+	return `--${getComputedStyle(document.documentElement).getPropertyValue("--chassis-prefix").trim()}${name}`;
+};
 //#endregion
 //#region js/src/util/config.ts
 /**
@@ -806,7 +821,7 @@ const CLASS_NAME_AUTO = "carousel-auto";
 const CLASS_NAME_CLONE = "carousel-item-clone";
 const CLASS_NAME_PAUSED = "paused";
 const CLASS_NAME_PLAYING = "carousel-playing";
-const PROPERTY_INTERVAL = "--cx-carousel-interval";
+const PROPERTY_INTERVAL = "carousel-interval";
 const SCROLL_DURATION = 300;
 const ACTIVE_RATIO_TOLERANCE = .05;
 const SELECTOR_ACTIVE = ".active";
@@ -1199,7 +1214,7 @@ var Carousel = class Carousel extends BaseComponent {
 		if (this._isFade() || items.length < 2) return false;
 		const styles = getComputedStyle(this._element);
 		const num = (name) => Number.parseFloat(styles.getPropertyValue(name)) || 0;
-		return (num("--cx-carousel-items") || 1) === 1 && num("--cx-carousel-items-peek") === 0 && !this._element.classList.contains(CLASS_NAME_CENTER) && !this._element.classList.contains(CLASS_NAME_AUTO);
+		return (num(cssVar("carousel-items")) || 1) === 1 && num(cssVar("carousel-items-peek")) === 0 && !this._element.classList.contains(CLASS_NAME_CENTER) && !this._element.classList.contains(CLASS_NAME_AUTO);
 	}
 	_direction(from, to) {
 		const isNext = to > from;
@@ -1208,7 +1223,7 @@ var Carousel = class Carousel extends BaseComponent {
 	}
 	_scheduleAutoplay(index = this._activeIndex) {
 		const interval = this._itemInterval(index);
-		this._element.style.setProperty(PROPERTY_INTERVAL, `${interval}ms`);
+		this._element.style.setProperty(cssVar(PROPERTY_INTERVAL), `${interval}ms`);
 		this._interval = setTimeout(() => {
 			const upcoming = this._upcomingIndex();
 			if (!this.nextWhenVisible()) {
@@ -1990,11 +2005,11 @@ var FloatingBase = class FloatingBase extends BaseComponent {
 			return /r?em$/.test(raw) ? value * rootFontSize : value;
 		};
 		return {
-			sm: toPx("--breakpoint-sm", 576),
-			md: toPx("--breakpoint-md", 768),
-			lg: toPx("--breakpoint-lg", 1024),
-			xl: toPx("--breakpoint-xl", 1280),
-			"2xl": toPx("--breakpoint-2xl", 1536)
+			sm: toPx(cssVar("breakpoint-sm"), 576),
+			md: toPx(cssVar("breakpoint-md"), 768),
+			lg: toPx(cssVar("breakpoint-lg"), 1024),
+			xl: toPx(cssVar("breakpoint-xl"), 1280),
+			"2xl": toPx(cssVar("breakpoint-2xl"), 1536)
 		};
 	}
 	static parseResponsivePlacement(placementString, defaultPlacement = "bottom") {
@@ -4310,7 +4325,7 @@ var NavOverflow = class extends BaseComponent {
 		const value = this._config.collapseBelow;
 		if (typeof value === "number") return value;
 		if (typeof value === "string" && value !== "") {
-			const cssValue = getComputedStyle(document.documentElement).getPropertyValue(`--cx-breakpoint-${value}`);
+			const cssValue = getComputedStyle(document.documentElement).getPropertyValue(cssVar(`breakpoint-${value}`));
 			return Number.parseFloat(cssValue) || 0;
 		}
 		return 0;
@@ -5475,12 +5490,12 @@ var Strength = class extends BaseComponent {
 		if (this._textElement) if (strength && this._config.messages[strength]) {
 			this._textElement.textContent = this._config.messages[strength];
 			this._textElement.dataset.cxStrength = strength;
-			this._textElement.style.setProperty("--cx-strength-color", `var(--cx-${{
+			this._textElement.style.setProperty(cssVar("strength-color"), `var(${cssVar(`${{
 				weak: "danger",
 				fair: "warning",
 				good: "info",
 				strong: "success"
-			}[strength]}-fg-main)`);
+			}[strength]}-fg-main`)})`);
 		} else {
 			this._textElement.textContent = "";
 			delete this._textElement.dataset.cxStrength;
