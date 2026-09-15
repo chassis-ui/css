@@ -44,7 +44,11 @@ const htmlValidate = new HtmlValidate({
     // Dialogs use h2, but the preset requires h1 for the sectioning roots
     'heading-level': ['error', { minInitialRank: 'h2', sectioningRoots: [] }],
     // SRI is not required for local assets in the docs
-    'require-sri': 'off'
+    'require-sri': 'off',
+    // Check duplicate IDs
+    'no-dup-id': 'error',
+    // Aloow autocomplete attribute on input elements
+    'input-attributes': 'off'
   },
   elements: [
     'html5',

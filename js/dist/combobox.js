@@ -1,5 +1,5 @@
 /*!
-* Chassis combobox.js v0.4.0-0 (https://chassis-ui.com)
+* Chassis combobox.js v0.4.0 (https://chassis-ui.com)
 * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
 * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
 */
