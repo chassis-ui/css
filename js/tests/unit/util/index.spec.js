@@ -663,6 +663,32 @@ describe('Util', () => {
     })
   })
 
+  describe('cssVar', () => {
+    afterEach(() => {
+      document.documentElement.style.removeProperty('--chassis-prefix')
+    })
+
+    it('should return the unprefixed name when no stylesheet declares a prefix', () => {
+      document.documentElement.style.removeProperty('--chassis-prefix')
+
+      expect(Util.cssVar('carousel-interval')).toEqual('--carousel-interval')
+    })
+
+    it('should use the prefix declared in --chassis-prefix', () => {
+      document.documentElement.style.setProperty('--chassis-prefix', 'acme-')
+
+      expect(Util.cssVar('carousel-interval')).toEqual('--acme-carousel-interval')
+    })
+
+    it('should pick up a prefix declared after an earlier read', () => {
+      expect(Util.cssVar('breakpoint-md')).toEqual('--cx-breakpoint-md')
+
+      document.documentElement.style.setProperty('--chassis-prefix', 'acme-')
+
+      expect(Util.cssVar('breakpoint-md')).toEqual('--acme-breakpoint-md')
+    })
+  })
+
   describe('setAriaAttribute', () => {
     it('should set the attribute to the string "true"', () => {
       const div = document.createElement('div')

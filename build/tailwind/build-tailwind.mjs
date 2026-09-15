@@ -53,7 +53,7 @@
 
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import postcss from 'postcss'
 import * as sass from 'sass'
 import tailwindConfig from './postcss.tailwind.config.js'
@@ -110,7 +110,7 @@ export async function compileTailwindDist() {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   await compileTailwindDist()
   await checkSourceExclusions()
   checkClashPolicy()

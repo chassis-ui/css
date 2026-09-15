@@ -56,7 +56,7 @@ Like the regular Chassis entry, the Tailwind entry point ships as Sass source �
 
 ## Build it
 
-Whichever way your bundler turns Sass into CSS, the `--cx-` custom-property prefix has to run **before** the result reaches Tailwind's own compiler — it's how the JS plugins that read `--cx-carousel-interval`, `--cx-breakpoint-*`, and similar properties at runtime find them (see [Installation]([[docsref:/getting-started/installation]])). `@chassis-ui/css/postcss` exports `chassisPrefix({ tailwind: true })`, a Tailwind-aware version of that same prefix step. Two proven ways to wire it in:
+Whichever way your bundler turns Sass into CSS, the `--cx-` custom-property prefix has to run **before** the result reaches Tailwind's own compiler — it's how the JS plugins that read `--cx-carousel-interval`, `--cx-breakpoint-*`, and similar properties at runtime find them (see [Installation]([[docsref:/getting-started/installation]])). `@chassis-ui/css/postcss` exports `chassisPrefix({ tailwind: true })`, a Tailwind-aware version of that same prefix step. Unlike a plain Sass build, a Tailwind build can't skip the prefix: Chassis's unprefixed `--breakpoint-*`, `--container-*`, and `--color-*` properties would collide with Tailwind's own theme keys, so `prefix: ''` throws an error here. Any other `prefix` works. Two proven ways to wire it in:
 
 ### Two-step (works with any bundler, including Parcel and the Tailwind CLI)
 
@@ -129,7 +129,7 @@ export default defineConfig({
 import '../scss/tailwind-entry.scss'
 ```
 
-The preset and `@tailwindcss/postcss` can go in either order in the `plugins` array — verified to produce byte-identical output either way.
+Keep the preset before `@tailwindcss/postcss` in the `plugins` array. Vite runs this pipeline over every CSS file in your project, so the preset renames your own custom properties too. It leaves Tailwind's names alone: `--tw-*`, `--color-*`, and every key you declare in an `@theme` block, along with `var()` references to those keys.
 
 ### Webpack, with `sass-loader` → `postcss-loader`
 

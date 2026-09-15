@@ -29,7 +29,7 @@
 import { compile } from '@tailwindcss/node'
 import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const root = path.resolve(fileURLToPath(import.meta.url), '../../..')
 const outDir = path.join(root, 'dist/tailwind')
@@ -679,7 +679,7 @@ export function updateClashPolicy() {
   console.log('tailwind-clashes: wrote scss/tailwind/_clash-policy.scss.')
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   run()
     .then(() => checkClashPolicy())
     .then(checkUtilityNameClashes)

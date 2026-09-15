@@ -21,28 +21,39 @@ describe('FloatingBase', () => {
 
     it('should resolve rem-based custom properties to pixels', () => {
       const root = document.documentElement
-      root.style.setProperty('--breakpoint-sm', '36rem')
+      root.style.setProperty('--cx-breakpoint-sm', '36rem')
 
       const rootFontSize = Number.parseFloat(getComputedStyle(root).fontSize)
       expect(FloatingBase.BREAKPOINTS.sm).toBe(36 * rootFontSize)
 
-      root.style.removeProperty('--breakpoint-sm')
+      root.style.removeProperty('--cx-breakpoint-sm')
     })
 
     it('should use px-based custom properties as-is', () => {
       const root = document.documentElement
-      root.style.setProperty('--breakpoint-sm', '600px')
+      root.style.setProperty('--cx-breakpoint-sm', '600px')
 
       expect(FloatingBase.BREAKPOINTS.sm).toBe(600)
 
-      root.style.removeProperty('--breakpoint-sm')
+      root.style.removeProperty('--cx-breakpoint-sm')
     })
 
     it('should fall back to default pixels when the custom property is unset', () => {
       const root = document.documentElement
-      root.style.removeProperty('--breakpoint-sm')
+      root.style.removeProperty('--cx-breakpoint-sm')
 
       expect(FloatingBase.BREAKPOINTS.sm).toBe(576)
+    })
+
+    it('should read breakpoints under the prefix declared in --chassis-prefix', () => {
+      const root = document.documentElement
+      root.style.setProperty('--chassis-prefix', 'acme-')
+      root.style.setProperty('--acme-breakpoint-sm', '600px')
+
+      expect(FloatingBase.BREAKPOINTS.sm).toBe(600)
+
+      root.style.removeProperty('--acme-breakpoint-sm')
+      root.style.removeProperty('--chassis-prefix')
     })
   })
 

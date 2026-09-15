@@ -6,9 +6,10 @@
 // overridden before importing Chassis CSS.
 //
 
-// The `--cx-` prefix is applied by the PostCSS step in
-// `build/postcss.config.js`, not in Sass. There is intentionally no Sass-level
-// `$prefix` knob — change the PostCSS `prefix` option to rename the namespace.
+// The `--cx-` prefix is applied by the PostCSS preset (`postcss/index.js`), not
+// in Sass. There is intentionally no Sass-level `$prefix` knob — pass
+// `chassisPrefix({ prefix })` to rename the namespace. The preset also writes the
+// prefix into `--chassis-prefix` on `:root`, which the JS plugins read at runtime.
 
 $enable-accordion-sizes:        true !default;
 $enable-accordion-contexts:     true !default;
