@@ -12,7 +12,7 @@
  * with its own chassis-tokens gets the same preamble as this build.
  *
  * The `--cx-` prefixing / `@layer` merge pass runs through the `postcss` API
- * directly (`build/postcss.tailwind.config.js`), not the `postcss-cli`
+ * directly (`build/tailwind/postcss.tailwind.config.js`), not the `postcss-cli`
  * `--config` flag: postcss-cli resolves a `--config` path via `lilconfig`,
  * which treats it as a search-start directory rather than a literal file, so
  * pointing it at a custom-named file in `build/` silently loads the sibling
@@ -26,8 +26,8 @@
  *     inline(...)` exclusions themselves are emitted by `theme.scss` at
  *     Sass-compile time, not written here.
  *  2. `tailwind-clashes.mjs`'s `checkClashPolicy()` re-derives
- *     `scss/tailwind/_clash-policy.scss` from `build/tailwind-utility-clashes.json`
- *     and `build/tailwind-bridge-clashes.json` and fails loudly if it has
+ *     `scss/tailwind/_clash-policy.scss` from `build/tailwind/tailwind-utility-clashes.json`
+ *     and `build/tailwind/tailwind-bridge-clashes.json` and fails loudly if it has
  *     drifted — a pure JSON→Sass re-derivation, not a live Tailwind-compile
  *     probe, since those two JSON files stay the reviewed source of truth.
  *  3. `tailwind-clashes.mjs`'s `checkUtilityNameClashes()` finds Chassis
@@ -35,7 +35,7 @@
  *     (a same-name `@utility` merge, not an exclusion candidate —
  *     `@source not inline()` would drop Chassis's own utility too), and
  *     fails loudly if the live clash set drifts from
- *     `build/tailwind-utility-clashes.json`. The `!important` remedy itself
+ *     `build/tailwind/tailwind-utility-clashes.json`. The `!important` remedy itself
  *     is applied by the Sass emitter (`scss/tailwind/_clash-policy.scss`),
  *     not written here — this only verifies it actually made Chassis's
  *     declared value win the real compiled merge.
@@ -64,7 +64,7 @@ import {
   run as checkSourceExclusions
 } from './tailwind-clashes.mjs'
 
-const root = path.resolve(fileURLToPath(import.meta.url), '../..')
+const root = path.resolve(fileURLToPath(import.meta.url), '../../..')
 const srcDir = path.join(root, 'scss/tailwind')
 const outDir = path.join(root, 'dist/tailwind')
 

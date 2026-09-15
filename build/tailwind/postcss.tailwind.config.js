@@ -1,4 +1,4 @@
-import { chassisPostcss } from '../postcss/index.js'
+import { chassisPostcss } from '../../postcss/index.js'
 
 // No autoprefixer here: the consumer's own Tailwind build (Lightning CSS)
 // handles vendor prefixes when it compiles the imported Chassis CSS.
