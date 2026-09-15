@@ -93,7 +93,7 @@ Place navigation controls below the carousel for a more traditional layout.
 
 Wrap controls and indicators in a `.carousel-overlay` container to overlay them on the slides.
 
-<Example code={`<div id="carouselOverlayExample" class="carousel" data-cx-autoplay="true"><!--[!code highlight]-->
+<Example code={`<div id="carouselOverlayExample" class="carousel" data-cx-autoplay="true"><!-- [!code highlight] -->
     <div class="carousel-inner">
       <div class="carousel-item active">
         <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="var(--cx-neutral-50)" background="var(--cx-neutral-30)" text="First slide" />
@@ -105,7 +105,7 @@ Wrap controls and indicators in a `.carousel-overlay` container to overlay them 
         <Placeholder width="800" height="400" class="cxd-placeholder-image-large d-block w-100" color="var(--cx-neutral-30)" background="var(--cx-neutral-50)" text="Third slide" />
       </div>
     </div>
-    <div class="carousel-overlay"><!--[!code highlight]-->
+    <div class="carousel-overlay"><!-- [!code highlight] -->
       <button class="button small icon-only" type="button" data-cx-target="#carouselOverlayExample" data-cx-slide="prev">
         <Icon name="chevron-left-solid" class="directional-icon" />
         <span class="visually-hidden">Previous</span>
@@ -314,7 +314,7 @@ With `data-cx-ends="stop"` the carousel hard-stops at the first and last slide. 
     </div>
   </div>`} />
 
-## Content
+## Content sizing
 
 Any markup can go inside a `.carousel-item`, and CSS custom properties on `.carousel` control how many slides show at once and how they're sized—no extra JavaScript beyond the base plugin.
 
@@ -363,7 +363,7 @@ Any markup can go inside a `.carousel-item` — add it, then size and style it w
 Set `--cx-carousel-items` inline to show several slides at once. Combine it with `--cx-carousel-items-gap` for spacing. Since seamless looping only applies to single-slide carousels (see [Loop (default)](#loop-default)), this example sets `data-cx-ends="stop"` for a clean boundary instead of a `wrap` jump.
 
 <Example code={`<div id="carouselMultiple" class="carousel slide" data-cx-ends="stop" 
-      style="--cx-carousel-items: 3; --cx-carousel-items-gap: 1rem;"><!--[!code highlight]-->
+      style="--cx-carousel-items: 3; --cx-carousel-items-gap: 1rem;"><!-- [!code highlight] -->
     <div class="carousel-inner">
       <div class="carousel-item active"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="1" /></div>
       <div class="carousel-item"><Placeholder width="260" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="2" /></div>
@@ -393,7 +393,7 @@ Set `--cx-carousel-items` inline to show several slides at once. Combine it with
 Set `--cx-carousel-items-peek` inline to reveal a sliver of the previous and next slides, hinting that there's more to scroll.
 
 <Example code={`<div id="carouselPeek" class="carousel slide" data-cx-ends="stop" 
-      style="--cx-carousel-items-peek: 3rem; --cx-carousel-items-gap: 1rem;"><!--[!code highlight]-->
+      style="--cx-carousel-items-peek: 3rem; --cx-carousel-items-gap: 1rem;"><!-- [!code highlight] -->
     <div class="carousel-inner">
       <div class="carousel-item active"><Placeholder width="800" height="300" class="cxd-placeholder-image-large d-block w-100 rounded-xlarge" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="First slide" /></div>
       <div class="carousel-item"><Placeholder width="800" height="300" class="cxd-placeholder-image-large d-block w-100 rounded-xlarge" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="Second slide" /></div>
@@ -419,24 +419,24 @@ Set `--cx-carousel-items-peek` inline to reveal a sliver of the previous and nex
 
 Add `.carousel-auto` and size each `.carousel-item` individually with utilities or custom CSS; snap points still land on every slide.
 
-<Example code={`<div id="carouselVariable" class="carousel carousel-auto slide" data-cx-ends="stop" style="--cx-carousel-items-gap: 1rem;"><!--[!code highlight]-->
+<Example code={`<div id="carouselVariable" class="carousel carousel-auto slide" data-cx-ends="stop" style="--cx-carousel-items-gap: 1rem;"><!-- [!code highlight] -->
     <div class="carousel-inner">
-      <div class="carousel-item active" style="width: 160px;"><!--[!code highlight]-->
+      <div class="carousel-item active" style="width: 160px;"><!-- [!code highlight] -->
         <Placeholder width="160" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="A" />
       </div>
-      <div class="carousel-item" style="width: 320px;"><!--[!code highlight]-->
+      <div class="carousel-item" style="width: 320px;"><!-- [!code highlight] -->
         <Placeholder width="320" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="B" />
       </div>
-      <div class="carousel-item" style="width: 220px;"><!--[!code highlight]-->
+      <div class="carousel-item" style="width: 220px;"><!-- [!code highlight] -->
         <Placeholder width="220" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="C" />
       </div>
-      <div class="carousel-item" style="width: 380px;"><!--[!code highlight]-->
+      <div class="carousel-item" style="width: 380px;"><!-- [!code highlight] -->
         <Placeholder width="380" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="D" />
       </div>
-      <div class="carousel-item" style="width: 200px;"><!--[!code highlight]-->
+      <div class="carousel-item" style="width: 200px;"><!-- [!code highlight] -->
         <Placeholder width="200" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="E" />
       </div>
-      <div class="carousel-item" style="width: 300px;"><!--[!code highlight]-->
+      <div class="carousel-item" style="width: 300px;"><!-- [!code highlight] -->
         <Placeholder width="300" height="200" class="cxd-placeholder-image-large d-block w-100 rounded" color="var(--cx-neutral-fg-subtle)" background="var(--cx-neutral-bg-evident)" text="F" />
       </div>
     </div>

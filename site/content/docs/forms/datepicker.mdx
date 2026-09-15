@@ -46,14 +46,6 @@ Use the [Input Adorn]([[docsref:/forms/input-adorn]]) component to add a calenda
 <Example code={`<label for="datepickerIconStart" class="form-label">Select date</label>
   <div class="form-input">
     <input type="text" class="ghost-input" id="datepickerIconStart" data-cx-toggle="datepicker" placeholder="Choose date…">
-    <span class="input-adorn" aria-label="Open calendar">
-      <Icon name="calendar-solid" size={16} />
-    </span>
-  </div>`} />
-
-<Example code={`<label for="datepickerIconStart" class="form-label">Select date</label>
-  <div class="form-input">
-    <input type="text" class="ghost-input" id="datepickerIconStart" data-cx-toggle="datepicker" placeholder="Choose date…">
     <button type="button" class="input-adorn" onclick="this.parentElement.querySelector('.ghost-input').focus()" aria-label="Open calendar">
       <Icon name="calendar-solid" size={16} />
     </button>
@@ -214,7 +206,7 @@ The datepicker adapts to Chassis's color modes. When `data-cx-theme="dark"` is s
 
 When a parent element carries a theme, both the input and calendar popup inherit it:
 
-<Example code={`<div data-cx-theme="dark" class="p-medium bg-main p-medium rounded">
+<Example code={`<div data-cx-theme="dark" class="p-medium bg-main rounded">
     <label for="datepickerDark" class="form-label">Dark mode datepicker</label>
     <input type="text" class="form-input" id="datepickerDark" data-cx-toggle="datepicker" placeholder="Select a date">
   </div>`} />
