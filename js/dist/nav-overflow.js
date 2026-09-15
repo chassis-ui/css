@@ -6,7 +6,7 @@
 import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
-import { isDisabled } from "./util/index.js";
+import { cssVar, isDisabled } from "./util/index.js";
 import { DefaultIconAllowlist, sanitizeHtml } from "./util/sanitizer.js";
 //#region js/src/nav-overflow.ts
 /**
@@ -147,7 +147,7 @@ var NavOverflow = class extends BaseComponent {
 		const value = this._config.collapseBelow;
 		if (typeof value === "number") return value;
 		if (typeof value === "string" && value !== "") {
-			const cssValue = getComputedStyle(document.documentElement).getPropertyValue(`--cx-breakpoint-${value}`);
+			const cssValue = getComputedStyle(document.documentElement).getPropertyValue(cssVar(`breakpoint-${value}`));
 			return Number.parseFloat(cssValue) || 0;
 		}
 		return 0;

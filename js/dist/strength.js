@@ -6,6 +6,7 @@
 import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
+import { cssVar } from "./util/index.js";
 //#region js/src/strength.ts
 /**
 * --------------------------------------------------------------------------
@@ -146,12 +147,12 @@ var Strength = class extends BaseComponent {
 		if (this._textElement) if (strength && this._config.messages[strength]) {
 			this._textElement.textContent = this._config.messages[strength];
 			this._textElement.dataset.cxStrength = strength;
-			this._textElement.style.setProperty("--cx-strength-color", `var(--cx-${{
+			this._textElement.style.setProperty(cssVar("strength-color"), `var(${cssVar(`${{
 				weak: "danger",
 				fair: "warning",
 				good: "info",
 				strong: "success"
-			}[strength]}-fg-main)`);
+			}[strength]}-fg-main`)})`);
 		} else {
 			this._textElement.textContent = "";
 			delete this._textElement.dataset.cxStrength;

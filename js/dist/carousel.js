@@ -7,7 +7,7 @@ import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import Manipulator from "./dom/manipulator.js";
 import SelectorEngine from "./dom/selector-engine.js";
-import { ARROW_LEFT_KEY, ARROW_RIGHT_KEY, isRTL, isVisible } from "./util/index.js";
+import { ARROW_LEFT_KEY, ARROW_RIGHT_KEY, cssVar, isRTL, isVisible } from "./util/index.js";
 //#region js/src/carousel.ts
 /**
 * --------------------------------------------------------------------------
@@ -39,7 +39,7 @@ const CLASS_NAME_AUTO = "carousel-auto";
 const CLASS_NAME_CLONE = "carousel-item-clone";
 const CLASS_NAME_PAUSED = "paused";
 const CLASS_NAME_PLAYING = "carousel-playing";
-const PROPERTY_INTERVAL = "--cx-carousel-interval";
+const PROPERTY_INTERVAL = "carousel-interval";
 const SCROLL_DURATION = 300;
 const ACTIVE_RATIO_TOLERANCE = .05;
 const SELECTOR_ACTIVE = ".active";
@@ -432,7 +432,7 @@ var Carousel = class Carousel extends BaseComponent {
 		if (this._isFade() || items.length < 2) return false;
 		const styles = getComputedStyle(this._element);
 		const num = (name) => Number.parseFloat(styles.getPropertyValue(name)) || 0;
-		return (num("--cx-carousel-items") || 1) === 1 && num("--cx-carousel-items-peek") === 0 && !this._element.classList.contains(CLASS_NAME_CENTER) && !this._element.classList.contains(CLASS_NAME_AUTO);
+		return (num(cssVar("carousel-items")) || 1) === 1 && num(cssVar("carousel-items-peek")) === 0 && !this._element.classList.contains(CLASS_NAME_CENTER) && !this._element.classList.contains(CLASS_NAME_AUTO);
 	}
 	_direction(from, to) {
 		const isNext = to > from;
@@ -441,7 +441,7 @@ var Carousel = class Carousel extends BaseComponent {
 	}
 	_scheduleAutoplay(index = this._activeIndex) {
 		const interval = this._itemInterval(index);
-		this._element.style.setProperty(PROPERTY_INTERVAL, `${interval}ms`);
+		this._element.style.setProperty(cssVar(PROPERTY_INTERVAL), `${interval}ms`);
 		this._interval = setTimeout(() => {
 			const upcoming = this._upcomingIndex();
 			if (!this.nextWhenVisible()) {
