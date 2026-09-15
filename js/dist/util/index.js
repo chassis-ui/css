@@ -160,7 +160,22 @@ const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed
 	if (isCycleAllowed) index = (index + listLength) % listLength;
 	return list[Math.max(0, Math.min(index, listLength - 1))];
 };
+/**
+* Resolve a Chassis custom property name under the prefix the stylesheet was
+* built with. The PostCSS preset (postcss/index.js) writes that prefix into
+* `--chassis-prefix` on `:root`, so a project that renames the namespace keeps
+* working without rebuilding the JS. With no marker (no prefixed stylesheet
+* loaded) the name comes back unprefixed, matching the raw Sass output. Not
+* cached: a stylesheet can load (or change) after the first read, and every
+* call site is already a style read or write.
+*
+* @param name  The unprefixed property name, e.g. `carousel-interval`
+* @return The full property name, e.g. `--cx-carousel-interval`
+*/
+const cssVar = (name) => {
+	return `--${getComputedStyle(document.documentElement).getPropertyValue("--chassis-prefix").trim()}${name}`;
+};
 //#endregion
-export { ARROW_DOWN_KEY, ARROW_LEFT_KEY, ARROW_RIGHT_KEY, ARROW_UP_KEY, BACKSPACE_KEY, DELETE_KEY, END_KEY, ENTER_KEY, ESCAPE_KEY, HOME_KEY, SPACE_KEY, TAB_KEY, execute, executeAfterTransition, findShadowRoot, getClipboardText, getElement, getNextActiveElement, getTransitionDurationFromElement, getUID, isDisabled, isElement, isRTL, isVisible, noop, onDOMContentLoaded, parseSelector, preventNavigationForAnchor, reflow, setAriaAttribute, toType, triggerTransitionEnd };
+export { ARROW_DOWN_KEY, ARROW_LEFT_KEY, ARROW_RIGHT_KEY, ARROW_UP_KEY, BACKSPACE_KEY, DELETE_KEY, END_KEY, ENTER_KEY, ESCAPE_KEY, HOME_KEY, SPACE_KEY, TAB_KEY, cssVar, execute, executeAfterTransition, findShadowRoot, getClipboardText, getElement, getNextActiveElement, getTransitionDurationFromElement, getUID, isDisabled, isElement, isRTL, isVisible, noop, onDOMContentLoaded, parseSelector, preventNavigationForAnchor, reflow, setAriaAttribute, toType, triggerTransitionEnd };
 
 //# sourceMappingURL=index.js.map
