@@ -7,7 +7,7 @@
  * real @tailwindcss/node compiler, then asserts: the bridge's new
  * capabilities actually work (ring-*, the shade ramp, the /<opacity>
  * modifier), the Phase 5-style same-name clash remedies from
- * build/tailwind-bridge-clashes.json make Chassis's own value keep winning
+ * build/tailwind/tailwind-bridge-clashes.json make Chassis's own value keep winning
  * the cascade, and dist/tailwind/index.css is unaffected when the bridge is
  * NOT imported (the !important patch must be a no-op for consumers who
  * never load it).
@@ -170,7 +170,7 @@ describe('dist/tailwind/bridge.css', () => {
   test('the dist/tailwind/bridge-clashes.json build report matches the committed policy', () => {
     const report = JSON.parse(readFileSync(path.join(outDir, 'bridge-clashes.json'), 'utf8'))
     const policy = JSON.parse(
-      readFileSync(path.join(root, 'build/tailwind-bridge-clashes.json'), 'utf8')
+      readFileSync(path.join(root, 'build/tailwind/tailwind-bridge-clashes.json'), 'utf8')
     )
     assert.equal(report.equal, policy.equal.length)
     assert.deepEqual(

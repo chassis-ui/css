@@ -5,7 +5,7 @@
  * applied by PostCSS, not Sass — every component writes plain `--foo`
  * literals in its source, and the prefix is added once, here, rather than
  * baked into every declaration by hand. Chassis's own build
- * (build/postcss.config.js, build/postcss.tailwind.config.js) imports this
+ * (build/postcss.config.js, build/tailwind/postcss.tailwind.config.js) imports this
  * preset instead of duplicating it; a project compiling Chassis from source
  * — with or without the Tailwind entry point — needs the same step, so it's
  * published as `@chassis-ui/css/postcss`.

@@ -2,7 +2,7 @@
 
 /*!
  * tailwind-bridge-clashes.mjs — reruns the Phase 5 same-name utility-clash
- * analysis (build/tailwind-clashes.mjs) with scss/tailwind/bridge.scss's
+ * analysis (build/tailwind/tailwind-clashes.mjs) with scss/tailwind/bridge.scss's
  * `--color-*` theme keys loaded. Bridging Chassis's palette into Tailwind's
  * own theme namespace re-enables NATIVE Tailwind color utilities (`bg-*`,
  * `border-*`, ...) for names Chassis's own `@utility` generator already
@@ -12,7 +12,7 @@
  *
  * Scoped to ONLY the names that clash BECAUSE of the bridge: a Chassis
  * utility name that already clashes with plain Tailwind core is already
- * covered by build/tailwind-utility-clashes.json and is skipped here, so
+ * covered by build/tailwind/tailwind-utility-clashes.json and is skipped here, so
  * the two policy files never overlap and scss/tailwind/_clash-policy.scss
  * (which merges both) never double-remedies one @utility block.
  *
@@ -40,7 +40,7 @@ import {
   winningValues
 } from './tailwind-clashes.mjs'
 
-const root = path.resolve(fileURLToPath(import.meta.url), '../..')
+const root = path.resolve(fileURLToPath(import.meta.url), '../../..')
 const outDir = path.join(root, 'dist/tailwind')
 
 async function coreUtilityWithBridge(candidate, themeCss, bridgeCss) {
@@ -65,7 +65,7 @@ async function mergedUtilityWithBridge(candidate, themeCss, bridgeCss, utilities
 // Finds Chassis utility names that become a same-name clash with Tailwind
 // core ONLY once bridge.css's theme keys are loaded (a name that already
 // clashes with plain Tailwind core is already covered by
-// build/tailwind-utility-clashes.json and is skipped here).
+// build/tailwind/tailwind-utility-clashes.json and is skipped here).
 async function detectBridgeClashes(themeCss, bridgeCss, utilitiesCssText) {
   const chassisBlocks = parseChassisUtilityBlocks(utilitiesCssText)
   const results = new Map()
@@ -137,7 +137,7 @@ export async function checkBridgeClashes() {
   const bridgeCss = readFileSync(path.join(outDir, 'bridge.css'), 'utf8')
   const utilitiesCssText = readFileSync(path.join(outDir, 'utilities.css'), 'utf8')
   const policy = JSON.parse(
-    readFileSync(path.join(root, 'build/tailwind-bridge-clashes.json'), 'utf8')
+    readFileSync(path.join(root, 'build/tailwind/tailwind-bridge-clashes.json'), 'utf8')
   )
 
   const live = await detectBridgeClashes(themeCss, bridgeCss, stripImportant(utilitiesCssText))
@@ -148,7 +148,7 @@ export async function checkBridgeClashes() {
   for (const [name, { classification }] of live) {
     if (!knownNames.has(name)) {
       drift.push(
-        `new bridge clash "${name}" (${classification}) is not in build/tailwind-bridge-clashes.json`
+        `new bridge clash "${name}" (${classification}) is not in build/tailwind/tailwind-bridge-clashes.json`
       )
       continue
     }
@@ -165,7 +165,7 @@ export async function checkBridgeClashes() {
   }
   if (drift.length > 0) {
     throw new Error(
-      `tailwind-bridge-clashes: bridge clash set has drifted from build/tailwind-bridge-clashes.json ` +
+      `tailwind-bridge-clashes: bridge clash set has drifted from build/tailwind/tailwind-bridge-clashes.json ` +
         `(re-run the analysis and update the policy file deliberately):\n  ${drift.join('\n  ')}`
     )
   }

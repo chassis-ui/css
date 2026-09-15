@@ -2,8 +2,8 @@
 
 /*!
  * update-tailwind-clash-policy.mjs — regenerates
- * scss/tailwind/_clash-policy.scss from build/tailwind-utility-clashes.json
- * and build/tailwind-bridge-clashes.json.
+ * scss/tailwind/_clash-policy.scss from build/tailwind/tailwind-utility-clashes.json
+ * and build/tailwind/tailwind-bridge-clashes.json.
  *
  * Unlike update-tailwind-source-exclusions.mjs, this needs no fresh
  * dist/tailwind/ build first -- it's a pure, mechanical re-derivation of the

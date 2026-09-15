@@ -5,7 +5,7 @@
  * point works for a project with its OWN chassis-tokens, not only the
  * prebuilt `dist/tailwind/` (default `docs/chassis` tokens). Phase 10 exists
  * because compiling `scss/tailwind/index.scss` directly used to skip every
- * fix `build/build-tailwind.mjs`/`build/tailwind-clashes.mjs` used to apply
+ * fix `build/tailwind/build-tailwind.mjs`/`build/tailwind/tailwind-clashes.mjs` used to apply
  * after the fact (fact 19); this is the end-to-end proof that no longer
  * happens.
  *

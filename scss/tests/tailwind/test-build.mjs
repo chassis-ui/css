@@ -312,7 +312,7 @@ describe('tailwind fixture build', () => {
 
   test("Phase 5 !important-remedied utilities keep Chassis's value as the cascade winner", () => {
     const policy = JSON.parse(
-      readFileSync(path.join(root, 'build/tailwind-utility-clashes.json'), 'utf8')
+      readFileSync(path.join(root, 'build/tailwind/tailwind-utility-clashes.json'), 'utf8')
     )
     const sample = policy.differs.filter((entry) => entry.remedy === 'important')
     assert.ok(sample.length > 0, 'expected at least one !important-remedied policy entry to check')
@@ -353,7 +353,7 @@ describe('tailwind fixture build', () => {
 
   test('the dist/tailwind/utility-clashes.json build report matches the committed policy', () => {
     const policy = JSON.parse(
-      readFileSync(path.join(root, 'build/tailwind-utility-clashes.json'), 'utf8')
+      readFileSync(path.join(root, 'build/tailwind/tailwind-utility-clashes.json'), 'utf8')
     )
     const report = JSON.parse(
       readFileSync(path.join(root, 'dist/tailwind/utility-clashes.json'), 'utf8')
