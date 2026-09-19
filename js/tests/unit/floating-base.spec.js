@@ -12,37 +12,48 @@ describe('FloatingBase', () => {
   describe('BREAKPOINTS', () => {
     it('should export breakpoint values', () => {
       expect(BREAKPOINTS).toEqual(jasmine.any(Object))
-      expect(BREAKPOINTS.small).toBe(576)
-      expect(BREAKPOINTS.medium).toBe(768)
-      expect(BREAKPOINTS.large).toBe(1024)
-      expect(BREAKPOINTS.xlarge).toBe(1280)
-      expect(BREAKPOINTS['2xlarge']).toBe(1536)
+      expect(BREAKPOINTS.sm).toBe(576)
+      expect(BREAKPOINTS.md).toBe(768)
+      expect(BREAKPOINTS.lg).toBe(1024)
+      expect(BREAKPOINTS.xl).toBe(1280)
+      expect(BREAKPOINTS['2xl']).toBe(1536)
     })
 
     it('should resolve rem-based custom properties to pixels', () => {
       const root = document.documentElement
-      root.style.setProperty('--breakpoint-small', '36rem')
+      root.style.setProperty('--cx-breakpoint-sm', '36rem')
 
       const rootFontSize = Number.parseFloat(getComputedStyle(root).fontSize)
-      expect(FloatingBase.BREAKPOINTS.small).toBe(36 * rootFontSize)
+      expect(FloatingBase.BREAKPOINTS.sm).toBe(36 * rootFontSize)
 
-      root.style.removeProperty('--breakpoint-small')
+      root.style.removeProperty('--cx-breakpoint-sm')
     })
 
     it('should use px-based custom properties as-is', () => {
       const root = document.documentElement
-      root.style.setProperty('--breakpoint-small', '600px')
+      root.style.setProperty('--cx-breakpoint-sm', '600px')
 
-      expect(FloatingBase.BREAKPOINTS.small).toBe(600)
+      expect(FloatingBase.BREAKPOINTS.sm).toBe(600)
 
-      root.style.removeProperty('--breakpoint-small')
+      root.style.removeProperty('--cx-breakpoint-sm')
     })
 
     it('should fall back to default pixels when the custom property is unset', () => {
       const root = document.documentElement
-      root.style.removeProperty('--breakpoint-small')
+      root.style.removeProperty('--cx-breakpoint-sm')
 
-      expect(FloatingBase.BREAKPOINTS.small).toBe(576)
+      expect(FloatingBase.BREAKPOINTS.sm).toBe(576)
+    })
+
+    it('should read breakpoints under the prefix declared in --chassis-prefix', () => {
+      const root = document.documentElement
+      root.style.setProperty('--chassis-prefix', 'acme-')
+      root.style.setProperty('--acme-breakpoint-sm', '600px')
+
+      expect(FloatingBase.BREAKPOINTS.sm).toBe(600)
+
+      root.style.removeProperty('--acme-breakpoint-sm')
+      root.style.removeProperty('--chassis-prefix')
     })
   })
 
@@ -57,57 +68,57 @@ describe('FloatingBase', () => {
     })
 
     it('should parse simple responsive placement', () => {
-      const result = parseResponsivePlacement('bottom medium:top')
+      const result = parseResponsivePlacement('bottom md:top')
       expect(result).toEqual({
-        xsmall: 'bottom',
-        medium: 'top'
+        xs: 'bottom',
+        md: 'top'
       })
     })
 
     it('should parse responsive placement with alignments', () => {
-      const result = parseResponsivePlacement('bottom-start medium:top-end large:right')
+      const result = parseResponsivePlacement('bottom-start md:top-end lg:right')
       expect(result).toEqual({
-        xsmall: 'bottom-start',
-        medium: 'top-end',
-        large: 'right'
+        xs: 'bottom-start',
+        md: 'top-end',
+        lg: 'right'
       })
     })
 
     it('should parse all breakpoints', () => {
-      const result = parseResponsivePlacement('bottom small:top medium:left large:right xlarge:bottom-start 2xlarge:top-end')
+      const result = parseResponsivePlacement('bottom sm:top md:left lg:right xl:bottom-start 2xl:top-end')
       expect(result).toEqual({
-        xsmall: 'bottom',
-        small: 'top',
-        medium: 'left',
-        large: 'right',
-        xlarge: 'bottom-start',
-        '2xlarge': 'top-end'
+        xs: 'bottom',
+        sm: 'top',
+        md: 'left',
+        lg: 'right',
+        xl: 'bottom-start',
+        '2xl': 'top-end'
       })
     })
 
     it('should use default placement for xs when base is not specified', () => {
-      const result = parseResponsivePlacement('medium:top large:bottom', 'right')
+      const result = parseResponsivePlacement('md:top lg:bottom', 'right')
       expect(result).toEqual({
-        xsmall: 'right',
-        medium: 'top',
-        large: 'bottom'
+        xs: 'right',
+        md: 'top',
+        lg: 'bottom'
       })
     })
 
     it('should ignore invalid breakpoints', () => {
-      const result = parseResponsivePlacement('bottom invalid:top medium:left')
+      const result = parseResponsivePlacement('bottom invalid:top md:left')
       expect(result).toEqual({
-        xsmall: 'bottom',
-        medium: 'left'
+        xs: 'bottom',
+        md: 'left'
       })
       expect(result.invalid).toBeUndefined()
     })
 
     it('should handle placement string with only responsive prefixes', () => {
-      const result = parseResponsivePlacement('medium:top')
+      const result = parseResponsivePlacement('md:top')
       expect(result).toEqual({
-        xsmall: 'bottom', // default
-        medium: 'top'
+        xs: 'bottom', // default
+        md: 'top'
       })
     })
   })
@@ -123,64 +134,64 @@ describe('FloatingBase', () => {
       expect(getResponsivePlacement(undefined, 'left')).toBe('left')
     })
 
-    it('should return xs placement for small viewports', () => {
+    it('should return xs placement for sm viewports', () => {
       spyOnProperty(window, 'innerWidth').and.returnValue(400)
 
-      const placements = { xsmall: 'bottom', medium: 'top' }
+      const placements = { xs: 'bottom', md: 'top' }
       expect(getResponsivePlacement(placements)).toBe('bottom')
     })
 
-    it('should return appropriate placement for small viewport', () => {
+    it('should return appropriate placement for sm viewport', () => {
       spyOnProperty(window, 'innerWidth').and.returnValue(600)
 
-      const placements = { xsmall: 'bottom', small: 'top', medium: 'left' }
+      const placements = { xs: 'bottom', sm: 'top', md: 'left' }
       expect(getResponsivePlacement(placements)).toBe('top')
     })
 
-    it('should return appropriate placement for medium viewport', () => {
+    it('should return appropriate placement for md viewport', () => {
       spyOnProperty(window, 'innerWidth').and.returnValue(800)
 
       const placements = {
-        xsmall: 'bottom',
-        small: 'top',
-        medium: 'left',
-        large: 'right'
+        xs: 'bottom',
+        sm: 'top',
+        md: 'left',
+        lg: 'right'
       }
       expect(getResponsivePlacement(placements)).toBe('left')
     })
 
-    it('should return appropriate placement for large viewport', () => {
+    it('should return appropriate placement for lg viewport', () => {
       spyOnProperty(window, 'innerWidth').and.returnValue(1100)
 
-      const placements = { xsmall: 'bottom', medium: 'top', large: 'right' }
+      const placements = { xs: 'bottom', md: 'top', lg: 'right' }
       expect(getResponsivePlacement(placements)).toBe('right')
     })
 
-    it('should return appropriate placement for xlarge viewport', () => {
+    it('should return appropriate placement for xl viewport', () => {
       spyOnProperty(window, 'innerWidth').and.returnValue(1300)
 
-      const placements = { xsmall: 'bottom', large: 'top', xlarge: 'left' }
+      const placements = { xs: 'bottom', lg: 'top', xl: 'left' }
       expect(getResponsivePlacement(placements)).toBe('left')
     })
 
-    it('should return appropriate placement for 2xlarge viewport', () => {
+    it('should return appropriate placement for 2xl viewport', () => {
       spyOnProperty(window, 'innerWidth').and.returnValue(1600)
 
-      const placements = { xsmall: 'bottom', xlarge: 'top', '2xlarge': 'right-start' }
+      const placements = { xs: 'bottom', xl: 'top', '2xl': 'right-start' }
       expect(getResponsivePlacement(placements)).toBe('right-start')
     })
 
     it('should cascade to smaller breakpoints when larger ones are not defined', () => {
       spyOnProperty(window, 'innerWidth').and.returnValue(1600)
 
-      const placements = { xsmall: 'bottom', medium: 'top' }
+      const placements = { xs: 'bottom', md: 'top' }
       expect(getResponsivePlacement(placements)).toBe('top')
     })
 
     it('should use default when xs is not defined', () => {
       spyOnProperty(window, 'innerWidth').and.returnValue(400)
 
-      const placements = { medium: 'top' }
+      const placements = { md: 'top' }
       expect(getResponsivePlacement(placements, 'left')).toBe('left')
     })
   })

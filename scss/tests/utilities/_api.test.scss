@@ -18,15 +18,15 @@
         property: font-size,
         important: true,
         class: font,
-        values: (large: 1.25rem),
+        values: (lg: 1.25rem),
         print: true
       )
     );
 
     $test-breakpoints: (
-      xsmall: 0,
-      small: 333px,
-      medium: 666px
+      xs: 0,
+      sm: 333px,
+      md: 666px
     );
 
     @include assert() {
@@ -45,24 +45,24 @@
           padding: 1rem !important;
         }
 
-        .font-large {
+        .font-lg {
           font-size: 1.25rem !important; // stylelint-disable-line
         }
 
         @media (width >= 333px) {
-          .small\:padding {
+          .sm\:padding {
             padding: 1rem !important;
           }
         }
 
         @media (width >= 666px) {
-          .medium\:padding {
+          .md\:padding {
             padding: 1rem !important;
           }
         }
 
         @media print {
-          .print\:font-large {
+          .print\:font-lg {
             font-size: 1.25rem !important; // stylelint-disable-line
           }
         }

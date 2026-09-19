@@ -72,7 +72,7 @@ Parcel itself needs no configuration file. The HTML page is the entry point, and
        <script type="module" src="js/main.js"></script>
      </head>
      <body>
-       <div class="container py-large px-medium mx-auto">
+       <div class="container py-lg px-md mx-auto">
          <h1>Hello, Chassis CSS and Parcel!</h1>
          <button class="button primary">Primary button</button>
        </div>
@@ -103,7 +103,7 @@ Parcel itself needs no configuration file. The HTML page is the entry point, and
 
 ## Import Chassis
 
-Parcel needs a Sass entry point and a `.sassrc.js` config file that sets `loadPaths` so Sass can resolve token overrides from `src/scss`.
+Parcel needs a Sass entry point and a `.sassrc.js` config file that sets `loadPaths` so Sass can resolve token overrides from `src/scss`, plus the framework's own default tokens and bare package specifiers under `node_modules` — unlike Vite, Webpack, and Astro, Parcel doesn't resolve `node_modules` for Sass automatically.
 
 1. **Create `.sassrc.js` in the project root.** Parcel passes these options directly to Dart Sass.
 
@@ -111,7 +111,11 @@ Parcel needs a Sass entry point and a `.sassrc.js` config file that sets `loadPa
    const path = require('path')
 
    module.exports = {
-     loadPaths: [path.resolve(__dirname, 'src/scss')]  // project token override
+     loadPaths: [
+       path.resolve(__dirname, 'src/scss'),                                    // project token override
+       path.resolve(__dirname, 'node_modules/@chassis-ui/css/scss/vendor'),    // framework's default tokens
+       path.resolve(__dirname, 'node_modules')                                 // bare package specifiers (@chassis-ui/tokens/…)
+     ]
    }
    ```
 
@@ -128,7 +132,7 @@ Parcel needs a Sass entry point and a `.sassrc.js` config file that sets `loadPa
    // );
    ```
 
-   The default token build (`chassis/docs`) is resolved automatically. To switch to a custom token set, place a `_chassis-tokens.scss` on an earlier `loadPaths` entry — see [Customize → Sass]([[docsref:/customize/sass#switching-to-a-different-token-set-recommended]]) for details.
+   The default token build (`chassis/docs`) is resolved automatically. To switch to a custom token set, place a `_chassis-tokens.scss` on an earlier `loadPaths` entry — see [Customize → Sass → Token sources]([[docsref:/customize/sass#token-sources]]) for details.
 
 3. **Import the Chassis JS in `src/js/main.js`.** Floating UI and vanilla-calendar-pro are resolved through the bundler when needed.
 
@@ -143,6 +147,25 @@ Parcel needs a Sass entry point and a `.sassrc.js` config file that sets `loadPa
    ```
 
 4. **Reload.** With all files filled in, Parcel hot-reloads the page — the heading and button should now render with Chassis styling.
+
+## Apply the `--cx-` prefix
+
+Chassis's own components and JS plugins read some CSS custom properties with a `--cx-` prefix (`--cx-carousel-interval`, `--cx-breakpoint-*`) — Sass only ever writes the unprefixed name (`--carousel-interval`), so a separate PostCSS step adds the prefix. Parcel auto-detects PostCSS config the same way it auto-detects the Sass transformer:
+
+```bash
+pnpm add -D postcss-prefix-custom-properties
+```
+
+```js
+// postcss.config.mjs
+import { chassisPrefix } from '@chassis-ui/css/postcss'
+
+export default {
+  plugins: [chassisPrefix()]
+}
+```
+
+Reload the page; `getComputedStyle` on any Chassis component now shows its `--cx-`-prefixed properties.
 
 ## Build optimizations
 

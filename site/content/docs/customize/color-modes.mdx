@@ -12,6 +12,8 @@ Chassis CSS supports color modes — light (default) and dark — controlled via
 
 Alternatively, switch to a media query implementation using the color mode mixin — see [the usage section for details](#building-with-sass). This eliminates the ability to change themes on a per-component basis as shown below.
 
+Tailwind CSS projects using [the Tailwind entry point]([[docsref:/getting-started/tailwind]]) get `dark:` and `light:` variants that follow this same nearest-attribute-wins logic automatically, on every utility — not just the ones covered here.
+
 ## Example
 
 For example, to change the color mode of a dropdown menu, add `data-cx-theme="light"` or `data-cx-theme="dark"` to the parent `.dropdown`. Now, no matter the global color mode, these dropdowns will display with the specified theme value.
@@ -147,7 +149,7 @@ For example, you can create a “blue theme” with the selector `data-cx-theme=
   <div class="h4">Example blue theme</div>
   <p>Some paragraph text to show how the blue theme might look with written copy.</p>
 
-  <hr class="border-large"/>
+  <hr class="border-lg"/>
 
   <div class="dropdown">
     <button class="button secondary caret" type="button" id="dropdownMenuButtonCustom" data-cx-toggle="menu" aria-expanded="false">

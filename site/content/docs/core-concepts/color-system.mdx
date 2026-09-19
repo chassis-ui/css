@@ -12,24 +12,24 @@ Chassis CSS organizes color into three layers that build on each other. **Primit
 
 Primitive colors and their scale steps are defined in Chassis Tokens. By default there are seven hues — one per brand role — and any project can swap them for its own palette.
 
-<div class="overflow-scroll text-nowrap mb-medium">
-  <div class="grid font-code" style="--cx-grid-columns: 11; --cx-grid-gap: var(--cx-space-2xsmall);">
+<div class="overflow-scroll text-nowrap mb-md">
+  <div class="grid font-code" style="--cx-grid-columns: 11; --cx-grid-gap: var(--cx-space-2xs);">
   {
     getData('colors').map((color) => {
       return (
         <div class="grid" style="width: 12rem; --cx-grid-columns: 1; grid-template-rows: auto;">
-          <div class={`p-medium rounded-small mb-xsmall position-relative swatch-${color.name} bg-${color.name} fg-contrast`}>
+          <div class={`p-md rounded-sm mb-xs position-relative swatch-${color.name} bg-${color.name} fg-contrast`}>
             <strong class="d-block">{color.name}</strong>
             {sassVars('color')?.[color.name]}
           </div>
-          <div class={`p-medium rounded-small cxd-${color.name}-05`}>{color.name}-05</div>
+          <div class={`p-md rounded-sm cxd-${color.name}-05`}>{color.name}-05</div>
             {
               Array.from({ length: 9 }, (_, i) => {
                 const value = (i + 1) * 10; // Generates 10, 20, ..., 90
-                return <div class={`p-medium rounded-small cxd-${color.name}-${value}`}>{color.name}-{value}</div>
+                return <div class={`p-md rounded-sm cxd-${color.name}-${value}`}>{color.name}-{value}</div>
               })
             }
-          <div class={`p-medium rounded-small cxd-${color.name}-95`}>{color.name}-95</div>
+          <div class={`p-md rounded-sm cxd-${color.name}-95`}>{color.name}-95</div>
         </div>
       )
     })
@@ -43,12 +43,12 @@ Each hue has eleven scale steps: `05`, `10`–`90` in increments of ten, and `95
 
 A context color is a palette of semantic tokens that adapts to light and dark mode. Chassis CSS ships with **eleven**: the seven brand hues — `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`, `info` — plus four non-brand contexts: `default`, `alternate`, `black`, and `white`.
 
-<div class="row g-xsmall mb-medium font-code">
+<div class="row g-xs mb-md font-code">
   {
     getData('context-colors').map((color) => {
       return (
-        <div class="medium:col-4">
-          <div class={`p-medium m-0 bg-${color.name} fg-contrast rounded-small`}>--cx-{color.name}</div>
+        <div class="md:col-4">
+          <div class={`p-md m-0 bg-${color.name} fg-contrast rounded-sm`}>--cx-{color.name}</div>
         </div>
       )
     })

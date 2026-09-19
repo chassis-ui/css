@@ -7,7 +7,7 @@
 // Form Labels
 //
 // Text labels for form inputs in stacked and horizontal layouts.
-// Supports small, medium, and large size variants aligned to matching
+// Supports sm, md, and lg size variants aligned to matching
 // input sizes.
 //
 
@@ -39,7 +39,7 @@
   //
   // For use with horizontal and inline forms, when you need the label (or legend)
   // text to visually align with the form inputs. This provides proper vertical
-  // alignment by matching the height of medium-sized form inputs.
+  // alignment by matching the height of md-sized form inputs.
   //
   // Can be used with both <label> and <legend> elements, with appropriate
   // overrides to ensure consistent styling.
@@ -47,27 +47,27 @@
   .col-form-label {
     @include map-font($form-label-font);
 
-    // Match the height of the default (medium) form input
-    padding-block-start: calc(#{$form-medium-padding-y} + #{$form-regular-border-width});
-    padding-block-end: calc(#{$form-medium-padding-y} + #{$form-regular-border-width});
+    // Match the height of the default (md) form input
+    padding-block-start: calc(#{$form-md-padding-y} + #{$form-regular-border-width});
+    padding-block-end: calc(#{$form-md-padding-y} + #{$form-regular-border-width});
     margin-block-end: 0; // Override the `<legend>` default
 
-    &.large {
-      // Match the height of large form inputs
-      padding-block-start: calc(#{$form-large-padding-y} + #{$form-regular-border-width});
-      padding-block-end: calc(#{$form-large-padding-y} + #{$form-regular-border-width});
-      // Use the same typography as large form inputs
-      @include font-size(map.get($form-large-text-font, "font-size"));
-      @include line-height(map.get($form-large-text-font, "line-height"));
+    &.lg {
+      // Match the height of lg form inputs
+      padding-block-start: calc(#{$form-lg-padding-y} + #{$form-regular-border-width});
+      padding-block-end: calc(#{$form-lg-padding-y} + #{$form-regular-border-width});
+      // Use the same typography as lg form inputs
+      @include font-size(map.get($form-lg-text-font, "font-size"));
+      @include line-height(map.get($form-lg-text-font, "line-height"));
     }
 
-    &.small {
-      // Match the height of small form inputs
-      padding-block-start: calc(#{$form-small-padding-y} + #{$form-regular-border-width});
-      padding-block-end: calc(#{$form-small-padding-y} + #{$form-regular-border-width});
-      // Use the same typography as small form inputs
-      @include font-size(map.get($form-small-text-font, "font-size"));
-      @include line-height(map.get($form-small-text-font, "line-height"));
+    &.sm {
+      // Match the height of sm form inputs
+      padding-block-start: calc(#{$form-sm-padding-y} + #{$form-regular-border-width});
+      padding-block-end: calc(#{$form-sm-padding-y} + #{$form-regular-border-width});
+      // Use the same typography as sm form inputs
+      @include font-size(map.get($form-sm-text-font, "font-size"));
+      @include line-height(map.get($form-sm-text-font, "line-height"));
     }
   }
 

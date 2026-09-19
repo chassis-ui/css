@@ -12,17 +12,17 @@ deps:
 
 Chassis CSS's Input Groups enable you to create cohesive, composite form controls by combining inputs with complementary elements. Built on our design token system, input groups provide semantic markup with responsive sizing and full theming support.
 
-<Example code={`<div class="input-group mb-medium">
+<Example code={`<div class="input-group mb-md">
     <span class="input-addon">@</span>
     <input type="text" class="form-input" placeholder="Username" aria-label="Username">
   </div>
 
-  <div class="input-group mb-medium">
+  <div class="input-group mb-md">
     <input type="text" class="form-input" placeholder="Recipient's username" aria-label="Recipient's username">
     <span class="input-addon">@example.com</span>
   </div>
 
-  <div class="mb-medium">
+  <div class="mb-md">
     <label for="basic-url" class="form-label">Website URL</label>
     <div class="input-group">
       <span class="input-addon">https://</span>
@@ -52,7 +52,7 @@ Chassis CSS offers several addon types that can be combined to create the exact 
 
 The `.input-addon` class creates text-based addons with appropriate spacing, borders, and background styling. These addons inherit form theming and automatically adapt to the input group's size.
 
-<Example code={`<div class="input-group mb-medium">
+<Example code={`<div class="input-group mb-md">
     <span class="input-addon">$</span>
     <input type="text" class="form-input" aria-label="Amount">
     <span class="input-addon">.00</span>
@@ -69,7 +69,7 @@ Text addons automatically share borders with adjacent form controls to create a 
 
 Combine the `.input-addon` class with an `<svg>` element to create borderless icon elements that appear to be integrated directly into the input field. Chassis CSS handles positioning and spacing automatically.
 
-<Example code={`<div class="input-group mb-medium">
+<Example code={`<div class="input-group mb-md">
     <span class="input-addon"><Icon name="lock-solid" /></span>
     <input type="password" autocomplete="current-password" class="form-input" placeholder="Password" aria-label="Password">
     <button class="input-addon" type="button" aria-label="Show password">
@@ -88,7 +88,7 @@ Icon addons are positioned absolutely relative to their input, with intelligent 
 
 Add any Chassis CSS button directly to an input group to create action-oriented form controls. Buttons maintain their styling while visually integrating with the input.
 
-<Example code={`<div class="input-group mb-medium">
+<Example code={`<div class="input-group mb-md">
     <input type="text" class="form-input" placeholder="Search term" aria-label="Search term">
     <button class="button primary" type="button">Search</button>
   </div>
@@ -104,7 +104,7 @@ Buttons within input groups are given a higher z-index than inputs to ensure pro
 
 Checks and radios can be incorporated into input groups by nesting them within `.input-addon` elements. This creates compact, multi-purpose controls while maintaining accessibility.
 
-<Example code={`<div class="input-group mb-medium" role="group" aria-label="Newsletter subscription">
+<Example code={`<div class="input-group mb-md" role="group" aria-label="Newsletter subscription">
     <div class="input-addon">
       <input class="check-input mt-0" type="checkbox" value="" aria-label="Subscribe to newsletter">
     </div>
@@ -128,7 +128,7 @@ Chassis CSS's input groups provide multiple layout options to handle various int
 
 Create more complex interfaces by including multiple addons on either side of an input. Each addon maintains proper styling and spacing while creating a unified control.
 
-<Example code={`<div class="input-group mb-medium">
+<Example code={`<div class="input-group mb-md">
     <span class="input-addon">Name</span>
     <span class="input-addon">@</span>
     <input type="text" class="form-input" aria-label="Username with multiple prefixes">
@@ -146,7 +146,7 @@ Multiple addons work together through Chassis CSS's advanced border radius manag
 
 Create multi-field forms with space efficiency by combining multiple inputs in a single input group. This approach works well for related fields like first/last name or city/state/zip.
 
-<Example code={`<div class="input-group mb-medium" role="group" aria-labelledby="nameAddon">
+<Example code={`<div class="input-group mb-md" role="group" aria-labelledby="nameAddon">
     <label class="input-addon" id="nameAddon" for="multiInputFirstName">Name</label>
     <input type="text" class="form-input" id="multiInputFirstName" placeholder="First" aria-label="First name">
     <input type="text" class="form-input" placeholder="Last" aria-label="Last name">
@@ -164,22 +164,22 @@ While multiple inputs are supported visually, note that validation states work b
 
 Chassis CSS's input groups include a unified sizing system that allows you to change the dimensions of all elements together by applying a single class to the container.
 
-<Example code={`<div class="input-group small mb-medium">
+<Example code={`<div class="input-group sm mb-md">
     <span class="input-addon">Small</span>
     <input type="text" class="form-input" aria-label="Small input group example">
   </div>
 
-  <div class="input-group mb-medium">
+  <div class="input-group mb-md">
     <span class="input-addon">Default</span>
     <input type="text" class="form-input" aria-label="Default input group example">
   </div>
 
-  <div class="input-group large">
+  <div class="input-group lg">
     <span class="input-addon">Large</span>
     <input type="text" class="form-input" aria-label="Large input group example">
   </div>`} />
 
-The sizing system works by extending Chassis CSS's form size placeholders (`%form-size-small`, `%form-size-medium`, `%form-size-large`) to all elements within the input group, ensuring consistent proportions regardless of content.
+The sizing system works by extending Chassis CSS's form size placeholders (`%form-size-sm`, `%form-size-md`, `%form-size-lg`) to all elements within the input group, ensuring consistent proportions regardless of content.
 
 ## Component integration
 
@@ -189,7 +189,7 @@ Chassis CSS's input groups seamlessly integrate with other form components to cr
 
 Combine input groups with select menus to create unified selection interfaces with context or additional options.
 
-<Example code={`<div class="input-group mb-medium">
+<Example code={`<div class="input-group mb-md">
     <label class="input-addon" for="inputGroupSelect01">Category</label>
     <select class="form-input" id="inputGroupSelect01">
       <option selected>Choose...</option>
@@ -214,7 +214,7 @@ Select menus in input groups maintain their dropdown functionality and styling w
 
 Enhance file inputs with contextual labels, instructions, or action buttons to create more user-friendly upload interfaces.
 
-<Example code={`<div class="input-group mb-medium">
+<Example code={`<div class="input-group mb-md">
     <label class="input-addon" for="inputGroupFile01">Upload</label>
     <input type="file" class="form-input" id="inputGroupFile01">
   </div>

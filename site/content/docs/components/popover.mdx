@@ -101,13 +101,13 @@ When the preferred placement would cause the popover to overflow its boundary, F
 
 ### Responsive placement
 
-The placement value accepts breakpoint prefixes to change direction at different viewport widths. The syntax is the base placement followed by `breakpoint:placement` tokens, where breakpoints are `small`, `medium`, `large`, `xlarge`, and `2xlarge`. The plugin re-evaluates placement whenever the viewport crosses a registered breakpoint.
+The placement value accepts breakpoint prefixes to change direction at different viewport widths. The syntax is the base placement followed by `breakpoint:placement` tokens, where breakpoints are `sm`, `md`, `lg`, `xl`, and `2xl`. The plugin re-evaluates placement whenever the viewport crosses a registered breakpoint.
 
 <Example addStackblitzJs code={`<button type="button" class="button secondary"
     data-cx-toggle="popover"
     data-cx-content="Changes with viewport"
-    data-cx-placement="top medium:right large:bottom">
-  top → medium:right → large:bottom
+    data-cx-placement="top md:right lg:bottom">
+  top → md:right → lg:bottom
 </button>`} />
 
 ## Advanced features
@@ -303,7 +303,7 @@ popover.setContent({
 | `floatingConfig` | null, object, function | `null` | Overrides the default Floating UI `computePosition` configuration. A function receives the default config object and must return a new config. See [Floating UI computePosition docs](https://floating-ui.com/docs/computePosition). |
 | `html` | boolean | `false` | Renders HTML tags in title and body content. When `false`, content is inserted via `innerText`. Use `false` for user-generated content to prevent XSS. |
 | `offset` | array, string, function | `[0, 8]` | Distance between the popover and its trigger `[crossAxis, mainAxis]`. Pass a comma-separated string in data attributes: `data-cx-offset="10,20"`. A function receives placement and rects and must return a two-number array. See [Floating UI offset docs](https://floating-ui.com/docs/offset). |
-| `placement` | string, function | `'right'` | Preferred placement. Logical values `start` and `end` adapt to text direction. Physical values `top`, `bottom`, `left`, and `right` always place the popover on that side. Accepts responsive prefixes (`'top medium:right'`). A function receives the popover element and the trigger element and must return a placement string. |
+| `placement` | string, function | `'right'` | Preferred placement. Logical values `start` and `end` adapt to text direction. Physical values `top`, `bottom`, `left`, and `right` always place the popover on that side. Accepts responsive prefixes (`'top md:right'`). A function receives the popover element and the trigger element and must return a placement string. |
 | `sanitize` | boolean | `true` | Enables [content sanitization]([[docsref:/getting-started/javascript#sanitizer]]) for `template`, `content`, and `title`. <Callout type="warning">**Disabling sanitization removes XSS protection.** See [OWASP's XSS Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html). Vulnerabilities arising solely from disabled sanitization are outside Chassis CSS's security scope.</Callout> |
 | `sanitizeFn` | null, function | `null` | Custom [sanitization function]([[docsref:/getting-started/javascript#sanitizer]]). Replaces the built-in sanitizer when provided. |
 | `selector` | string, false | `false` | CSS selector for event delegation. Enables attaching popovers to dynamically added descendants matching the selector. |

@@ -115,6 +115,52 @@ If you're using a bundler, follow the bundler-specific guide:
 - [Webpack]([[docsref:/getting-started/webpack]]) — Sass + PostCSS loaders, CSS extraction.
 - [Parcel]([[docsref:/getting-started/parcel]]) — Parcel auto-detects Sass; very little configuration needed.
 
+## Apply the `--cx-` prefix
+
+Some Chassis components and JS plugins read CSS custom properties with a `--cx-` prefix at runtime (`--cx-carousel-interval`, `--cx-breakpoint-*`) — Sass only ever writes the unprefixed name (`--carousel-interval`). A separate PostCSS step adds the prefix; install the plugin and add a config file next to `package.json` (the `.mjs` extension keeps it an ES module regardless of `package.json`'s own `"type"` field, since `@chassis-ui/css/postcss` is ESM-only):
+
+```bash
+npm install -D postcss-cli postcss-prefix-custom-properties
+```
+
+```js
+// postcss.config.mjs
+import { chassisPrefix } from '@chassis-ui/css/postcss'
+
+export default {
+  plugins: [chassisPrefix()]
+}
+```
+
+```bash
+npx postcss dist/styles.css -o dist/styles.css
+```
+
+Run this after every Sass compile. The bundler guides wire the same plugin into the bundler's own PostCSS step instead of a separate CLI call.
+
+To use a different namespace, pass a `prefix`:
+
+```js
+// postcss.config.mjs
+import { chassisPrefix } from '@chassis-ui/css/postcss'
+
+export default {
+  plugins: [chassisPrefix({ prefix: 'acme-' })]
+}
+```
+
+The prefix must start with a letter and end in `-` or `_`. It renames CSS custom properties only: `data-cx-*` attributes such as `data-cx-theme` and `data-cx-toggle` keep their names.
+
+The preset also writes the prefix into a `--chassis-prefix` property on `:root`, in every stylesheet it prefixes. The JS plugins read that property at runtime, so the prebuilt Chassis JS works with a renamed namespace without a rebuild.
+
+The preset renames every custom property in the CSS it processes, including your own. If your own stylesheets run through the same PostCSS config, reference their properties with the prefix (`var(--cx-my-color)`) in HTML and JavaScript.
+
+### Without a prefix
+
+The prefix step is optional unless you use the [Tailwind entry point]([[docsref:/getting-started/tailwind]]). Skip it, or pass `chassisPrefix({ prefix: '' })`, to keep the plain names Sass writes (`--primary`, `--carousel-interval`). No `--chassis-prefix` property is written, so the JS plugins read the plain names too.
+
+Tailwind builds need a prefix: Chassis's plain `--breakpoint-*`, `--container-*`, and `--color-*` properties share names with Tailwind's own theme keys, so `chassisPrefix({ prefix: '', tailwind: true })` throws an error.
+
 ## Include the JavaScript
 
 Chassis JS is optional — only needed for components with interactive behaviour (dropdowns, modals, accordions, etc.). Two ways to include it depending on your setup:
@@ -153,7 +199,7 @@ A minimal HTML page that pulls in your compiled CSS should look like this:
     <link rel="stylesheet" href="/dist/styles.css">
   </head>
   <body>
-    <div class="container py-large">
+    <div class="container py-lg">
       <button class="button primary">It works</button>
     </div>
   </body>

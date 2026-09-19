@@ -27,7 +27,7 @@ This foundational example demonstrates essential collapse functionality with mul
 
 The `.collapse` class hides content by default, `.collapsing` is applied during transition animations, and `.collapse.show` displays content in expanded state. Chassis CSS recommends semantic `<button>` elements with `data-cx-target` attributes. Link elements (`<a>`) with `href` attributes are supported but require `role="button"` for accessibility. Both approaches require `data-cx-toggle="collapse"`.
 
-<Example code={`<p class="d-inline-flex gap-2xsmall">
+<Example code={`<p class="d-inline-flex gap-2xs">
     <a class="button primary" data-cx-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
       Link with href
     </a>
@@ -70,7 +70,7 @@ Demonstrate advanced collapse functionality with complex trigger-target relation
 
 Use CSS selectors in `data-cx-target` or `href` attributes to control multiple collapse elements simultaneously. Reference the same target element from multiple triggers using consistent `data-cx-target` or `href` values for flexible interface control.
 
-<Example code={`<p class="d-inline-flex gap-2xsmall">
+<Example code={`<p class="d-inline-flex gap-2xs">
     <button type="button" class="button primary" data-cx-toggle="collapse" data-cx-target="#multiCollapseExample1" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle first element</button>
     <button class="button primary" type="button" data-cx-toggle="collapse" data-cx-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Toggle second element</button>
     <button class="button primary" type="button" data-cx-toggle="collapse" data-cx-target=".multi-collapse" aria-expanded="false" aria-controls="multiCollapseExample1 multiCollapseExample2">Toggle both elements</button>

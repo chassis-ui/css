@@ -5,7 +5,7 @@
 Package.describe({
   name: 'chassisui:chassis-css',
   summary: 'A CSS framework which synchronizes with Figma components by using design tokens.',
-  version: '0.3.5',
+  version: '0.5.0',
   git: 'https://github.com/chassis-ui/css.git'
 })
 

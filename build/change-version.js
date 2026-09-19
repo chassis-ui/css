@@ -33,8 +33,7 @@ const FILES = [
   'site/config.yml',
   'js/src/base-component.js',
   'package.js',
-  'scss/mixins/_banner.scss',
-  'site/data/docs-versions.yml'
+  'scss/mixins/_banner.scss'
 ]
 
 const SEMVER_RE = /^\d+\.\d+\.\d+$/

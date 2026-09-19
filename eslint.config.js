@@ -104,7 +104,7 @@ export default defineConfig([
     }
   },
   {
-    files: ['js/**/*.html', '**/*.md/*.html'],
+    files: ['js/**/*.html', '**/*.md/*.html', 'scss/tests/**/*.html'],
     plugins: { html: htmlPlugin },
     settings: {
       'html/html-extensions': ['.html']

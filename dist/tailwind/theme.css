@@ -1,0 +1,65 @@
+@layer theme {
+  @theme {
+    --*: initial;
+    --breakpoint-sm: 36rem;
+    --breakpoint-md: 48rem;
+    --breakpoint-lg: 64rem;
+    --breakpoint-xl: 80rem;
+    --breakpoint-2xl: 96rem;
+    --container-sm: 36rem;
+    --container-md: 48rem;
+    --container-lg: 64rem;
+    --container-xl: 80rem;
+    --container-2xl: 96rem;
+  }
+}
+@custom-variant dark {
+  &[data-cx-theme=dark] {
+    @slot;
+  }
+  &:where([data-cx-theme=dark] *):not(:where([data-cx-theme=dark] [data-cx-theme=light] *)) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:not(:where([data-cx-theme=light], [data-cx-theme=light] *)) {
+      @slot;
+    }
+  }
+}
+@custom-variant light {
+  &[data-cx-theme=light] {
+    @slot;
+  }
+  &:where([data-cx-theme=light] *):not(:where([data-cx-theme=light] [data-cx-theme=dark] *)) {
+    @slot;
+  }
+  @media (prefers-color-scheme: light) {
+    &:not(:where([data-cx-theme=dark], [data-cx-theme=dark] *)) {
+      @slot;
+    }
+  }
+}
+@source not inline("caption-top");
+@source not inline("collapse");
+@source not inline("grid");
+@source not inline("grid-cols-subgrid");
+@source not inline("inline");
+@source not inline("list-item");
+@source not inline("outline");
+@source not inline("static");
+@source not inline("table");
+@source not inline("{,sm:,md:,lg:,xl:,2xl:}col-1");
+@source not inline("{,sm:,md:,lg:,xl:,2xl:}col-10");
+@source not inline("{,sm:,md:,lg:,xl:,2xl:}col-11");
+@source not inline("{,sm:,md:,lg:,xl:,2xl:}col-12");
+@source not inline("{,sm:,md:,lg:,xl:,2xl:}col-2");
+@source not inline("{,sm:,md:,lg:,xl:,2xl:}col-3");
+@source not inline("{,sm:,md:,lg:,xl:,2xl:}col-4");
+@source not inline("{,sm:,md:,lg:,xl:,2xl:}col-5");
+@source not inline("{,sm:,md:,lg:,xl:,2xl:}col-6");
+@source not inline("{,sm:,md:,lg:,xl:,2xl:}col-7");
+@source not inline("{,sm:,md:,lg:,xl:,2xl:}col-8");
+@source not inline("{,sm:,md:,lg:,xl:,2xl:}col-9");
+@source not inline("{,sm:,md:,lg:,xl:,2xl:}col-auto");
+@source not inline("{,sm:,md:,lg:,xl:,2xl:}container");
+@source inline("d-none"); /* js/src/nav-overflow.ts toggles this class via classList.toggle('d-none', ...); Tailwind's own class-scanner never sees it in any source file, so it needs an explicit @source inline() safelist entry to be generated at all. */

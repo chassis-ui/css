@@ -1,0 +1,26 @@
+//
+// Consumer fixture — Tailwind entry with custom tokens (Phase 10d)
+//
+// What a real project's own stylesheet looks like: `_chassis-tokens.scss`
+// (this directory) on an earlier `loadPaths` entry supplies the brand's own
+// token package; a custom `$breakpoints` map configures settings before the
+// Tailwind entry is used. Relative paths stand in for the published
+// `@chassis-ui/css/scss/config` / `@chassis-ui/css/scss/tailwind` package
+// specifiers a real consumer would write — the packaged bundler smoke tests
+// (Phase 10d, D9) exercise the real package-specifier resolution
+// end-to-end; this fixture exercises the Sass/Tailwind/prefix pipeline
+// itself against a genuinely different token source and breakpoint map.
+//
+
+@use "../../../config" with (
+  $breakpoints: (
+    xs: 0,
+    sm: 30rem,
+    md: 48rem,
+    lg: 72rem,
+    // the brand's own `lg`, not Chassis's stock 64rem
+    xl: 84rem,
+    "2xl": 100rem
+  )
+);
+@use "../../../tailwind";

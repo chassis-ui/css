@@ -174,7 +174,7 @@ EventHandler.on(window, EVENT_RESIZE, () => {
 })
 
 // Custom dismiss handler — extends the standard pattern to also resolve
-// responsive drawer variants (e.g. .max-large:drawer) that have no .drawer class.
+// responsive drawer variants (e.g. .max-lg:drawer) that have no .drawer class.
 EventHandler.on(document, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, function (event) {
   preventNavigationForAnchor(event, this)
 

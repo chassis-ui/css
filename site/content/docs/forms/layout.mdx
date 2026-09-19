@@ -21,13 +21,13 @@ The simplest way to add structure to forms is with [margin and padding utilities
 For consistency, Chassis CSS recommends:
 - Using `margin-bottom` utilities (`mb-*`) for vertical spacing
 - Applying the same spacing size throughout a single form
-- Using the `medium` spacing value as a default starting point
+- Using the `md` spacing value as a default starting point
 
-<Example code={`<div class="mb-medium">
+<Example code={`<div class="mb-md">
     <label for="formGroupExampleInput" class="form-label">Example label</label>
     <input type="text" class="form-input" id="formGroupExampleInput" placeholder="Example input placeholder">
   </div>
-  <div class="mb-medium">
+  <div class="mb-md">
     <label for="formGroupExampleInput2" class="form-label">Another label</label>
     <input type="text" class="form-input" id="formGroupExampleInput2" placeholder="Another input placeholder">
   </div>`} />
@@ -66,9 +66,9 @@ Control the spacing between columns by applying [gutter modifier classes]([[docs
 - **Combined gutters** with `.g-*` classes for both directions
 - **Responsive variants** that adapt to different viewports
 
-For form layouts, medium-sized gutters (`.g-medium`) often provide the optimal spacing.
+For form layouts, md-sized gutters (`.g-md`) often provide the optimal spacing.
 
-<Example code={`<div class="row g-medium">
+<Example code={`<div class="row g-md">
     <div class="col">
       <input type="text" class="form-input" placeholder="First name" aria-label="First name">
     </div>
@@ -81,12 +81,12 @@ For form layouts, medium-sized gutters (`.g-medium`) often provide the optimal s
 
 Combine grid columns with different widths to create sophisticated form layouts:
 
-<Example code={`<form class="row g-medium">
-    <div class="medium:col-6">
+<Example code={`<form class="row g-md">
+    <div class="md:col-6">
       <label for="inputEmail4" class="form-label">Email</label>
       <input type="email" class="form-input" id="inputEmail4">
     </div>
-    <div class="medium:col-6">
+    <div class="md:col-6">
       <label for="inputPassword4" class="form-label">Password</label>
       <input type="password" autocomplete="current-password" class="form-input" id="inputPassword4">
     </div>
@@ -98,18 +98,18 @@ Combine grid columns with different widths to create sophisticated form layouts:
       <label for="inputAddress2" class="form-label">Address 2</label>
       <input type="text" class="form-input" id="inputAddress2" placeholder="Apartment, studio, or floor">
     </div>
-    <div class="medium:col-6">
+    <div class="md:col-6">
       <label for="inputCity" class="form-label">City</label>
       <input type="text" class="form-input" id="inputCity">
     </div>
-    <div class="medium:col-4">
+    <div class="md:col-4">
       <label for="inputState" class="form-label">State</label>
       <select id="inputState" class="form-input">
         <option value="" selected>Choose...</option>
         <option>...</option>
       </select>
     </div>
-    <div class="medium:col-2">
+    <div class="md:col-2">
       <label for="inputZip" class="form-label">Zip</label>
       <input type="text" class="form-input" id="inputZip">
     </div>
@@ -133,20 +133,20 @@ Create horizontal forms with the grid by adding the `.row` class to input groups
 You may need to use margin or padding utilities to achieve the desired alignment. In the example below, `padding-top` is removed from the radio group label to better align the text baseline.
 
 <Example code={`<form>
-    <div class="row mb-medium">
-      <label for="inputEmail3" class="small:col-2 col-form-label">Email</label>
-      <div class="small:col-10">
+    <div class="row mb-md">
+      <label for="inputEmail3" class="sm:col-2 col-form-label">Email</label>
+      <div class="sm:col-10">
         <input type="email" class="form-input" id="inputEmail3">
       </div>
     </div>
-    <div class="row mb-medium">
-      <label for="inputPassword3" class="small:col-2 col-form-label">Password</label>
-      <div class="small:col-10">
+    <div class="row mb-md">
+      <label for="inputPassword3" class="sm:col-2 col-form-label">Password</label>
+      <div class="sm:col-10">
         <input type="password" autocomplete="current-password" class="form-input" id="inputPassword3">
       </div>
     </div>
-    <div class="row mb-medium">
-      <div class="small:col-10 small:offset-2">
+    <div class="row mb-md">
+      <div class="sm:col-10 sm:offset-2">
         <div class="form-check">
           <input class="check-input" type="checkbox" id="gridCheck1">
           <label class="check-label" for="gridCheck1">
@@ -155,10 +155,10 @@ You may need to use margin or padding utilities to achieve the desired alignment
         </div>
       </div>
     </div>
-    <div class="row mb-medium" role="group" aria-labelledby="gridRadiosLabel">
-      <div class="col-form-label small:col-2 pt-0" id="gridRadiosLabel">Radios</div>
-      <div class="small:col-10 stack-container">
-      <div class="vstack small:hstack gap-medium row-gap-xsmall">
+    <div class="row mb-md" role="group" aria-labelledby="gridRadiosLabel">
+      <div class="col-form-label sm:col-2 pt-0" id="gridRadiosLabel">Radios</div>
+      <div class="sm:col-10 stack-container">
+      <div class="vstack sm:hstack gap-md row-gap-xs">
         <div class="form-check">
           <input class="check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
           <label class="check-label" for="gridRadios1">
@@ -180,8 +180,8 @@ You may need to use margin or padding utilities to achieve the desired alignment
       </div>
       </div>
     </div>
-    <div class="row mb-medium">
-      <div class="small:col-10 small:offset-2">
+    <div class="row mb-md">
+      <div class="sm:col-10 sm:offset-2">
         <button type="submit" class="button primary">Sign in</button>
       </div>
     </div>
@@ -190,42 +190,42 @@ You may need to use margin or padding utilities to achieve the desired alignment
 ### Horizontal label sizing
 
 Match label sizes to corresponding input sizes using these modifier classes:
-- `.col-form-label-small` for aligning with small inputs (`.form-input.small`)
-- `.col-form-label-large` for aligning with large inputs (`.form-input.large`)
+- `.col-form-label-sm` for aligning with sm inputs (`.form-input.sm`)
+- `.col-form-label-lg` for aligning with lg inputs (`.form-input.lg`)
 
 These classes maintain proper vertical alignment between labels and inputs of different sizes. They adjust the font size, line height, and padding to create a cohesive look in form layouts.
 
-<Example code={`<div class="row mb-medium">
-    <label for="colFormLabelSm" class="small:col-2 col-form-label small">Email</label>
-    <div class="small:col-10">
-      <input type="email" class="form-input small" id="colFormLabelSm" placeholder=".col-form-label.small">
+<Example code={`<div class="row mb-md">
+    <label for="colFormLabelSm" class="sm:col-2 col-form-label sm">Email</label>
+    <div class="sm:col-10">
+      <input type="email" class="form-input sm" id="colFormLabelSm" placeholder=".col-form-label.sm">
     </div>
   </div>
-  <div class="row mb-medium">
-    <label for="colFormLabel" class="small:col-2 col-form-label">Email</label>
-    <div class="small:col-10">
+  <div class="row mb-md">
+    <label for="colFormLabel" class="sm:col-2 col-form-label">Email</label>
+    <div class="sm:col-10">
       <input type="email" class="form-input" id="colFormLabel" placeholder="col-form-label">
     </div>
   </div>
   <div class="row">
-    <label for="colFormLabelLg" class="small:col-2 col-form-label large">Email</label>
-    <div class="small:col-10">
-      <input type="email" class="form-input large" id="colFormLabelLg" placeholder="col-form-label-large">
+    <label for="colFormLabelLg" class="sm:col-2 col-form-label lg">Email</label>
+    <div class="sm:col-10">
+      <input type="email" class="form-input lg" id="colFormLabelLg" placeholder="col-form-label-lg">
     </div>
   </div>`} />
 
 ## Column sizing
 
-The grid system supports placing any number of `.col`s within a `.row` — columns split the available width equally. To give a specific column more or less space, use a fixed column class like `.small:col-7`; remaining `.col`s split the rest equally.
+The grid system supports placing any number of `.col`s within a `.row` — columns split the available width equally. To give a specific column more or less space, use a fixed column class like `.sm:col-7`; remaining `.col`s split the rest equally.
 
-<Example code={`<div class="row g-medium">
-    <div class="small:col-7">
+<Example code={`<div class="row g-md">
+    <div class="sm:col-7">
       <input type="text" class="form-input" placeholder="City" aria-label="City">
     </div>
-    <div class="small:col">
+    <div class="sm:col">
       <input type="text" class="form-input" placeholder="State" aria-label="State">
     </div>
-    <div class="small:col">
+    <div class="sm:col">
       <input type="text" class="form-input" placeholder="Zip" aria-label="Zip">
     </div>
   </div>`} />
@@ -241,7 +241,7 @@ Auto-sizing allows form elements to adapt to their content's width rather than s
 
 When combined with flexbox alignment utilities like `.align-items-center`, auto-sizing creates clean, professional form layouts.
 
-<Example code={`<form class="row gy-small gx-medium align-items-center">
+<Example code={`<form class="row gy-sm gx-md align-items-center">
     <div class="col-auto">
       <label class="visually-hidden" for="autoSizingInput">Name</label>
       <input type="text" class="form-input" id="autoSizingInput" placeholder="Jane Doe">
@@ -277,19 +277,19 @@ When combined with flexbox alignment utilities like `.align-items-center`, auto-
 
 Auto-sizing can be combined with fixed-width columns for hybrid layouts:
 
-<Example code={`<form class="row gx-medium gy-small align-items-center">
-    <div class="small:col-3">
+<Example code={`<form class="row gx-md gy-sm align-items-center">
+    <div class="sm:col-3">
       <label class="visually-hidden" for="specificSizeInputName">Name</label>
       <input type="text" class="form-input" id="specificSizeInputName" placeholder="Jane Doe">
     </div>
-    <div class="small:col-3">
+    <div class="sm:col-3">
       <label class="visually-hidden" for="specificSizeInputGroupUsername">Username</label>
       <div class="input-group">
         <div class="input-addon">@</div>
         <input type="text" class="form-input" id="specificSizeInputGroupUsername" placeholder="Username">
       </div>
     </div>
-    <div class="small:col-3">
+    <div class="sm:col-3">
       <label class="visually-hidden" for="specificSizeSelect">Preference</label>
       <select class="form-input" id="specificSizeSelect">
         <option value="" selected>Choose...</option>
@@ -316,12 +316,12 @@ Auto-sizing can be combined with fixed-width columns for hybrid layouts:
 Create responsive horizontal form layouts with the `.row-cols-*` classes. These layouts adapt to different screen sizes, stacking vertically on small screens and displaying horizontally on larger screens.
 
 Key features of inline forms:
-- Use `.large:row-cols-auto` for responsive horizontal layouts
+- Use `.lg:row-cols-auto` for responsive horizontal layouts
 - Add gutter classes for consistent spacing
 - Apply `.col-12` on mobile to stack elements
 - Use `.align-items-center` for vertical alignment
 
-<Example code={`<form class="row large:row-cols-auto g-medium align-items-center">
+<Example code={`<form class="row lg:row-cols-auto g-md align-items-center">
     <div class="col-12">
       <label class="visually-hidden" for="inlineFormInputGroupUsername">Username</label>
       <div class="input-group">
@@ -358,7 +358,7 @@ Key features of inline forms:
 
 For compact layouts, use inline form help by applying the `.form-help` class to any inline element such as `<span>` or `<small>`.
 
-<Example code={`<div class="row large:row-cols-auto large:g-medium align-items-center">
+<Example code={`<div class="row lg:row-cols-auto lg:g-md align-items-center">
   <div class="col-12">
     <label for="inlineFormHelpInput" class="col-form-label">Password</label>
   </div>
@@ -366,7 +366,7 @@ For compact layouts, use inline form help by applying the `.form-help` class to 
     <input type="password" autocomplete="current-password" id="inlineFormHelpInput" class="form-input" aria-describedby="inlineFormHelpText" placeholder="Password">
   </div>
   <div class="col-12">
-    <span id="inlineFormHelpText" class="form-help large:my-auto">
+    <span id="inlineFormHelpText" class="form-help lg:my-auto">
       Must be 8-20 characters long.
     </span>
   </div>

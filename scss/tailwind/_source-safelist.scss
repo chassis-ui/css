@@ -1,0 +1,18 @@
+//
+// Chassis CSS — Tailwind Source Safelist (hand-maintained)
+//
+// Classes Tailwind's static source scanner can never see because JS toggles
+// them at runtime (fact 15) — `@source inline(...)` forces generation
+// regardless. Each entry is a `[class, reason]` pair, emitted by
+// `./theme.scss`. Unlike `./_source-exclusions.scss`, this list isn't
+// derived from the compiled output — add an entry here directly when a
+// plugin starts toggling a utility class Tailwind's scanner won't catch.
+//
+
+// The trailing comma is required: without it, a single-element outer list
+// collapses to its one element (the bracketed pair itself), which would make
+// `@each $entry in $safelist` iterate the pair's two strings separately
+// instead of once over the pair.
+$safelist: (
+  ["d-none", "js/src/nav-overflow.ts toggles this class via classList.toggle('d-none', ...); Tailwind's own class-scanner never sees it in any source file, so it needs an explicit @source inline() safelist entry to be generated at all."],
+) !default;

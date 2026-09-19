@@ -19,7 +19,7 @@ const placements = [
 
 const toastInner = `  <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header">
-      <svg aria-hidden="true" class="cxd-placeholder-image rounded me-xsmall" height="20" preserveAspectRatio="xMidYMid slice" width="20" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="${color}" /></svg>
+      <svg aria-hidden="true" class="cxd-placeholder-image rounded me-xs" height="20" preserveAspectRatio="xMidYMid slice" width="20" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="${color}" /></svg>
       <strong class="me-auto">Chassis</strong>
       <small>11 mins ago</small>
     </div>
@@ -30,7 +30,7 @@ const toastInner = `  <div class="toast show" role="alert" aria-live="assertive"
 
 const variants = await Promise.all(
   placements.map(async ({ value }) => {
-    const containerClass = `toast-container position-fixed ${value} p-medium`
+    const containerClass = `toast-container position-fixed ${value} p-md`
     const { html } = await highlightCode(
       `<div class="${containerClass}">\n${toastInner}\n</div>`,
       'html'
@@ -40,8 +40,8 @@ const variants = await Promise.all(
 )
 ---
 
-<div class="bg-even p-medium mb-medium font-small rounded-medium">
-  <div class="hstack gap-medium align-items-center">
+<div class="bg-even p-md mb-md font-sm rounded-md">
+  <div class="hstack gap-md align-items-center">
     <label class="form-label font-strong mb-0" for="toast-placement-menu">Placement:</label>
     <div>
       <button
@@ -74,10 +74,10 @@ const variants = await Promise.all(
 
 <Example
   class="cxd-example-toasts position-relative p-0"
-  code={`<div class="toast-container p-medium">
+  code={`<div class="toast-container p-md">
   <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header">
-      <Placeholder width="20" height="20" background="${color}" class="rounded me-xsmall" text={false} title={false} />
+      <Placeholder width="20" height="20" background="${color}" class="rounded me-xs" text={false} title={false} />
       <strong class="me-auto">Chassis</strong>
       <small>11 mins ago</small>
     </div>

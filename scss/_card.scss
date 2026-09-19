@@ -80,9 +80,9 @@
 
     --header-font-weight: var(--card-header-font-weight, #{$card-header-font-weight});
 
-    @include map-font($card-medium-title-font, card-title, title);
-    @include map-font($card-medium-subtitle-font, card-subtitle, subtitle);
-    @include map-font($card-medium-body-font, card);
+    @include map-font($card-md-title-font, card-title, title);
+    @include map-font($card-md-subtitle-font, card-subtitle, subtitle);
+    @include map-font($card-md-body-font, card);
 
     --height: var(--card-heading, #{$card-height});
     --group-margin: var(--card-group-margin, #{$card-group-margin});
@@ -106,44 +106,44 @@
     background-clip: border-box;
     @include box-shadow(var(--box-shadow));
 
-    &.large {
+    &.lg {
       // scss-docs-start card-large-css-vars
-      --padding-y: var(--card-large-padding-y, #{$card-large-padding-y});
-      --padding-x: var(--card-large-padding-x, #{$card-large-padding-x});
-      --header-padding-y: var(--card-large-header-padding-y, #{$card-large-header-padding-y});
-      --header-padding-x: var(--card-large-header-padding-x, #{$card-large-header-padding-x});
-      --footer-padding-y: var(--card-large-footer-padding-y, #{$card-large-footer-padding-y});
-      --footer-padding-x: var(--card-large-footer-padding-x, #{$card-large-footer-padding-x});
-      --gap-y: var(--card-large-gap-y, #{$card-large-gap-y});
-      --gap-x: var(--card-large-gap-x, #{$card-large-gap-x});
-      @include map-font($card-large-title-font, card-large, title);
-      @include map-font($card-large-subtitle-font, card-large, subtitle);
-      @include map-font($card-large-body-font, card-large);
+      --padding-y: var(--card-lg-padding-y, #{$card-lg-padding-y});
+      --padding-x: var(--card-lg-padding-x, #{$card-lg-padding-x});
+      --header-padding-y: var(--card-lg-header-padding-y, #{$card-lg-header-padding-y});
+      --header-padding-x: var(--card-lg-header-padding-x, #{$card-lg-header-padding-x});
+      --footer-padding-y: var(--card-lg-footer-padding-y, #{$card-lg-footer-padding-y});
+      --footer-padding-x: var(--card-lg-footer-padding-x, #{$card-lg-footer-padding-x});
+      --gap-y: var(--card-lg-gap-y, #{$card-lg-gap-y});
+      --gap-x: var(--card-lg-gap-x, #{$card-lg-gap-x});
+      @include map-font($card-lg-title-font, card-lg, title);
+      @include map-font($card-lg-subtitle-font, card-lg, subtitle);
+      @include map-font($card-lg-body-font, card-lg);
       // scss-docs-end card-large-css-vars
 
-      .button:not(.small):not(.medium) {
-        @extend %button-large;
+      .button:not(.sm):not(.md) {
+        @extend %button-lg;
       }
 
     }
 
-    &.small {
+    &.sm {
       // scss-docs-start card-small-css-vars
-      --padding-y: var(--card-small-padding-y, #{$card-small-padding-y});
-      --padding-x: var(--card-small-padding-x, #{$card-small-padding-x});
-      --header-padding-y: var(--card-small-header-padding-y, #{$card-small-header-padding-y});
-      --header-padding-x: var(--card-small-header-padding-x, #{$card-small-header-padding-x});
-      --footer-padding-y: var(--card-small-footer-padding-y, #{$card-small-footer-padding-y});
-      --footer-padding-x: var(--card-small-footer-padding-x, #{$card-small-footer-padding-x});
-      --gap-y: var(--card-small-gap-y, #{$card-small-gap-y});
-      --gap-x: var(--card-small-gap-x, #{$card-small-gap-x});
-      @include map-font($card-small-title-font, card-small, title);
-      @include map-font($card-small-subtitle-font, card-small, subtitle);
-      @include map-font($card-small-body-font, card-small);
+      --padding-y: var(--card-sm-padding-y, #{$card-sm-padding-y});
+      --padding-x: var(--card-sm-padding-x, #{$card-sm-padding-x});
+      --header-padding-y: var(--card-sm-header-padding-y, #{$card-sm-header-padding-y});
+      --header-padding-x: var(--card-sm-header-padding-x, #{$card-sm-header-padding-x});
+      --footer-padding-y: var(--card-sm-footer-padding-y, #{$card-sm-footer-padding-y});
+      --footer-padding-x: var(--card-sm-footer-padding-x, #{$card-sm-footer-padding-x});
+      --gap-y: var(--card-sm-gap-y, #{$card-sm-gap-y});
+      --gap-x: var(--card-sm-gap-x, #{$card-sm-gap-x});
+      @include map-font($card-sm-title-font, card-sm, title);
+      @include map-font($card-sm-subtitle-font, card-sm, subtitle);
+      @include map-font($card-sm-body-font, card-sm);
       // scss-docs-end card-small-css-vars
 
-      .button:not(.large):not(.medium) {
-        @extend %button-small;
+      .button:not(.lg):not(.md) {
+        @extend %button-sm;
       }
 
     }
@@ -323,7 +323,7 @@
   }
 
   // Responsive card-image-start/end via media queries.
-  // Usage: <img class="card-image-top medium:card-image-start" ...>
+  // Usage: <img class="card-image-top md:card-image-start" ...>
   // Border-radius and layout switch are coupled — both fire at the same viewport breakpoint.
   @include loop-breakpoints-up() using ($breakpoint, $prefix) {
     @if $prefix != "" {
@@ -359,7 +359,7 @@
       margin-block-end: var(--group-margin);
     }
 
-    @include container-breakpoint-up(small) {
+    @include container-breakpoint-up(sm) {
       display: flex;
       flex-flow: row wrap;
       // The child selector allows nested `.card` within `.card-group`

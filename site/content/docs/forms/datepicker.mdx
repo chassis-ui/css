@@ -46,14 +46,6 @@ Use the [Input Adorn]([[docsref:/forms/input-adorn]]) component to add a calenda
 <Example code={`<label for="datepickerIconStart" class="form-label">Select date</label>
   <div class="form-input">
     <input type="text" class="ghost-input" id="datepickerIconStart" data-cx-toggle="datepicker" placeholder="Choose date…">
-    <span class="input-adorn" aria-label="Open calendar">
-      <Icon name="calendar-solid" size={16} />
-    </span>
-  </div>`} />
-
-<Example code={`<label for="datepickerIconStart" class="form-label">Select date</label>
-  <div class="form-input">
-    <input type="text" class="ghost-input" id="datepickerIconStart" data-cx-toggle="datepicker" placeholder="Choose date…">
     <button type="button" class="input-adorn" onclick="this.parentElement.querySelector('.ghost-input').focus()" aria-label="Open calendar">
       <Icon name="calendar-solid" size={16} />
     </button>
@@ -119,7 +111,7 @@ Set the first day of the week (0 = Sunday, 1 = Monday, etc.) with `data-cx-first
 
 Control where the calendar appears relative to the input with `data-cx-placement`. Options are `left` (default), `center`, `right`, and `auto`.
 
-<Example code={`<div class="d-flex gap-medium">
+<Example code={`<div class="d-flex gap-md">
     <div>
       <label for="datepickerLeft" class="form-label">Left aligned</label>
       <input type="text" class="form-input" id="datepickerLeft" data-cx-toggle="datepicker" data-cx-placement="left" placeholder="Left">
@@ -183,7 +175,7 @@ Include a hidden input inside the container to bind the selection to a form fiel
   <div data-cx-toggle="datepicker" data-cx-inline="true">
     <input type="hidden" name="selected_date">
   </div>
-  <button type="submit" class="button solid primary mt-medium">Submit</button>
+  <button type="submit" class="button solid primary mt-md">Submit</button>
 </form>`} />
 
 ## Custom date formatting
@@ -214,7 +206,7 @@ The datepicker adapts to Chassis's color modes. When `data-cx-theme="dark"` is s
 
 When a parent element carries a theme, both the input and calendar popup inherit it:
 
-<Example code={`<div data-cx-theme="dark" class="p-medium bg-main p-medium rounded">
+<Example code={`<div data-cx-theme="dark" class="p-md bg-main p-md rounded">
     <label for="datepickerDark" class="form-label">Dark mode datepicker</label>
     <input type="text" class="form-input" id="datepickerDark" data-cx-toggle="datepicker" placeholder="Select a date">
   </div>`} />

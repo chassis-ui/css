@@ -67,10 +67,10 @@ The two class groups that control context behavior are color names and style mod
 
 Adding a color name to `.context` switches the active palette. Each context color provides coordinated foreground, background, border, icon, link, and cue values, so a single class change propagates throughout the component and its descendants.
 
-<Example code={[`<p class="p-xsmall">
+<Example code={[`<p class="p-xs">
     <Icon name="info-circle-solid" font />
     This is the body context <a href="#">with link</a>, same as default.
-  </p>`].concat(getData('context-colors').map((color) => `<p class="context ${color.name} p-xsmall">
+  </p>`].concat(getData('context-colors').map((color) => `<p class="context ${color.name} p-xs">
     <Icon name="info-circle-solid" font />
     This is the ${color.name} context <a href="#">with link</a>.
   </p>`))} />
@@ -97,19 +97,19 @@ Adding a style modifier controls how context tokens map onto the visual surface.
 - **`smooth`** — applies a muted tinted surface while keeping the standard context foreground, with a transparent border.
 - **`outline`** — sets a transparent background, colors foreground and border from the palette's base hue, and applies a larger border width.
 
-<Example code={`<p class="context primary p-xsmall">
+<Example code={`<p class="context primary p-xs">
     <Icon name="info-circle-solid" font />
     This is a basic context component <a href="#">with link</a>.
   </p>
-  <p class="context primary solid p-xsmall">
+  <p class="context primary solid p-xs">
     <Icon name="info-circle-solid" font />
     This is a solid context component <a href="#">with link</a>.
   </p>
-  <p class="context primary smooth p-xsmall">
+  <p class="context primary smooth p-xs">
     <Icon name="info-circle-solid" font />
     This is a smooth context component <a href="#">with link</a>.
   </p>
-  <p class="context primary outline p-xsmall">
+  <p class="context primary outline p-xs">
     <Icon name="info-circle-solid" font />
     This is an outline context component <a href="#">with link</a>.
   </p>`} />
@@ -202,9 +202,9 @@ The `:root` declaration gives `--example-fg` a default value. Setting it to `var
 
 <ScssDocs name="example-3" file="site/src/scss/_context-example.scss" />
 
-<Example code={`<p class="example-3 p-xsmall">--cx-fg-main</p>
-<p class="example-3 primary p-xsmall">--cx-fg-main</p>
-<p class="example-3 primary solid p-xsmall">--cx-fg-main</p>`} />
+<Example code={`<p class="example-3 p-xs">--cx-fg-main</p>
+<p class="example-3 primary p-xs">--cx-fg-main</p>
+<p class="example-3 primary solid p-xs">--cx-fg-main</p>`} />
 
 ## See also
 

@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import EventHandler from '../../src/dom/event-handler.js'
 import Menu from '../../src/menu.js'
 import { noop } from '../../src/util/index.js'
@@ -1303,7 +1304,7 @@ describe('Menu', () => {
     it('should use Floating UI positioning in navbar', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
-          '<nav class="navbar medium:navbar-expand bg-light">',
+          '<nav class="navbar md:navbar-expand bg-light">',
           '  <div>',
           '    <button class="button" data-cx-toggle="menu" aria-expanded="false">Menu</button>',
           '    <div class="menu">',
@@ -2479,7 +2480,7 @@ describe('Menu', () => {
     it('should parse responsive placement string and create instance', () => {
       fixtureEl.innerHTML = [
         '<div>',
-        '  <button class="button" data-cx-toggle="menu" data-cx-placement="bottom-start medium:top-end">Menu</button>',
+        '  <button class="button" data-cx-toggle="menu" data-cx-placement="bottom-start md:top-end">Menu</button>',
         '  <div class="menu">',
         '    <a class="menu-item" href="#">Link</a>',
         '  </div>',
@@ -2491,8 +2492,8 @@ describe('Menu', () => {
 
       // Menu should have parsed responsive placements
       expect(menu._responsivePlacements).not.toBeNull()
-      expect(menu._responsivePlacements.xsmall).toEqual('bottom-start')
-      expect(menu._responsivePlacements.medium).toEqual('top-end')
+      expect(menu._responsivePlacements.xs).toEqual('bottom-start')
+      expect(menu._responsivePlacements.md).toEqual('top-end')
     })
 
     it('should return null for non-responsive placement', () => {
@@ -4329,7 +4330,7 @@ describe('Menu', () => {
 
   describe('submenu stacked mode', () => {
     it('should focus .submenu-back when opening a stacked submenu via click', () => {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         fixtureEl.innerHTML = [
           '<div>',
           '  <button class="button" data-cx-toggle="menu">Menu</button>',
@@ -4353,13 +4354,16 @@ describe('Menu', () => {
 
         btnMenu.addEventListener('shown.cx.menu', () => {
           submenuTrigger.click()
+          expect(submenu).toHaveClass('show')
 
-          // Focus shift is scheduled via requestAnimationFrame — wait for it
-          setTimeout(() => {
-            expect(submenu).toHaveClass('show')
+          // Focus shift is scheduled via requestAnimationFrame — poll for it
+          // instead of a fixed delay, since a busy CI runner can be slow to
+          // schedule a frame.
+          vi.waitFor(() => {
             expect(document.activeElement).toEqual(backButton)
-            resolve()
-          }, 30)
+          }, { timeout: 1000, interval: 10 })
+            .then(resolve)
+            .catch(reject)
         })
 
         // eslint-disable-next-line no-new

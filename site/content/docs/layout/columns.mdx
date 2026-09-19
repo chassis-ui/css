@@ -100,14 +100,14 @@ A `<div class="w-100">` inserted between column elements forces subsequent colum
 
 <Example class="cxd-example-row" code={`<div class="container text-center">
     <div class="row">
-      <div class="col-6 small:col-3">.col-6 .small:col-3</div>
-      <div class="col-6 small:col-3">.col-6 .small:col-3</div>
+      <div class="col-6 sm:col-3">.col-6 .sm:col-3</div>
+      <div class="col-6 sm:col-3">.col-6 .sm:col-3</div>
 
       <!-- Force next columns to break to new line -->
       <div class="w-100"></div>
 
-      <div class="col-6 small:col-3">.col-6 .small:col-3</div>
-      <div class="col-6 small:col-3">.col-6 .small:col-3</div>
+      <div class="col-6 sm:col-3">.col-6 .sm:col-3</div>
+      <div class="col-6 sm:col-3">.col-6 .sm:col-3</div>
     </div>
   </div>`} />
 
@@ -115,14 +115,14 @@ Responsive [display utilities]([[docsref:/utilities/display]]) make the break co
 
 <Example class="cxd-example-row" code={`<div class="container text-center">
     <div class="row">
-      <div class="col-6 small:col-4">.col-6 .small:col-4</div>
-      <div class="col-6 small:col-4">.col-6 .small:col-4</div>
+      <div class="col-6 sm:col-4">.col-6 .sm:col-4</div>
+      <div class="col-6 sm:col-4">.col-6 .sm:col-4</div>
 
-      <!-- Force next columns to break to new line at medium breakpoint and up -->
-      <div class="w-100 d-none medium:d-block"></div>
+      <!-- Force next columns to break to new line at md breakpoint and up -->
+      <div class="w-100 d-none md:d-block"></div>
 
-      <div class="col-6 small:col-4">.col-6 .small:col-4</div>
-      <div class="col-6 small:col-4">.col-6 .small:col-4</div>
+      <div class="col-6 sm:col-4">.col-6 .sm:col-4</div>
+      <div class="col-6 sm:col-4">.col-6 .sm:col-4</div>
     </div>
   </div>`} />
 
@@ -132,7 +132,7 @@ Column order can be changed visually without altering DOM order, using either `.
 
 ### Order classes
 
-`.order-{n}` sets the flexbox `order` property for visual reordering independent of DOM position. Values `0` through `5` are generated across all six breakpoints, so the `order` can be set per tier (e.g. `.order-1.medium:order-2`). `.order-first` applies `order: -1`; `.order-last` applies `order: 6`.
+`.order-{n}` sets the flexbox `order` property for visual reordering independent of DOM position. Values `0` through `5` are generated across all six breakpoints, so the `order` can be set per tier (e.g. `.order-1.md:order-2`). `.order-first` applies `order: -1`; `.order-last` applies `order: 6`.
 
 <Example class="cxd-example-row" code={`<div class="container text-center">
     <div class="row">
@@ -156,45 +156,45 @@ Two mechanisms push a column to the right: offset classes, which consume grid tr
 
 #### Offset classes
 
-`{breakpoint}:offset-{n}` advances a column by `n` tracks using `margin-inline-start`. For example, `.medium:offset-4` moves a column four tracks to the right from the `medium` breakpoint upward. Reset an offset at a larger breakpoint with `{breakpoint}:offset-0`.
+`{breakpoint}:offset-{n}` advances a column by `n` tracks using `margin-inline-start`. For example, `.md:offset-4` moves a column four tracks to the right from the `md` breakpoint upward. Reset an offset at a larger breakpoint with `{breakpoint}:offset-0`.
 
 <Example class="cxd-example-row" code={`<div class="container text-center">
     <div class="row">
-      <div class="medium:col-4">.medium:col-4</div>
-      <div class="medium:col-4 medium:offset-4">.medium:col-4 .medium:offset-4</div>
+      <div class="md:col-4">.md:col-4</div>
+      <div class="md:col-4 md:offset-4">.md:col-4 .md:offset-4</div>
     </div>
     <div class="row">
-      <div class="medium:col-3 medium:offset-3">.medium:col-3 .medium:offset-3</div>
-      <div class="medium:col-3 medium:offset-3">.medium:col-3 .medium:offset-3</div>
+      <div class="md:col-3 md:offset-3">.md:col-3 .md:offset-3</div>
+      <div class="md:col-3 md:offset-3">.md:col-3 .md:offset-3</div>
     </div>
     <div class="row">
-      <div class="medium:col-6 medium:offset-3">.medium:col-6 .medium:offset-3</div>
+      <div class="md:col-6 md:offset-3">.md:col-6 .md:offset-3</div>
     </div>
   </div>`} />
 
 <Example class="cxd-example-row" code={`<div class="container text-center">
     <div class="row">
-      <div class="small:col-5 medium:col-6">.small:col-5 .medium:col-6</div>
-      <div class="small:col-5 small:offset-2 medium:col-6 medium:offset-0">.small:col-5 .small:offset-2 .medium:col-6 .medium:offset-0</div>
+      <div class="sm:col-5 md:col-6">.sm:col-5 .md:col-6</div>
+      <div class="sm:col-5 sm:offset-2 md:col-6 md:offset-0">.sm:col-5 .sm:offset-2 .md:col-6 .md:offset-0</div>
     </div>
     <div class="row">
-      <div class="small:col-6 medium:col-5 large:col-6">.small:col-6 .medium:col-5 .large:col-6</div>
-      <div class="small:col-6 medium:col-5 medium:offset-2 large:col-6 large:offset-0">.small:col-6 .medium:col-5 .medium:offset-2 .large:col-6 .large:offset-0</div>
+      <div class="sm:col-6 md:col-5 lg:col-6">.sm:col-6 .md:col-5 .lg:col-6</div>
+      <div class="sm:col-6 md:col-5 md:offset-2 lg:col-6 lg:offset-0">.sm:col-6 .md:col-5 .md:offset-2 .lg:col-6 .lg:offset-0</div>
     </div>
   </div>`} />
 
 #### Margin utilities
 
-`.me-auto` and `.ms-auto` push sibling columns by consuming available space with an automatic margin. Breakpoint-prefixed variants (e.g. `.medium:ms-auto`) activate at and above the named tier — see [Margin utilities]([[docsref:/utilities/margin]]).
+`.me-auto` and `.ms-auto` push sibling columns by consuming available space with an automatic margin. Breakpoint-prefixed variants (e.g. `.md:ms-auto`) activate at and above the named tier — see [Margin utilities]([[docsref:/utilities/margin]]).
 
 <Example class="cxd-example-row" code={`<div class="container text-center">
     <div class="row">
-      <div class="medium:col-4">.medium:col-4</div>
-      <div class="medium:col-4 ms-auto">.medium:col-4 .ms-auto</div>
+      <div class="md:col-4">.md:col-4</div>
+      <div class="md:col-4 ms-auto">.md:col-4 .ms-auto</div>
     </div>
     <div class="row">
-      <div class="medium:col-3 medium:ms-auto">.medium:col-3 .medium:ms-auto</div>
-      <div class="medium:col-3 medium:ms-auto">.medium:col-3 .medium:ms-auto</div>
+      <div class="md:col-3 md:ms-auto">.md:col-3 .md:ms-auto</div>
+      <div class="md:col-3 md:ms-auto">.md:col-3 .md:ms-auto</div>
     </div>
     <div class="row">
       <div class="col-auto me-auto">.col-auto .me-auto</div>
@@ -206,18 +206,18 @@ Two mechanisms push a column to the right: offset classes, which consume grid tr
 
 `.col-{n}` and `{breakpoint}:col-{n}` classes work outside a `.row` to give any element a percentage width matching the column grid. Gutter padding is only applied when a column class is a direct child of `.row`; outside that context the padding is omitted.
 
-<Example class="cxd-example-row" code={`<div class="col-3 p-medium mb-xsmall">
+<Example class="cxd-example-row" code={`<div class="col-3 p-md mb-xs">
     .col-3: width of 25%
   </div>
 
-  <div class="small:col-9 p-medium">
-    .small:col-9: width of 75% above sm breakpoint
+  <div class="sm:col-9 p-md">
+    .sm:col-9: width of 75% above sm breakpoint
   </div>`} />
 
 Float-based layouts can use column width classes alongside `.float-end` and `.float-start`. Wrap the content in a [`.clearfix`]([[docsref:/helpers/clearfix]]) container to contain the float when the text is shorter than the floated element.
 
 <Example code={`<div class="clearfix">
-    <Placeholder width="100%" height="210" class="medium:col-6 medium:float-end mb-medium medium:ms-medium" text="Responsive floated image" />
+    <Placeholder width="100%" height="210" class="md:col-6 md:float-end mb-md md:ms-md" text="Responsive floated image" />
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit.</p>
     <p>Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur.</p>
     <p>Donec sed odio dui. Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>

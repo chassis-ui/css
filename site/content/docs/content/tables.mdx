@@ -220,7 +220,7 @@ Border styles and context variants are not inherited by nested tables.
       <td>Third</td>
     </tr>
     <tr>
-      <td colspan="3" class="p-medium">
+      <td colspan="3" class="p-md">
         ${getTableHtml({ class: 'table mb-0' })}
       </td>
     </tr>
@@ -234,7 +234,7 @@ Border styles and context variants are not inherited by nested tables.
   customMarkup={`<table class="table striped bordered">
   ...
   <tr>
-    <td colspan="3" class="p-medium">
+    <td colspan="3" class="p-md">
       <table class="table mb-0">
         ...
       </table>
@@ -264,7 +264,7 @@ Apply the `context` class without a variant to enable the nested table to inheri
       <td>Third</td>
     </tr>
     <tr>
-      <td colspan="3" class="p-medium">
+      <td colspan="3" class="p-md">
         ${getTableHtml({ class: 'table context mb-0' })}
       </td>
     </tr>
@@ -278,7 +278,7 @@ Apply the `context` class without a variant to enable the nested table to inheri
   customMarkup={`<table class="table striped bordered context primary">
   ...
   <tr>
-    <td colspan="3" class="p-medium">
+    <td colspan="3" class="p-md">
       <table class="table context mb-0">
         ...
       </table>
@@ -643,10 +643,10 @@ Combine `.sticky-header` and `.sticky-column` on the same table within a contain
 
 Add `.stacked` to convert a table’s rows into stacked blocks when space is limited. Each row becomes a vertical block with the first cell acting as a bold title and the remaining cells displayed as label–value pairs. Labels are generated from `data-cell` attributes on each `<td>`.
 
-Both `.stacked` and `.table-responsive` use container queries, so the `.table-responsive` wrapper is required as the query container. Use `.max-medium:stacked`, `.max-large:stacked`, etc. to only stack until up to a specific container width. The default `.stacked` always stacks.
+Both `.stacked` and `.table-responsive` use container queries, so the `.table-responsive` wrapper is required as the query container. Use `.max-md:stacked`, `.max-lg:stacked`, etc. to only stack until up to a specific container width. The default `.stacked` always stacks.
 
 <ResizableExample code={`<div class="table-responsive">
-    <table class="table max-medium:stacked">
+    <table class="table max-md:stacked">
       <thead>
         <tr>
           <th scope="col">Name</th>
@@ -684,9 +684,9 @@ Both `.stacked` and `.table-responsive` use container queries, so the `.table-re
   <table class="table table-stacked">...</table>
 </div>
 
-<!-- Stacked below medium container width -->
+<!-- Stacked below md container width -->
 <div class="table-responsive">
-  <table class="table max-medium:table-stacked">...</table>
+  <table class="table max-md:table-stacked">...</table>
 </div>
 ```
 

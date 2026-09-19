@@ -12,7 +12,7 @@ extra_js:
 
 import { getDocsRelativePath } from '@libs/path'
 
-<Callout type="warning" class="mt-3xlarge -mb-medium">
+<Callout type="warning" class="mt-3xl -mb-md">
   When using client-side custom validation styles and tooltips, additional work is needed to ensure proper accessibility. For better out-of-the-box accessibility, consider using server-side validation or native browser validation.
 </Callout>
 
@@ -39,22 +39,22 @@ Key features of Chassis validation:
 - Consistent positioning of feedback messages
 - JavaScript integration for dynamic validation
 
-<Example code={`<form class="row g-medium" data-cx-validate novalidate>
-    <div class="medium:col-4">
+<Example code={`<form class="row g-md" data-cx-validate novalidate>
+    <div class="md:col-4">
       <label for="validationCustom01" class="form-label">First name</label>
       <input type="text" class="form-input" id="validationCustom01" value="John" required>
       <div class="valid-feedback">
         Looks good!
       </div>
     </div>
-    <div class="medium:col-4">
+    <div class="md:col-4">
       <label for="validationCustom02" class="form-label">Last name</label>
       <input type="text" class="form-input" id="validationCustom02" value="Smith" required>
       <div class="valid-feedback">
         Looks good!
       </div>
     </div>
-    <div class="medium:col-4">
+    <div class="md:col-4">
       <label for="validationCustomUsername" class="form-label">Username</label>
       <div class="input-group">
         <span class="input-addon" id="inputGroupPrepend">@</span>
@@ -64,14 +64,14 @@ Key features of Chassis validation:
         Please choose a username.
       </div>
     </div>
-    <div class="medium:col-6">
+    <div class="md:col-6">
       <label for="validationCustom03" class="form-label">City</label>
       <input type="text" class="form-input" id="validationCustom03" required>
       <div class="invalid-feedback">
         Please provide a valid city.
       </div>
     </div>
-    <div class="medium:col-3">
+    <div class="md:col-3">
       <label for="validationCustom04" class="form-label">State</label>
       <select class="form-input" id="validationCustom04" required>
         <option selected disabled value="">Choose...</option>
@@ -83,7 +83,7 @@ Key features of Chassis validation:
         Please select a valid state.
       </div>
     </div>
-    <div class="medium:col-3">
+    <div class="md:col-3">
       <label for="validationCustom05" class="form-label">Zip</label>
       <input type="text" class="form-input" id="validationCustom05" required>
       <div class="invalid-feedback">
@@ -116,27 +116,27 @@ Key features of Chassis validation:
 
 If you prefer simpler implementation, you can use the browser's built-in validation. Chassis CSS works seamlessly with native validation UI, though these styles cannot be customized with CSS.
 
-<Example code={`<form class="row g-medium">
-    <div class="medium:col-4">
+<Example code={`<form class="row g-md">
+    <div class="md:col-4">
       <label for="validationDefault01" class="form-label">First name</label>
       <input type="text" class="form-input" id="validationDefault01" value="John" required>
     </div>
-    <div class="medium:col-4">
+    <div class="md:col-4">
       <label for="validationDefault02" class="form-label">Last name</label>
       <input type="text" class="form-input" id="validationDefault02" value="Smith" required>
     </div>
-    <div class="medium:col-4">
+    <div class="md:col-4">
       <label for="validationDefaultUsername" class="form-label">Username</label>
       <div class="input-group">
         <span class="input-addon" id="inputGroupPrepend2">@</span>
         <input type="text" class="form-input" id="validationDefaultUsername" aria-describedby="inputGroupPrepend2" required>
       </div>
     </div>
-    <div class="medium:col-6">
+    <div class="md:col-6">
       <label for="validationDefault03" class="form-label">City</label>
       <input type="text" class="form-input" id="validationDefault03" required>
     </div>
-    <div class="medium:col-3">
+    <div class="md:col-3">
       <label for="validationDefault04" class="form-label">State</label>
       <select class="form-input" id="validationDefault04" required>
         <option selected disabled value="">Choose...</option>
@@ -145,7 +145,7 @@ If you prefer simpler implementation, you can use the browser's built-in validat
         <option>Texas</option>
       </select>
     </div>
-    <div class="medium:col-3">
+    <div class="md:col-3">
       <label for="validationDefault05" class="form-label">Zip</label>
       <input type="text" class="form-input" id="validationDefault05" required>
     </div>
@@ -174,22 +174,22 @@ For applications that validate on the server, Chassis CSS provides the `.is-vali
   For invalid fields, always connect error messages to their inputs using `aria-describedby` to ensure screen readers announce feedback properly. Multiple IDs can be referenced if a field has both help text and error messages.
 </Callout>
 
-<Example code={`<form class="row g-medium">
-    <div class="medium:col-4">
+<Example code={`<form class="row g-md">
+    <div class="md:col-4">
       <label for="validationServer01" class="form-label">First name</label>
       <input type="text" class="form-input is-valid" id="validationServer01" value="John" required>
       <div class="valid-feedback">
         Looks good!
       </div>
     </div>
-    <div class="medium:col-4">
+    <div class="md:col-4">
       <label for="validationServer02" class="form-label">Last name</label>
       <input type="text" class="form-input is-valid" id="validationServer02" value="Smith" required>
       <div class="valid-feedback">
         Looks good!
       </div>
     </div>
-    <div class="medium:col-4">
+    <div class="md:col-4">
       <label for="validationServerUsername" class="form-label">Username</label>
       <div class="input-group has-validation">
         <span class="input-addon" id="inputGroupPrepend3">@</span>
@@ -199,14 +199,14 @@ For applications that validate on the server, Chassis CSS provides the `.is-vali
         Please choose a username.
       </div>
     </div>
-    <div class="medium:col-6">
+    <div class="md:col-6">
       <label for="validationServer03" class="form-label">City</label>
       <input type="text" class="form-input is-invalid" id="validationServer03" aria-describedby="validationServer03Feedback" required>
       <div id="validationServer03Feedback" class="invalid-feedback">
         Please provide a valid city.
       </div>
     </div>
-    <div class="medium:col-3">
+    <div class="md:col-3">
       <label for="validationServer04" class="form-label">State</label>
       <select class="form-input is-invalid" id="validationServer04" aria-describedby="validationServer04Feedback" required>
         <option selected disabled value="">Choose...</option>
@@ -218,7 +218,7 @@ For applications that validate on the server, Chassis CSS provides the `.is-vali
         Please select a valid state.
       </div>
     </div>
-    <div class="medium:col-3">
+    <div class="md:col-3">
       <label for="validationServer05" class="form-label">Zip</label>
       <input type="text" class="form-input is-invalid" id="validationServer05" aria-describedby="validationServer05Feedback" required>
       <div id="validationServer05Feedback" class="invalid-feedback">
@@ -245,7 +245,7 @@ For applications that validate on the server, Chassis CSS provides the `.is-vali
 
 Chassis CSS validation styles work consistently across all basic form elements:
 
-<Example code={`<form class="vstack gap-medium">
+<Example code={`<form class="vstack gap-md">
     <div class="form-field">
       <label for="validationSelect" class="form-label">Select</label>
       <select class="form-input is-invalid" id="validationSelect" required aria-describedby="validationSelectFeedback">
@@ -396,22 +396,22 @@ For compact layouts, Chassis CSS provides tooltip-style validation feedback. Sim
   Tooltips require a parent element with `position: relative`. The column classes in our examples already have this, but you may need to add it to your own layouts.
 </Callout>
 
-<Example code={`<form class="row g-medium" data-cx-validate novalidate>
-    <div class="medium:col-4 position-relative">
+<Example code={`<form class="row g-md" data-cx-validate novalidate>
+    <div class="md:col-4 position-relative">
       <label for="validationTooltip01" class="form-label">First name</label>
       <input type="text" class="form-input" id="validationTooltip01" value="John" required>
       <div class="valid-tooltip">
         Looks good!
       </div>
     </div>
-    <div class="medium:col-4 position-relative">
+    <div class="md:col-4 position-relative">
       <label for="validationTooltip02" class="form-label">Last name</label>
       <input type="text" class="form-input" id="validationTooltip02" value="Smith" required>
       <div class="valid-tooltip">
         Looks good!
       </div>
     </div>
-    <div class="medium:col-4 position-relative">
+    <div class="md:col-4 position-relative">
       <label for="validationTooltipUsername" class="form-label">Username</label>
       <div class="input-group has-validation">
         <span class="input-addon" id="validationTooltipUsernamePrepend">@</span>
@@ -421,14 +421,14 @@ For compact layouts, Chassis CSS provides tooltip-style validation feedback. Sim
         Please choose a unique and valid username.
       </div>
     </div>
-    <div class="medium:col-6 position-relative">
+    <div class="md:col-6 position-relative">
       <label for="validationTooltip03" class="form-label">City</label>
       <input type="text" class="form-input" id="validationTooltip03" required>
       <div class="invalid-tooltip">
         Please provide a valid city.
       </div>
     </div>
-    <div class="medium:col-3 position-relative">
+    <div class="md:col-3 position-relative">
       <label for="validationTooltip04" class="form-label">State</label>
       <select class="form-input" id="validationTooltip04" required>
         <option selected disabled value="">Choose...</option>
@@ -440,7 +440,7 @@ For compact layouts, Chassis CSS provides tooltip-style validation feedback. Sim
         Please select a valid state.
       </div>
     </div>
-    <div class="medium:col-3 position-relative">
+    <div class="md:col-3 position-relative">
       <label for="validationTooltip05" class="form-label">Zip</label>
       <input type="text" class="form-input" id="validationTooltip05" required>
       <div class="invalid-tooltip">
@@ -458,7 +458,7 @@ Validation icons are opt-in at the **wrapper level**. Add the `.validation-icons
 
 Icons appear on text inputs, single-value `<select>` elements, color inputs, `.ghost-input` (used by `.chip-input` and the `.input-adorn` wrapper), and `.combobox-value`. Textareas, checkboxes, radios, switches, file, and range inputs do not receive icons by design.
 
-<Example code={`<form class="vstack gap-medium validation-icons" data-cx-validate novalidate>
+<Example code={`<form class="vstack gap-md validation-icons" data-cx-validate novalidate>
     <div class="form-field">
       <label for="validationIconsText" class="form-label">Text input</label>
       <input type="text" class="form-input" id="validationIconsText" value="John" required>
@@ -543,7 +543,7 @@ Validation feedback only works for every user when it's wired up with the right 
     </div>
     <div class="invalid-feedback" id="username-feedback" aria-live="polite"></div>
     <div class="form-help always-show" id="username-help">Enter your username</div>
-    <div class="mt-medium">
+    <div class="mt-md">
       <button class="button primary" type="button" onclick="validateUsername()">Validate username</button>
   </div>`} />
 

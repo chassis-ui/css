@@ -32,11 +32,11 @@ Three equal-width columns span the full row because `.col` without a number dist
 
 The grid is composed of three building blocks — container, row, and column — each with a specific responsibility:
 
-- **Containers center and pad content.** `.container` applies a responsive `max-width`; `.container.fluid` sets `width: 100%` at all viewports; a responsive container (e.g. `.container.medium`) switches between fluid and fixed at a specific breakpoint. See [Containers]([[docsref:/layout/containers]]).
+- **Containers center and pad content.** `.container` applies a responsive `max-width`; `.container.fluid` sets `width: 100%` at all viewports; a responsive container (e.g. `.container.md`) switches between fluid and fixed at a specific breakpoint. See [Containers]([[docsref:/layout/containers]]).
 - **Rows are flex parents.** `.row` sets `display: flex; flex-wrap: wrap` and applies negative inline margins equal to half the gutter, so the gutter padding on columns is visually flush at the row edges.
-- **Columns span a fraction of the row.** Each direct child of `.row` receives horizontal padding (the gutter) and is sized with `.col`, `.col-{n}`, or a breakpoint-prefixed variant like `.medium:col-4`. Widths are expressed as percentages of the 12-column track, so columns scale proportionally at any viewport width. See [Columns]([[docsref:/layout/columns]]).
+- **Columns span a fraction of the row.** Each direct child of `.row` receives horizontal padding (the gutter) and is sized with `.col`, `.col-{n}`, or a breakpoint-prefixed variant like `.md:col-4`. Widths are expressed as percentages of the 12-column track, so columns scale proportionally at any viewport width. See [Columns]([[docsref:/layout/columns]]).
 - **Gutters are controlled by CSS custom properties.** `.row` sets `--gutter-x` and `--gutter-y`; these are overridable per-row with [gutter classes]([[docsref:/layout/gutters]]).
-- **Breakpoints are min-width media queries.** A prefixed class like `.small:col-4` applies from the `small` breakpoint upward. Six tiers are available — see [Breakpoints]([[docsref:/layout/breakpoints]]).
+- **Breakpoints are min-width media queries.** A prefixed class like `.sm:col-4` applies from the `sm` breakpoint upward. Six tiers are available — see [Breakpoints]([[docsref:/layout/breakpoints]]).
 - **Sass variables, maps, and mixins back every class.** The same tokens that generate the predefined classes are available for custom semantic layouts — see [Sass variables](#sass-variables) and [Sass mixins](#sass-mixins).
 
 Flexbox has known edge cases — review the [flexbugs list](https://github.com/philipwalton/flexbugs), particularly [flexbug #9](https://github.com/philipwalton/flexbugs#flexbug-9) regarding which HTML elements can be flex containers.
@@ -46,36 +46,36 @@ Flexbox has known edge cases — review the [flexbugs list](https://github.com/p
 The six default breakpoints each have a container `max-width`, a column class prefix, and modifier class prefixes:
 
 <div class="table-responsive">
-  <table class="table mb-large">
+  <table class="table mb-lg">
     <thead>
       <tr>
         <th scope="col"></th>
-        <th scope="col">xsmall<br/><span class="font-normal">&lt;{sassBreakpointSize('small')}</span></th>
-        <th scope="col">small<br/><span class="font-normal">&ge;{sassBreakpointSize('small')}</span></th>
-        <th scope="col">medium<br/><span class="font-normal">&ge;{sassBreakpointSize('medium')}</span></th>
-        <th scope="col">large<br/><span class="font-normal">&ge;{sassBreakpointSize('large')}</span></th>
-        <th scope="col">xlarge<br/><span class="font-normal">&ge;{sassBreakpointSize('xlarge')}</span></th>
-        <th scope="col">2xlarge<br/><span class="font-normal">&ge;{sassBreakpointSize('2xlarge')}</span></th>
+        <th scope="col">xs<br/><span class="font-normal">&lt;{sassBreakpointSize('sm')}</span></th>
+        <th scope="col">sm<br/><span class="font-normal">&ge;{sassBreakpointSize('sm')}</span></th>
+        <th scope="col">md<br/><span class="font-normal">&ge;{sassBreakpointSize('md')}</span></th>
+        <th scope="col">lg<br/><span class="font-normal">&ge;{sassBreakpointSize('lg')}</span></th>
+        <th scope="col">xl<br/><span class="font-normal">&ge;{sassBreakpointSize('xl')}</span></th>
+        <th scope="col">2xl<br/><span class="font-normal">&ge;{sassBreakpointSize('2xl')}</span></th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <th class="text-nowrap" scope="row">Container <code class="font-normal">max-width</code></th>
         <td>None (auto)</td>
-        <td>{sassContainerSize('small')}</td>
-        <td>{sassContainerSize('medium')}</td>
-        <td>{sassContainerSize('large')}</td>
-        <td>{sassContainerSize('xlarge')}</td>
-        <td>{sassContainerSize('2xlarge')}</td>
+        <td>{sassContainerSize('sm')}</td>
+        <td>{sassContainerSize('md')}</td>
+        <td>{sassContainerSize('lg')}</td>
+        <td>{sassContainerSize('xl')}</td>
+        <td>{sassContainerSize('2xl')}</td>
       </tr>
       <tr>
         <th class="text-nowrap" scope="row">Class prefix</th>
         <td><code>.col-</code></td>
-        <td><code>.small:col-</code></td>
-        <td><code>.medium:col-</code></td>
-        <td><code>.large:col-</code></td>
-        <td><code>.xlarge:col-</code></td>
-        <td><code>.2xlarge:col-</code></td>
+        <td><code>.sm:col-</code></td>
+        <td><code>.md:col-</code></td>
+        <td><code>.lg:col-</code></td>
+        <td><code>.xl:col-</code></td>
+        <td><code>.2xl:col-</code></td>
       </tr>
       <tr>
         <th class="text-nowrap" scope="row"># of columns</th>
@@ -143,15 +143,15 @@ When one column carries an explicit span (`.col-{n}`), the remaining `.col` sibl
 `{breakpoint}:col-auto` sizes a column to its content's natural width; sibling columns fill the remaining space.
 
 <Example class="cxd-example-row" code={`<div class="container text-center">
-    <div class="row medium:justify-content-center">
-      <div class="col large:col-2">1 of 3</div>
-      <div class="medium:col-auto">Variable width content</div>
-      <div class="col large:col-2">3 of 3</div>
+    <div class="row md:justify-content-center">
+      <div class="col lg:col-2">1 of 3</div>
+      <div class="md:col-auto">Variable width content</div>
+      <div class="col lg:col-2">3 of 3</div>
     </div>
     <div class="row">
       <div class="col">1 of 3</div>
-      <div class="medium:col-auto">Variable width content</div>
-      <div class="col large:col-2">3 of 3</div>
+      <div class="md:col-auto">Variable width content</div>
+      <div class="col lg:col-2">3 of 3</div>
     </div>
   </div>`} />
 
@@ -178,17 +178,17 @@ Breakpoint-prefixed column classes control column width at specific viewport siz
 
 ### Stacked to horizontal
 
-Using `.small:col-*` classes alone produces columns that stack full-width below the `small` breakpoint and expand horizontally at and above it.
+Using `.sm:col-*` classes alone produces columns that stack full-width below the `sm` breakpoint and expand horizontally at and above it.
 
 <Example class="cxd-example-row" code={`<div class="container text-center">
     <div class="row">
-      <div class="small:col-8">small:col-8</div>
-      <div class="small:col-4">small:col-4</div>
+      <div class="sm:col-8">sm:col-8</div>
+      <div class="sm:col-4">sm:col-4</div>
     </div>
     <div class="row">
-      <div class="small:col">small:col</div>
-      <div class="small:col">small:col</div>
-      <div class="small:col">small:col</div>
+      <div class="sm:col">sm:col</div>
+      <div class="sm:col">sm:col</div>
+      <div class="sm:col">sm:col</div>
     </div>
   </div>`} />
 
@@ -199,15 +199,15 @@ Combining classes from multiple breakpoints on the same element controls column 
 <Example class="cxd-example-row" code={`<div class="container text-center">
     <!-- Stack the columns on mobile by making one full-width and the other half-width -->
     <div class="row">
-      <div class="medium:col-8">.medium:col-8</div>
-      <div class="col-6 medium:col-4">.col-6 .medium:col-4</div>
+      <div class="md:col-8">.md:col-8</div>
+      <div class="col-6 md:col-4">.col-6 .md:col-4</div>
     </div>
 
     <!-- Columns start at 50% wide on mobile and bump up to 33.3% wide on desktop -->
     <div class="row">
-      <div class="col-6 medium:col-4">.col-6 .medium:col-4</div>
-      <div class="col-6 medium:col-4">.col-6 .medium:col-4</div>
-      <div class="col-6 medium:col-4">.col-6 .medium:col-4</div>
+      <div class="col-6 md:col-4">.col-6 .md:col-4</div>
+      <div class="col-6 md:col-4">.col-6 .md:col-4</div>
+      <div class="col-6 md:col-4">.col-6 .md:col-4</div>
     </div>
 
     <!-- Columns are always 50% wide, on mobile and desktop -->
@@ -219,7 +219,7 @@ Combining classes from multiple breakpoints on the same element controls column 
 
 ### Row columns
 
-`.row-cols-{n}` on a `.row` element sets all direct child columns to an equal fractional width, without adding a span class to each child. `.row-cols-auto` gives each child its natural content width. Breakpoint-prefixed variants (`.small:row-cols-*`) change the column count at that tier.
+`.row-cols-{n}` on a `.row` element sets all direct child columns to an equal fractional width, without adding a span class to each child. `.row-cols-auto` gives each child its natural content width. Breakpoint-prefixed variants (`.sm:row-cols-*`) change the column count at that tier.
 
 <Example class="cxd-example-row" code={`<div class="container text-center">
     <div class="row row-cols-2">
@@ -267,7 +267,7 @@ Combining classes from multiple breakpoints on the same element controls column 
   </div>`} />
 
 <Example class="cxd-example-row" code={`<div class="container text-center">
-    <div class="row row-cols-1 small:row-cols-2 medium:row-cols-4">
+    <div class="row row-cols-1 sm:row-cols-2 md:row-cols-4">
       <div class="col">Column</div>
       <div class="col">Column</div>
       <div class="col">Column</div>
@@ -282,8 +282,8 @@ The `row-cols()` Sass mixin produces the same column-count output as the utility
   // Three columns to start
   @include row-cols(3);
 
-  // Five columns from the medium breakpoint up
-  @include media-breakpoint-up(medium) {
+  // Five columns from the md breakpoint up
+  @include media-breakpoint-up(md) {
     @include row-cols(5);
   }
 }
@@ -295,11 +295,11 @@ A new `.row` placed inside an existing column creates a nested grid. The nested 
 
 <Example class="cxd-example-row" code={`<div class="container text-center">
     <div class="row">
-      <div class="small:col-3">Level 1: .small:col-3</div>
-      <div class="small:col-9">
+      <div class="sm:col-3">Level 1: .sm:col-3</div>
+      <div class="sm:col-9">
         <div class="row">
-          <div class="col-8 small:col-6">Level 2: .col-8 .small:col-6</div>
-          <div class="col-4 small:col-6">Level 2: .col-4 .small:col-6</div>
+          <div class="col-8 sm:col-6">Level 2: .col-8 .sm:col-6</div>
+          <div class="col-4 sm:col-6">Level 2: .col-4 .sm:col-6</div>
         </div>
       </div>
     </div>
@@ -366,10 +366,10 @@ The grid mixins produce the same output as the predefined classes and apply to a
 .example-content-main {
   @include make-col-ready();
 
-  @include media-breakpoint-up(small) {
+  @include media-breakpoint-up(sm) {
     @include make-col(6);
   }
-  @include media-breakpoint-up(large) {
+  @include media-breakpoint-up(lg) {
     @include make-col(8);
   }
 }
@@ -377,10 +377,10 @@ The grid mixins produce the same output as the predefined classes and apply to a
 .example-content-secondary {
   @include make-col-ready();
 
-  @include media-breakpoint-up(small) {
+  @include media-breakpoint-up(sm) {
     @include make-col(6);
   }
-  @include media-breakpoint-up(large) {
+  @include media-breakpoint-up(lg) {
     @include make-col(4);
   }
 }

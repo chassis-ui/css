@@ -56,7 +56,7 @@ Use [button group]([[docsref:/components/button-group]]) to build split buttons 
 
 <Example code={`<div class="button-group">
   <button type="button" class="button secondary">Split</button>
-  <button type="button" class="button secondary caret icon-only" data-cx-toggle="menu" aria-expanded="false">
+  <button type="button" class="button secondary caret icon-only" data-cx-toggle="menu" aria-expanded="false" aria-label="Open actions menu">
     <Icon name="gear-solid" />
   </button>
   <div class="menu">
@@ -217,7 +217,7 @@ Place an `<hr class="menu-divider">` between groups of related items. The elemen
 
 For longer free-form prose, place content directly in the `.menu` with a spacing utility on the container.
 
-<Example code={`<div class="menu show position-static p-medium">
+<Example code={`<div class="menu show position-static p-md">
   <p>
     Some example text that's free-flowing within the menu.
   </p>
@@ -232,7 +232,7 @@ A `.menu` can contain any HTML form content. Apply spacing utilities to set inte
 
 <Example code={`<div class="menu show position-static"
      style="--cx-menu-min-width: 300px;">
-  <form class="vstack gap-medium p-medium">
+  <form class="vstack gap-md p-md">
     <div>
       <label for="menuFormEmail" class="form-label">Email address</label>
       <input type="email" class="form-input" id="menuFormEmail" placeholder="email@example.com">
@@ -245,7 +245,7 @@ A `.menu` can contain any HTML form content. Apply spacing utilities to set inte
       <input type="checkbox" class="check-input" id="menuRemember" />
       <label for="menuRemember" class="check-label">Remember me</label>
     </div>
-    <div class="vstack gap-small">
+    <div class="vstack gap-sm">
       <button type="submit" class="button primary">Sign in</button>
     </div>
   </form>
@@ -268,25 +268,25 @@ All placements accept `-start` and `-end` alignment modifiers (e.g. `bottom-star
 
 The placement attribute accepts breakpoint-prefixed values to change placement at specific viewport widths. The syntax is `breakpoint:placement`; multiple pairs are space-separated.
 
-For example, `data-cx-placement="bottom-start medium:bottom-end large:end-start"` applies `bottom-start` by default, switches to `bottom-end` at the `medium` breakpoint, and to `end-start` at `large`.
+For example, `data-cx-placement="bottom-start md:bottom-end lg:end-start"` applies `bottom-start` by default, switches to `bottom-end` at the `md` breakpoint, and to `end-start` at `lg`.
 
-<Example class="d-flex flex-column large:flex-row gap-small" code={`<button class="button secondary" type="button" data-cx-toggle="menu" data-cx-placement="bottom-start medium:bottom-end" aria-expanded="false">
-  bottom-start → medium:bottom-end
+<Example class="d-flex flex-column lg:flex-row gap-sm" code={`<button class="button secondary" type="button" data-cx-toggle="menu" data-cx-placement="bottom-start md:bottom-end" aria-expanded="false">
+  bottom-start → md:bottom-end
 </button>
 <div class="menu">
   <a class="menu-item" href="#">Copy</a>
   <a class="menu-item" href="#">Paste</a>
 </div>
 
-<button class="button secondary" type="button" data-cx-toggle="menu" data-cx-placement="bottom large:right" aria-expanded="false">
-  bottom → large:right
+<button class="button secondary" type="button" data-cx-toggle="menu" data-cx-placement="bottom lg:right" aria-expanded="false">
+  bottom → lg:right
 </button>
 <div class="menu">
   <a class="menu-item" href="#">Copy</a>
   <a class="menu-item" href="#">Paste</a>
 </div>
 
-<button class="button secondary" type="button" data-cx-toggle="menu" data-cx-placement="top-end medium:right-start xlarge:bottom-start" aria-expanded="false">
+<button class="button secondary" type="button" data-cx-toggle="menu" data-cx-placement="top-end md:right-start xl:bottom-start" aria-expanded="false">
   Multi-breakpoint
 </button>
 <div class="menu">
@@ -301,7 +301,7 @@ Resize the browser window to see placement change at each breakpoint.
 Use `data-cx-offset` to shift the menu from its reference element. The value is two comma-separated pixel values representing skidding (cross-axis) and distance (main-axis). Use `data-cx-reference="parent"` to position the menu relative to the toggle button's parent rather than the toggle itself.
 
 <Example code={`<div class="d-flex">
-  <div class="me-2xsmall">
+  <div class="me-2xs">
     <button type="button" class="button secondary" data-cx-toggle="menu" aria-expanded="false" data-cx-offset="16,24">
       Offset
     </button>
@@ -409,7 +409,7 @@ Submenus can nest to multiple levels. Each level opens to the side and flips dir
 
 ### Submenus on mobile
 
-Add `.submenu-stacked` alongside `.menu` on the inner menu to switch to a view-replacement pattern below the `small` breakpoint. Add `<button class="submenu-back menu-item">` as the first item of each stacked level — the plugin wires the back action to close the submenu and return focus to its trigger. The button is hidden above the breakpoint, so a single markup pattern serves both layouts.
+Add `.submenu-stacked` alongside `.menu` on the inner menu to switch to a view-replacement pattern below the `sm` breakpoint. Add `<button class="submenu-back menu-item">` as the first item of each stacked level — the plugin wires the back action to close the submenu and return focus to its trigger. The button is hidden above the breakpoint, so a single markup pattern serves both layouts.
 
 <Example code={`<button class="button secondary" type="button" data-cx-toggle="menu" aria-expanded="false">
   Stacked submenus
@@ -439,7 +439,7 @@ Add `.submenu-stacked` alongside `.menu` on the inner menu to switch to a view-r
 
 The `autoClose` option controls which clicks close the menu. The default (`true`) closes on any click inside or outside. Use `'inside'` or `'outside'` to restrict to one side, or `false` to require a programmatic call.
 
-<Example class="d-flex flex-wrap gap-small" code={`<div>
+<Example class="d-flex flex-wrap gap-sm" code={`<div>
   <button class="button secondary" type="button" data-cx-toggle="menu" data-cx-auto-close="true" aria-expanded="false">
     Default
   </button>
@@ -542,7 +542,7 @@ Add `.translucent` alongside `.menu` to blur and saturate the background. The va
 
 Add `.context` to a `.menu` to remap all item color tokens to a semantic palette. Add `.context` to individual `.menu-item` elements to scope context coloring to a single item. Both patterns accept the same semantic modifiers as the [context system]([[docsref:/core-concepts/context-class]]).
 
-<Example class="hstack gap-medium" code={`<div class="menu show position-static">
+<Example class="hstack gap-md" code={`<div class="menu show position-static">
   <a class="menu-item context info" href="#">Copy</a>
   <a class="menu-item context success" href="#">Save</a>
   <a class="menu-item context warning" href="#">Overwrite</a>
@@ -558,7 +558,7 @@ Add `.context` to a `.menu` to remap all item color tokens to a semantic palette
 
 Context colors carry through to icons. Add `.menu-item-icon` to an icon inside a context-colored item and it picks up the correct foreground token automatically.
 
-<Example class="hstack gap-medium" code={`<div class="menu show position-static">
+<Example class="hstack gap-md" code={`<div class="menu show position-static">
   <button class="menu-item context success" type="button">
     <Icon name="copy-solid" class="menu-item-icon" />
     Copy

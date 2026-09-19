@@ -1,0 +1,48 @@
+//
+// Tailwind Source Config Generator
+//
+// Emits the fact-9 `@source not inline(...)` component-clash exclusions and
+// the fact-15 JS-toggled-class safelist for the Tailwind entry point
+// (`scss/tailwind/theme.scss`), from plain Sass data rather than editing
+// compiled output after the fact.
+//
+
+@use "sass:list";
+
+/// Builds the brace-expansion group covering the unprefixed candidate and
+/// every non-`xs` breakpoint prefix from `$breakpoints`
+/// (e.g. `{,sm:,md:,lg:,xl:,2xl:}` for the default map), instead of a
+/// hard-coded prefix list, so a project's own custom `$breakpoints` stays
+/// correct.
+@function breakpoint-source-group($breakpoints) {
+  $group: "";
+  @each $name, $value in $breakpoints {
+    @if $name != xs {
+      @if $group == "" {
+        $group: "#{$name}:";
+      } @else {
+        $group: "#{$group},#{$name}:";
+      }
+    }
+  }
+  @return "{,#{$group}}";
+}
+
+/// Emits `@source not inline(...)` for `$bare` names unprefixed, for
+/// `$responsive` names at every breakpoint prefix (`breakpoint-source-group`),
+/// and `@source inline(...)` for each `[class, reason]` pair in `$safelist`.
+@mixin emit-source-config($breakpoints, $bare, $responsive, $safelist) {
+  $group: breakpoint-source-group($breakpoints);
+
+  @each $name in $bare {
+    @source not inline("#{$name}");
+  }
+
+  @each $name in $responsive {
+    @source not inline("#{$group}#{$name}");
+  }
+
+  @each $entry in $safelist {
+    @source inline("#{list.nth($entry, 1)}"); /* #{list.nth($entry, 2)} */
+  }
+}

@@ -3,7 +3,7 @@
 > A tokenized CSS framework bridging Figma designs to seamless code implementation.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Version: 0.3.5](https://img.shields.io/badge/Version-0.3.5-blue.svg)](https://github.com/chassis-ui/css)
+[![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-blue.svg)](https://github.com/chassis-ui/css)
 
 ## Overview
 
@@ -79,7 +79,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 ```
 
+### Using with Tailwind CSS
 
+For Tailwind CSS v4 projects, import the Tailwind entry point instead — it exposes Chassis components and utilities through Tailwind's own variant engine (`dark:fg-primary`, `lg:font-xl`, `hover:shadow-md`):
+
+```css
+/* app.css */
+@import "@chassis-ui/css/tailwind";
+```
+
+See the [Tailwind guide](https://chassis-ui.com/css/docs/getting-started/tailwind/) for setup, variant behavior, and known differences from the regular Sass/CSS entry.
 
 ## Design System in Action
 

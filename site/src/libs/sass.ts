@@ -14,34 +14,34 @@ export function sassVars(str: string): Record<string, string | undefined> {
       }
     case 'space':
       return {
-        '4xsmall': variables.space4xsmall,
-        '3xsmall': variables.space3xsmall,
-        '2xsmall': variables.space2xsmall,
-        xsmall: variables.spaceXsmall,
-        medium: variables.spaceMedium,
-        large: variables.spaceLarge,
-        xlarge: variables.spaceXlarge,
-        '2xlarge': variables.space2xlarge,
-        '3xlarge': variables.space3xlarge,
-        '4xlarge': variables.space4xlarge,
-        '5xlarge': variables.space5xlarge,
-        '6xlarge': variables.space6xlarge
+        '4xs': variables.space4xsmall,
+        '3xs': variables.space3xsmall,
+        '2xs': variables.space2xsmall,
+        xs: variables.spaceXsmall,
+        md: variables.spaceMedium,
+        lg: variables.spaceLarge,
+        xl: variables.spaceXlarge,
+        '2xl': variables.space2xlarge,
+        '3xl': variables.space3xlarge,
+        '4xl': variables.space4xlarge,
+        '5xl': variables.space5xlarge,
+        '6xl': variables.space6xlarge
       }
     case 'breakpoint':
       return {
-        '2xlarge': variables.breakpoint2xlarge,
-        xlarge: variables.breakpointXlarge,
-        large: variables.breakpointLarge,
-        medium: variables.breakpointMedium,
-        small: variables.breakpointSmall
+        '2xl': variables.breakpoint2xlarge,
+        xl: variables.breakpointXlarge,
+        lg: variables.breakpointLarge,
+        md: variables.breakpointMedium,
+        sm: variables.breakpointSmall
       }
     case 'container':
       return {
-        '2xlarge': variables.container2xlarge,
-        xlarge: variables.containerXlarge,
-        large: variables.containerLarge,
-        medium: variables.containerMedium,
-        small: variables.containerSmall
+        '2xl': variables.container2xlarge,
+        xl: variables.containerXlarge,
+        lg: variables.containerLarge,
+        md: variables.containerMedium,
+        sm: variables.containerSmall
       }
     case 'grid':
       return {
@@ -49,10 +49,10 @@ export function sassVars(str: string): Record<string, string | undefined> {
       }
     case 'modal':
       return {
-        small: variables.modalSmall,
-        medium: variables.modalMedium,
-        large: variables.modalLarge,
-        xlarge: variables.modalXlarge
+        sm: variables.modalSmall,
+        md: variables.modalMedium,
+        lg: variables.modalLarge,
+        xl: variables.modalXlarge
       }
     case 'setting':
       return {

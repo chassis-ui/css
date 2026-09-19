@@ -1,11 +1,8 @@
 {
   "name": "@chassis-ui/css",
   "description": "A CSS framework which synchronizes with Figma components by using design tokens.",
-  "version": "0.4.0-0",
+  "version": "0.5.0",
   "type": "module",
-  "config": {
-    "version_short": "0.2"
-  },
   "publishConfig": {
     "access": "public"
   },
@@ -16,11 +13,13 @@
     "responsive",
     "front-end",
     "framework",
-    "web"
+    "web",
+    "tailwind",
+    "tailwindcss"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/chassis-ui/css.git"
+    "url": "git+https://github.com/chassis-ui/css.git"
   },
   "bugs": {
     "url": "https://github.com/chassis-ui/css/issues"
@@ -46,23 +45,34 @@
     "./js/dist/*": "./js/dist/*",
     "./dist/js/*": "./dist/js/*",
     "./dist/css/*": "./dist/css/*",
-    "./scss/*": "./scss/*"
+    "./scss/*": "./scss/*",
+    "./postcss": "./postcss/index.js",
+    "./tailwind": {
+      "style": "./dist/tailwind/index.css",
+      "default": "./dist/tailwind/index.css"
+    },
+    "./tailwind/*": "./dist/tailwind/*"
   },
   "scripts": {
     "build": "pnpm dist && pnpm site:build",
     "start": "pnpm dist && pnpm sync-submodules && pnpm dev",
     "dev": "run-p watch astro:dev",
     "dist": "run-p css js",
-    "test": "pnpm check:code && pnpm dist && pnpm css:test && pnpm js:test && pnpm site:build && pnpm site:lint",
-    "css": "pnpm css:compile && pnpm css:prefix && pnpm css:minify",
-    "css:compile": "sass --load-path scss/vendor/ --load-path node_modules --style expanded --source-map --embed-sources scss/:dist/css/",
-    "css:lint": "run-p css:lint:stylelint css:lint:vars",
+    "test": "pnpm check:code && pnpm dist && pnpm css:test && pnpm css:test:tailwind && pnpm js:test && pnpm site:build && pnpm site:lint",
+    "css": "pnpm css:compile && pnpm css:prefix && pnpm css:minify && pnpm css:tailwind",
+    "css:compile": "sass --load-path scss/vendor/ --load-path node_modules --style expanded --source-map --embed-sources scss/chassis.scss:dist/css/chassis.css scss/chassis-grid.scss:dist/css/chassis-grid.css scss/chassis-reboot.scss:dist/css/chassis-reboot.css scss/chassis-utilities.scss:dist/css/chassis-utilities.css",
+    "css:lint": "run-p css:lint:stylelint css:lint:vars css:lint:component-stack",
+    "css:lint:component-stack": "node build/check-component-stack.js",
     "css:lint:imports": "node build/check-imports.js scss/ site/src/scss/",
     "css:lint:stylelint": "stylelint \"**/*.{css,scss}\" \"!vendor/**\" --cache --cache-location .cache/.stylelintcache",
     "css:lint:vars": "fusv scss/ site/src/scss/ || true",
     "css:minify": "node build/css-minify.js",
     "css:prefix": "postcss --config build/postcss.config.js --replace \"dist/css/*.css\" \"!dist/css/*.min.css\"",
+    "css:tailwind": "node build/tailwind/build-tailwind.mjs && node build/tailwind/build-tailwind-merge.mjs",
+    "css:tailwind:update-clashes": "node build/tailwind/update-tailwind-source-exclusions.mjs",
+    "css:tailwind:update-clash-policy": "node build/tailwind/update-tailwind-clash-policy.mjs",
     "css:test": "jasmine --config=scss/tests/jasmine.cjs",
+    "css:test:tailwind": "node --test scss/tests/tailwind/test-build.mjs scss/tests/tailwind/test-merge.mjs scss/tests/tailwind/test-bridge.mjs scss/tests/tailwind/test-postcss.mjs scss/tests/tailwind/test-consumer.mjs",
     "js": "pnpm js:compile && pnpm js:minify",
     "js:compile": "run-p js:compile:standalone js:compile:bundle js:compile:plugins",
     "js:compile:standalone": "rolldown --environment BUNDLE:false --config build/rolldown.config.js --sourcemap",
@@ -75,7 +85,8 @@
     "js:minify:bundle": "terser --compress passes=2 --mangle --comments \"/^!/\" --source-map \"content=dist/js/chassis.bundle.js.map,includeSources,url=chassis.bundle.min.js.map\" --output dist/js/chassis.bundle.min.js dist/js/chassis.bundle.js",
     "js:test": "pnpm js:test:unit",
     "js:test:debug": "cross-env DEBUG=true vitest --config js/tests/vitest.config.mts",
-    "js:test:e2e": "playwright test",
+    "js:test:e2e": "playwright test --project=chromium --project=firefox --project=webkit",
+    "js:test:e2e:tailwind-parity": "playwright test --project=tailwind-parity",
     "js:test:e2e:ui": "playwright test --ui",
     "js:test:integration": "run-p js:test:integration:bundle js:test:integration:modularity",
     "js:test:integration:bundle": "rollup --config js/tests/integration/rollup.bundle.js",
@@ -100,7 +111,7 @@
     "release:zip": "cross-env-shell \"rm -rf chassis-$npm_package_version-dist chassis-$npm_package_version-dist.zip && cp -r dist/ chassis-$npm_package_version-dist && zip -qr9 chassis-$npm_package_version-dist.zip chassis-$npm_package_version-dist && rm -rf chassis-$npm_package_version-dist\"",
     "watch": "run-p watch:css:main watch:css:site watch:css:test watch:js:main watch:js:site",
     "watch:css:dist": "nodemon --watch dist/css/ --ext css",
-    "watch:css:main": "nodemon --watch scss/ --ext scss --exec \"pnpm css:lint; pnpm css:compile && pnpm css:prefix\"",
+    "watch:css:main": "nodemon --watch scss/ --ext scss --exec \"pnpm css:lint; pnpm css:compile && pnpm css:prefix && pnpm css:tailwind\"",
     "watch:css:site": "nodemon --watch site/src/scss/ --ext scss --exec \"pnpm css:lint\"",
     "watch:css:test": "nodemon --watch scss/ --ext scss,js --exec \"pnpm css:test\"",
     "watch:js:main": "nodemon --watch js/src/ --ext ts --exec \"pnpm js:lint && pnpm js:compile\"",
@@ -119,16 +130,26 @@
   },
   "peerDependencies": {
     "@floating-ui/dom": "^1.7.6",
+    "postcss-prefix-custom-properties": "^0.1.0",
+    "tailwindcss": ">=4.1.0",
     "vanilla-calendar-pro": "^3.1.0"
+  },
+  "peerDependenciesMeta": {
+    "postcss-prefix-custom-properties": {
+      "optional": true
+    },
+    "tailwindcss": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@astrojs/markdown-remark": "^7.2.1",
     "@astrojs/mdx": "^7.0.2",
     "@astrojs/sitemap": "^3.7.3",
-    "@chassis-ui/docs": "^0.3.10",
+    "@chassis-ui/docs": "^0.5.0-0",
     "@chassis-ui/icons": "^0.3.1",
-    "@chassis-ui/tokens": "^0.4.0",
+    "@chassis-ui/tokens": "^0.5.0-0",
     "@eslint/js": "^10.0.1",
     "@eslint/markdown": "^8.0.3",
     "@floating-ui/dom": "^1.7.6",
@@ -140,6 +161,7 @@
     "@rollup/plugin-replace": "^6.0.3",
     "@shikijs/transformers": "^4.3.1",
     "@stackblitz/sdk": "^1.11.1",
+    "@tailwindcss/node": "4.3.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
     "@types/mdast": "^4.0.4",
@@ -198,6 +220,8 @@
     "shiki": "^4.3.1",
     "stylelint": "^16.26.1",
     "stylelint-config-twbs-bootstrap": "^16.1.0",
+    "tailwind-merge": "^3.7.0",
+    "tailwindcss": "4.3.3",
     "terser": "^5.48.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.62.1",
@@ -209,8 +233,11 @@
   },
   "files": [
     "dist/{css,js}/*.{css,js,map}",
+    "dist/tailwind/*.css",
+    "dist/tailwind/*.js",
     "js/{src,dist}/**/*.{js,map,ts}",
     "js/index.ts",
+    "postcss/*.js",
     "scss/**/*.scss",
     "!scss/tests/**",
     ".browserslistrc"

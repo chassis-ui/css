@@ -27,12 +27,12 @@ For environments where CSS may not load, it is possible to include `×` (`&times
 
 ## Sizes
 
-Apply `.small` or `.large` to match surrounding component sizes. The `--cx-close-button-size` custom property accepts any length value for one-off custom dimensions.
+Apply `.sm` or `.lg` to match surrounding component sizes. The `--cx-close-button-size` custom property accepts any length value for one-off custom dimensions.
 
-<Example class="d-flex align-items-center" code={`<button type="button" class="close-button small" aria-label="Close"></button>
+<Example class="d-flex align-items-center" code={`<button type="button" class="close-button sm" aria-label="Close"></button>
 <button type="button" class="close-button" aria-label="Close"></button>
-<button type="button" class="close-button large" aria-label="Close"></button>
-<span class="vr mx-medium"></span>
+<button type="button" class="close-button lg" aria-label="Close"></button>
+<span class="vr mx-md"></span>
 <button type="button" class="close-button" style="--cx-close-button-size: 2rem;" aria-label="Close"></button>`} />
 
 ## Disabled state
@@ -45,19 +45,19 @@ Add the `disabled` attribute to prevent interaction. Disabled close buttons rend
 
 The close button inherits its icon color from the nearest context class. Both default and solid context variants are supported.
 
-<Example class="hstack gap-medium" code={`<div class="context info p-xsmall d-flex align-items-center">
+<Example class="hstack gap-md" code={`<div class="context info p-xs d-flex align-items-center">
     <button type="button" class="close-button" aria-label="Close"></button>
     <button type="button" class="close-button" disabled aria-label="Close"></button>
   </div>
-  <div class="context info solid p-xsmall d-flex align-items-center">
+  <div class="context info solid p-xs d-flex align-items-center">
     <button type="button" class="close-button" aria-label="Close"></button>
     <button type="button" class="close-button" disabled aria-label="Close"></button>
   </div>
-  <div class="context warning p-xsmall d-flex align-items-center">
+  <div class="context warning p-xs d-flex align-items-center">
     <button type="button" class="close-button" aria-label="Close"></button>
     <button type="button" class="close-button" disabled aria-label="Close"></button>
   </div>
-  <div class="context warning solid p-xsmall d-flex align-items-center">
+  <div class="context warning solid p-xs d-flex align-items-center">
     <button type="button" class="close-button" aria-label="Close"></button>
     <button type="button" class="close-button" disabled aria-label="Close"></button>
   </div>`} />
@@ -66,7 +66,7 @@ The close button inherits its icon color from the nearest context class. Both de
 
 The button supports a child `<svg>` element when the CSS-managed icon needs to be replaced. Place the SVG directly inside the button — the default CSS icon is suppressed automatically when a child element is present.
 
-<Example code={`<button type="button" class="close-button large" aria-label="Close">
+<Example code={`<button type="button" class="close-button lg" aria-label="Close">
     <Icon name="xmark-circle-solid" />
   </button>`} />
 
@@ -76,13 +76,13 @@ The button supports a child `<svg>` element when the CSS-managed icon needs to b
 
 When used inside a component like a notification or dialog, the close button is positioned by that component's layout. For standalone placement in a custom container, CSS position utilities control where the button appears.
 
-<Example class="vstack gap-medium" code={`<div class="notification success">
+<Example class="vstack gap-md" code={`<div class="notification success">
     <p class="message">This is a notification!</p>
     <button type="button" class="close-button" data-cx-dismiss="notification" aria-label="Close"></button>
   </div>
-  <div class="context success border rounded px-medium py-small position-relative">
+  <div class="context success border rounded px-md py-sm position-relative">
     This is a contextual div.
-    <button type="button" class="close-button position-absolute end-0 me-medium" aria-label="Close"></button>
+    <button type="button" class="close-button position-absolute end-0 me-md" aria-label="Close"></button>
   </div>`} />
 
 ## CSS
