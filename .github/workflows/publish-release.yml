@@ -17,34 +17,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 2 # Need at least 2 commits to compare
-
-      - name: Check for package changes
-        id: changes
-        run: |
-          # Check if package.json version changed
-          if git diff HEAD~1 HEAD --name-only | grep -q "package.json"; then
-            CURRENT_VERSION=$(node -p "require('./package.json').version")
-            PREVIOUS_VERSION=$(git show HEAD~1:package.json | node -p "JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')).version")
-
-            echo "Current version: $CURRENT_VERSION"
-            echo "Previous version: $PREVIOUS_VERSION"
-
-            if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
-              echo "css-changed=true" >> $GITHUB_OUTPUT
-            else
-              echo "css-changed=false" >> $GITHUB_OUTPUT
-            fi
-          else
-            echo "css-changed=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Get current version
         id: version
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "css-version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if version already published on npm
+        id: changes
+        run: |
+          # Compare against what's actually published on npm rather than
+          # diffing git history — a push can bundle multiple commits, and
+          # the version bump isn't always in the tip commit, so a
+          # HEAD~1-vs-HEAD diff can miss it.
+          VERSION="${{ steps.version.outputs.css-version }}"
+          if npm view "@chassis-ui/css@$VERSION" version 2>/dev/null | grep -q "$VERSION"; then
+            echo "Version $VERSION already on npm, skipping publish"
+            echo "css-changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Version $VERSION not on npm, will publish"
+            echo "css-changed=true" >> $GITHUB_OUTPUT
+          fi
 
   publish-css:
     needs: detect-changes

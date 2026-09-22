@@ -71,12 +71,17 @@ export function chassis(): AstroIntegration[] {
           // Reload the config when these integration files are modified.
           addWatchFile(path.join(getDocsFsPath(), 'src/libs/astro.ts'))
 
-          // Dev-only: alias `@chassis-ui/css` to our own bundle since this repo can't
-          // depend on itself. Also exclude `@chassis-ui/docs` from optimizeDeps — otherwise
-          // esbuild pre-bundles its example-mode.js with its own inlined copy of
-          // `@chassis-ui/css`, giving two module instances and duplicate data-api listeners
-          // (modals open then immediately close).
-          if (cmd === 'dev') {
+          // Alias `@chassis-ui/css` to our own bundle since this repo can't depend on
+          // itself. Without this, `@chassis-ui/docs`'s own `example-mode.js` resolves
+          // `@chassis-ui/css` through ITS OWN node_modules — a real, separately
+          // installed (and often stale/unpublished-version-behind) copy — while the
+          // rest of the site resolves it via this package's self-reference. That's
+          // two independent module instances and duplicate data-api listeners
+          // (modals open then immediately close, drawers/nav-overflow never visibly
+          // open). Needed in both dev AND build — it's not dev-only, since Rollup's
+          // production bundling resolves the bare specifier the same way esbuild's
+          // dev pre-bundling does.
+          if (cmd === 'dev' || cmd === 'build') {
             updateConfig({
               vite: {
                 resolve: {
@@ -84,9 +89,9 @@ export function chassis(): AstroIntegration[] {
                     '@chassis-ui/css': path.join(getChassisCSSFsPath(), 'js/chassis.bundle.js')
                   }
                 },
-                optimizeDeps: {
-                  exclude: ['@chassis-ui/docs']
-                }
+                // optimizeDeps only affects the dev server's esbuild pre-bundling pass;
+                // harmless but meaningless during `astro build`.
+                ...(cmd === 'dev' ? { optimizeDeps: { exclude: ['@chassis-ui/docs'] } } : {})
               }
             })
           }

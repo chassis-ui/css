@@ -4373,7 +4373,7 @@ describe('Menu', () => {
     })
 
     it('should focus first visible item when stacked submenu has no .submenu-back', () => {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         fixtureEl.innerHTML = [
           '<div>',
           '  <button class="button" data-cx-toggle="menu">Menu</button>',
@@ -4396,10 +4396,14 @@ describe('Menu', () => {
         btnMenu.addEventListener('shown.cx.menu', () => {
           submenuTrigger.click()
 
-          setTimeout(() => {
+          // Focus shift is scheduled via requestAnimationFrame — poll for it
+          // instead of a fixed delay, since a busy CI runner can be slow to
+          // schedule a frame.
+          vi.waitFor(() => {
             expect(document.activeElement).toEqual(firstItem)
-            resolve()
-          }, 30)
+          }, { timeout: 1000, interval: 10 })
+            .then(resolve)
+            .catch(reject)
         })
 
         // eslint-disable-next-line no-new
