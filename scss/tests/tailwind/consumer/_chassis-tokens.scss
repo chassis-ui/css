@@ -8,11 +8,14 @@
 // @chassis-ui/tokens default set with one override: a distinct brand
 // primary color (both light and dark context variants), so
 // test-consumer.mjs can assert the BRAND color — not Chassis's own
-// docs-site default, #00A4CC — reaches :root.
+// docs-site default, #00A4CC — reaches :root. And a text font whose name
+// only parses quoted ("Source Serif 4": `4` isn't a CSS identifier), so
+// the test can assert the quotes survive to --cx-font-family-text.
 //
 
 @forward "@chassis-ui/tokens/dist/web/docs/chassis/main" hide $prefix
 with (
   $cx-color-base-context-light-primary-base-color: #ff6b35,
-  $cx-color-base-context-dark-primary-base-color: #ff6b35
+  $cx-color-base-context-dark-primary-base-color: #ff6b35,
+  $cx-typography-font-family-text: ("Source Serif 4", "Source Serif Pro", ui-serif, serif)
 );

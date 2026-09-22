@@ -84,6 +84,19 @@ describe('a consumer with their own chassis-tokens and $breakpoints', () => {
     assert.doesNotMatch(declaration[0], /oklch\(66\.72% 0\.125 223\.3deg\)/)
   })
 
+  test('a quoted font family keeps its quotes in --cx-font-family-text', () => {
+    // Unquoted, `Source Serif 4` isn't a valid font-family name (`4` isn't
+    // an identifier), so the browser drops the whole declaration and falls
+    // back to its default font. Interpolating the token list with `#{}`
+    // used to strip the quotes (scss/_root.scss's font-family loop).
+    const declaration = built.match(/--cx-font-family-text: [^;]+;/)
+    assert.ok(declaration, 'expected a --cx-font-family-text declaration')
+    assert.equal(
+      declaration[0],
+      '--cx-font-family-text: "Source Serif 4", "Source Serif Pro", ui-serif, serif;'
+    )
+  })
+
   test("lg: reads the brand breakpoint (72rem), not Chassis's stock 64rem", () => {
     assert.match(built, /@media \(width >= 72rem\)/)
     assert.doesNotMatch(built, /@media \(width >= 64rem\)/)

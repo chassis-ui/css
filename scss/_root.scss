@@ -55,7 +55,7 @@
 
   // Generate font variables
   @each $name, $value in $font-families {
-    --font-family-#{$name}: #{$value};
+    --font-family-#{$name}: #{meta.inspect($value)};
   }
   @each $name, $value in $typography {
     @include clamp($value, --#{$name});
