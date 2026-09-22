@@ -31,7 +31,7 @@ import { promisify } from 'node:util'
 const FILES = [
   'README.md',
   'site/config.yml',
-  'js/src/base-component.js',
+  'js/src/base-component.ts',
   'package.js',
   'scss/mixins/_banner.scss'
 ]
