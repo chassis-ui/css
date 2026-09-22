@@ -57,7 +57,11 @@ execFile('java', ['-version'], (error, stdout, stderr) => {
     // Allow heading role on summary elements for accordion functionality
     'Bad value “button” for attribute “role” on element “h3”.',
     'Bad value “heading” for attribute “role” on element “summary”.',
-    'Attribute “aria-level” not allowed on element “summary” at this point.'
+    'Attribute “aria-level” not allowed on element “summary” at this point.',
+    // vnu's bundled CSS checker predates container queries, so it rejects valid `container-*`
+    // declarations (js/tests/e2e/fixtures/tailwind-parity.html's inline styles). `.` stands in
+    // for the quotes, which would otherwise end the shell-quoted --filterpattern argument
+    'CSS: .container-(type|name).: Property .container-(type|name). doesn.t exist.'
   ].join('|')
 
   const args = [
