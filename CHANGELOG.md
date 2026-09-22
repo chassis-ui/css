@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2026-09-23
+
+### Fixed
+- `:root`'s `--font-family-*` tokens lost the quotes around family names. A name that only parses quoted, like `'Source Serif 4'` (`4` isn't a CSS identifier), came out as `Source Serif 4, ...`. The browser then rejected the whole `font-family` declaration and fell back to its default font. Names that are plain identifiers (`'Archivo Narrow'`) were unaffected, which is why Chassis's default tokens never showed it. The tokens now keep their quotes
+- `Component.VERSION` reported `0.4.0` in 0.5.0: `build/change-version.js` still listed the pre-TypeScript `js/src/base-component.js` path and skipped the file
+
 ## [0.5.0] - 2026-09-19
 
 ### Added
