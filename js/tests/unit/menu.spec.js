@@ -110,11 +110,11 @@ describe('Menu', () => {
       menu.show()
       await shownPromise
 
-      // Floating UI calls offset function asynchronously
-      await new Promise(resolve => {
-        setTimeout(resolve, 20)
-      })
-      expect(getOffset).toHaveBeenCalled()
+      // Floating UI calls offset function asynchronously — poll instead of a
+      // fixed delay, since a busy CI runner can be slow to schedule it.
+      await vi.waitFor(() => {
+        expect(getOffset).toHaveBeenCalled()
+      }, { timeout: 1000, interval: 10 })
     })
 
     it('should create offset modifier correctly when offset option is a string into data attribute', () => {
@@ -1302,7 +1302,7 @@ describe('Menu', () => {
     })
 
     it('should use Floating UI positioning in navbar', () => {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         fixtureEl.innerHTML = [
           '<nav class="navbar md:navbar-expand bg-light">',
           '  <div>',
@@ -1320,12 +1320,14 @@ describe('Menu', () => {
 
         btnMenu.addEventListener('shown.cx.menu', () => {
           expect(menu._floatingCleanup).not.toBeNull()
-          // Floating UI sets data-cx-placement via ResizeObserver after .show is added;
-          // allow a full render cycle for the callback to fire and computePosition to resolve.
-          setTimeout(() => {
+          // Floating UI sets data-cx-placement via ResizeObserver after .show is added —
+          // poll instead of a fixed delay, since a busy CI runner can be slow to fire the
+          // callback and resolve computePosition.
+          vi.waitFor(() => {
             expect(menuEl.getAttribute('data-cx-placement')).not.toBeNull()
-            resolve()
-          }, 100)
+          }, { timeout: 1000, interval: 10 })
+            .then(resolve)
+            .catch(reject)
         })
 
         menu.show()
