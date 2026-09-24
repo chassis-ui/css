@@ -14,7 +14,7 @@ import { executeAfterTransition, getElement } from './util/index.js'
  * Constants
  */
 
-const VERSION = '0.5.1'
+const VERSION = '0.5.2'
 
 // Tracks disposed instances outside the instance itself, since dispose()'s
 // own property-nulling loop would otherwise stomp on any flag set on `this`.
