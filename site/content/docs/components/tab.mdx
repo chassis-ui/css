@@ -9,7 +9,7 @@ deps:
   - title: Nav
 ---
 
-The Tab plugin works with [nav components]([[docsref:/components/nav]]) such as `.nav-tabs` and `.nav-pills`, and with [list groups]([[docsref:/components/list#javascript-behavior]]).
+The Tab plugin works with [nav components]([[docsref:/components/nav]]) such as `.nav-tabs` and `.nav-segments`, and with [list groups]([[docsref:/components/list#javascript-behavior]]).
 
 ## Nav tab
 
@@ -71,63 +71,63 @@ To help fit your needs, this works with `<ul>`-based markup, as shown above, or 
     </div>
   </div>`} />
 
-## Pills
+## Segments
 
-The tabs plugin also works with pills.
+The Tab plugin also works with the `.nav-segments` variant.
 
-<Example class="vstack gap-md" code={`<ul class="nav nav-pills" id="pills-tab" role="tablist">
+<Example class="vstack gap-md" code={`<ul class="nav nav-segments" id="segments-tab" role="tablist">
     <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="pills-home-tab" data-cx-toggle="tab" data-cx-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Home</button>
+      <button class="nav-link active" id="segments-home-tab" data-cx-toggle="tab" data-cx-target="#segments-home" type="button" role="tab" aria-controls="segments-home" aria-selected="true">Home</button>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link" id="pills-profile-tab" data-cx-toggle="tab" data-cx-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Profile</button>
+      <button class="nav-link" id="segments-profile-tab" data-cx-toggle="tab" data-cx-target="#segments-profile" type="button" role="tab" aria-controls="segments-profile" aria-selected="false">Profile</button>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link" id="pills-contact-tab" data-cx-toggle="tab" data-cx-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Contact</button>
+      <button class="nav-link" id="segments-contact-tab" data-cx-toggle="tab" data-cx-target="#segments-contact" type="button" role="tab" aria-controls="segments-contact" aria-selected="false">Contact</button>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link" id="pills-disabled-tab" data-cx-toggle="tab" data-cx-target="#pills-disabled" type="button" role="tab" aria-controls="pills-disabled" aria-selected="false" disabled>Disabled</button>
+      <button class="nav-link" id="segments-disabled-tab" data-cx-toggle="tab" data-cx-target="#segments-disabled" type="button" role="tab" aria-controls="segments-disabled" aria-selected="false" disabled>Disabled</button>
     </li>
   </ul>
-  <div class="tab-content" id="pills-tabContent">
-    <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+  <div class="tab-content" id="segments-tabContent">
+    <div class="tab-pane fade show active" id="segments-home" role="tabpanel" aria-labelledby="segments-home-tab" tabindex="0">
       <p>This is some placeholder content the <strong>Home tab's</strong> associated content.</p>
     </div>
-    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+    <div class="tab-pane fade" id="segments-profile" role="tabpanel" aria-labelledby="segments-profile-tab" tabindex="0">
       <p>This is some placeholder content the <strong>Profile tab's</strong> associated content.</p>
     </div>
-    <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">
+    <div class="tab-pane fade" id="segments-contact" role="tabpanel" aria-labelledby="segments-contact-tab" tabindex="0">
       <p>This is some placeholder content the <strong>Contact tab's</strong> associated content.</p>
     </div>
-    <div class="tab-pane fade" id="pills-disabled" role="tabpanel" aria-labelledby="pills-disabled-tab" tabindex="0">
+    <div class="tab-pane fade" id="segments-disabled" role="tabpanel" aria-labelledby="segments-disabled-tab" tabindex="0">
       <p>This is some placeholder content the <strong>Disabled tab's</strong> associated content.</p>
     </div>
   </div>`} />
 
-And with vertical pills. Ideally, for vertical tabs, you should also add `aria-orientation="vertical"` to the tab list container.
+Add `.flex-column` to stack the segments vertically. For vertical tabs, also add `aria-orientation="vertical"` to the tab list container.
 
 <Example code={`<div class="d-flex align-items-start">
-  <div class="nav nav-pills nav-pills-vertical me-4" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-    <button class="nav-link active" id="v-pills-home-tab" data-cx-toggle="tab" data-cx-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Home</button>
-    <button class="nav-link" id="v-pills-profile-tab" data-cx-toggle="tab" data-cx-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Profile</button>
-    <button class="nav-link" id="v-pills-disabled-tab" data-cx-toggle="tab" data-cx-target="#v-pills-disabled" type="button" role="tab" aria-controls="v-pills-disabled" aria-selected="false" disabled>Disabled</button>
-    <button class="nav-link" id="v-pills-messages-tab" data-cx-toggle="tab" data-cx-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">Messages</button>
-    <button class="nav-link" id="v-pills-settings-tab" data-cx-toggle="tab" data-cx-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">Settings</button>
+  <div class="nav nav-segments flex-column me-md" id="v-segments-tab" role="tablist" aria-orientation="vertical">
+    <button class="nav-link active" id="v-segments-home-tab" data-cx-toggle="tab" data-cx-target="#v-segments-home" type="button" role="tab" aria-controls="v-segments-home" aria-selected="true">Home</button>
+    <button class="nav-link" id="v-segments-profile-tab" data-cx-toggle="tab" data-cx-target="#v-segments-profile" type="button" role="tab" aria-controls="v-segments-profile" aria-selected="false">Profile</button>
+    <button class="nav-link" id="v-segments-disabled-tab" data-cx-toggle="tab" data-cx-target="#v-segments-disabled" type="button" role="tab" aria-controls="v-segments-disabled" aria-selected="false" disabled>Disabled</button>
+    <button class="nav-link" id="v-segments-messages-tab" data-cx-toggle="tab" data-cx-target="#v-segments-messages" type="button" role="tab" aria-controls="v-segments-messages" aria-selected="false">Messages</button>
+    <button class="nav-link" id="v-segments-settings-tab" data-cx-toggle="tab" data-cx-target="#v-segments-settings" type="button" role="tab" aria-controls="v-segments-settings" aria-selected="false">Settings</button>
   </div>
-  <div class="tab-content" id="v-pills-tabContent">
-    <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab" tabindex="0">
+  <div class="tab-content" id="v-segments-tabContent">
+    <div class="tab-pane fade show active" id="v-segments-home" role="tabpanel" aria-labelledby="v-segments-home-tab" tabindex="0">
       <p>This is some placeholder content the <strong>Home tab's</strong> associated content.</p>
     </div>
-    <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab" tabindex="0">
+    <div class="tab-pane fade" id="v-segments-profile" role="tabpanel" aria-labelledby="v-segments-profile-tab" tabindex="0">
       <p>This is some placeholder content the <strong>Profile tab's</strong> associated content.</p>
     </div>
-    <div class="tab-pane fade" id="v-pills-disabled" role="tabpanel" aria-labelledby="v-pills-disabled-tab" tabindex="0">
+    <div class="tab-pane fade" id="v-segments-disabled" role="tabpanel" aria-labelledby="v-segments-disabled-tab" tabindex="0">
       <p>This is some placeholder content the <strong>Disabled tab's</strong> associated content.</p>
     </div>
-    <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab" tabindex="0">
+    <div class="tab-pane fade" id="v-segments-messages" role="tabpanel" aria-labelledby="v-segments-messages-tab" tabindex="0">
       <p>This is some placeholder content the <strong>Messages tab's</strong> associated content.</p>
     </div>
-    <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab" tabindex="0">
+    <div class="tab-pane fade" id="v-segments-settings" role="tabpanel" aria-labelledby="v-segments-settings-tab" tabindex="0">
       <p>This is some placeholder content the <strong>Settings tab's</strong> associated content.</p>
     </div>
   </div>

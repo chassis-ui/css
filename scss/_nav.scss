@@ -1,4 +1,3 @@
-@use "sass:map";
 @use "./config" as *;
 @use "./mixins" as *;
 @use "./functions" as *;
@@ -8,15 +7,16 @@
 // Navigation Component
 //
 // Styles for all navigation patterns. Includes the base .nav container, link
-// styles, and four built-in variants: tabs, pills, underline, and fill/justified
-// layouts. Tab pane content visibility is managed here.
+// styles, size modifiers, and the built-in variants: tabs, segments, underline,
+// and fill/justified layouts. Tab pane content visibility is managed here.
 //
 
 @layer components {
   .nav {
     // scss-docs-start nav-css-vars
-    --link-padding-y: var(--nav-link-padding-y, #{$nav-link-padding-y});
-    --link-padding-x: var(--nav-link-padding-x, #{$nav-link-padding-x});
+    --link-padding-y: var(--nav-link-padding-y, #{$nav-link-medium-padding-y});
+    --link-padding-x: var(--nav-link-padding-x, #{$nav-link-medium-padding-x});
+    --link-gap: var(--nav-link-gap, #{$nav-link-medium-gap});
     --link-border-radius: var(--nav-link-border-radius, #{$nav-link-border-radius});
     --link-main-color: var(--nav-link-main-color, #{$nav-link-main-color});
     --link-hover-color: var(--nav-link-hover-color, #{$nav-link-hover-color});
@@ -24,14 +24,11 @@
     --link-active-color: var(--nav-link-active-color, #{$nav-link-active-color});
     --link-active-bg: var(--nav-link-active-bg, #{$nav-link-active-bg});
     --link-disabled-color: var(--nav-link-disabled-color, #{$nav-link-disabled-color});
-    --caret-spacing: var(--space-2xs) 0;
-
-    @if $nav-link-font {
-      --link-font-family: var(--nav-link-font-family, #{map.get($nav-link-font, font-family)});
-      --link-font-weight: var(--nav-link-font-weight, #{map.get($nav-link-font, font-weight)});
-      @include clamp(map.get($nav-link-font, font-size), --link-font-size, --nav-link-font-size);
-      @include clamp(map.get($nav-link-font, line-height), --link-line-height, --nav-link-line-height);
-    }
+    --link-icon-size: var(--nav-link-icon-size, #{$nav-link-medium-icon-size});
+    // Pulls the caret back over the link gap (`margin-inline`: start, end)
+    --caret-spacing: var(--nav-link-caret-spacing, #{$nav-link-caret-spacing});
+    --caret-size: var(--nav-link-caret-size, #{$nav-link-caret-size});
+    @include map-font($nav-link-medium-font, nav, link);
     // scss-docs-end nav-css-vars
 
     display: flex;
@@ -39,6 +36,22 @@
     padding-inline-start: 0;
     margin-block-end: 0;
     list-style: none;
+
+    &.lg {
+      --nav-link-padding-y: #{$nav-link-large-padding-y};
+      --nav-link-padding-x: #{$nav-link-large-padding-x};
+      --nav-link-gap: #{$nav-link-large-gap};
+      --nav-link-icon-size: #{$nav-link-large-icon-size};
+      @include map-font($nav-link-large-font, nav, link);
+    }
+
+    &.sm {
+      --nav-link-padding-y: #{$nav-link-small-padding-y};
+      --nav-link-padding-x: #{$nav-link-small-padding-x};
+      --nav-link-gap: #{$nav-link-small-gap};
+      --nav-link-icon-size: #{$nav-link-small-icon-size};
+      @include map-font($nav-link-small-font, nav, link);
+    }
   }
 
   .nav-link {
@@ -46,11 +59,15 @@
     // Define padding variables needed by .nav-tabs for the exclude-strokes mixin (which subtracts border width from padding)
     --padding-y: var(--link-padding-y);
     --padding-x: var(--link-padding-x);
+    --gap: var(--link-gap);
+    --icon-size: var(--link-icon-size);
     // Define foreground color needed for dropdown caret and text color
     --fg-color: var(--link-main-color);
     // scss-docs-end nav-link-css-vars
 
     display: flex;
+    gap: var(--gap);
+    align-items: center;
     color: var(--fg-color);
     text-decoration: none;
     white-space: nowrap;
@@ -64,9 +81,12 @@
 
     // Hover and keyboard focus share the same color change; mouse focus
     // (handled by :focus, not :focus-visible) deliberately doesn't flash the
-    // hover state after click.
+    // hover state after click. An open menu toggle (`.show`) keeps the hover
+    // state; the class is matched on the toggle itself because the menu also
+    // adds it to the parent, which is the `.nav` when links aren't wrapped.
     &:hover,
-    &:focus {
+    &:focus,
+    &.show {
       --link-main-color: var(--link-hover-color);
       text-decoration: none;
       background-color: var(--link-hover-bg);
@@ -78,8 +98,8 @@
       @include focus-ring(true);
     }
 
-    &.active,
-    &:active {
+    &.active {
+      --icon-color: var(--fg-color);
       --link-main-color: var(--link-active-color);
       background-color: var(--link-active-bg);
     }
@@ -87,6 +107,7 @@
     // Disabled state lightens text
     &.disabled,
     &:disabled {
+      --icon-color: var(--fg-color);
       --link-main-color: var(--link-disabled-color);
       pointer-events: none;
       cursor: default;
@@ -99,15 +120,24 @@
 
   .nav-tabs {
     // scss-docs-start nav-tabs-css-vars
-    --border-width: var(--nav-tabs-border-width, #{$nav-tabs-border-width});
+    --border-width: var(--nav-tabs-border-width, #{$nav-tabs-main-border-width});
     --border-color: var(--nav-tabs-border-color, #{$nav-tabs-border-color});
-    --link-border-radius: var(--nav-tabs-border-radius, #{$nav-tabs-border-radius});
+    --link-border-radius: var(--nav-tabs-border-radius, #{$nav-tabs-medium-border-radius});
     --active-fg-color: var(--nav-tabs-active-fg-color, #{$nav-tabs-active-fg-color});
     --active-bg-color: var(--nav-tabs-active-bg-color, #{$nav-tabs-active-bg-color});
     --active-border-top-color: var(--nav-tabs-active-border-top-color, #{$nav-tabs-active-border-top-color});
     --active-border-top-width: var(--nav-tabs-active-border-top-width, #{$nav-tabs-active-border-top-width});
+    @include map-font($nav-tabs-medium-font, nav, link);
     // scss-docs-end nav-tabs-css-vars
     border-block-end: var(--border-width) solid var(--border-color);
+
+    &.lg {
+      @include map-font($nav-tabs-large-font, nav, link);
+    }
+
+    &.sm {
+      @include map-font($nav-tabs-small-font, nav, link);
+    }
 
     .nav-link {
       padding: calc(var(--padding-y) - var(--border-width)) calc(var(--padding-x) - var(--border-width));
@@ -117,15 +147,15 @@
       @include border-bottom-radius(0);
 
       &:hover,
-      &:focus-visible {
+      &:focus-visible,
+      &.show {
         background-color: transparent;
         // Prevents active .nav-link tab overlapping focus outline of previous/next .nav-link
         isolation: isolate;
       }
     }
 
-    .nav-link.active,
-    .nav-item.show .nav-link {
+    .nav-link.active {
       --link-main-color: var(--active-fg-color);
       padding-block-start: calc(var(--padding-y) - var(--active-border-top-width));
       background-color: var(--active-bg-color);
@@ -135,31 +165,51 @@
   }
 
 
-  // Pills
-  // Pill-style navigation with rounded corners and active state background
+  // Segments
+  // Segmented-control navigation: links sit in a rounded bar and the active
+  // link is raised on its own surface
 
-  .nav-pills {
-    // scss-docs-start nav-pills-css-vars
-    --bg-color: var(--nav-pills-bg-color, #{$nav-pills-bg-color});
-    --padding: var(--nav-pills-padding, #{$nav-pills-padding});
-    --border-radius: var(--nav-pills-border-radius, #{$nav-pills-border-radius});
-    --link-border-radius: var(--nav-pills-link-border-radius, #{$nav-pills-link-border-radius});
-    --active-fg-color: var(--nav-pills-active-fg-color, #{$nav-pills-active-fg-color});
-    --active-bg-color: var(--nav-pills-active-bg-color, #{$nav-pills-active-bg-color});
-    --active-box-shadow: var(--nav-pills-active-box-shadow, #{$nav-pills-active-box-shadow});
-    // scss-docs-end nav-pills-css-vars
+  .nav-segments {
+    // scss-docs-start nav-segments-css-vars
+    --bg-color: var(--nav-segments-bg-color, #{$nav-segments-bar-bg-color});
+    --padding: var(--nav-segments-padding, #{$nav-segments-medium-bar-padding});
+    --border-radius: var(--nav-segments-border-radius, #{$nav-segments-medium-bar-border-radius});
+    --link-border-radius: var(--nav-segments-link-border-radius, #{$nav-segments-medium-item-border-radius});
+    --idle-fg-color: var(--nav-segments-idle-fg-color, #{$nav-segments-idle-fg-color});
+    --idle-bg-color: var(--nav-segments-idle-bg-color, #{$nav-segments-idle-bg-color});
+    --active-fg-color: var(--nav-segments-active-fg-color, #{$nav-segments-active-fg-color});
+    --active-bg-color: var(--nav-segments-active-bg-color, #{$nav-segments-active-bg-color});
+    --active-box-shadow: var(--nav-segments-active-box-shadow, #{$nav-segments-item-shadow});
+    @include map-font($nav-segments-medium-font, nav, link);
+    // scss-docs-end nav-segments-css-vars
+
+    // Set on the bar, not on the links, so the link states can still override it
+    --link-main-color: var(--idle-fg-color);
     display: inline-flex;
     padding: var(--padding);
     background-color: var(--bg-color);
     @include border-radius(var(--border-radius));
 
+    &.lg {
+      --nav-segments-padding: #{$nav-segments-large-bar-padding};
+      --nav-segments-border-radius: #{$nav-segments-large-bar-border-radius};
+      --nav-segments-link-border-radius: #{$nav-segments-large-item-border-radius};
+      @include map-font($nav-segments-large-font, nav, link);
+    }
+
+    &.sm {
+      --nav-segments-padding: #{$nav-segments-small-bar-padding};
+      --nav-segments-border-radius: #{$nav-segments-small-bar-border-radius};
+      --nav-segments-link-border-radius: #{$nav-segments-small-item-border-radius};
+      @include map-font($nav-segments-small-font, nav, link);
+    }
+
     .nav-link {
-      background-color: transparent;
+      background-color: var(--idle-bg-color);
       @include border-radius(var(--link-border-radius));
     }
 
-    .nav-link.active,
-    .show > .nav-link {
+    .nav-link.active {
       --link-main-color: var(--active-fg-color);
       background-color: var(--active-bg-color);
       @include gradient();
@@ -173,7 +223,7 @@
 
   .nav-underline {
     // scss-docs-start nav-underline-css-vars
-    --gap: var(--nav-underline-gap, #{$nav-underline-gap});
+    --gap: var(--nav-underline-gap, #{$nav-underline-medium-gap});
     --link-padding-x: var(--nav-underline-link-padding-x, #{$nav-underline-link-padding-x});
     --border-width: var(--nav-underline-border-width, #{$nav-underline-border-width});
     --border-color: var(--nav-underline-border-color, #{$nav-underline-border-color});
@@ -186,6 +236,14 @@
     gap: var(--gap);
     border-block-end: var(--border-width) solid var(--border-color);
 
+    &.lg {
+      --nav-underline-gap: #{$nav-underline-large-gap};
+    }
+
+    &.sm {
+      --nav-underline-gap: #{$nav-underline-small-gap};
+    }
+
     .nav-link {
       --border-color: transparent;
       padding-block-end: calc(var(--padding-y) - var(--border-width));
@@ -194,15 +252,15 @@
       border-block-end: var(--border-width) solid var(--border-color);
       @include border-radius(0);
 
-      &:hover,
-      &:focus-visible {
-        --border-color: currentcolor;
-        --border-width: var(--active-border-width);
-      }
+      // &:hover,
+      // &:focus-visible,
+      // &.show {
+      //   --border-color: currentcolor;
+      //   --border-width: var(--active-border-width);
+      // }
     }
 
-    .nav-link.active,
-    .show > .nav-link {
+    .nav-link.active {
       --link-main-color: var(--active-fg-color);
       --border-color: var(--active-border-color);
       --border-width: var(--active-border-width);
@@ -220,8 +278,6 @@
     --caret-transition: var(--nav-collapsible-caret-transition, #{$nav-collapsible-caret-transition});
     // scss-docs-end nav-collapsible-css-vars
 
-    display: flex;
-    align-items: center;
     justify-content: space-between;
 
     // Show collapsed caret (down) by default

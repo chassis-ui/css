@@ -9,10 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **`@chassis-ui/css/tailwind/merge.js`:** the grid classes are now part of the generated tailwind-merge `classGroups` config, so `twMerge('col-6', 'col-4')`, `twMerge('g-md', 'g-lg')`, `twMerge('offset-2', 'offset-4')`, and the `row-cols-*`, `gx-*`, `gy-*`, `g-col-*`, `g-start-*` equivalents resolve to the last class
+- `Nav`: `.sm` and `.lg` size modifiers on `.nav`, for the base nav and the tabs, segments, and underline variants. They scale the link padding, gap, icon size, caret size, and font from Chassis Tokens; segments also scale the bar padding and corner radius, and underline scales the gap between links. Without a modifier the medium size applies
+- `Nav`: `.nav-link` is now a centered flex row with a gap, so an icon placed inside the link aligns with the label and scales with the nav size. New `--cx-nav-link-gap`, `--cx-nav-link-icon-size`, `--cx-nav-link-caret-size`, and `--cx-nav-link-caret-spacing` custom properties, and `--cx-nav-segments-idle-fg-color`/`--cx-nav-segments-idle-bg-color` for the idle segment links
 
 ### Changed
 - **Tailwind entry:** grid column, offset, gutter, and CSS grid placement classes (`col-6`, `md:col-4`, `lg:offset-2`, `g-md`, `g-col-4`, …) are now Tailwind `@utility` rules, so a Tailwind build only generates the ones a project uses, at the breakpoints it uses them, instead of every class at every breakpoint. Class names are unchanged; grid class names built at runtime need an `@source inline(...)` safelist entry. The classes sit in a `layout` sublayer of Tailwind's `utilities` layer, so utilities still override them at every breakpoint (`w-100 md:col-6` stays full width). Two results differ from 0.5.2: with `g-*` and `gx-*`/`gy-*` on one element the axis-specific class now wins (`g-md gx-0` has no horizontal gutter), and grid classes now rank above the `content`, `components`, and `helpers` layers instead of below them. `dist/css` is unaffected
 - **Sass:** the Tailwind entry's mixins moved from `scss/mixins/` to `scss/tailwind/mixins/`, and `scss/mixins` no longer forwards `generate-tailwind-utilities`, `generate-tailwind-merge-manifest`, `emit-source-config`, or the Tailwind grid mixins. Only affects projects that called these directly from `scss/mixins`; the documented `@chassis-ui/css/scss/tailwind` entry is unchanged
+- **Breaking:** `Nav`: `.nav-pills` renamed to `.nav-segments` and `.card-header-pills` to `.card-header-segments`, with no aliases; the `--cx-nav-pills-*` custom properties are now `--cx-nav-segments-*`. The variant is restyled as a segmented control, with its colors, padding, corner radius, font, and shadow resolved from Chassis Tokens
+- **Breaking:** `Nav`: the Sass variables are now size-specific. `$nav-link-padding-y`, `$nav-link-padding-x`, and `$nav-link-font` are replaced by `$nav-link-{small,medium,large}-*`; `$nav-tabs-border-width` by `$nav-tabs-main-border-width`; `$nav-tabs-border-radius` by `$nav-tabs-medium-border-radius`; `$nav-underline-gap` by `$nav-underline-{small,medium,large}-gap`; and every `$nav-pills-*` variable by a `$nav-segments-*` one. A `@use ... with (...)` that configures a removed variable no longer compiles
+- `Nav`: the active link's default colors now resolve from `--fg-active`/`--bg-active` (previously `--fg-main`/`--bg-even`), and a pressed link (`:active`) no longer takes the active link's style
+- `Nav`: a `.nav-link` whose menu is open now keeps its hover style in every variant; `.nav-tabs` and `.nav-pills` previously gave it the active style
+- `Nav`: `.nav-underline` links no longer show the underline on hover and keyboard focus; only the active link is underlined
+- Docs: the `Nav` page is rewritten to the style guide's standard section order, with new sections for size variants, icons, Sass variables, and design tokens
+
+### Fixed
+- `Nav`: opening a menu from a toggle placed directly inside a `.nav-pills` nav, without a `.nav-item` wrapper, gave every sibling link the active style, because the open state was matched on the toggle's parent. It is now matched on the toggle itself
+- Docs: the vertical example on the `Tab` page used `.nav-pills-vertical` and `.me-4`, neither of which exists, so the links never stacked; it now uses `.flex-column` and `.me-md`. The `Nav` page's link to the Tab plugin pointed at an anchor that does not exist
 
 ## [0.5.2] - 2026-09-25
 

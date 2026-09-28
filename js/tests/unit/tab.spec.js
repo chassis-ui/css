@@ -107,7 +107,7 @@ describe('Tab', () => {
     it('should activate element by tab id in ordered list', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
-          '<ol class="nav nav-pills">',
+          '<ol class="nav nav-segments">',
           '  <li><button type="button" data-cx-target="#home" role="tab">Home</button></li>',
           '  <li><button type="button" id="triggerProfile" href="#profile" role="tab">Profile</button></li>',
           '</ol>',
