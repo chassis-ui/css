@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- **Tailwind entry:** grid column, offset, gutter, and CSS grid placement classes (`col-6`, `md:col-4`, `lg:offset-2`, `g-md`, `g-col-4`, …) are now Tailwind `@utility` rules, so a Tailwind build only generates the ones a project uses, at the breakpoints it uses them, instead of every class at every breakpoint. Class names and computed styles are unchanged; grid class names built at runtime need an `@source inline(...)` safelist entry. `dist/css` is unaffected
+- **Sass:** the Tailwind entry's mixins moved from `scss/mixins/` to `scss/tailwind/mixins/`, and `scss/mixins` no longer forwards `generate-tailwind-utilities`, `generate-tailwind-merge-manifest`, `emit-source-config`, or the Tailwind grid mixins. Only affects projects that called these directly from `scss/mixins`; the documented `@chassis-ui/css/scss/tailwind` entry is unchanged
+
 ## [0.5.2] - 2026-09-25
 
 ### Fixed

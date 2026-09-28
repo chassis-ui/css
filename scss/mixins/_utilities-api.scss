@@ -81,10 +81,9 @@
 // Helper mixin to generate CSS properties for both legacy and property map approaches.
 // $dynamic-only: when true (group mode), skip property-map entries with a non-null default
 // value — those static properties are already emitted in the shared group selector rule.
-// $force-important: property names (from generate-tailwind-utility, Phase 10c) that always
-// get `!important` regardless of the utility's own `important` flag — the Tailwind-clash
-// remedy (scss/tailwind/_clash-policy.scss). Every legacy caller leaves this at its default
-// `()`, so dist/css is unaffected.
+// $force-important: property names that always get `!important` regardless of the
+// utility's own `important` flag. The native generator leaves this at its default `()`;
+// the Tailwind entry passes its clash remedy (scss/tailwind/_clash-policy.scss).
 @mixin generate-properties($utility, $property-map, $properties, $value, $dynamic-only: false, $force-important: ()) {
   @if $property-map != null {
     // Property-Value Mapping approach

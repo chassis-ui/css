@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*!
- * check-component-stack.js — keeps scss/tailwind/_components-list.scss in
+ * check-component-stack.mjs — keeps scss/tailwind/_components-list.scss in
  * sync with scss/chassis.scss's import stack.
  *
  * scss/chassis.scss can't forward a shared partial for its component list:
@@ -21,7 +21,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const root = path.resolve(fileURLToPath(import.meta.url), '../..')
+const root = path.resolve(fileURLToPath(import.meta.url), '../../..')
 
 const FORWARD_RE = /^@forward\s+["']\.{1,2}\/([^"']+)["']/
 

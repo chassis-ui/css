@@ -3,7 +3,7 @@
 //
 // Emits every enabled entry in `$utilities` as a Tailwind `@utility` rule
 // (or, for attribute-selector utilities, plain CSS in `@layer utilities`).
-// See `scss/mixins/_utilities-tailwind.scss` for the emitter.
+// See `scss/tailwind/mixins/_utilities.scss` for the emitter.
 //
 // `./_clash-policy.scss` (generated, checked by `build/tailwind-clashes.mjs`)
 // forces `!important` on specific properties of specific same-name-clash
@@ -13,7 +13,7 @@
 //
 
 @use "../utilities" as *;
-@use "../mixins" as *;
+@use "./mixins" as *;
 @use "./clash-policy" as clash-policy;
 
 @include generate-tailwind-utilities($utilities, clash-policy.$important-properties);

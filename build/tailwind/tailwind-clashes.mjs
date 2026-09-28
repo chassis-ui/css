@@ -567,7 +567,7 @@ export async function checkUtilityNameClashes() {
 // ---------------------------------------------------------------------------
 // scss/tailwind/_clash-policy.scss (generated file): merges every
 // "important"-remedy entry from BOTH policy JSON files into one Sass map,
-// $important-properties, consumed by scss/mixins/_utilities-tailwind.scss's
+// $important-properties, consumed by scss/tailwind/mixins/_utilities.scss's
 // emitter. The JSON files stay the reviewed source of truth (edited by hand
 // after re-running the Phase 5/9 analysis, then checked by
 // checkUtilityNameClashes()/checkBridgeClashes() above); this is a pure,
@@ -628,7 +628,7 @@ function formatClashPolicyFile(policy) {
 // Forces \`!important\` on specific properties of specific same-name-clash
 // utilities (fact 6 / Phase 5) so Chassis's own value always wins Tailwind's
 // same-name \`@utility\` merge -- consumed by
-// \`scss/mixins/_utilities-tailwind.scss\`'s emitter, so it's scoped to the
+// \`scss/tailwind/mixins/_utilities.scss\`'s emitter, so it's scoped to the
 // Tailwind build only; \`dist/css\` never sees this.
 //
 // Merges the "important"-remedy entries from BOTH

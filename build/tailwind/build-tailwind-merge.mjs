@@ -17,7 +17,7 @@
  * comments it emits, one per generated utility class name, computed with
  * the SAME `utility-class-name()` function the real Tailwind emitter uses
  * (see `generate-tailwind-merge-manifest` in
- * scss/mixins/_utilities-tailwind.scss), so this can't drift from what
+ * scss/tailwind/mixins/_utilities.scss), so this can't drift from what
  * dist/tailwind/utilities.css actually contains. Group ids are the
  * utility map's own top-level keys (e.g. "fg-color", "margin"), unprefixed
  * by design: a Chassis group that happens to share a name with one of
