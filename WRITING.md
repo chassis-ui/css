@@ -263,10 +263,10 @@ One sentence describing what the mixin emits and when to use it in a custom sele
 .custom-selector {
   @include <mixin-name>();
 }
-````
+```
 
 <ScssDocs name="<helper>-mixin" file="scss/mixins/_<helper>.scss" />
-```
+````
 
 **File paths.** `file` is relative to the package, `packages/css/` in the repository: `file="scss/_button.scss"`. A file of the site is named from there, `file="../site/src/scss/_examples.scss"`. The docs show the path as written and link it to the file on GitHub.
 
@@ -317,7 +317,7 @@ The MyComponent plugin handles dismissal and exposes events for integrating with
 
 ```js
 import { MyComponent } from '@chassis-ui/css'
-````
+```
 
 ### Triggers
 
@@ -344,7 +344,7 @@ The plugin exposes instance methods for programmatic control:
 | `close` | Closes the component by removing it from the DOM. |
 | `getInstance` | Static — returns the instance bound to a DOM element, or `null`. |
 </CxTable>
-```
+````
 
 `### Methods` and `### Events` still need their intro sentence per [§2](#2-every-heading-earns-its-paragraph) — don't let `<CxTable>` immediately follow the heading.
 
