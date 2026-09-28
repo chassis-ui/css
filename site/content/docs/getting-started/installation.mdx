@@ -11,7 +11,7 @@ This page covers the project-as-dependency path: install `@chassis-ui/css` from 
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) 18 or later
+- [Node.js](https://nodejs.org/) 22 or later
 - A package manager: [pnpm](https://pnpm.io/), [npm](https://www.npmjs.com/), or [yarn](https://yarnpkg.com/)
 - A Sass compiler in your build pipeline (Dart Sass) — Chassis ships as Sass source, not pre-compiled CSS for project use
 
@@ -82,9 +82,9 @@ After install, `node_modules/@chassis-ui/css/` contains the pre-built distributi
 │       ├── chassis.bundle.js        ← ESM bundle with all peer deps included
 │       └── chassis.bundle.min.js
 ├── js/
-│   ├── index.js                     ← ESM entry; re-exports all plugins
-│   ├── src/                         ← individual plugin sources
-│   └── dist/                        ← individual compiled plugins
+│   ├── dist/                        ← compiled plugins (ESM) with type declarations
+│   │   └── index.js                 ← package entry; re-exports all plugins
+│   └── src/                         ← TypeScript sources the source maps point to
 └── scss/
     ├── chassis.scss                 ← full bundle entry
     ├── chassis-grid.scss            ← grid-only entry
@@ -172,7 +172,7 @@ Chassis JS is optional — only needed for components with interactive behaviour
 import * as chassis from '@chassis-ui/css'
 
 // Or just the plugins you use
-import { Modal, Tooltip } from '@chassis-ui/css'
+import { Dialog, Tooltip } from '@chassis-ui/css'
 ```
 
 **As a module script** (no bundler):

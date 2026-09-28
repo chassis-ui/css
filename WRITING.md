@@ -42,7 +42,7 @@ The right prose voice depends on the doc category. There are three distinct conv
 
 **Tutorial voice** (getting-started, customize, and all `overview.mdx` index pages) allows second-person "you"/"your" — they read naturally in a step-by-step guide or navigation page. Core-concepts pages stay instructive because the reader is observing the architecture, not following steps, unlike customize pages where the reader is actively doing things (importing Sass, toggling flags). Overview/index pages get tutorial voice regardless of section — `getting-started/overview.mdx`, `core-concepts/overview.mdx`, and `customize/overview.mdx` all use it for their navigation prose.
 
-**Good:** "If you already have a bundler set up, jump to [Import Chassis](#import-chassis)." / "You can now run `pnpm start` — the page renders with Chassis styling."
+**Good:** "If you already have a bundler set up, jump to Import Chassis." / "You can now run `pnpm start` — the page renders with Chassis styling."
 
 **Bad (still avoid even in tutorial docs):** "We've now installed the loaders. Our next step is to configure the dev server."
 
@@ -446,7 +446,7 @@ Currently unwritten:
 
 ## Appendix A — MDX component reference
 
-The Chassis docs site exposes a small set of MDX components for rendering examples, callouts, tables, and source-derived snippets. Source: [`site/src/components/shortcodes/`](../site/src/components/shortcodes/) and [`@chassis-ui/docs`](https://www.npmjs.com/package/@chassis-ui/docs). Listed here in order of frequency.
+The Chassis docs site exposes a small set of MDX components for rendering examples, callouts, tables, and source-derived snippets. Source: [`site/src/components/shortcodes/`](site/src/components/shortcodes/) and [`@chassis-ui/docs`](https://www.npmjs.com/package/@chassis-ui/docs). Listed here in order of frequency.
 
 ### `<Example>`
 

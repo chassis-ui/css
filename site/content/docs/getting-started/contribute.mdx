@@ -10,10 +10,10 @@ This page is for contributors working on Chassis CSS itself. If you only want to
 
 ## Tooling setup
 
-Chassis CSS is a [pnpm workspace](https://pnpm.io/workspaces). Local development depends on Node and pnpm; the documentation site is built with [Astro](https://astro.build/).
+Local development depends on Node.js and [pnpm](https://pnpm.io/); the documentation site is built with [Astro](https://astro.build/).
 
-1. **Install Node.js 18 or later.** [nodejs.org](https://nodejs.org/) ships installers; Volta and nvm are good options if you manage multiple Node versions.
-2. **Install pnpm.** Either via Corepack (`corepack enable && corepack prepare pnpm@latest --activate`) or directly: see [pnpm.io/installation](https://pnpm.io/installation).
+1. **Install Node.js 22 or later.** [nodejs.org](https://nodejs.org/) ships installers; Volta and nvm are good options if you manage multiple Node versions.
+2. **Install pnpm.** The version is pinned in the `packageManager` field of `package.json`; `corepack enable` installs and uses it. See [pnpm.io/installation](https://pnpm.io/installation) for other ways.
 3. **Fork and clone the repository.**
 
    ```sh
@@ -22,7 +22,7 @@ Chassis CSS is a [pnpm workspace](https://pnpm.io/workspaces). Local development
    pnpm install
    ```
 
-   `pnpm install` resolves and installs every workspace dependency, including the documentation site and the linked `@chassis-ui/tokens` and `@chassis-ui/icons` packages.
+   `pnpm install` installs the dependencies of the framework and the documentation site, including the `@chassis-ui/tokens` and `@chassis-ui/icons` packages from npm.
 
 When the install finishes, the scripts documented below are ready to run.
 
@@ -34,11 +34,13 @@ The full list of scripts lives in [`package.json`]([[config:repo]]/blob/main/pac
 | Command | What it does |
 | --- | --- |
 | `pnpm dev` | Compiles CSS and JS in watch mode and starts the docs site dev server. The fastest feedback loop for working on the framework or the docs. |
-| `pnpm dist` | Produces the full `dist/` output — compiled, prefixed, and minified CSS and JS. |
-| `pnpm test` | Lints CSS and JS, builds the distribution, runs the Sass test suite, runs the JS test suite, builds the docs site, and lints the built docs. The full pre-merge check. |
+| `pnpm dist` | Produces the full `dist/` and `js/dist/` output — compiled, prefixed, and minified CSS and JS, the Tailwind entry, and the type declarations. Both folders are committed; commit the rebuilt files with the source change. |
+| `pnpm test` | Lints CSS, JS, and the docs, builds the distribution, runs the Sass and JS unit tests, builds the docs site, and lints the built docs. |
+| `pnpm verify` | Rebuilds `dist/` and `js/dist/` and fails when the result differs from what is committed. CI runs it. |
 | `pnpm css:compile` | Compiles SCSS to CSS using Dart Sass with source maps. |
 | `pnpm css:test` | Runs the Sass test suite (`scss/tests/`). |
-| `pnpm js:test` | Runs the Karma test suite for the JS plugins. |
+| `pnpm js:test` | Runs the unit tests for the JS plugins with [Vitest](https://vitest.dev/) in browser mode. |
+| `pnpm js:typecheck` | Type-checks the TypeScript sources of the JS plugins. |
 | `pnpm site:build` | Builds the static docs site for production. |
 </CxTable>
 
@@ -46,7 +48,7 @@ Run `pnpm run` with no arguments to see every available script.
 
 ## Sass
 
-Chassis CSS uses [Dart Sass](https://sass-lang.com/dart-sass/). The Sass build runs at precision 10 (Dart Sass's default for efficiency) and the output is post-processed with Autoprefixer and minified with [clean-css](https://github.com/clean-css/clean-css). If you produce a custom build outside the project's tooling, keep precision at 6 or higher to avoid sub-pixel rounding artefacts.
+Chassis CSS uses [Dart Sass](https://sass-lang.com/dart-sass/). The output is post-processed with Autoprefixer and minified with [Lightning CSS](https://lightningcss.dev/).
 
 [Sass deprecation warnings](https://sass-lang.com/documentation/breaking-changes/) appear during compile when a transitional Sass syntax is used. They don't block the build. The project [tracks the long-term cleanup work]([[config:repo]]/issues) — silencing the warnings in your local config is fine in the meantime.
 
@@ -64,7 +66,7 @@ The documentation is a static [Astro](https://astro.build/) site under `site/`. 
 
 1. Run through the [tooling setup](#tooling-setup) above so dependencies are installed.
 2. From the project root, run `pnpm dev`.
-3. Open [`http://localhost:4323/`](http://localhost:4323/) in your browser. Edits to the docs MDX files hot-reload automatically.
+3. Open [`http://localhost:4323/css/`](http://localhost:4323/css/) in your browser. Edits to the docs MDX files hot-reload automatically.
 
 The site source is in `site/`; content lives under `site/content/docs/`. Astro's [documentation](https://docs.astro.build/) covers the rendering side of the stack.
 
@@ -73,16 +75,11 @@ The site source is in `site/`; content lives under `site/content/docs/`. Astro's
 If a fresh clone refuses to install or build cleanly:
 
 ```sh
-rm -rf node_modules pnpm-lock.yaml
+rm -rf node_modules
 pnpm install
 ```
 
-If the Sass test suite reports unexpected failures, regenerate the snapshot output the suite expects:
-
-```sh
-pnpm css:compile
-pnpm css:test
-```
+If `pnpm verify` fails after a change, a file in `dist/` or `js/dist/` is out of date. Rebuild with `pnpm dist` and commit the changed files.
 
 For anything that survives those resets, [open an issue]([[config:repo]]/issues/new/choose) with the failing command and your environment (Node version, pnpm version, OS).
 

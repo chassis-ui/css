@@ -178,9 +178,13 @@ jobs:
       - name: Build
         run: pnpm site:build
 
-      # After the build: the HTML validation reads _site/
+      # After the build: the HTML validation and the link check read _site/
       - name: Lint
         run: pnpm site:lint
+
+      # README, AGENTS.md and the other Markdown files, external URLs included
+      - name: Markdown links
+        run: pnpm docs:links
 
   # The sizes of the committed dist/ files against the budgets of .bundlewatch.config.json
   bundle:

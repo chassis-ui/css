@@ -7,26 +7,50 @@ Guidance for AI coding agents working in this repository.
 Chassis CSS (`@chassis-ui/css`) is a tokenized CSS framework that bridges design tokens from Figma to production code. It is derived from Bootstrap's Sass architecture and JS component system but has been substantially reworked around a context-based color system and design-token pipeline. The repo contains three deliverables:
 
 - **CSS framework** — Sass source in `scss/`, compiled to `dist/css/`.
-- **JS components** — vanilla JS in `js/src/`, compiled to per-component builds in `js/dist/` and combined builds in `dist/js/` (`chassis.js` standalone, `chassis.bundle.js` with dependencies bundled in).
+- **JS components** — TypeScript in `js/src/`, compiled to per-component ES modules with declarations in `js/dist/` and combined builds in `dist/js/` (`chassis.js` with the peer dependencies external, `chassis.bundle.js` with them bundled in). The package entry is `js/dist/index.js`, compiled from the barrel `js/src/index.ts`.
 - **Documentation site** — an Astro site in `site/`, built to `_site/`, using the shared `@chassis-ui/docs` package for layout/components.
 
-This repo is part of a multi-repo ecosystem (`chassis-website`, `chassis-tokens`, `chassis-icons`, `chassis-assets`, `chassis-figma`). See [README.md](README.md) for the full picture.
+This repo is part of a multi-repo ecosystem (`chassis-website`, `chassis-react`, `chassis-tokens`, `chassis-icons`, `chassis-assets`, `chassis-figma`). See [README.md](README.md) for the full picture.
 
 ## Quick commands
 
-Package manager is **pnpm** (pinned in `package.json`). Run `pnpm install` first.
+Package manager is **pnpm** (pinned in `package.json`), with Node.js 22 or later. Run `pnpm install` first.
 
-- `pnpm dev` — watch CSS/JS + Astro dev server (port 4323)
+- `pnpm dev` — watch CSS/JS + Astro dev server (`http://localhost:4323/css/`)
 - `pnpm build` — compile CSS + JS, then build the docs site
-- `pnpm css` / `pnpm js` — compile + prefix + minify CSS, or compile + minify JS
+- `pnpm dist` — `pnpm css` and `pnpm js` together: everything in `dist/` and `js/dist/`
+- `pnpm css` — compile, prefix and minify CSS, then build the Tailwind entry (`dist/tailwind/`)
+- `pnpm js` — compile, emit declarations (`js:emit-types`) and minify JS
 - `pnpm css:lint` / `pnpm js:lint` / `pnpm site:lint` — lint (or `pnpm check:code` for all three)
-- `pnpm css:test` / `pnpm js:test:karma` — Sass (Jasmine) / JS (Karma) unit tests
+- `pnpm js:typecheck` — `tsc --noEmit` over `js/src/` and the type tests in `js/tests/types/`
+- `pnpm css:test` — Sass unit tests (Jasmine with sass-true, `scss/tests/`)
+- `pnpm js:test:unit` — JS unit tests (Vitest in browser mode, `js/tests/unit/`); Chromium only locally, Chromium, Firefox and WebKit in CI or with `pnpm js:test:unit:all-browsers`. `pnpm js:test` is an alias. See [js/tests/README.md](js/tests/README.md)
+- `pnpm js:test:e2e` — Playwright end-to-end tests in Chromium, Firefox and WebKit
+- `pnpm js:test:integration` — bundles `dist/js/chassis.js` and single modules of `js/dist/` with Rollup, and packs the package into an empty project that imports it with Node.js and type-checks it with `tsc`
+- `pnpm check:package` — `publint` and `attw` over the packed package: `exports`, `types` and file layout
 - `pnpm css:test:tailwind` — Node-only regression test for the Tailwind build (`dist/tailwind/`); needs `pnpm dist` run first
 - `pnpm js:test:e2e:tailwind-parity` — Playwright project comparing computed styles between `dist/css/chassis.css` and a fresh Tailwind build; opt-in locally (excluded from `pnpm js:test:e2e` and `pnpm test`) because it's slower than the rest of the e2e suite, though CI runs it (the `css` job of `.github/workflows/ci.yml`) — run it after touching `scss/tailwind/` or the utility/component clash policies
 - `pnpm verify` — rebuild `dist/` and `js/dist/` and fail when they differ from the commit; CI and the publish workflow run it, since `npm publish` ships both as committed
-- `pnpm test` — full suite: lint + dist + css/js tests (including `css:test:tailwind`) + site build + site lint
+- `pnpm test` — lint + dist + css/js unit tests (including `css:test:tailwind`) + site build + site lint. It does not run `js:typecheck`, the e2e and integration tests, `check:package` or `verify`; CI runs all of them
 
-Run the narrowest relevant command while iterating; run `pnpm test` (or at least `pnpm check:code`) before considering a change complete.
+Run the narrowest relevant command while iterating, then the checks in [Before a task is done](#before-a-task-is-done).
+
+## Before a task is done
+
+Run the checks of the area you changed, and report the ones that fail.
+
+| Area changed | Run |
+| --- | --- |
+| `scss/` | `pnpm css:lint`, `pnpm css`, `pnpm css:test`, `pnpm verify` |
+| `scss/tailwind/`, `build/tailwind/` | the row above, then `pnpm css:test:tailwind` and `pnpm js:test:e2e:tailwind-parity` |
+| `js/src/` | `pnpm js:lint`, `pnpm js:typecheck`, `pnpm js:test:unit`, `pnpm verify`; `pnpm js:test:e2e` for behavior a user sees |
+| Exports, `package.json`, `postcss/`, `js/src/index.ts` | `pnpm js:test:integration`, `pnpm check:package`, `pnpm verify` |
+| `site/` | `pnpm check:astro`, `pnpm site:build`, then `pnpm site:lint` (its HTML validation reads `_site/`) |
+| README or other Markdown | `pnpm docs:links` |
+
+## Generated and committed output
+
+`dist/` and `js/dist/` are generated **and committed**: `npm publish` ships them as they are in the commit, and the `dist` job in CI runs `pnpm verify`, which fails when a fresh build differs from them. Never edit them by hand. Change the source, rebuild with `pnpm dist`, and commit the rebuilt files together with the source change. `pnpm verify` also fails on a file in `js/dist/` with no module in `js/src/`, so delete the output of a removed module.
 
 ## SCSS conventions
 
@@ -45,10 +69,11 @@ Run the narrowest relevant command while iterating; run `pnpm test` (or at least
 
 ## JavaScript conventions
 
-- Components extend `base-component.js`, one file per component under `js/src/`, mirrored by unit tests in `js/tests/unit/`.
+- Source is TypeScript. Components extend `BaseComponent` (`js/src/base-component.ts`), one file per component under `js/src/`, mirrored by unit tests in `js/tests/unit/<component>.spec.js` (the specs are JavaScript).
+- Every public component is re-exported from `js/src/index.ts`. Imports between modules use the `.js` extension (`./accordion.js`), which `tsc` and the build resolve to the `.ts` file.
 - Shared DOM/utility helpers live in `js/src/dom/` and `js/src/util/`.
 - The package ships per-component builds (`js/dist/`) plus two combined builds in `dist/js/`: `chassis.js` (dependencies external) and `chassis.bundle.js` (dependencies bundled in) — verify changes against the **production build** (`pnpm js:compile`), not just dev/watch output. Tree-shaking, `sideEffects`, and bundling behavior in `package.json` can regress in the compiled bundle even when a dev-mode click-test passes.
-- After editing `js/src/`, run `pnpm js:lint && pnpm js:test:karma`; for changes touching module boundaries or exports also run `pnpm js:test:integration`.
+- After editing `js/src/`, run `pnpm js:lint && pnpm js:typecheck && pnpm js:test:unit`; for changes touching module boundaries or exports also run `pnpm js:test:integration && pnpm check:package`.
 
 ## Docs conventions
 
@@ -69,7 +94,9 @@ Run the narrowest relevant command while iterating; run `pnpm test` (or at least
 
 Conventional Commits style, with an imperative, lower-case summary: `feat:`, `fix:`, `docs:`, `refactor:`, `test:` (e.g. `fix: preserve carousel focus, set aria attribute of disabled navigation`).
 
+Never commit, merge or push without being asked. Pushing `main` starts `publish-release.yml`, which runs CI and publishes `@chassis-ui/css` to npm.
+
 ## Do not edit
 
-- Generated output: `dist/`, `_site/`, `js/dist/`, `.cache/`.
+- Generated output: `dist/`, `js/dist/` (rebuild them, see [Generated and committed output](#generated-and-committed-output)), `_site/`, `.cache/`.
 - Git submodule (synced from `chassis-assets`, not owned by this repo): `vendor/assets/`.

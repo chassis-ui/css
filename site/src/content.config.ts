@@ -34,6 +34,7 @@ const docsSchema = z.object({
   sections: z
     .object({
       description: z.string(),
+      slug: z.string().optional(),
       title: z.string()
     })
     .array()
