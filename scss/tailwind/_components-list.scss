@@ -6,12 +6,14 @@
 // handles that). A partial, not a compiled entry — `../components.scss`
 // (à-la-carte) and `./index.scss` (full bundle) both forward this instead
 // of listing components twice. `build/check-component-stack.js` keeps this
-// list in sync with `../chassis.scss`.
+// list in sync with `../chassis.scss`. The grid is the one Tailwind-specific
+// entry: `./grid` emits its per-breakpoint classes as on-demand `@utility`
+// rules instead of `../grid`'s full breakpoint set.
 //
 
 @forward "../type";
 @forward "../containers";
-@forward "../grid";
+@forward "./grid";
 
 // Components
 @forward "../accordion";

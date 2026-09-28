@@ -230,7 +230,9 @@ The [prototype](#prototype-with-default-tokens) path has an equivalent CSS-file 
 
 The Tailwind entry resets Tailwind's own default theme (`@theme { --*: initial; }`) before re-declaring only the values Chassis needs: `--breakpoint-*` and `--container-*`, read from Chassis's `$breakpoints` map. Tailwind's default color, spacing, font, and shadow scales never generate — every Chassis component and utility resolves through Chassis's own tokens instead.
 
-A handful of Chassis component and grid class names would otherwise collide with Tailwind core utilities of the same name (`outline`, `collapse`, `container`, `grid`, `col-1`–`col-12`, `col-auto`, and their responsive-prefixed forms, `static`, `list-item`, `inline`, `table`, `caption-top`, `grid-cols-subgrid`). The Tailwind entry excludes these from Tailwind's own generation with `@source not inline(...)`, so Chassis's component CSS applies without interference.
+A handful of Chassis component and grid class names would otherwise collide with Tailwind core utilities of the same name (`outline`, `collapse`, `container` and its responsive-prefixed forms, `grid`, `static`, `list-item`, `inline`, `table`, `caption-top`, `grid-cols-subgrid`). The Tailwind entry excludes these from Tailwind's own generation with `@source not inline(...)`, so Chassis's component CSS applies without interference.
+
+The grid's column, offset, gutter, and CSS grid placement classes (`col-6`, `md:col-4`, `lg:offset-2`, `g-md`, `g-col-4`, and the rest) are Tailwind utilities in the Tailwind entry, so only the ones found in your source files are generated, at the breakpoints you use them. The class names match the regular build. If you build grid class names at runtime (`` `col-${n}` ``), Tailwind's scanner can't see them — safelist them, for example `@source inline("{,md:}col-{1..12}");`.
 
 <Callout type="info">
 The nav-overflow plugin toggles `.d-none` at runtime via `classList.toggle`, which Tailwind's static source scanner never sees. The Tailwind entry safelists it explicitly (`@source inline("d-none")`) so the class always generates.

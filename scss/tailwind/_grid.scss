@@ -1,0 +1,26 @@
+@use "../config" as *;
+@use "../mixins" as *;
+
+//
+// Chassis CSS — Tailwind Grid
+//
+// The Tailwind entry's `../grid`: `.row`, `.grid`, `.grid-cols-subgrid`, and
+// `.grid-fill` stay plain CSS in `@layer layout`, while the per-breakpoint
+// column, offset, gutter, and CSS grid placement classes become `@utility`
+// rules (`make-grid-columns-tailwind()`, `make-cssgrid-tailwind()`), so
+// Tailwind only generates the ones a project uses, at the breakpoints it uses
+// them. Class names are unchanged: `lg:col-6` is Tailwind's `lg:` variant of
+// `col-6`. Forwarded by `./_components-list.scss` in place of `../grid`.
+//
+
+@layer layout {
+  @include grid-layout($responsive: false);
+}
+
+@if $enable-grid-classes {
+  @include make-grid-columns-tailwind();
+}
+
+@if $enable-cssgrid {
+  @include make-cssgrid-tailwind();
+}

@@ -1,0 +1,135 @@
+@use "../config" as *;
+@use "../maps" as *;
+@use "./grid" as *;
+
+//
+// Grid Mixins — Tailwind
+//
+// The Tailwind entry's counterparts to `make-grid-columns()` and
+// `make-cssgrid()`: each class is emitted once, unprefixed, as a Tailwind
+// `@utility`. Tailwind's variant engine then generates `md:col-6` and friends
+// only for the classes a project actually uses, under the same class names
+// the per-breakpoint loops write out by hand.
+//
+// Tailwind orders utilities within one variant by the properties they set,
+// not by source order, so each rule pins its position with `--tw-sort: <property>`
+// (Tailwind-internal: the rule sorts as if it set that property, and the
+// declaration is dropped from the output; core `space-x-*` uses it the same
+// way). The pins reproduce the dist/css cascade:
+//  - among grid classes, `make-grid-columns()` source order: `col` <
+//    `row-cols-auto` < `row-cols-<n>` < `col-auto` < `col-<n>`, and
+//    `g-col-<n>` < `g-start-<n>`
+//  - every grid class ahead of the utilities it shares a property with
+//    (`ms-*`/`mx-*`/`m-*` sort from `margin`, `w-*` from `width`, `flex-*`
+//    from `flex`, `grid-cols-fill` from `grid-column`), as `@layer utilities`
+//    beats `@layer layout` in dist/css
+// `js/tests/e2e/tailwind-parity.spec.ts` compares both builds on these cases.
+
+/// Emit the flexbox grid's column, row-cols, offset, and gutter classes as
+/// Tailwind `@utility` rules.
+///
+/// @param {Number} $columns [$grid-columns] - Number of grid columns
+@mixin make-grid-columns-tailwind($columns: $grid-columns) {
+  @utility col {
+    --tw-sort: grid-column-start;
+    flex: 1 0 0;
+  }
+
+  @utility row-cols-auto {
+    & > * {
+      --tw-sort: grid-column-end;
+      @include make-col-auto();
+    }
+  }
+
+  @if $grid-row-columns > 0 {
+    @for $i from 1 through $grid-row-columns {
+      @utility row-cols-#{$i} {
+        & > * {
+          --tw-sort: grid-row;
+          @include make-col(1, $i);
+        }
+      }
+    }
+  }
+
+  @utility col-auto {
+    --tw-sort: grid-row-start;
+    @include make-col-auto();
+  }
+
+  @if $columns > 0 {
+    @for $i from 1 through $columns {
+      @utility col-#{$i} {
+        --tw-sort: grid-row-end;
+        @include make-col($i, $columns);
+        // Tailwind core's own `col-<n>` (`grid-column: <n>`) merges into this
+        // class; the sort pin places this reset after it.
+        grid-column: auto;
+      }
+    }
+
+    // Unlike `make-grid-columns()`, `offset-0` is kept unprefixed: it's the
+    // same utility `lg:offset-0` is generated from, and only emitted if used.
+    @for $i from 0 through ($columns - 1) {
+      @utility offset-#{$i} {
+        --tw-sort: clear;
+        @include make-col-offset($i, $columns);
+      }
+    }
+  }
+
+  // Gutters only set custom properties no other utility sets, so they need no
+  // sort pin. Tailwind's own order sorts `gx-*`/`gy-*` after `g-*`, so on one
+  // element at one breakpoint the axis-specific class wins (`g-md gx-0` has
+  // no horizontal gutter); in dist/css the later `$gutters` key wins instead.
+  @utility g-0 {
+    --gutter-x: 0;
+    --gutter-y: 0;
+  }
+
+  @utility gx-0 {
+    --gutter-x: 0;
+  }
+
+  @utility gy-0 {
+    --gutter-y: 0;
+  }
+
+  @each $key, $value in $gutters {
+    @utility g-#{$key} {
+      --gutter-x: var(--space-#{$key});
+      --gutter-y: var(--space-#{$key});
+    }
+
+    @utility gx-#{$key} {
+      --gutter-x: var(--space-#{$key});
+    }
+
+    @utility gy-#{$key} {
+      --gutter-y: var(--space-#{$key});
+    }
+  }
+}
+
+/// Emit the CSS grid's column span and start classes as Tailwind `@utility`
+/// rules.
+///
+/// @param {Number} $columns [$grid-columns] - Number of grid columns
+@mixin make-cssgrid-tailwind($columns: $grid-columns) {
+  @if $columns > 0 {
+    @for $i from 1 through $columns {
+      @utility g-col-#{$i} {
+        --tw-sort: z-index;
+        grid-column: auto / span $i;
+      }
+    }
+
+    @for $i from 1 through ($columns - 1) {
+      @utility g-start-#{$i} {
+        --tw-sort: order;
+        grid-column-start: $i;
+      }
+    }
+  }
+}

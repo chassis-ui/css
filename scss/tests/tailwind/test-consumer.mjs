@@ -106,25 +106,35 @@ describe('a consumer with their own chassis-tokens and $breakpoints', () => {
     assert.doesNotMatch(built, /outline-style/)
   })
 
-  test("Tailwind core's own container/col-* stay excluded at the brand-only breakpoint (container, col-*)", () => {
-    // Chassis authors its OWN `.container`/`.col-6` too (see scss/_containers.scss,
-    // scss/_grid.scss) — the exclusion's job is only to keep TAILWIND's core
-    // utility of the same name from ALSO generating and merging in, not to
-    // remove Chassis's own rule, so this checks for Tailwind's specific
-    // shape rather than the class name's mere presence:
-    //  - core `container` nests `@media` INSIDE the `.container` rule
-    //    itself (CSS nesting) and reads `--container-lg` — this brand's
-    //    72rem — where Chassis's own container uses separate, sibling
-    //    `@media` blocks and its own fixed (never 72rem) width scale.
-    //  - core `col-<n>` sets a bare `grid-column: <n>`, a different
-    //    property than Chassis's flex grid's `flex`/`width`.
-    // If the exclusion's breakpoint-prefix group were hard-coded to
-    // Chassis's own default breakpoint keys instead of built from this
-    // project's $breakpoints (fact 18/Phase 10b), either shape would leak
-    // in at "lg", a differently-valued key here than Chassis's default one.
+  test("Tailwind core's own container stays excluded at the brand-only breakpoint", () => {
+    // Chassis authors its OWN `.container` too (see scss/_containers.scss) —
+    // the exclusion's job is only to keep TAILWIND's core utility of the
+    // same name from ALSO generating and merging in, not to remove
+    // Chassis's own rule, so this checks for Tailwind's specific shape
+    // rather than the class name's mere presence: core `container` nests
+    // `@media` INSIDE the `.container` rule itself (CSS nesting) and reads
+    // `--container-lg` — this brand's 72rem — where Chassis's own container
+    // uses separate, sibling `@media` blocks and its own fixed (never 72rem)
+    // width scale. If the exclusion's breakpoint-prefix group were
+    // hard-coded to Chassis's own default breakpoint keys instead of built
+    // from this project's $breakpoints (fact 18/Phase 10b), that shape would
+    // leak in at "lg", a differently-valued key here than Chassis's default one.
     assert.doesNotMatch(built, /\.container\s*\{[^}]*max-width: 72rem/s)
     assert.doesNotMatch(built, /\.lg\\:container\s*\{[^}]*max-width: 72rem/s)
-    assert.doesNotMatch(built, /\.(lg\\:)?col-6\s*\{[^}]*grid-column: 6\b/s)
+  })
+
+  test('lg:col-6 is generated at the brand breakpoint, and resets core col-6', () => {
+    // col-<n> is a Chassis @utility (scss/tailwind/_grid.scss), so Tailwind's
+    // own `lg:` variant places it at this brand's 72rem. Core `col-<n>`
+    // (`grid-column: <n>`) merges into the same class; Chassis's sort pin
+    // puts its `grid-column: auto` reset last.
+    assert.match(built, /@media \(width >= 72rem\)\s*\{[^@]*\.lg\\:col-6\s*\{[^}]*width: 50%/s)
+    for (const selector of [String.raw`\.col-6`, String.raw`\.lg\\:col-6`]) {
+      const gridColumns = [
+        ...built.matchAll(new RegExp(String.raw`${selector}\s*\{([^}]*)\}`, 'g'))
+      ].flatMap((rule) => [...rule[1].matchAll(/grid-column:\s*([^;]+);/g)].map((d) => d[1]))
+      assert.equal(gridColumns.at(-1), 'auto', `${selector}: ${JSON.stringify(gridColumns)}`)
+    }
   })
 
   test('a Group 1 !important remedy (opacity-50) still wins the same-name merge', () => {

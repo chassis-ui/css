@@ -45,7 +45,11 @@ type Curated = { testid: string; properties: string[] }
 // at the lg breakpoint), table, grid row/col (flex-based) and CSS grid-cols-2
 // (the Phase 5 !important remedy -- the highest-value regression check
 // here), a container-query stack, and typical utilities spanning a
-// responsive variant and two more Phase 5 remedies.
+// responsive variant and two more Phase 5 remedies. The grid cases check the
+// Tailwind entry's on-demand grid utilities (scss/tailwind/_grid.scss)
+// against dist/css's per-breakpoint classes: responsive columns, the
+// same-breakpoint precedence among grid classes, utilities overriding grid
+// classes, and core col-<n>'s grid-column leak into a .grid parent.
 //
 // dark:fg-primary is deliberately NOT here: Chassis's own utility generator
 // only flags a handful of utilities (display) with `dark: true`, so
@@ -63,6 +67,22 @@ const CURATED: Curated[] = [
   { testid: 'navbar-toggler', properties: ['display'] },
   { testid: 'table', properties: ['borderCollapse'] },
   { testid: 'col-6', properties: ['width'] },
+  { testid: 'col-responsive', properties: ['width', 'flexGrow', 'flexBasis'] },
+  { testid: 'col-then-fluid', properties: ['width', 'flexGrow', 'flexBasis'] },
+  { testid: 'col-auto', properties: ['flexGrow', 'flexBasis'] },
+  { testid: 'row-cols-col', properties: ['width', 'flexGrow'] },
+  { testid: 'row-cols-col-6', properties: ['width', 'flexGrow'] },
+  { testid: 'row-cols-col-wrapped', properties: ['width', 'flexGrow'] },
+  { testid: 'row-cols-responsive', properties: ['width'] },
+  { testid: 'offset-responsive', properties: ['width', 'marginLeft'] },
+  { testid: 'offset-vs-margin-utility', properties: ['marginLeft'] },
+  { testid: 'col-vs-width-utility', properties: ['width'] },
+  { testid: 'col-vs-flex-utility', properties: ['flexGrow'] },
+  { testid: 'gutter-0', properties: ['paddingLeft', 'marginTop'] },
+  { testid: 'gutter-responsive', properties: ['paddingLeft', 'marginTop'] },
+  { testid: 'g-col-responsive', properties: ['gridColumnStart', 'gridColumnEnd'] },
+  { testid: 'g-col-start', properties: ['gridColumnStart', 'gridColumnEnd'] },
+  { testid: 'col-in-grid', properties: ['gridColumnStart', 'gridColumnEnd', 'width'] },
   { testid: 'grid-cols-2', properties: ['gridTemplateColumns'] },
   { testid: 'stack', properties: ['flexDirection'] },
   { testid: 'fg-primary', properties: ['color'] },
@@ -130,6 +150,8 @@ async function captureComputedStyles(
 
 const VIEWPORTS = [
   { name: 'mobile', width: 375, height: 812 },
+  // Between md and lg, where the grid cases' md: classes are the ones in effect.
+  { name: 'tablet', width: 900, height: 1024 },
   { name: 'desktop', width: 1440, height: 900 }
 ]
 

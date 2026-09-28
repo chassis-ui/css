@@ -10,7 +10,8 @@
  * site/content/docs/customize/optimize.mdx) so users can see and remove
  * individual component imports, which a single collapsed @forward would
  * break. So the two lists are physically separate files kept honest by this
- * check instead of a shared partial.
+ * check instead of a shared partial. Entries are compared by name, so the
+ * Tailwind list's own `./grid` stands in for `../grid`.
  *
  * Copyright 2026 Ozgur Gunes
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)

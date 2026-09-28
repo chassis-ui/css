@@ -109,6 +109,7 @@ export default {
       files: [
         'scss/tailwind/**/*.scss',
         'scss/mixins/_utilities-tailwind.scss',
+        'scss/mixins/_grid-tailwind.scss',
         'scss/mixins/_tailwind-source.scss'
       ],
       rules: {
