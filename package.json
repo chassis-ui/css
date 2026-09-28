@@ -18,6 +18,7 @@
     "dev": "run-p watch astro:dev",
     "dist": "pnpm --filter @chassis-ui/css run dist",
     "test": "pnpm check:code && pnpm dist && pnpm css:test && pnpm css:test:tailwind && pnpm js:test && pnpm site:build && pnpm site:lint",
+    "build:test": "node --test \"build/tests/*.test.mjs\"",
     "css": "pnpm --filter @chassis-ui/css run css",
     "css:compile": "pnpm --filter @chassis-ui/css run css:compile",
     "css:lint": "run-p css:lint:stylelint css:lint:vars css:lint:tailwind css:lint:imports",
