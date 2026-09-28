@@ -4,14 +4,14 @@
  * Release Notes Script
  *
  * Prints the CHANGELOG entry of one version of @chassis-ui/css, without its heading, for the
- * body of the GitHub release. Reads both heading styles of CHANGELOG.md: the hand-written style
- * (`## [0.5.2] - 2026-09-25`) and the Changesets style (`## 0.6.0`).
+ * body of the GitHub release. Reads both heading styles of packages/css/CHANGELOG.md: the
+ * hand-written style (`## [0.5.2] - 2026-09-25`) and the Changesets style (`## 0.6.0`).
  *
  * Usage:
  *   node build/release-notes.js [version]
  *
- * Without a version, it uses the version in package.json. Fails when the CHANGELOG has no entry
- * for the version, or the entry is empty.
+ * Without a version, it uses the version in packages/css/package.json. Fails when the CHANGELOG
+ * has no entry for the version, or the entry is empty.
  *
  * Copyright 2025-2026 Ozgur Gunes
  * Licensed under MIT
@@ -20,7 +20,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-const CHANGELOG = 'CHANGELOG.md'
+const CHANGELOG = 'packages/css/CHANGELOG.md'
 
 // A link reference definition, such as `[0.5.2]: https://github.com/…/compare/v0.5.1...v0.5.2`.
 // They follow the last entry of the hand-written CHANGELOG and are not part of it.
@@ -70,7 +70,7 @@ async function main() {
   let version = process.argv[2]
 
   if (!version) {
-    const pkg = JSON.parse(await fs.readFile(path.resolve('package.json'), 'utf8'))
+    const pkg = JSON.parse(await fs.readFile(path.resolve('packages/css/package.json'), 'utf8'))
     version = pkg.version
   }
 

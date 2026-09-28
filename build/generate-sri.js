@@ -19,22 +19,22 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 sh.config.fatal = true
 
-const configFile = path.join(__dirname, '../site/config.yml')
+const configFile = path.join(__dirname, '../packages/site/config.yml')
 
 // Array of objects which holds the files to generate SRI hashes for.
-// `file` is the path from the root folder
+// `file` is the path from the root of the repository
 // `configPropertyName` is the config.yml variable's name of the file
 const files = [
   {
-    file: 'dist/css/chassis.min.css',
+    file: 'packages/css/dist/css/chassis.min.css',
     configPropertyName: 'css_hash'
   },
   {
-    file: 'dist/js/chassis.min.js',
+    file: 'packages/css/dist/js/chassis.min.js',
     configPropertyName: 'js_hash'
   },
   {
-    file: 'dist/js/chassis.bundle.min.js',
+    file: 'packages/css/dist/js/chassis.bundle.min.js',
     configPropertyName: 'js_bundle_hash'
   }
 ]

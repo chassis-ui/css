@@ -40,9 +40,9 @@ export default {
     '**/tests/**',
     '**/coverage/**',
     '_site/**',
-    'site/.astro/**',
-    'site/public/**',
-    'site/static/**',
+    'packages/site/.astro/**',
+    'packages/site/public/**',
+    'packages/site/static/**',
     'vendor/**'
   ],
   reportInvalidScopeDisables: true,
@@ -90,14 +90,14 @@ export default {
       }
     },
     {
-      files: ['scss/**/*.{test,spec}.scss'],
+      files: ['packages/css/scss/**/*.{test,spec}.scss'],
       rules: {
         'scss/dollar-variable-default': null,
         'declaration-no-important': null
       }
     },
     {
-      files: ['site/**/*.scss'],
+      files: ['packages/site/**/*.scss'],
       rules: {
         'scss/dollar-variable-default': null
       }
@@ -106,7 +106,7 @@ export default {
       // Tailwind CSS v4 at-rules: `@theme`, `@utility`, `@custom-variant`,
       // `@source`, `@slot`. Neither stylelint core nor
       // stylelint-config-twbs-bootstrap know about them yet.
-      files: ['scss/tailwind/**/*.scss'],
+      files: ['packages/css/scss/tailwind/**/*.scss'],
       rules: {
         'scss/at-rule-no-unknown': null,
         // `:where(& #{$child-selector})` nests the literal `&` alongside an

@@ -26,8 +26,9 @@ const MARKDOWN_FILES = [
   'README.md',
   'AGENTS.md',
   'WRITING.md',
-  'js/tests/README.md',
   'VERSIONING.md',
+  'packages/css/README.md',
+  'packages/css/js/tests/README.md',
   '.changeset/README.md',
   '.github/CONTRIBUTING.md',
   '.github/SECURITY.md',
@@ -41,6 +42,11 @@ const MARKDOWN_FILES = [
 // belong to the sites of other repositories.
 const SITE_DIR = '_site'
 const SITE_BASE = '/css/'
+
+// A file of this repository on GitHub, which the README of the package has to name by its URL
+// because npm shows it outside the repository. Checked in the working tree: `main` gets a file
+// that a change adds or moves only when the change is released.
+const OWN_FILE_RE = /^https:\/\/github\.com\/chassis-ui\/css\/(?:blob|tree)\/main\/([^#?]+)/
 
 const broken = []
 
@@ -130,6 +136,15 @@ async function checkMarkdown({ offline }) {
     const markdown = readFileSync(absolute, 'utf8')
 
     for (const link of markdownLinks(markdown)) {
+      const ownFile = OWN_FILE_RE.exec(link)
+      if (ownFile) {
+        if (!existsSync(path.join(root, decodeURI(ownFile[1])))) {
+          report(file, link, 'no such file')
+        }
+
+        continue
+      }
+
       if (/^https?:\/\//.test(link)) {
         if (!external.has(link)) {
           external.set(link, [])
