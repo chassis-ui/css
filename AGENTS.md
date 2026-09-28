@@ -22,7 +22,8 @@ Package manager is **pnpm** (pinned in `package.json`). Run `pnpm install` first
 - `pnpm css:lint` / `pnpm js:lint` / `pnpm site:lint` — lint (or `pnpm check:code` for all three)
 - `pnpm css:test` / `pnpm js:test:karma` — Sass (Jasmine) / JS (Karma) unit tests
 - `pnpm css:test:tailwind` — Node-only regression test for the Tailwind build (`dist/tailwind/`); needs `pnpm dist` run first
-- `pnpm js:test:e2e:tailwind-parity` — Playwright project comparing computed styles between `dist/css/chassis.css` and a fresh Tailwind build; opt-in locally (excluded from `pnpm js:test:e2e` and `pnpm test`) because it's slower than the rest of the e2e suite, though CI runs it (`.github/workflows/css-test.yml`) — run it after touching `scss/tailwind/` or the utility/component clash policies
+- `pnpm js:test:e2e:tailwind-parity` — Playwright project comparing computed styles between `dist/css/chassis.css` and a fresh Tailwind build; opt-in locally (excluded from `pnpm js:test:e2e` and `pnpm test`) because it's slower than the rest of the e2e suite, though CI runs it (the `css` job of `.github/workflows/ci.yml`) — run it after touching `scss/tailwind/` or the utility/component clash policies
+- `pnpm verify` — rebuild `dist/` and `js/dist/` and fail when they differ from the commit; CI and the publish workflow run it, since `npm publish` ships both as committed
 - `pnpm test` — full suite: lint + dist + css/js tests (including `css:test:tailwind`) + site build + site lint
 
 Run the narrowest relevant command while iterating; run `pnpm test` (or at least `pnpm check:code`) before considering a change complete.
