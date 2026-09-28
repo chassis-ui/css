@@ -95,8 +95,23 @@
       <div class="col flex-grow-0" data-testid="col-vs-flex-utility">col, flex-grow-0</div>
     </div>
 
+    <!-- Utilities override grid classes at every breakpoint, not only their
+         own: dist/css keeps the grid in @layer layout, the Tailwind entry in
+         the utilities.layout sublayer. -->
+    <div class="row">
+      <div class="w-100 md:col-6" data-testid="width-utility-vs-responsive-col">w-100, md:col-6</div>
+      <div class="col-4 ms-0 md:offset-2" data-testid="margin-utility-vs-responsive-offset">ms-0, md:offset-2</div>
+      <div class="flex-grow-0 md:col" data-testid="flex-utility-vs-responsive-col">flex-grow-0, md:col</div>
+      <div class="col-4 mx-auto lg:offset-1" data-testid="auto-margin-utility-vs-responsive-offset">mx-auto, lg:offset-1</div>
+    </div>
+
     <div class="row g-0">
       <div class="col" data-testid="gutter-0">No gutters</div>
+    </div>
+
+    <!-- The one grid difference between the builds, see the dedicated test. -->
+    <div class="row g-md gx-0">
+      <div class="col" data-testid="gutter-axis-after-both">g-md, gx-0</div>
     </div>
 
     <div class="row gx-md lg:gx-6xl gy-md">

@@ -49,7 +49,8 @@ type Curated = { testid: string; properties: string[] }
 // Tailwind entry's on-demand grid utilities (scss/tailwind/_grid.scss)
 // against dist/css's per-breakpoint classes: responsive columns, the
 // same-breakpoint precedence among grid classes, utilities overriding grid
-// classes, and core col-<n>'s grid-column leak into a .grid parent.
+// classes at their own and at other breakpoints, and core col-<n>'s
+// grid-column leak into a .grid parent.
 //
 // dark:fg-primary is deliberately NOT here: Chassis's own utility generator
 // only flags a handful of utilities (display) with `dark: true`, so
@@ -78,6 +79,10 @@ const CURATED: Curated[] = [
   { testid: 'offset-vs-margin-utility', properties: ['marginLeft'] },
   { testid: 'col-vs-width-utility', properties: ['width'] },
   { testid: 'col-vs-flex-utility', properties: ['flexGrow'] },
+  { testid: 'width-utility-vs-responsive-col', properties: ['width', 'flexGrow'] },
+  { testid: 'margin-utility-vs-responsive-offset', properties: ['marginLeft'] },
+  { testid: 'flex-utility-vs-responsive-col', properties: ['flexGrow'] },
+  { testid: 'auto-margin-utility-vs-responsive-offset', properties: ['marginLeft', 'marginRight'] },
   { testid: 'gutter-0', properties: ['paddingLeft', 'marginTop'] },
   { testid: 'gutter-responsive', properties: ['paddingLeft', 'marginTop'] },
   { testid: 'g-col-responsive', properties: ['gridColumnStart', 'gridColumnEnd'] },
@@ -207,6 +212,20 @@ test('dark:d-none matches via prefers-color-scheme, the one dark: mechanism both
 
   expect(tailwind['dark-d-none']).toEqual(chassis['dark-d-none'])
   expect(chassis['dark-d-none'].display).toEqual('none')
+})
+
+// The one known grid difference, documented in the Tailwind guide. Tailwind
+// orders `gx-*`/`gy-*` after `g-*`, so the axis class wins whatever the keys;
+// dist/css orders gutters by `$gutters` key, so `g-md` beats the earlier
+// `gx-0`. A change here means the guide needs updating too.
+test('g-* with gx-* on one element: the axis class wins in the Tailwind build only', async ({ page }) => {
+  const gutter: Curated[] = [{ testid: 'gutter-axis-after-both', properties: ['paddingLeft', 'marginTop'] }]
+  const chassis = await captureComputedStyles(page, 'chassis', gutter)
+  const tailwind = await captureComputedStyles(page, 'tailwind', gutter)
+
+  expect(tailwind['gutter-axis-after-both'].paddingLeft).toBe('0px')
+  expect(chassis['gutter-axis-after-both'].paddingLeft).not.toBe('0px')
+  expect(tailwind['gutter-axis-after-both'].marginTop).toBe(chassis['gutter-axis-after-both'].marginTop)
 })
 
 // Tailwind-only: Chassis's own CSS has no attribute-aware dark:/light:

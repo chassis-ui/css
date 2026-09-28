@@ -11,7 +11,9 @@
 // rules (`make-grid-columns-tailwind()`, `make-cssgrid-tailwind()`), so
 // Tailwind only generates the ones a project uses, at the breakpoints it uses
 // them. Class names are unchanged: `lg:col-6` is Tailwind's `lg:` variant of
-// `col-6`. Forwarded by `./_components-list.scss` in place of `../grid`.
+// `col-6`. Those rules land in the `utilities.layout` sublayer, not in
+// `@layer layout` itself; see `./mixins/_grid.scss`. Forwarded by
+// `./_components-list.scss` in place of `../grid`.
 //
 
 @layer layout {

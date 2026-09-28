@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **`@chassis-ui/css/tailwind/merge.js`:** the grid classes are now part of the generated tailwind-merge `classGroups` config, so `twMerge('col-6', 'col-4')`, `twMerge('g-md', 'g-lg')`, `twMerge('offset-2', 'offset-4')`, and the `row-cols-*`, `gx-*`, `gy-*`, `g-col-*`, `g-start-*` equivalents resolve to the last class
+
 ### Changed
-- **Tailwind entry:** grid column, offset, gutter, and CSS grid placement classes (`col-6`, `md:col-4`, `lg:offset-2`, `g-md`, `g-col-4`, …) are now Tailwind `@utility` rules, so a Tailwind build only generates the ones a project uses, at the breakpoints it uses them, instead of every class at every breakpoint. Class names and computed styles are unchanged; grid class names built at runtime need an `@source inline(...)` safelist entry. `dist/css` is unaffected
+- **Tailwind entry:** grid column, offset, gutter, and CSS grid placement classes (`col-6`, `md:col-4`, `lg:offset-2`, `g-md`, `g-col-4`, …) are now Tailwind `@utility` rules, so a Tailwind build only generates the ones a project uses, at the breakpoints it uses them, instead of every class at every breakpoint. Class names are unchanged; grid class names built at runtime need an `@source inline(...)` safelist entry. The classes sit in a `layout` sublayer of Tailwind's `utilities` layer, so utilities still override them at every breakpoint (`w-100 md:col-6` stays full width). Two results differ from 0.5.2: with `g-*` and `gx-*`/`gy-*` on one element the axis-specific class now wins (`g-md gx-0` has no horizontal gutter), and grid classes now rank above the `content`, `components`, and `helpers` layers instead of below them. `dist/css` is unaffected
 - **Sass:** the Tailwind entry's mixins moved from `scss/mixins/` to `scss/tailwind/mixins/`, and `scss/mixins` no longer forwards `generate-tailwind-utilities`, `generate-tailwind-merge-manifest`, `emit-source-config`, or the Tailwind grid mixins. Only affects projects that called these directly from `scss/mixins`; the documented `@chassis-ui/css/scss/tailwind` entry is unchanged
 
 ## [0.5.2] - 2026-09-25
