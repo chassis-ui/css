@@ -19,7 +19,7 @@ type TemplateFactoryConfig = {
 /**
  * Class definition
  */
-declare class TemplateFactory extends Config {
+declare class TemplateFactory extends Config<TemplateFactoryConfig> {
     protected _config: TemplateFactoryConfig;
     constructor(config?: Partial<TemplateFactoryConfig> | null);
     static get Default(): TemplateFactoryConfig;

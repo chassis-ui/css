@@ -41,6 +41,8 @@ declare class Menu extends FloatingBase {
         y: number;
         t: number;
     }>;
+    protected _mousemoveRAF: number | null;
+    protected _pendingMouseEvent: ChassisEvent | null;
     protected _menu: HTMLElement;
     protected _menuOriginalParent: ParentNode | null;
     constructor(element?: string | Element | null, config?: Partial<MenuConfig> | null);
@@ -79,6 +81,7 @@ declare class Menu extends FloatingBase {
     protected _scheduleSubmenuClose(submenu: HTMLElement, submenuWrapper: Element): void;
     protected _cancelSubmenuCloseTimeout(submenu: HTMLElement): void;
     protected _clearAllSubmenuTimeouts(): void;
+    protected _scheduleTrackMousePosition(event: ChassisEvent): void;
     protected _trackMousePosition(event: ChassisEvent): void;
     protected _isMovingTowardSubmenu(event: ChassisEvent, submenu: HTMLElement): boolean;
     protected _pointInTriangle(point: Point, v1: Point, v2: Point, v3: Point): boolean;

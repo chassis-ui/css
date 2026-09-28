@@ -11,14 +11,15 @@ type ComponentConfig = Record<string, any>;
 /**
  * Class definition
  */
-declare class Config {
-    ['constructor']: typeof Config;
+declare class Config<TConfig extends ComponentConfig = ComponentConfig> {
+    ['constructor']: typeof Config<any>;
     static get Default(): ComponentConfig;
     static get DefaultType(): ComponentConfig;
     static get NAME(): string;
-    protected _getConfig(config?: ComponentConfig | null): ComponentConfig;
-    protected _configAfterMerge(config: ComponentConfig): ComponentConfig;
-    protected _mergeConfigObj(config?: ComponentConfig | null, element?: Element): ComponentConfig;
+    protected _getConfig(config?: Partial<TConfig> | null): TConfig;
+    protected _configAfterMerge(config: TConfig): TConfig;
+    protected _mergeConfigObj(config?: Partial<TConfig> | null, element?: Element): TConfig;
+    protected _excludedConfigKeys(): string[];
     protected _typeCheckConfig(config: ComponentConfig, configTypes?: ComponentConfig): void;
 }
 export default Config;

@@ -55,6 +55,7 @@ declare class Tooltip extends FloatingBase {
     toggle(): void;
     dispose(): void;
     show(): Promise<void>;
+    protected _show(): Promise<void>;
     hide(): void;
     update(): void;
     protected _isWithContent(): boolean;
@@ -78,7 +79,7 @@ declare class Tooltip extends FloatingBase {
     protected _leave(): void;
     protected _setTimeout(handler: () => void, timeout: number): void;
     protected _isWithActiveTrigger(): boolean;
-    protected _getConfig(config?: ComponentConfig | null): ComponentConfig;
+    protected _excludedConfigKeys(): string[];
     protected _configAfterMerge(config: ComponentConfig): ComponentConfig;
     protected _getDelegateConfig(): ComponentConfig;
     protected _disposeFloating(): void;

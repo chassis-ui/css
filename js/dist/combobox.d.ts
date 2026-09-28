@@ -24,12 +24,13 @@ declare class Combobox extends BaseComponent {
     protected _toggle: HTMLElement;
     protected _menu: HTMLElement;
     protected _valueDisplay: HTMLElement;
-    _comboInput: HTMLInputElement | null;
+    protected _comboInput: HTMLInputElement | null;
     protected _searchInput: HTMLInputElement | null;
     protected _noResults: HTMLElement | null;
     protected _hiddenInput: HTMLInputElement | null;
     protected _menuInstance: Menu | null;
     protected _ignoreNextFocus: boolean;
+    protected _filterDebounceTimer: ReturnType<typeof setTimeout> | null;
     constructor(element?: string | Element | null, config?: Partial<ComboboxConfig> | null);
     static get Default(): ComboboxConfig;
     static get DefaultType(): Record<string, string>;
@@ -53,10 +54,13 @@ declare class Combobox extends BaseComponent {
     protected _updateHiddenInput(): void;
     protected _getSelectedItems(): HTMLElement[];
     protected _getVisibleItems(): HTMLElement[];
+    protected _scheduleFilter(query: string, onFiltered?: (visibleCount: number) => void): void;
+    protected _cancelFilterDebounce(): void;
     protected _filterItems(query: string): number;
     protected _normalizeText(text: string): string;
     protected _handleToggleKeydown(event: ChassisEvent): void;
     protected _handleMenuKeydown(event: ChassisEvent): void;
+    static dataApiClickHandler(this: HTMLElement, event: ChassisEvent): void;
 }
 export default Combobox;
 export type { ComboboxConfig };

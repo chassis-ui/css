@@ -13,7 +13,7 @@ interface BreakpointListener {
     mql: MediaQueryList;
     handler: (event: MediaQueryListEvent) => void;
 }
-declare class FloatingBase extends BaseComponent {
+declare abstract class FloatingBase extends BaseComponent {
     protected _config: ComponentConfig;
     protected _floatingCleanup: (() => void) | null;
     protected _mediaQueryListeners: BreakpointListener[];
@@ -29,12 +29,13 @@ declare class FloatingBase extends BaseComponent {
     protected _getResponsivePlacement(): string;
     protected _setupMediaQueryListeners(): void;
     protected _disposeMediaQueryListeners(): void;
-    protected _isShown(): boolean;
-    protected _updateFloatingPosition(): any;
+    protected abstract _isShown(): boolean;
+    protected abstract _updateFloatingPosition(): any;
     protected _getOffset(): number[] | ((state: MiddlewareState) => any);
     protected _getFallbackPlacements(): Placement[];
     protected _getFloatingMiddleware(arrowElement?: Element | null): Middleware[];
     protected _getFloatingConfig(placement: Placement | string, middleware: Middleware[]): Record<string, any>;
+    protected _mergeFloatingConfig(defaultConfig: Record<string, any>): Record<string, any>;
     protected _disposeFloating(): void;
 }
 export default FloatingBase;

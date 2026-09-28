@@ -30,6 +30,8 @@ declare class DialogBase extends BaseComponent {
     protected _openedAsModal: boolean;
     constructor(element?: string | Element | null, config?: Partial<DialogBaseConfig> | null);
     static get NAME(): string;
+    static restoreFocusOnHide(target: Element, trigger: HTMLElement): void;
+    dispose(): void;
     toggle(relatedTarget?: HTMLElement): void;
     show(relatedTarget?: HTMLElement): void;
     hide(): void;

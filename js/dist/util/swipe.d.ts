@@ -16,7 +16,7 @@ type SwipeConfig = {
 /**
  * Class definition
  */
-declare class Swipe extends Config {
+declare class Swipe extends Config<SwipeConfig> {
     protected _element: HTMLElement;
     protected _config: SwipeConfig;
     protected _deltaX: number;

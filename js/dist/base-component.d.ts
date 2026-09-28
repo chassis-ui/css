@@ -8,12 +8,13 @@ import Config, { type ComponentConfig } from './util/config.js';
 /**
  * Class definition
  */
-declare class BaseComponent extends Config {
+declare class BaseComponent extends Config<ComponentConfig> {
     ['constructor']: typeof BaseComponent;
     protected _element: HTMLElement;
     protected _config: ComponentConfig;
     constructor(element?: string | Element | null, config?: ComponentConfig | null);
     dispose(): void;
+    isDisposed(): boolean;
     protected _queueCallback(callback: () => void, element: Element, isAnimated?: boolean): void;
     protected _getConfig(config?: ComponentConfig | null): ComponentConfig;
     static getInstance<T extends typeof BaseComponent>(this: T, element?: string | Element | null): InstanceType<T> | null;
