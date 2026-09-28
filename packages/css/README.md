@@ -10,14 +10,14 @@ The JavaScript plugins use two peer dependencies: `@floating-ui/dom` (menus, pop
 
 ## What the package holds
 
-| Folder | Files |
-| --- | --- |
-| `dist/css/` | The compiled CSS: `chassis.css`, and `chassis-grid.css`, `chassis-reboot.css` and `chassis-utilities.css` as separate parts, each with a minified build and source maps |
-| `dist/js/` | The JavaScript as ES modules: `chassis.js` expects the peer dependencies to be resolved, `chassis.bundle.js` includes them |
-| `dist/tailwind/` | The entry for Tailwind CSS v4 |
-| `js/dist/` | One module per plugin, with type declarations; `js/src/` is their TypeScript source |
-| `scss/` | The Sass source |
-| `postcss/` | The PostCSS plugin that adds the `--cx-` prefix to custom properties |
+| Folder           | Files                                                                                                                                                                   |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dist/css/`      | The compiled CSS: `chassis.css`, and `chassis-grid.css`, `chassis-reboot.css` and `chassis-utilities.css` as separate parts, each with a minified build and source maps |
+| `dist/js/`       | The JavaScript as ES modules: `chassis.js` expects the peer dependencies to be resolved, `chassis.bundle.js` includes them                                              |
+| `dist/tailwind/` | The entry for Tailwind CSS v4                                                                                                                                           |
+| `js/dist/`       | One module per plugin, with type declarations; `js/src/` is their TypeScript source                                                                                     |
+| `scss/`          | The Sass source                                                                                                                                                         |
+| `postcss/`       | The PostCSS plugin that adds the `--cx-` prefix to custom properties                                                                                                    |
 
 ## Use
 

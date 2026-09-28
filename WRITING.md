@@ -19,12 +19,12 @@ How to write component, helper, and concept docs for chassis-css. This guide cod
 
 The right prose voice depends on the doc category. There are three distinct conventions, and mixing them in the wrong context produces prose that either feels like a marketing page or sounds robotic.
 
-| Doc type | Voice | Second-person `you/your` | First-person `we/our` |
-| --- | --- | --- | --- |
-| Component, helper, and utility docs | Instructive | ✗ Avoid | ✗ Avoid |
-| Core Concepts (`core-concepts/*.mdx`) | Instructive | ✗ Avoid | ✗ Avoid |
-| Getting Started + Customize (`getting-started/*.mdx`, `customize/*.mdx`) | Tutorial | ✓ Appropriate | ✗ Avoid |
-| Overview / index pages (`*/overview.mdx`) | Tutorial | ✓ Appropriate | ✗ Avoid |
+| Doc type                                                                 | Voice       | Second-person `you/your` | First-person `we/our` |
+| ------------------------------------------------------------------------ | ----------- | ------------------------ | --------------------- |
+| Component, helper, and utility docs                                      | Instructive | ✗ Avoid                  | ✗ Avoid               |
+| Core Concepts (`core-concepts/*.mdx`)                                    | Instructive | ✗ Avoid                  | ✗ Avoid               |
+| Getting Started + Customize (`getting-started/*.mdx`, `customize/*.mdx`) | Tutorial    | ✓ Appropriate            | ✗ Avoid               |
+| Overview / index pages (`*/overview.mdx`)                                | Tutorial    | ✓ Appropriate            | ✗ Avoid               |
 
 ---
 
@@ -50,7 +50,7 @@ The right prose voice depends on the doc category. There are three distinct conv
 
 ### 2. Every heading earns its paragraph
 
-Every `##`, `###`, and `####` heading must be followed by at least one explanatory sentence before any code example, bullet list, or sub-heading, naming what the section is about and why it matters — bare-heading-then-example tells readers *what* exists but not *when to reach for it*.
+Every `##`, `###`, and `####` heading must be followed by at least one explanatory sentence before any code example, bullet list, or sub-heading, naming what the section is about and why it matters — bare-heading-then-example tells readers _what_ exists but not _when to reach for it_.
 
 **Floor:** one full sentence is enough — don't pad.
 
@@ -122,12 +122,12 @@ toc: true
 
 Conditional fields and their accepted values:
 
-| Field | Values | Effect |
-| --- | --- | --- |
-| `css_layer` | `components`, `forms` (or any other declared layer) | Renders a layer chip. Omit when the component is unlayered. |
-| `css_media` | `container`, `viewport` | Declares the responsiveness model. Use `container` for `@container`-based components ([§11](#11-example-vs-resizableexample)); use `viewport` (or omit) for media-query-driven components. |
-| `js` | `required`, `optional` | `required` renders a "JS required" badge (the component does not function without the bundled JS); `optional` renders a softer indicator (enhancement only). Omit for pure CSS components. |
-| `deps` | List of `{title}` entries, e.g. `- title: ComponentA` | Renders a deps list above the doc. List sibling components this one composes with. |
+| Field       | Values                                                | Effect                                                                                                                                                                                     |
+| ----------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `css_layer` | `components`, `forms` (or any other declared layer)   | Renders a layer chip. Omit when the component is unlayered.                                                                                                                                |
+| `css_media` | `container`, `viewport`                               | Declares the responsiveness model. Use `container` for `@container`-based components ([§11](#11-example-vs-resizableexample)); use `viewport` (or omit) for media-query-driven components. |
+| `js`        | `required`, `optional`                                | `required` renders a "JS required" badge (the component does not function without the bundled JS); `optional` renders a softer indicator (enhancement only). Omit for pure CSS components. |
+| `deps`      | List of `{title}` entries, e.g. `- title: ComponentA` | Renders a deps list above the doc. List sibling components this one composes with.                                                                                                         |
 
 `description` follows the same instructive-voice and use-case-list rules as body prose — see [§3](#3-describe-behavior-not-benefits).
 
@@ -235,7 +235,7 @@ One-sentence description of what each mixin emits and when to use it.
 
 **Helper CSS section.** Helper docs use a lighter `## CSS` template without the boilerplate components. Include only the sub-sections that exist for the helper:
 
-```mdx
+````mdx
 ## CSS
 
 One sentence describing what the helper class does (not a container phrase — see [§2](#2-every-heading-earns-its-paragraph)).
@@ -263,7 +263,7 @@ One sentence describing what the mixin emits and when to use it in a custom sele
 .custom-selector {
   @include <mixin-name>();
 }
-```
+````
 
 <ScssDocs name="<helper>-mixin" file="scss/mixins/_<helper>.scss" />
 ```
@@ -310,14 +310,14 @@ Every component example must carry the ARIA attributes appropriate to its semant
 
 Components that ship a JS plugin get a `## JavaScript API` section between `## Accessibility` and `## CSS`: a one-sentence summary, the ES module import, then `### Triggers` (data-attribute API), `### Initialization` (programmatic instantiation), `### Methods`, and `### Events` as applicable. Import the class as an ES module — the namespace pattern (`chassis.MyComponent(...)`) is legacy and shouldn't appear in new docs.
 
-```mdx
+````mdx
 ## JavaScript API
 
 The MyComponent plugin handles dismissal and exposes events for integrating with surrounding flows. Chassis JS ships as an ES module — import the `MyComponent` class:
 
 ```js
 import { MyComponent } from '@chassis-ui/css'
-```
+````
 
 ### Triggers
 
@@ -379,25 +379,25 @@ For the broader code-block conventions (language tags, partial vs full code, fen
 
 Always tag fenced code blocks with the source language — untagged blocks display without highlighting and break the copy-to-clipboard toolbar. Conventions in use:
 
-| Block kind | Language tag | Notes |
-| --- | --- | --- |
-| HTML markup outside `<Example>` | `` ```html `` | E.g. accessibility callout examples, raw `<svg>` snippets. |
-| JavaScript usage | `` ```js `` | Includes ESM imports, instantiation, and event listeners. |
-| SCSS | `` ```scss `` | Use for hand-written examples; prefer `<ScssDocs>` for snippets pulled from source. |
-| Compiled CSS | `` ```css `` | For showing compiled output by hand; otherwise pass `compile` to `<ScssDocs>` ([§10](#10-the--css-section-template)). |
-| Shell commands | `` ```bash `` | Installation, build, and CLI commands. |
-| MDX/Markdown | `` ```mdx `` / `` ```md `` | When the styleguide or a meta-doc shows authoring patterns. |
+| Block kind                      | Language tag           | Notes                                                                                                                 |
+| ------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| HTML markup outside `<Example>` | ` ```html `            | E.g. accessibility callout examples, raw `<svg>` snippets.                                                            |
+| JavaScript usage                | ` ```js `              | Includes ESM imports, instantiation, and event listeners.                                                             |
+| SCSS                            | ` ```scss `            | Use for hand-written examples; prefer `<ScssDocs>` for snippets pulled from source.                                   |
+| Compiled CSS                    | ` ```css `             | For showing compiled output by hand; otherwise pass `compile` to `<ScssDocs>` ([§10](#10-the--css-section-template)). |
+| Shell commands                  | ` ```bash `            | Installation, build, and CLI commands.                                                                                |
+| MDX/Markdown                    | ` ```mdx ` / ` ```md ` | When the styleguide or a meta-doc shows authoring patterns.                                                           |
 
 ### 18. Partial vs full code
 
-`<Example>` blocks should always be standalone and runnable — a reader copying the code into an empty HTML document should see a working component. Inline `` ```js `` / `` ```html `` snippets in narrative sections (Accessibility, JS API) can be partial — show only the pattern under discussion and don't repeat boilerplate. Prefer working code over comment-only placeholders: `document.getElementById('triggerButton').focus()` beats `// move focus here`.
+`<Example>` blocks should always be standalone and runnable — a reader copying the code into an empty HTML document should see a working component. Inline ` ```js ` / ` ```html ` snippets in narrative sections (Accessibility, JS API) can be partial — show only the pattern under discussion and don't repeat boilerplate. Prefer working code over comment-only placeholders: `document.getElementById('triggerButton').focus()` beats `// move focus here`.
 
 ### 19. Inline code vs code blocks
 
 - **Inline backticks** for single identifiers, attribute names, file paths, and short literal values. `` `.my-component` ``, `` `aria-current="page"` ``, `` `scss/_component.scss` ``.
 - **Fenced blocks** for anything that spans multiple lines, or for single lines that the reader will copy and run.
 
-If a one-liner is *demonstrating syntax* rather than something to copy, prefer an inline-code form. If it's *something to run*, prefer a fenced block.
+If a one-liner is _demonstrating syntax_ rather than something to copy, prefer an inline-code form. If it's _something to run_, prefer a fenced block.
 
 ### 20. Document length and splitting
 
@@ -410,8 +410,8 @@ A doc is too long when a `##` section has more than three `###` sub-sections on 
 Before opening a PR with a doc change, verify:
 
 - [ ] **Voice check ([§1](#1-voice-by-doc-type)):**
-  - *Component, helper, utility, and core-concepts docs:* No second-person or first-person plural in prose. Quick check: `grep -niE "\b(you|your|yours|we|our|ours|us)\b" <file>` returns nothing relevant.
-  - *Getting-started, customize, and all `overview.mdx` index pages:* "you/your" are acceptable; confirm "we/us/our" are absent.
+  - _Component, helper, utility, and core-concepts docs:_ No second-person or first-person plural in prose. Quick check: `grep -niE "\b(you|your|yours|we|our|ours|us)\b" <file>` returns nothing relevant.
+  - _Getting-started, customize, and all `overview.mdx` index pages:_ "you/your" are acceptable; confirm "we/us/our" are absent.
 - [ ] Every `##`/`###`/`####` heading has an explanatory sentence before the next block ([§2](#2-every-heading-earns-its-paragraph)).
 - [ ] No marketing adjectives in prose ([§3](#3-describe-behavior-not-benefits)) — use-case lists are allowed.
 - [ ] Frontmatter `description` is under 160 characters and instructive ([§6](#6-frontmatter)).
@@ -454,40 +454,40 @@ The Chassis docs site exposes a small set of MDX components for rendering exampl
 
 Renders a live preview of the component and the source markup below it. Default for all component examples.
 
-| Prop | Type | Default | Purpose |
-| --- | --- | --- | --- |
-| `code` | `string \| string[]` | required | The example markup. Array entries are joined with `\n`. |
-| `class` | `string` | — | Classes applied to the preview wrapper (e.g. `vstack gap-medium` to stack multiple variants). |
-| `lang` | `string` | `html` | Language for the source code block. |
-| `file` | `string` | — | When set, displays the file path in the source toolbar instead of the language label. |
-| `id` | `string` | — | DOM id on the preview wrapper. |
-| `lineNumbers` | `boolean` | `false` | Show line numbers in the source block. |
-| `showPreview` | `boolean` | `true` | Hide the rendered preview, source-only mode. |
-| `showMarkup` | `boolean` | `true` | Hide the source block, preview-only mode. |
-| `customMarkup` | `string \| string[]` | — | Source markup that differs from the rendered `code` (e.g. when the preview includes inline styles for demo purposes). |
-| `addStackblitzJs` | `boolean` | `false` | Bundle the doc's referenced JS snippets when opening the example in StackBlitz. Use for interactive examples that depend on `<JsDocs>` blocks. |
+| Prop              | Type                 | Default  | Purpose                                                                                                                                        |
+| ----------------- | -------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `code`            | `string \| string[]` | required | The example markup. Array entries are joined with `\n`.                                                                                        |
+| `class`           | `string`             | —        | Classes applied to the preview wrapper (e.g. `vstack gap-medium` to stack multiple variants).                                                  |
+| `lang`            | `string`             | `html`   | Language for the source code block.                                                                                                            |
+| `file`            | `string`             | —        | When set, displays the file path in the source toolbar instead of the language label.                                                          |
+| `id`              | `string`             | —        | DOM id on the preview wrapper.                                                                                                                 |
+| `lineNumbers`     | `boolean`            | `false`  | Show line numbers in the source block.                                                                                                         |
+| `showPreview`     | `boolean`            | `true`   | Hide the rendered preview, source-only mode.                                                                                                   |
+| `showMarkup`      | `boolean`            | `true`   | Hide the source block, preview-only mode.                                                                                                      |
+| `customMarkup`    | `string \| string[]` | —        | Source markup that differs from the rendered `code` (e.g. when the preview includes inline styles for demo purposes).                          |
+| `addStackblitzJs` | `boolean`            | `false`  | Bundle the doc's referenced JS snippets when opening the example in StackBlitz. Use for interactive examples that depend on `<JsDocs>` blocks. |
 
 ### `<ResizableExample>`
 
 Wraps the preview in a width-resizable container. Use only for components whose responsiveness is driven by `@container` queries — see [§11](#11-example-vs-resizableexample).
 
-| Prop | Type | Default | Purpose |
-| --- | --- | --- | --- |
-| `code` | `string \| string[]` | required | The example markup. |
-| `class` / `className` | `string` | — | Classes applied to the resizable container. |
-| `initialWidth` | `string` | `100%` | Starting width of the resizable container. |
-| `minWidth` | `string` | `200px` | Minimum width the user can resize down to. |
-| `showMarkup` | `boolean` | `true` | Hide the source block. |
+| Prop                  | Type                 | Default  | Purpose                                     |
+| --------------------- | -------------------- | -------- | ------------------------------------------- |
+| `code`                | `string \| string[]` | required | The example markup.                         |
+| `class` / `className` | `string`             | —        | Classes applied to the resizable container. |
+| `initialWidth`        | `string`             | `100%`   | Starting width of the resizable container.  |
+| `minWidth`            | `string`             | `200px`  | Minimum width the user can resize down to.  |
+| `showMarkup`          | `boolean`            | `true`   | Hide the source block.                      |
 
 ### `<Callout>`
 
 Highlighted aside. See [§12](#12-callouts) for when to use each type.
 
-| Prop | Type | Default | Purpose |
-| --- | --- | --- | --- |
-| `type` | `'info' \| 'warning' \| 'danger'` | `'info'` | Visual treatment. |
-| `name` | `string` | — | Render a shared callout from `packages/site/content/callouts/<name>.md`. Overrides the slot content. |
-| *(slot)* | MDX content | — | Inline callout body. Ignored when `name` is set. |
+| Prop     | Type                              | Default  | Purpose                                                                                              |
+| -------- | --------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| `type`   | `'info' \| 'warning' \| 'danger'` | `'info'` | Visual treatment.                                                                                    |
+| `name`   | `string`                          | —        | Render a shared callout from `packages/site/content/callouts/<name>.md`. Overrides the slot content. |
+| _(slot)_ | MDX content                       | —        | Inline callout body. Ignored when `name` is set.                                                     |
 
 Optional `title` attribute (on the inline form) renders a bold leading title above the body.
 
@@ -495,46 +495,46 @@ Optional `title` attribute (on the inline form) renders a bold leading title abo
 
 Wraps a Markdown table in a responsive scroll container. Use for any table that might overflow on narrow viewports — methods tables, events tables, frontmatter schemas.
 
-| Prop | Type | Default | Purpose |
-| --- | --- | --- | --- |
+| Prop    | Type     | Default | Purpose                                                        |
+| ------- | -------- | ------- | -------------------------------------------------------------- |
 | `class` | `string` | `table` | CSS class applied to the inner `<table>` by the rehype plugin. |
 
 ### `<ScssDocs>`
 
 Renders an SCSS snippet pulled from source between `// scss-docs-start <name>` and `// scss-docs-end <name>` markers.
 
-| Prop | Type | Default | Purpose |
-| --- | --- | --- | --- |
-| `name` | `string` | required | Marker name to extract from the source file. |
-| `file` | `string` | required | Source path relative to the repo root. |
-| `compile` | `boolean` | `false` | When `true`, compiles the snippet via the Sass JS API and renders the resulting CSS — useful for blocks that contain `@include` calls. See [§10](#10-the--css-section-template). |
+| Prop      | Type      | Default  | Purpose                                                                                                                                                                          |
+| --------- | --------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`    | `string`  | required | Marker name to extract from the source file.                                                                                                                                     |
+| `file`    | `string`  | required | Source path relative to the repo root.                                                                                                                                           |
+| `compile` | `boolean` | `false`  | When `true`, compiles the snippet via the Sass JS API and renders the resulting CSS — useful for blocks that contain `@include` calls. See [§10](#10-the--css-section-template). |
 
 ### `<JsDocs>`
 
 Renders a JavaScript snippet pulled from source between `// js-docs-start <name>` and `// js-docs-end <name>` markers. Same prop shape as `<ScssDocs>` minus `compile`.
 
-| Prop | Type | Default | Purpose |
-| --- | --- | --- | --- |
-| `name` | `string` | required | Marker name. |
+| Prop   | Type     | Default  | Purpose                                |
+| ------ | -------- | -------- | -------------------------------------- |
+| `name` | `string` | required | Marker name.                           |
 | `file` | `string` | required | Source path relative to the repo root. |
 
 ### `<JsDismiss>`
 
 Renders the standard data-attribute dismissal documentation for a component. Use inside `## JavaScript API` → `### Triggers`.
 
-| Prop | Type | Default | Purpose |
-| --- | --- | --- | --- |
+| Prop   | Type     | Default  | Purpose                                                                      |
+| ------ | -------- | -------- | ---------------------------------------------------------------------------- |
 | `name` | `string` | required | Component name (used in the rendered prose and code, e.g. `"my-component"`). |
 
 ### `<DocsCSS>`, `<DocsCSSVars>`, `<DocsSASSVars>`, `<DocsDesignTokens>`
 
 Boilerplate paragraph generators for the `## CSS` section. All four take the same shape:
 
-| Prop | Type | Default | Purpose |
-| --- | --- | --- | --- |
-| `component` | `string` | — | Component name in the rendered sentence (`"MyComponent"` → "The MyComponent component…"). Omit for the generic "This component" fallback. |
-| `plural` | `boolean` | `false` | Use plural phrasing ("These components" / "Form components"). |
-| `exposed` | `boolean` | `false` | `<DocsCSS>` / `<DocsSASSVars>`: marks variables as runtime-overridable via `--cx-` custom properties. `<DocsCSSVars>`: not accepted. |
-| `cascading` | `boolean` | `false` | `<DocsCSSVars>` only: appends the cascading-variables explanation and links to the context-class doc. |
+| Prop        | Type      | Default | Purpose                                                                                                                                   |
+| ----------- | --------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `component` | `string`  | —       | Component name in the rendered sentence (`"MyComponent"` → "The MyComponent component…"). Omit for the generic "This component" fallback. |
+| `plural`    | `boolean` | `false` | Use plural phrasing ("These components" / "Form components").                                                                             |
+| `exposed`   | `boolean` | `false` | `<DocsCSS>` / `<DocsSASSVars>`: marks variables as runtime-overridable via `--cx-` custom properties. `<DocsCSSVars>`: not accepted.      |
+| `cascading` | `boolean` | `false` | `<DocsCSSVars>` only: appends the cascading-variables explanation and links to the context-class doc.                                     |
 
 Each component renders a single paragraph. Place it directly under the corresponding `###` heading; no manual intro sentence is needed.

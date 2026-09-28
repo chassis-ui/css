@@ -183,6 +183,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # The whole repository, not only the site; .prettierignore lists what is left out
+      - name: Prettier
+        run: pnpm lint:prettier
+
       - name: Astro check
         run: pnpm check:astro
 

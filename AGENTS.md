@@ -62,15 +62,15 @@ Run the narrowest relevant command while iterating, then the checks in [Before a
 
 Run the checks of the area you changed, and report the ones that fail.
 
-| Area changed | Run |
-| --- | --- |
-| `scss/` | `pnpm css:lint`, `pnpm css`, `pnpm css:test`, `pnpm verify` |
-| `scss/tailwind/`, `packages/css/build/tailwind/` | the row above, then `pnpm css:test:tailwind` and `pnpm js:test:e2e:tailwind-parity` |
-| `js/src/` | `pnpm js:lint`, `pnpm js:typecheck`, `pnpm js:test:unit`, `pnpm verify`; `pnpm js:test:e2e` for behavior a user sees |
-| Exports, `packages/css/package.json`, `postcss/`, `js/src/index.ts` | `pnpm js:test:integration`, `pnpm check:package`, `pnpm verify` |
-| `packages/site/` | `pnpm check:astro`, `pnpm site:build`, then `pnpm site:lint` (its HTML validation reads `_site/`) |
-| README or other Markdown | `pnpm docs:links` |
-| A `package.json` or `pnpm-lock.yaml` | `pnpm install --frozen-lockfile`, `pnpm verify` (the bundled dependencies are in `dist/js/chassis.bundle.js`) |
+| Area changed                                                        | Run                                                                                                                  |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `scss/`                                                             | `pnpm css:lint`, `pnpm css`, `pnpm css:test`, `pnpm verify`                                                          |
+| `scss/tailwind/`, `packages/css/build/tailwind/`                    | the row above, then `pnpm css:test:tailwind` and `pnpm js:test:e2e:tailwind-parity`                                  |
+| `js/src/`                                                           | `pnpm js:lint`, `pnpm js:typecheck`, `pnpm js:test:unit`, `pnpm verify`; `pnpm js:test:e2e` for behavior a user sees |
+| Exports, `packages/css/package.json`, `postcss/`, `js/src/index.ts` | `pnpm js:test:integration`, `pnpm check:package`, `pnpm verify`                                                      |
+| `packages/site/`                                                    | `pnpm check:astro`, `pnpm site:build`, then `pnpm site:lint` (its HTML validation reads `_site/`)                    |
+| README or other Markdown                                            | `pnpm docs:links`                                                                                                    |
+| A `package.json` or `pnpm-lock.yaml`                                | `pnpm install --frozen-lockfile`, `pnpm verify` (the bundled dependencies are in `dist/js/chassis.bundle.js`)        |
 
 ## Generated and committed output
 
