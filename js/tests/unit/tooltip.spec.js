@@ -834,36 +834,57 @@ describe('Tooltip', () => {
     })
 
     it('should properly maintain tooltip state if leave event occurs and enter event occurs during hide transition', () => {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         // Style this tooltip to give it plenty of room for Floating UI to do what it wants
         fixtureEl.innerHTML = '<a href="#" rel="tooltip" title="Another tooltip" data-cx-placement="top" style="position:fixed;left:50%;top:50%;">Trigger</a>'
 
         const tooltipEl = fixtureEl.querySelector('a')
         const tooltip = new Tooltip(tooltipEl)
 
-        spyOn(window, 'getComputedStyle').and.returnValue({
-          transitionDuration: '0.15s',
-          transitionDelay: '0s'
+        // A 150ms transition on the tooltip only: Floating UI reads the computed
+        // style of other elements while it positions the tooltip
+        const { getComputedStyle } = window
+        spyOn(window, 'getComputedStyle').and.callFake((element, pseudoElement) => {
+          return element.classList?.contains('tooltip') ?
+            { transitionDuration: '0.15s', transitionDelay: '0s' } :
+            getComputedStyle(element, pseudoElement)
         })
 
-        setTimeout(() => {
-          expect(tooltip._floatingCleanup).not.toBeNull()
-          expect(tooltip._getTipElement().getAttribute('data-cx-placement')).toEqual('top')
-          tooltipEl.dispatchEvent(createEvent('mouseout'))
+        // Waits for events rather than fixed delays, since positioning is
+        // asynchronous; a failed expectation rejects instead of timing out
+        const check = assertions => {
+          try {
+            assertions()
+          } catch (error) {
+            reject(error)
+          }
+        }
 
-          setTimeout(() => {
-            expect(tooltip._getTipElement()).not.toHaveClass('show')
-            tooltipEl.dispatchEvent(createEvent('mouseover'))
-          }, 100)
-
-          // Wider gap after re-entering so any async Floating UI repositioning
-          // has settled before asserting state, independent of CI scheduling jitter
-          setTimeout(() => {
+        EventHandler.one(tooltipEl, 'shown.cx.tooltip', () => {
+          check(() => {
             expect(tooltip._floatingCleanup).not.toBeNull()
             expect(tooltip._getTipElement().getAttribute('data-cx-placement')).toEqual('top')
-            resolve()
-          }, 300)
-        }, 10)
+          })
+
+          tooltipEl.dispatchEvent(createEvent('mouseout'))
+
+          // Inside the 150ms hide transition
+          setTimeout(() => {
+            check(() => {
+              expect(tooltip._getTipElement()).not.toHaveClass('show')
+            })
+
+            EventHandler.one(tooltipEl, 'shown.cx.tooltip', () => {
+              check(() => {
+                expect(tooltip._floatingCleanup).not.toBeNull()
+                expect(tooltip._getTipElement().getAttribute('data-cx-placement')).toEqual('top')
+              })
+              resolve()
+            })
+
+            tooltipEl.dispatchEvent(createEvent('mouseover'))
+          }, 100)
+        })
 
         tooltipEl.dispatchEvent(createEvent('mouseover'))
       })
