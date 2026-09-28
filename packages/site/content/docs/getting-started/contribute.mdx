@@ -26,11 +26,13 @@ Local development depends on Node.js and [pnpm](https://pnpm.io/); the documenta
 
    `pnpm install` installs the dependencies of the framework and the documentation site, including the `@chassis-ui/tokens` and `@chassis-ui/icons` packages from npm.
 
-When the install finishes, the scripts documented below are ready to run.
+The repository is a pnpm workspace. The framework, which npm publishes, is in `packages/css/`: `scss/`, `js/`, `postcss/` and the committed `dist/` are folders of it. The documentation site is in `packages/site/`.
+
+When the install finishes, the scripts documented below are ready to run from the project root.
 
 ## pnpm scripts
 
-The full list of scripts lives in [`package.json`]([[config:repo]]/blob/main/package.json). The ones you'll use most often:
+The full list of scripts lives in the root [`package.json`]([[config:repo]]/blob/main/package.json), which runs the scripts of the package in `packages/css/`. The ones you'll use most often:
 
 <CxTable>
 | Command | What it does |
@@ -56,7 +58,7 @@ Chassis CSS uses [Dart Sass](https://sass-lang.com/dart-sass/). The output is po
 
 ## Autoprefixer
 
-Compiled CSS is post-processed with [Autoprefixer](https://github.com/postcss/autoprefixer) using the targets defined in [`.browserslistrc`]([[config:repo]]/blob/main/.browserslistrc). The build invokes Autoprefixer automatically; if you compile Chassis from source in your own pipeline, run Autoprefixer on the output to match the support matrix in our distribution build.
+Compiled CSS is post-processed with [Autoprefixer](https://github.com/postcss/autoprefixer) using the targets defined in [`.browserslistrc`]([[config:repo]]/blob/main/packages/css/.browserslistrc). The build invokes Autoprefixer automatically; if you compile Chassis from source in your own pipeline, run Autoprefixer on the output to match the support matrix in our distribution build.
 
 ## RTL
 
@@ -64,13 +66,13 @@ Chassis CSS supports RTL through CSS logical properties used throughout the fram
 
 ## Documentation site
 
-The documentation is a static [Astro](https://astro.build/) site under `site/`. To run it locally:
+The documentation is a static [Astro](https://astro.build/) site under `packages/site/`. To run it locally:
 
 1. Run through the [tooling setup](#tooling-setup) above so dependencies are installed.
 2. From the project root, run `pnpm dev`.
 3. Open [`http://localhost:4323/css/`](http://localhost:4323/css/) in your browser. Edits to the docs MDX files hot-reload automatically.
 
-The site source is in `site/`; content lives under `site/content/docs/`. Astro's [documentation](https://docs.astro.build/) covers the rendering side of the stack.
+The site source is in `packages/site/`; content lives under `packages/site/content/docs/`. Astro's [documentation](https://docs.astro.build/) covers the rendering side of the stack.
 
 ## Troubleshooting
 
@@ -89,4 +91,4 @@ For anything that survives those resets, [open an issue]([[config:repo]]/issues/
 
 - [Astro documentation](https://docs.astro.build/) — the docs site renderer.
 - [Dart Sass changelog](https://sass-lang.com/documentation/breaking-changes/) — context on the deprecation warnings.
-- [`.browserslistrc`]([[config:repo]]/blob/main/.browserslistrc) — the canonical browser-support list.
+- [`.browserslistrc`]([[config:repo]]/blob/main/packages/css/.browserslistrc) — the canonical browser-support list.

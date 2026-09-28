@@ -24,15 +24,16 @@ Projects depend on more than the JavaScript exports. All of these are public:
 - **JavaScript**: the exports of `@chassis-ui/css` and `@chassis-ui/css/js/dist/*`, each plugin's
   options, methods, static members and event names, and the TypeScript declarations in
   `js/dist/*.d.ts`.
-- **Package paths**: every path in the `exports` map of `package.json`, the file names in `dist/`,
-  the PostCSS preset (`@chassis-ui/css/postcss`), and the Tailwind entry
+- **Package paths**: every path in the `exports` map of `packages/css/package.json`, the file
+  names in `dist/`, the PostCSS preset (`@chassis-ui/css/postcss`), and the Tailwind entry
   (`@chassis-ui/css/tailwind`, its partials and `merge.js`).
 - **Requirements**: the peer dependency ranges, `engines.node`, and the browsers in
   `.browserslistrc`.
 
 Not public: the exact compiled CSS (selector order, how declarations are merged or minified), the
-internal Sass placeholders (`%…`), undocumented classes and custom properties, and the files in
-`build/`.
+internal Sass placeholders (`%…`), undocumented classes and custom properties, the files in
+`build/` and `packages/css/build/`, and where the package is in the repository: the paths above
+are the ones inside the published package, which is `packages/css/` in the repository.
 
 ## Which bump
 

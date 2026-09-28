@@ -6,8 +6,8 @@ kept up to date, rather than repeating them.
 
 ## Dev setup
 
-You need Node.js 22 or later and pnpm (the version in `packageManager` of `package.json`;
-`corepack enable` picks it up).
+You need Node.js 22 or later and pnpm (the version in `packageManager` of the root
+`package.json`; `corepack enable` picks it up).
 
 ```sh
 git clone https://github.com/chassis-ui/css.git chassis-css
@@ -20,20 +20,27 @@ pnpm start
 site needs it) and then runs `pnpm dev`: CSS and JavaScript in watch mode and the docs site at
 `http://localhost:4323/css/`. After the first run, `pnpm dev` is enough.
 
+Run every command from the root of the repository. The scripts of the root `package.json` run the
+ones of the package in `packages/css` for you.
+
 ## Repository layout
 
-The repository builds three things: the CSS framework, the JavaScript plugins and the
-documentation site.
+The repository is a pnpm workspace of two packages: `packages/css`, which is published and holds
+the CSS framework and the JavaScript plugins, and `packages/site`, the documentation site. In the
+rest of this guide, `scss/`, `js/`, `postcss/` and `dist/` are the folders in `packages/css/`.
 
 | Path                | What it is                                                                                                                                                                                         |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/css/`     | The published package, `@chassis-ui/css`. The folders of the next rows are inside it                                                                                                               |
 | `scss/`             | The Sass source. `chassis.scss` and the other `chassis-*.scss` files are the entries; one partial per component. `scss/tailwind/` is the Tailwind CSS v4 entry. `scss/tests/` holds the Sass tests |
 | `js/src/`           | The TypeScript source of the plugins, one module per component; `index.ts` re-exports them                                                                                                         |
-| `js/tests/`         | Unit tests (`unit/`), end-to-end tests (`e2e/`), bundle and package tests (`integration/`) and type tests (`types/`). See [js/tests/README.md](../js/tests/README.md)                              |
+| `js/tests/`         | Unit tests (`unit/`), end-to-end tests (`e2e/`), bundle and package tests (`integration/`) and type tests (`types/`). See [js/tests/README.md](../packages/css/js/tests/README.md)                 |
 | `dist/`, `js/dist/` | The build output, **committed and published**. See [Committed build output](#committed-build-output)                                                                                               |
 | `postcss/`          | The PostCSS preset published as `@chassis-ui/css/postcss`; it adds the `--cx-` prefix                                                                                                              |
-| `build/`            | The build, release and check scripts                                                                                                                                                               |
-| `site/`             | The Astro documentation site, published at [chassis-ui.com/css](https://chassis-ui.com/css/)                                                                                                       |
+| `build/`            | The build of the package: Rolldown, PostCSS, the Tailwind entry and `pnpm verify`                                                                                                                  |
+| `packages/site/`    | The Astro documentation site, published at [chassis-ui.com/css](https://chassis-ui.com/css/). A private package that depends on the one in `packages/css/`                                         |
+| `build/` (root)     | The scripts of the repository: link and HTML checks, version references, release notes                                                                                                             |
+| `patches/`          | pnpm patches of dependencies, applied by `pnpm install`                                                                                                                                            |
 | `vendor/assets`     | A git submodule of [chassis-ui/assets](https://github.com/chassis-ui/assets); changes belong there                                                                                                 |
 
 ## Branch and commit conventions
@@ -64,7 +71,7 @@ pnpm css
 pnpm css:test
 ```
 
-After a change to `scss/tailwind/` or `build/tailwind/`, also run `pnpm css:test:tailwind` and
+After a change to `scss/tailwind/` or `packages/css/build/tailwind/`, also run `pnpm css:test:tailwind` and
 `pnpm js:test:e2e:tailwind-parity`. The generated Tailwind files and the commands that write them
 again are described in AGENTS.md too.
 
@@ -86,7 +93,7 @@ pnpm js:test:unit
 
 `js:test:unit` runs the specs in Chromium through Vitest's browser mode;
 `pnpm js:test:unit:all-browsers` adds Firefox and WebKit, as CI does. `pnpm js:test:e2e` runs the
-Playwright tests. For a change to the exports, `package.json` or `postcss/`, also run
+Playwright tests. For a change to the exports, `packages/css/package.json` or `postcss/`, also run
 `pnpm js:test:integration` and `pnpm check:package`, which pack the package and install it into an
 empty project.
 
@@ -95,7 +102,7 @@ Check behavior in the production build (`pnpm js`), not only in the dev watcher:
 
 ## Changing the docs
 
-The pages are in `site/content/docs/`. [WRITING.md](../WRITING.md) is their style guide: voice,
+The pages are in `packages/site/content/docs/`. [WRITING.md](../WRITING.md) is their style guide: voice,
 section order, frontmatter and examples. With `pnpm dev` running, pages reload as you edit them.
 
 Before opening a pull request:
@@ -131,7 +138,7 @@ fails on your pull request, run `pnpm dist` and commit what changed.
   - **Site**: `astro check`, the site build, `site:lint` and `pnpm docs:links`.
   - **Audit**: `pnpm audit --prod` fails the job; the full audit is reported only.
   - **Bundle size**: the gzip size of each `dist/` CSS and JavaScript file against its budget in
-    `.bundlewatch.config.json`; raise a budget with `pnpm bundlewatch:fix` when a change outgrows it
+    `packages/css/.bundlewatch.config.json`; raise a budget with `pnpm bundlewatch:fix` when a change outgrows it
     on purpose.
   - **Changeset**: a changeset is present when the pull request changes `scss/`, `js/src/`,
     `postcss/`, `dist/` or `js/dist/`. It also runs on pushes to `develop`.
@@ -163,7 +170,7 @@ For a change that releases nothing, add an empty changeset instead:
 pnpm changeset --empty
 ```
 
-Don't edit `CHANGELOG.md` by hand; the version step writes it from the changesets.
+Don't edit `packages/css/CHANGELOG.md` by hand; the version step writes it from the changesets.
 
 ## Releases
 
@@ -172,10 +179,10 @@ on the pushed commit:
 
 1. A maintainer merges `develop` into `main` and pushes it. When `main` has changesets, the
    workflow opens or updates a "Version Packages" pull request. It runs `pnpm changeset:version`,
-   which removes the changesets, bumps the version in `package.json`, writes the CHANGELOG entry,
-   updates the version references (`site/config.yml`, `BaseComponent.VERSION`, the Sass banner)
-   and rebuilds `dist/` and `js/dist/`, so their banners and the SRI hashes in `site/config.yml`
-   match the new version.
+   which removes the changesets, bumps the version in `packages/css/package.json`, writes the
+   CHANGELOG entry, updates the version references (`packages/site/config.yml`,
+   `BaseComponent.VERSION`, the Sass banner) and rebuilds `dist/` and `js/dist/`, so their banners
+   and the CDN URLs and SRI hashes in `packages/site/config.yml` match the new version.
 2. Merging that pull request pushes `main` again. The version is not on npm yet, so the workflow
    runs `pnpm verify`, publishes `@chassis-ui/css` with npm trusted publishing and provenance (no
    npm token), and creates the GitHub release `v<version>` with the CHANGELOG entry as its body.

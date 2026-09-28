@@ -7,12 +7,13 @@ maintenance branches for older versions.
 
 The package ships CSS, Sass source and the JavaScript plugins, and has no runtime dependencies of
 its own (`@floating-ui/dom` and `vanilla-calendar-pro` are peer dependencies). The build scripts
-in `build/` and the documentation site run on contributors' machines and in CI.
+in `build/` and `packages/css/build/` and the documentation site run on contributors' machines
+and in CI.
 
 ## What to report
 
-The part of the package that runs in your users' browsers is the JavaScript in `js/src/`. Two
-kinds of plugin insert HTML. `Tooltip` and `Popover` pass their HTML content through the sanitizer
+The part of the package that runs in your users' browsers is the JavaScript in `js/src/`
+(`packages/css/js/src/` in the repository). Two kinds of plugin insert HTML. `Tooltip` and `Popover` pass their HTML content through the sanitizer
 in `js/src/util/sanitizer.ts` unless `sanitize` is turned off in code; `sanitize`, `allowList` and
 `sanitizeFn` cannot be set from `data-cx-*` attributes. `NavOverflow` always sanitizes the icon
 markup it copies into its menu. A way to run script or inject markup past the sanitizer with its

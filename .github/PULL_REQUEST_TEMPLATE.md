@@ -21,7 +21,7 @@ behind each of these.
 - [ ] The checks of the areas I changed pass locally (the table in
       [AGENTS.md](../AGENTS.md#before-a-task-is-done)): `pnpm css:lint`, `pnpm css:test` for
       `scss/`; `pnpm js:lint`, `pnpm js:typecheck`, `pnpm js:test:unit` for `js/src/`;
-      `pnpm site:build` and `pnpm site:lint` for `site/`
+      `pnpm site:build` and `pnpm site:lint` for `packages/site/`
 - [ ] **`dist/` and `js/dist/` rebuilt** with `pnpm dist` and committed, if the source changed
       them (`pnpm verify` passes)
 - [ ] **Changeset** (`pnpm changeset`) if the published package changed, with **Breaking:** for

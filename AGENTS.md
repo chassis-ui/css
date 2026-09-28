@@ -4,11 +4,32 @@ Guidance for AI coding agents working in this repository.
 
 ## Project overview
 
-Chassis CSS (`@chassis-ui/css`) is a tokenized CSS framework that bridges design tokens from Figma to production code. It is derived from Bootstrap's Sass architecture and JS component system but has been substantially reworked around a context-based color system and design-token pipeline. The repo contains three deliverables:
+Chassis CSS (`@chassis-ui/css`) is a tokenized CSS framework that bridges design tokens from Figma to production code. It is derived from Bootstrap's Sass architecture and JS component system but has been substantially reworked around a context-based color system and design-token pipeline.
+
+The repository is a pnpm workspace in the layout of `chassis-tokens` and `chassis-react`:
+
+```
+packages/
+  css/           # @chassis-ui/css, published to npm
+    scss/        # the Sass source; scss/tests/ holds the Sass tests
+    js/          # src/ (TypeScript), dist/ (compiled modules, committed), tests/
+    postcss/     # the PostCSS preset, @chassis-ui/css/postcss
+    dist/        # css/, js/ and tailwind/: the build output, committed and published
+    build/       # the build of the package (Rolldown, PostCSS, the Tailwind entry, verify)
+  site/          # chassis-css-site, the Astro documentation site (private)
+build/           # repository scripts (links, HTML validation, version references, release notes)
+patches/         # pnpm patches of dependencies
+vendor/assets    # git submodule of chassis-ui/assets
+_site/           # the built site, not committed
+```
+
+**In this file, a path that starts with `scss/`, `js/`, `postcss/` or `dist/` is inside `packages/css/`.** They are also the paths inside the published package. A path of the repository root or of the site is written in full (`build/check-links.mjs`, `packages/css/build/`, `packages/site/content/`).
+
+The three deliverables:
 
 - **CSS framework** — Sass source in `scss/`, compiled to `dist/css/`.
 - **JS components** — TypeScript in `js/src/`, compiled to per-component ES modules with declarations in `js/dist/` and combined builds in `dist/js/` (`chassis.js` with the peer dependencies external, `chassis.bundle.js` with them bundled in). The package entry is `js/dist/index.js`, compiled from the barrel `js/src/index.ts`.
-- **Documentation site** — an Astro site in `site/`, built to `_site/`, using the shared `@chassis-ui/docs` package for layout/components.
+- **Documentation site** — an Astro site in `packages/site/`, built to `_site/`, using the shared `@chassis-ui/docs` package for layout/components.
 
 This repo is part of a multi-repo ecosystem (`chassis-website`, `chassis-react`, `chassis-tokens`, `chassis-icons`, `chassis-assets`, `chassis-figma`). See [README.md](README.md) for the full picture.
 
@@ -16,7 +37,7 @@ Human contributors follow [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md): de
 
 ## Quick commands
 
-Package manager is **pnpm** (pinned in `package.json`), with Node.js 22 or later. Run `pnpm install` first.
+Package manager is **pnpm** (pinned in the root `package.json`), with Node.js 22 or later. Run `pnpm install` first, and run every command from the repository root: the root scripts run the ones of the package in `packages/css` (`pnpm --filter @chassis-ui/css run <script>`).
 
 - `pnpm dev` — watch CSS/JS + Astro dev server (`http://localhost:4323/css/`)
 - `pnpm build` — compile CSS + JS, then build the docs site
@@ -26,7 +47,7 @@ Package manager is **pnpm** (pinned in `package.json`), with Node.js 22 or later
 - `pnpm css:lint` / `pnpm js:lint` / `pnpm site:lint` — lint (or `pnpm check:code` for all three)
 - `pnpm js:typecheck` — `tsc --noEmit` over `js/src/` and the type tests in `js/tests/types/`
 - `pnpm css:test` — Sass unit tests (Jasmine with sass-true, `scss/tests/`)
-- `pnpm js:test:unit` — JS unit tests (Vitest in browser mode, `js/tests/unit/`); Chromium only locally, Chromium, Firefox and WebKit in CI or with `pnpm js:test:unit:all-browsers`. `pnpm js:test` is an alias. See [js/tests/README.md](js/tests/README.md)
+- `pnpm js:test:unit` — JS unit tests (Vitest in browser mode, `js/tests/unit/`); Chromium only locally, Chromium, Firefox and WebKit in CI or with `pnpm js:test:unit:all-browsers`. `pnpm js:test` is an alias. See [js/tests/README.md](packages/css/js/tests/README.md)
 - `pnpm js:test:e2e` — Playwright end-to-end tests in Chromium, Firefox and WebKit
 - `pnpm js:test:integration` — bundles `dist/js/chassis.js` and single modules of `js/dist/` with Rollup, and packs the package into an empty project that imports it with Node.js and type-checks it with `tsc`
 - `pnpm check:package` — `publint` and `attw` over the packed package: `exports`, `types` and file layout
@@ -44,11 +65,12 @@ Run the checks of the area you changed, and report the ones that fail.
 | Area changed | Run |
 | --- | --- |
 | `scss/` | `pnpm css:lint`, `pnpm css`, `pnpm css:test`, `pnpm verify` |
-| `scss/tailwind/`, `build/tailwind/` | the row above, then `pnpm css:test:tailwind` and `pnpm js:test:e2e:tailwind-parity` |
+| `scss/tailwind/`, `packages/css/build/tailwind/` | the row above, then `pnpm css:test:tailwind` and `pnpm js:test:e2e:tailwind-parity` |
 | `js/src/` | `pnpm js:lint`, `pnpm js:typecheck`, `pnpm js:test:unit`, `pnpm verify`; `pnpm js:test:e2e` for behavior a user sees |
-| Exports, `package.json`, `postcss/`, `js/src/index.ts` | `pnpm js:test:integration`, `pnpm check:package`, `pnpm verify` |
-| `site/` | `pnpm check:astro`, `pnpm site:build`, then `pnpm site:lint` (its HTML validation reads `_site/`) |
+| Exports, `packages/css/package.json`, `postcss/`, `js/src/index.ts` | `pnpm js:test:integration`, `pnpm check:package`, `pnpm verify` |
+| `packages/site/` | `pnpm check:astro`, `pnpm site:build`, then `pnpm site:lint` (its HTML validation reads `_site/`) |
 | README or other Markdown | `pnpm docs:links` |
+| A `package.json` or `pnpm-lock.yaml` | `pnpm install --frozen-lockfile`, `pnpm verify` (the bundled dependencies are in `dist/js/chassis.bundle.js`) |
 
 ## Generated and committed output
 
@@ -62,12 +84,13 @@ Run the checks of the area you changed, and report the ones that fail.
 - Prefer the `border-radius()` mixin over the raw `border-radius` property — it gates rounding on the global radius toggle. Use the raw property only for shape-defining elements (circles, pills) where the radius is structural, not stylistic.
 - `--fg-color` / `--bg-color` custom properties look unused component-locally but are consumed by the context utility classes — don't remove them during cleanup without checking `scss/_context.scss` and `scss/utilities/`.
 - Component selectors may not use certain "generic" modifier class names (`small`, `large`, `primary`, `outline`, `solid`, `horizontal`, etc. — see `forbiddenGenericClasses` in [stylelint.config.js](stylelint.config.js)), enforced by stylelint.
+- The Sass of the site (`packages/site/src/scss/`) loads the framework by relative path (`../../../css/scss/mixins`), and is linted with it.
 - Doc markers `// scss-docs-start name` / `// scss-docs-end name` mark regions extracted into the docs site.
 - Run `pnpm css:lint && pnpm css:test` after editing `scss/`. After editing `scss/tailwind/` specifically, also run `pnpm css:tailwind && pnpm css:test:tailwind` (needs a fresh `dist/tailwind/` build), and `pnpm js:test:e2e:tailwind-parity` for anything that could change computed styles.
 - In the Tailwind entry the grid classes are `@utility` rules (`scss/tailwind/mixins/_grid.scss`) whose declarations sit in a nested `@layer layout`, the `utilities.layout` sublayer, so utilities override them at every breakpoint. A property Tailwind core merges into a same-name grid class (`col-<n>`'s `grid-column`) is reset directly in the `@utility`, outside the sublayer; `pnpm css:tailwind` fails if one isn't.
-- Tailwind-specific code lives only in Tailwind folders: `scss/tailwind/` (entries, partials, and its own `mixins/`), `scss/tests/tailwind/`, and `build/tailwind/`. Tailwind code may `@use` native modules; native code never loads anything from `scss/tailwind/` — `pnpm css:lint:tailwind` (`build/tailwind/check-isolation.mjs`) enforces it.
-- `scss/tailwind/_source-exclusions.scss` and `scss/tailwind/_clash-policy.scss` are generated, checked-in files (`pnpm css:tailwind:update-clashes` / `pnpm css:tailwind:update-clash-policy` regenerate them from `build/tailwind/*-clashes.json`) — don't hand-edit; `build/tailwind/build.mjs` fails the build if either has drifted from what it re-derives. `scss/tailwind/_source-safelist.scss` is hand-maintained, not generated.
-- The `--cx-` custom-property prefix is applied by PostCSS, not Sass (`postcss/index.js`, published as `@chassis-ui/css/postcss`) — `build/postcss.config.js` and `build/tailwind/postcss.config.js` both import it rather than duplicating the plugin.
+- Tailwind-specific code lives only in Tailwind folders: `scss/tailwind/` (entries, partials, and its own `mixins/`), `scss/tests/tailwind/`, and `packages/css/build/tailwind/`. Tailwind code may `@use` native modules; native code never loads anything from `scss/tailwind/` — `pnpm css:lint:tailwind` (`packages/css/build/tailwind/check-isolation.mjs`) enforces it, for the Sass of the site too.
+- `scss/tailwind/_source-exclusions.scss` and `scss/tailwind/_clash-policy.scss` are generated, checked-in files (`pnpm css:tailwind:update-clashes` / `pnpm css:tailwind:update-clash-policy` regenerate them from `packages/css/build/tailwind/*-clashes.json`) — don't hand-edit; `packages/css/build/tailwind/build.mjs` fails the build if either has drifted from what it re-derives. `scss/tailwind/_source-safelist.scss` is hand-maintained, not generated.
+- The `--cx-` custom-property prefix is applied by PostCSS, not Sass (`postcss/index.js`, published as `@chassis-ui/css/postcss`) — `packages/css/build/postcss.config.js` and `packages/css/build/tailwind/postcss.config.js` both import it rather than duplicating the plugin.
 
 ## JavaScript conventions
 
@@ -79,13 +102,15 @@ Run the checks of the area you changed, and report the ones that fail.
 
 ## Docs conventions
 
-- MDX docs live in `site/content/docs/`, organized by section (`components/`, `forms/`, `layout/`, `utilities/`, `helpers/`, etc.). Reusable snippets live in `site/content/callouts/`.
+- MDX docs live in `packages/site/content/docs/`, organized by section (`components/`, `forms/`, `layout/`, `utilities/`, `helpers/`, etc.). Reusable snippets live in `packages/site/content/callouts/`.
+- The site depends on the package as `workspace:*` and Astro runs in `packages/site`. `file` of `<ScssDocs>` and `<JsDocs>` and `filePath` of `<Code>` are relative to `packages/css` (`sourceDir` in `packages/site/config.yml`): `file="scss/_button.scss"`, and `file="../site/src/scss/_examples.scss"` for a file of the site.
+- `@chassis-ui/docs` is patched (`patches/`, `pnpm.patchedDependencies` in the root `package.json`) so its components read `sourceDir` and link to `sourcePath`. Remove the patch when a release of `@chassis-ui/docs` has the change; until then, a new version of the package needs the patch made again (`pnpm patch`).
 - Style guide: [WRITING.md](WRITING.md) — instructive voice (no `you`/`your`/`we`/`our`) for component/helper/core-concepts docs, tutorial voice (`you`/`your` allowed) for getting-started/customize/overview pages. Standard component section order: Introduction → Basic structure → Content components → Layout → Advanced → Theming → Accessibility → JavaScript API → CSS, with Theming placed right after Basic structure instead of after Layout for variant-centric components (Button, Badge, Notification).
 - Frontmatter requires `title`, `description` (instructive voice, <160 chars), `toc`; conditional fields include `css_layer` and `css_media` (`container` vs `viewport`) — see WRITING.md's Frontmatter section.
 - `<ResizableExample>` is reserved for container-query (`css_media: container`) components only.
 - Inside `<Example code={...}>` blocks, preserve the template literal's indentation exactly as written — flattening it breaks MDX rendering.
 - Reference implementations: `components/stepper.mdx`, `components/navbar.mdx`, `helpers/focus-ring.mdx`, `customize/optimize.mdx`.
-- Run `pnpm site:lint` (eslint + prettier + vnu HTML validation) after editing `site/`.
+- Run `pnpm site:lint` (eslint + prettier + vnu HTML validation) after editing `packages/site/`.
 
 ## Formatting
 
@@ -102,6 +127,6 @@ Never commit, merge or push without being asked. Pushing `main` starts `publish-
 
 ## Do not edit
 
-- Generated output: `dist/`, `js/dist/` (rebuild them, see [Generated and committed output](#generated-and-committed-output)), `_site/`, `.cache/`.
-- Written by the version step (`pnpm changeset:version`): `CHANGELOG.md`, the version in `package.json`, and the version references in `site/config.yml`, `js/src/base-component.ts` and `scss/mixins/_banner.scss`.
+- Generated output: `dist/`, `js/dist/` (rebuild them, see [Generated and committed output](#generated-and-committed-output)), `_site/`, `packages/site/public/`, `.cache/`.
+- Written by the version step (`pnpm changeset:version`): `packages/css/CHANGELOG.md`, the version in `packages/css/package.json`, and the version references in `packages/site/config.yml` (with the CDN URLs and their SRI hashes), `js/src/base-component.ts` and `scss/mixins/_banner.scss`.
 - Git submodule (synced from `chassis-assets`, not owned by this repo): `vendor/assets/`.

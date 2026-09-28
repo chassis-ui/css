@@ -23,12 +23,12 @@ You can use the plain Vitest API in new specs. Import `vi` from `vitest` and pre
 
 ## How do I add a new unit test?
 
-1. Locate and open the file dedicated to the plugin which you need to add tests to (`js/tests/unit/<plugin-name>.spec.js`).
+1. Locate and open the file dedicated to the plugin which you need to add tests to (`packages/css/js/tests/unit/<plugin-name>.spec.js`).
 2. Review the [Vitest API documentation](https://vitest.dev/api/) and use the existing tests as references for how to structure your new tests.
 3. Write the necessary unit test(s) for the new or revised functionality.
 4. Run `pnpm js:test:unit` to see the results of your newly-added test(s).
 
-To run a single file, pass its path: `pnpm js:test:unit -- js/tests/unit/tab.spec.js`.
+To run a single file, pass its path from `packages/css`: `pnpm js:test:unit js/tests/unit/tab.spec.js`.
 
 **Note:** Your new unit tests should fail before your changes are applied to the plugin, and should pass after your changes are applied to the plugin.
 
@@ -41,7 +41,7 @@ To run a single file, pass its path: `pnpm js:test:unit -- js/tests/unit/tab.spe
 
 ## Code coverage
 
-Currently we're aiming for at least 90% test coverage for our code. To ensure your changes meet or exceed this limit, run `pnpm js:test:unit` and open the file in `js/coverage/lcov-report/index.html` to see the code coverage for each plugin. See more details when you select a plugin and ensure your change is fully covered by unit tests.
+Currently we're aiming for at least 90% test coverage for our code. To ensure your changes meet or exceed this limit, run `pnpm js:test:unit` and open the file in `packages/css/js/coverage/lcov-report/index.html` to see the code coverage for each plugin. See more details when you select a plugin and ensure your change is fully covered by unit tests.
 
 The run fails if coverage drops below the thresholds in `vitest.config.mts`: 90% of statements, functions and lines, and 88% of branches. Coverage counts every file in `js/src`, including the ones no spec imports, so an untested plugin shows as 0% instead of disappearing from the report.
 
