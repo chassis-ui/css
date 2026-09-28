@@ -93,7 +93,9 @@ pnpm js:test:unit
 
 `js:test:unit` runs the specs in Chromium through Vitest's browser mode;
 `pnpm js:test:unit:all-browsers` adds Firefox and WebKit, as CI does. `pnpm js:test:e2e` runs the
-Playwright tests. For a change to the exports, `packages/css/package.json` or `postcss/`, also run
+Playwright tests: one spec per plugin in `js/tests/e2e/`, on the pages of `js/tests/visual/`, for
+what a unit test cannot see (the keyboard, where focus goes, the production bundle).
+`pnpm js:test:a11y` runs axe on the same pages. For a change to the exports, `packages/css/package.json` or `postcss/`, also run
 `pnpm js:test:integration` and `pnpm check:package`, which pack the package and install it into an
 empty project.
 
@@ -150,7 +152,7 @@ fails on your pull request, run `pnpm dist` and commit what changed.
   - **Dist**: `pnpm build:test` and `pnpm verify` on Node.js 22 and 24.
   - **CSS**: Sass lint, build and tests, the Tailwind tests and the Tailwind parity tests.
   - **JS**: lint, type check, unit tests in Chromium, Firefox and WebKit, end-to-end tests,
-    integration tests and `pnpm check:package`.
+    accessibility checks, integration tests and `pnpm check:package`.
   - **Site**: `pnpm lint:prettier` for the whole repository, `astro check`, the site build,
     `site:lint` and `pnpm docs:links`.
   - **Audit**: `pnpm audit --prod` fails the job; the full audit is reported only.

@@ -49,7 +49,8 @@ Package manager is **pnpm** (pinned in the root `package.json`), with Node.js 22
 - `pnpm js:typecheck` — `tsc --noEmit` over `js/src/` and the type tests in `js/tests/types/`
 - `pnpm css:test` — Sass unit tests (Jasmine with sass-true, `scss/tests/`)
 - `pnpm js:test:unit` — JS unit tests (Vitest in browser mode, `js/tests/unit/`); Chromium only locally, Chromium, Firefox and WebKit in CI or with `pnpm js:test:unit:all-browsers`. See [js/tests/README.md](packages/css/js/tests/README.md)
-- `pnpm js:test:e2e` — Playwright end-to-end tests in Chromium, Firefox and WebKit
+- `pnpm js:test:e2e` — Playwright end-to-end tests in Chromium, Firefox and WebKit (`js/tests/e2e/`): one spec per plugin, on the pages of `js/tests/visual/`. A `test.fixme` there is a known defect of a plugin, with what is expected and what happens
+- `pnpm js:test:a11y` — axe on the same pages, as they load and with their component open, in Chromium. `js/tests/e2e/helpers/a11y-known.ts` records what it finds today; a new violation fails
 - `pnpm js:test:integration` — bundles `dist/js/chassis.js` and single modules of `js/dist/` with Rollup, and packs the package into an empty project that imports it with Node.js and type-checks it with `tsc`
 - `pnpm check:package` — `publint` and `attw` over the packed package: `exports`, `types` and file layout
 - `pnpm css:test:tailwind` — Node-only regression test for the Tailwind build (`dist/tailwind/`); needs `pnpm dist` run first
@@ -66,17 +67,17 @@ Run the narrowest relevant command while iterating, then the checks in [Before a
 
 Run the checks of the area you changed, and report the ones that fail.
 
-| Area changed                                                        | Run                                                                                                                  |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `scss/`                                                             | `pnpm css:lint`, `pnpm css`, `pnpm css:test`, `pnpm verify`                                                          |
-| `scss/tailwind/`, `packages/css/build/tailwind/`                    | the row above, then `pnpm css:test:tailwind` and `pnpm js:test:e2e:tailwind-parity`                                  |
-| `js/src/`                                                           | `pnpm js:lint`, `pnpm js:typecheck`, `pnpm js:test:unit`, `pnpm verify`; `pnpm js:test:e2e` for behavior a user sees |
-| Exports, `packages/css/package.json`, `postcss/`, `js/src/index.ts` | `pnpm js:test:integration`, `pnpm check:package`, `pnpm verify`                                                      |
-| `packages/site/`                                                    | `pnpm check:astro`, `pnpm site:build`, then `pnpm site:lint` (its HTML validation reads `_site/`)                    |
-| `build/`, `packages/css/build/`                                     | `pnpm js:lint`, `pnpm build:test`; add a test in `build/tests/` for a change of behavior                             |
-| `.github/workflows/ci.yml`                                          | `pnpm build:test`: a script the workflow runs is part of `test:ci` in the root `package.json`                        |
-| README or other Markdown                                            | `pnpm docs:links`, `pnpm lint:prettier`                                                                              |
-| A `package.json` or `pnpm-lock.yaml`                                | `pnpm install --frozen-lockfile`, `pnpm verify` (the bundled dependencies are in `dist/js/chassis.bundle.js`)        |
+| Area changed                                                        | Run                                                                                                                                                           |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scss/`                                                             | `pnpm css:lint`, `pnpm css`, `pnpm css:test`, `pnpm verify`                                                                                                   |
+| `scss/tailwind/`, `packages/css/build/tailwind/`                    | the row above, then `pnpm css:test:tailwind` and `pnpm js:test:e2e:tailwind-parity`                                                                           |
+| `js/src/`                                                           | `pnpm js:lint`, `pnpm js:typecheck`, `pnpm js:test:unit`, `pnpm verify`; `pnpm js:test:e2e` for behavior a user sees, `pnpm js:test:a11y` for ARIA attributes |
+| Exports, `packages/css/package.json`, `postcss/`, `js/src/index.ts` | `pnpm js:test:integration`, `pnpm check:package`, `pnpm verify`                                                                                               |
+| `packages/site/`                                                    | `pnpm check:astro`, `pnpm site:build`, then `pnpm site:lint` (its HTML validation reads `_site/`)                                                             |
+| `build/`, `packages/css/build/`                                     | `pnpm js:lint`, `pnpm build:test`; add a test in `build/tests/` for a change of behavior                                                                      |
+| `.github/workflows/ci.yml`                                          | `pnpm build:test`: a script the workflow runs is part of `test:ci` in the root `package.json`                                                                 |
+| README or other Markdown                                            | `pnpm docs:links`, `pnpm lint:prettier`                                                                                                                       |
+| A `package.json` or `pnpm-lock.yaml`                                | `pnpm install --frozen-lockfile`, `pnpm verify` (the bundled dependencies are in `dist/js/chassis.bundle.js`)                                                 |
 
 ## Generated and committed output
 

@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test'
 const PORT = 4310
 
 // The specs that are not part of `pnpm js:test:e2e`. Each has a project and a script of its own.
-const OWN_PROJECT = /tailwind-parity/
+const OWN_PROJECT = /tailwind-parity|a11y\.spec/
 
 export default defineConfig({
   testDir: 'js/tests/e2e',
@@ -37,6 +37,8 @@ export default defineConfig({
       name: 'tailwind-parity',
       use: { ...devices['Desktop Chrome'] },
       testMatch: /tailwind-parity/
-    }
+    },
+    // axe on the pages of js/tests/visual/: `pnpm js:test:a11y`
+    { name: 'a11y', use: { ...devices['Desktop Chrome'] }, testMatch: /a11y\.spec/ }
   ]
 })

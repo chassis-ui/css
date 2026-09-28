@@ -3,7 +3,7 @@
 Chassis CSS uses [Vitest](https://vitest.dev/) in [browser mode](https://vitest.dev/guide/browser/), which runs each spec in a real Chromium through [Playwright](https://playwright.dev/). Each plugin has a file dedicated to its tests in `js/tests/unit/<plugin-name>.spec.js`.
 
 - `visual/` contains "visual" tests which are run interactively in real browsers and require manual verification by humans.
-- `e2e/` contains real-browser Playwright specs that drive the `visual/` fixtures with actual assertions (chromium/firefox/webkit), for components that have been converted off the manual-verification workflow.
+- `e2e/` contains real-browser Playwright specs that drive the `visual/` fixtures with actual assertions (chromium/firefox/webkit), for components that have been converted off the manual-verification workflow: Accordion, Carousel, Combobox, Datepicker, Dialog, Menu, Tab and Toast. `e2e/a11y.spec.ts` runs axe on every page of `visual/`.
 - `types/` contains compile-time type tests. They are type-checked, never executed.
 - `vitest.config.mts` holds the runner config, and `vitest-setup.js` runs before every spec.
 
@@ -88,3 +88,16 @@ it('should show a tooltip without the animation', () => {
   })
 })
 ```
+
+## How do the end-to-end tests work?
+
+A spec in `js/tests/e2e/` opens a page of `js/tests/visual/` and uses it as a person would: with a real keyboard and a real pointer, on the production bundle the page loads (`dist/js/chassis.bundle.js`, so run `pnpm dist` after a change to the source). They test what a unit spec cannot see: where the focus goes, what a key does in the state the page is really in, where a menu is placed.
+
+- `pnpm js:test:e2e` runs them in Chromium, Firefox and WebKit. For one spec and one browser, from `packages/css`: `npx playwright test js/tests/e2e/menu.spec.ts --project=webkit`.
+- `helpers/pages.ts` opens a page on a fixed day (2026-01-15), so a calendar shows the same month every day. `Date` stands still on the page; timers run.
+- A test marked `test.fixme` is a known defect of a plugin: its comment says what is expected and what happens. Fix the plugin, then remove the mark.
+- A test never waits for a fixed time. It waits for what it expects (`await expect(…)`).
+
+## How does the accessibility check work?
+
+`pnpm js:test:a11y` runs [axe](https://github.com/dequelabs/axe-core) on every page of `visual/`, in the state it loads in and with its component open (`STATES` in `e2e/a11y.spec.ts`), light and dark, in Chromium. `e2e/helpers/a11y-known.ts` records the violations that exist today, each with the place the fix belongs. A page fails when it breaks a rule more often than recorded, and when it breaks one less often, so the record of a fixed defect goes with the fix. The rules that are left out are listed there too, with the reason.
