@@ -117,6 +117,20 @@ pnpm site:lint
 resolves, so it runs after `site:build`. For a change to README.md, AGENTS.md or another Markdown
 file, `pnpm docs:links` checks its links, external URLs included.
 
+## Changing the build scripts
+
+The scripts in `build/` and `packages/css/build/` build the package, check the repository and make
+the release. Several run on `main` only, so an error in one shows when a version is being
+released. Their tests are in `build/tests/`:
+
+```sh
+pnpm js:lint
+pnpm build:test
+```
+
+A test writes the files a script reads into a temporary directory and runs the script there, so
+it never reads or changes the repository. Add a test for a change of behavior.
+
 ## Committed build output
 
 `dist/` and `js/dist/` are generated from the source **and committed**, because `npm publish`
@@ -130,12 +144,15 @@ fails on your pull request, run `pnpm dist` and commit what changed.
 ## What a pull request needs before merge
 
 - **Passing CI.** `.github/workflows/ci.yml` runs these jobs, and the commands above run the same
-  checks locally:
-  - **Dist**: `pnpm verify` on Node.js 22 and 24.
+  checks locally. `pnpm test:ci` runs all of them except the changeset check in one command; it
+  takes several minutes and needs the Playwright browsers
+  (`pnpm --filter @chassis-ui/css exec playwright install chromium firefox webkit`).
+  - **Dist**: `pnpm build:test` and `pnpm verify` on Node.js 22 and 24.
   - **CSS**: Sass lint, build and tests, the Tailwind tests and the Tailwind parity tests.
   - **JS**: lint, type check, unit tests in Chromium, Firefox and WebKit, end-to-end tests,
     integration tests and `pnpm check:package`.
-  - **Site**: `astro check`, the site build, `site:lint` and `pnpm docs:links`.
+  - **Site**: `pnpm lint:prettier` for the whole repository, `astro check`, the site build,
+    `site:lint` and `pnpm docs:links`.
   - **Audit**: `pnpm audit --prod` fails the job; the full audit is reported only.
   - **Bundle size**: the gzip size of each `dist/` CSS and JavaScript file against its budget in
     `packages/css/.bundlewatch.config.json`; raise a budget with `pnpm bundlewatch:fix` when a change outgrows it

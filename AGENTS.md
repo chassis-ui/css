@@ -18,6 +18,7 @@ packages/
     build/       # the build of the package (Rolldown, PostCSS, the Tailwind entry, verify)
   site/          # chassis-css-site, the Astro documentation site (private)
 build/           # repository scripts (links, HTML validation, version references, release notes)
+  tests/         # tests of the build scripts, of build/ and of packages/css/build/
 patches/         # pnpm patches of dependencies
 vendor/assets    # git submodule of chassis-ui/assets
 _site/           # the built site, not committed
@@ -47,14 +48,17 @@ Package manager is **pnpm** (pinned in the root `package.json`), with Node.js 22
 - `pnpm css:lint` / `pnpm js:lint` / `pnpm site:lint` — lint (or `pnpm check:code` for all three)
 - `pnpm js:typecheck` — `tsc --noEmit` over `js/src/` and the type tests in `js/tests/types/`
 - `pnpm css:test` — Sass unit tests (Jasmine with sass-true, `scss/tests/`)
-- `pnpm js:test:unit` — JS unit tests (Vitest in browser mode, `js/tests/unit/`); Chromium only locally, Chromium, Firefox and WebKit in CI or with `pnpm js:test:unit:all-browsers`. `pnpm js:test` is an alias. See [js/tests/README.md](packages/css/js/tests/README.md)
+- `pnpm js:test:unit` — JS unit tests (Vitest in browser mode, `js/tests/unit/`); Chromium only locally, Chromium, Firefox and WebKit in CI or with `pnpm js:test:unit:all-browsers`. See [js/tests/README.md](packages/css/js/tests/README.md)
 - `pnpm js:test:e2e` — Playwright end-to-end tests in Chromium, Firefox and WebKit
 - `pnpm js:test:integration` — bundles `dist/js/chassis.js` and single modules of `js/dist/` with Rollup, and packs the package into an empty project that imports it with Node.js and type-checks it with `tsc`
 - `pnpm check:package` — `publint` and `attw` over the packed package: `exports`, `types` and file layout
 - `pnpm css:test:tailwind` — Node-only regression test for the Tailwind build (`dist/tailwind/`); needs `pnpm dist` run first
 - `pnpm js:test:e2e:tailwind-parity` — Playwright project comparing computed styles between `dist/css/chassis.css` and a fresh Tailwind build; opt-in locally (excluded from `pnpm js:test:e2e` and `pnpm test`) because it's slower than the rest of the e2e suite, though CI runs it (the `css` job of `.github/workflows/ci.yml`) — run it after touching `scss/tailwind/` or the utility/component clash policies
 - `pnpm verify` — rebuild `dist/` and `js/dist/` and fail when they differ from the commit; CI and the publish workflow run it, since `npm publish` ships both as committed
+- `pnpm build:test` — tests of the build scripts (`node --test`, `build/tests/`): each runs a script on files of its own, never on the repository
+- `pnpm lint:prettier` — Prettier over the whole repository; `.prettierignore` lists what is left out
 - `pnpm test` — lint + dist + css/js unit tests (including `css:test:tailwind`) + site build + site lint. It does not run `js:typecheck`, the e2e and integration tests, `check:package` or `verify`; CI runs all of them
+- `pnpm test:ci` — every check of `.github/workflows/ci.yml` except the changeset check, in one run: the unit tests in three browsers, the e2e tests and the site build included. Takes several minutes and needs the three Playwright browsers. A test in `build/tests/` fails when the workflow runs a script that `test:ci` does not
 
 Run the narrowest relevant command while iterating, then the checks in [Before a task is done](#before-a-task-is-done).
 
@@ -69,7 +73,9 @@ Run the checks of the area you changed, and report the ones that fail.
 | `js/src/`                                                           | `pnpm js:lint`, `pnpm js:typecheck`, `pnpm js:test:unit`, `pnpm verify`; `pnpm js:test:e2e` for behavior a user sees |
 | Exports, `packages/css/package.json`, `postcss/`, `js/src/index.ts` | `pnpm js:test:integration`, `pnpm check:package`, `pnpm verify`                                                      |
 | `packages/site/`                                                    | `pnpm check:astro`, `pnpm site:build`, then `pnpm site:lint` (its HTML validation reads `_site/`)                    |
-| README or other Markdown                                            | `pnpm docs:links`                                                                                                    |
+| `build/`, `packages/css/build/`                                     | `pnpm js:lint`, `pnpm build:test`; add a test in `build/tests/` for a change of behavior                             |
+| `.github/workflows/ci.yml`                                          | `pnpm build:test`: a script the workflow runs is part of `test:ci` in the root `package.json`                        |
+| README or other Markdown                                            | `pnpm docs:links`, `pnpm lint:prettier`                                                                              |
 | A `package.json` or `pnpm-lock.yaml`                                | `pnpm install --frozen-lockfile`, `pnpm verify` (the bundled dependencies are in `dist/js/chassis.bundle.js`)        |
 
 ## Generated and committed output
@@ -116,6 +122,7 @@ Run the checks of the area you changed, and report the ones that fail.
 
 - 2-space indent, LF line endings, final newline, trim trailing whitespace (`.editorconfig`); `.md`/`.mdx` keep trailing whitespace (line breaks).
 - Prettier: single quotes in JS (double quotes in `.scss`), no semicolons, no trailing commas, 100 print width (80 for `.md`/`.mdx`).
+- `pnpm lint:prettier` checks the whole repository, in CI too; `pnpm exec prettier --write <file>` formats a file. `.prettierignore` leaves out the generated files and `packages/css/js/`: the plugins and their tests follow the ESLint rules of `eslint.config.js` (no parentheses around a single arrow parameter), which `pnpm js:lint` checks.
 
 ## Commits
 
