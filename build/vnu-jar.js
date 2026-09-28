@@ -59,7 +59,7 @@ execFile('java', ['-version'], (error, stdout, stderr) => {
     'Bad value “heading” for attribute “role” on element “summary”.',
     'Attribute “aria-level” not allowed on element “summary” at this point.',
     // vnu's bundled CSS checker predates container queries, so it rejects valid `container-*`
-    // declarations (js/tests/e2e/fixtures/tailwind-parity.html's inline styles). `.` stands in
+    // declarations (packages/css/js/tests/e2e/fixtures/tailwind-parity.html's inline styles). `.` stands in
     // for the quotes, which would otherwise end the shell-quoted --filterpattern argument
     'CSS: .container-(type|name).: Property .container-(type|name). doesn.t exist.'
   ].join('|')
@@ -72,7 +72,7 @@ execFile('java', ['-version'], (error, stdout, stderr) => {
     '--Werror',
     `--filterpattern "${ignores}"`,
     ...getSitePaths(),
-    'js/tests/'
+    'packages/css/js/tests/'
   ]
 
   // For 32-bit Java we need to pass -Xss512k

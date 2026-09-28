@@ -1,0 +1,165 @@
+{
+  "name": "@chassis-ui/css",
+  "description": "A CSS framework which synchronizes with Figma components by using design tokens.",
+  "version": "0.5.2",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "css",
+    "sass",
+    "mobile-first",
+    "responsive",
+    "front-end",
+    "framework",
+    "web",
+    "tailwind",
+    "tailwindcss"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chassis-ui/css.git",
+    "directory": "packages/css"
+  },
+  "bugs": {
+    "url": "https://github.com/chassis-ui/css/issues"
+  },
+  "homepage": "https://chassis-ui.com",
+  "author": "Ozgur Gunes <o.gunes@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "sass": "scss/chassis.scss",
+  "style": "dist/css/chassis.css",
+  "sideEffects": [
+    "./js/src/*.ts",
+    "./js/dist/*.js",
+    "./dist/js/*.js"
+  ],
+  "types": "./js/dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./js/dist/index.d.ts",
+      "default": "./js/dist/index.js"
+    },
+    "./js/dist/*": "./js/dist/*",
+    "./dist/js/*": "./dist/js/*",
+    "./dist/css/*": "./dist/css/*",
+    "./scss/*": "./scss/*",
+    "./postcss": {
+      "types": "./postcss/index.d.ts",
+      "default": "./postcss/index.js"
+    },
+    "./tailwind": {
+      "style": "./dist/tailwind/index.css",
+      "default": "./dist/tailwind/index.css"
+    },
+    "./tailwind/*": "./dist/tailwind/*",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "dist": "run-p css js",
+    "css": "pnpm css:compile && pnpm css:prefix && pnpm css:minify && pnpm css:tailwind",
+    "css:compile": "sass --load-path scss/vendor/ --load-path node_modules --style expanded --source-map scss/chassis.scss:dist/css/chassis.css scss/chassis-grid.scss:dist/css/chassis-grid.css scss/chassis-reboot.scss:dist/css/chassis-reboot.css scss/chassis-utilities.scss:dist/css/chassis-utilities.css",
+    "css:lint:tailwind": "node build/tailwind/check-component-stack.mjs && node build/tailwind/check-isolation.mjs",
+    "css:minify": "node build/css-minify.js",
+    "css:prefix": "postcss --config build/postcss.config.js --replace \"dist/css/*.css\" \"!dist/css/*.min.css\"",
+    "css:tailwind": "node build/tailwind/build.mjs && node build/tailwind/build-merge.mjs",
+    "css:tailwind:update-clashes": "node build/tailwind/update-source-exclusions.mjs",
+    "css:tailwind:update-clash-policy": "node build/tailwind/update-clash-policy.mjs",
+    "css:test": "jasmine --config=scss/tests/jasmine.cjs",
+    "css:test:tailwind": "node --test scss/tests/tailwind/test-build.mjs scss/tests/tailwind/test-merge.mjs scss/tests/tailwind/test-bridge.mjs scss/tests/tailwind/test-postcss.mjs scss/tests/tailwind/test-consumer.mjs",
+    "js": "pnpm js:compile && pnpm js:emit-types && pnpm js:minify",
+    "js:compile": "run-p js:compile:standalone js:compile:bundle js:compile:plugins",
+    "js:compile:standalone": "rolldown --environment BUNDLE:false --config build/rolldown.config.js --sourcemap",
+    "js:compile:bundle": "rolldown --environment BUNDLE:true --config build/rolldown.config.js --sourcemap",
+    "js:compile:plugins": "node build/build-plugins.js",
+    "js:emit-types": "tsc --project build/tsconfig.dts.json",
+    "js:minify": "run-p js:minify:standalone js:minify:bundle",
+    "js:minify:standalone": "terser --compress passes=2 --mangle --comments \"/^!/\" --source-map \"content=dist/js/chassis.js.map,url=chassis.min.js.map\" --output dist/js/chassis.min.js dist/js/chassis.js",
+    "js:minify:bundle": "terser --compress passes=2 --mangle --comments \"/^!/\" --source-map \"content=dist/js/chassis.bundle.js.map,url=chassis.bundle.min.js.map\" --output dist/js/chassis.bundle.min.js dist/js/chassis.bundle.js",
+    "js:test": "pnpm js:test:unit",
+    "js:test:debug": "cross-env DEBUG=true vitest --config js/tests/vitest.config.mts",
+    "js:test:e2e": "playwright test --project=chromium --project=firefox --project=webkit",
+    "js:test:e2e:tailwind-parity": "playwright test --project=tailwind-parity",
+    "js:test:e2e:ui": "playwright test --ui",
+    "js:test:integration": "run-p js:test:integration:bundle js:test:integration:modularity js:test:integration:package",
+    "js:test:integration:bundle": "rollup --config js/tests/integration/rollup.bundle.js",
+    "js:test:integration:modularity": "rollup --config js/tests/integration/rollup.bundle-modularity.js",
+    "js:test:integration:package": "node --test js/tests/integration/package.test.mjs",
+    "js:test:unit": "vitest run --config js/tests/vitest.config.mts --coverage",
+    "js:test:unit:all-browsers": "cross-env ALL_BROWSERS=true vitest run --config js/tests/vitest.config.mts --coverage",
+    "js:typecheck": "tsc --noEmit",
+    "release:zip": "cross-env-shell \"rm -rf chassis-css-$npm_package_version-dist chassis-css-$npm_package_version-dist.zip && cp -r dist/ chassis-css-$npm_package_version-dist && zip -qr9 chassis-css-$npm_package_version-dist.zip chassis-css-$npm_package_version-dist && rm -rf chassis-css-$npm_package_version-dist\"",
+    "bundlewatch": "bundlewatch --config .bundlewatch.config.json",
+    "bundlewatch:fix": "node build/bundlewatch-fix.mjs",
+    "bundlewatch:table": "node build/bundlewatch-table.mjs",
+    "check:bundle": "bundlewatch --config .bundlewatch.config.json",
+    "check:package": "publint --strict && attw --pack . --profile esm-only --exclude-entrypoints ./tailwind",
+    "verify": "node build/verify-dist.js"
+  },
+  "peerDependencies": {
+    "@floating-ui/dom": "^1.7.6",
+    "postcss-prefix-custom-properties": "^0.1.0",
+    "tailwindcss": ">=4.1.0",
+    "vanilla-calendar-pro": "^3.1.0"
+  },
+  "peerDependenciesMeta": {
+    "postcss-prefix-custom-properties": {
+      "optional": true
+    },
+    "tailwindcss": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@chassis-ui/tokens": "^0.5.1",
+    "@floating-ui/dom": "^1.7.6",
+    "@playwright/test": "^1.62.1",
+    "@rollup/plugin-babel": "^7.1.0",
+    "@rollup/plugin-commonjs": "^29.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-replace": "^6.0.3",
+    "@tailwindcss/node": "4.3.3",
+    "@types/node": "^26.1.0",
+    "@vitest/browser": "^4.1.11",
+    "@vitest/browser-playwright": "^4.1.11",
+    "@vitest/coverage-istanbul": "^4.1.11",
+    "autoprefixer": "^10.5.2",
+    "browserslist": "^4.29.2",
+    "bundlewatch": "^0.4.2",
+    "cross-env": "^10.1.0",
+    "globby": "^16.2.0",
+    "hammer-simulator": "0.0.1",
+    "jasmine": "^6.3.0",
+    "lightningcss": "^1.32.0",
+    "npm-run-all2": "^9.0.2",
+    "picocolors": "^1.1.1",
+    "postcss": "^8.5.28",
+    "postcss-cli": "^11.0.1",
+    "postcss-prefix-custom-properties": "^0.1.0",
+    "publint": "^0.3.24",
+    "rolldown": "1.2.0",
+    "rollup": "^4.62.2",
+    "sass": "^1.101.0",
+    "sass-true": "^10.1.0",
+    "tailwind-merge": "^3.7.0",
+    "tailwindcss": "4.3.3",
+    "terser": "^5.48.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11"
+  },
+  "files": [
+    "dist/{css,js}/*.{css,js,map}",
+    "dist/tailwind/*.css",
+    "dist/tailwind/*.js",
+    "js/{src,dist}/**/*.{js,map,ts}",
+    "postcss/*.{js,d.ts}",
+    "scss/**/*.scss",
+    "!scss/tests/**",
+    ".browserslistrc"
+  ]
+}

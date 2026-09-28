@@ -110,7 +110,7 @@ Context classes change a component's whole color palette while keeping its struc
 
 ### Browser support
 
-The targets come from [`.browserslistrc`](.browserslistrc):
+The targets come from [`.browserslistrc`](packages/css/.browserslistrc):
 
 | Browser | Supported versions |
 |---------|-------------------|
@@ -153,7 +153,7 @@ All documentation sites share the `@chassis-ui/docs` package for consistent layo
 
 Contributions are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-Read the [contributing guide](.github/CONTRIBUTING.md) for the dev setup, the conventions, and what a pull request needs. Everyone taking part in this project is expected to follow the [Code of Conduct](.github/CODE_OF_CONDUCT.md). Found a security vulnerability? Please don't open a public issue; see the [security policy](.github/SECURITY.md) for private disclosure instead.
+The repository is a pnpm workspace: the published package is in [`packages/css`](packages/css/), the documentation site in [`packages/site`](packages/site/). Read the [contributing guide](.github/CONTRIBUTING.md) for the dev setup, the conventions, and what a pull request needs. Everyone taking part in this project is expected to follow the [Code of Conduct](.github/CODE_OF_CONDUCT.md). Found a security vulnerability? Please don't open a public issue; see the [security policy](.github/SECURITY.md) for private disclosure instead.
 
 ## Origin & Attribution
 

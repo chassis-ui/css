@@ -1,6 +1,6 @@
 # Documentation Style Guide
 
-How to write component, helper, and concept docs for chassis-css. This guide codifies conventions established across the docs (`site/content/docs/**/*.mdx`) so contributors and reviewers have one place to reference.
+How to write component, helper, and concept docs for chassis-css. This guide codifies conventions established across the docs (`packages/site/content/docs/**/*.mdx`) so contributors and reviewers have one place to reference.
 
 ## How this guide is organized
 
@@ -268,6 +268,8 @@ One sentence describing what the mixin emits and when to use it in a custom sele
 <ScssDocs name="<helper>-mixin" file="scss/mixins/_<helper>.scss" />
 ```
 
+**File paths.** `file` is relative to the package, `packages/css/` in the repository: `file="scss/_button.scss"`. A file of the site is named from there, `file="../site/src/scss/_examples.scss"`. The docs show the path as written and link it to the file on GitHub.
+
 **Adding SCSS markers.** `<ScssDocs>` requires `// scss-docs-start <name>` / `// scss-docs-end <name>` comment pairs wrapping the target block; add them in the same PR when documenting a helper that lacks them. Markers in `scss/helpers/_<helper>.scss` wrap the class block, in `scss/config/_defaults.scss` wrap the variable group, in `scss/mixins/_<helper>.scss` wrap the mixin body.
 
 ---
@@ -446,7 +448,7 @@ Currently unwritten:
 
 ## Appendix A — MDX component reference
 
-The Chassis docs site exposes a small set of MDX components for rendering examples, callouts, tables, and source-derived snippets. Source: [`site/src/components/shortcodes/`](site/src/components/shortcodes/) and [`@chassis-ui/docs`](https://www.npmjs.com/package/@chassis-ui/docs). Listed here in order of frequency.
+The Chassis docs site exposes a small set of MDX components for rendering examples, callouts, tables, and source-derived snippets. Source: [`packages/site/src/components/shortcodes/`](packages/site/src/components/shortcodes/) and [`@chassis-ui/docs`](https://www.npmjs.com/package/@chassis-ui/docs). Listed here in order of frequency.
 
 ### `<Example>`
 
@@ -484,7 +486,7 @@ Highlighted aside. See [§12](#12-callouts) for when to use each type.
 | Prop | Type | Default | Purpose |
 | --- | --- | --- | --- |
 | `type` | `'info' \| 'warning' \| 'danger'` | `'info'` | Visual treatment. |
-| `name` | `string` | — | Render a shared callout from `site/content/callouts/<name>.md`. Overrides the slot content. |
+| `name` | `string` | — | Render a shared callout from `packages/site/content/callouts/<name>.md`. Overrides the slot content. |
 | *(slot)* | MDX content | — | Inline callout body. Ignored when `name` is set. |
 
 Optional `title` attribute (on the inline form) renders a bold leading title above the body.

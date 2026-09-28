@@ -17,9 +17,9 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  # `npm publish` ships dist/ and js/dist/ as committed, with no build step of its own. This job
-  # builds them on every Node.js version the package supports and fails when the result differs
-  # from what is committed.
+  # `npm publish` ships dist/ and js/dist/ of packages/css as committed, with no build step of
+  # its own. This job builds them on every Node.js version the package supports and fails when
+  # the result differs from what is committed.
   dist:
     name: Dist (Node ${{ matrix.node }})
     runs-on: ubuntu-latest
@@ -43,11 +43,13 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: pnpm
 
+      # The package and the root's lint tools, not the site: the build must not depend on
+      # the site's packages
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --filter @chassis-ui/css
 
       # Builds the CSS, the Tailwind entry, the JavaScript and its type declarations, then
-      # compares dist/css, dist/tailwind, dist/js and js/dist with the commit
+      # compares dist/css, dist/tailwind, dist/js and js/dist of packages/css with the commit
       - name: Build and verify dist/
         run: pnpm verify
 
@@ -73,12 +75,14 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      # The package and the root's lint tools, not the site: the build must not depend on
+      # the site's packages
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --filter @chassis-ui/css
 
       # For the Tailwind parity tests
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm --filter @chassis-ui/css exec playwright install --with-deps chromium
 
       - name: Lint Sass
         run: pnpm css:lint
@@ -118,11 +122,13 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      # The package and the root's lint tools, not the site: the build must not depend on
+      # the site's packages
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --filter @chassis-ui/css
 
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium firefox webkit
+        run: pnpm --filter @chassis-ui/css exec playwright install --with-deps chromium firefox webkit
 
       - name: Lint
         run: pnpm js:lint
@@ -186,7 +192,8 @@ jobs:
       - name: Markdown links
         run: pnpm docs:links
 
-  # The sizes of the committed dist/ files against the budgets of .bundlewatch.config.json
+  # The sizes of the committed dist/ files against the budgets of
+  # packages/css/.bundlewatch.config.json
   bundle:
     name: Bundle size
     runs-on: ubuntu-latest
@@ -206,16 +213,19 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      # The package and the root's lint tools, not the site: the build must not depend on
+      # the site's packages
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --filter @chassis-ui/css
 
       # The budgets are the sizes of 2026-09-28 plus about 5 percent. When a change outgrows one
       # on purpose, `pnpm bundlewatch:fix` raises it to the new size
       - name: Check bundle sizes
         run: pnpm check:bundle
 
-  # A change to scss/, js/src/, postcss/, dist/ or js/dist/ needs a changeset (changedFilePatterns
-  # in .changeset/config.json); `pnpm changeset --empty` adds one that releases nothing. A pull
+  # A change to scss/, js/src/, postcss/, dist/ or js/dist/ of packages/css needs a changeset
+  # (changedFilePatterns in .changeset/config.json, which are relative to the package);
+  # `pnpm changeset --empty` adds one that releases nothing. A pull
   # request is compared with its base branch, a push to develop with the tip it replaced. The
   # Version Packages pull request consumes changesets, and so does the version commit when it
   # comes back from main into develop, so both are skipped.
@@ -244,7 +254,7 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --filter chassis-css-workspace
 
       - name: Check for a changeset
         env:
@@ -260,8 +270,14 @@ jobs:
               exit 0
             fi
 
-            OLD_VERSION=$(git show "$BEFORE:package.json" | node -p 'JSON.parse(require("node:fs").readFileSync(0, "utf8")).version')
-            NEW_VERSION=$(node -p 'require("./package.json").version')
+            # A commit from before the workspace layout has the package in the root
+            PACKAGE_JSON=packages/css/package.json
+            if ! git cat-file -e "$BEFORE:$PACKAGE_JSON" 2>/dev/null; then
+              PACKAGE_JSON=package.json
+            fi
+
+            OLD_VERSION=$(git show "$BEFORE:$PACKAGE_JSON" | node -p 'JSON.parse(require("node:fs").readFileSync(0, "utf8")).version')
+            NEW_VERSION=$(node -p 'require("./packages/css/package.json").version')
             if [ "$OLD_VERSION" != "$NEW_VERSION" ]; then
               echo "The push changes the version ($OLD_VERSION → $NEW_VERSION): a version step, which consumes changesets"
               exit 0
@@ -294,7 +310,9 @@ jobs:
           package-manager-cache: false
 
       # Blocking: a dependency that is installed with @chassis-ui/css reaches every project
-      # that uses it. The package has none today, so this guards the day one is added
+      # that uses it. The package has none today, so this guards the day one is added. The
+      # audit reads the lockfile of the whole workspace, so a runtime dependency of the site
+      # would block too; the site has only development dependencies
       - name: Audit runtime dependencies
         run: pnpm check:pnpm
 

@@ -15,9 +15,9 @@ export default defineConfig([
       '**/*.min.js',
       '**/dist/',
       '_site/',
-      'js/coverage/',
-      'site/.astro/',
-      'site/public/',
+      'packages/css/js/coverage/',
+      'packages/site/.astro/',
+      'packages/site/public/',
       'vendor/'
     ]
   },
@@ -59,7 +59,7 @@ export default defineConfig([
     }
   },
   {
-    files: ['build/**'],
+    files: ['build/**', 'packages/css/build/**'],
     languageOptions: {
       globals: { ...globals.node },
       sourceType: 'module'
@@ -69,7 +69,7 @@ export default defineConfig([
     }
   },
   {
-    files: ['js/**'],
+    files: ['packages/css/js/**'],
     languageOptions: {
       globals: { ...globals.browser }
     },
@@ -84,18 +84,21 @@ export default defineConfig([
       'unicorn/better-regex': 'error'
     }
   },
-  // js/**/*.ts — TypeScript sources, plus the .mts Vitest config
-  ...tseslint.configs.recommended.map((config) => ({ ...config, files: ['js/**/*.{ts,mts}'] })),
+  // packages/css/js/**/*.ts — TypeScript sources, plus the .mts Vitest config
+  ...tseslint.configs.recommended.map((config) => ({
+    ...config,
+    files: ['packages/css/js/**/*.{ts,mts}']
+  })),
   {
-    files: ['js/**/*.{ts,mts}'],
+    files: ['packages/css/js/**/*.{ts,mts}'],
     rules: {
       // DOM/config plumbing (event registry, config merging) is inherently dynamic
       '@typescript-eslint/no-explicit-any': 'off'
     }
   },
-  // js/tests/types/** - compile-time type assertions, never executed
+  // packages/css/js/tests/types/** - compile-time type assertions, never executed
   {
-    files: ['js/tests/types/**'],
+    files: ['packages/css/js/tests/types/**'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-unused-expressions': 'off',
@@ -104,7 +107,7 @@ export default defineConfig([
     }
   },
   {
-    files: ['js/**/*.html', '**/*.md/*.html', 'scss/tests/**/*.html'],
+    files: ['packages/css/js/**/*.html', '**/*.md/*.html', 'packages/css/scss/tests/**/*.html'],
     plugins: { html: htmlPlugin },
     settings: {
       'html/html-extensions': ['.html']
@@ -115,13 +118,17 @@ export default defineConfig([
     }
   },
   {
-    files: ['js/tests/*.js', 'js/tests/integration/rollup*.js', 'scss/tests/**/*.{js,cjs}'],
+    files: [
+      'packages/css/js/tests/*.js',
+      'packages/css/js/tests/integration/rollup*.js',
+      'packages/css/scss/tests/**/*.{js,cjs}'
+    ],
     languageOptions: {
       globals: { ...globals.node }
     }
   },
   {
-    files: ['js/tests/unit/**'],
+    files: ['packages/css/js/tests/unit/**'],
     languageOptions: {
       globals: { ...globals.jasmine, ...globals.jquery }
     },
@@ -130,7 +137,7 @@ export default defineConfig([
     }
   },
   {
-    files: ['js/tests/e2e/**'],
+    files: ['packages/css/js/tests/e2e/**'],
     languageOptions: {
       globals: { ...globals.node }
     },
@@ -139,19 +146,19 @@ export default defineConfig([
     }
   },
   {
-    files: ['scss/tests/**'],
+    files: ['packages/css/scss/tests/**'],
     languageOptions: {
       globals: { ...globals.jasmine }
     }
   },
   {
-    files: ['site/**/*.js'],
+    files: ['packages/site/**/*.js'],
     languageOptions: {
       globals: { ...globals.node, ...globals.browser }
     }
   },
   {
-    files: ['site/static/**/*.js'],
+    files: ['packages/site/static/**/*.js'],
     languageOptions: {
       sourceType: 'script'
     }

@@ -1,0 +1,73 @@
+import { fileURLToPath } from 'node:url'
+import path from 'node:path'
+import { defineConfig } from 'astro/config'
+import { chassis } from './src/libs/astro'
+import { getConfig } from './src/libs/config'
+import { remarkCxConfig, remarkCxDocsref } from './src/libs/remark'
+import { chassisAutoImportPlugin } from './src/libs/shortcode'
+import { getSiteUrl, getDocsMarkdownConfig } from '@chassis-ui/docs'
+import { stackblitzPlugin } from './src/plugins/stackblitz-plugin'
+const site = getSiteUrl(getConfig())
+
+// https://astro.build/config
+export default defineConfig({
+  site,
+  outDir: '../../_site',
+  build: {
+    assets: `static/astro`
+  },
+  integrations: [chassis()],
+  markdown: getDocsMarkdownConfig({
+    anchors: getConfig().anchors,
+    remarkPlugins: [chassisAutoImportPlugin(), remarkCxConfig, remarkCxDocsref]
+  }),
+  vite: {
+    plugins: [stackblitzPlugin()],
+    environments: {
+      client: {
+        build: {
+          rolldownOptions: {
+            output: {
+              entryFileNames: `static/astro/docs.[hash].js`,
+              chunkFileNames: 'static/astro/docs.[hash].js'
+              // assetFileNames: 'static/astro/docs.[hash][extname]'
+            }
+          }
+        }
+      }
+    },
+    // Required for CSS files
+    build: {
+      rolldownOptions: {
+        output: {
+          assetFileNames: 'static/astro/docs.[hash][extname]'
+        }
+      }
+    },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          loadPaths: [
+            // Include the `scss` directory for resolving imports in the docs styles.
+            path.resolve(fileURLToPath(import.meta.url), '../../css/scss'),
+            // Framework fallback `_chassis-tokens.scss` if no override above.
+            path.resolve(fileURLToPath(import.meta.url), '../../css/scss/vendor')
+          ],
+          // Resolve `@chassis-ui/css/...` imports to the workspace package in `packages/css/`.
+          // `@chassis-ui/docs` uses fully-qualified package paths
+          // (e.g. `@chassis-ui/css/scss/mixins`).
+          importers: [
+            {
+              findFileUrl(url: string) {
+                if (!url.startsWith('@chassis-ui/css/')) return null
+                const subPath = url.slice('@chassis-ui/css/'.length)
+                const rootDir = path.resolve(fileURLToPath(import.meta.url), '../../css')
+                return new URL('file://' + rootDir + '/' + subPath)
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+})

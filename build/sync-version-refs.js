@@ -3,22 +3,23 @@
 /*!
  * Version Reference Sync Script
  *
- * Copies the version of @chassis-ui/css from package.json into the places that show it but that
- * `changeset version` does not update:
+ * Copies the version of @chassis-ui/css from packages/css/package.json into the places that show
+ * it but that `changeset version` does not update:
  *
- * - site/config.yml: `current_version` and the download links
- * - js/src/base-component.ts: `BaseComponent.VERSION`
- * - scss/mixins/_banner.scss: the banner of the compiled CSS
- * - dist/ and js/dist/: rebuilt when a banner names another version, and the SRI hashes of the
- *   CDN files in site/config.yml written again for the rebuilt files
+ * - packages/site/config.yml: `current_version`, the download links and the CDN URLs
+ * - packages/css/js/src/base-component.ts: `BaseComponent.VERSION`
+ * - packages/css/scss/mixins/_banner.scss: the banner of the compiled CSS
+ * - packages/css/dist/ and packages/css/js/dist/: rebuilt when a banner names another version,
+ *   and the SRI hashes of the CDN files in packages/site/config.yml written again for the
+ *   rebuilt files
  *
- * It also moves the hand-written `## [Unreleased]` section of CHANGELOG.md, from before the move
- * to Changesets, into the entry `changeset version` wrote, and removes the bullet of the changeset
- * that asked for it (UNRELEASED_MARKER). A version step that bumps nothing (only empty changesets)
- * changes nothing.
+ * It also moves the hand-written `## [Unreleased]` section of packages/css/CHANGELOG.md, from
+ * before the move to Changesets, into the entry `changeset version` wrote, and removes the
+ * bullet of the changeset that asked for it (UNRELEASED_MARKER). A version step that bumps
+ * nothing (only empty changesets) changes nothing.
  *
- * Runs as part of `pnpm changeset:version`, after `changeset version` has bumped package.json,
- * which is the source of the version.
+ * Runs from the root of the repository as part of `pnpm changeset:version`, after
+ * `changeset version` has bumped packages/css/package.json, which is the source of the version.
  *
  * Copyright 2025-2026 Ozgur Gunes
  * Licensed under MIT
@@ -35,14 +36,25 @@ const UNRELEASED_MARKER =
   'The changes listed in the Unreleased section of CHANGELOG.md before the move to Changesets.'
 
 // Files that name the version, with the pattern that finds it. The first group is the version.
+const PACKAGE_JSON = 'packages/css/package.json'
+const CHANGELOG = 'packages/css/CHANGELOG.md'
+const SITE_CONFIG = 'packages/site/config.yml'
+
 const VERSION_REFS = [
-  { file: 'site/config.yml', pattern: /^current_version:\s*"([^"]+)"/m },
-  { file: 'js/src/base-component.ts', pattern: /^const VERSION = '([^']+)'/m },
-  { file: 'scss/mixins/_banner.scss', pattern: /Chassis CSS#\{\$-file-suffix\} v(\S+) \(/ }
+  { file: SITE_CONFIG, pattern: /^current_version:\s*"([^"]+)"/m },
+  { file: 'packages/css/js/src/base-component.ts', pattern: /^const VERSION = '([^']+)'/m },
+  {
+    file: 'packages/css/scss/mixins/_banner.scss',
+    pattern: /Chassis CSS#\{\$-file-suffix\} v(\S+) \(/
+  }
 ]
 
 // Files whose banner names the version the build wrote into them
-const BANNER_FILES = ['dist/css/chassis.css', 'dist/js/chassis.js', 'js/dist/base-component.js']
+const BANNER_FILES = [
+  'packages/css/dist/css/chassis.css',
+  'packages/css/dist/js/chassis.js',
+  'packages/css/js/dist/base-component.js'
+]
 const BANNER_RE = /Chassis(?: [\w.-]+)?(?: -)? {1,2}v(\S+) \(/
 
 function regExpQuote(string) {
@@ -50,10 +62,10 @@ function regExpQuote(string) {
 }
 
 async function readVersion() {
-  const pkg = JSON.parse(await fs.readFile('package.json', 'utf8'))
+  const pkg = JSON.parse(await fs.readFile(PACKAGE_JSON, 'utf8'))
 
   if (!pkg.version || !SEMVER_RE.test(pkg.version)) {
-    console.error(`❌ Invalid or missing version in package.json: "${pkg.version}"`)
+    console.error(`❌ Invalid or missing version in ${PACKAGE_JSON}: "${pkg.version}"`)
     process.exit(1)
   }
 
@@ -80,12 +92,14 @@ async function syncFile({ file, pattern }, version) {
 
   let updated = original.replace(match[0], match[0].replace(oldVersion, version))
 
-  // The download links of site/config.yml name the version too
-  if (file === 'site/config.yml') {
-    updated = updated.replace(
-      new RegExp(`^(\\s+(?:source|dist):\\s+".*)${regExpQuote(oldVersion)}(.*")$`, 'gm'),
-      (line) => line.replaceAll(oldVersion, version)
-    )
+  // The download links and the CDN URLs of the site's config name the version too
+  if (file === SITE_CONFIG) {
+    updated = updated
+      .replace(
+        new RegExp(`^(\\s+(?:source|dist):\\s+".*)${regExpQuote(oldVersion)}(.*")$`, 'gm'),
+        (line) => line.replaceAll(oldVersion, version)
+      )
+      .replaceAll(`/npm/@chassis-ui/css@${oldVersion}/`, `/npm/@chassis-ui/css@${version}/`)
   }
 
   await fs.writeFile(file, updated, 'utf8')
@@ -113,10 +127,10 @@ function findSection(lines, heading) {
 
 /**
  * Moves the `## [Unreleased]` section into the entry of `version`
- * @returns {Promise<boolean>} True if CHANGELOG.md changed
+ * @returns {Promise<boolean>} True if the CHANGELOG changed
  */
 async function foldUnreleased(version) {
-  const file = 'CHANGELOG.md'
+  const file = CHANGELOG
   const lines = (await fs.readFile(file, 'utf8')).split('\n')
 
   const unreleased = findSection(lines, /^## \[Unreleased\]/)
@@ -171,7 +185,7 @@ async function foldUnreleased(version) {
 
 /**
  * Rebuilds dist/ and js/dist/ when a banner names another version, then writes the SRI hashes
- * of the rebuilt CDN files into site/config.yml
+ * of the rebuilt CDN files into the site's config
  * @returns {Promise<boolean>} True if the output was rebuilt
  */
 async function syncBuild(version) {

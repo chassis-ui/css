@@ -94,7 +94,7 @@ async function validateHTML() {
         '_site/**/*.html',
         // Fixed path — icons always lives at _site/static/icons/
         '!_site/static/icons/**',
-        'js/tests/**/*.html'
+        'packages/css/js/tests/**/*.html'
       ],
       { ignore: ['**/node_modules/**'] }
     )
