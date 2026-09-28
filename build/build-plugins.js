@@ -50,6 +50,8 @@ const build = async (plugin) => {
     banner: banner(plugin.fileName),
     format: 'esm',
     sourcemap: true,
+    // The maps name the modules in js/src/, which the package ships
+    sourcemapExcludeSources: true,
     file: plugin.dist
   })
 

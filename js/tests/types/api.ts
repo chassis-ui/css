@@ -20,7 +20,7 @@ import {
   Popover,
   Toast,
   Tooltip
-} from '../../index.js'
+} from '../../src/index.js'
 import BaseComponent from '../../src/base-component.js'
 import EventHandler from '../../src/dom/event-handler.js'
 import SelectorEngine from '../../src/dom/selector-engine.js'

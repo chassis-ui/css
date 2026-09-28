@@ -27,31 +27,36 @@
   "homepage": "https://chassis-ui.com",
   "author": "Ozgur Gunes <o.gunes@gmail.com>",
   "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
   "sass": "scss/chassis.scss",
   "style": "dist/css/chassis.css",
   "sideEffects": [
-    "./js/index.ts",
     "./js/src/*.ts",
     "./js/dist/*.js",
     "./dist/js/*.js"
   ],
-  "types": "./js/index.ts",
+  "types": "./js/dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./js/index.ts",
-      "default": "./js/index.ts"
+      "types": "./js/dist/index.d.ts",
+      "default": "./js/dist/index.js"
     },
-    "./js/src/*": "./js/src/*",
     "./js/dist/*": "./js/dist/*",
     "./dist/js/*": "./dist/js/*",
     "./dist/css/*": "./dist/css/*",
     "./scss/*": "./scss/*",
-    "./postcss": "./postcss/index.js",
+    "./postcss": {
+      "types": "./postcss/index.d.ts",
+      "default": "./postcss/index.js"
+    },
     "./tailwind": {
       "style": "./dist/tailwind/index.css",
       "default": "./dist/tailwind/index.css"
     },
-    "./tailwind/*": "./dist/tailwind/*"
+    "./tailwind/*": "./dist/tailwind/*",
+    "./package.json": "./package.json"
   },
   "scripts": {
     "build": "pnpm dist && pnpm site:build",
@@ -60,7 +65,7 @@
     "dist": "run-p css js",
     "test": "pnpm check:code && pnpm dist && pnpm css:test && pnpm css:test:tailwind && pnpm js:test && pnpm site:build && pnpm site:lint",
     "css": "pnpm css:compile && pnpm css:prefix && pnpm css:minify && pnpm css:tailwind",
-    "css:compile": "sass --load-path scss/vendor/ --load-path node_modules --style expanded --source-map --embed-sources scss/chassis.scss:dist/css/chassis.css scss/chassis-grid.scss:dist/css/chassis-grid.css scss/chassis-reboot.scss:dist/css/chassis-reboot.css scss/chassis-utilities.scss:dist/css/chassis-utilities.css",
+    "css:compile": "sass --load-path scss/vendor/ --load-path node_modules --style expanded --source-map scss/chassis.scss:dist/css/chassis.css scss/chassis-grid.scss:dist/css/chassis-grid.css scss/chassis-reboot.scss:dist/css/chassis-reboot.css scss/chassis-utilities.scss:dist/css/chassis-utilities.css",
     "css:lint": "run-p css:lint:stylelint css:lint:vars css:lint:tailwind",
     "css:lint:tailwind": "node build/tailwind/check-component-stack.mjs && node build/tailwind/check-isolation.mjs",
     "css:lint:imports": "node build/check-imports.js scss/ site/src/scss/",
@@ -81,16 +86,17 @@
     "js:emit-types": "tsc --project build/tsconfig.dts.json",
     "js:lint": "eslint --cache --cache-location .cache/.eslintcache --report-unused-disable-directives --ext .html,.js,.ts,.cjs,.mjs,.md .",
     "js:minify": "run-p js:minify:standalone js:minify:bundle",
-    "js:minify:standalone": "terser --compress passes=2 --mangle --comments \"/^!/\" --source-map \"content=dist/js/chassis.js.map,includeSources,url=chassis.min.js.map\" --output dist/js/chassis.min.js dist/js/chassis.js",
-    "js:minify:bundle": "terser --compress passes=2 --mangle --comments \"/^!/\" --source-map \"content=dist/js/chassis.bundle.js.map,includeSources,url=chassis.bundle.min.js.map\" --output dist/js/chassis.bundle.min.js dist/js/chassis.bundle.js",
+    "js:minify:standalone": "terser --compress passes=2 --mangle --comments \"/^!/\" --source-map \"content=dist/js/chassis.js.map,url=chassis.min.js.map\" --output dist/js/chassis.min.js dist/js/chassis.js",
+    "js:minify:bundle": "terser --compress passes=2 --mangle --comments \"/^!/\" --source-map \"content=dist/js/chassis.bundle.js.map,url=chassis.bundle.min.js.map\" --output dist/js/chassis.bundle.min.js dist/js/chassis.bundle.js",
     "js:test": "pnpm js:test:unit",
     "js:test:debug": "cross-env DEBUG=true vitest --config js/tests/vitest.config.mts",
     "js:test:e2e": "playwright test --project=chromium --project=firefox --project=webkit",
     "js:test:e2e:tailwind-parity": "playwright test --project=tailwind-parity",
     "js:test:e2e:ui": "playwright test --ui",
-    "js:test:integration": "run-p js:test:integration:bundle js:test:integration:modularity",
+    "js:test:integration": "run-p js:test:integration:bundle js:test:integration:modularity js:test:integration:package",
     "js:test:integration:bundle": "rollup --config js/tests/integration/rollup.bundle.js",
     "js:test:integration:modularity": "rollup --config js/tests/integration/rollup.bundle-modularity.js",
+    "js:test:integration:package": "node --test js/tests/integration/package.test.mjs",
     "js:test:unit": "vitest run --config js/tests/vitest.config.mts --coverage",
     "js:test:unit:all-browsers": "cross-env ALL_BROWSERS=true vitest run --config js/tests/vitest.config.mts --coverage",
     "js:typecheck": "tsc --noEmit",
@@ -123,6 +129,7 @@
     "check:astro": "astro check --root site",
     "check:bundle": "bundlewatch --config .bundlewatch.config.json",
     "check:code": "run-p css:lint js:lint site:lint",
+    "check:package": "publint --strict && attw --pack . --profile esm-only --exclude-entrypoints ./tailwind",
     "check:pnpm": "pnpm audit --prod",
     "verify": "node build/verify-dist.js",
     "change-version": "node build/change-version.js",
@@ -143,6 +150,7 @@
     }
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@astrojs/check": "^0.9.9",
     "@astrojs/markdown-remark": "^7.2.1",
     "@astrojs/mdx": "^7.0.2",
@@ -208,6 +216,7 @@
     "postcss-prefix-custom-properties": "^0.1.0",
     "prettier": "^3.9.4",
     "prettier-plugin-astro": "^0.14.1",
+    "publint": "^0.3.24",
     "rehype-autolink-headings": "^7.1.0",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
@@ -235,8 +244,7 @@
     "dist/tailwind/*.css",
     "dist/tailwind/*.js",
     "js/{src,dist}/**/*.{js,map,ts}",
-    "js/index.ts",
-    "postcss/*.js",
+    "postcss/*.{js,d.ts}",
     "scss/**/*.scss",
     "!scss/tests/**",
     ".browserslistrc"

@@ -21,7 +21,7 @@ if (BUNDLE) {
 }
 
 export default defineConfig({
-  input: path.resolve(__dirname, '../js/index.ts'),
+  input: path.resolve(__dirname, '../js/src/index.ts'),
   external,
   resolve: {
     // Our TS sources import siblings with the ESM-style `.js` extension;
@@ -35,6 +35,9 @@ export default defineConfig({
   output: {
     banner: banner(),
     file: path.resolve(__dirname, `../dist/js/${destinationFile}.js`),
-    format: 'esm'
+    format: 'esm',
+    // The maps name the modules in js/src/, which the package ships, instead of holding a
+    // copy of them
+    sourcemapExcludeSources: true
   }
 })
