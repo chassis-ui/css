@@ -130,7 +130,9 @@ fails on your pull request, run `pnpm dist` and commit what changed.
     integration tests and `pnpm check:package`.
   - **Site**: `astro check`, the site build, `site:lint` and `pnpm docs:links`.
   - **Audit**: `pnpm audit --prod` fails the job; the full audit is reported only.
-  - **Bundle size**: reported only.
+  - **Bundle size**: the gzip size of each `dist/` CSS and JavaScript file against its budget in
+    `.bundlewatch.config.json`; raise a budget with `pnpm bundlewatch:fix` when a change outgrows it
+    on purpose.
   - **Changeset**: a changeset is present when the pull request changes `scss/`, `js/src/`,
     `postcss/`, `dist/` or `js/dist/`. It also runs on pushes to `develop`.
 - **The rebuilt `dist/` and `js/dist/`**, committed with any change to the source that changes
