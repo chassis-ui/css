@@ -293,20 +293,20 @@ A shorthand for the `prefers-color-scheme` media query with `light` and `dark` s
 
 ## Token sources
 
-Chassis loads its design tokens through a single override point — `scss/config/_token-source.scss`. The framework's `scss/config/_vendor.scss` re-exports from it, so swapping the entire token feed is a one-line change in a file you control.
+Chassis loads its design tokens through a single override point — a Sass module named `chassis-tokens`, which `scss/config/_vendor.scss` forwards and Sass finds on its `loadPaths`. The framework's default is `scss/vendor/_chassis-tokens.scss`, so swapping the entire token feed is a one-line change in a file you control.
 
-By default `_token-source.scss` forwards from `@chassis-ui/tokens/dist/web/docs/chassis/main`. Sass loads each module exactly once, so every downstream module — variables, maps, components — picks up whatever your override produces.
+By default `_chassis-tokens.scss` forwards from `@chassis-ui/tokens/dist/web/docs/chassis/main`. Sass loads each module exactly once, so every downstream module — variables, maps, components — picks up whatever your override produces.
 
 ### Switching token source
 
-Create a `_token-source.scss` file in your project that forwards your preferred token set:
+Create a `_chassis-tokens.scss` file in your project that forwards your preferred token set:
 
 ```scss
-// my-project/sass-overrides/_token-source.scss
-@forward "@chassis-ui/tokens/dist/web/docs/example/main";
+// my-project/sass-overrides/_chassis-tokens.scss
+@forward "@chassis-ui/tokens/dist/web/docs/sinefil/main";
 ```
 
-Then configure your build tool to search your override directory before the Chassis defaults. Because `_token-source.scss` sits at the root of the token dependency tree, all downstream modules pick up your token values automatically.
+Then configure your build tool to search your override directory before the Chassis defaults. Because `_chassis-tokens.scss` sits at the root of the token dependency tree, all downstream modules pick up your token values automatically.
 
 ```js
 // vite.config.ts (or astro.config.ts)
@@ -317,8 +317,8 @@ export default {
     preprocessorOptions: {
       scss: {
         loadPaths: [
-          path.resolve('./sass-overrides/'),                            // your _token-source.scss first
-          path.resolve('./node_modules/@chassis-ui/css/scss/config'), // framework fallback
+          path.resolve('./sass-overrides/'),                            // your _chassis-tokens.scss first
+          path.resolve('./node_modules/@chassis-ui/css/scss/vendor'), // framework fallback
           path.resolve('./node_modules'),                               // bare package specifiers (@chassis-ui/tokens/…)
         ],
       },
@@ -334,14 +334,14 @@ For partial overrides — adjusting a handful of token values — use `@use ... 
 ```scss
 // custom-entry.scss
 @use "@chassis-ui/css/scss/config/vendor" with (
-  $cx-color-base-palette-light-primary-50: #ff385c,
-  $cx-color-base-palette-light-primary-40: #ff6a85,
+  $cx-color-base-primitive-light-primary-50: #ff385c,
+  $cx-color-base-primitive-light-primary-40: #ff6a85,
 );
 // All subsequent chassis modules use the configured vendor instance
 @use "@chassis-ui/css/scss/chassis";
 ```
 
-This is practical for a handful of targeted adjustments. For a full theme swap (~1,200 variable differences between token sets), the `_token-source.scss` override above is far more maintainable.
+This is practical for a handful of targeted adjustments. For a full theme swap (~1,200 variable differences between token sets), the `_chassis-tokens.scss` override above is far more maintainable.
 
 ### Overriding properties
 

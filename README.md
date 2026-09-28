@@ -3,7 +3,8 @@
 > A tokenized CSS framework bridging Figma designs to seamless code implementation.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Version: 0.5.2](https://img.shields.io/badge/Version-0.5.2-blue.svg)](https://github.com/chassis-ui/css)
+[![npm version](https://img.shields.io/npm/v/@chassis-ui/css)](https://www.npmjs.com/package/@chassis-ui/css)
+[![CI](https://github.com/chassis-ui/css/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/chassis-ui/css/actions/workflows/ci.yml?query=branch%3Adevelop)
 
 ## Overview
 
@@ -11,17 +12,126 @@ Chassis is an open-source end-to-end design system that bridges the gap between 
 
 Starting with inspiration from Bootstrap but evolving into something entirely new, Chassis focuses on creating a system where design decisions can be made directly in Figma and automatically reflected in code across multiple platforms, products, and brands.
 
-### Core Features
+## Features
 
-- **Design Token System**: Chassis creates a single source of truth through design tokens that define every aspect of your UI, from colors and typography to spacing and component styles.
+- **Design Token System**: Chassis creates a single source of truth through design tokens that define every aspect of your UI, from colors and typography to spacing and component styles. The tokens come from [`@chassis-ui/tokens`](https://github.com/chassis-ui/tokens).
 
-- **Advanced Color System**: Beyond simple palettes, Chassis introduces context-based semantics. Every color has meaning and purpose in the UI, with carefully designed contextual palettes that maintain accessibility and visual hierarchy.
+- **Advanced Color System**: Beyond simple palettes, Chassis introduces context-based semantics. Base colors derived from the brand feed context colors (`primary`, `success`, `danger`, and more), each with a palette of states such as hover, active, subtle, and contrast that keep their meaning in light and dark modes.
 
 - **Context Classes**: A unique implementation that uses CSS variable re-declaration to create context-aware components. This system allows elements to completely change their color palette while maintaining semantic meaning and reducing CSS file size.
 
-- **Component Library**: Fully tokenized, accessible components that automatically adapt to your brand's design tokens. Components share common foundations while supporting multiple variants, sizes, and states.
+- **Component Library**: Fully tokenized, accessible components that automatically adapt to your brand's design tokens. Components share common foundations while supporting multiple variants, sizes, and states. Interactive components come with TypeScript-typed JavaScript plugins.
 
 - **Multi-Brand & Theme Support**: Built-in support for multiple brands, themes, and color modes through token collections. Switch between brands or toggle dark mode without changing your markup.
+
+- **Tailwind CSS v4 Entry**: An alternative entry point that exposes Chassis components and utilities through Tailwind's own variant engine.
+
+## Getting Started
+
+### Installation
+
+```shell
+npm install @chassis-ui/css
+```
+
+The JavaScript plugins use two peer dependencies: `@floating-ui/dom` (menus, popovers, tooltips) and `vanilla-calendar-pro` (datepicker). npm 7 and later installs them automatically.
+
+### Usage
+
+Include the compiled CSS in your HTML, and the JavaScript if you use interactive components. The JavaScript builds are ES modules:
+
+```html
+<link rel="stylesheet" href="node_modules/@chassis-ui/css/dist/css/chassis.min.css">
+
+<!-- Optional: only for interactive components -->
+<script type="module" src="node_modules/@chassis-ui/css/dist/js/chassis.bundle.min.js"></script>
+```
+
+`chassis.bundle.min.js` includes both peer dependencies. `chassis.min.js` expects them to be resolved separately.
+
+Components with a data-attribute API, such as `data-cx-toggle="tooltip"`, initialize themselves. Import a plugin to control a component from code:
+
+```js
+import '@chassis-ui/css/dist/css/chassis.min.css'
+import { Dialog } from '@chassis-ui/css'
+
+Dialog.getOrCreateInstance('#welcome-dialog').show()
+```
+
+The package exports `Accordion`, `Button`, `Carousel`, `Chip`, `ChipInput`, `Collapse`, `Combobox`, `Datepicker`, `Dialog`, `Drawer`, `Menu`, `NavOverflow`, `Notification`, `OtpInput`, `Popover`, `ScrollSpy`, `Strength`, `Tab`, `Toast`, `Toggler`, and `Tooltip`.
+
+### Using Sass
+
+Compile Chassis from source to apply your own tokens and settings. Chassis uses the Sass module system:
+
+```scss
+// styles.scss
+@use "@chassis-ui/css/scss/config" with (
+  $enable-dark-mode: false
+);
+@use "@chassis-ui/css/scss/chassis";
+
+.my-custom-element {
+  padding: var(--cx-space-sm) var(--cx-space-md);
+  background-color: var(--cx-primary);
+  color: var(--cx-primary-contrast);
+  border-radius: var(--cx-border-radius-sm);
+  font-family: var(--cx-font-family-text);
+}
+```
+
+Sass needs `node_modules` and the package's `scss/vendor/` directory on its load paths, and a PostCSS step adds the `--cx-` prefix to the custom properties. The [installation guide](https://chassis-ui.com/css/docs/getting-started/installation/) covers both, and [Sass customization](https://chassis-ui.com/css/docs/customize/sass/) shows how to switch to another token set.
+
+### Using Tailwind CSS
+
+For Tailwind CSS v4 projects, import the Tailwind entry point instead. It exposes Chassis components and utilities through Tailwind's own variant engine (`dark:fg-primary`, `lg:font-xl`, `hover:shadow-md`):
+
+```css
+/* app.css */
+@import "@chassis-ui/css/tailwind";
+```
+
+See the [Tailwind guide](https://chassis-ui.com/css/docs/getting-started/tailwind/) for setup, variant behavior, and known differences from the regular Sass/CSS entry.
+
+### Context classes
+
+Context classes change a component's whole color palette while keeping its structure:
+
+```html
+<button type="button" class="button primary">Submit</button>
+
+<div class="notification success" role="status">Your changes have been saved.</div>
+<div class="notification danger" role="status">The upload failed.</div>
+
+<div class="card context warning">
+  <div class="card-body">Your session will expire in 5 minutes.</div>
+</div>
+```
+
+### Browser support
+
+The targets come from [`.browserslistrc`](.browserslistrc):
+
+| Browser | Supported versions |
+|---------|-------------------|
+| Chrome | 130 and later |
+| Edge | 130 and later |
+| Firefox | 132 and later |
+| Safari (macOS and iOS) | 18 and later |
+| Other browsers | Last 2 major versions |
+
+Internet Explorer is not supported. See [Browsers & Devices](https://chassis-ui.com/css/docs/getting-started/browsers-devices/) for details.
+
+## Documentation
+
+Visit [chassis-ui.com/css](https://chassis-ui.com/css/) for the full documentation:
+
+- [Getting Started](https://chassis-ui.com/css/docs/getting-started/overview/)
+- [Core Concepts](https://chassis-ui.com/css/docs/core-concepts/overview/)
+- [Design Tokens](https://chassis-ui.com/css/docs/core-concepts/design-tokens/)
+- [Context Classes](https://chassis-ui.com/css/docs/core-concepts/context-class/)
+- [JavaScript](https://chassis-ui.com/css/docs/getting-started/javascript/)
+- [Components](https://chassis-ui.com/css/docs/components/accordion/)
 
 ## Chassis Ecosystem
 
@@ -31,6 +141,7 @@ This project is part of the Chassis Design System's multi-repository architectur
 |---------|-------------|
 | [chassis-website](https://github.com/chassis-ui/website) | Main website and shared documentation package |
 | **chassis-css** | **CSS framework and component library (this repository)** |
+| [chassis-react](https://github.com/chassis-ui/react) | React component library |
 | [chassis-tokens](https://github.com/chassis-ui/tokens) | Design token generation and management |
 | [chassis-icons](https://github.com/chassis-ui/icons) | Icon library and build toolkit |
 | [chassis-assets](https://github.com/chassis-ui/assets) | Multi-platform asset management |
@@ -38,170 +149,22 @@ This project is part of the Chassis Design System's multi-repository architectur
 
 All documentation sites share the `@chassis-ui/docs` package for consistent layouts, components, and styling.
 
-## Getting Started
+## Contributing
 
-### Installation
+Contributions are welcome. For major changes, please open an issue first to discuss what you would like to change. The [contributing guide](https://chassis-ui.com/css/docs/getting-started/contribute/) covers the tooling and the scripts.
 
-Install Chassis CSS via npm:
+### Development
+
+Requires Node.js 22 or later and pnpm (the version is pinned in `package.json`; `corepack enable` installs it):
 
 ```shell
-npm install @chassis-ui/css
+git clone https://github.com/chassis-ui/css.git
+cd css
+pnpm install
+pnpm dev
 ```
 
-### Usage
-
-Include the compiled CSS in your HTML:
-
-```html
-<!-- Include Chassis CSS -->
-<link rel="stylesheet" href="node_modules/@chassis-ui/css/dist/css/chassis.min.css">
-
-<!-- Optional JavaScript -->
-<script src="node_modules/@chassis-ui/css/dist/js/chassis.bundle.min.js"></script>
-```
-
-### Using with a bundler
-
-```js
-// Import Chassis CSS in your JavaScript entry file
-import '@chassis-ui/css/dist/css/chassis.min.css';
-
-// Import JS components as needed
-import { Modal, Dropdown, Tooltip } from '@chassis-ui/css';
-
-// Initialize components
-document.addEventListener('DOMContentLoaded', () => {
-  // Initialize all tooltips on a page
-  const tooltipElements = document.querySelectorAll('[data-cx-toggle="tooltip"]');
-  for (const element of tooltipElements) {
-    new Tooltip(element);
-  }
-});
-```
-
-### Using with Tailwind CSS
-
-For Tailwind CSS v4 projects, import the Tailwind entry point instead — it exposes Chassis components and utilities through Tailwind's own variant engine (`dark:fg-primary`, `lg:font-xl`, `hover:shadow-md`):
-
-```css
-/* app.css */
-@import "@chassis-ui/css/tailwind";
-```
-
-See the [Tailwind guide](https://chassis-ui.com/css/docs/getting-started/tailwind/) for setup, variant behavior, and known differences from the regular Sass/CSS entry.
-
-## Design System in Action
-
-### Token-Driven Development
-
-Chassis tokens flow directly from Figma to your code, creating a seamless design-to-development workflow:
-
-```scss
-// In your custom SCSS file
-@import '@chassis-ui/tokens/dist/web/my-app/my-brand.scss';
-@import '@chassis-ui/css/scss/chassis.scss';
-
-// Create a custom component using tokens
-.my-custom-element {
-  padding: var(--cx-space-small) var(--cx-space-medium);
-  background-color: var(--cx-primary);
-  color: var(--cx-primary-contrast);
-  border-radius: var(--cx-border-radius-small);
-  font-family: var(--cx-font-family-base);
-}
-```
-
-### Component Examples
-
-Chassis provides a rich library of components built on this token system:
-
-```html
-<!-- Button with semantic context -->
-<button class="button primary">Submit</button>
-
-<!-- Card with contextual styling -->
-<div class="card context success">
-  <div class="card-header">Success</div>
-  <div class="card-body">
-    Your changes have been saved successfully.
-  </div>
-</div>
-
-<!-- Alert using the context system -->
-<div class="alert warning">
-  <h4>Please note</h4>
-  <p>Your session will expire in 5 minutes.</p>
-</div>
-```
-
-### Context Classes for Semantic UI
-
-One of Chassis's most powerful features is the context class system that allows components to adapt their entire color palette while maintaining semantic meaning:
-
-```html
-<!-- Same component structure, different semantic contexts -->
-<div class="notification primary">Primary information</div>
-<div class="notification success">Success message</div>
-<div class="notification warning">Warning alert</div>
-<div class="notification danger">Critical error</div>
-```
-
-## Why Chassis?
-
-### For Designers
-
-- **Design Once, Deploy Everywhere**: Create in Figma and automatically update all implementations
-- **Full Control**: Modify tokens in Figma and see changes reflect across your application ecosystem
-- **Consistent User Experiences**: Ensure your design intent is preserved in the final product
-
-### For Developers
-
-- **Reduced Implementation Time**: The design-to-code bridge eliminates tedious translation work
-- **Robust Component Library**: Well-tested components ready for production use
-- **Flexible Utility System**: Expressive classes for rapid custom layouts
-
-### For Teams
-
-- **Single Source of Truth**: Design tokens serve as the shared language between design and development
-- **Scales with Your Organization**: From small teams to enterprise-level design systems
-- **Open Source Foundation**: Build on a community-supported framework that's constantly improving
-
-## Documentation
-
-Visit [chassis-ui.com](https://chassis-ui.com) for comprehensive documentation including:
-
-- [Getting Started Guide](https://chassis-ui.com/getting-started/)
-- [Core Concepts](https://chassis-ui.com/docsref/)
-- [Component Library](https://chassis-ui.com/components/)
-- [Design Tokens](https://chassis-ui.com/docsref/)
-
-## Browser Support
-
-Chassis CSS supports all major modern browsers:
-
-| Browser | Supported Versions |
-|---------|-------------------|
-| Chrome  | Last 2 versions   |
-| Firefox | Last 2 versions   |
-| Safari  | Last 2 versions   |
-| Edge    | Last 2 versions   |
-| Opera   | Last 2 versions   |
-
-IE 11 and older versions are not supported.
-
-## Philosophy: Color System
-
-Chassis introduces an advanced approach to UI colors that goes beyond traditional color systems. It's built on a deep understanding of how color creates meaning in interfaces:
-
-- **Base Colors**: Seven foundational colors derived from brand identity, each with a complete palette of tints and shades that serve as the building blocks for the entire system.
-
-- **Context Colors**: Eleven semantic colors (including default, primary, secondary, success, etc.) that maintain their meaning across light and dark modes, ensuring consistent user experience.
-
-- **Context Palettes**: For each context color, Chassis creates specialized variants like hover, active, subtle, and contrast to ensure accessibility and consistent interaction states.
-
-- **Body Colors**: Core interface colors that define surfaces, text, borders, and other fundamental UI elements, all of which adapt automatically to theme changes.
-
-- **Re-declaration Approach**: A technical innovation that uses CSS variable re-declaration to create context-aware components with minimal CSS size.
+`pnpm dev` compiles CSS and JavaScript in watch mode and serves the documentation site at `http://localhost:4323/css/`. `pnpm test` runs the lint, build, and test suite. The compiled `dist/` and `js/dist/` folders are committed: rebuild them with `pnpm dist` and commit the result with the change, since `pnpm verify` fails in CI when they differ from the source.
 
 ## Origin & Attribution
 
@@ -210,49 +173,6 @@ Chassis CSS is derived from [Bootstrap](https://getbootstrap.com/) and has been 
 Bootstrap is copyright (c) 2011–2025 the Bootstrap Authors and Twitter, Inc., released under the [MIT License](https://github.com/twbs/bootstrap/blob/main/LICENSE).
 
 The Bootstrap documentation is released under [Creative Commons Attribution 3.0 Unported (CC BY 3.0)](https://creativecommons.org/licenses/by/3.0/).
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Make your changes
-4. Test the build: `pnpm build && pnpm test`
-5. Commit your changes: `git commit -m "feat: add my feature"`
-6. Push to the branch: `git push origin feature/my-feature`
-7. Open a Pull Request
-
-For major changes, please open an issue first to discuss what you would like to change.
-
-## Development
-
-Clone the repo and install dependencies:
-
-```shell
-git clone https://github.com/chassis-ui/css.git
-cd css
-pnpm install
-```
-
-The documentation is built with [Astro](https://astro.build/) and can be run locally:
-
-```shell
-# Run the documentation site with live reloading
-pnpm dev
-
-# Build the CSS and JavaScript
-pnpm build
-
-# Run tests
-pnpm test
-```
-
-The project uses [stylelint](https://stylelint.io/) for SCSS formatting. If you're using VS Code, install the [vscode-stylelint](https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint) extension with these settings:
-
-```json
-{
-  "stylelint.validate": ["css", "scss"]
-}
-```
 
 ## License
 

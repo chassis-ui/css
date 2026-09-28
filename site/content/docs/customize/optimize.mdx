@@ -42,7 +42,7 @@ Two constraints apply:
 
 ## Lean JavaScript
 
-Chassis JS includes every plugin in the primary dist files (`chassis.js` and `chassis.min.js`), and Floating UI in the bundle files (`chassis.bundle.js` and `chassis.bundle.min.js`). When customizing via Sass, remove the JavaScript for any components you've excluded.
+Chassis JS includes every plugin in the primary dist files (`chassis.js` and `chassis.min.js`), and Floating UI and Vanilla Calendar Pro in the bundle files (`chassis.bundle.js` and `chassis.bundle.min.js`). When customizing via Sass, remove the JavaScript for any components you've excluded.
 
 With a bundler you can import exactly the plugins you need. Two equivalent styles — pick the one that fits your project:
 
@@ -55,9 +55,9 @@ import { Accordion, Dialog, Notification } from '@chassis-ui/css'
 **Individual file imports** (explicit, no bundler tree-shaking required):
 
 ```js
-import '@chassis-ui/css/js/dist/accordion'
-import '@chassis-ui/css/js/dist/dialog'
-import '@chassis-ui/css/js/dist/notification'
+import '@chassis-ui/css/js/dist/accordion.js'
+import '@chassis-ui/css/js/dist/dialog.js'
+import '@chassis-ui/css/js/dist/notification.js'
 ```
 
 `Menu`, `Popover`, and `Tooltip` depend on Floating UI — add `@floating-ui/dom` to your dependencies if you import any of them.
