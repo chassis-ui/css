@@ -19,7 +19,8 @@ concurrency:
 jobs:
   # `npm publish` ships dist/ and js/dist/ of packages/css as committed, with no build step of
   # its own. This job builds them on every Node.js version the package supports and fails when
-  # the result differs from what is committed.
+  # the result differs from what is committed. It also tests the build scripts on both
+  # versions.
   dist:
     name: Dist (Node ${{ matrix.node }})
     runs-on: ubuntu-latest
@@ -47,6 +48,11 @@ jobs:
       # the site's packages
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --filter @chassis-ui/css
+
+      # The scripts of the release path run on `main` only: the comparison below, the version
+      # references, the release notes. Their tests run them on files of their own
+      - name: Test the build scripts
+        run: pnpm build:test
 
       # Builds the CSS, the Tailwind entry, the JavaScript and its type declarations, then
       # compares dist/css, dist/tailwind, dist/js and js/dist of packages/css with the commit
@@ -176,6 +182,10 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # The whole repository, not only the site; .prettierignore lists what is left out
+      - name: Prettier
+        run: pnpm lint:prettier
 
       - name: Astro check
         run: pnpm check:astro

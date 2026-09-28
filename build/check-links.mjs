@@ -9,16 +9,29 @@
  *   node build/check-links.mjs --site     the links of the built docs site (`_site/`) to its
  *                                         own pages and assets, anchors included
  *
+ * `--root <directory>` checks the files of that directory instead of the repository's; the
+ * tests of this script use it.
+ *
  * Exits 1 and lists every broken link when one is found.
  */
 
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { parseArgs } from 'node:util'
 import GithubSlugger from 'github-slugger'
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const args = new Set(process.argv.slice(2))
+const { values: options } = parseArgs({
+  options: {
+    offline: { type: 'boolean', default: false },
+    site: { type: 'boolean', default: false },
+    root: { type: 'string' }
+  }
+})
+
+const root = path.resolve(
+  options.root ?? path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
+)
 
 // Markdown files that readers open on GitHub or npm. Docs pages are checked through the
 // built site instead, since their links are only resolved by the build.
@@ -272,10 +285,10 @@ function checkSite() {
   }
 }
 
-if (args.has('--site')) {
+if (options.site) {
   checkSite()
 } else {
-  await checkMarkdown({ offline: args.has('--offline') })
+  await checkMarkdown({ offline: options.offline })
 }
 
 if (broken.length > 0) {
@@ -288,7 +301,7 @@ if (broken.length > 0) {
 }
 
 console.log(
-  args.has('--site')
+  options.site
     ? `All links of ${SITE_DIR}${SITE_BASE} resolve.`
     : `All links of ${MARKDOWN_FILES.join(', ')} resolve.`
 )

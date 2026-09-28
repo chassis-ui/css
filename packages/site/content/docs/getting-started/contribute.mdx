@@ -40,10 +40,11 @@ The full list of scripts lives in the root [`package.json`]([[config:repo]]/blob
 | `pnpm dev` | Compiles CSS and JS in watch mode and starts the docs site dev server. The fastest feedback loop for working on the framework or the docs. |
 | `pnpm dist` | Produces the full `dist/` and `js/dist/` output — compiled, prefixed, and minified CSS and JS, the Tailwind entry, and the type declarations. Both folders are committed; commit the rebuilt files with the source change. |
 | `pnpm test` | Lints CSS, JS, and the docs, builds the distribution, runs the Sass and JS unit tests, builds the docs site, and lints the built docs. |
+| `pnpm test:ci` | Runs every check that CI runs, in one command: the unit tests in Chromium, Firefox, and WebKit, the end-to-end tests, and the site build included. Takes several minutes. |
 | `pnpm verify` | Rebuilds `dist/` and `js/dist/` and fails when the result differs from what is committed. CI runs it. |
 | `pnpm css:compile` | Compiles SCSS to CSS using Dart Sass with source maps. |
 | `pnpm css:test` | Runs the Sass test suite (`scss/tests/`). |
-| `pnpm js:test` | Runs the unit tests for the JS plugins with [Vitest](https://vitest.dev/) in browser mode. |
+| `pnpm js:test:unit` | Runs the unit tests for the JS plugins with [Vitest](https://vitest.dev/) in browser mode. |
 | `pnpm js:typecheck` | Type-checks the TypeScript sources of the JS plugins. |
 | `pnpm site:build` | Builds the static docs site for production. |
 </CxTable>

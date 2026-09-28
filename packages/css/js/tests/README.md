@@ -7,7 +7,7 @@ Chassis CSS uses [Vitest](https://vitest.dev/) in [browser mode](https://vitest.
 - `types/` contains compile-time type tests. They are type-checked, never executed.
 - `vitest.config.mts` holds the runner config, and `vitest-setup.js` runs before every spec.
 
-To run the unit test suite, run `pnpm js:test`. To run only the unit specs (skipping the integration bundle checks), run `pnpm js:test:unit`.
+To run the unit test suite, run `pnpm js:test:unit`. It runs the specs in Chromium; `pnpm js:test:unit:all-browsers` adds Firefox and WebKit, as CI does.
 To run the specs in a visible browser and debug them, run `pnpm js:test:debug`.
 
 Playwright needs its browsers installed once per machine: `npx playwright install chromium firefox webkit`.

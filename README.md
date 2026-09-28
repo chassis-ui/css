@@ -112,13 +112,13 @@ Context classes change a component's whole color palette while keeping its struc
 
 The targets come from [`.browserslistrc`](packages/css/.browserslistrc):
 
-| Browser | Supported versions |
-|---------|-------------------|
-| Chrome | 130 and later |
-| Edge | 130 and later |
-| Firefox | 132 and later |
-| Safari (macOS and iOS) | 18 and later |
-| Other browsers | Last 2 major versions |
+| Browser                | Supported versions    |
+| ---------------------- | --------------------- |
+| Chrome                 | 130 and later         |
+| Edge                   | 130 and later         |
+| Firefox                | 132 and later         |
+| Safari (macOS and iOS) | 18 and later          |
+| Other browsers         | Last 2 major versions |
 
 Internet Explorer is not supported. See [Browsers & Devices](https://chassis-ui.com/css/docs/getting-started/browsers-devices/) for details.
 
@@ -137,15 +137,15 @@ Visit [chassis-ui.com/css](https://chassis-ui.com/css/) for the full documentati
 
 This project is part of the Chassis Design System's multi-repository architecture:
 
-| Project | Description |
-|---------|-------------|
-| [chassis-website](https://github.com/chassis-ui/website) | Main website and shared documentation package |
-| **chassis-css** | **CSS framework and component library (this repository)** |
-| [chassis-react](https://github.com/chassis-ui/react) | React component library |
-| [chassis-tokens](https://github.com/chassis-ui/tokens) | Design token generation and management |
-| [chassis-icons](https://github.com/chassis-ui/icons) | Icon library and build toolkit |
-| [chassis-assets](https://github.com/chassis-ui/assets) | Multi-platform asset management |
-| [chassis-figma](https://github.com/chassis-ui/figma) | Figma component documentation |
+| Project                                                  | Description                                               |
+| -------------------------------------------------------- | --------------------------------------------------------- |
+| [chassis-website](https://github.com/chassis-ui/website) | Main website and shared documentation package             |
+| **chassis-css**                                          | **CSS framework and component library (this repository)** |
+| [chassis-react](https://github.com/chassis-ui/react)     | React component library                                   |
+| [chassis-tokens](https://github.com/chassis-ui/tokens)   | Design token generation and management                    |
+| [chassis-icons](https://github.com/chassis-ui/icons)     | Icon library and build toolkit                            |
+| [chassis-assets](https://github.com/chassis-ui/assets)   | Multi-platform asset management                           |
+| [chassis-figma](https://github.com/chassis-ui/figma)     | Figma component documentation                             |
 
 All documentation sites share the `@chassis-ui/docs` package for consistent layouts, components, and styling.
 
