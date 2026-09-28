@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../../../dist/css/chassis.min.css" rel="stylesheet">
+    <title>Combobox</title>
+  </head>
+  <body>
+    <div class="container mt-md">
+      <h1>Combobox <small>Chassis Visual Test</small></h1>
+
+      <p>Open each combobox with the mouse and with <kbd>↓</kbd>, move through the items with the arrow keys, select one with <kbd>Enter</kbd>, and close the menu with <kbd>Esc</kbd>: focus should go back to the toggle. The values below the form are the ones it would submit.</p>
+
+      <form id="form" class="vstack gap-md">
+        <div class="form-field">
+          <label for="country" class="form-label">Country <small>(input trigger)</small></label>
+          <div class="form-input combobox" id="countryToggle" data-cx-toggle="combobox" data-cx-name="country">
+            <input type="text" id="country" class="combobox-value" placeholder="Pick a country…" autocomplete="off">
+          </div>
+          <div class="menu w-100" id="countryMenu" role="listbox" aria-label="Country">
+            <button class="menu-item" type="button" role="option" data-cx-value="us">United States</button>
+            <button class="menu-item" type="button" role="option" data-cx-value="uk">United Kingdom</button>
+            <button class="menu-item" type="button" role="option" data-cx-value="ca">Canada</button>
+            <button class="menu-item" type="button" role="option" data-cx-value="au">Australia</button>
+            <button class="menu-item" type="button" role="option" data-cx-value="de">Germany</button>
+          </div>
+          <div class="form-help">Typing filters the list.</div>
+        </div>
+
+        <div class="form-field">
+          <span class="form-label" id="roleLabel">Role <small>(pre-selected)</small></span>
+          <div class="form-input combobox" id="roleToggle" data-cx-toggle="combobox" data-cx-name="role">
+            <input type="text" class="combobox-value" placeholder="Choose a role…" autocomplete="off" aria-labelledby="roleLabel">
+          </div>
+          <div class="menu w-100" id="roleMenu" role="listbox" aria-labelledby="roleLabel">
+            <button class="menu-item" type="button" role="option" data-cx-value="admin">Admin</button>
+            <button class="menu-item selected" type="button" role="option" aria-selected="true" data-cx-value="editor">Editor</button>
+            <button class="menu-item" type="button" role="option" data-cx-value="viewer">Viewer</button>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <span class="form-label" id="cityLabel">City <small>(button trigger, search field)</small></span>
+          <button class="form-input combobox" type="button" id="cityToggle" aria-labelledby="cityLabel" data-cx-toggle="combobox" data-cx-name="city" data-cx-placeholder="Select a city…">
+            <span class="combobox-value"></span>
+          </button>
+          <div class="menu w-100" id="cityMenu" role="listbox" aria-labelledby="cityLabel">
+            <div class="combobox-search">
+              <input type="text" class="form-input combobox-search-input sm" placeholder="Search…" autocomplete="off" aria-label="Filter cities">
+            </div>
+            <button class="menu-item" type="button" role="option" data-cx-value="ams">Amsterdam</button>
+            <button class="menu-item" type="button" role="option" data-cx-value="ber">Berlin</button>
+            <button class="menu-item" type="button" role="option" data-cx-value="ist">Istanbul</button>
+            <button class="menu-item" type="button" role="option" data-cx-value="lis">Lisbon</button>
+            <button class="menu-item" type="button" role="option" data-cx-value="lon">London</button>
+            <div class="combobox-no-results d-none">No results found</div>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="skills" class="form-label">Skills <small>(multiple)</small></label>
+          <div class="form-input combobox" id="skillsToggle" data-cx-toggle="combobox" data-cx-name="skills" data-cx-multiple="true">
+            <input type="text" id="skills" class="combobox-value" placeholder="Select skills…" autocomplete="off">
+          </div>
+          <div class="menu w-100" id="skillsMenu" role="listbox" aria-label="Skills" aria-multiselectable="true">
+            <button class="menu-item" type="button" role="option" data-cx-value="html">HTML</button>
+            <button class="menu-item" type="button" role="option" data-cx-value="css">CSS</button>
+            <button class="menu-item" type="button" role="option" data-cx-value="js">JavaScript</button>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="plan" class="form-label">Plan <small>(disabled)</small></label>
+          <div class="form-input combobox disabled" id="planToggle" data-cx-toggle="combobox" data-cx-name="plan" aria-disabled="true">
+            <input type="text" id="plan" class="combobox-value" placeholder="Not available…" autocomplete="off" disabled>
+          </div>
+          <div class="menu w-100" id="planMenu" role="listbox" aria-label="Plan">
+            <button class="menu-item" type="button" role="option" data-cx-value="free">Free</button>
+            <button class="menu-item" type="button" role="option" data-cx-value="pro">Pro</button>
+          </div>
+        </div>
+
+        <div>
+          <button type="submit" class="button primary" id="submit">Show the values</button>
+        </div>
+      </form>
+
+      <pre class="mt-md" id="values" aria-live="polite"></pre>
+    </div>
+
+    <script type="module" src="../../../dist/js/chassis.bundle.js"></script>
+    <script type="module">
+      const form = document.getElementById('form')
+
+      form.addEventListener('submit', event => {
+        event.preventDefault()
+        document.getElementById('values').textContent = new URLSearchParams(new FormData(form)).toString()
+      })
+
+      document.querySelectorAll('[data-cx-toggle="combobox"]').forEach(toggle => {
+        for (const type of ['show', 'shown', 'hide', 'hidden', 'change']) {
+          toggle.addEventListener(`${type}.cx.combobox`, event => console.log(`${type}.cx.combobox`, toggle.id, event.detail ?? ''))
+        }
+      })
+    </script>
+  </body>
+</html>

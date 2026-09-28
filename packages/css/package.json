@@ -80,6 +80,7 @@
     "js:minify": "run-p js:minify:standalone js:minify:bundle",
     "js:minify:standalone": "terser --compress passes=2 --mangle --comments \"/^!/\" --source-map \"content=dist/js/chassis.js.map,url=chassis.min.js.map\" --output dist/js/chassis.min.js dist/js/chassis.js",
     "js:minify:bundle": "terser --compress passes=2 --mangle --comments \"/^!/\" --source-map \"content=dist/js/chassis.bundle.js.map,url=chassis.bundle.min.js.map\" --output dist/js/chassis.bundle.min.js dist/js/chassis.bundle.js",
+    "js:test:a11y": "playwright test --project=a11y",
     "js:test:debug": "cross-env DEBUG=true vitest --config js/tests/vitest.config.mts",
     "js:test:e2e": "playwright test --project=chromium --project=firefox --project=webkit",
     "js:test:e2e:tailwind-parity": "playwright test --project=tailwind-parity",
@@ -114,6 +115,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
+    "@axe-core/playwright": "^4.13.0",
     "@chassis-ui/tokens": "^0.5.1",
     "@floating-ui/dom": "^1.7.6",
     "@playwright/test": "^1.62.1",

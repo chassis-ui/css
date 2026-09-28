@@ -2,6 +2,9 @@ import { defineConfig, devices } from '@playwright/test'
 
 const PORT = 4310
 
+// The specs that are not part of `pnpm js:test:e2e`. Each has a project and a script of its own.
+const OWN_PROJECT = /tailwind-parity|a11y\.spec/
+
 export default defineConfig({
   testDir: 'js/tests/e2e',
   fullyParallel: true,
@@ -10,6 +13,9 @@ export default defineConfig({
   reporter: process.env.CI ? 'dot' : 'list',
   use: {
     baseURL: `http://localhost:${PORT}`,
+    // The pages show the same dates and numbers wherever they are opened
+    locale: 'en-US',
+    timezoneId: 'UTC',
     trace: 'retain-on-failure'
   },
   webServer: {
@@ -24,9 +30,15 @@ export default defineConfig({
     // rest of the e2e suite, so it's excluded from the default three
     // browsers and run on request via `pnpm js:test:e2e:tailwind-parity`
     // (see AGENTS.md).
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] }, testIgnore: /tailwind-parity/ },
-    { name: 'firefox', use: { ...devices['Desktop Firefox'] }, testIgnore: /tailwind-parity/ },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] }, testIgnore: /tailwind-parity/ },
-    { name: 'tailwind-parity', use: { ...devices['Desktop Chrome'] }, testMatch: /tailwind-parity/ }
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] }, testIgnore: OWN_PROJECT },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] }, testIgnore: OWN_PROJECT },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] }, testIgnore: OWN_PROJECT },
+    {
+      name: 'tailwind-parity',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: /tailwind-parity/
+    },
+    // axe on the pages of js/tests/visual/: `pnpm js:test:a11y`
+    { name: 'a11y', use: { ...devices['Desktop Chrome'] }, testMatch: /a11y\.spec/ }
   ]
 })

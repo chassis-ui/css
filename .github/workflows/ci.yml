@@ -152,6 +152,10 @@ jobs:
       - name: Run e2e tests
         run: pnpm js:test:e2e
 
+      # axe on the pages the e2e tests open, closed and open; Chromium alone
+      - name: Run accessibility checks
+        run: pnpm js:test:a11y
+
       # Two bundles of the JavaScript, and the package as a project installs it: what each
       # import resolves to, and its types in a strict TypeScript project
       - name: Run integration checks

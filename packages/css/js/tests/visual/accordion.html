@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../../../dist/css/chassis.min.css" rel="stylesheet">
+    <title>Accordion</title>
+  </head>
+  <body>
+    <div class="container mt-md">
+      <h1>Accordion <small>Chassis Visual Test</small></h1>
+
+      <p>Open and close the items with the mouse, then press <kbd>Tab</kbd>: focus should move to the next item, and on to the button after the accordion. <kbd>Enter</kbd> and <kbd>Space</kbd> should toggle the item that has focus.</p>
+
+      <button type="button" class="button default" id="before">Before the accordion</button>
+
+      <h2 class="mt-md">Group: one item open at a time</h2>
+
+      <div class="accordion" id="group" data-cx-accordion>
+        <details name="group" id="groupOne" open>
+          <summary>
+            <span class="accordion-title">Group item #1</span>
+          </summary>
+          <div class="accordion-body">
+            <p>The first item of the group, open by default. It closes when another item of the group opens.</p>
+          </div>
+        </details>
+        <details name="group" id="groupTwo">
+          <summary>
+            <span class="accordion-title">Group item #2</span>
+          </summary>
+          <div class="accordion-body">
+            <p>The second item of the group, with a button in its body.</p>
+            <button type="button" class="button default" id="groupTwoButton">In the body</button>
+          </div>
+        </details>
+        <details name="group" id="groupThree">
+          <summary>
+            <span class="accordion-title">Group item #3</span>
+          </summary>
+          <div class="accordion-body">
+            <p>The third item of the group.</p>
+          </div>
+        </details>
+      </div>
+
+      <button type="button" class="button default mt-md" id="between">Between the accordions</button>
+
+      <h2 class="mt-md">Independent items</h2>
+
+      <div class="accordion" id="independent" data-cx-accordion>
+        <details id="independentOne" open>
+          <summary>
+            <span class="accordion-title">Independent item #1</span>
+          </summary>
+          <div class="accordion-body">
+            <p>Without a <code>name</code> attribute, the item closes only when its own summary is used.</p>
+          </div>
+        </details>
+        <details id="independentTwo">
+          <summary>
+            <span class="accordion-title">Independent item #2</span>
+          </summary>
+          <div class="accordion-body">
+            <p>Opening this item leaves the first one as it is.</p>
+          </div>
+        </details>
+      </div>
+
+      <button type="button" class="button default mt-md" id="after">After the accordions</button>
+    </div>
+
+    <script type="module" src="../../../dist/js/chassis.bundle.js"></script>
+    <script type="module">
+      document.querySelectorAll('.accordion > details').forEach(item => {
+        for (const type of ['open', 'opened', 'close', 'closed']) {
+          item.addEventListener(`${type}.cx.accordion`, () => console.log(`${type}.cx.accordion`, item.id))
+        }
+      })
+    </script>
+  </body>
+</html>
