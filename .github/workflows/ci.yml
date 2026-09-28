@@ -209,11 +209,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Reports only, for now: 7 of the 12 budgets are lower than the files they measure.
-      # Remove continue-on-error once the budgets are set from the current sizes.
+      # The budgets are the sizes of 2026-09-28 plus about 5 percent. When a change outgrows one
+      # on purpose, `pnpm bundlewatch:fix` raises it to the new size
       - name: Check bundle sizes
         run: pnpm check:bundle
-        continue-on-error: true
 
   # A change to scss/, js/src/, postcss/, dist/ or js/dist/ needs a changeset (changedFilePatterns
   # in .changeset/config.json); `pnpm changeset --empty` adds one that releases nothing. A pull
