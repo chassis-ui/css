@@ -25,7 +25,6 @@ declare class Drawer extends DialogBase {
         preventBodyScroll: boolean;
     };
     protected _onBeforeShow(): void;
-    protected _getInstantClassName(): string;
     protected _getStaticClassName(): string;
     protected _initSwipe(): void;
 }

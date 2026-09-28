@@ -41,7 +41,7 @@ declare class Carousel extends BaseComponent {
     prev(): void;
     pause(): void;
     cycle(): void;
-    to(index: number | string): void;
+    to(index: number | string, items?: HTMLElement[]): void;
     dispose(): void;
     protected _configAfterMerge(config: ComponentConfig): ComponentConfig;
     protected _initialActiveIndex(): number;
@@ -49,18 +49,18 @@ declare class Carousel extends BaseComponent {
     protected _keydown(event: ChassisEvent): void;
     protected _observeItems(): void;
     protected _handleIntersection(entries: IntersectionObserverEntry[]): void;
-    protected _navIndex(): number;
-    protected _scrollToIndex(index: number): void;
+    protected _navIndex(items?: HTMLElement[]): number;
+    protected _scrollToIndex(index: number, items?: HTMLElement[]): void;
     protected _animateScroll(targetLeft: number, onComplete: () => void): void;
-    protected _scrollDelta(element: Element): number;
-    protected _loopTransition(isNext: boolean): void;
+    protected _scrollDelta(element: Element, viewportRect?: DOMRect): number;
+    protected _loopTransition(isNext: boolean, items: HTMLElement[]): void;
     protected _loopDirection(isNext: boolean): string;
     protected _jumpScroll(delta: number): void;
-    protected _fadeTo(index: number): void;
-    protected _setActive(index: number): void;
-    protected _refreshActiveState(): void;
-    protected _updateEndControls(): void;
-    protected _scrollEdges(): {
+    protected _fadeTo(index: number, items: HTMLElement[]): void;
+    protected _setActive(index: number, items?: HTMLElement[]): void;
+    protected _refreshActiveState(items?: HTMLElement[]): void;
+    protected _updateEndControls(items?: HTMLElement[]): void;
+    protected _scrollEdges(items: HTMLElement[]): {
         atStart: boolean;
         atEnd: boolean;
     };
@@ -69,20 +69,22 @@ declare class Carousel extends BaseComponent {
     protected _setActiveIndicatorElement(index: number): void;
     protected _normalizeIndex(index: number, length: number): number | null;
     protected _wrapsAround(): boolean;
-    protected _canLoop(): boolean;
+    protected _canLoop(items: HTMLElement[]): boolean;
     protected _direction(from: number, to: number): string;
     protected _scheduleAutoplay(index?: number): void;
     protected _upcomingIndex(): number | null;
-    protected _nextRawIndex(): number;
+    protected _nextRawIndex(items: HTMLElement[]): number;
     protected _itemInterval(index?: number): number;
     protected _maybeEnableCycle(): void;
-    _pauseFromInteraction(): void;
-    _togglePlayPause(): void;
+    protected _pauseFromInteraction(): void;
+    protected _togglePlayPause(): void;
     protected _updatePlayPauseControl(): void;
     protected _isFade(): boolean;
     protected _prefersReducedMotion(): boolean;
     protected _getItems(): HTMLElement[];
     protected _clearInterval(): void;
+    static dataApiSlideHandler(this: HTMLElement, event: ChassisEvent): void;
+    static dataApiPlayPauseHandler(this: HTMLElement, event: ChassisEvent): void;
 }
 export default Carousel;
 export type { CarouselConfig };

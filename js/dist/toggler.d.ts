@@ -7,7 +7,7 @@
 import BaseComponent from './base-component.js';
 type TogglerConfig = {
     attribute: string;
-    value: string | number | boolean;
+    value: string | number | boolean | null;
 };
 /**
  * Class definition

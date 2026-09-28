@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - `Nav`: opening a menu from a toggle placed directly inside a `.nav-pills` nav, without a `.nav-item` wrapper, gave every sibling link the active style, because the open state was matched on the toggle's parent. It is now matched on the toggle itself
 - Docs: the vertical example on the `Tab` page used `.nav-pills-vertical` and `.me-4`, neither of which exists, so the links never stacked; it now uses `.flex-column` and `.me-md`. The `Nav` page's link to the Tab plugin pointed at an anchor that does not exist
+- **Types:** 16 of the type declarations in `js/dist/` were older than their modules, because the build did not write them. `NavOverflow`'s `moreText: string | false` and the `null` a `Toggler` value can hold were missing, among others. The build now writes the declarations with the modules, and a release fails when any file in `dist/` or `js/dist/` differs from a fresh build
 
 ## [0.5.2] - 2026-09-25
 

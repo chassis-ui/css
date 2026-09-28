@@ -27,7 +27,6 @@ declare class ChipInput extends BaseComponent {
     ['constructor']: typeof ChipInput;
     protected _config: ChipInputConfig;
     protected _input: HTMLInputElement | null;
-    protected _chips: string[];
     protected _selectedChips: Set<HTMLElement>;
     protected _anchorChip: HTMLElement | null;
     constructor(element?: string | Element | null, config?: Partial<ChipInputConfig> | null);
@@ -40,11 +39,10 @@ declare class ChipInput extends BaseComponent {
     getValues(): string[];
     getSelectedValues(): string[];
     clear(): void;
-    clearSelection(): void;
+    clearSelection(silent?: boolean): void;
     selectChip(chip: HTMLElement, options?: SelectChipOptions): void;
     focus(): void;
     dispose(): void;
-    protected _clearSelectionSilent(): void;
     protected _getChipElements(): HTMLElement[];
     protected _createInput(): void;
     protected _initializeExistingChips(): void;
