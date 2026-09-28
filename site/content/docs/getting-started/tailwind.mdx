@@ -1,43 +1,45 @@
 ---
 title: Tailwind
-description: Use Chassis CSS tokens, components, and utilities inside a Tailwind CSS v4 project, through Tailwind's own variant engine.
+description: Use Chassis CSS tokens, components, and utilities in a Tailwind CSS v4 project, with every Tailwind variant available on Chassis utilities.
 toc: true
 ---
 
-Chassis CSS ships a separate entry point for [Tailwind CSS](https://tailwindcss.com/) v4 projects. It exposes Chassis's token-based components (`.button.outline`, `.card`, `.navbar`) and its utilities (`fg-primary`, `font-xl`) as Tailwind `@utility` rules, so every Tailwind variant — `dark:`, `lg:`, `hover:`, `@md:`, `print:` — works on Chassis classes without extra configuration. Tailwind's own default design values never leak in; Chassis tokens stay the only source of values.
+Chassis CSS ships a separate entry point for [Tailwind CSS](https://tailwindcss.com/) v4 projects. It keeps Chassis components (`.button.outline`, `.card`, `.navbar`) as plain CSS and emits Chassis utilities (`.fg-primary`, `.font-xl`) as Tailwind `@utility` rules, so every Tailwind variant (`dark:`, `lg:`, `hover:`, `@md:`, `print:`) works on them. The entry also resets Tailwind's default theme, which leaves Chassis tokens as the only source of design values.
 
-Like the regular Chassis entry, the Tailwind entry point ships as Sass source — compile it yourself so your own `@chassis-ui/tokens` build and settings apply. [Installation]([[docsref:/getting-started/installation]]) covers the parts shared with every Chassis project; this guide covers what's specific to Tailwind.
+The Tailwind entry point ships as Sass source, like the regular Chassis entry. Compile it in your own build so your `@chassis-ui/tokens` build and settings apply. [Installation]([[docsref:/getting-started/installation]]) covers the parts every Chassis project shares; this guide covers what's specific to Tailwind.
 
 ## Setup
 
-1. **Install Chassis CSS, its tokens, and Tailwind.** Tailwind CSS 4.1 or later is required — the `@source not inline(...)` syntax the Tailwind entry point relies on to exclude clashing component names isn't available in 4.0. `postcss-prefix-custom-properties` is the `--cx-` prefix step every Chassis Sass build needs (see step 4).
+This guide assumes a project that already compiles Sass, as set up in the [Vite]([[docsref:/getting-started/vite]]), [Webpack]([[docsref:/getting-started/webpack]]), or [Parcel]([[docsref:/getting-started/parcel]]) guide. Tailwind CSS 4.1 or later is required: the entry point excludes clashing class names with `@source not inline()`, which 4.0 doesn't support.
+
+1. **Install Chassis CSS, its tokens, and Tailwind.** `postcss` and `postcss-prefix-custom-properties` run the `--cx-` prefix step described in [Build it](#build-it).
 
    ```bash
    pnpm add @chassis-ui/css @chassis-ui/tokens
    pnpm add -D sass tailwindcss postcss postcss-prefix-custom-properties
    ```
 
-2. **Point your Sass build at your own token source.** Chassis's own `scss/config/_vendor.scss` resolves its tokens through a bare `chassis-tokens` specifier, found via your Sass compiler's `loadPaths` — the same mechanism the regular (non-Tailwind) Sass setup uses. Create a `_chassis-tokens.scss` re-forwarding your token package in a directory your `loadPaths` already searches (`src/scss` in the bundler guides):
+2. **Point Sass at your token source.** Chassis resolves its tokens through a bare `chassis-tokens` specifier, which Sass finds through `loadPaths`, the same as in the regular Sass setup. Create `_chassis-tokens.scss` in a directory your `loadPaths` already search (`src/scss` in the bundler guides) and forward your token package from it:
 
    ```scss
    // src/scss/_chassis-tokens.scss
-   @forward "@chassis-ui/tokens/dist/web/docs/example/main" hide $prefix
+   @forward "@chassis-ui/tokens/dist/web/docs/chassis/main" hide $prefix
    with (
-     $cx-color-base-context-light-primary-base-color: #your-brand-color,
-     $cx-color-base-context-dark-primary-base-color: #your-brand-color,
+     $cx-color-base-context-light-primary-base-color: #ff6b35,
+     $cx-color-base-context-dark-primary-base-color: #ff6b35,
    );
    ```
 
-   See [Customize → Sass → Token sources]([[docsref:/customize/sass#token-sources]]) for the full mechanism, including partial token overrides that skip this file entirely.
+   [Customize → Sass → Token sources]([[docsref:/customize/sass#token-sources]]) describes the full mechanism, including partial overrides that need no file at all.
 
-3. **Import the Tailwind entry point instead of the regular Chassis entry.** A single `@use` is enough; configure `$breakpoints` or any other setting the same way you would for the regular entry.
+3. **Use the Tailwind entry point in place of the regular Chassis entry.** A single `@use` loads the layer order, theme, tokens, reboot, components, and utilities.
 
    ```scss
    // src/scss/tailwind-entry.scss
    @use "@chassis-ui/css/scss/tailwind";
    ```
 
-   To override settings first:
+   To change `$breakpoints` or any other setting, configure `scss/config` first, as you would for the regular entry:
 
    ```scss
    // src/scss/tailwind-entry.scss
@@ -56,11 +58,17 @@ Like the regular Chassis entry, the Tailwind entry point ships as Sass source �
 
 ## Build it
 
-Whichever way your bundler turns Sass into CSS, the `--cx-` custom-property prefix has to run **before** the result reaches Tailwind's own compiler — it's how the JS plugins that read `--cx-carousel-interval`, `--cx-breakpoint-*`, and similar properties at runtime find them (see [Installation]([[docsref:/getting-started/installation]])). `@chassis-ui/css/postcss` exports `chassisPrefix({ tailwind: true })`, a Tailwind-aware version of that same prefix step. Unlike a plain Sass build, a Tailwind build can't skip the prefix: Chassis's unprefixed `--breakpoint-*`, `--container-*`, and `--color-*` properties would collide with Tailwind's own theme keys, so `prefix: ''` throws an error here. Any other `prefix` works. Two proven ways to wire it in:
+The `--cx-` custom-property prefix has to run before the compiled CSS reaches Tailwind's compiler, whichever way your bundler turns Sass into CSS. The JS plugins read `--cx-carousel-interval`, `--cx-breakpoint-*`, and similar properties at runtime (see [Installation]([[docsref:/getting-started/installation]])). `@chassis-ui/css/postcss` exports `chassisPrefix({ tailwind: true })`, a version of that prefix step that leaves Tailwind's own names alone.
 
-### Two-step (works with any bundler, including Parcel and the Tailwind CLI)
+A Tailwind build can't skip the prefix the way a plain Sass build can. Unprefixed, Chassis's `--breakpoint-*`, `--container-*`, and `--color-*` properties collide with Tailwind's theme keys, so `prefix: ''` throws an error. Any other `prefix` works. Pick the recipe below that matches your build.
 
-Compile the Sass entry and apply the prefix in one script, then point your Tailwind build at the result instead of at Sass directly:
+<Callout type="warning">
+Remove `@import "tailwindcss"` from your CSS. The Chassis entry loads Tailwind's utilities itself, and a second import declares the `@layer` order again, which breaks the order the entry depends on.
+</Callout>
+
+### Two-step build
+
+This recipe works with any bundler, including Parcel and the Tailwind CLI. A script compiles the Sass entry and applies the prefix, and your Tailwind build then imports the resulting CSS file.
 
 ```js
 // scripts/build-tailwind-source.mjs
@@ -81,28 +89,36 @@ const { css: prefixed } = await postcss([chassisPrefix({ tailwind: true })]).pro
 await writeFile('src/tailwind-source.css', prefixed)
 ```
 
+Run the script to write `src/tailwind-source.css`:
+
 ```bash
 node scripts/build-tailwind-source.mjs
 ```
 
+Then import the result from the CSS file your Tailwind build compiles:
+
 ```css
-/* app.css — the file your Tailwind build actually compiles */
+/* app.css */
 @import "./tailwind-source.css";
 ```
 
-Re-run the script whenever `src/scss/` changes, before whatever compiles `app.css` — the Tailwind CLI, `@tailwindcss/vite`, `@tailwindcss/postcss` — runs. That tool resolves the `@import` and expands the `@theme`/`@utility` rules inside it like any other Tailwind source.
+Re-run the script whenever `src/scss/` changes, before the tool that compiles `app.css` runs (the Tailwind CLI, `@tailwindcss/vite`, or `@tailwindcss/postcss`). That tool resolves the `@import` and expands the `@theme` and `@utility` rules inside it like any other Tailwind source.
 
-### Vite, with `@tailwindcss/postcss`
+### Vite
 
-Point Vite's own Sass preprocessor at the Tailwind entry directly, and run the prefix preset and `@tailwindcss/postcss` in the same PostCSS pipeline — no separate script needed.
+Vite's Sass preprocessor compiles the Tailwind entry directly, and the prefix preset and `@tailwindcss/postcss` run in the same PostCSS pipeline, so this recipe needs no separate script.
 
-<Callout type="info">
-`@tailwindcss/vite` on its own does not transform `.scss`-sourced modules: Vite's Sass preprocessor compiles the file, but the `@theme`/`@utility` text that comes out passes through unrecognized. Use `@tailwindcss/postcss` for a Sass-sourced Tailwind entry.
+<Callout type="warning">
+`@tailwindcss/vite` doesn't transform `.scss` modules. Vite's Sass preprocessor compiles the file, but the `@theme` and `@utility` rules that come out pass through unprocessed. Use `@tailwindcss/postcss` for a Sass-sourced Tailwind entry.
 </Callout>
+
+Install the PostCSS plugin:
 
 ```bash
 pnpm add -D @tailwindcss/postcss
 ```
+
+Add both plugins and the Sass `loadPaths` to the Vite config:
 
 ```js
 // vite.config.js
@@ -124,6 +140,8 @@ export default defineConfig({
 })
 ```
 
+Then import the Sass entry from your JavaScript:
+
 ```js
 // src/js/main.js
 import '../scss/tailwind-entry.scss'
@@ -131,13 +149,15 @@ import '../scss/tailwind-entry.scss'
 
 Keep the preset before `@tailwindcss/postcss` in the `plugins` array. Vite runs this pipeline over every CSS file in your project, so the preset renames your own custom properties too. It leaves Tailwind's names alone: `--tw-*`, `--color-*`, and every key you declare in an `@theme` block, along with `var()` references to those keys.
 
-### Webpack, with `sass-loader` → `postcss-loader`
+### Webpack
+
+Webpack runs the same two PostCSS plugins through `postcss-loader`, placed between `css-loader` and `sass-loader`.
 
 ```bash
 pnpm add -D @tailwindcss/postcss
 ```
 
-`@chassis-ui/css/postcss` is ESM-only — name the config `webpack.config.mjs` so it can `import` the preset directly instead of going through `require()`.
+`@chassis-ui/css/postcss` is ESM-only. Name the config `webpack.config.mjs` so it can `import` the preset instead of going through `require()`.
 
 ```js
 // webpack.config.mjs
@@ -174,35 +194,39 @@ export default {
 
 ## Check it
 
+Markup that combines a component, a responsive variant, and a color-mode variant confirms the whole pipeline at once.
+
 ```html
 <div class="container py-lg px-md mx-auto">
   <h1>Hello, Chassis CSS and Tailwind!</h1>
-  <button class="button primary">Primary button</button>
-  <button class="button outline lg:font-xl dark:fg-primary">Responsive, themed</button>
+  <button type="button" class="button primary">Primary button</button>
+  <button type="button" class="button outline lg:font-xl dark:fg-primary">Responsive, themed</button>
 </div>
 ```
 
-If the outline button picks up the primary color at the `lg:` breakpoint your own `$breakpoints` map defines, tokens, Sass, and the prefix step are all wired correctly.
+The second button's text grows at the `lg` breakpoint from your `$breakpoints` map, and turns the primary color in dark mode. If both happen, tokens, Sass, the prefix step, and Tailwind are wired correctly.
 
-## Prototype with default tokens
+## Prebuilt CSS
 
-For a quick look with Chassis's own default `docs/chassis` tokens — no custom brand tokens, no Sass compile step — `@chassis-ui/css/tailwind` also resolves to a prebuilt CSS file:
+`@chassis-ui/css/tailwind` also resolves to a prebuilt CSS file, compiled with Chassis's default `docs/chassis` tokens. Use it to prototype without custom tokens or a Sass compile step.
 
 ```bash
 pnpm add @chassis-ui/css
 pnpm add -D tailwindcss
 ```
 
+Import the entry from the CSS file your Tailwind build compiles, in place of `@import "tailwindcss"`:
+
 ```css
 /* app.css */
 @import "@chassis-ui/css/tailwind";
 ```
 
-This is the same relationship [Installation]([[docsref:/getting-started/installation]]) describes for `dist/css/chassis.css`: useful for a prototype, but a real project should follow [Setup](#setup) above so its own tokens and settings apply. Don't also `@import "tailwindcss"` — that declares the `@layer` order a second time and breaks the order this entry depends on.
+[Installation]([[docsref:/getting-started/installation]]) describes the same relationship for `dist/css/chassis.css`. The prebuilt file suits a prototype; a real project follows [Setup](#setup) so its own tokens and settings apply.
 
 ## À la carte imports
 
-For projects that want to drop reboot or components, `@use` the pieces directly instead of the combined `tailwind` entry:
+To drop reboot or the components, `@use` the modules one by one instead of the combined entry.
 
 ```scss
 @use "@chassis-ui/css/scss/tailwind/layers";     // @layer order + Tailwind's own utilities layer
@@ -213,9 +237,9 @@ For projects that want to drop reboot or components, `@use` the pieces directly 
 @use "@chassis-ui/css/scss/tailwind/utilities";  // Chassis utilities as @utility rules
 ```
 
-`@chassis-ui/css/scss/tailwind` (the combined entry used in [Setup](#setup)) forwards these same six modules in this order. Configure settings the same way as the combined entry — a `@use "@chassis-ui/css/scss/config" with (…)` before the first one of these.
+The combined `@chassis-ui/css/scss/tailwind` entry forwards these six modules in this order. Configure settings the same way, with a `@use "@chassis-ui/css/scss/config" with (…)` before the first module.
 
-The [prototype](#prototype-with-default-tokens) path has an equivalent CSS-file form. Order matters there — there's no `@forward` to resolve it, so `layers.css` must load first:
+The [prebuilt CSS](#prebuilt-css) has the same split. Nothing resolves the order for you there, so import `layers.css` first:
 
 ```css
 @import "@chassis-ui/css/tailwind/layers.css";
@@ -226,25 +250,27 @@ The [prototype](#prototype-with-default-tokens) path has an equivalent CSS-file 
 @import "@chassis-ui/css/tailwind/utilities.css";
 ```
 
-## What the reset removes
+## Theme reset
 
-The Tailwind entry resets Tailwind's own default theme (`@theme { --*: initial; }`) before re-declaring only the values Chassis needs: `--breakpoint-*` and `--container-*`, read from Chassis's `$breakpoints` map. Tailwind's default color, spacing, font, and shadow scales never generate — every Chassis component and utility resolves through Chassis's own tokens instead.
+The Tailwind entry resets Tailwind's default theme with `@theme { --*: initial; }`, then declares only the keys Tailwind's variants need: `--breakpoint-*` and `--container-*`, read from the `$breakpoints` map. Tailwind's default color, spacing, font, and shadow scales never generate, so every component and utility resolves through Chassis tokens.
 
-A handful of Chassis component and layout class names would otherwise collide with Tailwind core utilities of the same name (`outline`, `collapse`, `container` and its responsive-prefixed forms, `grid`, `static`, `list-item`, `inline`, `table`, `caption-top`, `grid-cols-subgrid`). The Tailwind entry excludes these from Tailwind's own generation with `@source not inline(...)`, so Chassis's component CSS applies without interference.
+### Excluded class names
+
+Some Chassis component and layout classes share a name with a Tailwind core utility: `.outline`, `.collapse`, `.container` and its responsive forms, `.grid`, `.static`, `.list-item`, `.inline`, `.table`, `.caption-top`, and `.grid-cols-subgrid`. The Tailwind entry excludes these names from Tailwind's generation with `@source not inline()`, so only the Chassis rule applies.
 
 <Callout type="info">
-The nav-overflow plugin toggles `.d-none` at runtime via `classList.toggle`, which Tailwind's static source scanner never sees. The Tailwind entry safelists it explicitly (`@source inline("d-none")`) so the class always generates.
+The nav-overflow plugin toggles `.d-none` at runtime through `classList.toggle()`, which Tailwind's source scanner never sees. The Tailwind entry safelists the class with `@source inline("d-none")`, so it always generates.
 </Callout>
 
 ## Grid classes
 
-The grid's column, offset, gutter, and CSS grid placement classes (`col-6`, `md:col-4`, `lg:offset-2`, `g-md`, `g-col-4`, and the rest) are Tailwind utilities in the Tailwind entry, so only the ones found in your source files are generated, at the breakpoints you use them. The class names match the regular build. If you build grid class names at runtime (`` `col-${n}` ``), Tailwind's scanner can't see them — safelist them, for example `@source inline("{,md:}col-{1..12}");`.
+The grid's column, offset, gutter, and CSS grid placement classes (`.col-6`, `.md:col-4`, `.lg:offset-2`, `.g-md`, `.g-col-4`, and the rest) are Tailwind utilities in the Tailwind entry. Tailwind generates only the ones it finds in your source files, at the breakpoints you use them, under the same class names as the regular build. `.row`, `.grid`, `.grid-fill`, and `.grid-cols-subgrid` stay plain CSS in the `layout` layer.
 
-`.row`, `.grid`, `.grid-fill`, and `.grid-cols-subgrid` stay plain CSS in the `layout` layer.
+Tailwind's scanner can't see grid class names built at runtime (`` `col-${n}` ``). Safelist them, for example with `@source inline("{,md:}col-{1..12}");`.
 
 ### Precedence
 
-Utilities override grid classes at every breakpoint, the same as in the regular build. Tailwind generates every utility inside its `utilities` layer, so the Tailwind entry places the grid classes in a `layout` sublayer of that layer — and a rule placed directly in a layer always beats the layer's own sublayers, whatever the media query around it.
+Utilities override grid classes at every breakpoint, the same as in the regular build. Tailwind generates every utility inside its `utilities` layer, so the Tailwind entry places the grid classes in a `layout` sublayer of that layer. A rule placed directly in a layer always beats the layer's own sublayers, whatever the media query around it.
 
 ```html
 <div class="row">
@@ -254,20 +280,20 @@ Utilities override grid classes at every breakpoint, the same as in the regular 
 
 Two results differ from the regular build:
 
-- **Gutters.** With `g-*` and `gx-*` or `gy-*` on the same element at the same breakpoint, the axis-specific class wins: `g-md gx-0` has no horizontal gutter. In the regular build the class with the later `$gutters` key wins instead.
+- **Gutters.** With `.g-*` and `.gx-*` or `.gy-*` on the same element at the same breakpoint, the axis-specific class wins: `class="g-md gx-0"` has no horizontal gutter. In the regular build the class with the later `$gutters` key wins instead.
 - **Components.** The sublayer sits inside `utilities`, so grid classes rank above the `content`, `components`, and `helpers` layers; the regular build's `layout` layer ranks below them. A grid class on a component's own element overrides the `flex`, `width`, or `margin-inline-start` that component sets.
 
 ## Variants
 
-Every Chassis utility gets every Tailwind variant, not just the ones Chassis's own generator flags — that's the difference between importing Chassis normally and importing it through this entry point.
+Every Chassis utility gets every Tailwind variant, not only the ones Chassis's own generator flags as responsive, dark, or print.
 
 ### Responsive prefixes
 
-`sm:`, `md:`, `lg:`, `xl:`, and `2xl:` read Chassis's `$breakpoints` map directly (`sm:d-flex` activates at `36rem`, matching [Breakpoints]([[docsref:/layout/breakpoints]])), not Tailwind's own default scale. Container-query prefixes (`@md:d-flex`) read the matching `--container-*` value instead of Tailwind's default `--container-md`.
+`sm:`, `md:`, `lg:`, `xl:`, and `2xl:` read Chassis's `$breakpoints` map, not Tailwind's default scale: `.sm:d-flex` activates at `36rem`, matching [Breakpoints]([[docsref:/layout/breakpoints]]). Container-query prefixes (`.@md:d-flex`) read the matching `--container-*` value from the same map.
 
 ### Dark and light
 
-`dark:` and `light:` match both the `data-cx-theme` attribute and `prefers-color-scheme`, with the nearest attributed ancestor winning over the media query — the same behavior as Chassis's own `light-dark()` token system, see [Color modes]([[docsref:/customize/color-modes]]). A `dark:fg-primary` element inside a `[data-cx-theme="light"]` subtree renders the light value, even under a `prefers-color-scheme: dark` media query or an outer `[data-cx-theme="dark"]` ancestor.
+`dark:` and `light:` match both the `data-cx-theme` attribute and `prefers-color-scheme`, and the nearest attributed ancestor wins over the media query. Chassis's own `light-dark()` tokens behave the same way, see [Color modes]([[docsref:/customize/color-modes]]). A `.dark:fg-primary` element inside a `[data-cx-theme="light"]` subtree doesn't take the primary color, even under `prefers-color-scheme: dark` or an outer `[data-cx-theme="dark"]` ancestor.
 
 ```html
 <div data-cx-theme="dark">
@@ -278,64 +304,84 @@ Every Chassis utility gets every Tailwind variant, not just the ones Chassis's o
 </div>
 ```
 
-This supports one level of override. CSS selectors alone can't express "closest matching ancestor" through arbitrarily-alternating `dark` → `light` → `dark` nesting.
+The variants support one level of override. CSS selectors can't express "closest matching ancestor" through `dark` → `light` → `dark` nesting of any depth.
 
 ### Hover
 
-`hover:` uses Tailwind's own default, `@media (hover: hover) { &:hover }`, rather than Chassis's bare `:hover`. This matches what Tailwind users already expect from every other `hover:`-prefixed utility in their project; Chassis's own non-Tailwind CSS is unaffected.
+`hover:` uses Tailwind's default, `@media (hover: hover) { &:hover }`, where Chassis's own CSS uses a bare `:hover`. Chassis utilities then behave like every other `hover:` utility in your project. Chassis's component CSS is unaffected.
 
 ### Print
 
-`print:` needs no Chassis-specific setup — Tailwind's built-in print variant works on Chassis utilities the same as on its own.
+`print:` needs no Chassis-specific setup. Tailwind's built-in print variant works on Chassis utilities the same as on its own.
 
 ## Utility-name clashes
 
-A smaller set of utility names exist in both Chassis and Tailwind core with the same name but different values (`opacity-50`, `grid-cols-2`, `rounded-full`, and similar keyword- or scale-driven names). Tailwind merges same-name `@utility` declarations into one rule; for these names specifically, Tailwind's own declaration would otherwise win the cascade. The Tailwind entry patches those specific declarations with `!important` so Chassis's token-driven value always applies — the fix is scoped to this entry point only, not the regular `dist/css` build.
+Some utility names exist in both Chassis and Tailwind core with different values, such as `.opacity-50`, `.grid-cols-2`, and `.rounded-full`. Tailwind merges same-name utilities into one rule, and for these names Tailwind's declaration would win the cascade. The Tailwind entry marks the Chassis declaration `!important`, so the token-driven value applies. The regular `dist/css` build is unaffected.
 
-A few names differ in the property they set but not in visible effect, and are left as-is: `border` and `border-0` (Chassis's shorthand naturally wins over Tailwind's `border-style`/`border-width`), `top-auto`/`bottom-auto`/`mt-auto`/`mb-auto` (Tailwind sets a physical inset property alongside Chassis's logical one, both resolving to the same `auto`), and `text-wrap`/`text-nowrap` (Tailwind sets `text-wrap`, Chassis sets `white-space`, same rendered effect).
+### Harmless differences
+
+A few names set a different property in each framework with the same visible result, so the Tailwind entry leaves them as they are:
+
+- `.border` and `.border-0`: Chassis's `border` shorthand wins over Tailwind's `border-style` and `border-width`.
+- `.top-auto`, `.bottom-auto`, `.mt-auto`, and `.mb-auto`: Tailwind sets a physical property next to Chassis's logical one, and both resolve to `auto`.
+- `.text-wrap` and `.text-nowrap`: Tailwind sets `text-wrap`, Chassis sets `white-space`.
+
+### Custom utilities
+
+Chassis's build checks these clashes against the default `$utilities` map only. The reviewed result lives in [`build/tailwind/tailwind-utility-clashes.json`]([[config:repo]]/blob/main/build/tailwind/tailwind-utility-clashes.json) and [`build/tailwind/tailwind-bridge-clashes.json`]([[config:repo]]/blob/main/build/tailwind/tailwind-bridge-clashes.json).
+
+The check doesn't run against your customized `$utilities`. A renamed class, a new entry, or an [Options]([[docsref:/customize/options]]) override can introduce a clash with Tailwind core, or with another Chassis name, that nothing catches. Use the two JSON files as the reference for which names clash and how each case is resolved when you triage a new one.
 
 ## Token bridge
 
-`@chassis-ui/css/scss/tailwind/bridge` is a separate, opt-in Sass module that maps Chassis's context color palette into Tailwind's own `--color-*` theme namespace. `@use` it after the main entry:
+`@chassis-ui/css/scss/tailwind/bridge` is an opt-in Sass module that maps Chassis's color palette into Tailwind's `--color-*` theme namespace. `@use` it after the main entry:
 
 ```scss
 @use "@chassis-ui/css/scss/tailwind";
 @use "@chassis-ui/css/scss/tailwind/bridge";
 ```
 
-Using the [prototype](#prototype-with-default-tokens) CSS path instead, import `bridge.css` after the main entry:
+With the [prebuilt CSS](#prebuilt-css), import `bridge.css` after the main entry:
 
 ```css
 @import "@chassis-ui/css/tailwind";
 @import "@chassis-ui/css/tailwind/bridge.css";
 ```
 
-Chassis's own utilities don't cover every Tailwind color-driven utility group — there's no Chassis equivalent for `ring-*`, `outline-*`, `decoration-*`, `caret-*`, `accent-*`, `fill-*`, `stroke-*`, gradient stops (`from-*`/`via-*`/`to-*`), or `placeholder-*`, and no support for the `/<opacity>` modifier (`bg-primary/50`) on any color utility. The bridge makes all of these work with Chassis's palette — the 11 context colors (`default`, `alternate`, `primary`, `secondary`, `neutral`, `warning`, `success`, `danger`, `info`, `black`, `white`) plus the full shade ramp for the seven tinted ones (`primary-05` through `primary-95`, and likewise for `secondary`, `neutral`, `warning`, `success`, `danger`, `info`):
+The bridge makes the Tailwind color utilities that Chassis has no equivalent for work with the Chassis palette: `.ring-*`, `.outline-*`, `.decoration-*`, `.caret-*`, `.accent-*`, `.fill-*`, `.stroke-*`, `.placeholder-*`, gradient stops (`.from-*`, `.via-*`, `.to-*`), and the `/<opacity>` modifier on any color utility (`.bg-primary/50`).
+
+It covers the 11 context colors (`default`, `alternate`, `primary`, `secondary`, `neutral`, `warning`, `success`, `danger`, `info`, `black`, `white`) and the shade ramp of the seven tinted ones (`primary-05` through `primary-95`, and the same for `secondary`, `neutral`, `warning`, `success`, `danger`, and `info`).
 
 ```html
-<button class="button primary ring-2 ring-primary/50">Focus ring from the Chassis palette</button>
-<div class="bg-primary-70">A shade the bg-color utility doesn't expose directly</div>
+<button type="button" class="button primary ring-2 ring-primary/50">Focus ring from the Chassis palette</button>
+<div class="bg-primary-70">A shade the bg-color utility doesn't expose</div>
 ```
 
-Loading the bridge re-enables Tailwind's own native `bg-*` and `border-*` utilities for these same 11 color names — both of which Chassis's own utility generator already produces (`bg-primary`, `border-primary`). Same name, same property, both declared: without a fix, Tailwind's plain bridged value would win the cascade and silently drop Chassis's `--cx-bg-opacity`/`--cx-border-opacity` support. The bridge's own `@utility bg-*`/`border-*` declarations are patched with `!important` — the same fix, and the same reasoning, as [utility-name clashes](#utility-name-clashes) above — so `bg-primary`/`border-primary` keep their full Chassis behavior whether or not the bridge is loaded. `shadow-<color>` also becomes a same-name match, but the two sides set different custom properties (Tailwind's `--tw-shadow-color`, Chassis's `--cx-shadow-color`) and don't actually conflict — no patch needed there.
+### Bridged name clashes
 
-Font families, border radius, and shadow-size scales are deliberately not bridged: Chassis's own utility generator already produces `font-display`, `rounded-lg`, and `shadow-lg`-style classes from the same underlying values, so bridging those namespaces would only recreate more same-name clashes for no new capability, unlike colors.
+The bridge re-enables Tailwind's own `.bg-*` and `.border-*` utilities for the 11 color names, which Chassis already generates (`.bg-primary`, `.border-primary`). Without a fix, Tailwind's bridged value would win the cascade and drop Chassis's `--cx-bg-opacity` and `--cx-border-opacity` support.
 
-## JavaScript with Tailwind
+The Tailwind entry marks the Chassis declarations `!important`, the same fix as for [utility-name clashes](#utility-name-clashes), so `.bg-primary` and `.border-primary` behave the same with or without the bridge. `.shadow-<color>` also matches by name, but Tailwind sets `--tw-shadow-color` and Chassis sets `--cx-shadow-color`, so the two don't conflict.
 
-Chassis JS works unmodified — it's independent of which CSS entry point is imported. Import it the same way as in any other setup:
+### Unbridged scales
+
+Font families, border radius, and shadow sizes aren't bridged. Chassis already generates `.font-display`, `.rounded-lg`, and `.shadow-lg` from the same values, so bridging those namespaces would add name clashes and no new utilities.
+
+## JavaScript
+
+Chassis JS doesn't depend on which CSS entry point you import, so it works unchanged with the Tailwind entry. Import the plugins you need:
 
 ```js
-import * as chassis from '@chassis-ui/css'
+import { Modal, Tooltip } from '@chassis-ui/css'
 ```
 
-See [JavaScript]([[docsref:/getting-started/javascript]]) for the full plugin list, events, and the data-attribute API.
+[JavaScript]([[docsref:/getting-started/javascript]]) covers the full plugin list, events, and the data-attribute API.
 
-## Merging classes with tailwind-merge
+## Merging classes
 
-[tailwind-merge](https://github.com/dcastil/tailwind-merge) resolves conflicting classes when building a class string at runtime — for example when a component accepts a `className` prop that should override a default. It needs to know which classes belong to the same conflict group; Tailwind's own utilities are built in, but a project's custom `@utility` rules (Chassis's included) aren't, by default.
+[tailwind-merge](https://github.com/dcastil/tailwind-merge) resolves conflicting classes when you build a class string at runtime, for example when a component accepts a `className` prop that overrides a default. It needs to know which classes belong to the same conflict group. Tailwind's own utilities are built in; a project's custom `@utility` rules, Chassis's included, aren't.
 
-`@chassis-ui/css/tailwind/merge.js` ships a ready-made `classGroups` config, generated from the same utility map the Tailwind entry point itself uses, so every Chassis utility name is covered, the [grid classes](#grid-classes) included:
+`@chassis-ui/css/tailwind/merge.js` exports a `classGroups` config generated from the same utility map the Tailwind entry uses. It covers every Chassis utility name and the [grid classes](#grid-classes):
 
 ```js
 import { extendTailwindMerge } from 'tailwind-merge'
@@ -348,14 +394,12 @@ twMerge('m-sm', 'm-lg')            // -> 'm-lg'
 twMerge('col-6', 'col-4')          // -> 'col-4'
 ```
 
-Groups are keyed by Chassis's own utility names, not by CSS property — a handful of related utilities that happen to live under separate names (for example the base, hover-elevation, and hover-color shadow utilities, which all set `box-shadow` but come from three separate entries) land in separate groups and don't conflict-resolve against each other. Attribute-selector utilities like `ratio-16x9` have no fixed set of class names to enumerate and aren't included.
-
-## Limitations
-
-The utility-name clashes documented above are checked against Chassis's own `$utilities` map at build time; the reviewed, versioned result lives in [`build/tailwind/tailwind-utility-clashes.json`]([[config:repo]]/blob/main/build/tailwind/tailwind-utility-clashes.json) and [`build/tailwind/tailwind-bridge-clashes.json`]([[config:repo]]/blob/main/build/tailwind/tailwind-bridge-clashes.json). That check doesn't re-run against a project's own customized `$utilities` — a renamed class, a new entry, or an [Options]([[docsref:/customize/options]]) override can introduce a same-name clash of its own, against Tailwind core or against Chassis's other generated names, that nothing here catches automatically. Those two JSON files are the reference for what's already known to clash and how each case was resolved — useful for triaging a new one by hand.
+Groups follow Chassis's utility names, not CSS properties. Utilities that set the same property from separate map entries land in separate groups and don't resolve against each other: the base, hover-elevation, and hover-color shadow utilities all set `box-shadow`, for example. Attribute-selector utilities like `.ratio-16x9` have no fixed set of class names, so the config leaves them out.
 
 ## Next steps
 
-- [Color modes]([[docsref:/customize/color-modes]]) — how `data-cx-theme` and `prefers-color-scheme` combine, the same logic the `dark:`/`light:` variants follow here.
+These docs cover the systems the Tailwind entry builds on, and how to keep its output small.
+
+- [Color modes]([[docsref:/customize/color-modes]]) — how `data-cx-theme` and `prefers-color-scheme` combine, the same logic the `dark:` and `light:` variants follow.
 - [Breakpoints]([[docsref:/layout/breakpoints]]) — the `$breakpoints` map that drives `sm:`–`2xl:` and `@md:`–`@2xl:`.
-- [Customize → Optimize]([[docsref:/customize/optimize]]) — component CSS isn't tree-shaken by Tailwind's utility scanner; trim unused Sass imports the same way a non-Tailwind build would.
+- [Customize → Optimize]([[docsref:/customize/optimize]]) — Tailwind's scanner doesn't tree-shake component CSS, so trim unused Sass imports the same way a regular build does.
