@@ -1,0 +1,48 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: 'chore(deps)'
+    groups:
+      # Minor and patch updates of the tooling in one pull request. The packages
+      # that produce dist/ (the Sass and PostCSS chain, the JS bundler and minifier,
+      # tsc for the declarations, the dependencies chassis.bundle.js includes) and
+      # the Chassis packages are left out: they get a pull request each, since they
+      # can change the output that pnpm verify compares.
+      dev-dependencies:
+        dependency-type: development
+        update-types: [minor, patch]
+        exclude-patterns:
+          - sass
+          - autoprefixer
+          - browserslist
+          - postcss
+          - postcss-prefix-custom-properties
+          - lightningcss
+          - tailwindcss
+          - '@tailwindcss/*'
+          - rolldown
+          - terser
+          - typescript
+          - '@floating-ui/dom'
+          - vanilla-calendar-pro
+          - '@chassis-ui/*'
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: 'ci'
+    groups:
+      actions:
+        patterns: ['*']

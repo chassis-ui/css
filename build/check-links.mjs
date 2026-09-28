@@ -22,7 +22,18 @@ const args = new Set(process.argv.slice(2))
 
 // Markdown files that readers open on GitHub or npm. Docs pages are checked through the
 // built site instead, since their links are only resolved by the build.
-const MARKDOWN_FILES = ['README.md', 'AGENTS.md', 'WRITING.md', 'js/tests/README.md']
+const MARKDOWN_FILES = [
+  'README.md',
+  'AGENTS.md',
+  'WRITING.md',
+  'js/tests/README.md',
+  '.github/CONTRIBUTING.md',
+  '.github/SECURITY.md',
+  '.github/CODE_OF_CONDUCT.md',
+  '.github/PULL_REQUEST_TEMPLATE.md',
+  '.github/ISSUE_TEMPLATE/bug_report.md',
+  '.github/ISSUE_TEMPLATE/feature_request.md'
+]
 
 // The part of chassis-ui.com that this repository builds. Links elsewhere on the domain
 // belong to the sites of other repositories.
