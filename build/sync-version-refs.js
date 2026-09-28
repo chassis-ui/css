@@ -9,7 +9,6 @@
  * - site/config.yml: `current_version` and the download links
  * - js/src/base-component.ts: `BaseComponent.VERSION`
  * - scss/mixins/_banner.scss: the banner of the compiled CSS
- * - package.js: the Meteor package version, while the file exists
  * - dist/ and js/dist/: rebuilt when a banner names another version, and the SRI hashes of the
  *   CDN files in site/config.yml written again for the rebuilt files
  *
@@ -39,8 +38,7 @@ const UNRELEASED_MARKER =
 const VERSION_REFS = [
   { file: 'site/config.yml', pattern: /^current_version:\s*"([^"]+)"/m },
   { file: 'js/src/base-component.ts', pattern: /^const VERSION = '([^']+)'/m },
-  { file: 'scss/mixins/_banner.scss', pattern: /Chassis CSS#\{\$-file-suffix\} v(\S+) \(/ },
-  { file: 'package.js', pattern: /^\s*version: '([^']+)'/m, optional: true }
+  { file: 'scss/mixins/_banner.scss', pattern: /Chassis CSS#\{\$-file-suffix\} v(\S+) \(/ }
 ]
 
 // Files whose banner names the version the build wrote into them
@@ -49,15 +47,6 @@ const BANNER_RE = /Chassis(?: [\w.-]+)?(?: -)? {1,2}v(\S+) \(/
 
 function regExpQuote(string) {
   return string.replace(/[$()*+-.?[\\\]^{|}]/g, '\\$&')
-}
-
-async function exists(file) {
-  try {
-    await fs.access(file)
-    return true
-  } catch {
-    return false
-  }
 }
 
 async function readVersion() {
@@ -75,11 +64,7 @@ async function readVersion() {
  * Replaces the version a file names with `version`
  * @returns {Promise<boolean>} True if the file changed
  */
-async function syncFile({ file, pattern, optional }, version) {
-  if (optional && !(await exists(file))) {
-    return false
-  }
-
+async function syncFile({ file, pattern }, version) {
   const original = await fs.readFile(file, 'utf8')
   const match = pattern.exec(original)
 
