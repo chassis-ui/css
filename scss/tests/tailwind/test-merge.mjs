@@ -38,6 +38,22 @@ describe('dist/tailwind/merge.js', () => {
     assert.equal(twMerge('m-sm', 'm-lg'), 'm-lg')
   })
 
+  test('grid classes resolve within their own group', () => {
+    // The grid classes are `@utility` rules too (scss/tailwind/_grid.scss),
+    // listed by `generate-tailwind-grid-merge-manifest`.
+    assert.equal(twMerge('col-6', 'col-4'), 'col-4')
+    assert.equal(twMerge('col', 'col-auto'), 'col-auto')
+    assert.equal(twMerge('md:col-6', 'md:col-4'), 'md:col-4')
+    assert.equal(twMerge('col-6', 'md:col-4'), 'col-6 md:col-4')
+    assert.equal(twMerge('row-cols-2', 'row-cols-4'), 'row-cols-4')
+    assert.equal(twMerge('offset-2', 'offset-4'), 'offset-4')
+    assert.equal(twMerge('g-md', 'g-lg'), 'g-lg')
+    assert.equal(twMerge('gx-0', 'gx-md'), 'gx-md')
+    assert.equal(twMerge('g-col-4', 'g-col-6'), 'g-col-6')
+    assert.equal(twMerge('g-start-2', 'g-start-4'), 'g-start-4')
+    assert.equal(twMerge('col-6', 'offset-2', 'g-col-4'), 'col-6 offset-2 g-col-4')
+  })
+
   test('classes from different groups are both kept', () => {
     assert.equal(twMerge('fg-primary', 'm-sm'), 'fg-primary m-sm')
   })

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*!
- * check-component-stack.js — keeps scss/tailwind/_components-list.scss in
+ * check-component-stack.mjs — keeps scss/tailwind/_components-list.scss in
  * sync with scss/chassis.scss's import stack.
  *
  * scss/chassis.scss can't forward a shared partial for its component list:
@@ -10,7 +10,8 @@
  * site/content/docs/customize/optimize.mdx) so users can see and remove
  * individual component imports, which a single collapsed @forward would
  * break. So the two lists are physically separate files kept honest by this
- * check instead of a shared partial.
+ * check instead of a shared partial. Entries are compared by name, so the
+ * Tailwind list's own `./grid` stands in for `../grid`.
  *
  * Copyright 2026 Ozgur Gunes
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
@@ -20,7 +21,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const root = path.resolve(fileURLToPath(import.meta.url), '../..')
+const root = path.resolve(fileURLToPath(import.meta.url), '../../..')
 
 const FORWARD_RE = /^@forward\s+["']\.{1,2}\/([^"']+)["']/
 

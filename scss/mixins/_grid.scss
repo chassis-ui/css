@@ -205,3 +205,56 @@
     }
   }
 }
+
+/// Emit the grid layout classes: `.row` with its column prep, `.grid`,
+/// `.grid-cols-subgrid`, `.grid-fill`, and every breakpoint's column, offset,
+/// gutter, and CSS grid placement classes. Pass `$responsive: false` to skip
+/// the per-breakpoint classes, which the Tailwind entry emits as on-demand
+/// `@utility` rules instead (see `scss/tailwind/mixins/_grid.scss`).
+///
+/// @param {Boolean} $responsive [true] - Include the per-breakpoint classes
+@mixin grid-layout($responsive: true) {
+  @if $enable-grid-classes {
+    .row {
+      @include make-row();
+
+      > * {
+        @include make-col-ready();
+      }
+    }
+
+    @if $responsive {
+      @include make-grid-columns();
+    }
+  }
+
+  @if $enable-cssgrid {
+    .grid {
+      --columns: var(--grid-columns, #{$grid-columns});
+      --rows: var(--grid-rows, 1);
+      --gap: var(--grid-gap, #{$grid-gutter-x});
+
+      display: grid;
+      grid-template-rows: repeat(var(--rows), 1fr);
+      grid-template-columns: repeat(var(--columns), 1fr);
+      gap: var(--gap);
+    }
+
+    @if $responsive {
+      @include make-cssgrid();
+    }
+  }
+
+  .grid-cols-subgrid {
+    grid-template-columns: subgrid;
+  }
+
+  .grid-fill {
+    --gap: #{$grid-gutter-x};
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    grid-auto-flow: row;
+    gap: var(--gap);
+  }
+}

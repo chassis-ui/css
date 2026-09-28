@@ -69,6 +69,61 @@
       <div class="col-6" data-testid="col-6">Half</div>
     </div>
 
+    <!-- Grid: responsive columns, and the same-breakpoint precedence the
+         docs rely on (row-cols beats .col, col-N beats row-cols). -->
+    <div class="row">
+      <div class="col-12 md:col-6 lg:col-4" data-testid="col-responsive">Responsive</div>
+      <div class="col-6 md:col" data-testid="col-then-fluid">Fluid from md</div>
+      <div class="col-auto" data-testid="col-auto">Auto</div>
+    </div>
+
+    <div class="row row-cols-4">
+      <div class="col" data-testid="row-cols-col">Column</div>
+      <div class="col">Column</div>
+      <div class="col-6" data-testid="row-cols-col-6">Column</div>
+      <div class="col" data-testid="row-cols-col-wrapped">Column</div>
+    </div>
+
+    <div class="row row-cols-1 md:row-cols-2 lg:row-cols-4">
+      <div class="col" data-testid="row-cols-responsive">Column</div>
+    </div>
+
+    <div class="row">
+      <div class="sm:col-6 md:col-5 md:offset-2 lg:col-6 lg:offset-0" data-testid="offset-responsive">Offset</div>
+      <div class="col-4 offset-2 ms-0" data-testid="offset-vs-margin-utility">Offset, ms-0</div>
+      <div class="col-6 w-100" data-testid="col-vs-width-utility">col-6, w-100</div>
+      <div class="col flex-grow-0" data-testid="col-vs-flex-utility">col, flex-grow-0</div>
+    </div>
+
+    <!-- Utilities override grid classes at every breakpoint, not only their
+         own: dist/css keeps the grid in @layer layout, the Tailwind entry in
+         the utilities.layout sublayer. -->
+    <div class="row">
+      <div class="w-100 md:col-6" data-testid="width-utility-vs-responsive-col">w-100, md:col-6</div>
+      <div class="col-4 ms-0 md:offset-2" data-testid="margin-utility-vs-responsive-offset">ms-0, md:offset-2</div>
+      <div class="flex-grow-0 md:col" data-testid="flex-utility-vs-responsive-col">flex-grow-0, md:col</div>
+      <div class="col-4 mx-auto lg:offset-1" data-testid="auto-margin-utility-vs-responsive-offset">mx-auto, lg:offset-1</div>
+    </div>
+
+    <div class="row g-0">
+      <div class="col" data-testid="gutter-0">No gutters</div>
+    </div>
+
+    <!-- The one grid difference between the builds, see the dedicated test. -->
+    <div class="row g-md gx-0">
+      <div class="col" data-testid="gutter-axis-after-both">g-md, gx-0</div>
+    </div>
+
+    <div class="row gx-md lg:gx-6xl gy-md">
+      <div class="col" data-testid="gutter-responsive">Gutters</div>
+    </div>
+
+    <div class="grid">
+      <div class="g-col-6 md:g-col-4" data-testid="g-col-responsive">g-col</div>
+      <div class="g-col-4 g-start-6" data-testid="g-col-start">g-col, g-start</div>
+      <div class="col-6" data-testid="col-in-grid">col-6 in .grid</div>
+    </div>
+
     <div class="d-grid grid-cols-2" data-testid="grid-cols-2">
       <div>a</div>
       <div>b</div>
