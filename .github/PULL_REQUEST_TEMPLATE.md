@@ -24,7 +24,8 @@ behind each of these.
       `pnpm site:build` and `pnpm site:lint` for `site/`
 - [ ] **`dist/` and `js/dist/` rebuilt** with `pnpm dist` and committed, if the source changed
       them (`pnpm verify` passes)
-- [ ] **CHANGELOG entry** under `## [Unreleased]` if the published package changed, with
-      **Breaking:** for a renamed or removed class, custom property, Sass variable, mixin,
-      JavaScript option or export
+- [ ] **Changeset** (`pnpm changeset`) if the published package changed, with **Breaking:** for
+      a renamed or removed class, custom property, Sass variable, mixin, JavaScript option or
+      export (see [VERSIONING.md](../VERSIONING.md)); an empty one (`pnpm changeset --empty`) if
+      `scss/`, `js/src/`, `postcss/` or `dist/` changed but nothing is released
 - [ ] Docs updated, if the change is visible to users of a component

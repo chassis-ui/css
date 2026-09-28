@@ -69,7 +69,8 @@ After a change to `scss/tailwind/` or `build/tailwind/`, also run `pnpm css:test
 again are described in AGENTS.md too.
 
 Class names, custom properties, Sass variables and mixins are public API: renaming or removing one
-breaks the projects that use it. Say so in the CHANGELOG entry.
+breaks the projects that use it. [VERSIONING.md](../VERSIONING.md) lists what is public and which
+bump a change needs; say what breaks in the changeset.
 
 ## Changing the JavaScript
 
@@ -130,29 +131,63 @@ fails on your pull request, run `pnpm dist` and commit what changed.
   - **Site**: `astro check`, the site build, `site:lint` and `pnpm docs:links`.
   - **Audit**: `pnpm audit --prod` fails the job; the full audit is reported only.
   - **Bundle size**: reported only.
+  - **Changeset**: a changeset is present when the pull request changes `scss/`, `js/src/`,
+    `postcss/`, `dist/` or `js/dist/`. It also runs on pushes to `develop`.
 - **The rebuilt `dist/` and `js/dist/`**, committed with any change to the source that changes
   them.
-- **A CHANGELOG entry** under `## [Unreleased]` in [CHANGELOG.md](../CHANGELOG.md) for anything
-  that changes the published package: CSS output, class names, custom properties, Sass API,
-  JavaScript API, `exports` or the package contents. Mark a breaking change with **Breaking:**. A
-  pull request that only touches the docs site, the tests or the tooling doesn't need one.
+- **A changeset** for anything that changes the published package: CSS output, class names,
+  custom properties, Sass API, JavaScript API, `exports` or the package contents. CI fails a pull
+  request that changes `scss/`, `js/src/`, `postcss/`, `dist/` or `js/dist/` without one; for such
+  a change that releases nothing, such as a refactor with the same output, add an empty changeset.
+  A pull request that only touches the docs site, the tests or the tooling doesn't need one.
+
+## Changesets
+
+A changeset is a Markdown file in [`.changeset/`](../.changeset/) that names the version bump and
+the text of the CHANGELOG entry. Write one with:
+
+```sh
+pnpm changeset
+```
+
+Pick the bump, then write the entry: what changed and, for a breaking change, what a project has to
+change, starting with `**Breaking:**`. Commit the file with your change.
+[VERSIONING.md](../VERSIONING.md) says which bump a change needs; while the version is `0.x`, a
+breaking change is a **minor**.
+
+For a change that releases nothing, add an empty changeset instead:
+
+```sh
+pnpm changeset --empty
+```
+
+Don't edit `CHANGELOG.md` by hand; the version step writes it from the changesets.
 
 ## Releases
 
-Releases are made from `main` by `.github/workflows/publish-release.yml`:
+Releases are made from `main` by `.github/workflows/publish-release.yml`, after the CI checks pass
+on the pushed commit:
 
-1. A maintainer sets the new version with `pnpm change-version <old> <new>` (or `--patch`,
-   `--minor`, `--major`), which updates `package.json` and the version references in the README,
-   the docs config, `BaseComponent.VERSION` and the Sass banner. `pnpm dist` then rebuilds `dist/`
-   and `js/dist/`, whose banners name the version, and the Unreleased section of the CHANGELOG is
-   renamed to the version's entry. All of it is committed on `develop`.
-2. `develop` is merged into `main` and pushed. The workflow runs the whole CI on that commit. When
-   the version is not on npm yet, it runs `pnpm verify`, publishes `@chassis-ui/css` with npm
-   trusted publishing and provenance (no npm token), and creates the GitHub release `v<version>`
-   with the CHANGELOG entry as its body.
+1. A maintainer merges `develop` into `main` and pushes it. When `main` has changesets, the
+   workflow opens or updates a "Version Packages" pull request. It runs `pnpm changeset:version`,
+   which removes the changesets, bumps the version in `package.json`, writes the CHANGELOG entry,
+   updates the version references (`site/config.yml`, `BaseComponent.VERSION`, the Sass banner)
+   and rebuilds `dist/` and `js/dist/`, so their banners and the SRI hashes in `site/config.yml`
+   match the new version.
+2. Merging that pull request pushes `main` again. The version is not on npm yet, so the workflow
+   runs `pnpm verify`, publishes `@chassis-ui/css` with npm trusted publishing and provenance (no
+   npm token), and creates the GitHub release `v<version>` with the CHANGELOG entry as its body.
+3. The maintainer merges `main` back into `develop`, so the next changes start from the released
+   version. The Changeset check skips that push, since it changes the version.
 
-A prerelease version (`0.6.0-beta.1`) is published under the dist-tag of its first identifier
-(`beta`), or `next` when that is a number. A version without a CHANGELOG entry is not published.
+The Version Packages pull request is opened by GitHub Actions, so CI does not run on it by itself;
+the push to `main` that merging it causes runs every check before anything is published.
+
+A maintainer can also run `pnpm changeset:version` locally on `develop`, review and commit the
+result, then merge into `main` and push; the workflow then publishes without a pull request. A
+prerelease version (`0.6.0-beta.1`) is published under the dist-tag of its first identifier
+(`beta`), or `next` when that is a number; see [VERSIONING.md](../VERSIONING.md#prereleases). A
+version without a CHANGELOG entry is not published.
 
 ## Using the issue tracker
 

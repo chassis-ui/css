@@ -96,9 +96,12 @@ Run the checks of the area you changed, and report the ones that fail.
 
 Conventional Commits style, with an imperative, lower-case summary: `feat:`, `fix:`, `docs:`, `refactor:`, `test:` (e.g. `fix: preserve carousel focus, set aria attribute of disabled navigation`).
 
+Add a changeset (`pnpm changeset`) to a change of what the package publishes, and an empty one (`pnpm changeset --empty`) to a change of `scss/`, `js/src/`, `postcss/`, `dist/` or `js/dist/` that releases nothing; CI's Changeset job fails without it. While the version is `0.x`, a breaking change is a `minor` whose text starts with `**Breaking:**`. [VERSIONING.md](VERSIONING.md) lists what is public API and which bump a change needs.
+
 Never commit, merge or push without being asked. Pushing `main` starts `publish-release.yml`, which runs CI and publishes `@chassis-ui/css` to npm.
 
 ## Do not edit
 
 - Generated output: `dist/`, `js/dist/` (rebuild them, see [Generated and committed output](#generated-and-committed-output)), `_site/`, `.cache/`.
+- Written by the version step (`pnpm changeset:version`): `CHANGELOG.md`, the version in `package.json`, and the version references in `site/config.yml`, `js/src/base-component.ts` and `scss/mixins/_banner.scss`.
 - Git submodule (synced from `chassis-assets`, not owned by this repo): `vendor/assets/`.

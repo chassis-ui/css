@@ -27,6 +27,8 @@ const MARKDOWN_FILES = [
   'AGENTS.md',
   'WRITING.md',
   'js/tests/README.md',
+  'VERSIONING.md',
+  '.changeset/README.md',
   '.github/CONTRIBUTING.md',
   '.github/SECURITY.md',
   '.github/CODE_OF_CONDUCT.md',
