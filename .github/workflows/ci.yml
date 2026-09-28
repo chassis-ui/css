@@ -140,8 +140,14 @@ jobs:
       - name: Run e2e tests
         run: pnpm js:test:e2e
 
-      - name: Run integration bundle checks
+      # Two bundles of the JavaScript, and the package as a project installs it: what each
+      # import resolves to, and its types in a strict TypeScript project
+      - name: Run integration checks
         run: pnpm js:test:integration
+
+      # publint and Are the types wrong? on the packed package
+      - name: Check the package
+        run: pnpm check:package
 
   site:
     name: Site
