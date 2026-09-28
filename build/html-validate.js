@@ -21,6 +21,10 @@ const htmlValidate = new HtmlValidate({
     'valid-autocomplete': 'off',
     // Allow void elements with trailing slashes (Astro)
     'void-style': 'off',
+    // The live previews of @chassis-ui/docs' <Example> keep Shiki's `<!--[!code highlight]-->`
+    // markers, which the rule takes for Internet Explorer's `<!--[if …]>` comments. The site has
+    // no conditional comments; the markers belong to the docs package to strip
+    'no-conditional-comment': 'off',
     // Reboot docs intentionally show <input type="submit/reset/button"> to document base styles
     'prefer-button': 'off',
     // Docs pages show many instances of the same component with the same aria-label;
