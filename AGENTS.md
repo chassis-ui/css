@@ -12,6 +12,8 @@ Chassis CSS (`@chassis-ui/css`) is a tokenized CSS framework that bridges design
 
 This repo is part of a multi-repo ecosystem (`chassis-website`, `chassis-react`, `chassis-tokens`, `chassis-icons`, `chassis-assets`, `chassis-figma`). See [README.md](README.md) for the full picture.
 
+Human contributors follow [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md): dev setup, branches, what a pull request needs, and how releases are made.
+
 ## Quick commands
 
 Package manager is **pnpm** (pinned in `package.json`), with Node.js 22 or later. Run `pnpm install` first.

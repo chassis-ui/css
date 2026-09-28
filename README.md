@@ -151,20 +151,9 @@ All documentation sites share the `@chassis-ui/docs` package for consistent layo
 
 ## Contributing
 
-Contributions are welcome. For major changes, please open an issue first to discuss what you would like to change. The [contributing guide](https://chassis-ui.com/css/docs/getting-started/contribute/) covers the tooling and the scripts.
+Contributions are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-### Development
-
-Requires Node.js 22 or later and pnpm (the version is pinned in `package.json`; `corepack enable` installs it):
-
-```shell
-git clone https://github.com/chassis-ui/css.git
-cd css
-pnpm install
-pnpm dev
-```
-
-`pnpm dev` compiles CSS and JavaScript in watch mode and serves the documentation site at `http://localhost:4323/css/`. `pnpm test` runs the lint, build, and test suite. The compiled `dist/` and `js/dist/` folders are committed: rebuild them with `pnpm dist` and commit the result with the change, since `pnpm verify` fails in CI when they differ from the source.
+Read the [contributing guide](.github/CONTRIBUTING.md) for the dev setup, the conventions, and what a pull request needs. Everyone taking part in this project is expected to follow the [Code of Conduct](.github/CODE_OF_CONDUCT.md). Found a security vulnerability? Please don't open a public issue; see the [security policy](.github/SECURITY.md) for private disclosure instead.
 
 ## Origin & Attribution
 
