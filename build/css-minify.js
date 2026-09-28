@@ -66,6 +66,10 @@ for (const file of cssFiles) {
       if (map.sourceRoot === null) {
         delete map.sourceRoot
       }
+
+      // The maps name the Sass files in scss/, which the package ships, instead of
+      // holding a copy of them
+      delete map.sourcesContent
       fs.writeFileSync(mapPath, JSON.stringify(map))
     }
 

@@ -1,10 +1,12 @@
 import autoprefixer from 'autoprefixer'
 import { chassisPrefix, mergeLayerBlocks } from '../postcss/index.js'
 
+// The maps name the Sass files in scss/, which the package ships, instead of holding a
+// copy of them
 const mapConfig = {
   inline: false,
   annotation: true,
-  sourcesContent: true
+  sourcesContent: false
 }
 
 // Strip vendor-prefixed declarations Autoprefixer emits that are dead weight for
