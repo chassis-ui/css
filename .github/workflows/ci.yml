@@ -53,7 +53,10 @@ jobs:
 
   css:
     name: CSS
-    runs-on: ubuntu-latest
+    # Not ubuntu-latest: `playwright install --with-deps` installs system packages for the
+    # Ubuntu releases its Playwright version knows. Move to a newer release together with a
+    # Playwright version that supports it
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -95,7 +98,10 @@ jobs:
 
   js:
     name: JS
-    runs-on: ubuntu-latest
+    # Not ubuntu-latest: `playwright install --with-deps` installs system packages for the
+    # Ubuntu releases its Playwright version knows. Move to a newer release together with a
+    # Playwright version that supports it
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - name: Checkout
