@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /*!
- * tailwind-bridge-clashes.mjs — reruns the Phase 5 same-name utility-clash
- * analysis (build/tailwind/tailwind-clashes.mjs) with scss/tailwind/bridge.scss's
+ * bridge-clashes.mjs — reruns the Phase 5 same-name utility-clash
+ * analysis (build/tailwind/clashes.mjs) with scss/tailwind/bridge.scss's
  * `--color-*` theme keys loaded. Bridging Chassis's palette into Tailwind's
  * own theme namespace re-enables NATIVE Tailwind color utilities (`bg-*`,
  * `border-*`, ...) for names Chassis's own `@utility` generator already
@@ -12,11 +12,11 @@
  *
  * Scoped to ONLY the names that clash BECAUSE of the bridge: a Chassis
  * utility name that already clashes with plain Tailwind core is already
- * covered by build/tailwind/tailwind-utility-clashes.json and is skipped here, so
+ * covered by build/tailwind/utility-clashes.json and is skipped here, so
  * the two policy files never overlap and scss/tailwind/_clash-policy.scss
  * (which merges both) never double-remedies one @utility block.
  *
- * Runs inside `css:tailwind`, after build-tailwind.mjs's Sass + prefix pass,
+ * Runs inside `css:tailwind`, after build.mjs's Sass + prefix pass,
  * so dist/tailwind/utilities.css / index.css / bridge.css already hold their
  * final content -- the !important remedy is baked into utilities.css /
  * index.css UNCONDITIONALLY by the Sass emitter (scss/tailwind/_clash-policy.scss),
@@ -38,7 +38,7 @@ import {
   stripImportant,
   TAILWIND_UTILITIES_PROBE,
   winningValues
-} from './tailwind-clashes.mjs'
+} from './clashes.mjs'
 
 const root = path.resolve(fileURLToPath(import.meta.url), '../../..')
 const outDir = path.join(root, 'dist/tailwind')
@@ -65,7 +65,7 @@ async function mergedUtilityWithBridge(candidate, themeCss, bridgeCss, utilities
 // Finds Chassis utility names that become a same-name clash with Tailwind
 // core ONLY once bridge.css's theme keys are loaded (a name that already
 // clashes with plain Tailwind core is already covered by
-// build/tailwind/tailwind-utility-clashes.json and is skipped here).
+// build/tailwind/utility-clashes.json and is skipped here).
 async function detectBridgeClashes(themeCss, bridgeCss, utilitiesCssText) {
   const chassisBlocks = parseChassisUtilityBlocks(utilitiesCssText)
   const results = new Map()
@@ -124,7 +124,7 @@ async function verifyBridgeClashRemedies(themeCss, bridgeCss, utilitiesCssText, 
       const actual = mergedWinners.get(property)
       if (actual !== expected) {
         throw new Error(
-          `tailwind-bridge-clashes: !important remedy for "${entry.name}" failed to win "${property}" ` +
+          `bridge-clashes: !important remedy for "${entry.name}" failed to win "${property}" ` +
             `(expected "${expected}", got "${actual}")`
         )
       }
@@ -137,7 +137,7 @@ export async function checkBridgeClashes() {
   const bridgeCss = readFileSync(path.join(outDir, 'bridge.css'), 'utf8')
   const utilitiesCssText = readFileSync(path.join(outDir, 'utilities.css'), 'utf8')
   const policy = JSON.parse(
-    readFileSync(path.join(root, 'build/tailwind/tailwind-bridge-clashes.json'), 'utf8')
+    readFileSync(path.join(root, 'build/tailwind/bridge-clashes.json'), 'utf8')
   )
 
   const live = await detectBridgeClashes(themeCss, bridgeCss, stripImportant(utilitiesCssText))
@@ -148,7 +148,7 @@ export async function checkBridgeClashes() {
   for (const [name, { classification }] of live) {
     if (!knownNames.has(name)) {
       drift.push(
-        `new bridge clash "${name}" (${classification}) is not in build/tailwind/tailwind-bridge-clashes.json`
+        `new bridge clash "${name}" (${classification}) is not in build/tailwind/bridge-clashes.json`
       )
       continue
     }
@@ -165,7 +165,7 @@ export async function checkBridgeClashes() {
   }
   if (drift.length > 0) {
     throw new Error(
-      `tailwind-bridge-clashes: bridge clash set has drifted from build/tailwind/tailwind-bridge-clashes.json ` +
+      `bridge-clashes: bridge clash set has drifted from build/tailwind/bridge-clashes.json ` +
         `(re-run the analysis and update the policy file deliberately):\n  ${drift.join('\n  ')}`
     )
   }
@@ -186,7 +186,7 @@ export async function checkBridgeClashes() {
   )
 
   console.log(
-    `tailwind-bridge-clashes: ${live.size} bridge-only clash(es) checked against policy, ` +
+    `bridge-clashes: ${live.size} bridge-only clash(es) checked against policy, ` +
       `${policy.differs.filter((d) => d.remedy === 'important').length} remedied with !important, ` +
       `${policy.differs.filter((d) => d.remedy === 'documented').length} documented-only.`
   )

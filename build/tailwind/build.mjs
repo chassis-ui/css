@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*!
- * build-tailwind.mjs — compiles scss/tailwind/ into dist/tailwind/.
+ * build.mjs — compiles scss/tailwind/ into dist/tailwind/.
  *
  * The combined Chassis + Tailwind layer order comes from Sass
  * (`scss/tailwind/_layer-order.scss`): a `@layer` statement followed by
@@ -12,41 +12,41 @@
  * with its own chassis-tokens gets the same preamble as this build.
  *
  * The `--cx-` prefixing / `@layer` merge pass runs through the `postcss` API
- * directly (`build/tailwind/postcss.tailwind.config.js`), not the `postcss-cli`
+ * directly (`build/tailwind/postcss.config.js`), not the `postcss-cli`
  * `--config` flag: postcss-cli resolves a `--config` path via `lilconfig`,
  * which treats it as a search-start directory rather than a literal file, so
  * pointing it at a custom-named file in `build/` silently loads the sibling
  * `build/postcss.config.js` instead.
  *
  * Finally, five checks run against the final compiled output, in order:
- *  1. `tailwind-clashes.mjs`'s `run()` re-detects Chassis component/reboot
+ *  1. `clashes.mjs`'s `run()` re-detects Chassis component/reboot
  *     class names that clash with Tailwind core and fails loudly if that
  *     set has drifted from the committed
  *     `scss/tailwind/_source-exclusions.scss` — the `@source not
  *     inline(...)` exclusions themselves are emitted by `theme.scss` at
  *     Sass-compile time, not written here.
- *  2. `tailwind-clashes.mjs`'s `checkClashPolicy()` re-derives
- *     `scss/tailwind/_clash-policy.scss` from `build/tailwind/tailwind-utility-clashes.json`
- *     and `build/tailwind/tailwind-bridge-clashes.json` and fails loudly if it has
+ *  2. `clashes.mjs`'s `checkClashPolicy()` re-derives
+ *     `scss/tailwind/_clash-policy.scss` from `build/tailwind/utility-clashes.json`
+ *     and `build/tailwind/bridge-clashes.json` and fails loudly if it has
  *     drifted — a pure JSON→Sass re-derivation, not a live Tailwind-compile
  *     probe, since those two JSON files stay the reviewed source of truth.
- *  3. `tailwind-clashes.mjs`'s `checkUtilityNameClashes()` finds Chassis
+ *  3. `clashes.mjs`'s `checkUtilityNameClashes()` finds Chassis
  *     utility names Tailwind core ALSO generates even after the theme reset
  *     (a same-name `@utility` merge, not an exclusion candidate —
  *     `@source not inline()` would drop Chassis's own utility too), and
  *     fails loudly if the live clash set drifts from
- *     `build/tailwind/tailwind-utility-clashes.json`. The `!important` remedy itself
+ *     `build/tailwind/utility-clashes.json`. The `!important` remedy itself
  *     is applied by the Sass emitter (`scss/tailwind/_clash-policy.scss`),
  *     not written here — this only verifies it actually made Chassis's
  *     declared value win the real compiled merge.
- *  4. `tailwind-bridge-clashes.mjs`'s `checkBridgeClashes()` reruns the same
+ *  4. `bridge-clashes.mjs`'s `checkBridgeClashes()` reruns the same
  *     analysis with the opt-in `bridge.scss` token bridge's `--color-*`
  *     theme keys loaded, since bridging Chassis's palette re-enables native
  *     Tailwind color utilities (`bg-*`, `border-*`, ...) that clash with
  *     Chassis's own same-named ones. Its remedy is unconditional in
  *     `_clash-policy.scss` too, so it's a no-op for consumers who never
  *     import bridge.css and a real fix for the ones who do.
- *  5. `tailwind-clashes.mjs`'s `checkGridUtilityClashes()` covers the grid
+ *  5. `clashes.mjs`'s `checkGridUtilityClashes()` covers the grid
  *     classes, which are `@utility` rules compiled into components.css: every
  *     property Tailwind core merges into a same-name grid class (`col-<n>`,
  *     `col-auto`) must be reset by that class and win the merged output.
@@ -60,14 +60,14 @@ import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import postcss from 'postcss'
 import * as sass from 'sass'
-import tailwindConfig from './postcss.tailwind.config.js'
-import { checkBridgeClashes } from './tailwind-bridge-clashes.mjs'
+import tailwindConfig from './postcss.config.js'
+import { checkBridgeClashes } from './bridge-clashes.mjs'
 import {
   checkClashPolicy,
   checkGridUtilityClashes,
   checkUtilityNameClashes,
   run as checkSourceExclusions
-} from './tailwind-clashes.mjs'
+} from './clashes.mjs'
 
 const root = path.resolve(fileURLToPath(import.meta.url), '../../..')
 const srcDir = path.join(root, 'scss/tailwind')
@@ -85,7 +85,7 @@ const entries = [
 ]
 
 // The Sass + prefix compile pass, exported so
-// `update-tailwind-source-exclusions.mjs` can produce a fresh
+// `update-source-exclusions.mjs` can produce a fresh
 // `dist/tailwind/` build without running the checks below (which would
 // throw on the very drift that script exists to resolve).
 export async function compileTailwindDist() {

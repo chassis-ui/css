@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*!
- * update-tailwind-source-exclusions.mjs — regenerates
+ * update-source-exclusions.mjs — regenerates
  * scss/tailwind/_source-exclusions.scss from a fresh dist/tailwind/ build.
  *
  * Run this only after `pnpm css:tailwind` reports a source-exclusion drift
@@ -14,8 +14,8 @@
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  */
 
-import { compileTailwindDist } from './build-tailwind.mjs'
-import { updateSourceExclusions } from './tailwind-clashes.mjs'
+import { compileTailwindDist } from './build.mjs'
+import { updateSourceExclusions } from './clashes.mjs'
 
 await compileTailwindDist()
 await updateSourceExclusions()
