@@ -215,6 +215,64 @@ jobs:
         run: pnpm check:bundle
         continue-on-error: true
 
+  # A change to scss/, js/src/, postcss/, dist/ or js/dist/ needs a changeset (changedFilePatterns
+  # in .changeset/config.json); `pnpm changeset --empty` adds one that releases nothing. A pull
+  # request is compared with its base branch, a push to develop with the tip it replaced. The
+  # Version Packages pull request consumes changesets, and so does the version commit when it
+  # comes back from main into develop, so both are skipped.
+  changeset:
+    name: Changeset
+    if: >-
+      (github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')) ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/develop')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Changesets compares with an earlier commit
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for a changeset
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ "$EVENT" = pull_request ]; then
+            SINCE="origin/$BASE_REF"
+          else
+            if [ -z "$BEFORE" ] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+              echo "No earlier commit to compare with"
+              exit 0
+            fi
+
+            OLD_VERSION=$(git show "$BEFORE:package.json" | node -p 'JSON.parse(require("node:fs").readFileSync(0, "utf8")).version')
+            NEW_VERSION=$(node -p 'require("./package.json").version')
+            if [ "$OLD_VERSION" != "$NEW_VERSION" ]; then
+              echo "The push changes the version ($OLD_VERSION → $NEW_VERSION): a version step, which consumes changesets"
+              exit 0
+            fi
+
+            SINCE="$BEFORE"
+          fi
+
+          pnpm changeset status --since "$SINCE"
+
   audit:
     name: Audit
     runs-on: ubuntu-latest

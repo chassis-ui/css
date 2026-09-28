@@ -1,13 +1,9 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
 ## [Unreleased]
 
 ### Added
+
 - **`@chassis-ui/css/tailwind/merge.js`:** the grid classes are now part of the generated tailwind-merge `classGroups` config, so `twMerge('col-6', 'col-4')`, `twMerge('g-md', 'g-lg')`, `twMerge('offset-2', 'offset-4')`, and the `row-cols-*`, `gx-*`, `gy-*`, `g-col-*`, `g-start-*` equivalents resolve to the last class
 - `Nav`: `.sm` and `.lg` size modifiers on `.nav`, for the base nav and the tabs, segments, and underline variants. They scale the link padding, gap, icon size, caret size, and font from Chassis Tokens; segments also scale the bar padding and corner radius, and underline scales the gap between links. Without a modifier the medium size applies
 - **`@chassis-ui/css/postcss`:** the preset now has type declarations, so a TypeScript PostCSS configuration gets `chassisPrefix()`, `chassisPostcss()`, `mergeLayerBlocks`, and the `ChassisPrefixOptions` type checked
@@ -15,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Nav`: `.nav-link` is now a centered flex row with a gap, so an icon placed inside the link aligns with the label and scales with the nav size. New `--cx-nav-link-gap`, `--cx-nav-link-icon-size`, `--cx-nav-link-caret-size`, and `--cx-nav-link-caret-spacing` custom properties, and `--cx-nav-segments-idle-fg-color`/`--cx-nav-segments-idle-bg-color` for the idle segment links
 
 ### Changed
+
 - **Breaking:** **JavaScript entry:** `import { Tooltip } from '@chassis-ui/css'` now resolves to compiled JavaScript (`js/dist/index.js`) with type declarations (`js/dist/index.d.ts`), instead of the TypeScript source (`js/index.ts`). Node.js could not import the source from `node_modules`, a bundler had to compile it, and a TypeScript project checked it with its own compiler options: a strict project got 209 errors from 0.5.0. Imports from `@chassis-ui/css` and from `@chassis-ui/css/js/dist/*` need no change. `@chassis-ui/css/js/src/*` is no longer an export; import the module from `@chassis-ui/css/js/dist/` instead (`js/dist/tooltip.js` for `js/src/tooltip.ts`). `js/index.ts` moved to `js/src/index.ts`, so a bundler alias that names the file by its path needs the new path, `js/dist/index.js`
 - **Source maps** no longer hold a copy of their sources. They name the Sass files in `scss/` and the modules in `js/src/`, which the package ships, so the browser's developer tools show the same source as before when the package is installed from npm or loaded from a CDN that serves the whole package. The installed package is 7.2 MB instead of 14.4 MB. Two kinds of source are not in the package and no longer show: the Chassis Tokens file the CSS is compiled with, and the dependencies inside `chassis.bundle.js`. A copy of `dist/` alone, without `scss/` and `js/src/` next to it, shows no source
 - `package.json` declares `engines.node` `>=22`, the version the PostCSS preset and the Sass build are tested with. The CSS and the JavaScript in the browser are not affected
@@ -28,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Docs: the `Nav` page is rewritten to the style guide's standard section order, with new sections for size variants, icons, Sass variables, and design tokens
 
 ### Fixed
+
 - `Nav`: opening a menu from a toggle placed directly inside a `.nav-pills` nav, without a `.nav-item` wrapper, gave every sibling link the active style, because the open state was matched on the toggle's parent. It is now matched on the toggle itself
 - Docs: the vertical example on the `Tab` page used `.nav-pills-vertical` and `.me-4`, neither of which exists, so the links never stacked; it now uses `.flex-column` and `.me-md`. The `Nav` page's link to the Tab plugin pointed at an anchor that does not exist
 - **Types:** 16 of the type declarations in `js/dist/` were older than their modules, because the build did not write them. `NavOverflow`'s `moreText: string | false` and the `null` a `Toggler` value can hold were missing, among others. The build now writes the declarations with the modules, and a release fails when any file in `dist/` or `js/dist/` differs from a fresh build
@@ -35,26 +33,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.5.2] - 2026-09-25
 
 ### Fixed
+
 - `Nav`: `.nav-pills`' border radius now resolves from Chassis Tokens (`--border-radius-md` for the bar, `--border-radius-sm` for the items) instead of a hardcoded `var(--border-radius-full)`, so pills match their Figma design instead of always rendering fully rounded
 
 ## [0.5.1] - 2026-09-23
 
 ### Fixed
+
 - `:root`'s `--font-family-*` tokens lost the quotes around family names. A name that only parses quoted, like `'Source Serif 4'` (`4` isn't a CSS identifier), came out as `Source Serif 4, ...`. The browser then rejected the whole `font-family` declaration and fell back to its default font. Names that are plain identifiers (`'Archivo Narrow'`) were unaffected, which is why Chassis's default tokens never showed it. The tokens now keep their quotes
 - `Component.VERSION` reported `0.4.0` in 0.5.0: `build/change-version.js` still listed the pre-TypeScript `js/src/base-component.js` path and skipped the file
 
 ## [0.5.0] - 2026-09-19
 
 ### Added
+
 - **Tailwind CSS v4 integration:** a new `@chassis-ui/css/tailwind` entry point (plus à-la-carte imports under `@chassis-ui/css/tailwind/*`) exposes Chassis tokens, components, and utilities to Tailwind CSS v4 projects. Chassis utilities are re-emitted as Tailwind `@utility` rules, so every Tailwind variant (`dark:`, `lg:`, `hover:`, `@md:`, `print:`) works on them without extra configuration; `dark:`/`light:` variants follow the same nearest-`data-cx-theme`-wins logic as Chassis's own `light-dark()` tokens; `sm:`–`2xl:` and `@md:`–`@2xl:` read Chassis's `$breakpoints` map instead of Tailwind's defaults. Tailwind core utility names that clash with Chassis component classes (`outline`, `collapse`, `container`, `grid`, `col-*`, and others) are excluded from Tailwind's own generation; utility names that clash by value are patched so Chassis's token-driven declaration wins. See the [Tailwind guide](https://chassis-ui.com/css/docs/getting-started/tailwind/)
 - **`@chassis-ui/css/tailwind/merge.js`:** a generated [tailwind-merge](https://github.com/dcastil/tailwind-merge) `classGroups` config for the Tailwind entry point, so `extendTailwindMerge({ extend: { classGroups } })` resolves conflicts between Chassis utilities (`twMerge('fg-primary', 'fg-danger')` → `'fg-danger'`) the same way it already does for Tailwind's own utilities
 - **`@chassis-ui/css/tailwind/bridge.css`:** an opt-in stylesheet that maps Chassis's context color palette (11 base colors plus the full shade ramp) into Tailwind's own `--color-*` theme namespace, so Tailwind-native color utilities Chassis has no equivalent for (`ring-*`, `outline-*`, `decoration-*`, `caret-*`, `accent-*`, `fill-*`, `stroke-*`, gradient stops, `placeholder-*`, and the `/<opacity>` modifier on any color utility) work with Chassis's palette. Same-name clashes this reintroduces against Chassis's own `bg-*`/`border-*` utilities are patched with `!important`, the same fix as the existing utility-name clash policy
 - **`@chassis-ui/css/postcss`:** the `--cx-` custom-property prefix step is now a public preset — `chassisPrefix({ tailwind })` and `chassisPostcss({ tailwind })` — instead of a build-internal PostCSS config, so any project compiling Chassis from Sass (with or without the Tailwind entry point) can wire it into its own build. Fixes a real gap: the Tailwind entry's own `dist/tailwind/root.css` was shipping an unprefixed `--breakpoint-*`/`--container-*` Chassis runtime property (read by the nav-overflow plugin), because that name also has to stay unprefixed inside Tailwind's own `@theme`; the preset now tells the two apart by where the declaration sits, not just its name. The Tailwind entry point itself now compiles fully through Sass — `@layer` order, component-name exclusions, the JS-toggled-class safelist, and same-name `!important` remedies are all emitted by the Sass source instead of being patched onto the build output afterward — so a project with its own `chassis-tokens` and its own `$utilities`/`$breakpoints` gets the same result compiling `@chassis-ui/css/scss/tailwind` directly that the prebuilt `dist/tailwind/*.css` gets. See the [Tailwind guide](https://chassis-ui.com/css/docs/getting-started/tailwind/)
 
 ### Changed
+
 - **Breaking:** Sizing keywords renamed to short form everywhere they're CSS-facing — class modifiers, Sass map keys, `$variable` name segments, `%placeholder` names, and generated CSS custom properties now use `2xs`/`xs`/`sm`/`md`/`lg`/`xl`/`2xl`/`3xl`/`4xl`/`5xl`/`6xl` instead of `2xsmall`/`xsmall`/`small`/`medium`/`large`/`xlarge`/`2xlarge`/`3xlarge`/`4xlarge`/`5xlarge`/`6xlarge`. Breakpoints are included in the rename, so the framework now has one consistent short vocabulary: `$breakpoints`/`$container-max-widths` map keys, responsive prefixes (`large:` → `lg:`, `.container.large` → `.container.lg`, `max-large:drawer` → `max-lg:drawer`), and `FloatingBase.BREAKPOINTS`/`ResponsivePlacements` on the JS side (base key `xsmall` → `xs`). Also renamed: the sizing/spacing/border/font/shadow maps and their generated `--size-*`/`--space-*`/`--border-*`/`--font-size-*`/`--line-height-*` custom properties; component size modifiers (e.g. `.button.large` → `.button.lg`, `.accordion.small` → `.accordion.sm`); the `scss/config/_defaults.scss` component variables and `scss/tokens/_forms.scss` composite variables that aren't 1:1 vendor mirrors. The upstream `@chassis-ui/tokens` package's 1:1 vendor-mirror variables in `scss/tokens/*.scss` (e.g. `$size-large: $cx-size-context-large`) keep their long-form names by design, so future vendor-package syncs stay a trivial diff — only the layer built on top of that boundary changed.
 
 ### Fixed
+
 - **Custom prefixes:** `chassisPrefix()`/`chassisPostcss()` now take a `prefix` option (default `'cx-'`), and the JS plugins no longer hardcode `--cx-`. The preset writes the prefix into a `--chassis-prefix` property on `:root`, and a new internal `cssVar()` helper reads it at runtime, so `Carousel`, `NavOverflow`, `Strength`, and responsive placements keep working when a project renames the namespace — including with the prebuilt `dist/js`. Non-Tailwind builds can also opt out of prefixing entirely, by skipping the step or passing `prefix: ''`; the JS then reads the plain names. The Tailwind entry point still requires a prefix, since plain `--breakpoint-*`/`--container-*`/`--color-*` names collide with Tailwind's theme keys
 - `Strength`: the `$form-password-strength-{weak,fair,good,strong}-color` defaults hardcoded `var(--cx-danger)` and similar, so a custom prefix produced references like `var(--acme-cx-danger)` that don't exist, and so did building with no prefix. They now use the plain Sass names (`var(--danger)`), which the prefix step renames like every other property
 - **`chassisPrefix({ prefix })`:** the prefix must now end in `-` or `_`. A prefix like `acme` produced `--acmeprimary`, and `b` left every `--bg-*` unprefixed
@@ -64,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.0] - 2026-09-15
 
 ### Added
+
 - **TypeScript:** `js/src/**` and the `js/index` entry point are now fully TypeScript instead of plain JS. The package ships real `.d.ts` declarations (emitted alongside each `js/dist/*.js`) instead of requiring a separate `@types` package; a compile-time-only `js/tests/types/api.ts` contract test locks in the public API shape
 - **Build:** the production JS build now compiles through Rolldown's native TypeScript support instead of Rollup + Babel, producing smaller output across all four JS artifacts (`chassis.js`, `chassis.bundle.js`, and their minified builds); a new `build/browser-targets.js` resolves `.browserslistrc` into Rolldown/oxc target strings
 - **Testing:** unit tests migrated from Karma/Jasmine to Vitest
@@ -79,6 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `AGENTS.md` and `WRITING.md` (replacing `.github/DOCUMENTATION_STYLEGUIDE.md`) documenting repo conventions and the docs writing style guide
 
 ### Changed
+
 - **Breaking:** `Pagination` sub-classes renamed from `page-*` to `pagination-*`
 - **Breaking:** `.input-help` renamed to `.input-adorn`, and the `Form Help` component/class renamed to `Form Adorn` to match
 - **Breaking:** `NavOverflow` now requires the `.nav` to be wrapped in a `.nav-overflow` element, with `data-cx-toggle="nav-overflow"` moved from the `.nav` to that wrapper. The component previously measured, observed, and collapsed the same `.nav` element it was mutating — collapsing items changed the nav's own width, so on nav styles/layouts where that width wasn't otherwise pinned (e.g. `.nav-pills`, or a `.nav` whose flex ancestor let its min-content width leak through), the ResizeObserver could fire repeatedly and either never settle on a stable collapsed state or flicker on load. The wrapper is measured/observed instead, with `container-type: inline-size` closing off the remaining path for the nav's content width to affect the wrapper's own size. Ported from upstream Bootstrap's nav-overflow rewrite. Existing markup needs the extra wrapper element; see `site/content/docs/components/nav-overflow.mdx`
@@ -92,6 +97,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sanitizer: adopted a hardened `SAFE_URL_PATTERN` that also blocks `data:`/`vbscript:` URI schemes (previously only `javascript:`), plus a `DATA_URL_PATTERN` allowlist for safe image/video/audio data URIs
 
 ### Fixed
+
 - `border()` mixin: the border color custom property now falls back to `transparent` when unset, instead of resolving to an empty/invalid value
 - `Accordion`: the open/close CSS transition is now scoped by the `[data-cx-accordion]` attribute selector instead of `:not(.no-transition)`, matching the `data-cx-accordion` JS init trigger introduced in 0.3.5
 - `Chip`: removed a `>` direct-child combinator from icon/avatar/close-button selectors so nested markup still matches
@@ -110,19 +116,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed the nav overflow docs incorrectly referencing `update.bs.navoverflow`/`overflow.bs.navoverflow` event names (leftover from the upstream port); they are `update.cx.navoverflow`/`overflow.cx.navoverflow`
 
 ### Removed
+
 - Deleted `js/src/util/backdrop.ts`, `focustrap.ts`, and `scrollbar.ts` — no source file imported them, artifacts of old js plugins.
 
 ## [0.3.5] - 2026-07-25
 
 ### Changed
+
 - `Accordion`: JavaScript now initializes via a `data-cx-accordion` attribute on the wrapper instead of the `.accordion` class, so `.accordion` is purely a visual/CSS class and no longer triggers JS on its own. Markup that relied on `.accordion` alone for the smooth open/close transition needs `data-cx-accordion` added to the wrapper to keep that behavior. Also renamed the internal attribute marking the transient clone used during the close transition from `data-accordion-clone` to `data-cx-clone`
 
 ## [0.3.4] - 2026-07-18
 
 ### Changed
+
 - `Pagination`: reworked the color custom properties into explicit per-state variables (`--idle-fg-color`/`--idle-bg-color`, `--hover-fg-color`/`--hover-bg-color`, `--focus-fg-color`/`--focus-bg-color`, `--active-fg-color`/`--active-bg-color`/`--active-border-color`, `--disabled-fg-color`/`--disabled-bg-color`/`--disabled-border-color`) instead of overloading a single `--fg-color`/`--bg-color` pair across `:hover`, `:focus-visible`, `.active`, and `.disabled`; `.page-link` switched from `display: block` to a flex layout (`align-items: center`, `height: 100%`) so icon-based prev/next controls center correctly, and icons get `transform: translateZ(0)` to prevent a sub-pixel shift when `z-index` changes on hover/focus/active; added a new `$pagination-icon-size`/`--pagination-icon-size` Sass variable and CSS custom property
 
 ### Fixed
+
 - Fixed `Pagination`'s `--border-radius` custom property incorrectly falling back through `--pagination-border-color` instead of `--pagination-border-radius`, so overriding `--pagination-border-color` silently also overrode the border radius
 - Fixed `_icon-link.scss`: `text-decoration-color` now resolves from `currentcolor` instead of the hardcoded `--link-main-color`, so the underline correctly follows contextual link colors (e.g. `.link-danger`) instead of always rendering in the base link color
 - Fixed `b`/`strong` bold weight in `_reboot.scss` to use the `$font-weight-bolder` (`bolder` keyword) Sass variable directly instead of the fixed `--bold-font-weight` custom property, so bold text scales relative to its inherited weight instead of always resolving to the same absolute value
@@ -130,17 +140,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.3] - 2026-07-07
 
 ### Fixed
+
 - Fixed `build/css-minify.js`: the dynamic `import('browserslist')` used to read `.browserslistrc` targets was silently failing under pnpm's strict `node_modules` layout (`browserslist` was never a direct dependency, only a transitive one), so every build minified with lightningcss's default targets instead of this project's actual declared browser support. Added `browserslist` as a direct devDependency; a failure to load targets now fails the build instead of silently degrading. Also dropped the invalid `sourceRoot: null` key lightningcss emits in source maps (violates the source map spec, triggers devtools warnings), removed a redundant JSON parse/stringify round-trip on the input source map, and anchored the `.css` → `.min.css` extension replace to the end of the filename
 - Fixed the docs site dev server (`site/`) intermittently failing to load `Dialog`/`Drawer`/etc. component scripts (e.g. modals opening and immediately closing): whenever `@chassis-ui/docs` is installed as a real dependency (not workspace-linked), Vite's `optimizeDeps` pre-bundles its `example-mode.js` with its own inlined copy of `@chassis-ui/css`, producing a second module instance and duplicate data-api click listeners alongside the one aliased in `site/src/libs/astro.ts`. Excluded `@chassis-ui/docs` from `optimizeDeps` so it always resolves through the same aliased instance
 
 ## [0.3.2] - 2026-07-05
 
 ### Fixed
+
 - Fixed the `sideEffects` field in `package.json`: it listed `./js/src/*.js`, `./js/dist/*.js`, and `./dist/js/*.js`, but not `./js/index.js` — the package's actual `exports["."]` entry point. Bundlers treated that barrel file as side-effect-free and tree-shook away any component nobody imported by name (e.g. `Dialog`, `Drawer`, `Accordion`, `Toast`, `Carousel`), silently dropping their self-registering `data-cx-toggle`/`data-cx-dismiss` click handlers. This only affected consumers who bundle `@chassis-ui/css` from source directly (e.g. via a bare `import '@chassis-ui/css'` in their own build) rather than loading the prebuilt `chassis.bundle.js`. Added `./js/index.js` to `sideEffects`.
 
 ## [0.3.1] - 2026-07-04
 
 ### Fixed
+
 - Fixed `scss/vendor/_chassis-tokens.scss` default token forward: replaced the relative `../../node_modules/@chassis-ui/tokens/...` path (which only resolved when `@chassis-ui/tokens` was hoisted/nested inside `@chassis-ui/css`'s own `node_modules`) with a bare `@chassis-ui/tokens/...` package specifier, so consumers installing `@chassis-ui/css` under pnpm's isolated `node_modules` layout no longer hit a "Can't find stylesheet to import" Sass build error
 - Added `--load-path node_modules` to `css:compile` so the Dart Sass CLI resolves the bare `@chassis-ui/tokens` specifier the same way Vite/Astro consumers already do
 
@@ -151,6 +164,7 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 ### Added
 
 **New components**
+
 - `Dialog` (`.dialog`): new foundational primitive built on the native `<dialog>` element, shared by Modal, Alert, and Drawer (`show()`/`showModal()`, backdrop/keyboard config, `.dialog-static`, `.scrollable`, `.translucent`, seamless "dialog swapping" between triggers inside an already-open dialog)
 - `Drawer` (`.drawer`): replaces Offcanvas; native `<dialog>`-based, `.drawer-start/-end/-top/-bottom` placements, swipe-to-dismiss gestures, `.sheet` edge-flush variant, `.fullscreen`, non-modal `scroll` mode, responsive inline-collapse
 - `Menu` (`.menu`): replaces Dropdown; rebuilt on Floating UI with native submenu (nested flyout) support — hover/click/`both` trigger modes, safe-triangle hover intent, mobile stacked/back-button submenu variant, portal `container` option, `display: dynamic|static`, keyboard nav
@@ -166,6 +180,7 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 - Vertical input groups (`.input-group.vertical`), including nested groups
 
 **SCSS architecture**
+
 - CSS cascade layers with an explicit global order: `colors, theme, config, root, reboot, layout, content, components, custom, helpers, utilities`
 - New `scss/config/` entry point consolidating all feature flags (`_settings.scss`) and every configurable variable (`_defaults.scss`, ~1,500 lines) behind a single `@use "@chassis-ui/css/scss/config" as *`
 - Design tokens now resolve through a swappable vendor package (`scss/config/_vendor.scss` → `scss/vendor/_chassis-tokens.scss`, resolved via Sass `loadPaths`), so a consumer can override the entire token source without editing the framework
@@ -178,10 +193,12 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 - New Sass map helpers: `defaults()` (override-merge that supports removing keys), `map-get-nested()`
 
 **New utilities**
+
 - `scss/utilities/_gap.scss`, `_grid.scss` (CSS grid utilities), `_icon.scss`, `_link.scss` (`.link-{context}` color utilities), `_position.scss`, `_skeleton.scss`, `_spinner.scss`
 - `space-x`/`space-y` (Tailwind-style "space between children"), `divide-x`/`divide-y`, `aspect-ratio`/`aspect-ratio-attr`, `container`/`.contains-inline`/`.contains-size`, `min-w-*`/`min-h-*`, `.dvh-{25,50,75,100}` (dynamic viewport height)
 
 **Build & tooling**
+
 - `build/check-imports.js`: static analyzer that flags unresolved, unused, or missing Sass `@use`/`@forward` imports (`css:lint:imports`)
 - `build/css-minify.js`: minification moved from `clean-css` to `lightningcss` (needed for `light-dark()`, `color-mix()`, and `@layer` support)
 - `build/html-validate.js`: validates built site HTML via `html-validate` (`site:lint:html`)
@@ -191,12 +208,14 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 ### Changed
 
 **Design tokens & color system**
+
 - Deprecated Sass `@import` rules replaced with `@use` and `@forward` across the entire codebase
 - Color variables now use `oklch()`
 - CSS variable prefixing (`--cx-`) now handled by PostCSS instead of Sass — Sass source and mixins/functions emit unprefixed `--name` custom properties throughout
 - RFS (Responsive Font Sizes) system replaced with CSS `clamp()`
 
 **JavaScript**
+
 - JavaScript is now ESM-only — the UMD build, `js/index.umd.js`, and all `jQuery` interop (`jQueryInterface()`, `defineJQueryPlugin()`) have been removed; `js/index.esm.js` is now the single entry point at `js/index.js`
 - Dropped jQuery support
 - Dropdown component replaced with the new Menu component, which adds submenu support
@@ -207,6 +226,7 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 - `tab.js` dropdown handling rebuilt around the new Menu component; `scrollspy.js` menu-item activation updated to match
 
 **Components**
+
 - Card groups now use container queries
 - List group horizontal variants now use container queries; `.list-group` renamed to `.list` (`.list.outline`, `.list.numbered`, `.list.flush`, `.list.plain`)
 - Accordion: `.indicator-end` renamed `.caret-end`; Safari/WebKit Tab-focus loss after a pointer click on `<summary>` fixed by switching `display: flex` to `list-item` and moving flex layout into a new `.accordion-title` wrapper
@@ -221,6 +241,7 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 - Toast: new `.toast-footer`, `.toast.translucent`
 
 **Forms**
+
 - Consolidated `.form-select` into `.form-input` (`select.form-input`); `_form-select.scss` removed
 - Form validation icons now require a `.validation-icons` class on any ancestor (previously controlled only by a Sass flag with no markup opt-in)
 - Validation state trigger model changed from `.was-validated` + `:valid`/`:invalid` to `[data-cx-validate]` + `:user-valid`/`:user-invalid` combined with `.is-valid`/`.is-invalid`, extended to Combobox, OTP Input, and both checkbox styles
@@ -230,6 +251,7 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 - Floating labels rewritten to use `:has()` instead of adjacent-sibling selectors, making label-floating robust to intervening elements like `.input-help`
 
 **Utilities**
+
 - Utility breakpoint variants use `{breakpoint}:` prefix (Tailwind-style) exclusively; the legacy infix form and its `breakpoint-infix()` alias are fully removed in favor of `breakpoint-prefix()`
 - Media queries switched from `min-width`/`max-width` (with a 0.02px Safari rounding offset) to CSS range syntax (`width >= Xpx`)
 - The utilities-API map format gained `property` maps (emit a CSS variable and a consuming property together), `selector` (`class`/`attr-starts`/`attr-includes`), `child-selector`, `variables`, `group` (deduplicated shared-property output), `print`, and `dark` media variants; the legacy `rfs`, `css-var`, `local-vars`, and `rtl` utility-map keys are no longer supported
@@ -237,6 +259,7 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 - Negative margin utilities now gated behind `$enable-negative-margins` and renamed with a `-m`/`-mt`/etc. prefix
 
 **Build & tooling**
+
 - Focus ring rendering switched from `box-shadow` to `outline` (new `focus-ring()` mixin)
 - `gradient-bg()` mixin renamed to `gradient()`; no longer sets `background-color` itself
 - The prebuilt RTL CSS build (`css:rtl`, the `rtlcss` PostCSS plugin, `.rtl.css`/`.rtl.min.css` output) has been dropped in favor of logical properties handling RTL directly
@@ -244,6 +267,7 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 - `package.json` gained an `exports` map and `sideEffects` array in place of the `main`/`module` fields
 
 ### Removed
+
 - jQuery peer dependency and all jQuery interop code and tests
 - UMD build output and build scripts (`js:compile:umd`, `js:minify:umd`, `js/index.umd.js`)
 - `@popperjs/core` dependency
@@ -256,6 +280,7 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 - `$negative-spacers`, `$basic-opacities`, and `$bg-opacities` Sass maps
 
 ### Fixed
+
 - Toast `hide()` now clears the autohide timeout immediately instead of after checking `defaultPrevented`, preventing a stale autohide from firing after a manual `hide()`
 - Notification link-emphasis selector now excludes `.button`/`.close-button` children, preventing unwanted bold styling on those elements
 - `svg-icon()` now escapes already-formed `data:image/svg+xml` URIs, fixing malformed `background-image` URLs in some code paths
@@ -264,9 +289,11 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 ## [0.2.3] - 2026-05-03
 
 ### Changed
+
 - `$enable-responsive-gradients` default value changed to `false`
 
 ### Fixed
+
 - Added `scss-docs` start/end markers to `opacity-var()`, `to-color()`, and `to-opacity()` in `_color.scss` for documentation extraction
 - Fixed `cleanPublicDirectory()` to delete directory contents rather than the directory itself, preventing `ENOTEMPTY` errors on macOS and Windows caused by OS-managed metadata files
 - Fixed misplaced parenthesis in `copyStaticRecursively()` that caused `{ recursive: true }` to be ignored in `mkdirSync`
@@ -276,11 +303,13 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 ## [0.2.2] - 2026-05-03
 
 ### Fixed
+
 - Fixed `publish-release.yml` GitHub Actions workflow
 
 ## [0.2.1] - 2026-05-03
 
 ### Fixed
+
 - Added `publishConfig` to `package.json` for correct npm registry targeting
 - Removed `pnpm-workspace.yaml` (not needed for single-package repo)
 - Fixed deployment configuration issues
@@ -288,6 +317,7 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 ## [0.2.0] - 2026-05-03
 
 ### Added
+
 - `to-color()` SCSS function: converts any Sass color to a rounded `oklch()` value with preserved alpha
 - `to-opacity()` SCSS function: generates a CSS relative color expression using `oklch(from … / opacity)` syntax, replacing `rgba()` for dynamic opacity on CSS custom properties
 - `opacity-var()` SCSS function: replaces `rgba-css-var()` — generates `oklch(from var(--cx-{identifier}) l c h / var(--cx-{target}-opacity, 1))` for component color utilities
@@ -296,6 +326,7 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 - GitHub Actions workflow (`publish-release.yml`) that detects version bumps on `main` and auto-publishes releases
 
 ### Changed
+
 - Renamed `$enable-responsive-utilities` to `$enable-adaptive-font-sizes` for clarity; controls breakpoint-based responsive font and icon size utilities
 - Replaced all `rgba()` calls in SCSS variables and component styles with `to-opacity()` / `to-color()` — migrated ~76 occurrences across `_variables.scss`, `_reboot.scss`, `_button.scss`, `_forms.scss`, `_navbar.scss`, `_toast.scss`, and more
 - `rgba-css-var()` function renamed to `opacity-var()` and updated to use CSS relative color syntax instead of `rgba(var(--rgb), opacity)` — no longer requires separate `-rgb` custom properties
@@ -315,39 +346,46 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 - `eslint.config.js` minor update
 
 ### Fixed
+
 - Form label color: now set via `--cx-fg-color` CSS custom property for proper theming support
 
 ## [0.1.2] - 2026-04-14
 
 ### Added
+
 - Responsive icon utilities for icon positioning
 - `$enable-bts` setting renamed to ``$enable-responsive-utilities`
 - `_vendor.scss` file for centralized Chassis Tokens import
 - Icon documentation with responsive utility examples
 
 ### Changed
+
 - Changed `box-padding` setting to `exclude-strokes` for better Figma alignment
 - Updated component mixins to use `exclude-strokes` instead of `box-padding`
 - Reorganized homepage components into `homepage/` subdirectory
 - Updated Chassis Tokens vendor submodule
 
 ### Fixed
+
 - Icon positioning and sizing utilities now support responsive variants
 
 ## [0.1.1] - 2026-04-08
 
 ### Added
+
 - Breakpoint Type Scale (BTS) utilities for responsive font sizing
 - Enable/disable BTS feature via `$enable-bts` variable
 - Responsive font size classes following mobile-first approach
 - Circle option to border radius map
 
 ### Changed
+
 - Updated home page documentation
 - Renamed opacity levels for better clarity
 - Updated internal path references
 
 ### Documentation
+
 - Improved typography documentation with BTS examples
 - Updated README.md with correct package installation and usage examples
 - Fixed broken URLs and import paths in documentation
@@ -355,6 +393,7 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 ## [0.1.0] - 2025-10-28
 
 ### Added
+
 - Major framework refactor with improved architecture
 - Comprehensive documentation site built with Astro
 - Design token system integration
@@ -366,6 +405,7 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 - Network accessible development server
 
 ### Changed
+
 - Migrated from Hugo to Astro for documentation
 - Transferred project ownership to chassis-ui organization
 - Improved build scripts and configuration
@@ -375,12 +415,14 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 - Updated to ES module format
 
 ### Fixed
+
 - Icon-only button styling issues
 - Code component rendering in documentation
 - Transfer ownership related path issues
 - Package.json configuration errors
 
 ### Documentation
+
 - Complete rewrite of all component documentation
 - New documentation for:
   - Accordion components with tokens
@@ -399,6 +441,7 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 ## [0.0.1] - 2025-02-27
 
 ### Added
+
 - Initial project setup
 - Core SCSS architecture from Bootstrap foundation
 - Basic component structure
@@ -408,6 +451,7 @@ Chassis CSS 0.3.0 is a near-total rewrite of the SCSS architecture, the componen
 - Development environment configuration
 
 ### Documentation
+
 - Initial README
 - License files (MIT and Bootstrap attribution)
 - Basic project structure documentation
@@ -421,24 +465,28 @@ The project was transferred to the chassis-ui organization, establishing it as a
 ## Development Timeline
 
 ### 2026 Q1-Q2
+
 - Added breakpoint type scales
 - Updated opacity system
 - Enhanced border radius utilities
 - Improved documentation
 
 ### 2025 Q4
+
 - Major framework refactor
 - Ownership transfer to chassis-ui
 - Documentation improvements
 - Build system enhancements
 
 ### 2025 Q3
+
 - Astro migration completed
 - Build script improvements
 - Package configuration updates
 - Submodule integration
 
 ### 2025 Q2
+
 - Comprehensive component documentation
 - Forms documentation series
 - Navigation components
@@ -447,11 +495,13 @@ The project was transferred to the chassis-ui organization, establishing it as a
 - Link color namespace addition
 
 ### 2025 Q1-Q2
+
 - Astro documentation migration (19 parts)
 - Foundation work and architecture
 - Initial component implementations
 
 ### 2025 Q1
+
 - Project initialization
 - Core framework setup
 - Development environment
