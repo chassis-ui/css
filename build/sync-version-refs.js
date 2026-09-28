@@ -135,7 +135,9 @@ async function foldUnreleased(version) {
   const lines = (await fs.readFile(file, 'utf8')).split('\n')
 
   const unreleased = findSection(lines, /^## \[Unreleased\]/)
-  const entry = findSection(lines, new RegExp(`^## \\[?${regExpQuote(version)}\\]?(?:\\s|$)`))
+  // Only the entry `changeset version` writes (`## 0.6.0`), never a hand-written one
+  // (`## [0.5.2] - 2026-09-25`) of a version that is already released
+  const entry = findSection(lines, new RegExp(`^## ${regExpQuote(version)}$`))
   if (!unreleased || !entry) {
     return false
   }
