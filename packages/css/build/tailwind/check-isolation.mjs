@@ -20,7 +20,8 @@ import { fileURLToPath } from 'node:url'
 
 const root = path.resolve(fileURLToPath(import.meta.url), '../../..')
 const tailwindDir = path.join(root, 'scss/tailwind')
-const scanDirs = ['scss', 'site/src/scss'].map((dir) => path.join(root, dir))
+// The Sass of the package, and that of the docs site in packages/site
+const scanDirs = ['scss', '../site/src/scss'].map((dir) => path.join(root, dir))
 const allowedDirs = [tailwindDir, path.join(root, 'scss/tests/tailwind')]
 
 const LOAD_RE = /^\s*@(?:use|forward|import)\s+["']([^"']+)["']/gm

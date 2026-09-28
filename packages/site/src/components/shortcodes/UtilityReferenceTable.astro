@@ -1,6 +1,7 @@
 ---
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { getChassisCSSFsPath } from '@libs/path'
 
 interface Props {
   /**
@@ -34,7 +35,7 @@ function parseUtilityCSS(
   excludePrefixes: string[],
   includeBreakpoints: boolean
 ): Array<{ className: string; declarations: string[] }> {
-  const cssPath = join(process.cwd(), 'dist/css/chassis-utilities.css')
+  const cssPath = join(getChassisCSSFsPath(), 'css/chassis-utilities.css')
   const rawCss = readFileSync(cssPath, 'utf-8')
 
   // Normalize \32 xl (CSS numeric escape for "2") so the regex can match it

@@ -3,31 +3,37 @@ import path from 'node:path'
 import { getConfig } from './config'
 import { fileURLToPath } from 'node:url'
 
-// The docs directory path relative to the root of the project.
+// The docs directory path relative to the working directory, `packages/site`.
 export const docsDirectory = getConfig().docsDir
 
 export function getDocsFsPath() {
   return path.join(process.cwd(), docsDirectory)
 }
 
+// The path of a file of the site as `file` and `filePath` of the docs components name it:
+// relative to the `sourceDir` of `config.yml`
 export function getDocsRelativePath(docsPath: string) {
-  return path.join(docsDirectory, docsPath)
+  const sourceDirectory = path.join(process.cwd(), getConfig().sourceDir)
+
+  return path.relative(sourceDirectory, path.join(getDocsFsPath(), docsPath))
 }
 
 export function getChassisAssetsFsPath() {
-  return path.join(process.cwd(), 'vendor/assets/dist/web/docs', 'chassis')
+  return path.join(getDocsFsPath(), '../../vendor/assets/dist/web/docs', 'chassis')
 }
 
 export function getChassisTokensFsPath() {
-  return path.join(process.cwd(), 'node_modules/@chassis-ui/tokens/dist/web/docs', 'chassis')
+  return path.join(getDocsFsPath(), 'node_modules/@chassis-ui/tokens/dist/web/docs', 'chassis')
 }
 
+// The package of the workspace, `packages/css`, not the link to it in `node_modules`: the dev
+// server watches files in it, and reports their real paths
 export function getChassisCSSFsPath() {
-  return path.join(process.cwd(), 'dist')
+  return path.join(getDocsFsPath(), '../css/dist')
 }
 
 export function getChassisIconsFsPath() {
-  return path.join(process.cwd(), 'node_modules/@chassis-ui/icons')
+  return path.join(getDocsFsPath(), 'node_modules/@chassis-ui/icons')
 }
 
 export function getDocsStaticFsPath() {

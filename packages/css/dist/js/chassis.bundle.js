@@ -1985,7 +1985,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$6, SELECTOR_DATA_TOGGLE$9, functi
 	for (const element of SelectorEngine.getMultipleElementsFromSelector(this)) Collapse.getOrCreateInstance(element, { toggle: false }).toggle();
 });
 //#endregion
-//#region node_modules/.pnpm/@floating-ui+utils@0.2.11/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
+//#region ../../node_modules/.pnpm/@floating-ui+utils@0.2.11/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
 const min = Math.min;
 const max = Math.max;
 const round = Math.round;
@@ -2104,7 +2104,7 @@ function rectToClientRect(rect) {
 	};
 }
 //#endregion
-//#region node_modules/.pnpm/@floating-ui+core@1.7.5/node_modules/@floating-ui/core/dist/floating-ui.core.mjs
+//#region ../../node_modules/.pnpm/@floating-ui+core@1.7.5/node_modules/@floating-ui/core/dist/floating-ui.core.mjs
 function computeCoordsFromPlacement(_ref, placement, rtl) {
 	let { reference, floating } = _ref;
 	const sideAxis = getSideAxis(placement);
@@ -2515,7 +2515,7 @@ const shift$1 = function(options) {
 	};
 };
 //#endregion
-//#region node_modules/.pnpm/@floating-ui+utils@0.2.11/node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
+//#region ../../node_modules/.pnpm/@floating-ui+utils@0.2.11/node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
 function hasWindow() {
 	return typeof window !== "undefined";
 }
@@ -2628,7 +2628,7 @@ function getFrameElement(win) {
 	return win.parent && Object.getPrototypeOf(win.parent) ? win.frameElement : null;
 }
 //#endregion
-//#region node_modules/.pnpm/@floating-ui+dom@1.7.6/node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs
+//#region ../../node_modules/.pnpm/@floating-ui+dom@1.7.6/node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs
 function getCssDimensions(element) {
 	const css = getComputedStyle$1(element);
 	let width = parseFloat(css.width) || 0;
@@ -4348,7 +4348,7 @@ EventHandler.on(document, "DOMContentLoaded", () => {
 	for (const toggle of SelectorEngine.find(SELECTOR_DATA_TOGGLE$7)) Combobox.getOrCreateInstance(toggle);
 });
 //#endregion
-//#region node_modules/.pnpm/vanilla-calendar-pro@3.1.0/node_modules/vanilla-calendar-pro/index.mjs
+//#region ../../node_modules/.pnpm/vanilla-calendar-pro@3.1.0/node_modules/vanilla-calendar-pro/index.mjs
 /*! name: vanilla-calendar-pro v3.1.0 | url: https://github.com/uvarov-frontend/vanilla-calendar-pro */
 var __defProp = Object.defineProperty;
 var __defProps = Object.defineProperties;

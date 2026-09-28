@@ -46,7 +46,7 @@ Notifications are commonly created at runtime in response to user actions rather
 <Example addStackblitzJs code={`<div id="notificationStack" role="region" aria-label="Notifications" class="vstack gap-sm mb-md"></div>
 <button type="button" class="button primary" id="notificationButton">Show notification</button>`} />
 
-<JsDocs name="live-notification" file="site/src/assets/snippets.js" />
+<JsDocs name="live-notification" file="../site/src/assets/snippets.js" />
 
 For apps that show multiple notifications concurrently, host them inside a stable container with `role="region"` and a descriptive `aria-label` (as shown above). The region gives screen-reader users a named landmark to navigate to, and each notification announces itself through its own `role="status"` or `role="alert"` once inserted. Insert new notifications at the top of the stack when the freshest message matters most — the typical toast pattern — and at the bottom for chronological transcripts. When `role="alert"` notifications stack, dismiss or expire older entries so urgent messages aren't drowned by a backlog.
 

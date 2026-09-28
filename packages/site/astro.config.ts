@@ -12,7 +12,7 @@ const site = getSiteUrl(getConfig())
 // https://astro.build/config
 export default defineConfig({
   site,
-  outDir: '../_site',
+  outDir: '../../_site',
   build: {
     assets: `static/astro`
   },
@@ -49,21 +49,19 @@ export default defineConfig({
         scss: {
           loadPaths: [
             // Include the `scss` directory for resolving imports in the docs styles.
-            path.resolve(fileURLToPath(import.meta.url), '../../scss'),
+            path.resolve(fileURLToPath(import.meta.url), '../../css/scss'),
             // Framework fallback `_chassis-tokens.scss` if no override above.
-            path.resolve(fileURLToPath(import.meta.url), '../../scss/vendor')
-            // Include the root `node_modules` for resolving packages like `@chassis-ui/tokens`.
-            // path.resolve(fileURLToPath(import.meta.url), '../../../node_modules')
+            path.resolve(fileURLToPath(import.meta.url), '../../css/scss/vendor')
           ],
-          // Resolve `@chassis-ui/css/...` imports to the local `scss/` source tree.
-          // `@chassis-ui/docs` uses fully-qualified package paths (e.g. `@chassis-ui/css/scss/mixins`)
-          // but this repo IS `@chassis-ui/css` and won't install itself in node_modules.
+          // Resolve `@chassis-ui/css/...` imports to the workspace package in `packages/css/`.
+          // `@chassis-ui/docs` uses fully-qualified package paths
+          // (e.g. `@chassis-ui/css/scss/mixins`).
           importers: [
             {
               findFileUrl(url: string) {
                 if (!url.startsWith('@chassis-ui/css/')) return null
                 const subPath = url.slice('@chassis-ui/css/'.length)
-                const rootDir = path.resolve(fileURLToPath(import.meta.url), '../..')
+                const rootDir = path.resolve(fileURLToPath(import.meta.url), '../../css')
                 return new URL('file://' + rootDir + '/' + subPath)
               }
             }

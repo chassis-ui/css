@@ -158,7 +158,7 @@ The same building blocks let you write your own context-aware components. The th
 
 `.example` declares a CSS custom property (`--example-fg`) with a context-aware fallback. Override the property where a specific value is needed; when the override resolves to an invalid value, the fallback chain reaches `--cx-fg-subtle`, which adapts to the active context.
 
-<ScssDocs name="example-1" file="site/src/scss/_context-example.scss" />
+<ScssDocs name="example-1" file="../site/src/scss/_context-example.scss" />
 
 The `:root` declaration gives `--example-fg` a default value. Setting it to `var(--no-color)` on a container produces an invalid value, activating the `--cx-fg-subtle` fallback.
 
@@ -190,7 +190,7 @@ The `:root` declaration gives `--example-fg` a default value. Setting it to `var
 
 `.example-2` extends `%context` and pins `--cx-fg-color` to a component-scoped property that reads from `--cx-fg-subtle`. Because the component sets `--cx-fg-color` directly rather than inheriting it from `%body-context`, the value stays tied to `--cx-fg-subtle` when `.solid` is applied — even as `%solid-context` overrides the other semantic tokens.
 
-<ScssDocs name="example-2" file="site/src/scss/_context-example.scss" />
+<ScssDocs name="example-2" file="../site/src/scss/_context-example.scss" />
 
 <Example code={`<p class="example-2">--cx-fg-subtle</p>
 <p class="example-2 primary">--cx-fg-subtle</p>
@@ -200,7 +200,7 @@ The `:root` declaration gives `--example-fg` a default value. Setting it to `var
 
 `.example-3` is a fully context-aware component — it extends both `%context` and `%body-context` and maps component-scoped custom properties as overrideable hooks over the body variables. The `.solid` modifier restores the solid background explicitly, because the component uses `--component-bg-color` (reading from `--cx-bg-even`) for its background rather than `--cx-bg-color`, so `%solid-context`'s override of `--cx-bg-main` alone is not enough.
 
-<ScssDocs name="example-3" file="site/src/scss/_context-example.scss" />
+<ScssDocs name="example-3" file="../site/src/scss/_context-example.scss" />
 
 <Example code={`<p class="example-3 p-xs">--cx-fg-main</p>
 <p class="example-3 primary p-xs">--cx-fg-main</p>

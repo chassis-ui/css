@@ -34,11 +34,11 @@ export function chassis(): AstroIntegration[] {
 
   const watchPairs: Array<[string, string]> = [
     [
-      path.join(getDocsFsPath(), '../dist/css/chassis.css'),
+      path.join(getChassisCSSFsPath(), 'css/chassis.css'),
       path.join(getDocsPublicFsPath(), 'static/css/chassis.css')
     ],
     [
-      path.join(getDocsFsPath(), '../dist/js/chassis.js'),
+      path.join(getChassisCSSFsPath(), 'js/chassis.js'),
       path.join(getDocsPublicFsPath(), 'static/js/chassis.js')
     ]
   ]
@@ -71,16 +71,12 @@ export function chassis(): AstroIntegration[] {
           // Reload the config when these integration files are modified.
           addWatchFile(path.join(getDocsFsPath(), 'src/libs/astro.ts'))
 
-          // Alias `@chassis-ui/css` to our own bundle since this repo can't depend on
-          // itself. Without this, `@chassis-ui/docs`'s own `example-mode.js` resolves
-          // `@chassis-ui/css` through ITS OWN node_modules — a real, separately
-          // installed (and often stale/unpublished-version-behind) copy — while the
-          // rest of the site resolves it via this package's self-reference. That's
-          // two independent module instances and duplicate data-api listeners
-          // (modals open then immediately close, drawers/nav-overflow never visibly
-          // open). Needed in both dev AND build — it's not dev-only, since Rollup's
-          // production bundling resolves the bare specifier the same way esbuild's
-          // dev pre-bundling does.
+          // Alias `@chassis-ui/css` to the bundle of the workspace package, so the site and
+          // `@chassis-ui/docs` (its `example-mode.js` imports `@chassis-ui/css` too) load one
+          // file. Two module instances register the data-api listeners twice: modals open
+          // then immediately close, drawers and the nav overflow never visibly open. Needed
+          // in both dev AND build — it's not dev-only, since Rollup's production bundling
+          // resolves the bare specifier the same way esbuild's dev pre-bundling does.
           if (cmd === 'dev' || cmd === 'build') {
             updateConfig({
               vite: {
@@ -120,11 +116,11 @@ export function chassis(): AstroIntegration[] {
 }
 
 // Copy the previously-generated Pagefind search index from `_site/css/pagefind/`
-// into `site/public/css/pagefind/` so `astro dev` can serve it at `/css/pagefind/`,
+// into `packages/site/public/css/pagefind/` so `astro dev` can serve it at `/css/pagefind/`,
 // matching the path prefix this site is proxied under in production.
 // No-op if no build has been run yet; dev simply has no search results until then.
 function copyPagefindIndex() {
-  const source = path.join(process.cwd(), '_site', 'css', 'pagefind')
+  const source = path.join(getDocsFsPath(), '../../_site', 'css', 'pagefind')
   if (!fs.existsSync(source)) return
   const destination = path.join(getDocsPublicFsPath(), 'css', 'pagefind')
 
