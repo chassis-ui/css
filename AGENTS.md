@@ -19,7 +19,6 @@ packages/
   site/          # chassis-css-site, the Astro documentation site (private)
 build/           # repository scripts (links, HTML validation, version references, release notes)
   tests/         # tests of the build scripts, of build/ and of packages/css/build/
-patches/         # pnpm patches of dependencies
 vendor/assets    # git submodule of chassis-ui/assets
 _site/           # the built site, not committed
 ```
@@ -111,7 +110,7 @@ Run the checks of the area you changed, and report the ones that fail.
 
 - MDX docs live in `packages/site/content/docs/`, organized by section (`components/`, `forms/`, `layout/`, `utilities/`, `helpers/`, etc.). Reusable snippets live in `packages/site/content/callouts/`.
 - The site depends on the package as `workspace:*` and Astro runs in `packages/site`. `file` of `<ScssDocs>` and `<JsDocs>` and `filePath` of `<Code>` are relative to `packages/css` (`sourceDir` in `packages/site/config.yml`): `file="scss/_button.scss"`, and `file="../site/src/scss/_examples.scss"` for a file of the site.
-- `@chassis-ui/docs` is patched (`patches/`, `pnpm.patchedDependencies` in the root `package.json`) so its components read `sourceDir` and link to `sourcePath`. Remove the patch when a release of `@chassis-ui/docs` has the change; until then, a new version of the package needs the patch made again (`pnpm patch`).
+- The site uses `@chassis-ui/docs` through its `chassisDocs()` integration (`packages/site/astro.config.ts`). `packages/site/src/libs/` holds only what is the site's own: the schema of its keys of `config.yml` (`config.ts`), its data files (`data.ts`) and its Astro integration (`astro.ts`). Pages read the config and the paths from `@chassis-ui/docs/site`.
 - Style guide: [WRITING.md](WRITING.md) — instructive voice (no `you`/`your`/`we`/`our`) for component/helper/core-concepts docs, tutorial voice (`you`/`your` allowed) for getting-started/customize/overview pages. Standard component section order: Introduction → Basic structure → Content components → Layout → Advanced → Theming → Accessibility → JavaScript API → CSS, with Theming placed right after Basic structure instead of after Layout for variant-centric components (Button, Badge, Notification).
 - Frontmatter requires `title`, `description` (instructive voice, <160 chars), `toc`; conditional fields include `css_layer` and `css_media` (`container` vs `viewport`) — see WRITING.md's Frontmatter section.
 - `<ResizableExample>` is reserved for container-query (`css_media: container`) components only.

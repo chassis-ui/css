@@ -1,19 +1,15 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import type { AstroIntegration } from 'astro'
-import { getConfig } from './config'
 import {
-  getDocsFsPath,
   getChassisAssetsFsPath,
   getChassisCSSFsPath,
-  getChassisIconsFsPath,
-  getDocsPublicFsPath,
-  getDocsStaticFsPath,
-  validateChassisDocsPaths
-} from './path'
-import { chassisAutoImportIntegration } from './shortcode'
+  getChassisIconsFsPath
+} from '@chassis-ui/docs'
+import type { ChassisConfig } from '@chassis-ui/docs/schema'
 
 // A list of static file paths that will be aliased to a different path.
 const staticFileAliases = {
@@ -24,27 +20,35 @@ const staticFileAliases = {
 // A list of pages that will be excluded from the sitemap.
 const sitemapExcludes = ['/404', '/docs']
 
-export function chassis(): AstroIntegration[] {
-  const config = getConfig()
+// The `dist` folder of the workspace package, `packages/css`, not the link to it in
+// `node_modules`: the dev server watches files in it, and reports their real paths
+const chassisCSSDir = '../css/dist'
+
+/**
+ * Returns the site's own Astro integrations, added after `chassisDocs()` of `@chassis-ui/docs`.
+ */
+export function chassis({
+  config,
+  root
+}: {
+  config: ChassisConfig
+  root: string
+}): AstroIntegration[] {
   const sitemapExcludedUrls = sitemapExcludes.map((url) => `${config.baseURL}${url}/`)
+  const publicDir = path.join(root, 'public')
+  const chassisCSS = getChassisCSSFsPath({ root, dir: chassisCSSDir })
 
   // `astro check` / `astro sync` doesn't need static assets copied into _site.
   // Track the command so the config:done hook can skip expensive file copies.
   let cmd = 'dev'
+  let outDir = path.join(root, 'dist')
 
   const watchPairs: Array<[string, string]> = [
-    [
-      path.join(getChassisCSSFsPath(), 'css/chassis.css'),
-      path.join(getDocsPublicFsPath(), 'static/css/chassis.css')
-    ],
-    [
-      path.join(getChassisCSSFsPath(), 'js/chassis.js'),
-      path.join(getDocsPublicFsPath(), 'static/js/chassis.js')
-    ]
+    [path.join(chassisCSS, 'css/chassis.css'), path.join(publicDir, 'static/css/chassis.css')],
+    [path.join(chassisCSS, 'js/chassis.js'), path.join(publicDir, 'static/js/chassis.js')]
   ]
 
   return [
-    chassisAutoImportIntegration(),
     {
       name: 'chassis-integration',
       hooks: {
@@ -66,44 +70,21 @@ export function chassis(): AstroIntegration[] {
             server.ws.send({ type: 'full-reload' })
           })
         },
-        'astro:config:setup': ({ addWatchFile, command, updateConfig }) => {
+        'astro:config:setup': ({ addWatchFile, command, config: astroConfig }) => {
           cmd = command
-          // Reload the config when these integration files are modified.
-          addWatchFile(path.join(getDocsFsPath(), 'src/libs/astro.ts'))
-
-          // Alias `@chassis-ui/css` to the bundle of the workspace package, so the site and
-          // `@chassis-ui/docs` (its `example-mode.js` imports `@chassis-ui/css` too) load one
-          // file. Two module instances register the data-api listeners twice: modals open
-          // then immediately close, drawers and the nav overflow never visibly open. Needed
-          // in both dev AND build — it's not dev-only, since Rollup's production bundling
-          // resolves the bare specifier the same way esbuild's dev pre-bundling does.
-          if (cmd === 'dev' || cmd === 'build') {
-            updateConfig({
-              vite: {
-                resolve: {
-                  alias: {
-                    '@chassis-ui/css': path.join(getChassisCSSFsPath(), 'js/chassis.bundle.js')
-                  }
-                },
-                // optimizeDeps only affects the dev server's esbuild pre-bundling pass;
-                // harmless but meaningless during `astro build`.
-                ...(cmd === 'dev' ? { optimizeDeps: { exclude: ['@chassis-ui/docs'] } } : {})
-              }
-            })
-          }
+          outDir = fileURLToPath(astroConfig.outDir)
+          // Reload the config when the integration is modified.
+          addWatchFile(path.join(root, 'src/libs/astro.ts'))
         },
         'astro:config:done': () => {
           if (cmd === 'sync') return
-          cleanPublicDirectory()
-          copyStatic()
-          copyChassisCSS()
-          copyChassisAssets()
-          copyChassisIcons()
-          aliasStatic()
-          copyPagefindIndex()
-        },
-        'astro:build:done': ({ dir }) => {
-          validateChassisDocsPaths(dir)
+          cleanPublicDirectory(publicDir)
+          copyStatic(path.join(root, 'static'), publicDir)
+          copyChassisCSS(chassisCSS, publicDir)
+          copyChassisAssets(root, publicDir)
+          copyChassisIcons(root, publicDir)
+          aliasStatic(root, publicDir)
+          copyPagefindIndex(outDir, publicDir)
         }
       }
     },
@@ -119,17 +100,16 @@ export function chassis(): AstroIntegration[] {
 // into `packages/site/public/css/pagefind/` so `astro dev` can serve it at `/css/pagefind/`,
 // matching the path prefix this site is proxied under in production.
 // No-op if no build has been run yet; dev simply has no search results until then.
-function copyPagefindIndex() {
-  const source = path.join(getDocsFsPath(), '../../_site', 'css', 'pagefind')
+function copyPagefindIndex(outDir: string, publicDir: string) {
+  const source = path.join(outDir, 'css', 'pagefind')
   if (!fs.existsSync(source)) return
-  const destination = path.join(getDocsPublicFsPath(), 'css', 'pagefind')
+  const destination = path.join(publicDir, 'css', 'pagefind')
 
   fs.mkdirSync(destination, { recursive: true })
   fs.cpSync(source, destination, { recursive: true })
 }
 
-function cleanPublicDirectory() {
-  const dir = getDocsPublicFsPath()
+function cleanPublicDirectory(dir: string) {
   if (!fs.existsSync(dir)) return
   // Delete contents rather than the directory itself to avoid ENOTEMPTY on the root public dir.
   for (const entry of fs.readdirSync(dir)) {
@@ -142,47 +122,43 @@ function cleanPublicDirectory() {
   }
 }
 
-// Copy the `dist` folder from the root of the repo containing the latest version of Chassis to make it available from
-// the `/docs/${docs_version}/dist` URL.
-function copyChassisCSS() {
-  const source = getChassisCSSFsPath()
-  const destination = path.join(getDocsPublicFsPath(), 'static')
+// Copy the `dist` folder of the workspace package, the latest build of Chassis CSS, to make it
+// available from the `/static` URL.
+function copyChassisCSS(source: string, publicDir: string) {
+  const destination = path.join(publicDir, 'static')
 
   fs.mkdirSync(destination, { recursive: true })
   fs.cpSync(source, destination, { recursive: true })
 }
 
-function copyChassisAssets() {
-  const source = getChassisAssetsFsPath()
-  const destination = path.join(getDocsPublicFsPath(), 'static')
+function copyChassisAssets(root: string, publicDir: string) {
+  const source = getChassisAssetsFsPath({ root })
+  const destination = path.join(publicDir, 'static')
 
   fs.mkdirSync(destination, { recursive: true })
   fs.cpSync(source, destination, { recursive: true })
 }
 
-// Copy the `icons` folder from the chassis-tokens repo to make it available from the `/icons` URL.
-function copyChassisIcons() {
-  const source = path.join(getChassisIconsFsPath(), 'icons')
-  const destination = path.join(getDocsPublicFsPath(), 'static', 'icons')
+// Copy the `icons` folder of `@chassis-ui/icons` to make it available from the `/static/icons` URL.
+function copyChassisIcons(root: string, publicDir: string) {
+  const source = path.join(getChassisIconsFsPath({ root }), 'icons')
+  const destination = path.join(publicDir, 'static', 'icons')
 
   fs.mkdirSync(destination, { recursive: true })
   fs.cpSync(source, destination, { recursive: true })
 }
 
 // Copy the content as-is of the `static` folder to make it available from the `/` URL.
-function copyStatic() {
-  const source = getDocsStaticFsPath()
-  const destination = getDocsPublicFsPath()
-
-  fs.cpSync(source, destination, { recursive: true })
+function copyStatic(source: string, publicDir: string) {
+  fs.mkdirSync(publicDir, { recursive: true })
+  fs.cpSync(source, publicDir, { recursive: true })
 }
 
 // Alias (copy) some static files to different paths.
-function aliasStatic() {
-  const source = getChassisAssetsFsPath()
-  const destination = getDocsPublicFsPath()
+function aliasStatic(root: string, publicDir: string) {
+  const source = getChassisAssetsFsPath({ root })
 
   for (const [aliasSource, aliasDestination] of Object.entries(staticFileAliases)) {
-    fs.cpSync(path.join(source, aliasSource), path.join(destination, aliasDestination))
+    fs.cpSync(path.join(source, aliasSource), path.join(publicDir, aliasDestination))
   }
 }

@@ -5,12 +5,12 @@ toc: true
 tokens: component
 css_layer: components
 mdn: https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation
-extra_js:
+extraJs:
   - src: "/static/js/validate-forms.js"
     async: true
 ---
 
-import { getDocsRelativePath } from '@libs/path'
+import { getSiteFsPath } from '@chassis-ui/docs/site'
 
 <Callout type="warning" class="mt-3xl -mb-md">
   When using client-side custom validation styles and tooltips, additional work is needed to ensure proper accessibility. For better out-of-the-box accessibility, consider using server-side validation or native browser validation.
@@ -110,7 +110,7 @@ Key features of Chassis validation:
   The example below shows the JavaScript needed to implement custom validation with Chassis CSS.
 </Callout>
 
-<Code containerClass="cxd-example-snippet" lang="js" filePath={getDocsRelativePath('/static/static/js/validate-forms.js')} />
+<Code containerClass="cxd-example-snippet" lang="js" filePath={getSiteFsPath('static/static/js/validate-forms.js')} />
 
 ## Native browser validation
 

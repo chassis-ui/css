@@ -31,7 +31,7 @@ const BASE_COMPONENT = 'packages/css/js/src/base-component.ts'
 const BANNER = 'packages/css/scss/mixins/_banner.scss'
 const CHANGELOG = 'packages/css/CHANGELOG.md'
 
-const siteConfig = (version) => `current_version:        "${version}"
+const siteConfig = (version) => `currentVersion:         "${version}"
 repo:                   "https://github.com/chassis-ui/css"
 
 download:
@@ -40,10 +40,10 @@ download:
 
 cdn:
   css:                  "https://cdn.jsdelivr.net/npm/@chassis-ui/css@${version}/dist/css/chassis.min.css"
-  css_hash:             "sha384-PawGlnA"
+  cssHash:              "sha384-PawGlnA"
   js:                   "https://cdn.jsdelivr.net/npm/@chassis-ui/css@${version}/dist/js/chassis.min.js"
-  floating_ui:          "https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.7.6/dist/floating-ui.dom.esm.min.js"
-  vanilla_calendar_pro: "https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@3.1.0/index.mjs"
+  floatingUi:           "https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.7.6/dist/floating-ui.dom.esm.min.js"
+  vanillaCalendarPro:   "https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@3.1.0/index.mjs"
 `
 
 const RELEASED = `## [0.5.2] - 2026-09-25

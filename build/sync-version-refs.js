@@ -6,7 +6,7 @@
  * Copies the version of @chassis-ui/css from packages/css/package.json into the places that show
  * it but that `changeset version` does not update:
  *
- * - packages/site/config.yml: `current_version`, the download links and the CDN URLs
+ * - packages/site/config.yml: `currentVersion`, the download links and the CDN URLs
  * - packages/css/js/src/base-component.ts: `BaseComponent.VERSION`
  * - packages/css/scss/mixins/_banner.scss: the banner of the compiled CSS
  * - packages/css/dist/ and packages/css/js/dist/: rebuilt when a banner names another version,
@@ -41,7 +41,7 @@ const CHANGELOG = 'packages/css/CHANGELOG.md'
 const SITE_CONFIG = 'packages/site/config.yml'
 
 const VERSION_REFS = [
-  { file: SITE_CONFIG, pattern: /^current_version:\s*"([^"]+)"/m },
+  { file: SITE_CONFIG, pattern: /^currentVersion:\s*"([^"]+)"/m },
   { file: 'packages/css/js/src/base-component.ts', pattern: /^const VERSION = '([^']+)'/m },
   {
     file: 'packages/css/scss/mixins/_banner.scss',

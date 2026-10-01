@@ -4,7 +4,7 @@ description: Explore Chassis CSS color modes — the default light mode, dark mo
 toc: true
 ---
 
-import { getDocsRelativePath } from '@libs/path'
+import { getPackageFilePath } from '@chassis-ui/docs/site'
 
 ## Dark mode
 
@@ -74,11 +74,11 @@ Enable the built in dark color mode across your entire project by adding the `da
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chassis CSS demo</title>
-    <link href="[[config:cdn.css]]" rel="stylesheet" integrity="[[config:cdn.css_hash]]" crossorigin="anonymous">
+    <link href="[[config:cdn.css]]" rel="stylesheet" integrity="[[config:cdn.cssHash]]" crossorigin="anonymous">
   </head>
   <body>
     <h1>Hello, world!</h1>
-    <script src="[[config:cdn.js_bundle]]" integrity="[[config:cdn.js_bundle_hash]]" crossorigin="anonymous"></script>
+    <script src="[[config:cdn.jsBundle]]" integrity="[[config:cdn.jsBundleHash]]" crossorigin="anonymous"></script>
   </body>
 </html>
 ```
@@ -178,7 +178,7 @@ To allow visitors to toggle color modes, create a toggle element that controls t
 
 The JavaScript below powers it. Inspect the Chassis docs navbar to see how it's implemented using Chassis components. Include it at the top of the page to reduce screen flickering on reload. When using media queries for color modes, this script may need to be modified or removed if implicit control is preferred.
 
-<Code containerClass="cxd-example-snippet" lang="js" filePath={getDocsRelativePath('node_modules/@chassis-ui/docs/src/js/color-modes.js')} />
+<Code containerClass="cxd-example-snippet" lang="js" filePath={getPackageFilePath('js/color-modes.js')} />
 
 ## Adding theme colors
 

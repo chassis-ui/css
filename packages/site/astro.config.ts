@@ -1,28 +1,23 @@
-import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { defineConfig } from 'astro/config'
+import { loadConfig } from '@chassis-ui/docs'
+import { chassisDocs } from '@chassis-ui/docs/integration'
 import { chassis } from './src/libs/astro'
-import { getConfig } from './src/libs/config'
-import { remarkCxConfig, remarkCxDocsref } from './src/libs/remark'
-import { chassisAutoImportPlugin } from './src/libs/shortcode'
-import { getSiteUrl, getDocsMarkdownConfig } from '@chassis-ui/docs'
+import { siteConfigSchema } from './src/libs/config'
 import { stackblitzPlugin } from './src/plugins/stackblitz-plugin'
-const site = getSiteUrl(getConfig())
+
+const root = import.meta.dirname
+const config = loadConfig({ root, schema: siteConfigSchema })
 
 // https://astro.build/config
 export default defineConfig({
-  site,
   outDir: '../../_site',
   build: {
     assets: `static/astro`
   },
-  integrations: [chassis()],
-  markdown: getDocsMarkdownConfig({
-    anchors: getConfig().anchors,
-    remarkPlugins: [chassisAutoImportPlugin(), remarkCxConfig, remarkCxDocsref]
-  }),
+  integrations: [chassisDocs({ config }), ...chassis({ config, root })],
   vite: {
-    plugins: [stackblitzPlugin()],
+    plugins: [stackblitzPlugin(config)],
     environments: {
       client: {
         build: {
@@ -47,12 +42,9 @@ export default defineConfig({
     css: {
       preprocessorOptions: {
         scss: {
-          loadPaths: [
-            // Include the `scss` directory for resolving imports in the docs styles.
-            path.resolve(fileURLToPath(import.meta.url), '../../css/scss'),
-            // Framework fallback `_chassis-tokens.scss` if no override above.
-            path.resolve(fileURLToPath(import.meta.url), '../../css/scss/vendor')
-          ],
+          // Include the `scss` directory for resolving imports in the docs styles. The
+          // integration adds the fallback `_chassis-tokens.scss`, `scss/vendor` of the package.
+          loadPaths: [path.resolve(root, '../css/scss')],
           // Resolve `@chassis-ui/css/...` imports to the workspace package in `packages/css/`.
           // `@chassis-ui/docs` uses fully-qualified package paths
           // (e.g. `@chassis-ui/css/scss/mixins`).
@@ -61,7 +53,7 @@ export default defineConfig({
               findFileUrl(url: string) {
                 if (!url.startsWith('@chassis-ui/css/')) return null
                 const subPath = url.slice('@chassis-ui/css/'.length)
-                const rootDir = path.resolve(fileURLToPath(import.meta.url), '../../css')
+                const rootDir = path.resolve(root, '../css')
                 return new URL('file://' + rootDir + '/' + subPath)
               }
             }

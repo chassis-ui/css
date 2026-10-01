@@ -40,7 +40,6 @@ rest of this guide, `scss/`, `js/`, `postcss/` and `dist/` are the folders in `p
 | `build/`            | The build of the package: Rolldown, PostCSS, the Tailwind entry and `pnpm verify`                                                                                                                  |
 | `packages/site/`    | The Astro documentation site, published at [chassis-ui.com/css](https://chassis-ui.com/css/). A private package that depends on the one in `packages/css/`                                         |
 | `build/` (root)     | The scripts of the repository: link and HTML checks, version references, release notes                                                                                                             |
-| `patches/`          | pnpm patches of dependencies, applied by `pnpm install`                                                                                                                                            |
 | `vendor/assets`     | A git submodule of [chassis-ui/assets](https://github.com/chassis-ui/assets); changes belong there                                                                                                 |
 
 ## Branch and commit conventions

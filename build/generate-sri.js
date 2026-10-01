@@ -27,15 +27,15 @@ const configFile = path.join(__dirname, '../packages/site/config.yml')
 const files = [
   {
     file: 'packages/css/dist/css/chassis.min.css',
-    configPropertyName: 'css_hash'
+    configPropertyName: 'cssHash'
   },
   {
     file: 'packages/css/dist/js/chassis.min.js',
-    configPropertyName: 'js_hash'
+    configPropertyName: 'jsHash'
   },
   {
     file: 'packages/css/dist/js/chassis.bundle.min.js',
-    configPropertyName: 'js_bundle_hash'
+    configPropertyName: 'jsBundleHash'
   }
 ]
 

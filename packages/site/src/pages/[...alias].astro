@@ -1,10 +1,13 @@
 ---
 import type { InferGetStaticPropsType } from 'astro'
 import RedirectLayout from '@chassis-ui/docs/layouts/RedirectLayout.astro'
-import { getChassisDocsPath } from '@libs/path'
 import { trimLeadingAndTrailingSlashes } from '@chassis-ui/docs'
-import { replaceConfigInText, replaceDocsrefInText } from '@libs/remark'
-import { aliasedDocsPages } from '@libs/content'
+import {
+  getDocsPages,
+  getDocsPath,
+  resolveConfigRefs,
+  resolveDocsrefs
+} from '@chassis-ui/docs/site'
 
 export async function getStaticPaths() {
   function normalizeAliases(aliases: string | string[] | undefined): string[] {
@@ -14,12 +17,13 @@ export async function getStaticPaths() {
   function getAliasStaticPath(alias: string, path: string) {
     return {
       params: {
-        alias: trimLeadingAndTrailingSlashes(replaceDocsrefInText(replaceConfigInText(alias)))
+        alias: trimLeadingAndTrailingSlashes(resolveDocsrefs(resolveConfigRefs(alias)))
       },
       props: { path }
     }
   }
 
+  const aliasedDocsPages = (await getDocsPages()).filter(({ data }) => data.aliases !== undefined)
   const staticPaths = []
 
   // Generate static paths for all docs pages with aliases.
@@ -39,4 +43,4 @@ type Props = InferGetStaticPropsType<typeof getStaticPaths>
 const { path } = Astro.props
 ---
 
-<RedirectLayout path={getChassisDocsPath(path)} />
+<RedirectLayout path={getDocsPath(path)} />

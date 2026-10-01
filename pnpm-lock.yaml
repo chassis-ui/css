@@ -14,11 +14,6 @@ overrides:
   image-size: ^2.0.3
   smol-toml: ^1.7.1
 
-patchedDependencies:
-  '@chassis-ui/docs@0.5.0-0':
-    hash: ef3c1138e60e10ec22919860aa69ad811a8fce2671237ac111b6b7f8f0171412
-    path: patches/@chassis-ui__docs@0.5.0-0.patch
-
 importers:
 
   .:
@@ -247,8 +242,8 @@ importers:
         specifier: workspace:*
         version: link:../css
       '@chassis-ui/docs':
-        specifier: ^0.5.0-0
-        version: 0.5.0-0(patch_hash=ef3c1138e60e10ec22919860aa69ad811a8fce2671237ac111b6b7f8f0171412)(@astrojs/markdown-remark@7.3.1)(@chassis-ui/css@packages+css)(@pagefind/component-ui@1.5.2)(@shikijs/transformers@4.3.1)(astro@7.3.5(@astrojs/markdown-remark@7.3.1)(@types/node@26.1.0)(jiti@2.7.0)(sass@1.101.0)(terser@5.48.0)(yaml@2.9.0))(htmlparser2@12.0.0)(rehype-autolink-headings@7.1.0)(sass@1.101.0)(shiki@4.3.1)
+        specifier: ^0.6.2
+        version: 0.6.2(@astrojs/markdown-remark@7.3.1)(@chassis-ui/css@packages+css)(@pagefind/component-ui@1.5.2)(@shikijs/transformers@4.3.1)(astro@7.3.5(@astrojs/markdown-remark@7.3.1)(@types/node@26.1.0)(jiti@2.7.0)(sass@1.101.0)(terser@5.48.0)(yaml@2.9.0))(html-validate@11.5.5(@vitest/expect@4.1.11)(vitest@4.1.11))(htmlparser2@12.0.0)(rehype-autolink-headings@7.1.0)(sass@1.101.0)(shiki@4.3.1)(vnu-jar@26.7.3)
       '@chassis-ui/icons':
         specifier: ^0.3.1
         version: 0.3.1
@@ -267,12 +262,6 @@ importers:
       '@stackblitz/sdk':
         specifier: ^1.11.1
         version: 1.11.1
-      '@types/js-yaml':
-        specifier: ^4.0.9
-        version: 4.0.9
-      '@types/mdast':
-        specifier: ^4.0.4
-        version: 4.0.4
       '@types/node':
         specifier: ^26.1.0
         version: 26.1.0
@@ -282,21 +271,12 @@ importers:
       autoprefixer:
         specifier: ^10.5.2
         version: 10.5.2(postcss@8.5.28)
-      clipboard:
-        specifier: ^2.0.11
-        version: 2.0.11
       culori:
         specifier: ^4.0.2
         version: 4.0.2
       htmlparser2:
         specifier: ^12.0.0
         version: 12.0.0
-      js-yaml:
-        specifier: ^5.4.2
-        version: 5.4.2
-      mdast-util-mdx-jsx:
-        specifier: ^3.2.0
-        version: 3.2.0
       postcss:
         specifier: ^8.5.28
         version: 8.5.28
@@ -315,15 +295,6 @@ importers:
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
-      unified:
-        specifier: ^11.0.5
-        version: 11.0.5
-      unist-util-visit:
-        specifier: ^5.1.0
-        version: 5.1.0
-      zod:
-        specifier: ^4.6.5
-        version: 4.6.5
 
 packages:
 
@@ -726,18 +697,27 @@ packages:
     resolution: {integrity: sha512-q/ThtP9gcnEP6xlv7LrY26C2mHqdGBti/MmOVngt/M/oIGYkssmQGxPK9WzBNt2juVcH/vml2WQ+ra8LXYOTaA==}
     engines: {node: ^22.11 || ^24 || >=26}
 
-  '@chassis-ui/docs@0.5.0-0':
-    resolution: {integrity: sha512-ROaQBFyqnu3jyaTXKrL3Yh5hRh9nxeO8qLYPfkv5ek/L830NlW7SXuEl1a3Mewd3zxx3siwZRIpJsYikPaERwQ==}
+  '@chassis-ui/docs@0.6.2':
+    resolution: {integrity: sha512-bLIVgk98dqsRIMmcJ79AX+nsP2DCtEVCVE3GqDFAsGTKOOpIkEYD7NNEuk9vEqHLhM5bb9p1LMy+YEvOUD1AKA==}
+    engines: {node: '>=22.12.0'}
+    hasBin: true
     peerDependencies:
       '@astrojs/markdown-remark': ^7.0.0
       '@chassis-ui/css': ^0.5.0-0
       '@pagefind/component-ui': ^1.0.0
       '@shikijs/transformers': ^4.3.1
       astro: ^7.0.0
+      html-validate: ^11.0.0
       htmlparser2: ^12.0.0
       rehype-autolink-headings: ^7.0.0
       sass: ^1.101.0
       shiki: ^4.3.1
+      vnu-jar: '>=26.0.0'
+    peerDependenciesMeta:
+      html-validate:
+        optional: true
+      vnu-jar:
+        optional: true
 
   '@chassis-ui/icons@0.3.1':
     resolution: {integrity: sha512-u940omGLvaDqQWzkLDiXXACs3UiEGgZeESbDM+7mB9Dd/L2QKkCk0XQE6sVRv3Tb4+eXDmJOLNd63scZgAKS+Q==}
@@ -2245,9 +2225,6 @@ packages:
 
   '@types/hast@3.0.5':
     resolution: {integrity: sha512-rp/ezSWaD1m44dPKICGhiskI13nVr7qTloFwDa/IYkhhf5nzwP+zIQcIJh3WIFSBOy/H1PzB40jPjMDksN4F+g==}
-
-  '@types/js-yaml@4.0.9':
-    resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -6674,17 +6651,22 @@ snapshots:
       '@changesets/types': 7.0.0
       human-id: 4.2.1
 
-  '@chassis-ui/docs@0.5.0-0(patch_hash=ef3c1138e60e10ec22919860aa69ad811a8fce2671237ac111b6b7f8f0171412)(@astrojs/markdown-remark@7.3.1)(@chassis-ui/css@packages+css)(@pagefind/component-ui@1.5.2)(@shikijs/transformers@4.3.1)(astro@7.3.5(@astrojs/markdown-remark@7.3.1)(@types/node@26.1.0)(jiti@2.7.0)(sass@1.101.0)(terser@5.48.0)(yaml@2.9.0))(htmlparser2@12.0.0)(rehype-autolink-headings@7.1.0)(sass@1.101.0)(shiki@4.3.1)':
+  '@chassis-ui/docs@0.6.2(@astrojs/markdown-remark@7.3.1)(@chassis-ui/css@packages+css)(@pagefind/component-ui@1.5.2)(@shikijs/transformers@4.3.1)(astro@7.3.5(@astrojs/markdown-remark@7.3.1)(@types/node@26.1.0)(jiti@2.7.0)(sass@1.101.0)(terser@5.48.0)(yaml@2.9.0))(html-validate@11.5.5(@vitest/expect@4.1.11)(vitest@4.1.11))(htmlparser2@12.0.0)(rehype-autolink-headings@7.1.0)(sass@1.101.0)(shiki@4.3.1)(vnu-jar@26.7.3)':
     dependencies:
       '@astrojs/markdown-remark': 7.3.1
       '@chassis-ui/css': link:packages/css
       '@pagefind/component-ui': 1.5.2
       '@shikijs/transformers': 4.3.1
+      '@types/hast': 3.0.5
+      '@types/mdast': 4.0.4
       astro: 7.3.5(@astrojs/markdown-remark@7.3.1)(@types/node@26.1.0)(jiti@2.7.0)(sass@1.101.0)(terser@5.48.0)(yaml@2.9.0)
+      clipboard: 2.0.11
       github-slugger: 2.0.0
       htmlparser2: 12.0.0
       image-size: 2.0.4
+      js-yaml: 5.4.2
       mdast-util-from-markdown: 2.0.3
+      mdast-util-mdx-jsx: 3.2.0
       mdast-util-to-string: 4.0.0
       medium-zoom: 1.1.0
       rehype-autolink-headings: 7.1.0
@@ -6692,7 +6674,11 @@ snapshots:
       remark-html: 16.0.1
       sass: 1.101.0
       shiki: 4.3.1
+      unified: 11.0.5
       unist-util-visit: 5.1.0
+    optionalDependencies:
+      html-validate: 11.5.5(@vitest/expect@4.1.11)(vitest@4.1.11)
+      vnu-jar: 26.7.3
     transitivePeerDependencies:
       - supports-color
 
@@ -7939,8 +7925,6 @@ snapshots:
   '@types/hast@3.0.5':
     dependencies:
       '@types/unist': 3.0.3
-
-  '@types/js-yaml@4.0.9': {}
 
   '@types/json-schema@7.0.15': {}
 
@@ -9755,7 +9739,7 @@ snapshots:
 
   hast-util-parse-selector@4.0.0:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
 
   hast-util-raw@9.1.0:
     dependencies:
@@ -9775,7 +9759,7 @@ snapshots:
 
   hast-util-sanitize@5.0.2:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       '@ungap/structured-clone': 1.3.2
       unist-util-position: 5.0.0
 
@@ -9783,7 +9767,7 @@ snapshots:
     dependencies:
       '@types/estree': 1.0.9
       '@types/estree-jsx': 1.0.5
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       comma-separated-tokens: 2.0.3
       devlop: 1.1.0
       estree-util-attach-comments: 3.0.0
@@ -9836,7 +9820,7 @@ snapshots:
 
   hast-util-to-parse5@8.0.1:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       comma-separated-tokens: 2.0.3
       devlop: 1.1.0
       property-information: 7.2.0
@@ -9857,7 +9841,7 @@ snapshots:
 
   hastscript@9.0.1:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       comma-separated-tokens: 2.0.3
       hast-util-parse-selector: 4.0.0
       property-information: 7.2.0
@@ -10452,7 +10436,7 @@ snapshots:
   mdast-util-mdx-expression@2.0.1:
     dependencies:
       '@types/estree-jsx': 1.0.5
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       '@types/mdast': 4.0.4
       devlop: 1.1.0
       mdast-util-from-markdown: 2.0.3
@@ -10463,7 +10447,7 @@ snapshots:
   mdast-util-mdx-jsx@3.2.0:
     dependencies:
       '@types/estree-jsx': 1.0.5
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
       ccount: 2.0.1
@@ -10490,7 +10474,7 @@ snapshots:
   mdast-util-mdxjs-esm@2.0.1:
     dependencies:
       '@types/estree-jsx': 1.0.5
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       '@types/mdast': 4.0.4
       devlop: 1.1.0
       mdast-util-from-markdown: 2.0.3
