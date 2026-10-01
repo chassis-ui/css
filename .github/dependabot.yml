@@ -8,14 +8,23 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 10
+    # Dependabot waits 3 days after a release by default, and passes that on to pnpm as its
+    # minimum release age when it re-resolves the lockfile, so a Chassis package that develop
+    # already requires would fail the whole run until it is 3 days old. Chassis releases can be
+    # urgent fixes between our own packages: they are exempt here, and from pnpm's check in
+    # pnpm-workspace.yaml. Everything else keeps the default.
+    cooldown:
+      default-days: 3
+      exclude:
+        - '@chassis-ui/*'
     commit-message:
       prefix: 'chore(deps)'
     groups:
       # Minor and patch updates of the tooling in one pull request. The packages
       # that produce dist/ (the Sass and PostCSS chain, the JS bundler and minifier,
-      # tsc for the declarations, the dependencies chassis.bundle.js includes) and
-      # the Chassis packages are left out: they get a pull request each, since they
-      # can change the output that pnpm verify compares.
+      # tsc for the declarations, the dependencies chassis.bundle.js includes) are
+      # left out: they get a pull request each, since they can change the output that
+      # pnpm verify compares. The Chassis packages have a group of their own.
       dev-dependencies:
         dependency-type: development
         update-types: [minor, patch]
@@ -34,6 +43,9 @@ updates:
           - '@floating-ui/dom'
           - vanilla-calendar-pro
           - '@chassis-ui/*'
+      # A release of the Chassis packages, in one pull request
+      chassis:
+        patterns: ['@chassis-ui/*']
 
   - package-ecosystem: github-actions
     directory: /

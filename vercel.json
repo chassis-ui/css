@@ -4,9 +4,12 @@
   "git": {
     "deploymentEnabled": {
       "main": true,
-      "staging": true
+      "staging": true,
+      "develop": false,
+      "dependabot/**": false
     }
   },
+  "rewrites": [{ "source": "/css/static/(.*)", "destination": "/static/$1" }],
   "headers": [
     {
       "source": "/(.*)",

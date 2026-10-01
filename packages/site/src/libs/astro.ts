@@ -18,7 +18,7 @@ const staticFileAliases = {
 }
 
 // A list of pages that will be excluded from the sitemap.
-const sitemapExcludes = ['/404', '/docs']
+const sitemapExcludes = ['/404']
 
 // The `dist` folder of the workspace package, `packages/css`, not the link to it in
 // `node_modules`: the dev server watches files in it, and reports their real paths
@@ -34,7 +34,8 @@ export function chassis({
   config: ChassisConfig
   root: string
 }): AstroIntegration[] {
-  const sitemapExcludedUrls = sitemapExcludes.map((url) => `${config.baseURL}${url}/`)
+  const baseURL = config.baseURL.replace(/\/$/, '')
+  const sitemapExcludedUrls = sitemapExcludes.map((url) => `${baseURL}${url}/`)
   const publicDir = path.join(root, 'public')
   const chassisCSS = getChassisCSSFsPath({ root, dir: chassisCSSDir })
 
@@ -53,6 +54,21 @@ export function chassis({
       name: 'chassis-integration',
       hooks: {
         'astro:server:setup': ({ server }) => {
+          // The pages request the static files under `staticPath` of config.yml, and the
+          // files are in `public/static/`. In production a rewrite of vercel.json maps one
+          // to the other; the dev server has no such rewrite, so this does the same.
+          const staticPath = config.staticPath
+
+          if (staticPath && staticPath !== '/static') {
+            server.middlewares.use((request, _response, next) => {
+              if (request.url?.startsWith(`${staticPath}/`)) {
+                request.url = `/static${request.url.slice(staticPath.length)}`
+              }
+
+              next()
+            })
+          }
+
           if (server.config.mode !== 'development') {
             return
           }
@@ -92,8 +108,59 @@ export function chassis({
     mdx() as AstroIntegration,
     sitemap({
       filter: (page) => !sitemapExcludedUrls.includes(page)
-    })
+    }),
+    {
+      // Must run after `@astrojs/sitemap` has written the sitemap.
+      name: 'chassis-sitemap-postprocess',
+      hooks: {
+        'astro:build:done': ({ dir }) => {
+          const builtDir = fileURLToPath(dir)
+
+          removeRedirectsFromSitemap(builtDir)
+          rebaseSitemapIndex(builtDir, baseURL)
+        }
+      }
+    }
   ]
+}
+
+// Remove the redirect pages from the sitemap: the pages of `aliases` in the frontmatter, `/`
+// and `/css/docs/`. `@astrojs/sitemap` lists every page that was built, and a redirect is not
+// a page to index. Those outside `/css` do not exist on chassis-ui.com at all.
+function removeRedirectsFromSitemap(builtDir: string) {
+  const sitemaps = fs.readdirSync(builtDir).filter((file) => /^sitemap-\d+\.xml$/.test(file))
+
+  for (const file of sitemaps) {
+    const sitemapPath = path.join(builtDir, file)
+    const content = fs.readFileSync(sitemapPath, 'utf8')
+
+    const updated = content.replace(/<url><loc>([^<]+)<\/loc>.*?<\/url>/g, (entry, loc: string) => {
+      const page = path.join(builtDir, decodeURIComponent(new URL(loc).pathname), 'index.html')
+      const isRedirect =
+        fs.existsSync(page) && fs.readFileSync(page, 'utf8').includes('<meta http-equiv="refresh"')
+
+      return isRedirect ? '' : entry
+    })
+
+    fs.writeFileSync(sitemapPath, updated)
+  }
+}
+
+// Rewrite the sitemaps listed in `sitemap-index.xml` to the URLs they are served from.
+// `@astrojs/sitemap` lists them at the origin, `https://chassis-ui.com/sitemap-0.xml`, which is
+// the sitemap of the main site. This site is proxied under the path of `baseURL`, so its own
+// sitemap is `https://chassis-ui.com/css/sitemap-0.xml`.
+function rebaseSitemapIndex(builtDir: string, baseURL: string) {
+  const sitemapIndexPath = path.join(builtDir, 'sitemap-index.xml')
+  if (!fs.existsSync(sitemapIndexPath)) return
+
+  const origin = new URL(baseURL).origin
+  const content = fs.readFileSync(sitemapIndexPath, 'utf8')
+
+  fs.writeFileSync(
+    sitemapIndexPath,
+    content.replaceAll(`<loc>${origin}/sitemap-`, `<loc>${baseURL}/sitemap-`)
+  )
 }
 
 // Copy the previously-generated Pagefind search index from `_site/css/pagefind/`

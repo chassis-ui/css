@@ -10,11 +10,11 @@
   "author": "Ozgur Gunes <o.gunes@gmail.com>",
   "license": "MIT",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.12.0"
   },
   "scripts": {
     "build": "pnpm dist && pnpm site:build",
-    "start": "pnpm dist && pnpm sync-submodules && pnpm dev",
+    "start": "pnpm dist && pnpm vendor && pnpm dev",
     "dev": "run-p watch astro:dev",
     "dist": "pnpm --filter @chassis-ui/css run dist",
     "test": "pnpm check:code && pnpm dist && pnpm css:test && pnpm css:test:tailwind && pnpm js:test:unit && pnpm site:build && pnpm site:lint",
@@ -51,14 +51,14 @@
     "js:test:unit:all-browsers": "pnpm --filter @chassis-ui/css run js:test:unit:all-browsers",
     "js:typecheck": "pnpm --filter @chassis-ui/css run js:typecheck",
     "site": "pnpm site:build && pnpm site:lint",
-    "site:build": "pnpm sync-submodules && pnpm astro:build && pnpm site:pagefind",
+    "site:build": "pnpm vendor && pnpm astro:build && pnpm site:pagefind",
     "site:clean": "rm -rf _site packages/site/node_modules packages/site/.astro packages/site/public",
     "site:lint": "pnpm site:lint:eslint && pnpm site:lint:prettier && pnpm site:lint:vnu && pnpm site:lint:html && pnpm site:lint:links",
     "site:lint:eslint": "eslint packages/site --cache --cache-location .cache/.eslintcache --report-unused-disable-directives",
     "site:lint:prettier": "prettier -c --cache packages/site",
-    "site:lint:vnu": "node build/vnu-jar.js",
+    "site:lint:vnu": "pnpm --filter chassis-css-site run lint:vnu",
     "site:lint:links": "node build/check-links.mjs --site",
-    "site:lint:html": "node build/html-validate.js",
+    "site:lint:html": "pnpm --filter chassis-css-site run lint:html",
     "site:pagefind": "pagefind --site _site --output-subdir css/pagefind",
     "astro:build": "pnpm --filter chassis-css-site run build",
     "astro:dev": "pnpm --filter chassis-css-site run dev",
@@ -83,7 +83,8 @@
     "docs:links": "node build/check-links.mjs",
     "changeset": "changeset",
     "changeset:version": "changeset version && node build/sync-version-refs.js",
-    "sync-submodules": "node build/sync-submodules.js"
+    "sync-submodules": "pnpm --filter chassis-css-site exec chassis-docs sync-submodules",
+    "vendor": "pnpm --filter chassis-css-site exec chassis-docs vendor"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
@@ -101,20 +102,16 @@
     "find-unused-sass-variables": "^6.2.1",
     "github-slugger": "^2.0.0",
     "globals": "^17.7.0",
-    "globby": "^16.2.0",
-    "html-validate": "11.5.5",
     "nodemon": "^3.1.14",
     "npm-run-all2": "^9.0.2",
     "pagefind": "^1.5.2",
-    "picocolors": "^1.1.1",
     "prettier": "^3.9.4",
     "prettier-plugin-astro": "^0.14.1",
     "shelljs": "^0.10.0",
     "stylelint": "^16.26.1",
     "stylelint-config-twbs-bootstrap": "^16.1.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.62.1",
-    "vnu-jar": "^26.7.3"
+    "typescript-eslint": "^8.62.1"
   },
   "packageManager": "pnpm@10.33.2+sha512.a90faf6feeab71ad6c6e57f94e0fe1a12f5dcc22cd754db40ae9593eb6a3e0b6b12e3540218bb37ae083404b1f2ce6db2a4121e979829b4aff94b99f49da1cf8",
   "pnpm": {

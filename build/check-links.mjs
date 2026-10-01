@@ -7,7 +7,7 @@
  *                                         heading anchors and external URLs
  *   node build/check-links.mjs --offline  the same without the external URLs
  *   node build/check-links.mjs --site     the links of the built docs site (`_site/`) to its
- *                                         own pages and assets, anchors included
+ *                                         own pages and static files, anchors included
  *
  * `--root <directory>` checks the files of that directory instead of the repository's; the
  * tests of this script use it.
@@ -55,6 +55,11 @@ const MARKDOWN_FILES = [
 // belong to the sites of other repositories.
 const SITE_DIR = '_site'
 const SITE_BASE = '/css/'
+
+// The pages load their static files under `staticPath` of packages/site/config.yml, and the
+// files are in `_site/static/`: a rewrite of vercel.json maps one to the other.
+const STATIC_PATH = '/css/static/'
+const STATIC_DIR = '/static/'
 
 // A file of this repository on GitHub, which the README of the package has to name by its URL
 // because npm shows it outside the repository. Checked in the working tree: `main` gets a file
@@ -218,7 +223,10 @@ function htmlFiles(directory) {
 }
 
 function pageFile(siteDir, pathname) {
-  const candidate = path.join(siteDir, decodeURIComponent(pathname))
+  const servedPath = pathname.startsWith(STATIC_PATH)
+    ? STATIC_DIR + pathname.slice(STATIC_PATH.length)
+    : pathname
+  const candidate = path.join(siteDir, decodeURIComponent(servedPath))
   for (const file of [candidate, path.join(candidate, 'index.html'), `${candidate}.html`]) {
     if (existsSync(file) && statSync(file).isFile()) {
       return file

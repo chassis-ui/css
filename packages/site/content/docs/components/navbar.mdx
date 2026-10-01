@@ -11,7 +11,7 @@ deps:
   - title: Nav
 ---
 
-import { getConfig } from '@chassis-ui/docs/site'
+import { getConfig, getStaticPath } from '@chassis-ui/docs/site'
 
 ## Overview
 
@@ -103,7 +103,7 @@ Replace the text with an `<img>` for an image-only brand.
 <Example code={`<nav class="navbar bg-even" aria-label="Main navigation">
     <div class="container">
       <a class="navbar-brand" href="#">
-        <img src="/static/images/site-logo.svg" alt="Chassis CSS" height="24">
+        <img src="${getStaticPath('images/site-logo.svg')}" alt="Chassis CSS" height="24">
       </a>
     </div>
   </nav>`} />
@@ -115,7 +115,7 @@ Combine an image and text in the same brand element. The `.d-inline-block` and `
 <Example code={`<nav class="navbar bg-even" aria-label="Main navigation">
     <div class="container fluid">
       <a class="navbar-brand" href="#">
-        <img src="/static/images/site-logo.svg" alt="Logo" height="24" class="d-inline-block align-text-top">
+        <img src="${getStaticPath('images/site-logo.svg')}" alt="Logo" height="24" class="d-inline-block align-text-top">
         <span class="ms-xs font-strong">CSS</span>
       </a>
     </div>

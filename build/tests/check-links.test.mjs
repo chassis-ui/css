@@ -239,7 +239,8 @@ describe('check-links.mjs', () => {
         '_site/css/index.html': page('<h1 id="chassis">Chassis</h1>'),
         '_site/css/docs/components/button/index.html': page('<h2 id="sizes">Sizes</h2>'),
         '_site/css/docs/legacy.html': page('<a name="old">Old</a>'),
-        '_site/css/static/docs.css': 'body {}\n'
+        // The static files are requested under /css/static and served from /static
+        '_site/static/docs.css': 'body {}\n'
       })
     })
 

@@ -106,8 +106,13 @@ If you don't already have a Sass build, install Dart Sass and compile your style
 
 ```bash
 npm install -D sass
-npx sass --watch --load-path node_modules/ scss/styles.scss dist/styles.css
+npx sass --watch \
+  --load-path node_modules/@chassis-ui/css/scss/vendor \
+  --load-path node_modules \
+  scss/styles.scss dist/styles.css
 ```
+
+Sass needs both load paths: `node_modules`, and the `scss/vendor` folder of `@chassis-ui/css`, which holds the `_chassis-tokens.scss` that forwards the default tokens. To use your own tokens, put a `_chassis-tokens.scss` of your own in a folder that comes before it on the load path.
 
 If you're using a bundler, follow the bundler-specific guide:
 

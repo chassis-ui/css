@@ -4,6 +4,8 @@ description: Chassis CSS is a design-system-first CSS framework that keeps Figma
 toc: true
 ---
 
+import { getStaticPath } from '@chassis-ui/docs/site'
+
 Most CSS frameworks give you a stylesheet. Chassis CSS gives you a system.
 
 The difference matters when you're building for more than one brand, supporting light and dark modes, or working in a team where designers and developers need to stay in sync. With a typical framework, every one of those scenarios requires custom overrides. With Chassis, they're built into how the framework works from the start.
@@ -30,7 +32,7 @@ The Figma component library is fully tokenized, so a designer can switch a brand
 
 The class names and CSS variable names mirror the Figma layer structure directly. A text layer with Figma styles `font/text/lg/mass` maps to the HTML class combination `font-lg font-mass`:
 
-<img class="d-block mb-md image fluid w-100 rounded" srcset="/static/images/css/docs-figma-font-specs.png, /static/images/css/docs-figma-font-specs@2x.png 2x" src="/static/images/css/docs-figma-font-specs.png" alt="Figma text layer properties" />
+<img class="d-block mb-md image fluid w-100 rounded" srcset={`${getStaticPath('images/css/docs-figma-font-specs.png')}, ${getStaticPath('images/css/docs-figma-font-specs@2x.png')} 2x`} src={getStaticPath('images/css/docs-figma-font-specs.png')} alt="Figma text layer properties" />
 
 <Example code={`<p>font/text/md/normal</p>
 <p class="font-lg font-mass">font/text/lg/mass</p>
@@ -38,7 +40,7 @@ The class names and CSS variable names mirror the Figma layer structure directly
 
 A Figma frame with padding, border, and shadow tokens maps to the equivalent utility classes:
 
-<img id="image" class="d-block mb-md image fluid rounded" srcset="/static/images/css/docs-figma-frame-specs.png, /static/images/css/docs-figma-frame-specs@2x.png 2x" src="/static/images/css/docs-figma-frame-specs.png" alt="Figma frame layer properties" />
+<img id="image" class="d-block mb-md image fluid rounded" srcset={`${getStaticPath('images/css/docs-figma-frame-specs.png')}, ${getStaticPath('images/css/docs-figma-frame-specs@2x.png')} 2x`} src={getStaticPath('images/css/docs-figma-frame-specs.png')} alt="Figma frame layer properties" />
 
 
 <Example code={`<div style="width: 128px; height: 128px;"

@@ -1,5 +1,6 @@
 ---
 import FeatureCard from '@chassis-ui/docs/components/FeatureCard.astro'
+import { getDocsPath } from '@chassis-ui/docs/site'
 ---
 
 <section class="home-section py-3xl md:py-6xl">
@@ -26,16 +27,16 @@ import FeatureCard from '@chassis-ui/docs/components/FeatureCard.astro'
           </Fragment>
           <ul class="list-unstyled d-flex flex-column gap-xs">
             <li>
-              <a href="/getting-started/introduction">Introduction</a>
+              <a href={getDocsPath('/getting-started/what-is-chassis/')}>What is Chassis?</a>
             </li>
             <li>
-              <a href="/getting-started/download">Download</a>
+              <a href={getDocsPath('/getting-started/quick-start/')}>Quick Start</a>
             </li>
             <li>
-              <a href="/getting-started/contents">Contents</a>
+              <a href={getDocsPath('/getting-started/installation/')}>Installation</a>
             </li>
             <li>
-              <a href="/getting-started/build-tools">Build Tools</a>
+              <a href={getDocsPath('/getting-started/clone-customize/')}>Clone &amp; Customize</a>
             </li>
           </ul>
         </FeatureCard>
@@ -49,16 +50,16 @@ import FeatureCard from '@chassis-ui/docs/components/FeatureCard.astro'
           </Fragment>
           <ul class="list-unstyled d-flex flex-column gap-xs">
             <li>
-              <a href="/components/accordion">Accordion</a>
+              <a href={getDocsPath('/components/accordion/')}>Accordion</a>
             </li>
             <li>
-              <a href="/components/button">Buttons</a>
+              <a href={getDocsPath('/components/button/')}>Button</a>
             </li>
             <li>
-              <a href="/components/cards">Cards</a>
+              <a href={getDocsPath('/components/card/')}>Card</a>
             </li>
             <li>
-              <a href="/components/modal">Modal</a>
+              <a href={getDocsPath('/components/modal/')}>Modal</a>
             </li>
           </ul>
         </FeatureCard>
@@ -72,13 +73,13 @@ import FeatureCard from '@chassis-ui/docs/components/FeatureCard.astro'
           </Fragment>
           <ul class="list-unstyled d-flex flex-column gap-xs">
             <li>
-              <a href="/css/docs/utilities">Utilities</a>
+              <a href={getDocsPath('/utilities/api/')}>Utilities</a>
             </li>
             <li>
-              <a href="/css/docs/layout">Layout</a>
+              <a href={getDocsPath('/layout/breakpoints/')}>Layout</a>
             </li>
             <li>
-              <a href="/css/docs/customize">Customize</a>
+              <a href={getDocsPath('/customize/overview/')}>Customize</a>
             </li>
             <li>
               <a href="https://github.com/chassis-ui/css" target="_blank" rel="noopener"
@@ -91,8 +92,8 @@ import FeatureCard from '@chassis-ui/docs/components/FeatureCard.astro'
     </div>
 
     <div class="d-flex gap-md justify-content-center mt-3xl md:mt-6xl">
-      <a href="/getting-started" class="button primary lg">Get Started</a>
-      <a href="/css/docs/" class="button default lg">View Documentation</a>
+      <a href={getDocsPath('/getting-started/overview/')} class="button primary lg">Get Started</a>
+      <a href={getDocsPath('/')} class="button default lg">View Documentation</a>
     </div>
   </div>
 </section>

@@ -1,0 +1,37 @@
+# Messages of the Nu Html Checker that `pnpm site:lint:vnu` leaves out, one regular expression
+# per line. `chassis-docs vnu` adds them to its own. The rules of html-validate that the site
+# changes are in html-validate.json, which cannot hold comments:
+#
+# - valid-autocomplete, input-attributes: the docs show autocomplete on buttons and inputs
+#   (https://stackoverflow.com/a/60774549)
+# - no-conditional-comment: the live previews of <Example> keep Shiki's `<!--[!code highlight]-->`
+#   markers, which the rule takes for conditional comments of Internet Explorer
+# - prefer-button: the Reboot docs show <input type="submit/reset/button"> on purpose
+# - unique-landmark: a page shows the same component many times, with the same aria-label
+# - prefer-native-element: the components that use an ARIA role on a div (progressbar, combobox,
+#   region, select, listbox), and [role="button"] in the Reboot docs
+# - input-missing-label: the docs show an <input> without a label to document the base styles
+# - elements: the `switch` attribute, and the values of `autocomplete` the docs use
+
+# "autocomplete" is on <button> and on checkbox and radio <input>s because of Firefox's
+# non-standard autocomplete behavior, see https://bugzilla.mozilla.org/show_bug.cgi?id=654072
+Attribute “autocomplete” is only allowed when the input type is.*
+Attribute “autocomplete” not allowed on element “button” at this point.
+
+# Per https://www.w3.org/TR/html-aria/#docconformance "aria-disabled" on a link is not
+# recommended, but valid. The docs say so, offer alternatives, and show the example
+An “aria-disabled” attribute whose value is “true” should not be specified on an “a” element that has an “href” attribute.
+
+# A `code` element with the `is:raw` attribute (possibly an Astro bug)
+Attribute “is:raw” is not serializable as XML 1.0.
+Attribute “is:raw” not allowed on element “code” at this point.
+
+# The accordion: `name` on <details>, and the heading role on <summary>
+Attribute “name” not allowed on element “details” at this point.
+Bad value “button” for attribute “role” on element “h3”.
+Bad value “heading” for attribute “role” on element “summary”.
+Attribute “aria-level” not allowed on element “summary” at this point.
+
+# The CSS checker of vnu predates container queries, so it rejects valid `container-*`
+# declarations (the inline styles of packages/css/js/tests/e2e/fixtures/tailwind-parity.html)
+CSS: .container-(type|name).: Property .container-(type|name). doesn.t exist.

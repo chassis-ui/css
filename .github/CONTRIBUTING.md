@@ -6,7 +6,7 @@ kept up to date, rather than repeating them.
 
 ## Dev setup
 
-You need Node.js 22 or later and pnpm (the version in `packageManager` of the root
+You need Node.js 22.12 or later (`.nvmrc` names the version CI uses, 24) and pnpm (the version in `packageManager` of the root
 `package.json`; `corepack enable` picks it up).
 
 ```sh
@@ -16,8 +16,9 @@ pnpm install
 pnpm start
 ```
 
-`pnpm start` builds `dist/`, fetches and builds the assets submodule in `vendor/assets` (the docs
-site needs it) and then runs `pnpm dev`: CSS and JavaScript in watch mode and the docs site at
+`pnpm start` builds `dist/`, checks out the assets submodule in `vendor/assets` at the pinned commit
+and builds it (the docs site needs it; `pnpm sync-submodules` moves the pin to the latest
+`app/docs`) and then runs `pnpm dev`: CSS and JavaScript in watch mode and the docs site at
 `http://localhost:4323/css/`. After the first run, `pnpm dev` is enough.
 
 Run every command from the root of the repository. The scripts of the root `package.json` run the
@@ -39,7 +40,7 @@ rest of this guide, `scss/`, `js/`, `postcss/` and `dist/` are the folders in `p
 | `postcss/`          | The PostCSS preset published as `@chassis-ui/css/postcss`; it adds the `--cx-` prefix                                                                                                              |
 | `build/`            | The build of the package: Rolldown, PostCSS, the Tailwind entry and `pnpm verify`                                                                                                                  |
 | `packages/site/`    | The Astro documentation site, published at [chassis-ui.com/css](https://chassis-ui.com/css/). A private package that depends on the one in `packages/css/`                                         |
-| `build/` (root)     | The scripts of the repository: link and HTML checks, version references, release notes                                                                                                             |
+| `build/` (root)     | The scripts of the repository: the link check, version references, release notes                                                                                                                   |
 | `vendor/assets`     | A git submodule of [chassis-ui/assets](https://github.com/chassis-ui/assets); changes belong there                                                                                                 |
 
 ## Branch and commit conventions

@@ -8,6 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "lint:html": "chassis-docs html-validate ../../_site ../css/js/tests --config html-validate.json",
+    "lint:vnu": "chassis-docs vnu ../../_site ../css/js/tests --filter-file vnu-filters.txt",
     "clean": "rm -rf .astro public"
   },
   "devDependencies": {
@@ -27,12 +29,14 @@
     "astro": "^7.3.5",
     "autoprefixer": "^10.5.2",
     "culori": "^4.0.2",
+    "html-validate": "11.5.5",
     "htmlparser2": "^12.0.0",
     "postcss": "^8.5.28",
     "postcss-prefix-custom-properties": "^0.1.0",
     "rehype-autolink-headings": "^7.1.0",
     "sass": "^1.101.0",
     "shiki": "^4.3.1",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vnu-jar": "^26.7.3"
   }
 }
