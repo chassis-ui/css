@@ -116,7 +116,7 @@ Run the checks of the area you changed, and report the ones that fail.
 - `<ResizableExample>` is reserved for container-query (`css_media: container`) components only.
 - Inside `<Example code={...}>` blocks, preserve the template literal's indentation exactly as written — flattening it breaks MDX rendering.
 - Reference implementations: `components/stepper.mdx`, `components/navbar.mdx`, `helpers/focus-ring.mdx`, `customize/optimize.mdx`.
-- The site's static files (`packages/site/public/static/`, built to `_site/static/`) are requested under `/css/static` (`staticPath` in `packages/site/config.yml`): a rewrite of `vercel.json` maps the path, the dev server does the same, and `build.assetsPrefix` moves Astro's own files. Write a static URL with `getStaticPath()` of `@chassis-ui/docs/site`, never as `/static/…`.
+- The site's static files (`packages/site/public/static/`, built to `_site/static/`) are requested under the shared `/static` path, the same URLs on every Chassis site (chassis-ui.com routes them by the `Referer` header), so there is no prefix: no `staticPath`, rewrite or `assetsPrefix`. Write a static URL with `getStaticPath()` of `@chassis-ui/docs/site`, never as `/static/…`.
 - `pnpm vendor` builds `vendor/assets` at the pinned commit (`pnpm site:build` and `pnpm start` run it); `pnpm sync-submodules` moves the pin to the latest `app/docs`, to commit on its own. Both are `chassis-docs` commands of `@chassis-ui/docs`, as are the two HTML validators of `pnpm site:lint`; the site's exceptions for them are in `packages/site/html-validate.json` and `packages/site/vnu-filters.txt`.
 - Run `pnpm site:lint` (eslint + prettier + vnu and html-validate HTML validation + the link check) after editing `packages/site/`.
 

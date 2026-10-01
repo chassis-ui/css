@@ -56,11 +56,6 @@ const MARKDOWN_FILES = [
 const SITE_DIR = '_site'
 const SITE_BASE = '/css/'
 
-// The pages load their static files under `staticPath` of packages/site/config.yml, and the
-// files are in `_site/static/`: a rewrite of vercel.json maps one to the other.
-const STATIC_PATH = '/css/static/'
-const STATIC_DIR = '/static/'
-
 // A file of this repository on GitHub, which the README of the package has to name by its URL
 // because npm shows it outside the repository. Checked in the working tree: `main` gets a file
 // that a change adds or moves only when the change is released.
@@ -223,10 +218,7 @@ function htmlFiles(directory) {
 }
 
 function pageFile(siteDir, pathname) {
-  const servedPath = pathname.startsWith(STATIC_PATH)
-    ? STATIC_DIR + pathname.slice(STATIC_PATH.length)
-    : pathname
-  const candidate = path.join(siteDir, decodeURIComponent(servedPath))
+  const candidate = path.join(siteDir, decodeURIComponent(pathname))
   for (const file of [candidate, path.join(candidate, 'index.html'), `${candidate}.html`]) {
     if (existsSync(file) && statSync(file).isFile()) {
       return file

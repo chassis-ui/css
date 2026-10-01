@@ -239,8 +239,7 @@ describe('check-links.mjs', () => {
         '_site/css/index.html': page('<h1 id="chassis">Chassis</h1>'),
         '_site/css/docs/components/button/index.html': page('<h2 id="sizes">Sizes</h2>'),
         '_site/css/docs/legacy.html': page('<a name="old">Old</a>'),
-        // The static files are requested under /css/static and served from /static
-        '_site/static/docs.css': 'body {}\n'
+        '_site/css/docs/docs.css': 'body {}\n'
       })
     })
 
@@ -251,7 +250,8 @@ describe('check-links.mjs', () => {
 
     test('passes when every link resolves', async () => {
       const { status, stdout, stderr } = await checkPage(`
-        <link href="/css/static/docs.css" rel="stylesheet">
+        <link href="/css/docs/docs.css" rel="stylesheet">
+        <link href="/static/docs.css" rel="stylesheet">
         <a href="/css">Home</a> <a href="/css/">Home</a> <a href="/css/#chassis">Chassis</a>
         <a href="/css/docs/components/button/">Button</a>
         <a href="/css/docs/components/button">Button</a>
@@ -271,13 +271,13 @@ describe('check-links.mjs', () => {
     test('fails on a page or a file that does not exist', async () => {
       const { status, stderr } = await checkPage(`
         <a href="/css/docs/components/badge/">Badge</a>
-        <script src="/css/static/docs.js"></script>
+        <script src="/css/docs/docs.js"></script>
       `)
 
       assert.equal(status, 1)
       assert.deepEqual(brokenLinks(stderr), [
         '_site/css/docs/index.html: /css/docs/components/badge/ (no such page or file)',
-        '_site/css/docs/index.html: /css/static/docs.js (no such page or file)'
+        '_site/css/docs/index.html: /css/docs/docs.js (no such page or file)'
       ])
     })
 

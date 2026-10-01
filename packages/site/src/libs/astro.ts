@@ -54,21 +54,6 @@ export function chassis({
       name: 'chassis-integration',
       hooks: {
         'astro:server:setup': ({ server }) => {
-          // The pages request the static files under `staticPath` of config.yml, and the
-          // files are in `public/static/`. In production a rewrite of vercel.json maps one
-          // to the other; the dev server has no such rewrite, so this does the same.
-          const staticPath = config.staticPath
-
-          if (staticPath && staticPath !== '/static') {
-            server.middlewares.use((request, _response, next) => {
-              if (request.url?.startsWith(`${staticPath}/`)) {
-                request.url = `/static${request.url.slice(staticPath.length)}`
-              }
-
-              next()
-            })
-          }
-
           if (server.config.mode !== 'development') {
             return
           }

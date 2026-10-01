@@ -13,10 +13,7 @@ const config = loadConfig({ root, schema: siteConfigSchema })
 export default defineConfig({
   outDir: '../../_site',
   build: {
-    assets: `static/astro`,
-    // The site is served under /css of chassis-ui.com, where /static belongs to the main site.
-    // With `staticPath` of config.yml, every static file is requested under /css/static.
-    assetsPrefix: '/css'
+    assets: `static/astro`
   },
   integrations: [chassisDocs({ config }), ...chassis({ config, root })],
   vite: {
