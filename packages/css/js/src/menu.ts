@@ -824,7 +824,7 @@ class Menu extends FloatingBase {
       return
     }
 
-    getNextActiveElement(items, target as HTMLElement, key === ARROW_DOWN_KEY, !items.includes(target as HTMLElement)).focus()
+    getNextActiveElement(items, target as HTMLElement, key === ARROW_DOWN_KEY, true).focus()
   }
 
   protected _handleSubmenuKeydown(event: ChassisEvent): boolean {
@@ -924,6 +924,30 @@ class Menu extends FloatingBase {
       }
 
       instance._completeHide(relatedTarget)
+    }
+  }
+
+  // Escape with the focus on the page itself: a click on an item leaves it there in a
+  // browser that does not focus a button on a click (Safari), and the handler of the keys
+  // only hears the toggle and the menu. Closes the menu opened last.
+  static escapeHandler(event: ChassisEvent): void {
+    const { target } = event
+
+    if (event.key !== ESCAPE_KEY || event.defaultPrevented ||
+        (target !== document.body && target !== document.documentElement)) {
+      return
+    }
+
+    const instance = [...Menu._openInstances].at(-1)
+    if (!instance) {
+      return
+    }
+
+    event.preventDefault()
+    instance.hide()
+
+    if (!instance._isShown()) {
+      instance._element.focus()
     }
   }
 
@@ -1041,6 +1065,7 @@ class Menu extends FloatingBase {
 
 EventHandler.on(document, EVENT_KEYDOWN_DATA_API, SELECTOR_DATA_TOGGLE, Menu.dataApiKeydownHandler)
 EventHandler.on(document, EVENT_KEYDOWN_DATA_API, SELECTOR_MENU, Menu.dataApiKeydownHandler)
+EventHandler.on(document, EVENT_KEYDOWN_DATA_API, Menu.escapeHandler)
 EventHandler.on(document, EVENT_CLICK_DATA_API, Menu.clearMenus)
 EventHandler.on(document, EVENT_KEYUP_DATA_API, Menu.clearMenus)
 EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (event) {

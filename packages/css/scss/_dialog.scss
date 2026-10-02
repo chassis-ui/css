@@ -109,14 +109,12 @@
     }
 
     // Non-modal dialog positioning
-    // show() doesn't use the top layer, so we need explicit positioning and z-index
+    // show() doesn't use the top layer, so the dialog needs a position against the
+    // viewport and a z-index. `inset: 0` and `margin: auto` of the base rule center it,
+    // as they center a modal dialog, and leave `transform` to the transition.
     &.nonmodal {
       position: fixed;
-      inset-block-start: 50%;
-      inset-inline-start: 50%;
       z-index: $zindex-modal;
-      margin-inline: 0;
-      transform: translate(-50%, -50%);
     }
 
     // Scrollable dialog body (header/footer stay fixed)

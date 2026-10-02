@@ -28,6 +28,8 @@ declare class DialogBase extends BaseComponent {
     protected _config: DialogBaseConfig;
     protected _isTransitioning: boolean;
     protected _openedAsModal: boolean;
+    protected _closeExpected: boolean;
+    protected _nativeCloseHandler: () => void;
     constructor(element?: string | Element | null, config?: Partial<DialogBaseConfig> | null);
     static get NAME(): string;
     static restoreFocusOnHide(target: Element, trigger: HTMLElement): void;
@@ -53,6 +55,8 @@ declare class DialogBase extends BaseComponent {
     protected _closeAndCleanup(): void;
     protected _shouldDeferClose(): boolean;
     protected _triggerBackdropTransition(): void;
+    protected _onNativeClose(): void;
+    protected _handleEscape(): void;
     protected _hideChildComponents(): void;
     protected _addDialogListeners(): void;
 }

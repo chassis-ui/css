@@ -328,9 +328,9 @@ The plugin fires events around the show/hide lifecycle and date selection:
 <CxTable>
 | Event | Description |
 | --- | --- |
-| `show.cx.datepicker` | Fires immediately when the `show` method is called |
+| `show.cx.datepicker` | Fires when the calendar is about to open: from the `show` method, or from a click on or the focus of its input. Preventable via `event.preventDefault()`. |
 | `shown.cx.datepicker` | Fires when the datepicker has been made visible |
-| `hide.cx.datepicker` | Fires immediately when the `hide` method is called |
+| `hide.cx.datepicker` | Fires when the calendar closes: from the `hide` method, a selected date, <kbd>Esc</kbd>, or a click outside. Preventable via `event.preventDefault()`. |
 | `hidden.cx.datepicker` | Fires when the datepicker has been hidden |
 | `change.cx.datepicker` | Fires when a date is selected. Event includes `dates` (array) and `event` properties |
 </CxTable>

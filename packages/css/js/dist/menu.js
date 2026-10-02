@@ -547,7 +547,7 @@ var Menu = class Menu extends FloatingBase {
 		const currentMenu = target.closest(SELECTOR_MENU) || this._menu;
 		const items = SelectorEngine.find(SELECTOR_KB_NAV_ITEMS, currentMenu).filter((element) => isVisible(element));
 		if (!items.length) return;
-		getNextActiveElement(items, target, key === ARROW_DOWN_KEY, !items.includes(target)).focus();
+		getNextActiveElement(items, target, key === ARROW_DOWN_KEY, true).focus();
 	}
 	_handleSubmenuKeydown(event) {
 		const { key, target } = event;
@@ -603,6 +603,15 @@ var Menu = class Menu extends FloatingBase {
 			if (event.type === "click") relatedTarget.clickEvent = event;
 			instance._completeHide(relatedTarget);
 		}
+	}
+	static escapeHandler(event) {
+		const { target } = event;
+		if (event.key !== ESCAPE_KEY || event.defaultPrevented || target !== document.body && target !== document.documentElement) return;
+		const instance = [...Menu._openInstances].at(-1);
+		if (!instance) return;
+		event.preventDefault();
+		instance.hide();
+		if (!instance._isShown()) instance._element.focus();
 	}
 	static dataApiKeydownHandler(event) {
 		const isInput = /input|textarea/i.test(event.target.tagName);
@@ -670,6 +679,7 @@ var Menu = class Menu extends FloatingBase {
 */
 EventHandler.on(document, EVENT_KEYDOWN_DATA_API, SELECTOR_DATA_TOGGLE, Menu.dataApiKeydownHandler);
 EventHandler.on(document, EVENT_KEYDOWN_DATA_API, SELECTOR_MENU, Menu.dataApiKeydownHandler);
+EventHandler.on(document, EVENT_KEYDOWN_DATA_API, Menu.escapeHandler);
 EventHandler.on(document, EVENT_CLICK_DATA_API, Menu.clearMenus);
 EventHandler.on(document, EVENT_KEYUP_DATA_API, Menu.clearMenus);
 EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function(event) {

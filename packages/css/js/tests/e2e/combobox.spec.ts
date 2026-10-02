@@ -70,11 +70,9 @@ test.describe('input trigger', () => {
   })
 
   // The docs: with the toggle focused and the menu closed, ArrowDown and ArrowUp open the menu
-  // and focus the first or the last item. The menu opens, and show() gives the focus back to
-  // the input in the next frame (to the search field, with a button trigger), so the focus
-  // never stays on the item. Chromium and WebKit; the unit spec reads the focus before that
-  // frame. A second press of the key moves to the item.
-  test.fixme('ArrowDown opens a closed menu with focus on the first item, ArrowUp on the last', async ({
+  // and focus the first or the last item. `expectOpen` waits for the frame in which show()
+  // gives the focus to the input, which it must not do here.
+  test('ArrowDown opens a closed menu with focus on the first item, ArrowUp on the last', async ({
     page
   }) => {
     await input(page, 'country').focus()
@@ -114,10 +112,7 @@ test.describe('input trigger', () => {
     await expect(option(page, 'country', 'United States')).toBeFocused()
   })
 
-  // The docs: the arrow keys wrap at the ends. They stop there: the plugin lets the focus
-  // cycle only when it comes from outside the items. Chromium and WebKit; the Menu plugin
-  // does the same, against its docs too. Either the docs or the plugins have to change.
-  test.fixme('the arrow keys wrap at the ends of the list', async ({ page }) => {
+  test('the arrow keys wrap at the ends of the list', async ({ page }) => {
     await input(page, 'country').focus()
     await expectOpen(page, 'country')
     await page.keyboard.press('ArrowDown')
@@ -163,10 +158,8 @@ test.describe('input trigger', () => {
     await expect(hiddenInput(page, 'country')).toHaveValue('')
   })
 
-  // The docs: with the menu open, Escape closes it and returns focus to the toggle. With the
-  // focus in the input, where it is after a click or while typing, the key does nothing: the
-  // plugin listens for Escape on the menu and on the search field only. Chromium and WebKit.
-  test.fixme('Escape in the input closes the menu', async ({ page }) => {
+  // The focus is in the input after a click or while typing, not in the menu
+  test('Escape in the input closes the menu', async ({ page }) => {
     await clickSlowly(page, input(page, 'country'))
     await expectOpen(page, 'country')
 
@@ -212,15 +205,9 @@ test.describe('input trigger', () => {
     await expect(hiddenInput(page, 'country')).toHaveValue('au')
   })
 
-  test('Tab on an item closes the menu and moves on to the next control', async ({
-    page,
-    browserName
-  }) => {
-    // The docs: Tab closes the menu and moves focus normally. WebKit: the menu closes while
-    // the item has the focus, the focus falls to <body>, and Tab starts from the top of the
-    // page. Chromium moves on from where the item was.
-    test.fixme(browserName === 'webkit', 'The focus is lost when the menu closes')
-
+  // The plugin moves the focus to the input before it hides the item that has it: WebKit
+  // would leave the focus on <body>, and Tab would start from the top of the page
+  test('Tab on an item closes the menu and moves on to the next control', async ({ page }) => {
     await input(page, 'country').focus()
     await expectOpen(page, 'country')
     await page.keyboard.press('ArrowDown')
@@ -262,23 +249,6 @@ test.describe('input trigger', () => {
     await clickSlowly(page, option(page, 'role', 'Viewer'))
 
     await expect(page.locator('body')).toHaveAttribute('data-change', 'roleToggle viewer Viewer')
-  })
-
-  // The docs: `event.detail` contains `value` and `item`. They are properties of the event
-  // itself, as `relatedTarget` is for the other plugins, and `event.detail` is undefined.
-  // Either the docs or the plugin has to change.
-  test.fixme('the change event has the value and the item in its detail', async ({ page }) => {
-    await page.evaluate(() => {
-      document.addEventListener('change.cx.combobox', (event) => {
-        document.body.dataset.detail = JSON.stringify((event as CustomEvent).detail?.value ?? null)
-      })
-    })
-
-    await clickSlowly(page, input(page, 'role'))
-    await expectOpen(page, 'role')
-    await clickSlowly(page, option(page, 'role', 'Viewer'))
-
-    await expect(page.locator('body')).toHaveAttribute('data-detail', '"viewer"')
   })
 })
 

@@ -32,6 +32,10 @@ declare class Datepicker extends BaseComponent {
     protected _config: DatepickerConfig;
     protected _calendar: Calendar | null;
     protected _isShown: boolean;
+    protected _ownCall: boolean;
+    protected _returnFocus: boolean;
+    protected _returningFocus: boolean;
+    protected _popup: HTMLElement | null;
     protected _themeObserver: MutationObserver | null;
     protected _isInput: boolean;
     protected _isInline: boolean;
@@ -59,6 +63,11 @@ declare class Datepicker extends BaseComponent {
     protected _syncThemeAttribute(element?: HTMLElement | null): void;
     protected _setupThemeObserver(): void;
     protected _buildCalendarOptions(): Record<string, any>;
+    protected _onCalendarShow(): void;
+    protected _onCalendarHide(): void;
+    protected _hasFocusInPopup(): boolean;
+    protected _watchPopup(popup: HTMLElement): void;
+    protected _restoreFocus(): void;
     protected _handleDateClick(self: Calendar, event: MouseEvent): void;
     protected _maybeHideAfterSelection(selectedDates: string[]): void;
     protected _parseDate(dateStr: string): Date;

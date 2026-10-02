@@ -3823,7 +3823,7 @@ var Menu = class Menu extends FloatingBase {
 		const currentMenu = target.closest(SELECTOR_MENU$2) || this._menu;
 		const items = SelectorEngine.find(SELECTOR_KB_NAV_ITEMS, currentMenu).filter((element) => isVisible(element));
 		if (!items.length) return;
-		getNextActiveElement(items, target, key === ARROW_DOWN_KEY, !items.includes(target)).focus();
+		getNextActiveElement(items, target, key === ARROW_DOWN_KEY, true).focus();
 	}
 	_handleSubmenuKeydown(event) {
 		const { key, target } = event;
@@ -3879,6 +3879,15 @@ var Menu = class Menu extends FloatingBase {
 			if (event.type === "click") relatedTarget.clickEvent = event;
 			instance._completeHide(relatedTarget);
 		}
+	}
+	static escapeHandler(event) {
+		const { target } = event;
+		if (event.key !== "Escape" || event.defaultPrevented || target !== document.body && target !== document.documentElement) return;
+		const instance = [...Menu._openInstances].at(-1);
+		if (!instance) return;
+		event.preventDefault();
+		instance.hide();
+		if (!instance._isShown()) instance._element.focus();
 	}
 	static dataApiKeydownHandler(event) {
 		const isInput = /input|textarea/i.test(event.target.tagName);
@@ -3946,6 +3955,7 @@ var Menu = class Menu extends FloatingBase {
 */
 EventHandler.on(document, EVENT_KEYDOWN_DATA_API, SELECTOR_DATA_TOGGLE$8, Menu.dataApiKeydownHandler);
 EventHandler.on(document, EVENT_KEYDOWN_DATA_API, SELECTOR_MENU$2, Menu.dataApiKeydownHandler);
+EventHandler.on(document, EVENT_KEYDOWN_DATA_API, Menu.escapeHandler);
 EventHandler.on(document, EVENT_CLICK_DATA_API$5, Menu.clearMenus);
 EventHandler.on(document, EVENT_KEYUP_DATA_API, Menu.clearMenus);
 EventHandler.on(document, EVENT_CLICK_DATA_API$5, SELECTOR_DATA_TOGGLE$8, function(event) {
@@ -4039,6 +4049,9 @@ var Combobox = class Combobox extends BaseComponent {
 		return this._isShown() ? this.hide() : this.show();
 	}
 	show() {
+		this._show();
+	}
+	_show(focusInput = true) {
 		if (isDisabled(this._toggle) || this._isShown()) return;
 		if (EventHandler.trigger(this._toggle, EVENT_SHOW$5).defaultPrevented) return;
 		this._menuInstance.show();
@@ -4046,18 +4059,13 @@ var Combobox = class Combobox extends BaseComponent {
 		if (this._searchInput) {
 			this._searchInput.value = "";
 			this._filterItems("");
-			requestAnimationFrame(() => {
-				if (!this.isDisposed()) this._searchInput?.focus();
-			});
-		} else if (this._comboInput) {
-			this._filterItems("");
-			requestAnimationFrame(() => {
-				if (!this.isDisposed()) {
-					this._comboInput?.focus();
-					this._comboInput?.select();
-				}
-			});
-		}
+		} else if (this._comboInput) this._filterItems("");
+		if (focusInput) requestAnimationFrame(() => {
+			if (this.isDisposed()) return;
+			this._searchInput?.focus();
+			this._comboInput?.focus();
+			this._comboInput?.select();
+		});
 		EventHandler.trigger(this._toggle, EVENT_SHOWN$4);
 	}
 	hide() {
@@ -4287,9 +4295,15 @@ var Combobox = class Combobox extends BaseComponent {
 		const { key } = event;
 		if (key === "ArrowDown" || key === "ArrowUp") {
 			event.preventDefault();
-			if (!this._isShown()) this.show();
+			if (!this._isShown()) this._show(false);
 			const items = this._getVisibleItems();
 			if (items.length > 0) (key === "ArrowDown" ? items[0] : items.at(-1)).focus();
+			return;
+		}
+		if (key === "Escape" && this._isShown()) {
+			event.preventDefault();
+			event.stopPropagation();
+			this.hide();
 			return;
 		}
 		if ((key === "Enter" || key === " ") && !this._isShown() && event.target !== this._comboInput) {
@@ -4308,6 +4322,14 @@ var Combobox = class Combobox extends BaseComponent {
 			return;
 		}
 		if (key === "Tab") {
+			this._ignoreNextFocus = true;
+			(this._comboInput ?? this._toggle).focus();
+			this._ignoreNextFocus = false;
+			const menu = this._menu;
+			menu.inert = true;
+			setTimeout(() => {
+				menu.inert = false;
+			});
 			this.hide();
 			return;
 		}
@@ -4315,7 +4337,7 @@ var Combobox = class Combobox extends BaseComponent {
 		if (key === "ArrowDown" || key === "ArrowUp") {
 			event.preventDefault();
 			const items = this._getVisibleItems();
-			if (items.length > 0) getNextActiveElement(items, target, key === ARROW_DOWN_KEY, !items.includes(target)).focus();
+			if (items.length > 0) getNextActiveElement(items, target, key === ARROW_DOWN_KEY, true).focus();
 			return;
 		}
 		if (key === "Home" || key === "End") {
@@ -5674,6 +5696,10 @@ var Datepicker = class extends BaseComponent {
 		super(element, config);
 		this._calendar = null;
 		this._isShown = false;
+		this._ownCall = false;
+		this._returnFocus = false;
+		this._returningFocus = false;
+		this._popup = null;
 		this._initCalendar();
 	}
 	static get Default() {
@@ -5696,7 +5722,9 @@ var Datepicker = class extends BaseComponent {
 		if (this._config.inline) return;
 		if (isDisabled(this._element) || this._isShown) return;
 		if (EventHandler.trigger(this._element, EVENT_SHOW$4).defaultPrevented) return;
+		this._ownCall = true;
 		this._calendar.show();
+		this._ownCall = false;
 		this._isShown = true;
 		EventHandler.trigger(this._element, EVENT_SHOWN$3);
 	}
@@ -5705,7 +5733,10 @@ var Datepicker = class extends BaseComponent {
 		if (this._config.inline) return;
 		if (!this._isShown) return;
 		if (EventHandler.trigger(this._element, EVENT_HIDE$3).defaultPrevented) return;
+		this._returnFocus = this._hasFocusInPopup();
+		this._ownCall = true;
 		this._calendar.hide();
+		this._ownCall = false;
 		this._isShown = false;
 		EventHandler.trigger(this._element, EVENT_HIDDEN$4);
 	}
@@ -5713,6 +5744,10 @@ var Datepicker = class extends BaseComponent {
 		if (this._themeObserver) {
 			this._themeObserver.disconnect();
 			this._themeObserver = null;
+		}
+		if (this._popup) {
+			EventHandler.off(this._popup, EVENT_KEY$11);
+			this._popup = null;
 		}
 		if (this._calendar) this._calendar.destroy();
 		this._calendar = null;
@@ -5815,13 +5850,13 @@ var Datepicker = class extends BaseComponent {
 			onInit: (self) => {
 				this._syncThemeAttribute(self.context.mainElement);
 			},
-			onShow: () => {
-				this._isShown = true;
-				this._syncThemeAttribute(this._calendar.context.mainElement);
-			},
-			onHide: () => {
-				this._isShown = false;
-			}
+			onShow: () => this._onCalendarShow(),
+			onHide: () => this._onCalendarHide()
+		};
+		const { openOnFocus } = this._config.vcpOptions;
+		calendarOptions.openOnFocus = (self) => {
+			if (this._returningFocus) return false;
+			return typeof openOnFocus === "function" ? openOnFocus(self) : openOnFocus !== false;
 		};
 		if (this._config.selectedDates.length > 0) {
 			const firstDate = this._parseDate(this._config.selectedDates[0]);
@@ -5831,6 +5866,52 @@ var Datepicker = class extends BaseComponent {
 		if (this._config.dateMin) calendarOptions.dateMin = this._config.dateMin;
 		if (this._config.dateMax) calendarOptions.dateMax = this._config.dateMax;
 		return calendarOptions;
+	}
+	_onCalendarShow() {
+		const popup = this._calendar.context.mainElement;
+		this._syncThemeAttribute(popup);
+		this._watchPopup(popup);
+		if (this._ownCall || this._isShown) return;
+		if (EventHandler.trigger(this._element, EVENT_SHOW$4).defaultPrevented) {
+			this._calendar.hide();
+			return;
+		}
+		this._isShown = true;
+		EventHandler.trigger(this._element, EVENT_SHOWN$3);
+	}
+	_onCalendarHide() {
+		const closedByCalendar = !this._ownCall && this._isShown;
+		if (closedByCalendar) {
+			if (EventHandler.trigger(this._element, EVENT_HIDE$3).defaultPrevented) {
+				this._returnFocus = false;
+				this._calendar.show();
+				return;
+			}
+		}
+		this._restoreFocus();
+		if (closedByCalendar) {
+			this._isShown = false;
+			EventHandler.trigger(this._element, EVENT_HIDDEN$4);
+		}
+	}
+	_hasFocusInPopup() {
+		return Boolean(this._popup?.contains(document.activeElement));
+	}
+	_watchPopup(popup) {
+		if (this._popup === popup || popup === this._positionElement) return;
+		this._popup = popup;
+		EventHandler.on(popup, `keydown${EVENT_KEY$11}`, (event) => {
+			if (event.key === "Escape") this._returnFocus = this._hasFocusInPopup();
+		});
+	}
+	_restoreFocus() {
+		if (!this._returnFocus) return;
+		this._returnFocus = false;
+		if (document.activeElement !== this._element) {
+			this._returningFocus = true;
+			this._element.focus();
+			this._returningFocus = false;
+		}
 	}
 	_handleDateClick(self, event) {
 		const selectedDates = [...self.context.selectedDates];
@@ -5919,6 +6000,8 @@ var DialogBase = class extends BaseComponent {
 		super(element, config);
 		this._isTransitioning = false;
 		this._openedAsModal = false;
+		this._closeExpected = false;
+		this._nativeCloseHandler = () => this._onNativeClose();
 		this._addDialogListeners();
 	}
 	static get NAME() {
@@ -5931,6 +6014,7 @@ var DialogBase = class extends BaseComponent {
 	}
 	dispose() {
 		if (this._element.open) this._closeAndCleanup();
+		this._element.removeEventListener("close", this._nativeCloseHandler);
 		super.dispose();
 	}
 	toggle(relatedTarget) {
@@ -6000,6 +6084,7 @@ var DialogBase = class extends BaseComponent {
 		if (!this._shouldDeferClose()) this._closeAndCleanup();
 	}
 	_closeAndCleanup() {
+		this._closeExpected = this._closeExpected || this._element.open;
 		this._element.close();
 		this._openedAsModal = false;
 		if (!document.querySelector("dialog[open]:modal")) document.body.classList.remove(CLASS_NAME_OPEN);
@@ -6015,6 +6100,26 @@ var DialogBase = class extends BaseComponent {
 			this._element.classList.remove(staticClass);
 		}, this._element);
 	}
+	_onNativeClose() {
+		if (this._closeExpected) {
+			this._closeExpected = false;
+			return;
+		}
+		if (this._isTransitioning && this._element.classList.contains("hiding")) return;
+		this._hideChildComponents();
+		this._closeAndCleanup();
+		this._onAfterHide();
+		this._isTransitioning = false;
+		EventHandler.trigger(this._element, this.constructor.eventName("hidden"));
+	}
+	_handleEscape() {
+		if (!this._config.keyboard) {
+			if (this._openedAsModal) this._triggerBackdropTransition();
+			return;
+		}
+		this._onCancel();
+		this.hide();
+	}
 	_hideChildComponents() {
 		for (const el of SelectorEngine.find("[data-cx-toggle=\"tooltip\"], [data-cx-toggle=\"popover\"], [data-cx-toggle=\"menu\"]", this._element)) {
 			const instance = data_default.getAny(el);
@@ -6027,22 +6132,16 @@ var DialogBase = class extends BaseComponent {
 	}
 	_addDialogListeners() {
 		const eventKey = this.constructor.EVENT_KEY;
+		EventHandler.on(this._element, `keydown${eventKey}`, (event) => {
+			if (event.key !== "Escape" || event.defaultPrevented) return;
+			event.preventDefault();
+			this._handleEscape();
+		});
 		EventHandler.on(this._element, `cancel${eventKey}`, (event) => {
 			event.preventDefault();
-			if (!this._config.keyboard) {
-				this._triggerBackdropTransition();
-				return;
-			}
-			this._onCancel();
-			this.hide();
+			this._handleEscape();
 		});
-		EventHandler.on(this._element, `keydown${eventKey}`, (event) => {
-			if (event.key !== "Escape" || this._openedAsModal) return;
-			event.preventDefault();
-			if (!this._config.keyboard) return;
-			this._onCancel();
-			this.hide();
-		});
+		this._element.addEventListener("close", this._nativeCloseHandler);
 		EventHandler.on(this._element, `click${eventKey}`, (event) => {
 			if (event.target !== this._element || !this._openedAsModal) return;
 			if (this._config.backdrop === "static") {

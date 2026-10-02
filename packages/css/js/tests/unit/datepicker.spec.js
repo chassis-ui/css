@@ -1212,4 +1212,106 @@ describe('Datepicker', () => {
       expect(datepicker._displayElement).toEqual(targetEl)
     })
   })
+
+  describe('a calendar that Vanilla Calendar Pro opens and closes', () => {
+    const opened = (inputEl, datepicker) => new Promise(resolve => {
+      inputEl.addEventListener('shown.cx.datepicker', () => {
+        // The calendar is built on its first use, and shown a moment later
+        setTimeout(resolve, 50)
+      }, { once: true })
+
+      datepicker.show()
+    })
+
+    const record = inputEl => {
+      const events = []
+      for (const name of ['show', 'shown', 'hide', 'hidden']) {
+        inputEl.addEventListener(`${name}.cx.datepicker`, () => events.push(name))
+      }
+
+      return events
+    }
+
+    it('should fire hide and hidden when Escape closes the calendar', async () => {
+      fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker">'
+
+      const inputEl = fixtureEl.querySelector('input')
+      const datepicker = new Datepicker(inputEl)
+
+      await opened(inputEl, datepicker)
+      const events = record(inputEl)
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+
+      expect(events).toEqual(['hide', 'hidden'])
+      expect(datepicker._isShown).toBeFalse()
+    })
+
+    it('should fire show and shown when the calendar opens by itself', async () => {
+      fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker">'
+
+      const inputEl = fixtureEl.querySelector('input')
+      const datepicker = new Datepicker(inputEl)
+
+      await opened(inputEl, datepicker)
+      datepicker.hide()
+      const events = record(inputEl)
+
+      // What a click on an input that already has the focus does
+      datepicker._calendar.show()
+
+      expect(events).toEqual(['show', 'shown'])
+      expect(datepicker._isShown).toBeTrue()
+    })
+
+    it('should fire each event once for show() and hide()', async () => {
+      fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker">'
+
+      const inputEl = fixtureEl.querySelector('input')
+      const datepicker = new Datepicker(inputEl)
+      const events = record(inputEl)
+
+      await opened(inputEl, datepicker)
+      datepicker.hide()
+      datepicker.show()
+
+      expect(events).toEqual(['show', 'shown', 'hide', 'hidden', 'show', 'shown'])
+    })
+
+    it('should keep the calendar open when hide is prevented', async () => {
+      fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker">'
+
+      const inputEl = fixtureEl.querySelector('input')
+      const datepicker = new Datepicker(inputEl)
+
+      await opened(inputEl, datepicker)
+      inputEl.addEventListener('hide.cx.datepicker', event => event.preventDefault())
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+
+      expect(datepicker._isShown).toBeTrue()
+      expect(datepicker._calendar.context.isShowInInputMode).toBeTrue()
+    })
+
+    it('should return the focus from the calendar to the input, without opening it again', async () => {
+      fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker">'
+
+      const inputEl = fixtureEl.querySelector('input')
+      const datepicker = new Datepicker(inputEl)
+
+      await opened(inputEl, datepicker)
+      const button = datepicker._calendar.context.mainElement.querySelector('button')
+      button.focus()
+      expect(document.activeElement).toEqual(button)
+
+      button.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+
+      expect(document.activeElement).toEqual(inputEl)
+      await new Promise(resolve => {
+        setTimeout(resolve, 50)
+      })
+      expect(datepicker._isShown).toBeFalse()
+      expect(datepicker._calendar.context.isShowInInputMode).toBeFalse()
+    })
+  })
 })

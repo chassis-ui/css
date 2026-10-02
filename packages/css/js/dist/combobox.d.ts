@@ -37,6 +37,7 @@ declare class Combobox extends BaseComponent {
     static get NAME(): string;
     toggle(): void;
     show(): void;
+    protected _show(focusInput?: boolean): void;
     hide(): void;
     disable(): void;
     enable(): void;

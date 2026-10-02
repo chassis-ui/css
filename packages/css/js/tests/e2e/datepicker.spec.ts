@@ -218,18 +218,10 @@ test.describe('closing', () => {
     await expect(calendar(page)).toBeVisible()
   })
 
-  test('Escape returns the focus from the calendar to the input', async ({
-    page,
-    browserName
-  }) => {
-    // Expected: the calendar closes and the focus returns to the input, as the hide() of Vanilla
-    // Calendar Pro means to (`inputElement.focus()` when the focus is inside the calendar).
-    // Chromium: the calendar closes and the focus is left on the body. The button that has the
-    // focus loses it while hide() disables the tabbing of the calendar it has just hidden, so
-    // hide() no longer finds the focus inside the calendar and does not move it to the input.
-    // WebKit: passes. Firefox: not checked (it does not launch locally), so not run either.
-    test.fixme(browserName !== 'webkit', 'Chromium leaves the focus on the body')
-
+  // The hide() of Vanilla Calendar Pro returns the focus to the input when it finds it inside
+  // the calendar. In Chromium the button that has the focus loses it while hide() disables the
+  // tabbing of the calendar it has just hidden, so the plugin returns the focus itself.
+  test('Escape returns the focus from the calendar to the input', async ({ page }) => {
     await page.keyboard.press('Tab')
     await expect(calendar(page)).toBeVisible()
     await page.keyboard.press('ArrowDown')
@@ -251,14 +243,12 @@ test.describe('closing', () => {
     await expect(input(page, 'basicDatepicker')).toHaveValue('')
   })
 
-  // Expected: `hide.cx.datepicker` and `hidden.cx.datepicker` fire whenever the calendar closes,
-  // `show.cx.datepicker` and `shown.cx.datepicker` whenever it opens. The docs tell to keep
-  // `aria-expanded` of the trigger in sync with these events.
-  // Chromium and WebKit: the events fire only when the plugin itself shows or hides the calendar
-  // (focus of the input, show(), hide(), a selected date). Vanilla Calendar Pro closes the
+  // `hide.cx.datepicker` and `hidden.cx.datepicker` fire whenever the calendar closes,
+  // `show.cx.datepicker` and `shown.cx.datepicker` whenever it opens: the docs tell to keep
+  // `aria-expanded` of the trigger in sync with these events. Vanilla Calendar Pro closes the
   // calendar on Escape and on a click outside, and opens it on a click on the input that already
-  // has the focus: no event fires, and the log has only the first `show` and `shown`.
-  test.fixme('the events follow a calendar closed with Escape and opened again', async ({
+  // has the focus, without the plugin.
+  test('the events follow a calendar closed with Escape and opened again', async ({
     page
   }) => {
     await input(page, 'eventsDatepicker').click()

@@ -210,14 +210,22 @@ test.describe('modal dialogs', () => {
     await expect(trigger(page, 'nonModal')).toBeFocused()
   })
 
-  // Expected: the dialog is at the center of the viewport, as the docs of the non-modal dialog
-  // say. Actual, in Chromium and WebKit: its top left corner is at the center, since
-  // `.dialog:not(.instant)[open]:not(.hiding) { transform: none }` wins over the
-  // `transform: translate(-50%, -50%)` of `.dialog.nonmodal` in scss/_dialog.scss.
-  test.fixme('a non-modal dialog is at the center of the viewport', async ({ page }) => {
+  // `inset: 0` and `margin: auto` center it, with no transform: the open state of the dialog
+  // sets `transform: none`, which a centering `translate(-50%, -50%)` lost against
+  test('a non-modal dialog is at the center of the viewport', async ({ page }) => {
     await open(page, 'nonModal')
 
-    const viewport = page.viewportSize()!
+    // The area an element with `position: fixed` is laid out in: the viewport without the
+    // gutter the page keeps for its scrollbar, which takes room in Chromium on Linux
+    const viewport = await page.evaluate(() => {
+      const probe = document.createElement('div')
+      probe.style.cssText = 'position: fixed; inset: 0; visibility: hidden'
+      document.body.append(probe)
+      const { width, height } = probe.getBoundingClientRect()
+      probe.remove()
+
+      return { width, height }
+    })
     const center = async () => {
       const box = await page.locator('#nonModal').boundingBox()
       return [Math.round(box!.x + box!.width / 2), Math.round(box!.y + box!.height / 2)]
@@ -285,12 +293,10 @@ test.describe('alert dialogs', () => {
     await expect(trigger(page, 'confirmAlert')).toBeFocused()
   })
 
-  // Expected: Escape never closes a dialog with `data-cx-keyboard="false"`, and the plugin
-  // fires `hidePrevented` each time. Actual, in Chromium and WebKit: the third Escape in a row
-  // closes it. The browser makes that `cancel` event not cancelable and closes the dialog by
-  // itself, so the plugin fires no `hide` or `hidden`, and `body` keeps `dialog-open`, which
-  // leaves the page unable to scroll.
-  test.fixme('Escape, pressed repeatedly, does not close an alert that forbids it', async ({
+  // A browser makes the `cancel` event of a dialog not cancelable when Escape is pressed
+  // again with no other interaction, and closes the dialog by itself. The plugin prevents the
+  // keydown, so that the browser never starts that close request.
+  test('Escape, pressed repeatedly, does not close an alert that forbids it', async ({
     page
   }) => {
     await open(page, 'confirmAlert')

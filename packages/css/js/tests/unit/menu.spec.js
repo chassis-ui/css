@@ -4917,7 +4917,7 @@ describe('Menu', () => {
 
         btnMenu.addEventListener('shown.cx.menu', () => {
           // After open, focus is on the toggle. ArrowDown should advance one
-          // item per press: ITEM1 → ITEM2 → ITEM3 → ITEM3 (clamped at the end).
+          // item per press, and wrap at the end: ITEM1 → ITEM2 → ITEM3 → ITEM1.
           const focusAfter = ['INITIAL']
           for (let i = 0; i < 5; i++) {
             document.activeElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }))
@@ -4933,7 +4933,7 @@ describe('Menu', () => {
           expect(focusAfter[1]).toEqual('ITEM1')
           expect(focusAfter[2]).toEqual('ITEM2')
           expect(focusAfter[3]).toEqual('ITEM3')
-          expect(focusAfter[4]).toEqual('ITEM3')
+          expect(focusAfter[4]).toEqual('ITEM1')
           resolve()
         })
 
@@ -5201,6 +5201,48 @@ describe('Menu', () => {
 
         menu.show()
       })
+    })
+  })
+
+  describe('Escape with the focus on the body', () => {
+    it('should close the open menu and focus its toggle', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = [
+          '<div>',
+          '  <button class="button" data-cx-toggle="menu" data-cx-auto-close="outside">Toggle</button>',
+          '  <div class="menu">',
+          '    <button class="menu-item" type="button">Item</button>',
+          '  </div>',
+          '</div>'
+        ].join('')
+
+        const btnMenu = fixtureEl.querySelector('[data-cx-toggle="menu"]')
+        const menuEl = fixtureEl.querySelector('.menu')
+        const menu = new Menu(btnMenu)
+
+        btnMenu.addEventListener('shown.cx.menu', () => {
+          // What a click on an item leaves in Safari, which does not focus a button
+          btnMenu.blur()
+          expect(document.activeElement).toEqual(document.body)
+
+          const keydown = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+          document.body.dispatchEvent(keydown)
+
+          expect(keydown.defaultPrevented).toBeTrue()
+          expect(menuEl).not.toHaveClass('show')
+          expect(document.activeElement).toEqual(btnMenu)
+          resolve()
+        })
+
+        menu.show()
+      })
+    })
+
+    it('should leave Escape alone when no menu is open', () => {
+      const keydown = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+      document.body.dispatchEvent(keydown)
+
+      expect(keydown.defaultPrevented).toBeFalse()
     })
   })
 })

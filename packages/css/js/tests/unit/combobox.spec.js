@@ -1853,4 +1853,82 @@ describe('Combobox', () => {
       expect(Combobox.getInstance(toggleEl)).toBeInstanceOf(Combobox)
     })
   })
+
+  describe('keyboard, as the docs describe it', () => {
+    const frames = () => new Promise(resolve => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve))
+    })
+
+    it('should leave the focus on the item ArrowDown opened the menu on', async () => {
+      fixtureEl.innerHTML = buildInputTrigger()
+      const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
+      const inputEl = fixtureEl.querySelector('.combobox-value')
+      const items = fixtureEl.querySelectorAll('.menu-item')
+      const combobox = new Combobox(toggleEl)
+
+      inputEl.focus()
+      await frames()
+      combobox.hide()
+
+      inputEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }))
+      // show() gives the focus to the input in the next frame, unless a key opened the menu
+      await frames()
+
+      expect(fixtureEl.querySelector('.menu')).toHaveClass('show')
+      expect(document.activeElement).toEqual(items[0])
+    })
+
+    it('should close the menu on Escape in the input, and leave the focus there', async () => {
+      fixtureEl.innerHTML = buildInputTrigger()
+      const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
+      const inputEl = fixtureEl.querySelector('.combobox-value')
+      const menuEl = fixtureEl.querySelector('.menu')
+      // eslint-disable-next-line no-new
+      new Combobox(toggleEl)
+
+      inputEl.focus()
+      await frames()
+      expect(menuEl).toHaveClass('show')
+
+      const keydown = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+      inputEl.dispatchEvent(keydown)
+
+      expect(keydown.defaultPrevented).toBeTrue()
+      expect(menuEl).not.toHaveClass('show')
+      expect(document.activeElement).toEqual(inputEl)
+    })
+
+    it('should wrap at the ends of the list', () => {
+      fixtureEl.innerHTML = buildButtonTrigger()
+      const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
+      const items = fixtureEl.querySelectorAll('.menu-item')
+      const combobox = new Combobox(toggleEl)
+
+      combobox.show()
+      items[2].focus()
+      items[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }))
+      expect(document.activeElement).toEqual(items[0])
+
+      items[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true }))
+      expect(document.activeElement).toEqual(items[2])
+    })
+
+    it('should move the focus to the toggle on Tab, before the item is hidden', () => {
+      fixtureEl.innerHTML = buildButtonTrigger()
+      const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
+      const menuEl = fixtureEl.querySelector('.menu')
+      const items = fixtureEl.querySelectorAll('.menu-item')
+      const combobox = new Combobox(toggleEl)
+
+      combobox.show()
+      items[0].focus()
+      const keydown = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true })
+      items[0].dispatchEvent(keydown)
+
+      // Tab itself is left to the browser, which moves on from the toggle
+      expect(keydown.defaultPrevented).toBeFalse()
+      expect(menuEl).not.toHaveClass('show')
+      expect(document.activeElement).toEqual(toggleEl)
+    })
+  })
 })

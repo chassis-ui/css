@@ -107,6 +107,10 @@ var Datepicker = class extends BaseComponent {
 		super(element, config);
 		this._calendar = null;
 		this._isShown = false;
+		this._ownCall = false;
+		this._returnFocus = false;
+		this._returningFocus = false;
+		this._popup = null;
 		this._initCalendar();
 	}
 	static get Default() {
@@ -129,7 +133,9 @@ var Datepicker = class extends BaseComponent {
 		if (this._config.inline) return;
 		if (isDisabled(this._element) || this._isShown) return;
 		if (EventHandler.trigger(this._element, EVENT_SHOW).defaultPrevented) return;
+		this._ownCall = true;
 		this._calendar.show();
+		this._ownCall = false;
 		this._isShown = true;
 		EventHandler.trigger(this._element, EVENT_SHOWN);
 	}
@@ -138,7 +144,10 @@ var Datepicker = class extends BaseComponent {
 		if (this._config.inline) return;
 		if (!this._isShown) return;
 		if (EventHandler.trigger(this._element, EVENT_HIDE).defaultPrevented) return;
+		this._returnFocus = this._hasFocusInPopup();
+		this._ownCall = true;
 		this._calendar.hide();
+		this._ownCall = false;
 		this._isShown = false;
 		EventHandler.trigger(this._element, EVENT_HIDDEN);
 	}
@@ -146,6 +155,10 @@ var Datepicker = class extends BaseComponent {
 		if (this._themeObserver) {
 			this._themeObserver.disconnect();
 			this._themeObserver = null;
+		}
+		if (this._popup) {
+			EventHandler.off(this._popup, EVENT_KEY);
+			this._popup = null;
 		}
 		if (this._calendar) this._calendar.destroy();
 		this._calendar = null;
@@ -248,13 +261,13 @@ var Datepicker = class extends BaseComponent {
 			onInit: (self) => {
 				this._syncThemeAttribute(self.context.mainElement);
 			},
-			onShow: () => {
-				this._isShown = true;
-				this._syncThemeAttribute(this._calendar.context.mainElement);
-			},
-			onHide: () => {
-				this._isShown = false;
-			}
+			onShow: () => this._onCalendarShow(),
+			onHide: () => this._onCalendarHide()
+		};
+		const { openOnFocus } = this._config.vcpOptions;
+		calendarOptions.openOnFocus = (self) => {
+			if (this._returningFocus) return false;
+			return typeof openOnFocus === "function" ? openOnFocus(self) : openOnFocus !== false;
 		};
 		if (this._config.selectedDates.length > 0) {
 			const firstDate = this._parseDate(this._config.selectedDates[0]);
@@ -264,6 +277,52 @@ var Datepicker = class extends BaseComponent {
 		if (this._config.dateMin) calendarOptions.dateMin = this._config.dateMin;
 		if (this._config.dateMax) calendarOptions.dateMax = this._config.dateMax;
 		return calendarOptions;
+	}
+	_onCalendarShow() {
+		const popup = this._calendar.context.mainElement;
+		this._syncThemeAttribute(popup);
+		this._watchPopup(popup);
+		if (this._ownCall || this._isShown) return;
+		if (EventHandler.trigger(this._element, EVENT_SHOW).defaultPrevented) {
+			this._calendar.hide();
+			return;
+		}
+		this._isShown = true;
+		EventHandler.trigger(this._element, EVENT_SHOWN);
+	}
+	_onCalendarHide() {
+		const closedByCalendar = !this._ownCall && this._isShown;
+		if (closedByCalendar) {
+			if (EventHandler.trigger(this._element, EVENT_HIDE).defaultPrevented) {
+				this._returnFocus = false;
+				this._calendar.show();
+				return;
+			}
+		}
+		this._restoreFocus();
+		if (closedByCalendar) {
+			this._isShown = false;
+			EventHandler.trigger(this._element, EVENT_HIDDEN);
+		}
+	}
+	_hasFocusInPopup() {
+		return Boolean(this._popup?.contains(document.activeElement));
+	}
+	_watchPopup(popup) {
+		if (this._popup === popup || popup === this._positionElement) return;
+		this._popup = popup;
+		EventHandler.on(popup, `keydown${EVENT_KEY}`, (event) => {
+			if (event.key === "Escape") this._returnFocus = this._hasFocusInPopup();
+		});
+	}
+	_restoreFocus() {
+		if (!this._returnFocus) return;
+		this._returnFocus = false;
+		if (document.activeElement !== this._element) {
+			this._returningFocus = true;
+			this._element.focus();
+			this._returningFocus = false;
+		}
 	}
 	_handleDateClick(self, event) {
 		const selectedDates = [...self.context.selectedDates];

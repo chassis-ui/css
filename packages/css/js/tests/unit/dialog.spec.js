@@ -1222,4 +1222,107 @@ describe('Dialog', () => {
       })
     })
   })
+
+  describe('Escape on the keydown', () => {
+    it('should prevent the keydown and fire hidePrevented when keyboard = false', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = '<dialog class="dialog instant"></dialog>'
+
+        const dialogEl = fixtureEl.querySelector('.dialog')
+        const dialog = new Dialog(dialogEl, { keyboard: false })
+        let prevented = 0
+
+        dialogEl.addEventListener('hidePrevented.cx.dialog', () => {
+          prevented++
+        })
+
+        dialogEl.addEventListener('shown.cx.dialog', () => {
+          // A browser closes the dialog by itself on a later Escape unless each keydown
+          // is prevented
+          for (let press = 0; press < 4; press++) {
+            const keydown = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+            dialogEl.dispatchEvent(keydown)
+            expect(keydown.defaultPrevented).toBeTrue()
+          }
+
+          expect(prevented).toEqual(4)
+          expect(dialogEl.open).toBeTrue()
+          resolve()
+        })
+
+        dialog.show()
+      })
+    })
+
+    it('should leave a keydown that is already prevented', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = '<dialog class="dialog instant"></dialog>'
+
+        const dialogEl = fixtureEl.querySelector('.dialog')
+        const dialog = new Dialog(dialogEl)
+
+        dialogEl.addEventListener('shown.cx.dialog', () => {
+          const keydown = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+          keydown.preventDefault()
+          dialogEl.dispatchEvent(keydown)
+
+          expect(dialogEl.open).toBeTrue()
+          resolve()
+        })
+
+        dialog.show()
+      })
+    })
+  })
+
+  describe('a dialog closed by the browser', () => {
+    it('should release the body and fire hidden', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = '<dialog class="dialog"></dialog>'
+
+        const dialogEl = fixtureEl.querySelector('.dialog')
+        const dialog = new Dialog(dialogEl)
+
+        dialogEl.addEventListener('shown.cx.dialog', () => {
+          expect(document.body).toHaveClass('dialog-open')
+
+          dialogEl.addEventListener('hidden.cx.dialog', () => {
+            expect(document.body).not.toHaveClass('dialog-open')
+            expect(dialog._isTransitioning).toBeFalse()
+            resolve()
+          })
+
+          dialogEl.close()
+        })
+
+        dialog.show()
+      })
+    })
+
+    it('should fire hidden once when the plugin closes the dialog', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = '<dialog class="dialog instant"></dialog>'
+
+        const dialogEl = fixtureEl.querySelector('.dialog')
+        const dialog = new Dialog(dialogEl)
+        let hidden = 0
+
+        dialogEl.addEventListener('hidden.cx.dialog', () => {
+          hidden++
+        })
+
+        dialogEl.addEventListener('shown.cx.dialog', () => {
+          dialog.hide()
+
+          // The native close event comes in a task of its own
+          setTimeout(() => {
+            expect(hidden).toEqual(1)
+            resolve()
+          }, 50)
+        })
+
+        dialog.show()
+      })
+    })
+  })
 })

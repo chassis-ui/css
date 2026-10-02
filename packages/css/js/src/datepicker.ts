@@ -133,6 +133,10 @@ class Datepicker extends BaseComponent {
   protected declare _config: DatepickerConfig
   protected declare _calendar: Calendar | null
   protected declare _isShown: boolean
+  protected declare _ownCall: boolean
+  protected declare _returnFocus: boolean
+  protected declare _returningFocus: boolean
+  protected declare _popup: HTMLElement | null
   protected declare _themeObserver: MutationObserver | null
   protected declare _isInput: boolean
   protected declare _isInline: boolean
@@ -145,6 +149,10 @@ class Datepicker extends BaseComponent {
 
     this._calendar = null
     this._isShown = false
+    this._ownCall = false
+    this._returnFocus = false
+    this._returningFocus = false
+    this._popup = null
 
     this._initCalendar()
   }
@@ -199,7 +207,9 @@ class Datepicker extends BaseComponent {
       return
     }
 
+    this._ownCall = true
     this._calendar!.show()
+    this._ownCall = false
     this._isShown = true
 
     EventHandler.trigger(this._element, EVENT_SHOWN)
@@ -223,7 +233,10 @@ class Datepicker extends BaseComponent {
       return
     }
 
+    this._returnFocus = this._hasFocusInPopup()
+    this._ownCall = true
     this._calendar!.hide()
+    this._ownCall = false
     this._isShown = false
 
     EventHandler.trigger(this._element, EVENT_HIDDEN)
@@ -233,6 +246,11 @@ class Datepicker extends BaseComponent {
     if (this._themeObserver) {
       this._themeObserver.disconnect()
       this._themeObserver = null
+    }
+
+    if (this._popup) {
+      EventHandler.off(this._popup, EVENT_KEY)
+      this._popup = null
     }
 
     if (this._calendar) {
@@ -427,13 +445,18 @@ class Datepicker extends BaseComponent {
       onInit: (self: Calendar) => {
         this._syncThemeAttribute(self.context.mainElement)
       },
-      onShow: () => {
-        this._isShown = true
-        this._syncThemeAttribute(this._calendar!.context.mainElement)
-      },
-      onHide: () => {
-        this._isShown = false
+      onShow: () => this._onCalendarShow(),
+      onHide: () => this._onCalendarHide()
+    }
+
+    // The focus the plugin gives back to the element must not open the calendar again
+    const { openOnFocus } = this._config.vcpOptions
+    calendarOptions.openOnFocus = (self: Calendar) => {
+      if (this._returningFocus) {
+        return false
       }
+
+      return typeof openOnFocus === 'function' ? openOnFocus(self) : openOnFocus !== false
     }
 
     // Navigate to the month of the first selected date
@@ -452,6 +475,87 @@ class Datepicker extends BaseComponent {
     }
 
     return calendarOptions
+  }
+
+  // Vanilla Calendar Pro opens the calendar by itself on a click on an input that already
+  // has the focus, and closes it on Escape and on a click outside. The events of the plugin
+  // fire for those too.
+  protected _onCalendarShow(): void {
+    const popup = this._calendar!.context.mainElement
+
+    this._syncThemeAttribute(popup)
+    this._watchPopup(popup)
+
+    // show() opened it: now, or a moment ago for a calendar that is built on its first use
+    if (this._ownCall || this._isShown) {
+      return
+    }
+
+    const showEvent = EventHandler.trigger(this._element, EVENT_SHOW)
+    if (showEvent.defaultPrevented) {
+      this._calendar!.hide()
+      return
+    }
+
+    this._isShown = true
+    EventHandler.trigger(this._element, EVENT_SHOWN)
+  }
+
+  protected _onCalendarHide(): void {
+    const closedByCalendar = !this._ownCall && this._isShown
+
+    if (closedByCalendar) {
+      const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE)
+      if (hideEvent.defaultPrevented) {
+        this._returnFocus = false
+        this._calendar!.show()
+        return
+      }
+    }
+
+    this._restoreFocus()
+
+    if (closedByCalendar) {
+      this._isShown = false
+      EventHandler.trigger(this._element, EVENT_HIDDEN)
+    }
+  }
+
+  protected _hasFocusInPopup(): boolean {
+    return Boolean(this._popup?.contains(document.activeElement))
+  }
+
+  // Escape reaches the popup before the listener of Vanilla Calendar Pro on the document,
+  // which closes the calendar
+  protected _watchPopup(popup: HTMLElement): void {
+    if (this._popup === popup || popup === this._positionElement) {
+      return
+    }
+
+    this._popup = popup
+    EventHandler.on(popup, `keydown${EVENT_KEY}`, event => {
+      if (event.key === 'Escape') {
+        this._returnFocus = this._hasFocusInPopup()
+      }
+    })
+  }
+
+  // Vanilla Calendar Pro returns the focus to the input when it finds it inside the
+  // calendar it has just hidden. A browser that takes the focus from a hidden element
+  // at once (Chromium, Firefox) leaves it on the body instead. The calendar still counts
+  // as shown here, so the focus does not open it again.
+  protected _restoreFocus(): void {
+    if (!this._returnFocus) {
+      return
+    }
+
+    this._returnFocus = false
+
+    if (document.activeElement !== this._element) {
+      this._returningFocus = true
+      this._element.focus()
+      this._returningFocus = false
+    }
   }
 
   protected _handleDateClick(self: Calendar, event: MouseEvent): void {

@@ -88,6 +88,7 @@ declare class Menu extends FloatingBase {
     protected _selectMenuItem({ key, target }: ChassisEvent): void;
     protected _handleSubmenuKeydown(event: ChassisEvent): boolean;
     static clearMenus(event: ChassisEvent): void;
+    static escapeHandler(event: ChassisEvent): void;
     static dataApiKeydownHandler(this: HTMLElement, event: ChassisEvent): void;
 }
 export default Menu;

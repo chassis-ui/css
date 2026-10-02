@@ -42,12 +42,16 @@ class DialogBase extends BaseComponent {
   protected declare _config: DialogBaseConfig
   protected declare _isTransitioning: boolean
   protected declare _openedAsModal: boolean
+  protected declare _closeExpected: boolean
+  protected declare _nativeCloseHandler: () => void
 
   constructor(element?: string | Element | null, config?: Partial<DialogBaseConfig> | null) {
     super(element, config)
 
     this._isTransitioning = false
     this._openedAsModal = false
+    this._closeExpected = false
+    this._nativeCloseHandler = () => this._onNativeClose()
     this._addDialogListeners()
   }
 
@@ -78,6 +82,7 @@ class DialogBase extends BaseComponent {
       this._closeAndCleanup()
     }
 
+    this._element.removeEventListener('close', this._nativeCloseHandler)
     super.dispose()
   }
 
@@ -233,6 +238,8 @@ class DialogBase extends BaseComponent {
   // Closes the native <dialog> and tears down body-scroll prevention.
   // Safe to call multiple times — close() is a no-op on a closed dialog.
   protected _closeAndCleanup(): void {
+    // The native close event comes later, in a task of its own
+    this._closeExpected = this._closeExpected || this._element.open
     this._element.close()
     this._openedAsModal = false
 
@@ -268,6 +275,41 @@ class DialogBase extends BaseComponent {
     }, this._element)
   }
 
+  // Handles a dialog the browser closed by itself, when the cancel event could not be
+  // prevented or `close()` was called on the element: hide() did not run, so the body would
+  // keep its scroll lock and no event would tell that the dialog is closed
+  protected _onNativeClose(): void {
+    if (this._closeExpected) {
+      this._closeExpected = false
+      return
+    }
+
+    // hide() is waiting for its transition, and finishes the work when it ends
+    if (this._isTransitioning && this._element.classList.contains('hiding')) {
+      return
+    }
+
+    this._hideChildComponents()
+    this._closeAndCleanup()
+    this._onAfterHide()
+    this._isTransitioning = false
+    EventHandler.trigger(this._element, this.constructor.eventName('hidden'))
+  }
+
+  protected _handleEscape(): void {
+    if (!this._config.keyboard) {
+      // A non-modal dialog has no backdrop to bounce against
+      if (this._openedAsModal) {
+        this._triggerBackdropTransition()
+      }
+
+      return
+    }
+
+    this._onCancel()
+    this.hide()
+  }
+
   // Hide any tooltips, popovers, or toasts inside the dialog before closing.
   // These components append to the dialog (for top-layer rendering) and would
   // otherwise persist visibly after close().
@@ -295,34 +337,29 @@ class DialogBase extends BaseComponent {
   protected _addDialogListeners(): void {
     const eventKey = this.constructor.EVENT_KEY
 
-    // Handle native cancel event (Escape key) — only fires for modal dialogs
+    // Handle Escape on the keydown, for modal and non-modal dialogs. A modal dialog would
+    // also get a native cancel event, but a browser makes that event not cancelable when
+    // Escape is pressed again without another interaction, and closes the dialog by itself.
+    // Preventing the keydown keeps the browser from starting that close request.
+    EventHandler.on(this._element, `keydown${eventKey}`, event => {
+      if (event.key !== 'Escape' || event.defaultPrevented) {
+        return
+      }
+
+      event.preventDefault()
+      this._handleEscape()
+    })
+
+    // Handle the native cancel event of a modal dialog: a close request that did not come
+    // through the keydown above (focus outside the dialog, the back gesture of Android)
     EventHandler.on(this._element, `cancel${eventKey}`, event => {
       event.preventDefault()
-
-      if (!this._config.keyboard) {
-        this._triggerBackdropTransition()
-        return
-      }
-
-      this._onCancel()
-      this.hide()
+      this._handleEscape()
     })
 
-    // Handle Escape key for non-modal dialogs (native cancel doesn't fire for show())
-    EventHandler.on(this._element, `keydown${eventKey}`, event => {
-      if (event.key !== 'Escape' || this._openedAsModal) {
-        return
-      }
-
-      event.preventDefault()
-
-      if (!this._config.keyboard) {
-        return
-      }
-
-      this._onCancel()
-      this.hide()
-    })
+    // `close` is the name of an event of other plugins (`close.cx.chip`), so EventHandler
+    // does not take it for the native event
+    this._element.addEventListener('close', this._nativeCloseHandler)
 
     // Handle backdrop clicks — only applies to modal dialogs
     EventHandler.on(this._element, `click${eventKey}`, event => {

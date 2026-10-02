@@ -38,6 +38,8 @@ var DialogBase = class extends BaseComponent {
 		super(element, config);
 		this._isTransitioning = false;
 		this._openedAsModal = false;
+		this._closeExpected = false;
+		this._nativeCloseHandler = () => this._onNativeClose();
 		this._addDialogListeners();
 	}
 	static get NAME() {
@@ -50,6 +52,7 @@ var DialogBase = class extends BaseComponent {
 	}
 	dispose() {
 		if (this._element.open) this._closeAndCleanup();
+		this._element.removeEventListener("close", this._nativeCloseHandler);
 		super.dispose();
 	}
 	toggle(relatedTarget) {
@@ -119,6 +122,7 @@ var DialogBase = class extends BaseComponent {
 		if (!this._shouldDeferClose()) this._closeAndCleanup();
 	}
 	_closeAndCleanup() {
+		this._closeExpected = this._closeExpected || this._element.open;
 		this._element.close();
 		this._openedAsModal = false;
 		if (!document.querySelector("dialog[open]:modal")) document.body.classList.remove(CLASS_NAME_OPEN);
@@ -134,6 +138,26 @@ var DialogBase = class extends BaseComponent {
 			this._element.classList.remove(staticClass);
 		}, this._element);
 	}
+	_onNativeClose() {
+		if (this._closeExpected) {
+			this._closeExpected = false;
+			return;
+		}
+		if (this._isTransitioning && this._element.classList.contains("hiding")) return;
+		this._hideChildComponents();
+		this._closeAndCleanup();
+		this._onAfterHide();
+		this._isTransitioning = false;
+		EventHandler.trigger(this._element, this.constructor.eventName("hidden"));
+	}
+	_handleEscape() {
+		if (!this._config.keyboard) {
+			if (this._openedAsModal) this._triggerBackdropTransition();
+			return;
+		}
+		this._onCancel();
+		this.hide();
+	}
 	_hideChildComponents() {
 		for (const el of SelectorEngine.find("[data-cx-toggle=\"tooltip\"], [data-cx-toggle=\"popover\"], [data-cx-toggle=\"menu\"]", this._element)) {
 			const instance = Data.getAny(el);
@@ -146,22 +170,16 @@ var DialogBase = class extends BaseComponent {
 	}
 	_addDialogListeners() {
 		const eventKey = this.constructor.EVENT_KEY;
+		EventHandler.on(this._element, `keydown${eventKey}`, (event) => {
+			if (event.key !== "Escape" || event.defaultPrevented) return;
+			event.preventDefault();
+			this._handleEscape();
+		});
 		EventHandler.on(this._element, `cancel${eventKey}`, (event) => {
 			event.preventDefault();
-			if (!this._config.keyboard) {
-				this._triggerBackdropTransition();
-				return;
-			}
-			this._onCancel();
-			this.hide();
+			this._handleEscape();
 		});
-		EventHandler.on(this._element, `keydown${eventKey}`, (event) => {
-			if (event.key !== "Escape" || this._openedAsModal) return;
-			event.preventDefault();
-			if (!this._config.keyboard) return;
-			this._onCancel();
-			this.hide();
-		});
+		this._element.addEventListener("close", this._nativeCloseHandler);
 		EventHandler.on(this._element, `click${eventKey}`, (event) => {
 			if (event.target !== this._element || !this._openedAsModal) return;
 			if (this._config.backdrop === "static") {

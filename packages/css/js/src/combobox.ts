@@ -145,6 +145,11 @@ class Combobox extends BaseComponent {
   }
 
   show(): void {
+    this._show()
+  }
+
+  // `focusInput: false` leaves the focus to the caller, which moves it to an item
+  protected _show(focusInput = true): void {
     if (isDisabled(this._toggle) || this._isShown()) {
       return
     }
@@ -163,18 +168,19 @@ class Combobox extends BaseComponent {
     if (this._searchInput) {
       this._searchInput.value = ''
       this._filterItems('')
-      requestAnimationFrame(() => {
-        if (!this.isDisposed()) {
-          this._searchInput?.focus()
-        }
-      })
     } else if (this._comboInput) {
       this._filterItems('')
+    }
+
+    if (focusInput) {
       requestAnimationFrame(() => {
-        if (!this.isDisposed()) {
-          this._comboInput?.focus()
-          this._comboInput?.select()
+        if (this.isDisposed()) {
+          return
         }
+
+        this._searchInput?.focus()
+        this._comboInput?.focus()
+        this._comboInput?.select()
       })
     }
 
@@ -565,7 +571,7 @@ class Combobox extends BaseComponent {
     if (key === ARROW_DOWN_KEY || key === ARROW_UP_KEY) {
       event.preventDefault()
       if (!this._isShown()) {
-        this.show()
+        this._show(false)
       }
 
       const items = this._getVisibleItems()
@@ -574,6 +580,14 @@ class Combobox extends BaseComponent {
         target.focus()
       }
 
+      return
+    }
+
+    // The focus is on the toggle or in its input, and stays there
+    if (key === ESCAPE_KEY && this._isShown()) {
+      event.preventDefault()
+      event.stopPropagation()
+      this.hide()
       return
     }
 
@@ -596,6 +610,21 @@ class Combobox extends BaseComponent {
     }
 
     if (key === TAB_KEY) {
+      // The item or the search field that has the focus is about to be hidden, and a
+      // browser that then leaves the focus on the body starts Tab from the top of the
+      // page. From the toggle, Tab moves on to the control that follows the combobox.
+      this._ignoreNextFocus = true
+      ;(this._comboInput ?? this._toggle).focus()
+      this._ignoreNextFocus = false
+
+      // The items stay in the layout while the menu fades out: inert for the time of
+      // the key, they are not the next stop of Tab
+      const menu = this._menu
+      menu.inert = true
+      setTimeout(() => {
+        menu.inert = false
+      })
+
       this.hide()
       return
     }
@@ -606,7 +635,7 @@ class Combobox extends BaseComponent {
       event.preventDefault()
       const items = this._getVisibleItems()
       if (items.length > 0) {
-        getNextActiveElement(items, target as HTMLElement, key === ARROW_DOWN_KEY, !items.includes(target as HTMLElement)).focus()
+        getNextActiveElement(items, target as HTMLElement, key === ARROW_DOWN_KEY, true).focus()
       }
 
       return

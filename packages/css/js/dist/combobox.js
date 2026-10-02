@@ -91,6 +91,9 @@ var Combobox = class Combobox extends BaseComponent {
 		return this._isShown() ? this.hide() : this.show();
 	}
 	show() {
+		this._show();
+	}
+	_show(focusInput = true) {
 		if (isDisabled(this._toggle) || this._isShown()) return;
 		if (EventHandler.trigger(this._toggle, EVENT_SHOW).defaultPrevented) return;
 		this._menuInstance.show();
@@ -98,18 +101,13 @@ var Combobox = class Combobox extends BaseComponent {
 		if (this._searchInput) {
 			this._searchInput.value = "";
 			this._filterItems("");
-			requestAnimationFrame(() => {
-				if (!this.isDisposed()) this._searchInput?.focus();
-			});
-		} else if (this._comboInput) {
-			this._filterItems("");
-			requestAnimationFrame(() => {
-				if (!this.isDisposed()) {
-					this._comboInput?.focus();
-					this._comboInput?.select();
-				}
-			});
-		}
+		} else if (this._comboInput) this._filterItems("");
+		if (focusInput) requestAnimationFrame(() => {
+			if (this.isDisposed()) return;
+			this._searchInput?.focus();
+			this._comboInput?.focus();
+			this._comboInput?.select();
+		});
 		EventHandler.trigger(this._toggle, EVENT_SHOWN);
 	}
 	hide() {
@@ -339,9 +337,15 @@ var Combobox = class Combobox extends BaseComponent {
 		const { key } = event;
 		if (key === ARROW_DOWN_KEY || key === ARROW_UP_KEY) {
 			event.preventDefault();
-			if (!this._isShown()) this.show();
+			if (!this._isShown()) this._show(false);
 			const items = this._getVisibleItems();
 			if (items.length > 0) (key === ARROW_DOWN_KEY ? items[0] : items.at(-1)).focus();
+			return;
+		}
+		if (key === ESCAPE_KEY && this._isShown()) {
+			event.preventDefault();
+			event.stopPropagation();
+			this.hide();
 			return;
 		}
 		if ((key === ENTER_KEY || key === SPACE_KEY) && !this._isShown() && event.target !== this._comboInput) {
@@ -360,6 +364,14 @@ var Combobox = class Combobox extends BaseComponent {
 			return;
 		}
 		if (key === TAB_KEY) {
+			this._ignoreNextFocus = true;
+			(this._comboInput ?? this._toggle).focus();
+			this._ignoreNextFocus = false;
+			const menu = this._menu;
+			menu.inert = true;
+			setTimeout(() => {
+				menu.inert = false;
+			});
 			this.hide();
 			return;
 		}
@@ -367,7 +379,7 @@ var Combobox = class Combobox extends BaseComponent {
 		if (key === ARROW_DOWN_KEY || key === ARROW_UP_KEY) {
 			event.preventDefault();
 			const items = this._getVisibleItems();
-			if (items.length > 0) getNextActiveElement(items, target, key === ARROW_DOWN_KEY, !items.includes(target)).focus();
+			if (items.length > 0) getNextActiveElement(items, target, key === ARROW_DOWN_KEY, true).focus();
 			return;
 		}
 		if (key === HOME_KEY || key === END_KEY) {

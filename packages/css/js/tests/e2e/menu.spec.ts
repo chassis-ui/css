@@ -250,12 +250,7 @@ test.describe('submenus', () => {
     await expect(item(menu, 'Enabled action')).toBeFocused()
   })
 
-  // The documentation of the keyboard interaction (menu.mdx) says: "Arrow key navigation wraps
-  // from last to first and vice versa." The plugin does not wrap, in any browser: ArrowDown on
-  // the last item and ArrowUp on the first one leave focus where it is, since `_selectMenuItem`
-  // lets `getNextActiveElement` cycle only when focus is not on an item. The unit spec expects
-  // that too ("ITEM3 (clamped at the end)"), so either the documentation or the plugin is wrong.
-  test.fixme('the arrow keys wrap from the last item to the first and back', async ({ page }) => {
+  test('the arrow keys wrap from the last item to the first and back', async ({ page }) => {
     const toggle = toggleOf(page, 'Menu with Submenu')
     const menu = menuOf(toggle)
 
@@ -407,16 +402,9 @@ test.describe('submenus', () => {
     }
   })
 
-  test('Escape closes the menu after a click on the item of a submenu', async ({
-    page,
-    browserName
-  }) => {
-    // Expected: Escape closes the menu and returns focus to the toggle, wherever the pointer
-    // clicked before. In WebKit the menu stays open: a click does not focus a button there, it
-    // takes focus from the toggle to the body, and the plugin listens to the keys on the toggle
-    // and the menu only.
-    test.fixme(browserName === 'webkit', 'Escape does nothing once a click moved focus to body')
-
+  // In WebKit a click does not focus a button, it takes focus from the toggle to the body:
+  // the plugin hears Escape there too
+  test('Escape closes the menu after a click on the item of a submenu', async ({ page }) => {
     const toggle = toggleOf(page, 'Menu with Submenu')
     const menu = menuOf(toggle)
 
