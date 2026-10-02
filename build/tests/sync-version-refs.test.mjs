@@ -1,7 +1,7 @@
 /*!
  * sync-version-refs.test.mjs — the version step, after `changeset version`.
  *
- * build/sync-version-refs.js runs in the Version Packages pull request only. It writes the
+ * build/sync-version-refs.js runs in `pnpm changeset:version` only. It writes the
  * version into the files that show it, moves the hand-written Unreleased section of the
  * CHANGELOG into the first Changesets entry, and rebuilds the output when a banner names
  * another version. Run via `pnpm build:test`.

@@ -1,22 +1,31 @@
 name: CI
 
-# Pull requests and pushes to develop run this workflow directly. Pushes to main run it through
-# publish-release.yml, which publishes only after these jobs pass.
 on:
   push:
+    # A commit reaches `staging` and `main` only after these checks passed on it, so they
+    # run on `develop` first. Their results belong to the commit, and the ruleset of `main`
+    # and the release workflow read them there, so pushing the same commit to `staging` and
+    # `main` does not run them again. See "Releases" in .github/CONTRIBUTING.md.
     branches: [develop]
   pull_request:
+    # Contributors open pull requests against `develop`
+    branches: [develop, staging, main]
+  # Runs the checks again on a commit, on the branch the run is started from
   workflow_dispatch:
-  workflow_call:
 
 permissions:
   contents: read
 
+# A newer push to the same pull request supersedes the running one. A push to `develop` always
+# runs to the end: the ruleset and the release workflow read the results of that commit.
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  group: ci-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # The ruleset of `main` requires Dist (Node 22), Dist (Node 24), CSS, JS, Site and Bundle Size
+  # by these names, and release.yml reads them too. Rename a job in all three places.
+  #
   # `npm publish` ships dist/ and js/dist/ of packages/css as committed, with no build step of
   # its own. This job builds them on every Node.js version the package supports and fails when
   # the result differs from what is committed. It also tests the build scripts on both
@@ -49,8 +58,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --filter @chassis-ui/css
 
-      # The scripts of the release path run on `main` only: the comparison below, the version
-      # references, the release notes. Their tests run them on files of their own
+      # The scripts of the release path run for a version only: the comparison below, the
+      # version references, the release notes. Their tests run them on files of their own
       - name: Test the build scripts
         run: pnpm build:test
 
@@ -209,7 +218,7 @@ jobs:
   # The sizes of the committed dist/ files against the budgets of
   # packages/css/.bundlewatch.config.json
   bundle:
-    name: Bundle size
+    name: Bundle Size
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -241,13 +250,9 @@ jobs:
   # (changedFilePatterns in .changeset/config.json, which are relative to the package);
   # `pnpm changeset --empty` adds one that releases nothing. A pull
   # request is compared with its base branch, a push to develop with the tip it replaced. The
-  # Version Packages pull request consumes changesets, and so does the version commit when it
-  # comes back from main into develop, so both are skipped.
+  # version commit consumes the changesets, so a push that changes the version is skipped.
   changeset:
     name: Changeset
-    if: >-
-      (github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')) ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/develop')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -334,3 +339,19 @@ jobs:
       - name: Audit all dependencies
         run: pnpm audit
         continue-on-error: true
+
+  dependency-review:
+    name: Dependency Review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: moderate

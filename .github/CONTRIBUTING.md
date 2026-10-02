@@ -45,8 +45,10 @@ rest of this guide, `scss/`, `js/`, `postcss/` and `dist/` are the folders in `p
 
 ## Branch and commit conventions
 
-`develop` is the integration branch: open pull requests against it. `main` holds released versions
-only; pushing it publishes to npm (see [Releases](#releases)).
+`develop` is the integration branch: open pull requests against it, and CI runs there. `main` and
+`staging` only ever receive a commit that passed CI on `develop`: `main` is production, and a push
+to it publishes a new version to npm (see [Releases](#releases)); `staging` is a preview deployment
+of the docs site, pushed from `develop` when one is wanted.
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org/) with a lower-case,
 imperative summary:
@@ -122,7 +124,7 @@ file, `pnpm docs:links` checks its links, external URLs included.
 ## Changing the build scripts
 
 The scripts in `build/` and `packages/css/build/` build the package, check the repository and make
-the release. Several run on `main` only, so an error in one shows when a version is being
+the release. Several run for a version only, so an error in one shows when a version is being
 released. Their tests are in `build/tests/`:
 
 ```sh
@@ -146,8 +148,8 @@ fails on your pull request, run `pnpm dist` and commit what changed.
 ## What a pull request needs before merge
 
 - **Passing CI.** `.github/workflows/ci.yml` runs these jobs, and the commands above run the same
-  checks locally. `pnpm test:ci` runs all of them except the changeset check in one command; it
-  takes several minutes and needs the Playwright browsers
+  checks locally. `pnpm test:ci` runs all of them except the changeset check and the dependency
+  review in one command; it takes several minutes and needs the Playwright browsers
   (`pnpm --filter @chassis-ui/css exec playwright install chromium firefox webkit`).
   - **Dist**: `pnpm build:test` and `pnpm verify` on Node.js 22 and 24.
   - **CSS**: Sass lint, build and tests, the Tailwind tests and the Tailwind parity tests.
@@ -155,8 +157,11 @@ fails on your pull request, run `pnpm dist` and commit what changed.
     accessibility checks, integration tests and `pnpm check:package`.
   - **Site**: `pnpm lint:prettier` for the whole repository, `astro check`, the site build,
     `site:lint` and `pnpm docs:links`.
-  - **Audit**: `pnpm audit --prod` fails the job; the full audit is reported only.
-  - **Bundle size**: the gzip size of each `dist/` CSS and JavaScript file against its budget in
+  - **Audit**: `pnpm check:pnpm`, which is `pnpm audit --prod --audit-level moderate`, fails the
+    job; the full audit is reported only.
+  - **Dependency Review**: on a pull request, fails when it adds a dependency with a known
+    vulnerability of moderate severity or higher.
+  - **Bundle Size**: the gzip size of each `dist/` CSS and JavaScript file against its budget in
     `packages/css/.bundlewatch.config.json`; raise a budget with `pnpm bundlewatch:fix` when a change outgrows it
     on purpose.
   - **Changeset**: a changeset is present when the pull request changes `scss/`, `js/src/`,
@@ -193,29 +198,35 @@ Don't edit `packages/css/CHANGELOG.md` by hand; the version step writes it from 
 
 ## Releases
 
-Releases are made from `main` by `.github/workflows/publish-release.yml`, after the CI checks pass
-on the pushed commit:
+The version is made on `develop`, and `.github/workflows/release.yml` publishes it when the commit
+reaches `main`:
 
-1. A maintainer merges `develop` into `main` and pushes it. When `main` has changesets, the
-   workflow opens or updates a "Version Packages" pull request. It runs `pnpm changeset:version`,
-   which removes the changesets, bumps the version in `packages/css/package.json`, writes the
-   CHANGELOG entry, updates the version references (`packages/site/config.yml`,
-   `BaseComponent.VERSION`, the Sass banner) and rebuilds `dist/` and `js/dist/`, so their banners
-   and the CDN URLs and SRI hashes in `packages/site/config.yml` match the new version.
-2. Merging that pull request pushes `main` again. The version is not on npm yet, so the workflow
-   runs `pnpm verify`, publishes `@chassis-ui/css` with npm trusted publishing and provenance (no
-   npm token), and creates the GitHub release `v<version>` with the CHANGELOG entry as its body.
-3. The maintainer merges `main` back into `develop`, so the next changes start from the released
-   version. The Changeset check skips that push, since it changes the version.
+1. On `develop`, a maintainer runs `pnpm changeset:version`. It removes the changesets, bumps the
+   version in `packages/css/package.json`, writes the CHANGELOG entry, updates the version
+   references (`packages/site/config.yml`, `BaseComponent.VERSION`, the Sass banner) and rebuilds
+   `dist/` and `js/dist/`, so their banners and the CDN URLs and SRI hashes in
+   `packages/site/config.yml` match the new version. The maintainer reviews the result, commits
+   it and pushes `develop`. The Changeset check skips that push, since it changes the version.
+2. CI runs on that commit. When it has passed, the maintainer pushes the same commit to `main`
+   (`git push origin develop:main`), and to `staging` first when a preview is wanted. Neither push
+   runs CI again: the results belong to the commit, and the ruleset of `main` requires them.
+3. The push to `main` starts `release.yml`. It reads the version, asks npm whether it has it, and
+   stops when it does. Otherwise it reads the results of the Dist, CSS, JS, Site and Bundle Size
+   jobs on the commit and stops unless each one passed. Then it publishes `@chassis-ui/css` with
+   npm trusted publishing and provenance (no npm token), and creates the GitHub release
+   `v<version>` with the CHANGELOG entry as its body and `chassis-css-<version>-dist.zip`
+   attached.
 
-The Version Packages pull request is opened by GitHub Actions, so CI does not run on it by itself;
-the push to `main` that merging it causes runs every check before anything is published.
+`develop`, `staging` and `main` are the same commit after a release, so nothing is merged back. A
+push to `main` that does not change the version publishes nothing.
 
-A maintainer can also run `pnpm changeset:version` locally on `develop`, review and commit the
-result, then merge into `main` and push; the workflow then publishes without a pull request. A
-prerelease version (`0.6.0-beta.1`) is published under the dist-tag of its first identifier
-(`beta`), or `next` when that is a number; see [VERSIONING.md](../VERSIONING.md#prereleases). A
-version without a CHANGELOG entry is not published.
+A prerelease version (`0.6.0-beta.1`) is published under the dist-tag of its first identifier
+(`beta`), or `next` when that is a number, and its GitHub release is marked as a prerelease; see
+[VERSIONING.md](../VERSIONING.md#prereleases). A version without a CHANGELOG entry is not
+published.
+
+npm trusts the file `release.yml` of this repository as the publisher of the package. Renaming the
+workflow breaks publishing until the trusted publisher on npmjs.com names the new file.
 
 ## Using the issue tracker
 

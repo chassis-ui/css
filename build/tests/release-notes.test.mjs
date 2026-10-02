@@ -1,7 +1,7 @@
 /*!
  * release-notes.test.mjs — the body of the GitHub release, from the CHANGELOG.
  *
- * publish-release.yml runs build/release-notes.js on `main` only, so an error in it shows when
+ * release.yml runs build/release-notes.js for a new version only, so an error in it shows when
  * a version is being released. Run via `pnpm build:test`.
  *
  * Copyright 2026 Ozgur Gunes

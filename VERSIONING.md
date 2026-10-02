@@ -72,7 +72,7 @@ with the migration in its changeset.
 
 ## Prereleases
 
-A prerelease is versioned with Changesets' pre mode on a branch that is merged into `main`:
+A prerelease is versioned with Changesets' pre mode on `develop`, and released like any version:
 
 ```sh
 pnpm changeset pre enter beta   # following version steps write 0.6.0-beta.0, 0.6.0-beta.1, …

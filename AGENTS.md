@@ -54,11 +54,11 @@ Package manager is **pnpm** (pinned in the root `package.json`), with Node.js 22
 - `pnpm check:package` — `publint` and `attw` over the packed package: `exports`, `types` and file layout
 - `pnpm css:test:tailwind` — Node-only regression test for the Tailwind build (`dist/tailwind/`); needs `pnpm dist` run first
 - `pnpm js:test:e2e:tailwind-parity` — Playwright project comparing computed styles between `dist/css/chassis.css` and a fresh Tailwind build; opt-in locally (excluded from `pnpm js:test:e2e` and `pnpm test`) because it's slower than the rest of the e2e suite, though CI runs it (the `css` job of `.github/workflows/ci.yml`) — run it after touching `scss/tailwind/` or the utility/component clash policies
-- `pnpm verify` — rebuild `dist/` and `js/dist/` and fail when they differ from the commit; CI and the publish workflow run it, since `npm publish` ships both as committed
+- `pnpm verify` — rebuild `dist/` and `js/dist/` and fail when they differ from the commit; the Dist job of CI runs it, and the release workflow publishes only when that job passed on the commit, since `npm publish` ships both as committed
 - `pnpm build:test` — tests of the build scripts (`node --test`, `build/tests/`): each runs a script on files of its own, never on the repository
 - `pnpm lint:prettier` — Prettier over the whole repository; `.prettierignore` lists what is left out
 - `pnpm test` — lint + dist + css/js unit tests (including `css:test:tailwind`) + site build + site lint. It does not run `js:typecheck`, the e2e and integration tests, `check:package` or `verify`; CI runs all of them
-- `pnpm test:ci` — every check of `.github/workflows/ci.yml` except the changeset check, in one run: the unit tests in three browsers, the e2e tests and the site build included. Takes several minutes and needs the three Playwright browsers. A test in `build/tests/` fails when the workflow runs a script that `test:ci` does not
+- `pnpm test:ci` — every check of `.github/workflows/ci.yml` except the changeset check and the dependency review, in one run: the unit tests in three browsers, the e2e tests and the site build included. Takes several minutes and needs the three Playwright browsers. A test in `build/tests/` fails when the workflow runs a script that `test:ci` does not
 
 Run the narrowest relevant command while iterating, then the checks in [Before a task is done](#before-a-task-is-done).
 
@@ -66,17 +66,17 @@ Run the narrowest relevant command while iterating, then the checks in [Before a
 
 Run the checks of the area you changed, and report the ones that fail.
 
-| Area changed                                                        | Run                                                                                                                                                           |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `scss/`                                                             | `pnpm css:lint`, `pnpm css`, `pnpm css:test`, `pnpm verify`                                                                                                   |
-| `scss/tailwind/`, `packages/css/build/tailwind/`                    | the row above, then `pnpm css:test:tailwind` and `pnpm js:test:e2e:tailwind-parity`                                                                           |
-| `js/src/`                                                           | `pnpm js:lint`, `pnpm js:typecheck`, `pnpm js:test:unit`, `pnpm verify`; `pnpm js:test:e2e` for behavior a user sees, `pnpm js:test:a11y` for ARIA attributes |
-| Exports, `packages/css/package.json`, `postcss/`, `js/src/index.ts` | `pnpm js:test:integration`, `pnpm check:package`, `pnpm verify`                                                                                               |
-| `packages/site/`                                                    | `pnpm check:astro`, `pnpm site:build`, then `pnpm site:lint` (its HTML validation reads `_site/`)                                                             |
-| `build/`, `packages/css/build/`                                     | `pnpm js:lint`, `pnpm build:test`; add a test in `build/tests/` for a change of behavior                                                                      |
-| `.github/workflows/ci.yml`                                          | `pnpm build:test`: a script the workflow runs is part of `test:ci` in the root `package.json`                                                                 |
-| README or other Markdown                                            | `pnpm docs:links`, `pnpm lint:prettier`                                                                                                                       |
-| A `package.json` or `pnpm-lock.yaml`                                | `pnpm install --frozen-lockfile`, `pnpm verify` (the bundled dependencies are in `dist/js/chassis.bundle.js`)                                                 |
+| Area changed                                                        | Run                                                                                                                                                                           |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scss/`                                                             | `pnpm css:lint`, `pnpm css`, `pnpm css:test`, `pnpm verify`                                                                                                                   |
+| `scss/tailwind/`, `packages/css/build/tailwind/`                    | the row above, then `pnpm css:test:tailwind` and `pnpm js:test:e2e:tailwind-parity`                                                                                           |
+| `js/src/`                                                           | `pnpm js:lint`, `pnpm js:typecheck`, `pnpm js:test:unit`, `pnpm verify`; `pnpm js:test:e2e` for behavior a user sees, `pnpm js:test:a11y` for ARIA attributes                 |
+| Exports, `packages/css/package.json`, `postcss/`, `js/src/index.ts` | `pnpm js:test:integration`, `pnpm check:package`, `pnpm verify`                                                                                                               |
+| `packages/site/`                                                    | `pnpm check:astro`, `pnpm site:build`, then `pnpm site:lint` (its HTML validation reads `_site/`)                                                                             |
+| `build/`, `packages/css/build/`                                     | `pnpm js:lint`, `pnpm build:test`; add a test in `build/tests/` for a change of behavior                                                                                      |
+| `.github/workflows/`                                                | `actionlint`, and `pnpm build:test`: a script `ci.yml` runs is part of `test:ci` in the root `package.json`. A job name is also in the ruleset of `main` and in `release.yml` |
+| README or other Markdown                                            | `pnpm docs:links`, `pnpm lint:prettier`                                                                                                                                       |
+| A `package.json` or `pnpm-lock.yaml`                                | `pnpm install --frozen-lockfile`, `pnpm verify` (the bundled dependencies are in `dist/js/chassis.bundle.js`)                                                                 |
 
 ## Generated and committed output
 
@@ -132,7 +132,7 @@ Conventional Commits style, with an imperative, lower-case summary: `feat:`, `fi
 
 Add a changeset (`pnpm changeset`) to a change of what the package publishes, and an empty one (`pnpm changeset --empty`) to a change of `scss/`, `js/src/`, `postcss/`, `dist/` or `js/dist/` that releases nothing; CI's Changeset job fails without it. While the version is `0.x`, a breaking change is a `minor` whose text starts with `**Breaking:**`. [VERSIONING.md](VERSIONING.md) lists what is public API and which bump a change needs.
 
-Never commit, merge or push without being asked. Pushing `main` starts `publish-release.yml`, which runs CI and publishes `@chassis-ui/css` to npm.
+Never commit, merge or push without being asked. CI runs on `develop` and on pull requests only; a commit goes to `staging` and `main` after it passed there. Pushing `main` starts `release.yml`, which publishes `@chassis-ui/css` to npm when the version is new and the CI jobs passed on that commit. The version is made on `develop` with `pnpm changeset:version`.
 
 ## Do not edit
 
