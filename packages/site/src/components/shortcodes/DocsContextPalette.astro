@@ -6,30 +6,30 @@ import { getData } from '@libs/data'
   <div class="grid context-palette-grid" style="--cx-grid-columns: 11; --cx-grid-rows: 38;">
     <!--// DESCRIPTION COLUMN -->
     <div class="grid-col description-col">
-      <div class="header grid-item"><div>Description</div></div>
+      <div class="header grid-item">
+        <div>Description</div>
+      </div>
       <div class="grid-item g-rowspan-3">
         <h4 class="mb-0">Base Colors</h4>
         <p class="font-sm">
           The base color for the context, its contrast counterpart, and a fully transparent variant.
-          Contrast colors are intended for design use and may not meet <a
-            href={`/docs/core-concepts/accessibility`}>accessibility</a
-          > contrast requirements.
+          Contrast colors are intended for design use and may not meet{' '}
+          <a href={`/docs/core-concepts/accessibility`}>accessibility</a> contrast requirements.
         </p>
       </div>
       <div class="grid-item g-rowspan-7">
         <h4 class="mb-0">Foreground Colors</h4>
         <p class="font-sm">
-          Text colors named by priority or function. Used for the <code>color</code> property. Following
-          abstraction principles, these tokens are not limited to text — they apply to any foreground
-          element.
+          Text colors named by priority or function. Used for the <code>color</code> property.
+          Following abstraction principles, these tokens are not limited to text — they apply to any
+          foreground element.
         </p>
       </div>
       <div class="grid-item g-rowspan-7">
         <h4 class="mb-0">Background Colors</h4>
         <p class="font-sm">
-          Solid surface colors named by priority and function. Used for the <code
-            >background-color</code
-          > property.
+          Solid surface colors named by priority and function. Used for the{' '}
+          <code>background-color</code> property.
         </p>
       </div>
       <div class="grid-item g-rowspan-2">
@@ -48,17 +48,15 @@ import { getData } from '@libs/data'
       <div class="grid-item g-rowspan-2">
         <h4 class="mb-0">Cue Colors</h4>
         <p class="font-sm">
-          Colors for activity indicators and selection marks. Used for the <code>fill</code> and <code
-            >accent-color</code
-          > properties.
+          Colors for activity indicators and selection marks. Used for the <code>fill</code> and{' '}
+          <code>accent-color</code> properties.
         </p>
       </div>
       <div class="grid-item g-rowspan-3">
         <h4 class="mb-0">Dim Colors</h4>
         <p class="font-sm">
-          Semi-transparent surface colors named by function. Used for the <code
-            >background-color</code
-          > property. Suitable for overlays and layered UI surfaces.
+          Semi-transparent surface colors named by function. Used for the{' '}
+          <code>background-color</code> property. Suitable for overlays and layered UI surfaces.
         </p>
       </div>
       <div class="grid-item g-rowspan-4">
@@ -76,327 +74,327 @@ import { getData } from '@libs/data'
       </div>
     </div>
     <!--// CONTEXT COLOR COLUMNS -->
-    {
-      getData('context-colors').map((contextColor) => {
-        return (
-          <div class="grid-col color-col">
-            <div class="header grid-item text-capitalize">
-              <div>{contextColor.name}</div>
-            </div>
-            <div class="grid-item">
-              <div class={`h-100 w-100 rounded position-relative swatch-${contextColor.name}`} />
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-contrast-color);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-transparent-color);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-fg-main);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-fg-subtle);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-fg-slight);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-fg-active);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-fg-inverse);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-fg-solid);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-fg-highlight);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-bg-main);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-bg-even);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-bg-evident);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-bg-active);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-bg-inverse);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-bg-solid);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-bg-highlight);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-border-main);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-border-subtle);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-icon-main);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-icon-subtle);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-icon-slight);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-cue-main);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-cue-slight);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-dim-slight);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-dim-main);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-dim-subtle);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-link-main);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-link-hover);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-link-active);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-link-visited);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-fg-idle);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-bg-idle);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-fg-hover);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-bg-hover);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-fg-press);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-bg-press);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-fg-disabled);`}
-              >
-                &nbsp;
-              </div>
-            </div>
-            <div class="grid-item">
-              <div
-                class="h-100 w-100 rounded-md"
-                style={`background-color: var(--cx-${contextColor.name}-bg-disabled);`}
-              >
-                &nbsp;
-              </div>
+    {getData('context-colors').map((contextColor) => {
+      return (
+        <div class="grid-col color-col">
+          <div class="header grid-item text-capitalize">
+            <div>{contextColor.name}</div>
+          </div>
+          <div class="grid-item">
+            <div class={`h-100 w-100 rounded position-relative swatch-${contextColor.name}`} />
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-contrast-color);`}
+            >
+              &nbsp;
             </div>
           </div>
-        )
-      })
-    }
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-transparent-color);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-fg-main);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-fg-subtle);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-fg-slight);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-fg-active);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-fg-inverse);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-fg-solid);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-fg-highlight);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-bg-main);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-bg-even);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-bg-evident);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-bg-active);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-bg-inverse);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-bg-solid);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-bg-highlight);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-border-main);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-border-subtle);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-icon-main);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-icon-subtle);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-icon-slight);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-cue-main);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-cue-slight);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-dim-slight);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-dim-main);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-dim-subtle);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-link-main);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-link-hover);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-link-active);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-link-visited);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-fg-idle);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-bg-idle);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-fg-hover);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-bg-hover);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-fg-press);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-bg-press);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-fg-disabled);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="grid-item">
+            <div
+              class="h-100 w-100 rounded-md"
+              style={`background-color: var(--cx-${contextColor.name}-bg-disabled);`}
+            >
+              &nbsp;
+            </div>
+          </div>
+        </div>
+      )
+    })}
     <!--// VARIABLE COLUMN -->
     <div class="grid-col variable-col">
-      <div class="header grid-item"><div>Variable Name</div></div>
+      <div class="header grid-item">
+        <div>Variable Name</div>
+      </div>
       <div class="grid-item">
         <code>--cx-*-base-color</code>
       </div>

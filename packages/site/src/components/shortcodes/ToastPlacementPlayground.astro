@@ -42,7 +42,9 @@ const variants = await Promise.all(
 
 <div class="bg-even p-md mb-md font-sm rounded-md">
   <div class="hstack gap-md align-items-center">
-    <label class="form-label font-strong mb-0" for="toast-placement-menu">Placement:</label>
+    <label class="form-label font-strong mb-0" for="toast-placement-menu">
+      Placement:
+    </label>
     <div>
       <button
         type="button"
@@ -56,17 +58,15 @@ const variants = await Promise.all(
         <span>Bottom end</span>
       </button>
       <div class="menu" style="z-index: 1100;">
-        {
-          placements.map((p) => (
-            <button
-              type="button"
-              class:list={['menu-item', { active: p.value === 'bottom-0 end-0' }]}
-              data-placement={p.value}
-            >
-              {p.label}
-            </button>
-          ))
-        }
+        {placements.map((p) => (
+          <button
+            type="button"
+            class:list={['menu-item', { active: p.value === 'bottom-0 end-0' }]}
+            data-placement={p.value}
+          >
+            {p.label}
+          </button>
+        ))}
       </div>
     </div>
   </div>
@@ -90,7 +90,9 @@ const variants = await Promise.all(
 />
 
 <div hidden>
-  {variants.map((v) => <div data-toast-placement-code={v.value} set:html={v.html} />)}
+  {variants.map((v) => (
+    <div data-toast-placement-code={v.value} set:html={v.html} />
+  ))}
 </div>
 
 <script>

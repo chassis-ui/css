@@ -78,7 +78,9 @@ const variants = await Promise.all(
     </div>
 
     <div class="vstack gap-xs flex-grow-0">
-      <label class="form-label font-strong mb-0" for="menu-placement-selector">Placement</label>
+      <label class="form-label font-strong mb-0" for="menu-placement-selector">
+        Placement
+      </label>
       <div>
         <button
           type="button"
@@ -92,30 +94,26 @@ const variants = await Promise.all(
           <span>bottom-start</span>
         </button>
         <div class="menu" id="menu-placement-selector-menu">
-          {
-            physicalPlacements.map((p) => (
-              <button
-                class:list={['menu-item', { active: p.value === 'bottom-start' }]}
-                type="button"
-                data-placement-group="physical"
-                data-placement={p.value}
-              >
-                {p.label}
-              </button>
-            ))
-          }
-          {
-            logicalPlacements.map((p) => (
-              <button
-                class="menu-item d-none"
-                type="button"
-                data-placement-group="logical"
-                data-placement={p.value}
-              >
-                {p.label}
-              </button>
-            ))
-          }
+          {physicalPlacements.map((p) => (
+            <button
+              class:list={['menu-item', { active: p.value === 'bottom-start' }]}
+              type="button"
+              data-placement-group="physical"
+              data-placement={p.value}
+            >
+              {p.label}
+            </button>
+          ))}
+          {logicalPlacements.map((p) => (
+            <button
+              class="menu-item d-none"
+              type="button"
+              data-placement-group="logical"
+              data-placement={p.value}
+            >
+              {p.label}
+            </button>
+          ))}
         </div>
       </div>
     </div>
@@ -136,7 +134,9 @@ const variants = await Promise.all(
 />
 
 <div hidden>
-  {variants.map((v) => <div data-menu-placement-code={v.value} set:html={v.html} />)}
+  {variants.map((v) => (
+    <div data-menu-placement-code={v.value} set:html={v.html} />
+  ))}
 </div>
 
 <script>

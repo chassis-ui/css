@@ -43,18 +43,14 @@ const possessive = plural ? 'their' : 'its'
 
 <p>
   {opener} CSS custom properties to control {possessive} appearance at runtime.
-  {
-    cascading && (
-      <>
-        {' '}
-        They follow the{' '}
-        <a href="https://www.w3.org/TR/css-variables-1/#example-c3e4e8d9">
-          cascading variables
-        </a>{' '}
-        pattern, inheriting values from a{' '}
-        <a href={`${getConfig().docsPath}/core-concepts/context-class`}>context class</a> or any
-        parent element.
-      </>
-    )
-  }
+  {cascading && (
+    <>
+      {' '}
+      They follow the{' '}
+      <a href="https://www.w3.org/TR/css-variables-1/#example-c3e4e8d9">cascading variables</a>{' '}
+      pattern, inheriting values from a{' '}
+      <a href={`${getConfig().docsPath}/core-concepts/context-class`}>context class</a> or any
+      parent element.
+    </>
+  )}
 </p>
