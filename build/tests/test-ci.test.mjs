@@ -24,6 +24,8 @@ const NOT_LOCAL = {
 const LOCAL_NAMES = {
   // `pnpm verify` builds before it compares
   css: 'verify',
+  // `docs:links` is the same check with the external URLs
+  'docs:links:offline': 'docs:links',
   dist: 'verify',
   // CI sets the variable that adds Firefox and WebKit
   'js:test:unit': 'js:test:unit:all-browsers'
