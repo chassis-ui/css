@@ -64,94 +64,92 @@ const hasContent =
   !!frontmatter.tokens
 ---
 
-{
-  hasContent && (
-    <div
-      class="cxd-page-meta d-grid sm:grid-cols-2 lg:d-flex gap-md row-gap-xs px-sm py-xs bg-even icon-sm font-sm rounded"
-      style="--cx-tooltip-max-width: 24rem;"
-    >
-      {frontmatter.css_layer && (
-        <div>
-          <Icon name="css-brand" style="--cx-icon-color: #663399;" />{' '}
-          <code
-            class="fg-reset"
-            title={layerTooltips[frontmatter.css_layer]}
-            data-cx-toggle="tooltip"
-          >
-            @layer {frontmatter.css_layer}
-          </code>
-        </div>
-      )}
-      {frontmatter.js === 'required' && (
-        <div>
-          <Icon name="js-brand" class="warning-fg-main icon-reset" /> Requires JavaScript
-        </div>
-      )}
-      {frontmatter.js === 'optional' && (
-        <div>
-          <Icon name="js-brand" class="warning-fg-main icon-reset" /> JavaScript is optional
-        </div>
-      )}
-      {frontmatter.css_media === 'container' && (
-        <div>
-          <Icon name="square-outline" class="icon-info" /> Container queries
-        </div>
-      )}
-      {frontmatter.css_media === 'viewport' && (
-        <div>
-          <Icon name="window-outline" class="icon-info" /> Viewport queries
-        </div>
-      )}
-      {depsCount > 0 && (
-        <div>
-          <Icon name="box-solid" class="icon-info" /> Depends on
-          {deps.map((dep, i) => (
-            <Fragment>
-              {i > 0 && ', '}
-              {dep.url?.startsWith('http') ? (
-                <a class="text-decoration-none" href={dep.url} target="_blank" rel="noopener">
-                  {dep.title}
-                </a>
-              ) : dep.url ? (
-                <a class="text-decoration-none" href={dep.url}>
-                  {dep.title}
-                </a>
-              ) : (
-                <a
-                  class="text-decoration-none"
-                  href={`${getConfig().docsPath}/components/${getSlug(dep.title)}/`}
-                >
-                  {dep.title}
-                </a>
-              )}
-            </Fragment>
-          ))}
-        </div>
-      )}
-      {frontmatter.mdn && (
-        <div>
-          <Icon name="mdn-brand" class="icon-reset" />
-          <a class="text-decoration-none" href={frontmatter.mdn} target="_blank" rel="noopener">
-            MDN Reference
-          </a>
-        </div>
-      )}
-      {frontmatter.added &&
-        (frontmatter.added.showBadge === undefined || frontmatter.added.showBadge === true) && (
-          <div class="ms-auto">
-            <Icon name="plus-solid" class="icon-success" /> Added in v{frontmatter.added.version}
-          </div>
-        )}
-      {frontmatter.tokens && (
-        <div
-          class="lg:ms-auto"
-          title={tokenTooltip}
+{hasContent && (
+  <div
+    class="cxd-page-meta d-grid sm:grid-cols-2 lg:d-flex gap-md row-gap-xs px-sm py-xs bg-even icon-sm font-sm rounded"
+    style="--cx-tooltip-max-width: 24rem;"
+  >
+    {frontmatter.css_layer && (
+      <div>
+        <Icon name="css-brand" style="--cx-icon-color: #663399;" />{' '}
+        <code
+          class="fg-reset"
+          title={layerTooltips[frontmatter.css_layer]}
           data-cx-toggle="tooltip"
-          data-cx-container=".cxd-page-meta"
         >
-          <Icon name="chassis-icon-solid" class="icon-primary" /> {tokenLabels[tokensLevel!]}
+          @layer {frontmatter.css_layer}
+        </code>
+      </div>
+    )}
+    {frontmatter.js === 'required' && (
+      <div>
+        <Icon name="js-brand" class="warning-fg-main icon-reset" /> Requires JavaScript
+      </div>
+    )}
+    {frontmatter.js === 'optional' && (
+      <div>
+        <Icon name="js-brand" class="warning-fg-main icon-reset" /> JavaScript is optional
+      </div>
+    )}
+    {frontmatter.css_media === 'container' && (
+      <div>
+        <Icon name="square-outline" class="icon-info" /> Container queries
+      </div>
+    )}
+    {frontmatter.css_media === 'viewport' && (
+      <div>
+        <Icon name="window-outline" class="icon-info" /> Viewport queries
+      </div>
+    )}
+    {depsCount > 0 && (
+      <div>
+        <Icon name="box-solid" class="icon-info" /> Depends on
+        {deps.map((dep, i) => (
+          <Fragment>
+            {i > 0 && ', '}
+            {dep.url?.startsWith('http') ? (
+              <a class="text-decoration-none" href={dep.url} target="_blank" rel="noopener">
+                {dep.title}
+              </a>
+            ) : dep.url ? (
+              <a class="text-decoration-none" href={dep.url}>
+                {dep.title}
+              </a>
+            ) : (
+              <a
+                class="text-decoration-none"
+                href={`${getConfig().docsPath}/components/${getSlug(dep.title)}/`}
+              >
+                {dep.title}
+              </a>
+            )}
+          </Fragment>
+        ))}
+      </div>
+    )}
+    {frontmatter.mdn && (
+      <div>
+        <Icon name="mdn-brand" class="icon-reset" />
+        <a class="text-decoration-none" href={frontmatter.mdn} target="_blank" rel="noopener">
+          MDN Reference
+        </a>
+      </div>
+    )}
+    {frontmatter.added &&
+      (frontmatter.added.showBadge === undefined || frontmatter.added.showBadge === true) && (
+        <div class="ms-auto">
+          <Icon name="plus-solid" class="icon-success" /> Added in v{frontmatter.added.version}
         </div>
       )}
-    </div>
-  )
-}
+    {frontmatter.tokens && (
+      <div
+        class="lg:ms-auto"
+        title={tokenTooltip}
+        data-cx-toggle="tooltip"
+        data-cx-container=".cxd-page-meta"
+      >
+        <Icon name="chassis-icon-solid" class="icon-primary" /> {tokenLabels[tokensLevel!]}
+      </div>
+    )}
+  </div>
+)}

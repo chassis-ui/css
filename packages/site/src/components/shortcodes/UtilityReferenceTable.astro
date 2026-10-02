@@ -142,25 +142,23 @@ if (rows.length === 0) {
       </tr>
     </thead>
     <tbody>
-      {
-        rows.map((row) => (
-          <tr>
-            <td>
-              <code>{row.className}</code>
-            </td>
-            <td>
-              <code>
-                {row.declarations.map((decl, i) => (
-                  <>
-                    {decl}
-                    {i < row.declarations.length - 1 && <br />}
-                  </>
-                ))}
-              </code>
-            </td>
-          </tr>
-        ))
-      }
+      {rows.map((row) => (
+        <tr>
+          <td>
+            <code>{row.className}</code>
+          </td>
+          <td>
+            <code>
+              {row.declarations.map((decl, i) => (
+                <>
+                  {decl}
+                  {i < row.declarations.length - 1 && <br />}
+                </>
+              ))}
+            </code>
+          </td>
+        </tr>
+      ))}
     </tbody>
   </table>
 </div>

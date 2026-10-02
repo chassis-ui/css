@@ -66,10 +66,8 @@ const tableHtml = getTableHtml(tableProps)
 const tableCode = customMarkup ?? getTableCode({ ...tableProps, simplified })
 ---
 
-{
-  nested ? (
-    <Fragment set:html={tableHtml} />
-  ) : (
-    <Example showMarkup={showMarkup} code={tableHtml} customMarkup={tableCode} />
-  )
-}
+{nested ? (
+  <Fragment set:html={tableHtml} />
+) : (
+  <Example showMarkup={showMarkup} code={tableHtml} customMarkup={tableCode} />
+)}

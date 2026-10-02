@@ -40,20 +40,16 @@ const opener = `${subject} use${plural ? '' : 's'}`
 const possessive = plural ? 'their' : 'its'
 ---
 
-{
-  exposed ? (
-    <p>
-      {opener} Sass variables in <code>scss/config/_defaults.scss</code> to define {possessive}{' '}
-      defaults; they are also exposed as CSS custom properties using the <code>--cx-</code> prefix
-      for runtime override — <code>$variable-name</code> becomes <code>--cx-variable-name</code>.
-      See the{' '}
-      <a href={`${getConfig().docsPath}/core-concepts/component-anatomy`}>component anatomy</a>{' '}
-      page.
-    </p>
-  ) : (
-    <p>
-      {opener} Sass variables in <code>scss/config/_defaults.scss</code> to define {possessive}{' '}
-      defaults.
-    </p>
-  )
-}
+{exposed ? (
+  <p>
+    {opener} Sass variables in <code>scss/config/_defaults.scss</code> to define {possessive}{' '}
+    defaults; they are also exposed as CSS custom properties using the <code>--cx-</code> prefix for
+    runtime override — <code>$variable-name</code> becomes <code>--cx-variable-name</code>. See the{' '}
+    <a href={`${getConfig().docsPath}/core-concepts/component-anatomy`}>component anatomy</a> page.
+  </p>
+) : (
+  <p>
+    {opener} Sass variables in <code>scss/config/_defaults.scss</code> to define {possessive}{' '}
+    defaults.
+  </p>
+)}
