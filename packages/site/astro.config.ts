@@ -13,7 +13,12 @@ const config = loadConfig({ root, schema: siteConfigSchema })
 export default defineConfig({
   outDir: '../../_site',
   build: {
-    assets: `static/astro`
+    assets: `static/astro`,
+    // The scripts and styles of the build are requested as /css/static/astro/…, which
+    // chassis-ui.com routes to this site by path. Under /static it routes by the `Referer`
+    // header, and that of a script another script imports names no site. A rewrite of
+    // vercel.json serves them from /static/astro/. The shared files stay on /static.
+    assetsPrefix: '/css'
   },
   integrations: [chassisDocs({ config }), ...chassis({ config, root })],
   vite: {
