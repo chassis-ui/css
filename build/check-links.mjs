@@ -56,12 +56,6 @@ const MARKDOWN_FILES = [
 const SITE_DIR = '_site'
 const SITE_BASE = '/css/'
 
-// The pages load the files that Astro builds under `build.assetsPrefix` of
-// packages/site/astro.config.ts, and the files are in `_site/static/astro/`: a rewrite of
-// vercel.json maps one to the other.
-const ASTRO_PATH = '/css/static/astro/'
-const ASTRO_DIR = '/static/astro/'
-
 // A file of this repository on GitHub, which the README of the package has to name by its URL
 // because npm shows it outside the repository. Checked in the working tree: `main` gets a file
 // that a change adds or moves only when the change is released.
@@ -224,10 +218,7 @@ function htmlFiles(directory) {
 }
 
 function pageFile(siteDir, pathname) {
-  const servedPath = pathname.startsWith(ASTRO_PATH)
-    ? ASTRO_DIR + pathname.slice(ASTRO_PATH.length)
-    : pathname
-  const candidate = path.join(siteDir, decodeURIComponent(servedPath))
+  const candidate = path.join(siteDir, decodeURIComponent(pathname))
   for (const file of [candidate, path.join(candidate, 'index.html'), `${candidate}.html`]) {
     if (existsSync(file) && statSync(file).isFile()) {
       return file
