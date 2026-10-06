@@ -109,10 +109,7 @@ var Toast = class extends BaseComponent {
 				this._hasMouseInteraction = isInteracting;
 				break;
 			case "focusin":
-			case "focusout":
-				this._hasKeyboardInteraction = isInteracting;
-				break;
-			default: break;
+			case "focusout": this._hasKeyboardInteraction = isInteracting;
 		}
 		if (isInteracting) {
 			this._clearTimeout();

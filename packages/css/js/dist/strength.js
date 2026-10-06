@@ -144,18 +144,20 @@ var Strength = class extends BaseComponent {
 		const strengthIndex = strength ? STRENGTH_LEVELS.indexOf(strength) : -1;
 		for (const [index, segment] of this._segments.entries()) if (index <= strengthIndex) segment.classList.add("active");
 		else segment.classList.remove("active");
-		if (this._textElement) if (strength && this._config.messages[strength]) {
-			this._textElement.textContent = this._config.messages[strength];
-			this._textElement.dataset.cxStrength = strength;
-			this._textElement.style.setProperty(cssVar("strength-color"), `var(${cssVar(`${{
-				weak: "danger",
-				fair: "warning",
-				good: "info",
-				strong: "success"
-			}[strength]}-fg-main`)})`);
-		} else {
-			this._textElement.textContent = "";
-			delete this._textElement.dataset.cxStrength;
+		if (this._textElement) {
+			if (strength && this._config.messages[strength]) {
+				this._textElement.textContent = this._config.messages[strength];
+				this._textElement.dataset.cxStrength = strength;
+				this._textElement.style.setProperty(cssVar("strength-color"), `var(${cssVar(`${{
+					weak: "danger",
+					fair: "warning",
+					good: "info",
+					strong: "success"
+				}[strength]}-fg-main`)})`);
+			} else {
+				this._textElement.textContent = "";
+				delete this._textElement.dataset.cxStrength;
+			}
 		}
 	}
 };

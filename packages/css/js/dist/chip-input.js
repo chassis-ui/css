@@ -165,17 +165,18 @@ var ChipInput = class extends BaseComponent {
 				chipElements[i].classList.add(CLASS_NAME_ACTIVE);
 				chipElements[i].setAttribute("aria-selected", "true");
 			}
-		} else if (addToSelection) if (this._selectedChips.has(chip)) {
-			this._selectedChips.delete(chip);
-			chip.classList.remove(CLASS_NAME_ACTIVE);
-			chip.setAttribute("aria-selected", "false");
+		} else if (addToSelection) {
+			if (this._selectedChips.has(chip)) {
+				this._selectedChips.delete(chip);
+				chip.classList.remove(CLASS_NAME_ACTIVE);
+				chip.setAttribute("aria-selected", "false");
+			} else {
+				this._selectedChips.add(chip);
+				chip.classList.add(CLASS_NAME_ACTIVE);
+				chip.setAttribute("aria-selected", "true");
+				this._anchorChip = chip;
+			}
 		} else {
-			this._selectedChips.add(chip);
-			chip.classList.add(CLASS_NAME_ACTIVE);
-			chip.setAttribute("aria-selected", "true");
-			this._anchorChip = chip;
-		}
-		else {
 			this.clearSelection();
 			this._selectedChips.add(chip);
 			chip.classList.add(CLASS_NAME_ACTIVE);
@@ -320,7 +321,6 @@ var ChipInput = class extends BaseComponent {
 				this._input.value = "";
 				this.clearSelection();
 				this._input.blur();
-				break;
 		}
 	}
 	_handleChipKeydown(event) {
@@ -359,7 +359,6 @@ var ChipInput = class extends BaseComponent {
 				event.preventDefault();
 				this.clearSelection();
 				this._input?.focus();
-				break;
 		}
 	}
 	_handleChipDelete(currentIndex, chips) {
