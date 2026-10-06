@@ -124,12 +124,10 @@ var OtpInput = class extends BaseComponent {
 					this._inputs[index - 1].focus();
 				}
 				break;
-			case ARROW_RIGHT_KEY:
-				if (index < this._inputs.length - 1) {
-					event.preventDefault();
-					this._inputs[index + 1].focus();
-				}
-				break;
+			case ARROW_RIGHT_KEY: if (index < this._inputs.length - 1) {
+				event.preventDefault();
+				this._inputs[index + 1].focus();
+			}
 		}
 	}
 	_handlePaste(event) {

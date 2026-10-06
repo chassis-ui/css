@@ -199,10 +199,12 @@ var Menu = class Menu extends FloatingBase {
 	}
 	async _updateFloatingPosition(referenceElement = null) {
 		if (!this._menu) return;
-		if (!referenceElement) if (this._config.reference === "parent") referenceElement = this._parent;
-		else if (isElement(this._config.reference)) referenceElement = getElement(this._config.reference);
-		else if (typeof this._config.reference === "object") referenceElement = this._config.reference;
-		else referenceElement = this._element;
+		if (!referenceElement) {
+			if (this._config.reference === "parent") referenceElement = this._parent;
+			else if (isElement(this._config.reference)) referenceElement = getElement(this._config.reference);
+			else if (typeof this._config.reference === "object") referenceElement = this._config.reference;
+			else referenceElement = this._element;
+		}
 		const placement = this._getPlacement();
 		const middleware = this._getFloatingMiddleware();
 		const floatingConfig = this._getFloatingConfig(placement, middleware);

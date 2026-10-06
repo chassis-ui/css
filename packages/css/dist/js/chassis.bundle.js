@@ -1559,17 +1559,18 @@ var ChipInput = class extends BaseComponent {
 				chipElements[i].classList.add(CLASS_NAME_ACTIVE$2);
 				chipElements[i].setAttribute("aria-selected", "true");
 			}
-		} else if (addToSelection) if (this._selectedChips.has(chip)) {
-			this._selectedChips.delete(chip);
-			chip.classList.remove(CLASS_NAME_ACTIVE$2);
-			chip.setAttribute("aria-selected", "false");
+		} else if (addToSelection) {
+			if (this._selectedChips.has(chip)) {
+				this._selectedChips.delete(chip);
+				chip.classList.remove(CLASS_NAME_ACTIVE$2);
+				chip.setAttribute("aria-selected", "false");
+			} else {
+				this._selectedChips.add(chip);
+				chip.classList.add(CLASS_NAME_ACTIVE$2);
+				chip.setAttribute("aria-selected", "true");
+				this._anchorChip = chip;
+			}
 		} else {
-			this._selectedChips.add(chip);
-			chip.classList.add(CLASS_NAME_ACTIVE$2);
-			chip.setAttribute("aria-selected", "true");
-			this._anchorChip = chip;
-		}
-		else {
 			this.clearSelection();
 			this._selectedChips.add(chip);
 			chip.classList.add(CLASS_NAME_ACTIVE$2);
@@ -1714,7 +1715,6 @@ var ChipInput = class extends BaseComponent {
 				this._input.value = "";
 				this.clearSelection();
 				this._input.blur();
-				break;
 		}
 	}
 	_handleChipKeydown(event) {
@@ -1753,7 +1753,6 @@ var ChipInput = class extends BaseComponent {
 				event.preventDefault();
 				this.clearSelection();
 				this._input?.focus();
-				break;
 		}
 	}
 	_handleChipDelete(currentIndex, chips) {
@@ -2150,9 +2149,7 @@ function computeCoordsFromPlacement(_ref, placement, rtl) {
 		case "start":
 			coords[alignmentAxis] -= commonAlign * (rtl && isVertical ? -1 : 1);
 			break;
-		case "end":
-			coords[alignmentAxis] += commonAlign * (rtl && isVertical ? -1 : 1);
-			break;
+		case "end": coords[alignmentAxis] += commonAlign * (rtl && isVertical ? -1 : 1);
 	}
 	return coords;
 }
@@ -2387,9 +2384,7 @@ const flip$1 = function(options) {
 						if (placement) resetPlacement = placement;
 						break;
 					}
-					case "initialPlacement":
-						resetPlacement = initialPlacement;
-						break;
+					case "initialPlacement": resetPlacement = initialPlacement;
 				}
 				if (placement !== resetPlacement) return { reset: { placement: resetPlacement } };
 			}
@@ -2684,9 +2679,11 @@ function getBoundingClientRect(element, includeScale, isFixedStrategy, offsetPar
 	const clientRect = element.getBoundingClientRect();
 	const domElement = unwrapElement(element);
 	let scale = createCoords(1);
-	if (includeScale) if (offsetParent) {
-		if (isElement(offsetParent)) scale = getScale(offsetParent);
-	} else scale = getScale(element);
+	if (includeScale) {
+		if (offsetParent) {
+			if (isElement(offsetParent)) scale = getScale(offsetParent);
+		} else scale = getScale(element);
+	}
 	const visualOffsets = shouldAddVisualOffsets(domElement, isFixedStrategy, offsetParent) ? getVisualOffsets(domElement) : createCoords(0);
 	let x = (clientRect.left + visualOffsets.x) / scale.x;
 	let y = (clientRect.top + visualOffsets.y) / scale.y;
@@ -3475,10 +3472,12 @@ var Menu = class Menu extends FloatingBase {
 	}
 	async _updateFloatingPosition(referenceElement = null) {
 		if (!this._menu) return;
-		if (!referenceElement) if (this._config.reference === "parent") referenceElement = this._parent;
-		else if (isElement$1(this._config.reference)) referenceElement = getElement(this._config.reference);
-		else if (typeof this._config.reference === "object") referenceElement = this._config.reference;
-		else referenceElement = this._element;
+		if (!referenceElement) {
+			if (this._config.reference === "parent") referenceElement = this._parent;
+			else if (isElement$1(this._config.reference)) referenceElement = getElement(this._config.reference);
+			else if (typeof this._config.reference === "object") referenceElement = this._config.reference;
+			else referenceElement = this._element;
+		}
 		const placement = this._getPlacement();
 		const middleware = this._getFloatingMiddleware();
 		const floatingConfig = this._getFloatingConfig(placement, middleware);
@@ -7055,12 +7054,10 @@ var OtpInput = class extends BaseComponent {
 					this._inputs[index - 1].focus();
 				}
 				break;
-			case ARROW_RIGHT_KEY:
-				if (index < this._inputs.length - 1) {
-					event.preventDefault();
-					this._inputs[index + 1].focus();
-				}
-				break;
+			case ARROW_RIGHT_KEY: if (index < this._inputs.length - 1) {
+				event.preventDefault();
+				this._inputs[index + 1].focus();
+			}
 		}
 	}
 	_handlePaste(event) {
@@ -7965,18 +7962,20 @@ var Strength = class extends BaseComponent {
 		const strengthIndex = strength ? STRENGTH_LEVELS.indexOf(strength) : -1;
 		for (const [index, segment] of this._segments.entries()) if (index <= strengthIndex) segment.classList.add("active");
 		else segment.classList.remove("active");
-		if (this._textElement) if (strength && this._config.messages[strength]) {
-			this._textElement.textContent = this._config.messages[strength];
-			this._textElement.dataset.cxStrength = strength;
-			this._textElement.style.setProperty(cssVar("strength-color"), `var(${cssVar(`${{
-				weak: "danger",
-				fair: "warning",
-				good: "info",
-				strong: "success"
-			}[strength]}-fg-main`)})`);
-		} else {
-			this._textElement.textContent = "";
-			delete this._textElement.dataset.cxStrength;
+		if (this._textElement) {
+			if (strength && this._config.messages[strength]) {
+				this._textElement.textContent = this._config.messages[strength];
+				this._textElement.dataset.cxStrength = strength;
+				this._textElement.style.setProperty(cssVar("strength-color"), `var(${cssVar(`${{
+					weak: "danger",
+					fair: "warning",
+					good: "info",
+					strong: "success"
+				}[strength]}-fg-main`)})`);
+			} else {
+				this._textElement.textContent = "";
+				delete this._textElement.dataset.cxStrength;
+			}
 		}
 	}
 };
@@ -8262,10 +8261,7 @@ var Toast = class extends BaseComponent {
 				this._hasMouseInteraction = isInteracting;
 				break;
 			case "focusin":
-			case "focusout":
-				this._hasKeyboardInteraction = isInteracting;
-				break;
-			default: break;
+			case "focusout": this._hasKeyboardInteraction = isInteracting;
 		}
 		if (isInteracting) {
 			this._clearTimeout();
