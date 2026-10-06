@@ -256,9 +256,10 @@ $-grid-removed: "0.7.0" !default;
 // scss-docs-start make-cssgrid
 /// Generate the placement classes of `.grid` for every breakpoint, with the
 /// declarations of Tailwind's utilities of the same names: `col-span-{1…$columns}`
-/// and `col-span-full` (`grid-column`), `col-start-{1…$columns + 1}`
-/// (`grid-column-start`), `row-span-{1…$rows}` (`grid-row`) and
-/// `row-start-{1…$rows + 1}` (`grid-row-start`). `g-col-{n}` and `g-start-{n}`,
+/// and `col-span-full` (`grid-column`), `col-start-{1…$columns + 1}` and
+/// `col-start-auto` (`grid-column-start`), `row-span-{1…$rows}` (`grid-row`),
+/// `row-start-{1…$rows + 1}` and `row-start-auto` (`grid-row-start`). The
+/// `auto` classes reset a start line set at a narrower breakpoint. `g-col-{n}` and `g-start-{n}`,
 /// deprecated as of 0.6.0 and removed in 0.7.0, are second selectors of
 /// `col-span-{n}` and `col-start-{n}`.
 ///
@@ -297,6 +298,10 @@ $-grid-removed: "0.7.0" !default;
             }
           }
         }
+
+        .#{$prefix}col-start-auto {
+          grid-column-start: auto;
+        }
       }
 
       @if $rows > 0 {
@@ -310,6 +315,10 @@ $-grid-removed: "0.7.0" !default;
           .#{$prefix}row-start-#{$i} {
             grid-row-start: $i;
           }
+        }
+
+        .#{$prefix}row-start-auto {
+          grid-row-start: auto;
         }
       }
     }

@@ -53,7 +53,8 @@ type Curated = { testid: string; properties: string[] }
 // grid-column leak into a .grid parent. The .grid cases check Tailwind
 // core's placement utilities (col-span-*, col-start-*, row-span-*,
 // grid-cols-*) against dist/css's per-breakpoint classes, the deprecated
-// g-col-* alias mixed with the class it aliases, the responsive gutter of
+// g-col-* alias mixed with the class it aliases, a start line reset with
+// col-start-auto and row-start-auto, the responsive gutter of
 // .grid at each viewport, a gap utility over it, and the fraction widths.
 //
 // dark:fg-primary is deliberately NOT here: Chassis's own utility generator
@@ -99,6 +100,7 @@ const CURATED: Curated[] = [
   { testid: 'col-start-3', properties: ['gridColumnStart', 'gridColumnEnd'] },
   { testid: 'row-span-2', properties: ['gridRowStart', 'gridRowEnd'] },
   { testid: 'col-span-then-alias', properties: ['gridColumnStart', 'gridColumnEnd'] },
+  { testid: 'start-reset', properties: ['gridColumnStart', 'gridColumnEnd', 'gridRowStart'] },
   { testid: 'grid-gutter', properties: ['columnGap', 'rowGap'] },
   { testid: 'grid-gap-md', properties: ['columnGap', 'rowGap'] },
   { testid: 'skeleton-fraction', properties: ['width'] },

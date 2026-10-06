@@ -162,7 +162,7 @@ $bp: (xs: 0, md: 768px, lg: 992px);
 // ─── make-cssgrid ────────────────────────────────────────────────────────────
 
 @include describe("make-cssgrid") {
-  @include it("emits the placement classes per breakpoint, with g-col and g-start as second selectors") {
+  @include it("emits the placement classes per breakpoint, with the start resets, and g-col and g-start as second selectors") {
     @include assert() {
       @include output() {
         @include make-cssgrid($columns: 2, $rows: 1, $breakpoints: (xs: 0, md: 768px));
@@ -196,6 +196,10 @@ $bp: (xs: 0, md: 768px, lg: 992px);
           grid-column-start: 3;
         }
 
+        .col-start-auto {
+          grid-column-start: auto;
+        }
+
         .row-span-1 {
           grid-row: #{"span 1 / span 1"};
         }
@@ -206,6 +210,10 @@ $bp: (xs: 0, md: 768px, lg: 992px);
 
         .row-start-2 {
           grid-row-start: 2;
+        }
+
+        .row-start-auto {
+          grid-row-start: auto;
         }
 
         @media (width >= 768px) {
@@ -236,6 +244,10 @@ $bp: (xs: 0, md: 768px, lg: 992px);
             grid-column-start: 3;
           }
 
+          .md\:col-start-auto {
+            grid-column-start: auto;
+          }
+
           .md\:row-span-1 {
             grid-row: #{"span 1 / span 1"};
           }
@@ -246,6 +258,10 @@ $bp: (xs: 0, md: 768px, lg: 992px);
 
           .md\:row-start-2 {
             grid-row-start: 2;
+          }
+
+          .md\:row-start-auto {
+            grid-row-start: auto;
           }
         }
       }

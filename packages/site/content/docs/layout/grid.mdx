@@ -146,7 +146,7 @@ An item that does not fit in the tracks left on a row moves to the next row. The
 
 ## Placement
 
-`.col-start-{n}` places an item on a grid line, from `1` to `13`, the line after the last track. `.row-span-{n}` and `.row-start-{n}` do the same on the row axis, and `.order-*` changes the visual order.
+`.col-start-{n}` places an item on a grid line, from `1` to `13`, the line after the last track, and `.col-start-auto` returns it to automatic placement. `.row-span-{n}` and `.row-start-{n}` do the same on the row axis, and `.order-*` changes the visual order.
 
 <Example class="cxd-example-grid" code={`<div class="grid text-center">
     <div class="col-span-3 col-start-2">.col-span-3 .col-start-2</div>
@@ -313,6 +313,7 @@ Each class of the deprecated [flexbox grid]([[docsref:/layout/flexbox-grid]]) ha
 | `.col-{n}` | `.col-span-{n}` | |
 | `.col-12`, or no class below a breakpoint | `.col-span-full` | An item with no class is one track wide, not full width |
 | `.offset-{n}` | `.col-start-{n + 1}` | Exact for the first item of a row: an offset counts from the previous item, a start line from the edge of the grid |
+| `.{breakpoint}:offset-0` | `.{breakpoint}:col-start-auto` | Resets a start line set at a narrower breakpoint |
 | `.row-cols-{n}` | `.grid-cols-{n}` | |
 | `.g-{size}` | `.gap-{size}` | Not needed for the default gutter |
 | `.gx-{size}`, `.gy-{size}` | `.column-gap-{size}`, `.row-gap-{size}` | |

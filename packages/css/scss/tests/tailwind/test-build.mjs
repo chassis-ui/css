@@ -317,8 +317,10 @@ describe('tailwind fixture build', () => {
       'col-span-4',
       'col-span-full',
       'col-start-3',
+      'col-start-auto',
       'row-span-2',
-      'row-start-2'
+      'row-start-2',
+      'row-start-auto'
     ]) {
       assert.doesNotMatch(
         componentsCss,
@@ -331,6 +333,11 @@ describe('tailwind fixture build', () => {
       'span 4 / span 4'
     )
     assert.equal(winningValues(findExactRule(built, 'col-start-3')).get('grid-column-start'), '3')
+    assertWrapped(
+      built,
+      String.raw`@media \(width >= 48rem\)`,
+      String.raw`\.md\\:col-start-auto \{`
+    )
     assert.equal(
       winningValues(findExactRule(built, 'row-span-2')).get('grid-row'),
       'span 2 / span 2'

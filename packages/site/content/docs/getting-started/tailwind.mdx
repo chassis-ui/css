@@ -277,7 +277,7 @@ In the Tailwind entry the grid is split between Chassis and Tailwind core:
 </div>
 ```
 
-Tailwind core has placement utilities the regular build does not generate, such as `col-end-*`, `row-end-*`, and arbitrary values (`col-span-[14]`). They work in the Tailwind entry; markup that has to render with both builds stays within `col-span-{1…12}`, `col-span-full`, `col-start-{1…13}`, `row-span-{1…6}`, and `row-start-{1…7}`.
+Tailwind core has placement utilities the regular build does not generate, such as `col-end-*`, `row-end-*`, and arbitrary values (`col-span-[14]`). They work in the Tailwind entry; markup that has to render with both builds stays within `col-span-{1…12}`, `col-span-full`, `col-start-{1…13}`, `col-start-auto`, `row-span-{1…6}`, `row-start-{1…7}`, and `row-start-auto`.
 
 Tailwind's scanner can't see class names built at runtime (`` `col-span-${n}` ``). Safelist them, for example with `@source inline("{,md:}col-span-{1..12}");`.
 

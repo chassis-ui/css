@@ -35,11 +35,11 @@ A start line is absolute: it counts from the edge of the grid, not from the prev
 
 ### Responsive start lines
 
-Breakpoint variants set the start line per breakpoint. A start line stays in effect at wider breakpoints, so an item that moves needs a start class at each breakpoint where its position changes.
+Breakpoint variants set the start line per breakpoint. A start line stays in effect at wider breakpoints until another start class replaces it: a number moves the item to another line, and `.col-start-auto` returns it to the next free tracks.
 
 <Example class="cxd-example-grid" code={`<div class="grid text-center">
     <div class="col-span-full sm:col-span-5 md:col-span-6">.sm:col-span-5 .md:col-span-6</div>
-    <div class="col-span-full sm:col-span-5 sm:col-start-8 md:col-span-6 md:col-start-7">.sm:col-span-5 .sm:col-start-8 .md:col-span-6 .md:col-start-7</div>
+    <div class="col-span-full sm:col-span-5 sm:col-start-8 md:col-span-6 md:col-start-auto">.sm:col-span-5 .sm:col-start-8 .md:col-span-6 .md:col-start-auto</div>
   </div>`} />
 
 ### Column breaks
@@ -55,7 +55,7 @@ Breakpoint variants set the start line per breakpoint. A start line stays in eff
 
 ## Rows
 
-`.row-span-{n}` makes an item span `n` rows, from `1` to `6`, and `.row-start-{n}` places it on a row line, from `1` to `7`. Both have breakpoint variants.
+`.row-span-{n}` makes an item span `n` rows, from `1` to `6`, and `.row-start-{n}` places it on a row line, from `1` to `7`. Both have breakpoint variants, and `.row-start-auto` resets a row line as `.col-start-auto` resets a column line.
 
 <Example class="cxd-example-grid" code={`<div class="grid text-center" style="--cx-grid-columns: 4;">
     <div class="row-span-2">.row-span-2</div>

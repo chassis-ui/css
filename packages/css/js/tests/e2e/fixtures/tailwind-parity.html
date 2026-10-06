@@ -132,13 +132,17 @@
     <!-- The placement classes of .grid: Tailwind core's own utilities in the
          Tailwind build, per-breakpoint classes in dist/css. The last item
          mixes a class with its deprecated alias, which must have the same
-         precedence as the class (in dist/css they share one rule). -->
+         precedence as the class (in dist/css they share one rule); the one
+         after it resets its start lines from the md breakpoint. -->
     <div class="grid grid-cols-12" data-testid="grid-cols-12">
       <div class="col-span-4" data-testid="col-span-4">col-span-4</div>
       <div class="col-span-12 md:col-span-6" data-testid="col-span-responsive">col-span-12 md:col-span-6</div>
       <div class="col-span-4 col-start-3" data-testid="col-start-3">col-span-4 col-start-3</div>
       <div class="row-span-2" data-testid="row-span-2">row-span-2</div>
       <div class="col-span-6 md:g-col-4" data-testid="col-span-then-alias">col-span-6 md:g-col-4</div>
+      <div class="col-span-4 col-start-3 md:col-start-auto row-start-2 md:row-start-auto" data-testid="start-reset">
+        col-start-3 md:col-start-auto row-start-2 md:row-start-auto
+      </div>
     </div>
 
     <!-- The gap of .grid is the gutter token of the breakpoint (the
