@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## 0.6.0
 
 ### Added
 
@@ -29,6 +29,33 @@
 - `Nav`: opening a menu from a toggle placed directly inside a `.nav-pills` nav, without a `.nav-item` wrapper, gave every sibling link the active style, because the open state was matched on the toggle's parent. It is now matched on the toggle itself
 - Docs: the vertical example on the `Tab` page used `.nav-pills-vertical` and `.me-4`, neither of which exists, so the links never stacked; it now uses `.flex-column` and `.me-md`. The `Nav` page's link to the Tab plugin pointed at an anchor that does not exist
 - **Types:** 16 of the type declarations in `js/dist/` were older than their modules, because the build did not write them. `NavOverflow`'s `moreText: string | false` and the `null` a `Toggler` value can hold were missing, among others. The build now writes the declarations with the modules, and a release fails when any file in `dist/` or `js/dist/` differs from a fresh build
+
+### Minor Changes
+
+- b60c264: **Breaking:** `.grid` is the grid system of Chassis, with gutters, column counts and container padding from the design tokens per breakpoint. The flexbox grid is deprecated.
+  
+  - **Placement classes with Tailwind's names and declarations**, generated for every breakpoint: `col-span-{1…12}`, `col-span-full`, `col-start-{1…13}`, `row-span-{1…6}` and `row-start-{1…7}`, with `col-start-auto` and `row-start-auto` to reset a start line at a wider breakpoint. `g-col-{n}` and `g-start-{n}` keep working as second selectors of `col-span-{n}` and `col-start-{n}`, deprecated. The declaration of `g-col-{n}` is now `grid-column: span n / span n` instead of `auto / span n`: the same placement, unless an element sets `grid-column-end` itself.
+  - **The gap of `.grid` and `.grid-fill` is the gutter token of the breakpoint**, `--cx-grid-gutter` on `:root` (0.5rem at `xs` to 3rem at `2xl`, from `$grid-gutters`), where it was `$grid-gutter-x` (1.5rem) at every width. `--cx-grid-gap` on an element still sets the gap of one grid. The tracks are `minmax(0, 1fr)`, so content no longer widens a column. `.grid-fill` takes `--cx-grid-min` as the minimum column width.
+  - **The column count comes from `$grid-column-counts`** (`--cx-grid-columns` on `:root`, 12 at every breakpoint until the Figma library defines the counts). `grid-cols-{1…12}` are utilities with Tailwind's `repeat(n, minmax(0, 1fr))`; `grid-cols-fill` is deprecated in favour of `col-span-full`.
+  - **The padding of `.container` is `--cx-container-padding`** from `$container-paddings`, the page margin per breakpoint, independent of the gutter (0.75rem at every breakpoint, today's value). A `--cx-gutter-x` set on a container still works until 0.7.0. `$container-padding-x` is deprecated: when a project sets it, half of it is the padding at every breakpoint, as before, and the build warns.
+  - **In the Tailwind entry, the placement classes are Tailwind core's own** `col-span-*`, `col-start-*`, `row-span-*` and `row-start-*` utilities: the entry no longer emits grid placement rules of its own, only the deprecated `g-col-*` and `g-start-*` aliases, which now carry the declarations of the classes they alias and sit in the `utilities` layer with them instead of the `utilities.layout` sublayer. In `@chassis-ui/css/tailwind/merge.js` the aliases join tailwind-merge's `col-start-end` and `col-start` groups, so `col-span-4 g-col-6` resolves to one class.
+  - **Responsive fraction widths** `w-{1…11}/12` (`md:w-6/12`), the names and values of Tailwind's `w-<fraction>`, replace `col-{n}` used as a width outside a `.row`, as on skeletons; `w-100`, `w-auto` and `flex-fill` replace `col-12`, `col-auto` and `col`.
+  - **Deprecated as of 0.6.0, removed in 0.7.0:** the flexbox grid (`.row`, `.col-*`, `.offset-*`, `.row-cols-*`, `.g-*`, `.gx-*`, `.gy-*`), its mixins (`make-row()`, `make-col-ready()`, `make-col()`, `make-col-auto()`, `make-col-offset()`, `row-cols()`, `make-grid-columns()`) and its variables (`$grid-gutter-y`, `$grid-row-columns`, `$gutters`). The build warns once per compile while `$enable-grid-classes` is true; set it to `false` to drop the flexbox grid now, or `$enable-deprecation-messages: false` to silence the notice. Migrate `.row` to `.grid`, `.col-4` to `.col-span-4`, `.offset-2` to `.col-start-3`, `.md:offset-0` to `.md:col-start-auto`, `.row-cols-3` to `.grid-cols-3`, `.g-md` to `.gap-md`, `.gx-*` and `.gy-*` to `.column-gap-*` and `.row-gap-*`.
+  - The grid bundle (`chassis-grid.css`) declares the `--cx-space-*` custom properties its gap and gutter classes read.
+
+### Patch Changes
+
+- e58ef47: Fix the defects the end-to-end tests found in Dialog, Combobox, Menu and Datepicker.
+  
+  - **Dialog:** Escape pressed repeatedly no longer closes a dialog with `data-cx-keyboard="false"`, and a dialog the browser closes by itself releases the scroll lock of the page and fires `hidden`. A non-modal dialog is centered in the viewport.
+  - **Combobox:** ArrowDown and ArrowUp on a closed menu leave the focus on the first or the last item. Escape in the input closes the menu. Tab on an item moves on to the next control in Safari.
+  - **Combobox, Menu:** the arrow keys wrap at the ends of the list, as documented.
+  - **Menu:** Escape closes the menu when a click left the focus on the page, as Safari does.
+  - **Datepicker:** `show`, `shown`, `hide` and `hidden` also fire when the calendar opens on a click on its input and closes on Escape or a click outside. The focus returns from the calendar to its trigger when the calendar closes.
+- e58ef47: Build the CSS with `@chassis-ui/tokens` 0.6.0. Half-pixel values keep their full precision: `0.03125rem` instead of `0.0313rem` in `--cx-border-width-sm`, `--cx-border-width-lg`, `--cx-box-shadow-sm` and the shadows and letter spacing built on them.
+- 5c1cbfe: Rebuild the JavaScript with rolldown 1.2.12. The modules run the same code: a nested `if` now has its braces, and the last `case` of a `switch` no longer ends with a `break`. The minified builds do not change.
+- cce6918: Rebuild the minified CSS with lightningcss 1.33, which collapses `light-dark()` calls whose two values are the same.
+- c7e01b9: Build `chassis.bundle.js` with `@floating-ui/dom` 1.8.0, which positions a floating element against a `scrollbar-gutter: stable` viewport and a left-side scrollbar correctly. The peer dependency range stays `^1.7.6`.
 
 ## [0.5.2] - 2026-09-25
 
