@@ -15,6 +15,8 @@ import { sassVars, sassSpaceValue } from '@libs/sass'
 
 Gap utilities apply the CSS `gap`, `row-gap`, and `column-gap` properties to flex and grid containers, distributing space between items without adding margin to individual children. All three utilities are responsive and share the same `$spaces` spacing scale used by [margin]([[docsref:/utilities/margin]]) and [padding]([[docsref:/utilities/padding]]).
 
+On a `.grid`, a gap utility overrides the default gap, the [gutter]([[docsref:/layout/gutters]]) of the current breakpoint. The sizes are fixed steps of the spacing scale and do not change with the viewport: `.gap-md` is the `md` space at every width.
+
 ## Notation
 
 Gap classes that apply at all breakpoints have no breakpoint prefix — they start from `min-width: 0` and are not media-query-bound. Breakpoint-prefixed classes apply at that breakpoint and above.
@@ -43,33 +45,33 @@ There is no `.gap-auto` class — `auto` has no defined behavior for gap in the 
 
 `.gap-{size}` sets `gap` on a flex or grid container, controlling spacing between all items in both directions at once.
 
-<Example class="cxd-example-cssgrid" code={`<div class="grid gap-md">
-    <div class="g-col-6 p-xs">Item 1</div>
-    <div class="g-col-6 p-xs">Item 2</div>
-    <div class="g-col-6 p-xs">Item 3</div>
-    <div class="g-col-6 p-xs">Item 4</div>
+<Example class="cxd-example-grid" code={`<div class="grid gap-md">
+    <div class="col-span-6 p-xs">Item 1</div>
+    <div class="col-span-6 p-xs">Item 2</div>
+    <div class="col-span-6 p-xs">Item 3</div>
+    <div class="col-span-6 p-xs">Item 4</div>
   </div>`} />
 
 ## row-gap
 
 `.row-gap-{size}` controls vertical spacing between rows in a grid or flex container without affecting column spacing.
 
-<Example class="cxd-example-cssgrid" code={`<div class="grid gap-0 row-gap-md">
-    <div class="g-col-6 p-xs">Item 1</div>
-    <div class="g-col-6 p-xs">Item 2</div>
-    <div class="g-col-6 p-xs">Item 3</div>
-    <div class="g-col-6 p-xs">Item 4</div>
+<Example class="cxd-example-grid" code={`<div class="grid gap-0 row-gap-md">
+    <div class="col-span-6 p-xs">Item 1</div>
+    <div class="col-span-6 p-xs">Item 2</div>
+    <div class="col-span-6 p-xs">Item 3</div>
+    <div class="col-span-6 p-xs">Item 4</div>
   </div>`} />
 
 ## column-gap
 
 `.column-gap-{size}` controls horizontal spacing between columns in a grid or flex container without affecting row spacing.
 
-<Example class="cxd-example-cssgrid" code={`<div class="grid gap-0 column-gap-md">
-    <div class="g-col-6 p-xs">Item 1</div>
-    <div class="g-col-6 p-xs">Item 2</div>
-    <div class="g-col-6 p-xs">Item 3</div>
-    <div class="g-col-6 p-xs">Item 4</div>
+<Example class="cxd-example-grid" code={`<div class="grid gap-0 column-gap-md">
+    <div class="col-span-6 p-xs">Item 1</div>
+    <div class="col-span-6 p-xs">Item 2</div>
+    <div class="col-span-6 p-xs">Item 3</div>
+    <div class="col-span-6 p-xs">Item 4</div>
   </div>`} />
 
 ## CSS

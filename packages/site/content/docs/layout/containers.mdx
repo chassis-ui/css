@@ -9,9 +9,9 @@ tokens:
     - breakpoint
     - width
 ---
-import { sassBreakpointSize, sassContainerSize } from '@libs/sass'
+import { sassVars, sassBreakpointSize, sassContainerSize } from '@libs/sass'
 
-`.container` applies `width: 100%`, inline padding, and `margin-inline: auto` to create a centered, gutter-padded wrapper. Containers can be nested, though most layouts require only one.
+`.container` applies `width: 100%`, the page margin as `padding-inline`, and `margin-inline: auto` to create a centered, padded wrapper. Containers can be nested, though most layouts require only one.
 
 ## Available containers
 
@@ -65,9 +65,39 @@ Each responsive variant is `width: 100%` below its named breakpoint, then applie
 </div>
 ```
 
+## Padding
+
+The inline padding of a container is the page margin: `--cx-container-padding`, declared on `:root` per breakpoint from the margin tokens. It is a value of its own and does not follow the [gutter]([[docsref:/layout/gutters]]) of the grid, so the margin of the page and the gap between columns can differ, as they do in a Figma layout grid.
+
+<CxTable>
+|  | xs | sm | md | lg | xl | 2xl |
+| --- | --- | --- | --- | --- | --- | --- |
+| Page margin | {sassVars('margin').xs} | {sassVars('margin').sm} | {sassVars('margin').md} | {sassVars('margin').lg} | {sassVars('margin').xl} | {sassVars('margin')['2xl']} |
+</CxTable>
+
+`.px-0` removes the padding of one container, for content that runs to the edges of the viewport. Other [padding utilities]([[docsref:/utilities/padding]]) replace it.
+
+```html
+<div class="container fluid px-0">
+  ...
+</div>
+```
+
+`--cx-container-padding` set on an element changes the padding of the containers inside it:
+
+```html
+<main style="--cx-container-padding: 2rem;">
+  <div class="container">...</div>
+</main>
+```
+
+<Callout type="warning">
+Until v0.6.0 the padding was half of `--cx-gutter-x`, the gutter of the flexbox grid. A `--cx-gutter-x` set on a container still changes its padding, and stops doing so in v0.7.0: set `--cx-container-padding` to the padding itself, half of the old value.
+</Callout>
+
 ## CSS
 
-<DocsCSS name="Container" type="system" />
+<DocsCSS name="Container" type="system" exposed />
 
 Container classes are generated from `$container-max-widths` and can be disabled by setting `$enable-container-classes: false`.
 
@@ -77,15 +107,25 @@ Override `$container-max-widths` before importing Chassis CSS to change the `max
 
 <ScssDocs name="container-max-widths" file="scss/config/_defaults.scss" />
 
+`$container-paddings` holds the padding of each breakpoint. Set every key to `0` for containers with no padding.
+
+<ScssDocs name="container-paddings" file="scss/config/_defaults.scss" />
+
+`$container-padding-x` is deprecated. A project that sets it keeps half of it as the padding at every breakpoint, and the build warns.
+
 ### Design tokens
 
 <DocsDesignTokens name="Container" type="system" />
 
 <ScssDocs name="container-tokens" file="scss/tokens/_grid.scss" />
 
+The margin tokens are placeholders with a literal value until `@chassis-ui/tokens` ships them; each will read the vendor token of the same name (`$cx-grid-margin-xsmall`).
+
+<ScssDocs name="margin-tokens" file="scss/tokens/_grid.scss" />
+
 ### Sass mixins
 
-`make-container()` applies the same base styles as `.container` — `width: 100%`, inline padding from `$container-padding-x`, and centered margins — without the breakpoint `max-width` overrides.
+`make-container()` applies the same base styles as `.container` — `width: 100%`, the padding of `--cx-container-padding`, and centered margins — without the breakpoint `max-width` overrides.
 
 <ScssDocs name="make-container" file="scss/mixins/_grid.scss" />
 

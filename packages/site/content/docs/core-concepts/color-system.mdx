@@ -13,11 +13,11 @@ Chassis CSS organizes color into three layers that build on each other. **Primit
 Primitive colors and their scale steps are defined in Chassis Tokens. By default there are seven hues — one per brand role — and any project can swap them for its own palette.
 
 <div class="overflow-scroll text-nowrap mb-md">
-  <div class="grid font-code" style="--cx-grid-columns: 11; --cx-grid-gap: var(--cx-space-2xs);">
+  <div class="d-flex gap-2xs font-code" style="--cx-grid-gap: var(--cx-space-2xs);">
   {
     getData('colors').map((color) => {
       return (
-        <div class="grid" style="width: 12rem; --cx-grid-columns: 1; grid-template-rows: auto;">
+        <div class="grid flex-shrink-0" style="width: 12rem; --cx-grid-columns: 1; grid-template-rows: auto;">
           <div class={`p-md rounded-sm mb-xs position-relative swatch-${color.name} bg-${color.name} fg-contrast`}>
             <strong class="d-block">{color.name}</strong>
             {sassVars('color')?.[color.name]}
@@ -43,11 +43,11 @@ Each hue has eleven scale steps: `05`, `10`–`90` in increments of ten, and `95
 
 A context color is a palette of semantic tokens that adapts to light and dark mode. Chassis CSS ships with **eleven**: the seven brand hues — `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`, `info` — plus four non-brand contexts: `default`, `alternate`, `black`, and `white`.
 
-<div class="row g-xs mb-md font-code">
+<div class="grid gap-xs mb-md font-code">
   {
     getData('context-colors').map((color) => {
       return (
-        <div class="md:col-4">
+        <div class="col-span-full md:col-span-4">
           <div class={`p-md m-0 bg-${color.name} fg-contrast rounded-sm`}>--cx-{color.name}</div>
         </div>
       )

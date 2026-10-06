@@ -47,6 +47,33 @@ export function sassVars(str: string): Record<string, string | undefined> {
       return {
         gutter: variables.gridGutter
       }
+    case 'gutter':
+      return {
+        xs: variables.gutterXsmall,
+        sm: variables.gutterSmall,
+        md: variables.gutterMedium,
+        lg: variables.gutterLarge,
+        xl: variables.gutterXlarge,
+        '2xl': variables.gutter2xlarge
+      }
+    case 'margin':
+      return {
+        xs: variables.marginXsmall,
+        sm: variables.marginSmall,
+        md: variables.marginMedium,
+        lg: variables.marginLarge,
+        xl: variables.marginXlarge,
+        '2xl': variables.margin2xlarge
+      }
+    case 'columns':
+      return {
+        xs: variables.columnsXsmall,
+        sm: variables.columnsSmall,
+        md: variables.columnsMedium,
+        lg: variables.columnsLarge,
+        xl: variables.columnsXlarge,
+        '2xl': variables.columns2xlarge
+      }
     case 'modal':
       return {
         sm: variables.modalSmall,

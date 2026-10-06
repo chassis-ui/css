@@ -1,175 +1,183 @@
 ---
 title: Gutters
-description: Horizontal, vertical, and combined gutter classes for the flexbox grid, with breakpoint-prefixed variants for responsive spacing.
+description: The gap between grid items, set per breakpoint by the gutter tokens and overridable per grid with a custom property or the gap utilities.
 toc: true
 css_layer: layout
+css_media: viewport
 ---
-import { sassVars } from '@libs/sass'
+import { sassVars, sassBreakpointSize } from '@libs/sass'
 
 ## Overview
 
-Gutters are the gaps between column content. `.row` sets two CSS custom properties — `--gutter-x` and `--gutter-y` — that columns consume: `--gutter-x` drives `padding-inline` on each column, and `--gutter-y` drives `margin-block-start`. Gutter classes override these properties at the row level without touching the column structure.
+The gutter is the gap between the items of a `.grid` or `.grid-fill`, between columns and between rows. It is a design token with a value per breakpoint, declared on `:root` as `--cx-grid-gutter`, so a grid needs no class to have the gutter of the current viewport.
 
-Suffixes follow the same naming scale as [padding]([[docsref:/utilities/padding]]) and [margin]([[docsref:/utilities/margin]]) utilities (`xs`, `sm`, `md`, `lg`, …) so gutter widths stay on-scale with the rest of the layout. The default horizontal gutter is <code>{sassVars('grid').gutter}</code> (`$grid-gutter-x`); the vertical gutter defaults to `0` (`$grid-gutter-y`).
+<CxTable>
+| Breakpoint | Dimensions | Gutter |
+| --- | --- | --- |
+| XS | &lt;{sassBreakpointSize('sm')} | {sassVars('gutter').xs} |
+| SM | &ge;{sassBreakpointSize('sm')} | {sassVars('gutter').sm} |
+| MD | &ge;{sassBreakpointSize('md')} | {sassVars('gutter').md} |
+| LG | &ge;{sassBreakpointSize('lg')} | {sassVars('gutter').lg} |
+| XL | &ge;{sassBreakpointSize('xl')} | {sassVars('gutter').xl} |
+| 2XL | &ge;{sassBreakpointSize('2xl')} | {sassVars('gutter')['2xl']} |
+</CxTable>
 
-## Horizontal gutters
+<Example class="cxd-example-grid" code={`<div class="grid text-center">
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+  </div>`} />
 
-`.gx-{size}` overrides `--gutter-x` on a `.row` to change horizontal column spacing.
+The gutter is a `gap`: it sits between items only, never at the edges of the grid, so a grid needs no negative margin and no wrapper to contain it.
 
-<Example class="cxd-example-cols" code={`<div class="container text-center">
-    <div class="row gx-md">
-      <div class="col">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col">
-        <div class="p-md">Column content</div>
+## Custom gap
+
+`--cx-grid-gap` replaces the gutter for one grid, or for every grid inside the element that sets it. It takes any length.
+
+<Example class="cxd-example-grid" code={`<div class="grid text-center" style="--cx-grid-gap: .25rem;">
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+  </div>`} />
+
+Two values set the row gap and the column gap, in that order:
+
+<Example class="cxd-example-grid" code={`<div class="grid text-center" style="--cx-grid-gap: .25rem 2rem;">
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+  </div>`} />
+
+## Gap utilities
+
+The [gap utilities]([[docsref:/utilities/gap]]) set the gap from the spacing scale, the scale of the [padding]([[docsref:/utilities/padding]]) and [margin]([[docsref:/utilities/margin]]) utilities. A utility overrides both the gutter and `--cx-grid-gap`.
+
+<Callout type="info">
+The sizes of the gap utilities are fixed steps of the spacing scale. `.gap-md` is the `md` space at every viewport width; it shares a name with the `md` breakpoint and nothing else.
+</Callout>
+
+### Both axes
+
+`.gap-{size}` sets the gap between columns and between rows.
+
+<Example class="cxd-example-grid" code={`<div class="grid gap-xs text-center">
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+  </div>`} />
+
+### Horizontal gaps
+
+`.column-gap-{size}` sets the gap between columns and leaves the row gap at the gutter.
+
+<Example class="cxd-example-grid" code={`<div class="grid column-gap-3xl text-center">
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+  </div>`} />
+
+### Vertical gaps
+
+`.row-gap-{size}` sets the gap between rows and leaves the column gap at the gutter.
+
+<Example class="cxd-example-grid" code={`<div class="grid row-gap-0 text-center">
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+    <div class="col-span-6">.col-span-6</div>
+  </div>`} />
+
+### Responsive gaps
+
+Every gap utility has breakpoint variants — `.{breakpoint}:gap-{size}`, `.{breakpoint}:column-gap-{size}`, `.{breakpoint}:row-gap-{size}` — and combines with the [column counts]([[docsref:/layout/grid#column-counts]]). The grid below has two columns and a small gap, then five columns and a larger gap from the `lg` breakpoint:
+
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-2 lg:grid-cols-5 gap-xs lg:gap-md text-center">
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+  </div>`} />
+
+### No gap
+
+`.gap-0` removes the gap on both axes. Spans, start lines, and ordering are unaffected.
+
+<Example class="cxd-example-grid" code={`<div class="grid gap-0 text-center">
+    <div class="col-span-full sm:col-span-6 md:col-span-8">.sm:col-span-6 .md:col-span-8</div>
+    <div class="col-span-6 md:col-span-4">.col-span-6 .md:col-span-4</div>
+  </div>`} />
+
+## Narrow grids
+
+The gutter follows the width of the viewport, not the width of the grid. A grid that fills the page gets a gap in proportion to it; a grid in a sidebar, a card, or a grid item gets the same gap in a fraction of the width, and twelve tracks can be left with little room. Give a narrow grid a gap of its own, with `--cx-grid-gap` or a gap utility, or fewer tracks with a [column count]([[docsref:/layout/grid#column-counts]]).
+
+<Example class="cxd-example-grid" code={`<div class="grid text-center">
+    <div class="col-span-4">Sidebar</div>
+    <div class="col-span-8">
+      <div class="grid grid-cols-2 gap-xs">
+        <div>Item</div>
+        <div>Item</div>
+        <div>Item</div>
+        <div>Item</div>
       </div>
     </div>
   </div>`} />
 
-When the gutter is wider than the container's horizontal padding, the row's negative inline margins bleed outside the container edge.
+<Callout type="info">
+The examples in these docs sit in a column narrower than the viewport, so their grids stop at the gutter of the `sm` breakpoint. A grid on a full-width page continues through the steps of the table above.
+</Callout>
 
-<Example class="cxd-example-cols" code={`<div class="container bg-even text-center">
-    <div class="row gx-6xl cxd-pattern-diagonal"><!-- [!code highlight] -->
-      <div class="col dim-slight">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col">
-        <div class="p-md">Column content</div>
-      </div>
-    </div>
-  </div>`} />
+## Outside a grid
 
-Add a matching padding utility to the `.container` to contain it:
+`--cx-grid-gutter` is declared on `:root`, so any element can read it. A flex row gets the gutter of the grid with one declaration:
 
-<Example class="cxd-example-cols" code={`<div class="container px-xl bg-even text-center"><!-- [!code highlight] -->
-    <div class="row gx-6xl cxd-pattern-diagonal">
-      <div class="col dim-slight">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col">
-        <div class="p-md">Column content</div>
-      </div>
-    </div>
-  </div>`} />
+```css
+.toolbar {
+  display: flex;
+  gap: var(--cx-grid-gutter);
+}
+```
 
-Alternatively, add `.overflow-hidden` to the `.container` to clip the bleed without extra padding:
+## Page margin
 
-<Example class="cxd-example-cols" code={`<div class="container overflow-hidden bg-even text-center"><!-- [!code highlight] -->
-    <div class="row gx-6xl cxd-pattern-diagonal">
-      <div class="col dim-slight">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col">
-        <div class="p-md">Column content</div>
-      </div>
-    </div>
-  </div>`} />
-
-## Vertical gutters
-
-`.gy-{size}` overrides `--gutter-y` to add top spacing between rows of columns when they wrap. The `.row` applies an equal negative `margin-block-start` to cancel the gap before the first row, but this negative margin bleeds above the container boundary. Add `.overflow-hidden` to the `.container` to clip the bleed without extra padding:
-
-<Example class="cxd-example-cols" code={`<div class="container overflow-hidden text-center">
-    <div class="row gy-md">
-      <div class="col-6">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col-6">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col-6">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col-6">
-        <div class="p-md">Column content</div>
-      </div>
-    </div>
-  </div>`} />
-
-## Combined gutters
-
-`.g-{size}` sets `--gutter-x` and `--gutter-y` simultaneously. At smaller values, the negative top-margin bleed is typically small enough that a container wrapper is not needed:
-
-<Example class="cxd-example-cols" code={`<div class="container overflow-hidden text-center">
-    <div class="row g-xs">
-      <div class="col-6">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col-6">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col-6">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col-6">
-        <div class="p-md">Column content</div>
-      </div>
-    </div>
-  </div>`} />
-
-## Responsive gutters
-
-All three class families accept breakpoint prefixes — `.{breakpoint}:g-{size}`, `.{breakpoint}:gx-{size}`, `.{breakpoint}:gy-{size}` — so gutter width can change at specific viewport widths. Gutter classes work with [row columns]([[docsref:/layout/grid#row-columns]]) as well as explicit column spans. The example below uses a narrow two-column layout with sm gutters, switching to five columns with larger gutters at the `lg` breakpoint:
-
-<Example class="cxd-example-cols" code={`<div class="container overflow-hidden text-center">
-    <div class="row row-cols-2 lg:row-cols-5 g-xs lg:g-md">
-      <div class="col">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col">
-        <div class="p-md">Column content</div>
-      </div>
-      <div class="col">
-        <div class="p-md">Column content</div>
-      </div>
-    </div>
-  </div>`} />
-
-## No gutters
-
-`.g-0` sets both `--gutter-x` and `--gutter-y` to `0`, removing the row's negative margins and the column `padding-inline`. All other grid classes — column widths, responsive tiers, reordering — remain fully composable:
-
-For an edge-to-edge layout, drop the `.container` wrapper and add `.mx-0` to the `.row` to prevent inline overflow.
-
-<Example class="cxd-example-row" code={`<div class="row g-0 text-center">
-    <div class="sm:col-6 md:col-8">.sm:col-6 .md:col-8</div>
-    <div class="col-6 md:col-4">.col-6 .md:col-4</div>
-  </div>`} />
+The padding of `.container` is the page margin, `--cx-container-padding`: a value of its own, with its own tokens, that does not follow the gutter. A grid in a container starts at the padding edge of the container at every breakpoint. See [Containers]([[docsref:/layout/containers#padding]]).
 
 ## CSS
 
-<DocsCSS name="Gutter" type="utility" plural />
+<DocsCSS name="Gutter" type="system" plural exposed />
 
-### Sass variables
+### Custom properties
 
-`$grid-gutter-x` and `$grid-gutter-y` set the default gutter applied to every `.row`. Override these variables before importing Chassis to change the baseline gutter across all rows.
-
-<ScssDocs name="grid-variables" file="scss/config/_defaults.scss" />
+<CxTable>
+| Property | Default | Description |
+| --- | --- | --- |
+| `--cx-grid-gutter` | `:root`, from `$grid-gutters` | Gutter of the current breakpoint |
+| `--cx-grid-gap` | `--cx-grid-gutter` | Gap of `.grid` and `.grid-fill`; one value, or `row-gap column-gap` |
+</CxTable>
 
 ### Sass maps
 
-`$gutters` is assigned directly from `$spaces`, so every entry in the spacing scale generates a corresponding `.g-*`, `.gx-*`, and `.gy-*` class set. Extend `$spaces` before importing Chassis to add extra gutter steps; the spacing scale is shared with [padding]([[docsref:/utilities/padding]]) and [margin]([[docsref:/utilities/margin]]) utilities.
+`$grid-gutters` holds the gutter of each breakpoint. Override the map, or the tokens it reads, before importing Chassis. A breakpoint whose gutter equals that of the breakpoint before it emits no declaration.
+
+<ScssDocs name="grid-gutters" file="scss/config/_defaults.scss" />
+
+The gap utilities are generated from `$spaces`, the spacing scale.
 
 <ScssDocs name="spaces-map" file="scss/maps/_spacing.scss" />
+
+### Design tokens
+
+<DocsDesignTokens name="Gutter" type="system" plural />
+
+<ScssDocs name="gutter-tokens" file="scss/tokens/_grid.scss" />

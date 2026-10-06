@@ -185,6 +185,20 @@ Use `map.remove()` in the `with (…)` configuration:
 );
 ```
 
+### Grid maps
+
+Three maps, keyed by breakpoint, set the measures of the [grid system]([[docsref:/layout/grid]]): `$grid-gutters` (the gap of `.grid`), `$grid-column-counts` (its number of columns), and `$container-paddings` (the padding of `.container`, the page margin). Each becomes a custom property on `:root`, declared again at a breakpoint only where the value changes, so a map can list just the breakpoints where something changes:
+
+```scss
+@use "@chassis-ui/css/scss/config/defaults" with (
+  $grid-column-counts: (xs: 4, md: 8, lg: 12),
+  $container-paddings: (xs: 1rem, md: 1.5rem, xl: 2rem),
+);
+@use "@chassis-ui/css/scss/chassis";
+```
+
+The first breakpoint (`xs`) must be in the map: it is the value every viewport starts from. `$grid-gutter-x`, `$grid-gutter-y`, `$grid-row-columns`, `$gutters`, and `$container-padding-x` configure the deprecated [flexbox grid]([[docsref:/layout/flexbox-grid]]) and go with it in v0.7.0.
+
 ## Required keys
 
 Chassis assumes certain keys exist in some maps. For example, the framework consumes `primary`, `success`, and `danger` from `$context-colors` for links, buttons, and form states. Changing their values is safe; removing them may cause Sass compilation errors that you'll have to address in your own overrides.
@@ -326,6 +340,20 @@ export default {
   },
 }
 ```
+
+### Placeholder tokens
+
+Two groups of grid tokens do not come from the token source yet. The page margins (`$margin-xsmall` to `$margin-2xlarge`) and the column counts (`$columns-xsmall` to `$columns-2xlarge`) are declared in `scss/tokens/_grid.scss` with literal values, until `@chassis-ui/tokens` ships `cx-grid-margin-*` and `cx-grid-columns-*`. A `_chassis-tokens.scss` of your own therefore cannot change them: set the variables themselves, or the [grid maps](#grid-maps) that read them.
+
+```scss
+@use "@chassis-ui/css/scss/tokens/grid" with (
+  $margin-xsmall: 1rem,
+  $columns-xsmall: 4,
+);
+@use "@chassis-ui/css/scss/chassis";
+```
+
+The gutters, the breakpoints, and the container widths do come from the token source, as `cx-grid-gutter-*`, `cx-grid-breakpoint-*`, and `cx-grid-container-*`.
 
 ### Configuring variables
 

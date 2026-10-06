@@ -48,12 +48,12 @@ All configuration options are organized in a single alphabetical list for easier
 | `$enable-background-gradients`    | `true` (default) or `false`        | Applies subtle gradient backgrounds to various components via `background-image`. Disable for a flatter visual style or to reduce CSS size. |
 | `$enable-component-shadows`       | `true` (default) or `false`        | Enables predefined decorative `box-shadow` styles on various components for depth. |
 | `$enable-container-classes`       | `true` (default) or `false`        | Generates CSS classes for layout containers (`.container`, `.container.fluid`, etc.). Disable to reduce CSS size if you're using custom containers. |
-| `$enable-cssgrid`                 | `true` (default) or `false`        | Enables the modern CSS Grid system with classes like `.grid` and `.md:g-col-1`. Provides two-dimensional layout capabilities. |
+| `$enable-cssgrid`                 | `true` (default) or `false`        | Generates the [grid system]([[docsref:/layout/grid]]): `.grid`, `.grid-fill`, `.grid-cols-subgrid`, and the span and start classes (`.col-span-6`, `.md:col-start-3`). |
 | `$enable-dark-mode`               | `true` (default) or `false`        | Implements [dark mode support]([[docsref:/customize/color-modes#dark-mode]]) throughout the framework, with automatic detection and toggle capability. |
 | `$enable-deprecation-messages`    | `true` (default) or `false`        | Shows console warnings when using deprecated features scheduled for removal in future versions. Disable in production for cleaner console output. |
 | `$enable-elevation-shadows`       | `true` (default) or `false`        | Generates elevation-specific shadow utilities that create consistent layering effects based on design tokens. |
 | `$enable-exclude-strokes`         | `true` (default), `false`, or list | Controls border width exclusion from padding for components. `true` applies to all components, `false` never applies, or provide a list like `button, badge, form-control, notification` for specific components. |
-| `$enable-grid-classes`            | `true` (default) or `false`        | Generates classes for the flexbox-based grid system (`.row`, `.md:col-1`, etc.). Consider disabling if you only use CSS Grid. |
+| `$enable-grid-classes`            | `true` (default) or `false`        | **Deprecated.** Generates the [flexbox grid]([[docsref:/layout/flexbox-grid]]) (`.row`, `.md:col-1`, `.g-md`), which is removed in v0.7.0. Set it to `false` to drop the classes, and the deprecation notice of the build, now. |
 | `$enable-important-utilities`     | `true` (default) or `false`        | Adds `!important` to utility classes to ensure they override component styles. Disable only if you have a carefully controlled CSS specificity strategy. |
 | `$enable-negative-margins`        | `true` (default) or `false`        | Generates [negative margin utilities]([[docsref:/utilities/margin#negative-margins]]) like `.-m-md`, `-mt-sm`. Useful for precise layout adjustments. |
 | `$enable-reduced-motion`          | `true` (default) or `false`        | Respects the [`prefers-reduced-motion` media query]([[docsref:/core-concepts/accessibility#reduced-motion]]), reducing or eliminating animations for users who prefer minimal motion. Critical for vestibular disorders. |
@@ -121,7 +121,7 @@ Strategic configuration can significantly improve both CSS bundle size and runti
 
 For smaller CSS files, consider disabling:
 
-- **Layout Systems**: Use only one grid system by setting either `$enable-cssgrid: false` or `$enable-grid-classes: false`
+- **Layout Systems**: Set `$enable-grid-classes: false` once your markup no longer uses the deprecated flexbox grid (`.row`, `.col-*`)
 - **Visual Enhancements**: Disable `$enable-background-gradients` and `$enable-component-shadows` for a more minimal style
 - **Form Features**: Turn off `$enable-validation-icons` if you implement custom validation UI
 - **Transitions**: Set `$enable-transitions: false` for a more minimal build

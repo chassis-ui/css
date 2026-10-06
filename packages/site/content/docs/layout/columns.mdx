@@ -1,223 +1,169 @@
 ---
 title: Columns
-description: Column alignment, ordering, and offsetting within the flexbox grid, plus standalone column width classes for non-grid contexts.
+description: Start lines, row placement, alignment, column breaks, and ordering for the items of the CSS Grid system.
 toc: true
 css_layer: layout
+css_media: viewport
 ---
 
 ## Overview
 
-Columns are the innermost structural layer of the grid — they sit inside a `.row`, receive gutter padding, and hold page content. This page covers the alignment, reordering, and offsetting features that operate on columns directly. For the base row/column structure and responsive column sizing, see the [Grid system]([[docsref:/layout/grid]]).
+A grid item is a direct child of `.grid`. This page covers the classes that act on items: where an item starts, how many rows it takes, how it aligns in its cell, and in which order it appears. For the grid itself, spans, and responsive column counts, see the [Grid system]([[docsref:/layout/grid]]).
 
-## Alignment
+## Start line
 
-Flexbox alignment utilities apply at both the row and column level. Row-level classes affect all columns uniformly; column-level classes override alignment for individual items.
+`.col-start-{n}` sets `grid-column-start`, the grid line on which an item starts. Lines are numbered from `1`, the start edge of the grid, to `13`, the end edge of a twelve-column grid. An item with no start class goes into the next free tracks.
 
-### Vertical alignment
-
-`.align-items-{value}` on a `.row` controls the cross-axis position of all columns simultaneously. Available values: `start`, `end`, `center`, `baseline`, `stretch`.
-
-<Example class="cxd-example-row cxd-example-row-flex-cols" code={`<div class="container text-center">
-    <div class="row align-items-start">
-      <div class="col">One of three columns</div>
-      <div class="col">One of three columns</div>
-      <div class="col">One of three columns</div>
-    </div>
+<Example class="cxd-example-grid" code={`<div class="grid text-center">
+    <div class="col-span-4">.col-span-4</div>
+    <div class="col-span-4 col-start-9">.col-span-4 .col-start-9</div>
   </div>`} />
 
-<Example class="cxd-example-row cxd-example-row-flex-cols" code={`<div class="container text-center">
-    <div class="row align-items-center">
-      <div class="col">One of three columns</div>
-      <div class="col">One of three columns</div>
-      <div class="col">One of three columns</div>
-    </div>
+### Offsetting
+
+A start line leaves the tracks before the item empty. An item that starts at line `n` has `n - 1` tracks before it, so centering a span of six in twelve columns takes `.col-start-4`.
+
+<Example class="cxd-example-grid" code={`<div class="grid text-center">
+    <div class="col-span-3 col-start-4">.col-span-3 .col-start-4</div>
+    <div class="col-span-3 col-start-10">.col-span-3 .col-start-10</div>
+  </div>
+  <div class="grid text-center">
+    <div class="col-span-6 col-start-4">.col-span-6 .col-start-4</div>
   </div>`} />
 
-<Example class="cxd-example-row cxd-example-row-flex-cols" code={`<div class="container text-center">
-    <div class="row align-items-end">
-      <div class="col">One of three columns</div>
-      <div class="col">One of three columns</div>
-      <div class="col">One of three columns</div>
-    </div>
-  </div>`} />
+A start line is absolute: it counts from the edge of the grid, not from the previous item. Moving the second of two items takes a start line that accounts for the first.
 
-`.align-self-{value}` on a column overrides the row's `align-items` setting for that column only.
+### Responsive start lines
 
-<Example class="cxd-example-row cxd-example-row-flex-cols" code={`<div class="container text-center">
-    <div class="row">
-      <div class="col align-self-start">One of three columns</div>
-      <div class="col align-self-center">One of three columns</div>
-      <div class="col align-self-end">One of three columns</div>
-    </div>
-  </div>`} />
+Breakpoint variants set the start line per breakpoint. A start line stays in effect at wider breakpoints, so an item that moves needs a start class at each breakpoint where its position changes.
 
-### Horizontal alignment
-
-`.justify-content-{value}` on a `.row` distributes columns along the main axis. Available values: `start`, `center`, `end`, `around`, `between`, `evenly`.
-
-<Example class="cxd-example-row" code={`<div class="container text-center">
-    <div class="row justify-content-start">
-      <div class="col-4">One of two columns</div>
-      <div class="col-4">One of two columns</div>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-4">One of two columns</div>
-      <div class="col-4">One of two columns</div>
-    </div>
-    <div class="row justify-content-end">
-      <div class="col-4">One of two columns</div>
-      <div class="col-4">One of two columns</div>
-    </div>
-    <div class="row justify-content-around">
-      <div class="col-4">One of two columns</div>
-      <div class="col-4">One of two columns</div>
-    </div>
-    <div class="row justify-content-between">
-      <div class="col-4">One of two columns</div>
-      <div class="col-4">One of two columns</div>
-    </div>
-    <div class="row justify-content-evenly">
-      <div class="col-4">One of two columns</div>
-      <div class="col-4">One of two columns</div>
-    </div>
-  </div>`} />
-
-### Column wrapping
-
-When the sum of column spans in a row exceeds 12, the overflow columns wrap to a new line as a group.
-
-<Example class="cxd-example-row" code={`<div class="container">
-    <div class="row">
-      <div class="col-9">.col-9</div>
-      <div class="col-4">.col-4<br>Since 9 + 4 = 13 &gt; 12, this 4-column-wide div gets wrapped onto a new line as one contiguous unit.</div>
-      <div class="col-6">.col-6<br>Subsequent columns continue along the new line.</div>
-    </div>
+<Example class="cxd-example-grid" code={`<div class="grid text-center">
+    <div class="col-span-full sm:col-span-5 md:col-span-6">.sm:col-span-5 .md:col-span-6</div>
+    <div class="col-span-full sm:col-span-5 sm:col-start-8 md:col-span-6 md:col-start-7">.sm:col-span-5 .sm:col-start-8 .md:col-span-6 .md:col-start-7</div>
   </div>`} />
 
 ### Column breaks
 
-A `<div class="w-100">` inserted between column elements forces subsequent columns to start on a new line within the same `.row`. This avoids splitting content across separate `.row` elements when the markup structure prevents it.
+`.col-start-1` sends an item to the first track, which starts a new row when the item is not there already. No empty element is needed to break a row.
 
-<Example class="cxd-example-row" code={`<div class="container text-center">
-    <div class="row">
-      <div class="col-6 sm:col-3">.col-6 .sm:col-3</div>
-      <div class="col-6 sm:col-3">.col-6 .sm:col-3</div>
-
-      <!-- Force next columns to break to new line -->
-      <div class="w-100"></div>
-
-      <div class="col-6 sm:col-3">.col-6 .sm:col-3</div>
-      <div class="col-6 sm:col-3">.col-6 .sm:col-3</div>
-    </div>
+<Example class="cxd-example-grid" code={`<div class="grid text-center">
+    <div class="col-span-3">.col-span-3</div>
+    <div class="col-span-3">.col-span-3</div>
+    <div class="col-span-3 col-start-1">.col-span-3 .col-start-1</div>
+    <div class="col-span-3">.col-span-3</div>
   </div>`} />
 
-Responsive [display utilities]([[docsref:/utilities/display]]) make the break conditional on viewport size.
+## Rows
 
-<Example class="cxd-example-row" code={`<div class="container text-center">
-    <div class="row">
-      <div class="col-6 sm:col-4">.col-6 .sm:col-4</div>
-      <div class="col-6 sm:col-4">.col-6 .sm:col-4</div>
+`.row-span-{n}` makes an item span `n` rows, from `1` to `6`, and `.row-start-{n}` places it on a row line, from `1` to `7`. Both have breakpoint variants.
 
-      <!-- Force next columns to break to new line at md breakpoint and up -->
-      <div class="w-100 d-none md:d-block"></div>
+<Example class="cxd-example-grid" code={`<div class="grid text-center" style="--cx-grid-columns: 4;">
+    <div class="row-span-2">.row-span-2</div>
+    <div class="col-span-3">.col-span-3</div>
+    <div class="col-span-3">.col-span-3</div>
+  </div>`} />
 
-      <div class="col-6 sm:col-4">.col-6 .sm:col-4</div>
-      <div class="col-6 sm:col-4">.col-6 .sm:col-4</div>
-    </div>
+`.grid` has one explicit row; items that wrap create rows as tall as their content. `--cx-grid-rows` sets the number of explicit rows, which share the height of the grid equally.
+
+<Example class="cxd-example-grid" code={`<div class="grid text-center" style="--cx-grid-columns: 3; --cx-grid-rows: 3;">
+    <div>Row 1</div>
+    <div class="col-start-2 row-start-2">.col-start-2 .row-start-2</div>
+    <div class="col-start-3 row-start-3">.col-start-3 .row-start-3</div>
+  </div>`} />
+
+## Alignment
+
+The tracks of `.grid` fill its width, and an item fills its cell on both axes. Alignment classes change how an item sits in its cell.
+
+### Vertical alignment
+
+`.align-items-{value}` on the grid aligns every item on the block axis. Available values: `start`, `end`, `center`, `baseline`, `stretch`.
+
+<Example class="cxd-example-grid cxd-example-grid-tall" code={`<div class="grid align-items-start text-center">
+    <div class="col-span-4">One of three items</div>
+    <div class="col-span-4">One of three items</div>
+    <div class="col-span-4">One of three items</div>
+  </div>`} />
+
+<Example class="cxd-example-grid cxd-example-grid-tall" code={`<div class="grid align-items-center text-center">
+    <div class="col-span-4">One of three items</div>
+    <div class="col-span-4">One of three items</div>
+    <div class="col-span-4">One of three items</div>
+  </div>`} />
+
+<Example class="cxd-example-grid cxd-example-grid-tall" code={`<div class="grid align-items-end text-center">
+    <div class="col-span-4">One of three items</div>
+    <div class="col-span-4">One of three items</div>
+    <div class="col-span-4">One of three items</div>
+  </div>`} />
+
+`.align-self-{value}` on an item overrides the alignment of the grid for that item.
+
+<Example class="cxd-example-grid cxd-example-grid-tall" code={`<div class="grid text-center">
+    <div class="col-span-4 align-self-start">.align-self-start</div>
+    <div class="col-span-4 align-self-center">.align-self-center</div>
+    <div class="col-span-4 align-self-end">.align-self-end</div>
+  </div>`} />
+
+### Both axes
+
+`.place-items-{value}` on the grid aligns every item on both axes at once: with `start`, `center`, or `end` an item is as wide as its content and sits at that edge of its cell.
+
+<Example class="cxd-example-grid cxd-example-grid-tall" code={`<div class="grid place-items-center text-center">
+    <div class="col-span-4 px-md">Centered</div>
+    <div class="col-span-4 px-md">Centered</div>
+    <div class="col-span-4 px-md">Centered</div>
+  </div>`} />
+
+### Horizontal position
+
+The tracks leave no free space on the inline axis, so `.justify-content-*` does not move the items of a `.grid`. Position an item with a [start line](#start-line) instead.
+
+<Example class="cxd-example-grid" code={`<div class="grid text-center">
+    <div class="col-span-4 col-start-3">.col-span-4 .col-start-3</div>
+    <div class="col-span-4">.col-span-4</div>
+  </div>
+  <div class="grid text-center">
+    <div class="col-span-4 col-start-5">.col-span-4 .col-start-5</div>
+    <div class="col-span-4">.col-span-4</div>
   </div>`} />
 
 ## Reordering
 
-Column order can be changed visually without altering DOM order, using either `.order-*` classes or offset margins.
+`.order-{n}` sets the `order` property, which changes the visual position of an item without changing the DOM. Values `0` through `5` are generated at all six breakpoints, so the order can change per breakpoint (`.order-1.md:order-2`). `.order-first` applies `order: -1`; `.order-last` applies `order: 6`.
 
-### Order classes
-
-`.order-{n}` sets the flexbox `order` property for visual reordering independent of DOM position. Values `0` through `5` are generated across all six breakpoints, so the `order` can be set per tier (e.g. `.order-1.md:order-2`). `.order-first` applies `order: -1`; `.order-last` applies `order: 6`.
-
-<Example class="cxd-example-row" code={`<div class="container text-center">
-    <div class="row">
-      <div class="col">First in DOM, no order applied</div>
-      <div class="col order-5">Second in DOM, with a larger order</div>
-      <div class="col order-1">Third in DOM, with an order of 1</div>
-    </div>
+<Example class="cxd-example-grid" code={`<div class="grid text-center">
+    <div class="col-span-4">First in DOM, no order applied</div>
+    <div class="col-span-4 order-5">Second in DOM, with a larger order</div>
+    <div class="col-span-4 order-1">Third in DOM, with an order of 1</div>
   </div>`} />
 
-<Example class="cxd-example-row" code={`<div class="container text-center">
-    <div class="row">
-      <div class="col order-last">First in DOM, ordered last</div>
-      <div class="col">Second in DOM, unordered</div>
-      <div class="col order-first">Third in DOM, ordered first</div>
-    </div>
+<Example class="cxd-example-grid" code={`<div class="grid text-center">
+    <div class="col-span-4 order-last">First in DOM, ordered last</div>
+    <div class="col-span-4">Second in DOM, unordered</div>
+    <div class="col-span-4 order-first">Third in DOM, ordered first</div>
   </div>`} />
 
-### Offsetting columns
+<Callout type="warning">
+Visual order does not change the order in which keyboards and screen readers reach the items. Keep the DOM order meaningful and reorder only where the reading order stays the same.
+</Callout>
 
-Two mechanisms push a column to the right: offset classes, which consume grid track space, and margin utilities, which use `margin-inline-start: auto`.
+## Widths outside a grid
 
-#### Offset classes
+Span classes do nothing outside a `.grid`. To give an element a fraction of the width of its parent, use the responsive fraction widths, `.w-{n}/12` — see [Sizing]([[docsref:/utilities/sizing#fractions]]).
 
-`{breakpoint}:offset-{n}` advances a column by `n` tracks using `margin-inline-start`. For example, `.md:offset-4` moves a column four tracks to the right from the `md` breakpoint upward. Reset an offset at a larger breakpoint with `{breakpoint}:offset-0`.
-
-<Example class="cxd-example-row" code={`<div class="container text-center">
-    <div class="row">
-      <div class="md:col-4">.md:col-4</div>
-      <div class="md:col-4 md:offset-4">.md:col-4 .md:offset-4</div>
-    </div>
-    <div class="row">
-      <div class="md:col-3 md:offset-3">.md:col-3 .md:offset-3</div>
-      <div class="md:col-3 md:offset-3">.md:col-3 .md:offset-3</div>
-    </div>
-    <div class="row">
-      <div class="md:col-6 md:offset-3">.md:col-6 .md:offset-3</div>
-    </div>
-  </div>`} />
-
-<Example class="cxd-example-row" code={`<div class="container text-center">
-    <div class="row">
-      <div class="sm:col-5 md:col-6">.sm:col-5 .md:col-6</div>
-      <div class="sm:col-5 sm:offset-2 md:col-6 md:offset-0">.sm:col-5 .sm:offset-2 .md:col-6 .md:offset-0</div>
-    </div>
-    <div class="row">
-      <div class="sm:col-6 md:col-5 lg:col-6">.sm:col-6 .md:col-5 .lg:col-6</div>
-      <div class="sm:col-6 md:col-5 md:offset-2 lg:col-6 lg:offset-0">.sm:col-6 .md:col-5 .md:offset-2 .lg:col-6 .lg:offset-0</div>
-    </div>
-  </div>`} />
-
-#### Margin utilities
-
-`.me-auto` and `.ms-auto` push sibling columns by consuming available space with an automatic margin. Breakpoint-prefixed variants (e.g. `.md:ms-auto`) activate at and above the named tier — see [Margin utilities]([[docsref:/utilities/margin]]).
-
-<Example class="cxd-example-row" code={`<div class="container text-center">
-    <div class="row">
-      <div class="md:col-4">.md:col-4</div>
-      <div class="md:col-4 ms-auto">.md:col-4 .ms-auto</div>
-    </div>
-    <div class="row">
-      <div class="md:col-3 md:ms-auto">.md:col-3 .md:ms-auto</div>
-      <div class="md:col-3 md:ms-auto">.md:col-3 .md:ms-auto</div>
-    </div>
-    <div class="row">
-      <div class="col-auto me-auto">.col-auto .me-auto</div>
-      <div class="col-auto">.col-auto</div>
-    </div>
-  </div>`} />
-
-## Standalone columns
-
-`.col-{n}` and `{breakpoint}:col-{n}` classes work outside a `.row` to give any element a percentage width matching the column grid. Gutter padding is only applied when a column class is a direct child of `.row`; outside that context the padding is omitted.
-
-<Example class="cxd-example-row" code={`<div class="col-3 p-md mb-xs">
-    .col-3: width of 25%
+<Example class="cxd-example-flex" code={`<div class="w-3/12 p-md mb-xs">
+    .w-3/12: width of 25%
   </div>
 
-  <div class="sm:col-9 p-md">
-    .sm:col-9: width of 75% above sm breakpoint
+  <div class="sm:w-9/12 p-md">
+    .sm:w-9/12: width of 75% above sm breakpoint
   </div>`} />
 
-Float-based layouts can use column width classes alongside `.float-end` and `.float-start`. Wrap the content in a [`.clearfix`]([[docsref:/helpers/clearfix]]) container to contain the float when the text is shorter than the floated element.
+Float-based layouts combine a fraction width with `.float-end` or `.float-start`. Wrap the content in a [`.clearfix`]([[docsref:/helpers/clearfix]]) container to contain the float when the text is shorter than the floated element.
 
 <Example code={`<div class="clearfix">
-    <Placeholder width="100%" height="210" class="md:col-6 md:float-end mb-md md:ms-md" text="Responsive floated image" />
+    <Placeholder width="100%" height="210" class="md:w-6/12 md:float-end mb-md md:ms-md" text="Responsive floated image" />
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit.</p>
     <p>Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur.</p>
     <p>Donec sed odio dui. Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
@@ -225,7 +171,7 @@ Float-based layouts can use column width classes alongside `.float-end` and `.fl
 
 ## CSS
 
-Column and offset classes are generated by the grid Sass system — see [Grid system → Sass variables]([[docsref:/layout/grid#sass-variables]]) for the variables that control column count and gutter width. 
+The span, start, and row classes are generated by `make-cssgrid()` up to `$grid-columns` and `$grid-rows` — see [Grid system → Sass variables]([[docsref:/layout/grid#sass-variables]]).
 
 The `order-*` utility range is configurable through the `$utilities` Sass map; the following extends the range with an `.order-6` class and updates `.order-last` to maintain its position beyond the new value:
 

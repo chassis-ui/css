@@ -1,6 +1,6 @@
 ---
 title: Grid
-description: Utilities for controlling CSS Grid layout behavior including column counts, column behavior, and auto-placement options.
+description: Responsive utilities for the column count and the auto-placement of a CSS Grid container.
 toc: true
 css_layer: utilities
 mdn: https://developer.mozilla.org/en-US/docs/Web/CSS/grid
@@ -10,92 +10,58 @@ import { getData } from '@libs/data'
 
 ## Overview
 
-Use grid utilities to control CSS Grid layout behavior. These utilities work with Chassis CSS’s [CSS Grid layout system]([[docsref:/layout/css-grid]]) to manage column counts and auto-placement algorithms.
-
-<Callout type="info">
-**CSS Grid is opt-in.** To use these utilities, you need to enable the CSS Grid system by setting `$enable-cssgrid: true` in your Sass configuration. See our [CSS Grid documentation]([[docsref:/layout/css-grid]]) for more details.
-</Callout>
+Grid utilities set the number of columns of a grid and the way its items are placed. They act on `.grid`, the container of the [grid system]([[docsref:/layout/grid]]), and on any element with `display: grid` (`.d-grid`). The classes that place a single item — `.col-span-*`, `.col-start-*`, `.row-span-*`, `.row-start-*` — belong to the grid system and are covered in [Columns]([[docsref:/layout/columns]]).
 
 ## Column counts
 
-Use `grid-cols-{value}` utilities to set the number of columns in a CSS Grid container by modifying the `--cx-columns` CSS variable. Chassis CSS’s CSS Grid system supports 3, 4, and 6 column layouts out of the box.
+`.grid-cols-{n}` sets `grid-template-columns` to `n` equal tracks, from `1` to `12`. On a `.grid` it replaces the column count of `--cx-grid-columns`, so items of equal width need no span class.
 
-<Example class="cxd-example-cssgrid" code={`<div class="grid text-center grid-cols-3">
-    <div>Column</div>
-    <div>Column</div>
-    <div>Column</div>
-    <div>Column</div>
-    <div>Column</div>
-    <div>Column</div>
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 text-center">
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
   </div>`} />
 
-<Example class="cxd-example-cssgrid" code={`<div class="grid text-center grid-cols-4">
-    <div>Column</div>
-    <div>Column</div>
-    <div>Column</div>
-    <div>Column</div>
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-4 text-center">
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
   </div>`} />
 
-<Example class="cxd-example-cssgrid" code={`<div class="grid text-center grid-cols-6">
-    <div>Column</div>
-    <div>Column</div>
-    <div>Column</div>
-    <div>Column</div>
-    <div>Column</div>
-    <div>Column</div>
+Span classes count against the tracks of the utility:
+
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-4 text-center">
+    <div>Item</div>
+    <div class="col-span-2">.col-span-2</div>
+    <div>Item</div>
+    <div class="col-span-full">.col-span-full</div>
   </div>`} />
 
-These utilities set the `--cx-columns` CSS variable:
+Each track is `minmax(0, 1fr)`, the declaration of the Tailwind utility of the same name, so wide content does not widen a track:
 
-```scss
+```css
 .grid-cols-3 {
-  --cx-columns: 3;
-}
-
-.grid-cols-4 {
-  --cx-columns: 4;
-}
-
-.grid-cols-6 {
-  --cx-columns: 6;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 ```
 
-## Fill columns
-
-Use `grid-cols-fill` to make a grid item span the entire width of the grid container by setting `grid-column: 1 / -1`.
-
-<Example class="cxd-example-cssgrid" code={`<div class="grid text-center" style="--cx-columns: 4;">
-    <div>Column</div>
-    <div>Column</div>
-    <div>Column</div>
-    <div>Column</div>
-    <div class="grid-cols-fill">Full width column</div>
-    <div>Column</div>
-    <div>Column</div>
-  </div>`} />
-
-```html
-<div class="grid" style="--cx-columns: 4;">
-  <div>Column</div>
-  <div>Column</div>
-  <div>Column</div>
-  <div>Column</div>
-  <div class="grid-cols-fill">Full width column</div>
-  <div>Column</div>
-  <div>Column</div>
-</div>
-```
+<Callout type="warning">
+`.grid-cols-fill`, which makes an item span the whole grid, is deprecated as of v0.6.0 and removed in v0.7.0. Use `.col-span-full`.
+</Callout>
 
 ## Auto flow
 
-Control how auto-placed items are inserted into the grid with `grid-auto-flow` utilities.
+`.grid-auto-flow-{value}` sets `grid-auto-flow`, the direction in which items without a start line fill the grid.
 
-### Row (default)
+### Row
 
-Use `grid-auto-flow-row` to place items by filling each row in turn, adding new rows as necessary.
+`.grid-auto-flow-row`, the browser default, fills each row in turn and adds rows as needed.
 
-<Example class="cxd-example-cssgrid" code={`<div class="grid text-center grid-auto-flow-row" style="--cx-columns: 3;">
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-auto-flow-row text-center">
     <div>Item 1</div>
     <div>Item 2</div>
     <div>Item 3</div>
@@ -105,9 +71,9 @@ Use `grid-auto-flow-row` to place items by filling each row in turn, adding new 
 
 ### Column
 
-Use `grid-auto-flow-column` to place items by filling each column in turn, adding new columns as necessary.
+`.grid-auto-flow-column` fills each column in turn and adds columns as needed. `--cx-grid-rows` sets the number of rows a column holds.
 
-<Example class="cxd-example-cssgrid" code={`<div class="grid text-center grid-auto-flow-column" style="--cx-rows: 3; --cx-columns: 3;">
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-auto-flow-column text-center" style="--cx-grid-rows: 2;">
     <div>Item 1</div>
     <div>Item 2</div>
     <div>Item 3</div>
@@ -117,45 +83,32 @@ Use `grid-auto-flow-column` to place items by filling each column in turn, addin
 
 ### Dense
 
-Use `grid-auto-flow-dense` to use the "dense" packing algorithm, which attempts to fill in holes earlier in the grid if smaller items come up later.
+`.grid-auto-flow-dense` lets a later item fill a hole that an earlier, wider item left behind. The visual order can then differ from the DOM order.
 
-<Example class="cxd-example-cssgrid" code={`<div class="grid text-center grid-auto-flow-dense" style="--cx-columns: 3;">
-    <div class="g-col-2">Item 1 (spans 2)</div>
-    <div>Item 2</div>
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-auto-flow-dense text-center">
+    <div class="col-span-2">Item 1 (spans 2)</div>
+    <div class="col-span-2">Item 2 (spans 2)</div>
     <div>Item 3</div>
     <div>Item 4</div>
-    <div class="g-col-2">Item 5 (spans 2)</div>
   </div>`} />
-
-```scss
-.grid-auto-flow-row {
-  grid-auto-flow: row;
-}
-
-.grid-auto-flow-column {
-  grid-auto-flow: column;
-}
-
-.grid-auto-flow-dense {
-  grid-auto-flow: dense;
-}
-```
 
 ## Responsive
 
-All grid utilities are responsive and include all breakpoints.
+Every grid utility has a variant per breakpoint.
+
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-2 md:grid-cols-4 text-center">
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+  </div>`} />
 
 ### Column counts
 
 <ul>
 {getData('breakpoints').map((breakpoint) => {
   return (
-    <Fragment>
-      <li><code>.{breakpoint.abbr}grid-cols-3</code></li>
-      <li><code>.{breakpoint.abbr}grid-cols-4</code></li>
-      <li><code>.{breakpoint.abbr}grid-cols-6</code></li>
-      <li><code>.{breakpoint.abbr}grid-cols-fill</code></li>
-    </Fragment>
+    <li><code>.{breakpoint.abbr}grid-cols-1</code> to <code>.{breakpoint.abbr}grid-cols-12</code></li>
   )
 })}
 </ul>
@@ -186,6 +139,6 @@ The table lists all grid utilities and their CSS properties.
 
 ### Utilities API
 
-Grid utilities are declared in `scss/utilities/_grid.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]).
+Grid utilities are declared in `scss/utilities/_grid.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]). The column counts are generated from `1` to `$grid-columns`.
 
 <ScssDocs name="utils-grid" file="scss/utilities/_grid.scss" />

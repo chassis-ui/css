@@ -33,6 +33,18 @@ Width utilities (`w-25`, `w-50`, `w-75`, `w-100`, `w-auto`) set the element's wi
     <div class="mh-100" style="width: 100px; height: 200px;">Max-height 100%</div>
   </div>`} />
 
+## Fractions
+
+`.w-{n}/12` sets the width to `n` twelfths of the parent, from `.w-1/12` to `.w-11/12`. Unlike the percentage widths above, the fractions have a variant per breakpoint (`.md:w-6/12`), which sizes an element responsively outside a [grid]([[docsref:/layout/grid]]): an image beside floated text, a [skeleton]([[docsref:/components/skeleton]]) line, the image of a horizontal card.
+
+<Example class="cxd-example-flex" code={`<div class="w-4/12 p-md mb-xs">.w-4/12</div>
+<div class="w-8/12 p-md mb-xs">.w-8/12</div>
+<div class="w-100 md:w-6/12 p-md">.w-100 .md:w-6/12</div>`} />
+
+The names and values are those of the Tailwind fraction widths: `.w-6/12` declares `width: calc(6 / 12 * 100%)`. In a stylesheet the slash is escaped (`.w-6\/12`); in HTML the class is written as is.
+
+A flex item with a fraction width still shrinks. Add `.flex-shrink-0` to keep the width when siblings need the room.
+
 ## Relative to the viewport
 
 Viewport-relative utilities set dimensions based on viewport units rather than the parent element.

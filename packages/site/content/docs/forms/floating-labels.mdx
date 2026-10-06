@@ -203,16 +203,16 @@ See the [input group]([[docsref:/forms/input-group]]) page for the full set of a
 
 ### Grid layout
 
-Combine `.form-floating` containers with Chassis CSS's grid system by placing them within column classes:
+Place `.form-floating` containers in the items of a [grid]([[docsref:/layout/grid]]) to set them side by side:
 
-<Example code={`<div class="row g-md">
-    <div class="md:col">
+<Example code={`<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+    <div>
       <div class="form-floating">
         <label for="floatingInputGrid">Email address</label>
         <input type="email" class="form-input" id="floatingInputGrid" placeholder="name@example.com" value="user@chassis.css">
       </div>
     </div>
-    <div class="md:col">
+    <div>
       <div class="form-floating">
         <label for="floatingSelectGrid">Preferences</label>
         <select class="form-input" id="floatingSelectGrid">

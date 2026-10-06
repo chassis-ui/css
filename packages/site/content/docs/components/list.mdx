@@ -230,8 +230,8 @@ Apply the `.active` class to indicate the currently selected item within a conte
 
 Contextual styles are applied to lists or items using `.solid`, `.outline`, or `.smooth` classes. These classes apply the appropriate background, border, and text colors based on your design system's color palette.
 
-<Example code={`<div class="row md:row-cols-2 g-lg">
-    <div class="col">
+<Example code={`<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+    <div>
       <ul class="list context primary">
         <li class="list-item">An item</li>
         <li class="list-item">A second item</li>
@@ -240,7 +240,7 @@ Contextual styles are applied to lists or items using `.solid`, `.outline`, or `
         <li class="list-item">And a fifth one</li>
       </ul>
     </div>
-    <div class="col">
+    <div>
       <ul class="list context primary solid flush rounded">
         <li class="list-item">An item</li>
         <li class="list-item">A second item</li>
@@ -249,7 +249,7 @@ Contextual styles are applied to lists or items using `.solid`, `.outline`, or `
         <li class="list-item">And a fifth one</li>
       </ul>
     </div>
-    <div class="col">
+    <div>
       <ul class="list context primary smooth flush rounded">
         <li class="list-item">An item</li>
         <li class="list-item">A second item</li>
@@ -258,7 +258,7 @@ Contextual styles are applied to lists or items using `.solid`, `.outline`, or `
         <li class="list-item">And a fifth one</li>
       </ul>
     </div>
-    <div class="col">
+    <div>
       <ul class="list context primary outline">
         <li class="list-item">An item</li>
         <li class="list-item">A second item</li>
@@ -397,8 +397,8 @@ Chassis CSS includes JavaScript functionality that extends lists with dynamic be
 The tab JavaScript plugin—available either as an individual module or through the compiled `chassis.js` file—transforms lists into interactive tab navigation systems. This creates a cohesive interface where list styling is applied to navigational elements that control content visibility.
 
 <div class="cxd-example" role="tabpanel">
-  <div class="row">
-    <div class="col-4">
+  <div class="grid">
+    <div class="col-span-4">
       <div class="list" id="list-tab" role="tablist">
         <a class="list-item list-action active" id="list-home-item" data-cx-toggle="tab" href="#list-home" role="tab" aria-controls="list-home">Home</a>
         <a class="list-item list-action" id="list-profile-item" data-cx-toggle="tab" href="#list-profile" role="tab" aria-controls="list-profile">Profile</a>
@@ -406,7 +406,7 @@ The tab JavaScript plugin—available either as an individual module or through 
         <a class="list-item list-action" id="list-settings-item" data-cx-toggle="tab" href="#list-settings" role="tab" aria-controls="list-settings">Settings</a>
       </div>
     </div>
-    <div class="col-8">
+    <div class="col-span-8">
       <div class="tab-content" id="nav-tabContent">
         <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-item">
           <p>Some placeholder content in a paragraph relating to "Home". And some more content, used here just to pad out and fill this tab panel. In production, you would obviously have more real content here. And not just text. It could be anything, really. Text, images, forms.</p>
@@ -426,8 +426,8 @@ The tab JavaScript plugin—available either as an individual module or through 
 </div>
 
 ```html
-<div class="row">
-  <div class="col-4">
+<div class="grid">
+  <div class="col-span-4">
     <div class="list" id="list-tab" role="tablist">
       <a class="list-item list-action active" id="list-home-item" data-cx-toggle="list" href="#list-solid-home" role="tab" aria-controls="list-home">Home</a>
       <a class="list-item list-action" id="list-profile-item" data-cx-toggle="list" href="#list-solid-profile" role="tab" aria-controls="list-profile">Profile</a>
@@ -435,7 +435,7 @@ The tab JavaScript plugin—available either as an individual module or through 
       <a class="list-item list-action" id="list-settings-item" data-cx-toggle="list" href="#list-solid-settings" role="tab" aria-controls="list-settings">Settings</a>
     </div>
   </div>
-  <div class="col-8">
+  <div class="col-span-8">
     <div class="tab-content" id="nav-tabContent">
       <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-item">...</div>
       <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-item">...</div>

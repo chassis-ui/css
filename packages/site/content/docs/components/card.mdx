@@ -186,10 +186,10 @@ Cards have no intrinsic width and expand to fill their container. Width is contr
 
 Cards expand to 100% of their container. Three patterns control width:
 
-**Grid columns.** Wrap each card in a column inside a `.row`. Breakpoint column classes control how many cards appear per row.
+**Grid columns.** Wrap each card in an item of a [`.grid`]([[docsref:/layout/grid]]). Span classes per breakpoint control how many cards appear per row.
 
-<Example code={`<div class="row">
-    <div class="sm:col-6 mb-md mb-xs-0">
+<Example code={`<div class="grid">
+    <div class="col-span-full sm:col-span-6">
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">Special title treatment</h4>
@@ -198,7 +198,7 @@ Cards expand to 100% of their container. Three patterns control width:
         </div>
       </div>
     </div>
-    <div class="sm:col-6">
+    <div class="col-span-full sm:col-span-6">
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">Special title treatment</h4>
@@ -240,8 +240,8 @@ Cards expand to 100% of their container. Three patterns control width:
 
 Apply `.text-center` or `.text-end` to `.card` to align all content uniformly, or scope the class to an individual sub-element.
 
-<Example code={`<div class="row">
-    <div class="md:col-6 mb-md sm:mb-0">
+<Example code={`<div class="grid">
+    <div class="col-span-full md:col-span-6">
       <div class="card text-center"><!-- [!code highlight] -->
         <div class="card-header">
           Featured
@@ -256,7 +256,7 @@ Apply `.text-center` or `.text-end` to `.card` to align all content uniformly, o
         </div>
       </div>
     </div>
-    <div class="md:col-6">
+    <div class="col-span-full md:col-span-6">
       <div class="card text-end"><!-- [!code highlight] -->
         <div class="card-header">
           Featured
@@ -275,13 +275,13 @@ Apply `.text-center` or `.text-end` to `.card` to align all content uniformly, o
 
 ### Horizontal layout
 
-Apply a responsive flex-row utility (e.g. `lg:flex-row`) directly to `.card` to switch from a stacked to a side-by-side layout at a breakpoint. Pair responsive image classes on the image to match: `.card-image-top` rounds the top corners at narrow viewports; `.{breakpoint}:card-image-start` (or `.card-image-end`) takes over at wider viewports, rounding the start-side corners.
+Apply a responsive flex-row utility (e.g. `lg:flex-row`) directly to `.card` to switch from a stacked to a side-by-side layout at a breakpoint, and a responsive [fraction width]([[docsref:/utilities/sizing#fractions]]) to each side (`lg:w-4/12` and `lg:w-8/12`) to set their shares. Pair responsive image classes on the image to match: `.card-image-top` rounds the top corners at narrow viewports; `.{breakpoint}:card-image-start` (or `.card-image-end`) takes over at wider viewports, rounding the start-side corners.
 
 <Example code={`<div class="card lg:flex-row">
-      <div class="lg:col-4">
+      <div class="lg:w-4/12">
         <Placeholder width="100%" height="100%" class="card-image-top lg:card-image-start" text="Card image" aria-hidden="true" /><!-- [!code highlight] -->
       </div>
-      <div class="card-body lg:col-8">
+      <div class="card-body lg:w-8/12">
         <h4 class="card-title">Card title</h4>
         <p>This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
         <p><small class="fg-subtle">Last updated 3 mins ago</small></p>
@@ -293,10 +293,10 @@ To place the image inside the body region with padding, apply both `.card-body` 
 
 <Example code={`<div class="card">
     <div class="card-body lg:flex-row gap-md"><!-- [!code highlight] -->
-      <div class="lg:col-4">
+      <div class="lg:w-4/12">
         <Placeholder width="100%" height="100%" class="card-image" text="Card image" aria-hidden="true" />
       </div>
-      <div class="lg:col-8 card-body p-0"><!-- [!code highlight] -->
+      <div class="lg:w-8/12 card-body p-0"><!-- [!code highlight] -->
         <h4 class="card-title">Card title</h4>
         <p>This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
         <p class="mb-0"><small class="fg-subtle">Last updated 3 mins ago</small></p>
@@ -306,10 +306,10 @@ To place the image inside the body region with padding, apply both `.card-body` 
 
 ### Grid layout
 
-The `.row-cols-*` classes on the row control how many `.col`-wrapped cards appear per row at each breakpoint. `.g-*` gutter classes control spacing between cards.
+`.grid-cols-*` on a `.grid` sets how many cards appear per row at each breakpoint. [Gap utilities]([[docsref:/utilities/gap]]) set the spacing between cards; with none, it is the gutter of the breakpoint.
 
-<Example code={`<div class="row row-cols-1 md:row-cols-2 g-lg">
-    <div class="col">
+<Example code={`<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+    <div>
       <div class="card">
         <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" aria-hidden="true" />
         <div class="card-body">
@@ -318,7 +318,7 @@ The `.row-cols-*` classes on the row control how many `.col`-wrapped cards appea
         </div>
       </div>
     </div>
-    <div class="col">
+    <div>
       <div class="card">
         <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" aria-hidden="true" />
         <div class="card-body">
@@ -327,7 +327,7 @@ The `.row-cols-*` classes on the row control how many `.col`-wrapped cards appea
         </div>
       </div>
     </div>
-    <div class="col">
+    <div>
       <div class="card">
         <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" aria-hidden="true" />
         <div class="card-body">
@@ -336,7 +336,7 @@ The `.row-cols-*` classes on the row control how many `.col`-wrapped cards appea
         </div>
       </div>
     </div>
-    <div class="col">
+    <div>
       <div class="card">
         <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" aria-hidden="true" />
         <div class="card-body">
@@ -349,10 +349,10 @@ The `.row-cols-*` classes on the row control how many `.col`-wrapped cards appea
 
 ### Equal heights
 
-Add `.h-100` to each card inside a grid row. The grid column stretches to fill the row height; `.card-body`'s `flex: 1 1 auto` grows the body to fill the remaining space, which pins `.card-footer` to the bottom.
+Add `.h-100` to each card inside a grid item. The item stretches to the height of its row; `.card-body`'s `flex: 1 1 auto` grows the body to fill the remaining space, which pins `.card-footer` to the bottom.
 
-<Example code={`<div class="row row-cols-1 md:row-cols-3 g-4">
-    <div class="col">
+<Example code={`<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+    <div>
       <div class="card h-100">
         <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" aria-hidden="true" />
         <div class="card-body">
@@ -361,7 +361,7 @@ Add `.h-100` to each card inside a grid row. The grid column stretches to fill t
         </div>
       </div>
     </div>
-    <div class="col">
+    <div>
       <div class="card h-100">
         <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" aria-hidden="true" />
         <div class="card-body">
@@ -370,7 +370,7 @@ Add `.h-100` to each card inside a grid row. The grid column stretches to fill t
         </div>
       </div>
     </div>
-    <div class="col">
+    <div>
       <div class="card h-100">
         <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" aria-hidden="true" />
         <div class="card-body">
@@ -383,8 +383,8 @@ Add `.h-100` to each card inside a grid row. The grid column stretches to fill t
 
 With footers, `.card-footer` aligns to the bottom of each card regardless of body content length.
 
-<Example code={`<div class="row row-cols-1 md:row-cols-3 g-lg">
-    <div class="col">
+<Example code={`<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+    <div>
       <div class="card h-100">
         <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" aria-hidden="true" />
         <div class="card-body">
@@ -396,7 +396,7 @@ With footers, `.card-footer` aligns to the bottom of each card regardless of bod
         </div>
       </div>
     </div>
-    <div class="col">
+    <div>
       <div class="card h-100">
         <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" aria-hidden="true" />
         <div class="card-body">
@@ -408,7 +408,7 @@ With footers, `.card-footer` aligns to the bottom of each card regardless of bod
         </div>
       </div>
     </div>
-    <div class="col">
+    <div>
       <div class="card h-100">
         <Placeholder width="100%" height="140" class="card-image-top" text="Image cap" aria-hidden="true" />
         <div class="card-body">
@@ -568,8 +568,8 @@ Cards support the Chassis context color system. Individual regions can also be s
 
 Add `.context` and a contextual modifier — `.primary`, `.secondary`, etc. — along with an intensity class (`.solid`, `.smooth`, `.outline`, or none for the default) to theme the entire card.
 
-<Example code={`<div class="row row-cols-1 md:row-cols-2 g-lg">
-    <div class="col">
+<Example code={`<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+    <div>
       <div class="card context primary h-100">
         <div class="card-header">Header</div>
         <div class="card-body">
@@ -578,7 +578,7 @@ Add `.context` and a contextual modifier — `.primary`, `.secondary`, etc. — 
         </div>
       </div>
     </div>
-    <div class="col">
+    <div>
       <div class="card context primary solid h-100">
         <div class="card-header">Header</div>
         <div class="card-body">
@@ -587,7 +587,7 @@ Add `.context` and a contextual modifier — `.primary`, `.secondary`, etc. — 
         </div>
       </div>
     </div>
-    <div class="col">
+    <div>
       <div class="card context primary smooth h-100">
         <div class="card-header">Header</div>
         <div class="card-body">
@@ -596,7 +596,7 @@ Add `.context` and a contextual modifier — `.primary`, `.secondary`, etc. — 
         </div>
       </div>
     </div>
-    <div class="col">
+    <div>
       <div class="card context primary outline h-100">
         <div class="card-header">Header</div>
         <div class="card-body">
@@ -613,8 +613,8 @@ Add `.context` and a contextual modifier — `.primary`, `.secondary`, etc. — 
 
 Background-color, foreground-color, and border utility classes target individual card regions independently.
 
-<Example code={`<div class="row row-cols-1 md:row-cols-2 g-lg">
-    <div class="col">
+<Example code={`<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+    <div>
       <div class="card border-primary h-100">
         <div class="card-header primary-bg-evident">Header</div>
         <div class="card-body primary-bg-main">
@@ -624,7 +624,7 @@ Background-color, foreground-color, and border utility classes target individual
         <div class="card-footer primary-bg-even">Footer</div>
       </div>
     </div>
-    <div class="col">
+    <div>
       <div class="card h-100">
         <div class="card-header fg-primary border-primary">Header</div>
         <div class="card-body fg-secondary">

@@ -1,3 +1,4 @@
+@use "sass:map";
 @use "@chassis-ui/docs/scss/vars" as *;
 @use "../../../css/scss/config/defaults" as *;
 @use "../../../css/scss/functions" as *;
@@ -9,6 +10,11 @@
 
 @layer custom {
   .cxd-example {
+    // The content column is narrower than the viewport the gutter follows, so
+    // the grids of the examples stop at the gutter of the `sm` breakpoint.
+    @include media-breakpoint-up(md) {
+      --grid-gutter: #{map.get($grid-gutters, sm)};
+    }
 
     + p {
       margin-block-start: 2rem;
@@ -104,22 +110,21 @@
   // Grid examples
   //
 
+  .cxd-example-grid :is(.grid, .grid-fill) > *,
   .cxd-example-row [class^="col"],
-  .cxd-example-row [class*="\:col"],
-  .cxd-example-cols [class^="col"] > *,
-  .cxd-example-cols [class*="\:col"] > *,
-  .cxd-example-cssgrid [class*="grid"] > * {
+  .cxd-example-row [class*="\:col"] {
     padding-block: .75rem;
     background-color: #{to-opacity(var(--cxd-subtle), .2)};
     border: 1px solid #{to-opacity(var(--cxd-subtle), .4)};
   }
 
-  .cxd-example-row .row + .row,
-  .cxd-example-cssgrid .grid + .grid {
+  .cxd-example-grid :is(.grid, .grid-fill) + :is(.grid, .grid-fill),
+  .cxd-example-row .row + .row {
     margin-block-start: 1rem;
   }
 
-  .cxd-example-row-flex-cols .row {
+  // Room for the alignment classes to move the items of a grid
+  .cxd-example-grid-tall .grid {
     min-height: 10rem;
     background-color: #{to-opacity(var(--cxd-subtle), .2)};
   }
@@ -148,35 +153,38 @@
 
   // Grid mixins
   .example-container {
-    width: 800px;
     @include make-container();
+    max-width: 800px;
   }
 
-  .example-row {
-    @include make-row();
+  .example-layout {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    gap: var(--grid-gutter);
+  }
+
+  .example-content-main,
+  .example-content-secondary {
+    grid-column: 1 / -1;
   }
 
   .example-content-main {
-    @include make-col-ready();
-
     @include media-breakpoint-up(sm) {
-      @include make-col(6);
+      grid-column: span 6;
     }
 
     @include media-breakpoint-up(lg) {
-      @include make-col(8);
+      grid-column: span 8;
     }
   }
 
   .example-content-secondary {
-    @include make-col-ready();
-
     @include media-breakpoint-up(sm) {
-      @include make-col(6);
+      grid-column: span 6;
     }
 
     @include media-breakpoint-up(lg) {
-      @include make-col(4);
+      grid-column: span 4;
     }
   }
 

@@ -33,14 +33,14 @@ Most custom components do not have `position: relative` by default. Adding `.pos
     </div>
   </div>`} />
 
-The same pattern works with grid columns:
+The same pattern works with the items of a grid:
 
-<Example code={`<div class="row g-0 bg-evident position-relative">
-    <div class="md:col-6 md:mb-0 md:p-lg">
+<Example code={`<div class="grid gap-0 bg-evident position-relative">
+    <div class="col-span-full md:col-span-6 md:mb-0 md:p-lg">
       <Placeholder width="100%" height="200" class="w-100" text={false} title="Generic placeholder image" />
     </div>
-    <div class="md:col-6 p-lg md:ps-0">
-      <h2 class="font-xl mt-0">Columns with stretched link</h2>
+    <div class="col-span-full md:col-span-6 p-lg md:ps-0">
+      <h2 class="font-xl mt-0">Grid items with stretched link</h2>
       <p>Another instance of placeholder content for this other custom component. It is intended to mimic what some real-world content would look like, and used here to give the component a bit of body and size.</p>
       <a href="#" class="stretched-link">Go somewhere</a>
     </div>
