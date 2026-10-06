@@ -167,7 +167,7 @@
 // ─── make-cssgrid-tailwind ───────────────────────────────────────────────────
 
 @include describe("make-cssgrid-tailwind") {
-  @include it("emits span classes through $columns and start classes through $columns - 1") {
+  @include it("emits only the g-col and g-start aliases, unlayered, with the declarations of col-span and col-start") {
     @include assert() {
       @include output() {
         @include make-cssgrid-tailwind($columns: 3);
@@ -175,39 +175,35 @@
 
       @include expect() {
         @utility g-col-1 {
-          @layer layout {
-            --tw-sort: z-index;
-            grid-column: auto / span 1;
-          }
+          grid-column: #{"span 1 / span 1"};
         }
 
         @utility g-col-2 {
-          @layer layout {
-            --tw-sort: z-index;
-            grid-column: auto / span 2;
-          }
+          grid-column: #{"span 2 / span 2"};
         }
 
         @utility g-col-3 {
-          @layer layout {
-            --tw-sort: z-index;
-            grid-column: auto / span 3;
-          }
+          grid-column: #{"span 3 / span 3"};
         }
 
         @utility g-start-1 {
-          @layer layout {
-            --tw-sort: order;
-            grid-column-start: 1;
-          }
+          grid-column-start: 1;
         }
 
         @utility g-start-2 {
-          @layer layout {
-            --tw-sort: order;
-            grid-column-start: 2;
-          }
+          grid-column-start: 2;
         }
+      }
+    }
+  }
+
+  @include it("emits nothing for a zero-column grid") {
+    @include assert() {
+      @include output() {
+        @include make-cssgrid-tailwind($columns: 0);
+      }
+
+      @include expect() {
       }
     }
   }
@@ -238,9 +234,9 @@
         /* MERGE|grid-gutter|g-md */
         /* MERGE|grid-gutter-x|gx-md */
         /* MERGE|grid-gutter-y|gy-md */
-        /* MERGE|grid-g-col|g-col-1 */
-        /* MERGE|grid-g-col|g-col-2 */
-        /* MERGE|grid-g-start|g-start-1 */
+        /* MERGE|col-start-end|g-col-1 */
+        /* MERGE|col-start-end|g-col-2 */
+        /* MERGE|col-start|g-start-1 */
       }
     }
   }

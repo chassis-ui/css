@@ -6,14 +6,18 @@
 // Chassis CSS — Tailwind Grid
 //
 // The Tailwind entry's `../grid`: `.row`, `.grid`, `.grid-cols-subgrid`, and
-// `.grid-fill` stay plain CSS in `@layer layout`, while the per-breakpoint
-// column, offset, gutter, and CSS grid placement classes become `@utility`
-// rules (`make-grid-columns-tailwind()`, `make-cssgrid-tailwind()`), so
-// Tailwind only generates the ones a project uses, at the breakpoints it uses
-// them. Class names are unchanged: `lg:col-6` is Tailwind's `lg:` variant of
-// `col-6`. Those rules land in the `utilities.layout` sublayer, not in
-// `@layer layout` itself; see `./mixins/_grid.scss`. Forwarded by
-// `./_components-list.scss` in place of `../grid`.
+// `.grid-fill` stay plain CSS in `@layer layout`. The placement classes of
+// `.grid` (`col-span-*`, `col-start-*`, `row-span-*`, `row-start-*`) and
+// `grid-cols-*` are Tailwind core's own utilities, with the declarations
+// `make-cssgrid()` copies, so the entry emits only their deprecated `g-col-*`
+// / `g-start-*` aliases (`make-cssgrid-tailwind()`). The deprecated flexbox
+// grid's per-breakpoint column, offset and gutter classes become `@utility`
+// rules too (`make-grid-columns-tailwind()`), so Tailwind only generates the
+// ones a project uses, at the breakpoints it uses them. Class names are
+// unchanged: `lg:col-6` is Tailwind's `lg:` variant of `col-6`. Those rules
+// land in the `utilities.layout` sublayer, not in `@layer layout` itself; see
+// `./mixins/_grid.scss`. Forwarded by `./_components-list.scss` in place of
+// `../grid`.
 //
 
 @layer layout {

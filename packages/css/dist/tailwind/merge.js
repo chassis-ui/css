@@ -374,6 +374,33 @@ export const classGroups = {
     "bottom-75",
     "bottom-auto"
   ],
+  "col-start": [
+    "g-start-1",
+    "g-start-10",
+    "g-start-11",
+    "g-start-2",
+    "g-start-3",
+    "g-start-4",
+    "g-start-5",
+    "g-start-6",
+    "g-start-7",
+    "g-start-8",
+    "g-start-9"
+  ],
+  "col-start-end": [
+    "g-col-1",
+    "g-col-10",
+    "g-col-11",
+    "g-col-12",
+    "g-col-2",
+    "g-col-3",
+    "g-col-4",
+    "g-col-5",
+    "g-col-6",
+    "g-col-7",
+    "g-col-8",
+    "g-col-9"
+  ],
   "column-gap": [
     "column-gap-0",
     "column-gap-2xl",
@@ -792,33 +819,6 @@ export const classGroups = {
   ],
   "grid-columns": [
     "grid-cols-fill"
-  ],
-  "grid-g-col": [
-    "g-col-1",
-    "g-col-10",
-    "g-col-11",
-    "g-col-12",
-    "g-col-2",
-    "g-col-3",
-    "g-col-4",
-    "g-col-5",
-    "g-col-6",
-    "g-col-7",
-    "g-col-8",
-    "g-col-9"
-  ],
-  "grid-g-start": [
-    "g-start-1",
-    "g-start-10",
-    "g-start-11",
-    "g-start-2",
-    "g-start-3",
-    "g-start-4",
-    "g-start-5",
-    "g-start-6",
-    "g-start-7",
-    "g-start-8",
-    "g-start-9"
   ],
   "grid-gutter": [
     "g-0",

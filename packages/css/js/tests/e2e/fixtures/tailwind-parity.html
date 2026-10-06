@@ -129,6 +129,30 @@
       <div>b</div>
     </div>
 
+    <!-- The placement classes of .grid: Tailwind core's own utilities in the
+         Tailwind build, per-breakpoint classes in dist/css. The last item
+         mixes a class with its deprecated alias, which must have the same
+         precedence as the class (in dist/css they share one rule). -->
+    <div class="grid grid-cols-12" data-testid="grid-cols-12">
+      <div class="col-span-4" data-testid="col-span-4">col-span-4</div>
+      <div class="col-span-12 md:col-span-6" data-testid="col-span-responsive">col-span-12 md:col-span-6</div>
+      <div class="col-span-4 col-start-3" data-testid="col-start-3">col-span-4 col-start-3</div>
+      <div class="row-span-2" data-testid="row-span-2">row-span-2</div>
+      <div class="col-span-6 md:g-col-4" data-testid="col-span-then-alias">col-span-6 md:g-col-4</div>
+    </div>
+
+    <!-- The gap of .grid is the gutter token of the breakpoint (--cx-grid-gutter
+         on :root); a gap utility overrides it. -->
+    <div class="grid" data-testid="grid-gutter">
+      <div class="col-span-6">gutter of the breakpoint</div>
+    </div>
+
+    <div class="grid gap-md" data-testid="grid-gap-md">
+      <div class="col-span-6">gap-md</div>
+    </div>
+
+    <span class="skeleton w-6/12 md:w-4/12" data-testid="skeleton-fraction"></span>
+
     <div class="vstack md:hstack" data-testid="stack">
       <span>a</span>
       <span>b</span>

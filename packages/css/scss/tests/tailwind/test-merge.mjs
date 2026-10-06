@@ -54,6 +54,21 @@ describe('dist/tailwind/merge.js', () => {
     assert.equal(twMerge('col-6', 'offset-2', 'g-col-4'), 'col-6 offset-2 g-col-4')
   })
 
+  test('the deprecated g-col-*/g-start-* aliases share the groups of col-span-*/col-start-*', () => {
+    // The placement classes of `.grid` are Tailwind core utilities, which
+    // tailwind-merge groups on its own (`col-start-end`, `col-start`); the
+    // manifest adds the aliases to those groups instead of making its own.
+    assert.ok(classGroups['col-start-end'].includes('g-col-4'))
+    assert.ok(classGroups['col-start'].includes('g-start-2'))
+    assert.equal(classGroups['grid-g-col'], undefined)
+    assert.equal(classGroups['grid-g-start'], undefined)
+    assert.equal(twMerge('col-span-4', 'g-col-6'), 'g-col-6')
+    assert.equal(twMerge('g-col-4', 'col-span-6'), 'col-span-6')
+    assert.equal(twMerge('md:g-col-4', 'md:col-span-6'), 'md:col-span-6')
+    assert.equal(twMerge('col-start-2', 'g-start-4'), 'g-start-4')
+    assert.equal(twMerge('g-col-4', 'md:col-span-6'), 'g-col-4 md:col-span-6')
+  })
+
   test('classes from different groups are both kept', () => {
     assert.equal(twMerge('fg-primary', 'm-sm'), 'fg-primary m-sm')
   })

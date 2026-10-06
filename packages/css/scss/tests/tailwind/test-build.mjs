@@ -311,6 +311,70 @@ describe('tailwind fixture build', () => {
     }
   })
 
+  test('the placement classes of .grid are Tailwind core utilities, with no Chassis @utility of their own', () => {
+    const componentsCss = readFileSync(path.join(root, 'dist/tailwind/components.css'), 'utf8')
+    for (const name of [
+      'col-span-4',
+      'col-span-full',
+      'col-start-3',
+      'row-span-2',
+      'row-start-2'
+    ]) {
+      assert.doesNotMatch(
+        componentsCss,
+        new RegExp(`@utility ${name}\\b`),
+        `the Tailwind entry must not emit @utility ${name}, Tailwind core generates it`
+      )
+    }
+    assert.equal(
+      winningValues(findExactRule(built, 'col-span-4')).get('grid-column'),
+      'span 4 / span 4'
+    )
+    assert.equal(winningValues(findExactRule(built, 'col-start-3')).get('grid-column-start'), '3')
+    assert.equal(
+      winningValues(findExactRule(built, 'row-span-2')).get('grid-row'),
+      'span 2 / span 2'
+    )
+    assertWrapped(built, String.raw`@media \(width >= 48rem\)`, String.raw`\.md\\:col-span-6 \{`)
+    // `grid-cols-*` is a Chassis utility with Tailwind's declaration, an
+    // `equal` clash: one merged rule, no `!important`.
+    const gridCols = findExactRule(built, 'grid-cols-12')
+    assert.equal(winningValues(gridCols).get('grid-template-columns'), 'repeat(12, minmax(0, 1fr))')
+    assert.ok(gridCols.every((body) => !/!important/.test(body)))
+  })
+
+  test('the deprecated g-col-*/g-start-* aliases carry the declaration of the class they alias, in the utilities layer itself', () => {
+    const componentsCss = readFileSync(path.join(root, 'dist/tailwind/components.css'), 'utf8')
+    const alias = componentsCss.match(/@utility g-col-4 \{[^}]*\}/)?.[0]
+    assert.ok(alias, 'expected @utility g-col-4 in components.css')
+    assert.doesNotMatch(
+      alias,
+      /@layer|--tw-sort/,
+      'the alias sits in no sublayer and carries no sort pin'
+    )
+    assert.equal(
+      winningValues(findExactRule(built, 'g-col-4')).get('grid-column'),
+      'span 4 / span 4'
+    )
+    assert.equal(winningValues(findExactRule(built, 'g-start-2')).get('grid-column-start'), '2')
+    assertWrapped(built, String.raw`@media \(width >= 48rem\)`, String.raw`\.md\\:g-col-6 \{`)
+    // Same sort as the class it aliases: `g-col-4` sits next to `col-span-4`,
+    // before `col-start-3` and `g-start-2` (`grid-column` < `grid-column-start`).
+    const position = (name) => built.indexOf(`.${name} {`)
+    assert.ok(position('g-col-4') > 0 && position('col-span-4') > 0)
+    assert.ok(position('g-col-4') < position('col-start-3'))
+    assert.ok(position('col-span-4') < position('g-start-2'))
+  })
+
+  test('a fraction width utility is generated under its escaped selector in both forms', () => {
+    // Tailwind writes the selector escaped, `.w-6\/12`.
+    assert.equal(
+      winningValues(findExactRule(built, 'w-6\\/12')).get('width'),
+      'calc(6 / 12 * 100%)'
+    )
+    assertWrapped(built, String.raw`@media \(width >= 48rem\)`, String.raw`\.md\\:w-4\\/12 \{`)
+  })
+
   test("Phase 5 !important-remedied utilities keep Chassis's value as the cascade winner", () => {
     const policy = JSON.parse(
       readFileSync(path.join(root, 'build/tailwind/utility-clashes.json'), 'utf8')

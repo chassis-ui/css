@@ -11,22 +11,33 @@
 // only for the classes a project actually uses, under the same class names
 // the per-breakpoint loops write out by hand.
 //
+// The placement classes of `.grid` (`col-span-*`, `col-span-full`,
+// `col-start-*`, `row-span-*`, `row-start-*`) and `grid-cols-*` are Tailwind
+// core utilities of the same names and declarations, so the entry emits none
+// of them: `make-cssgrid-tailwind()` emits only their deprecated `g-col-*` /
+// `g-start-*` aliases, each a plain `@utility` with the declaration of the
+// class it aliases. The deprecated flexbox grid (`make-grid-columns-tailwind()`)
+// needs more care, until 0.7.0 removes it:
+//
 // Tailwind emits every `@utility` where `@tailwind utilities` sits, inside
-// `@layer utilities`, so the grid can't reach the real `layout` layer. Each
-// rule wraps its declarations in a nested `@layer layout` instead, which makes
-// them the `utilities.layout` sublayer. Rules placed directly in a layer beat
-// that layer's sublayers, so every utility overrides every grid class at any
-// breakpoint (`w-100 md:col-6` stays full width), as `@layer utilities` beats
-// `@layer layout` in dist/css. Unlike dist/css, the grid classes still sit
-// above the `content`, `components`, and `helpers` layers.
+// `@layer utilities`, so the flexbox grid can't reach the real `layout` layer.
+// Each rule wraps its declarations in a nested `@layer layout` instead, which
+// makes them the `utilities.layout` sublayer. Rules placed directly in a layer
+// beat that layer's sublayers, so every utility overrides every flexbox grid
+// class at any breakpoint (`w-100 md:col-6` stays full width), as
+// `@layer utilities` beats `@layer layout` in dist/css. Unlike dist/css, the
+// grid classes still sit above the `content`, `components`, and `helpers`
+// layers.
 //
 // Tailwind orders utilities within one variant by the properties they set,
-// not by source order, so each rule pins its position with `--tw-sort: <property>`
-// (Tailwind-internal: the rule sorts as if it set that property, and the
-// declaration is dropped from the output; core `space-x-*` uses it the same
-// way). The pins reproduce `make-grid-columns()`'s source order among the grid
-// classes: `col` < `row-cols-auto` < `row-cols-<n>` < `col-auto` < `col-<n>`,
-// and `g-col-<n>` < `g-start-<n>`.
+// not by source order, so each flexbox rule pins its position with
+// `--tw-sort: <property>` (Tailwind-internal: the rule sorts as if it set
+// that property, and the declaration is dropped from the output; core
+// `space-x-*` uses it the same way). The pins reproduce `make-grid-columns()`'s
+// source order among the grid classes: `col` < `row-cols-auto` <
+// `row-cols-<n>` < `col-auto` < `col-<n>`. The `g-col-*` / `g-start-*` aliases
+// need neither the sublayer nor a pin: they set the property they sort by,
+// and nothing but the class they alias sets it.
 // `js/tests/e2e/tailwind-parity.spec.ts` compares both builds on these cases.
 
 /// Emit the flexbox grid's column, row-cols, offset, and gutter classes as
@@ -154,27 +165,28 @@
   }
 }
 
-/// Emit the CSS grid's column span and start classes as Tailwind `@utility`
-/// rules.
+/// Emit the deprecated `g-col-{1…$columns}` and `g-start-{1…$columns - 1}`
+/// aliases of `col-span-{n}` and `col-start-{n}` as Tailwind `@utility` rules,
+/// removed in 0.7.0. The classes they alias are Tailwind core's own utilities
+/// (`make-cssgrid()` copies core's declarations), so the entry emits nothing
+/// else for `.grid`'s placement. Each alias carries the declaration of its
+/// class, directly in `@layer utilities` and with no sort pin: it sorts by
+/// the property it sets, where core's `col-span-*` / `col-start-*` sort, so
+/// `col-span-6 md:g-col-4` resolves as in dist/css, where both names share
+/// one rule.
 ///
 /// @param {Number} $columns [$grid-columns] - Number of grid columns
 @mixin make-cssgrid-tailwind($columns: $grid-columns) {
   @if $columns > 0 {
     @for $i from 1 through $columns {
       @utility g-col-#{$i} {
-        @layer layout {
-          --tw-sort: z-index;
-          grid-column: auto / span $i;
-        }
+        grid-column: #{"span #{$i} / span #{$i}"};
       }
     }
 
     @for $i from 1 through ($columns - 1) {
       @utility g-start-#{$i} {
-        @layer layout {
-          --tw-sort: order;
-          grid-column-start: $i;
-        }
+        grid-column-start: $i;
       }
     }
   }
@@ -182,7 +194,11 @@
 
 /// Emit one `/* MERGE|<group>|<class> */` marker per grid class, for
 /// `scss/tailwind/merge-manifest.scss`. Classes that override each other share
-/// a group: `col`, `col-auto`, and `col-<n>` all size one column.
+/// a group: `col`, `col-auto`, and `col-<n>` all size one column. The
+/// `g-col-*` / `g-start-*` aliases join tailwind-merge's own groups of the
+/// classes they alias, `col-start-end` (`col-span-*`) and `col-start`
+/// (`col-start-*`), so `col-span-4 g-col-6` resolves to one class as
+/// `col-span-4 col-span-6` does.
 ///
 /// @param {Number} $columns [$grid-columns] - Number of grid columns
 @mixin generate-tailwind-grid-merge-manifest($columns: $grid-columns) {
@@ -226,11 +242,11 @@
 
   @if $enable-cssgrid and $columns > 0 {
     @for $i from 1 through $columns {
-      /* MERGE|grid-g-col|g-col-#{$i} */
+      /* MERGE|col-start-end|g-col-#{$i} */
     }
 
     @for $i from 1 through ($columns - 1) {
-      /* MERGE|grid-g-start|g-start-#{$i} */
+      /* MERGE|col-start|g-start-#{$i} */
     }
   }
 }

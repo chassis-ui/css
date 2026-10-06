@@ -50,7 +50,11 @@ type Curated = { testid: string; properties: string[] }
 // against dist/css's per-breakpoint classes: responsive columns, the
 // same-breakpoint precedence among grid classes, utilities overriding grid
 // classes at their own and at other breakpoints, and core col-<n>'s
-// grid-column leak into a .grid parent.
+// grid-column leak into a .grid parent. The .grid cases check Tailwind
+// core's placement utilities (col-span-*, col-start-*, row-span-*,
+// grid-cols-*) against dist/css's per-breakpoint classes, the deprecated
+// g-col-* alias mixed with the class it aliases, the responsive gutter of
+// .grid at each viewport, a gap utility over it, and the fraction widths.
 //
 // dark:fg-primary is deliberately NOT here: Chassis's own utility generator
 // only flags a handful of utilities (display) with `dark: true`, so
@@ -89,6 +93,15 @@ const CURATED: Curated[] = [
   { testid: 'g-col-start', properties: ['gridColumnStart', 'gridColumnEnd'] },
   { testid: 'col-in-grid', properties: ['gridColumnStart', 'gridColumnEnd', 'width'] },
   { testid: 'grid-cols-2', properties: ['gridTemplateColumns'] },
+  { testid: 'grid-cols-12', properties: ['gridTemplateColumns'] },
+  { testid: 'col-span-4', properties: ['gridColumnStart', 'gridColumnEnd'] },
+  { testid: 'col-span-responsive', properties: ['gridColumnStart', 'gridColumnEnd'] },
+  { testid: 'col-start-3', properties: ['gridColumnStart', 'gridColumnEnd'] },
+  { testid: 'row-span-2', properties: ['gridRowStart', 'gridRowEnd'] },
+  { testid: 'col-span-then-alias', properties: ['gridColumnStart', 'gridColumnEnd'] },
+  { testid: 'grid-gutter', properties: ['columnGap', 'rowGap'] },
+  { testid: 'grid-gap-md', properties: ['columnGap', 'rowGap'] },
+  { testid: 'skeleton-fraction', properties: ['width'] },
   { testid: 'stack', properties: ['flexDirection'] },
   { testid: 'fg-primary', properties: ['color'] },
   { testid: 'lg-font-xl', properties: ['fontSize'] },
