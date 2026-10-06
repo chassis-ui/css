@@ -55,7 +55,8 @@ type Curated = { testid: string; properties: string[] }
 // grid-cols-*) against dist/css's per-breakpoint classes, the deprecated
 // g-col-* alias mixed with the class it aliases, a start line reset with
 // col-start-auto and row-start-auto, the responsive gutter of
-// .grid at each viewport, a gap utility over it, and the fraction widths.
+// .grid at each viewport, a gap utility over it, the fraction widths, and
+// a fraction reset with md:w-100 and lg:w-auto.
 //
 // dark:fg-primary is deliberately NOT here: Chassis's own utility generator
 // only flags a handful of utilities (display) with `dark: true`, so
@@ -104,6 +105,7 @@ const CURATED: Curated[] = [
   { testid: 'grid-gutter', properties: ['columnGap', 'rowGap'] },
   { testid: 'grid-gap-md', properties: ['columnGap', 'rowGap'] },
   { testid: 'skeleton-fraction', properties: ['width'] },
+  { testid: 'width-reset', properties: ['width'] },
   { testid: 'stack', properties: ['flexDirection'] },
   { testid: 'fg-primary', properties: ['color'] },
   { testid: 'lg-font-xl', properties: ['fontSize'] },

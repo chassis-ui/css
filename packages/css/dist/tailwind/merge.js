@@ -17,6 +17,8 @@
  * example base-shadow / elevation-shadow / shadow-color, which all set
  * box-shadow under the "shadow" class prefix) land in separate groups here
  * rather than one merged group — grouping is by map key, not by property.
+ * The width utilities are in "w", the width group of tailwind-merge, which
+ * holds its `w-<fraction>` too.
  *
  * Copyright 2026 Ozgur Gunes
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
@@ -1795,17 +1797,24 @@ export const classGroups = {
     "invisible",
     "visible"
   ],
-  "white-space": [
-    "text-nowrap",
-    "text-wrap"
-  ],
-  "width": [
+  "w": [
+    "w-1/12",
+    "w-10/12",
     "w-100",
+    "w-11/12",
+    "w-2/12",
     "w-25",
     "w-2xl",
     "w-2xs",
+    "w-3/12",
+    "w-4/12",
+    "w-5/12",
     "w-50",
+    "w-6/12",
+    "w-7/12",
     "w-75",
+    "w-8/12",
+    "w-9/12",
     "w-auto",
     "w-lg",
     "w-md",
@@ -1813,18 +1822,9 @@ export const classGroups = {
     "w-xl",
     "w-xs"
   ],
-  "width-fraction": [
-    "w-1/12",
-    "w-10/12",
-    "w-11/12",
-    "w-2/12",
-    "w-3/12",
-    "w-4/12",
-    "w-5/12",
-    "w-6/12",
-    "w-7/12",
-    "w-8/12",
-    "w-9/12"
+  "white-space": [
+    "text-nowrap",
+    "text-wrap"
   ],
   "word-wrap": [
     "text-break"

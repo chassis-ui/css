@@ -283,7 +283,7 @@ $bp: (xs: 0, md: 768px, lg: 992px);
 // ─── width fractions ─────────────────────────────────────────────────────────
 
 @include describe("width-fraction utility") {
-  @include it("emits w-{n}/12 with the escaped selector and the unfolded calc() of Tailwind's w-<fraction>") {
+  @include it("emits w-{n}/12 with the escaped selector and the unfolded calc() of Tailwind's w-<fraction>, then w-100 and w-auto") {
     @include assert() {
       @include output() {
         @include generate-utility(map.get(sizing.$utilities, "width-fraction"));
@@ -295,7 +295,24 @@ $bp: (xs: 0, md: 768px, lg: 992px);
             width: calc(#{"#{$i} / 12 * 100%"});
           }
         }
+
+        .w-100 {
+          width: 100%;
+        }
+
+        .w-auto {
+          width: auto;
+        }
       }
     }
+  }
+
+  @include it("is responsive, and the plain width entry leaves w-100 and w-auto to it") {
+    $fraction: map.get(sizing.$utilities, "width-fraction");
+    $width: map.get(map.get(sizing.$utilities, "width"), values);
+
+    @include assert-true(map.get($fraction, responsive));
+    @include assert-false(map.has-key($width, 100));
+    @include assert-false(map.has-key($width, auto));
   }
 }

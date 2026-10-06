@@ -74,6 +74,8 @@ const banner = `/*!
  * example base-shadow / elevation-shadow / shadow-color, which all set
  * box-shadow under the "shadow" class prefix) land in separate groups here
  * rather than one merged group — grouping is by map key, not by property.
+ * The width utilities are in "w", the width group of tailwind-merge, which
+ * holds its \`w-<fraction>\` too.
  *
  * Copyright 2026 Ozgur Gunes
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)

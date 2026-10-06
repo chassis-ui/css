@@ -167,6 +167,16 @@
 // base shadow vs. a hover elevation shadow) aren't detected. Resolving this
 // would need grouping by property instead of by map key — out of scope for
 // this generator.
+//
+// The width entries are the exception: `width` and `width-fraction` join
+// `w`, tailwind-merge's own width group. It resolves `w-6/12` to that group
+// before it looks at a group of ours (it reads `/12` as a modifier of `w-6`),
+// so a fraction conflicts with `w-100`, `w-auto` or `w-50` only there.
+$-merge-groups: (
+  "width": "w",
+  "width-fraction": "w"
+) !default;
+
 @mixin generate-tailwind-merge-manifest($utilities) {
   @each $key, $utility in $utilities {
     @if meta.type-of($utility) == "map" and map.get($utility, enabled) != false {
@@ -198,7 +208,7 @@
               $utility-name: string.slice($class-name, $dot-index + 1);
             }
 
-            /* MERGE|#{$key}|#{$utility-name} */
+            /* MERGE|#{map.get($-merge-groups, $key) or $key}|#{$utility-name} */
           }
         }
       }

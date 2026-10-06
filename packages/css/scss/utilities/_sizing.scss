@@ -6,7 +6,7 @@
 // Sizing Utilities
 //
 // Utility map for width, height, and max-size classes generated from the size
-// token map, and the responsive fraction widths.
+// token map, and the responsive widths.
 //
 
 // `w-{1…11}/12`, the names and declarations of Tailwind's `w-<fraction>`.
@@ -29,17 +29,23 @@ $utilities: (
       (
         25: 25%,
         50: 50%,
-        75: 75%,
-        100: 100%,
-        auto: auto
+        75: 75%
       )
     )
   ),
+  // The widths with a variant per breakpoint: the fractions, and `w-100` and
+  // `w-auto`, which reset a fraction at a breakpoint (`w-6/12 lg:w-auto`).
   "width-fraction": (
     responsive: true,
     property: width,
     class: w,
-    values: $-width-fractions
+    values: map.merge(
+      $-width-fractions,
+      (
+        100: 100%,
+        auto: auto
+      )
+    )
   ),
   "height": (
     property: height,

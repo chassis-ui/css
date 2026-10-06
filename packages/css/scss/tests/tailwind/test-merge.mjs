@@ -69,6 +69,23 @@ describe('dist/tailwind/merge.js', () => {
     assert.equal(twMerge('g-col-4', 'md:col-span-6'), 'g-col-4 md:col-span-6')
   })
 
+  test("the width classes join tailwind-merge's own width group", () => {
+    // tailwind-merge resolves `w-6/12` to its `w` group, so the Chassis
+    // widths are listed there: a fraction then conflicts with `w-100`,
+    // `w-auto` and the percentage and token widths.
+    assert.ok(classGroups.w.includes('w-100'))
+    assert.ok(classGroups.w.includes('w-6/12'))
+    assert.equal(classGroups.width, undefined)
+    assert.equal(classGroups['width-fraction'], undefined)
+    assert.equal(twMerge('w-50', 'w-100'), 'w-100')
+    assert.equal(twMerge('w-md', 'w-auto'), 'w-auto')
+    assert.equal(twMerge('w-6/12', 'w-auto'), 'w-auto')
+    assert.equal(twMerge('w-100', 'w-6/12'), 'w-6/12')
+    assert.equal(twMerge('md:w-6/12', 'md:w-100'), 'md:w-100')
+    assert.equal(twMerge('w-6/12', 'lg:w-auto'), 'w-6/12 lg:w-auto')
+    assert.equal(twMerge('w-100', 'h-100'), 'w-100 h-100')
+  })
+
   test('classes from different groups are both kept', () => {
     assert.equal(twMerge('fg-primary', 'm-sm'), 'fg-primary m-sm')
   })

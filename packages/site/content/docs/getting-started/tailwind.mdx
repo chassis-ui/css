@@ -398,7 +398,7 @@ import { Dialog, Tooltip } from '@chassis-ui/css'
 
 [tailwind-merge](https://github.com/dcastil/tailwind-merge) resolves conflicting classes when you build a class string at runtime, for example when a component accepts a `className` prop that overrides a default. It needs to know which classes belong to the same conflict group. Tailwind's own utilities are built in; a project's custom `@utility` rules, Chassis's included, aren't.
 
-`@chassis-ui/css/tailwind/merge.js` exports a `classGroups` config generated from the same utility map the Tailwind entry uses. It covers every Chassis utility name and the [deprecated grid classes](#deprecated-classes); the old `g-col-*` and `g-start-*` names join tailwind-merge's own groups for `col-span-*` and `col-start-*`:
+`@chassis-ui/css/tailwind/merge.js` exports a `classGroups` config generated from the same utility map the Tailwind entry uses. It covers every Chassis utility name and the [deprecated grid classes](#deprecated-classes); the old `g-col-*` and `g-start-*` names join tailwind-merge's own groups for `col-span-*` and `col-start-*`, and the width utilities its group for `w-*`, so `.w-6/12` resolves against `.w-100` and `.w-auto`:
 
 ```js
 import { extendTailwindMerge } from 'tailwind-merge'
@@ -409,6 +409,7 @@ const twMerge = extendTailwindMerge({ extend: { classGroups } })
 twMerge('fg-primary', 'fg-danger') // -> 'fg-danger'
 twMerge('m-sm', 'm-lg')            // -> 'm-lg'
 twMerge('col-span-6', 'g-col-4')   // -> 'g-col-4'
+twMerge('w-6/12', 'w-auto')        // -> 'w-auto'
 ```
 
 Groups follow Chassis's utility names, not CSS properties. Utilities that set the same property from separate map entries land in separate groups and don't resolve against each other: the base, hover-elevation, and hover-color shadow utilities all set `box-shadow`, for example. Attribute-selector utilities like `.ratio-16x9` have no fixed set of class names, so the config leaves them out.
