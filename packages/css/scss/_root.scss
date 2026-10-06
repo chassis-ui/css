@@ -75,6 +75,10 @@
     --breakpoint-#{$name}: #{$value};
   }
   // scss-docs-end root-breakpoint-variables
+  // Generate grid variables: the gutter and columns of `.grid` and the padding of `.container`
+  // scss-docs-start root-grid-variables
+  @include grid-root-vars();
+  // scss-docs-end root-grid-variables
   // Generate sizing variables
   @each $name, $value in $sizes {
     --size-#{$name}: #{$value};

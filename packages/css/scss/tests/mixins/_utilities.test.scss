@@ -457,3 +457,20 @@
     }
   }
 }
+
+@include describe("utility-selector-name") {
+  @include it("escapes the slash of a fraction key in the base and state selectors") {
+    @include test-generate-utility(
+      (
+        property: "width",
+        class: w,
+        state: hover,
+        values: ("6/12": calc(#{"6 / 12 * 100%"}))
+      )
+    ) {
+      .w-6\/12, .hover\:w-6\/12:hover {
+        width: calc(#{"6 / 12 * 100%"});
+      }
+    }
+  }
+}

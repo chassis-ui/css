@@ -3,26 +3,15 @@
 //
 // Grid
 //
-// Flexbox-based .row / column classes and a native CSS Grid (.grid) layout system.
-// Breakpoint custom properties are declared on :root. Flexbox columns are generated
-// via make-grid-columns(). The .grid variant uses display:grid with configurable
-// column/row counts. The rules themselves live in the grid-layout() mixin, shared
-// with the Tailwind entry's ./tailwind/_grid.scss.
+// The CSS Grid layout system: `.grid` with its placement classes (`col-span-*`,
+// `col-start-*`, `row-span-*`, `row-start-*`), `.grid-cols-subgrid` and
+// `.grid-fill`. The gutter, the column count and the container padding per
+// breakpoint are custom properties on `:root` (`grid-root-vars()` in
+// `_root.scss`). The deprecated flexbox grid (`.row`, `.col-*`) is emitted
+// while `$enable-grid-classes` is true. The rules themselves live in the
+// grid-layout() mixin, shared with the Tailwind entry's ./tailwind/_grid.scss.
 //
 
 @layer layout {
   @include grid-layout();
-
-  // @if $enable-cssgrid {
-  //   .grid {
-  //     display: grid;
-  //     grid-template-rows: repeat(var(--grid-rows, 1), 1fr);
-  //     grid-template-columns: repeat(var(--grid-columns, #{$grid-columns}), 1fr);
-  //     gap: var(--grid-gap, #{$grid-gutter-x});
-
-  //     @include make-cssgrid();
-  //   }
-
-  // }
-
 } // @layer layout

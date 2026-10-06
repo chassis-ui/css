@@ -2,6 +2,7 @@
 @use "sass:list";
 @use "sass:meta";
 @use "../config" as *;
+@use "../functions/string" as *;
 @use "./breakpoints" as bp;
 
 //
@@ -168,6 +169,14 @@
   }
 }
 
+// Escapes a class name for use in a selector: the `/` of a fraction value key
+// (`w-6/12`) becomes `\/`. The Tailwind emitter (`scss/tailwind/mixins/_utilities.scss`)
+// names its `@utility` rules with the unescaped `utility-class-name()`;
+// Tailwind escapes the selector itself.
+@function utility-selector-name($class-name) {
+  @return str-replace($class-name, "/", "\\/");
+}
+
 @mixin generate-utility($utility, $prefix: "") {
   // Validate required keys
   @if not map.has-key($utility, property) {
@@ -266,7 +275,7 @@
           $gmod: "#{$key}";
         }
       }
-      $gname: "#{$grp-cls}#{$gmod}";
+      $gname: utility-selector-name("#{$grp-cls}#{$gmod}");
       $gsel: ".#{$prefix}#{$gname}";
       @if $grp-child {
         $gsel: ":where(#{$gsel} #{$grp-child})";
@@ -324,7 +333,7 @@
     // Build the class name fragment (without prefix or dot) for reuse in state variants
     $class-name: "";
     @if $selector-type == "class" {
-      $class-name: utility-class-name($utility, $key);
+      $class-name: utility-selector-name(utility-class-name($utility, $key));
     }
 
     $selector: "";

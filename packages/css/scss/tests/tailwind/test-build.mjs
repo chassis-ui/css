@@ -23,6 +23,7 @@ import path from 'node:path'
 import { before, describe, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import * as sass from 'sass'
+import { extractOrderedDecls } from '../../../build/tailwind/clashes.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '../../..')
@@ -365,5 +366,13 @@ describe('tailwind fixture build', () => {
       policy.differs.map((d) => d.name).sort(),
       'dist/tailwind/utility-clashes.json is stale — re-run `pnpm css:tailwind` (or `pnpm dist`)'
     )
+  })
+})
+
+describe('extractOrderedDecls (build/tailwind/clashes.mjs)', () => {
+  test('finds the rule of a fraction utility, whose selector Tailwind writes escaped', () => {
+    const css = '@layer utilities {\n  .w-6\\/12 {\n    width: calc(6 / 12 * 100%);\n  }\n}\n'
+    assert.deepEqual(extractOrderedDecls(css, 'w-6/12'), [['width', 'calc(6 / 12 * 100%)']])
+    assert.equal(extractOrderedDecls(css, 'w-5/12'), null)
   })
 })

@@ -398,8 +398,12 @@ function parseDecls(body) {
 // blocks: one level of nested `selector { ... }` is stripped (its
 // declarations discarded, matching how a `--tw-*` runtime variable set only
 // inside that fallback is inert for clash-detection purposes anyway).
+//
+// The candidate is a utility name; Tailwind writes its selector with the `/`
+// of a fraction escaped (`.w-1\/12`), so the match is made on that form.
 export function extractOrderedDecls(css, candidate) {
-  const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const selector = candidate.replace(/\//g, '\\/')
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const openRe = new RegExp(`(?<=^|[{}])\\s*\\.${escaped}(?:[^\\n{]*)\\{`)
   const m = openRe.exec(css)
   if (!m) return null

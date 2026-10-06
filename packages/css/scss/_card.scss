@@ -186,7 +186,7 @@
 
     @include _card-exclude-strokes();
 
-    &:has(.card-image:only-child):not(.row > [class*="col-"]) {
+    &:has(.card-image:only-child):not(.row > [class*="col-"], .grid > [class*="col-span-"]) {
       flex-grow: 0;
       &:has(+ .card-body)  {
         padding-block-end: 0;
@@ -196,7 +196,7 @@
       }
     }
 
-    &:has(.card-image:only-child):is(.row > [class*="col-"]) {
+    &:has(.card-image:only-child):is(.row > [class*="col-"], .grid > [class*="col-span-"]) {
       &:has(+ .card-body[class*="col-"])  {
         padding-inline-end: 0;
       }

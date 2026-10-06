@@ -45,7 +45,7 @@
     @layer layout {
       & > * {
         --tw-sort: grid-column-end;
-        @include make-col-auto();
+        @include make-col-auto($ignore-warning: true);
       }
     }
   }
@@ -56,7 +56,7 @@
         @layer layout {
           & > * {
             --tw-sort: grid-row;
-            @include make-col(1, $i);
+            @include make-col(1, $i, $ignore-warning: true);
           }
         }
       }
@@ -66,7 +66,7 @@
   @utility col-auto {
     @layer layout {
       --tw-sort: grid-row-start;
-      @include make-col-auto();
+      @include make-col-auto($ignore-warning: true);
     }
   }
 
@@ -87,7 +87,7 @@
       @utility col-#{$i} {
         @layer layout {
           --tw-sort: grid-row-end;
-          @include make-col($i, $columns);
+          @include make-col($i, $columns, $ignore-warning: true);
         }
       }
 
@@ -103,7 +103,7 @@
       @utility offset-#{$i} {
         @layer layout {
           --tw-sort: clear;
-          @include make-col-offset($i, $columns);
+          @include make-col-offset($i, $columns, $ignore-warning: true);
         }
       }
     }

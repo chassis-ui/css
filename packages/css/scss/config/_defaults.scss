@@ -7,7 +7,9 @@
 //
 
 @use "sass:map";
+@use "sass:meta";
 @use "sass:string";
+@use "./settings" as *;
 @use "./vendor" as *;
 @use "../tokens" as *;
 @use "../functions/color" as *;
@@ -57,21 +59,84 @@ $container-max-widths: (
 
 
 //
-// Grid columns
+// Grid
 //
-// Set the number of columns and specify the width of the gutters.
-// See `scss/tokens/_breakpoint.scss` for design tokens.
+// The placement classes of `.grid` (`col-span-*`, `col-start-*`, `row-span-*`,
+// `row-start-*`) are generated up to `$grid-columns` and `$grid-rows`. The
+// gutter and the column count of `.grid` per breakpoint, and the page margin
+// of `.container`, come from the maps below. See `scss/tokens/_grid.scss` for
+// the design tokens.
+//
+// `$grid-gutter-x`, `$grid-gutter-y` and `$grid-row-columns` belong to the
+// flexbox grid (`.row`, `.col-*`, `.g-*`, `.row-cols-*`), deprecated as of
+// 0.6.0 and removed in 0.7.0.
 
 // scss-docs-start grid-variables
 $grid-columns:            12 !default;
-$grid-gutter-x:           $space-xlarge !default;
-$grid-gutter-y:           0 !default;
-$grid-row-columns:        6 !default;
+$grid-rows:               6 !default;
+$grid-gutter-x:           $space-xlarge !default; // Deprecated: the flexbox grid's gutter
+$grid-gutter-y:           0 !default; // Deprecated: the flexbox grid's vertical gutter
+$grid-row-columns:        6 !default; // Deprecated: the flexbox grid's `.row-cols-*` count
 // scss-docs-end grid-variables
 
-// Container padding
+// The gap of `.grid` and `.grid-fill` per breakpoint, from the gutter tokens.
+// scss-docs-start grid-gutters
+$grid-gutters: (
+  xs:           $gutter-xsmall,
+  sm:           $gutter-small,
+  md:           $gutter-medium,
+  lg:           $gutter-large,
+  xl:           $gutter-xlarge,
+  2xl:          $gutter-2xlarge
+) !default;
+// scss-docs-end grid-gutters
 
+// The column count of `.grid` per breakpoint, from the column tokens.
+// scss-docs-start grid-column-counts
+$grid-column-counts: (
+  xs:           $columns-xsmall,
+  sm:           $columns-small,
+  md:           $columns-medium,
+  lg:           $columns-large,
+  xl:           $columns-xlarge,
+  2xl:          $columns-2xlarge
+) !default;
+// scss-docs-end grid-column-counts
+
+//
+// Containers
+//
+// The padding of `.container` per breakpoint, from the margin tokens: the
+// page margin, independent of the gutter.
+
+// scss-docs-start container-paddings
+$container-paddings: (
+  xs:           $margin-xsmall,
+  sm:           $margin-small,
+  md:           $margin-medium,
+  lg:           $margin-large,
+  xl:           $margin-xlarge,
+  2xl:          $margin-2xlarge
+) !default;
+// scss-docs-end container-paddings
+
+// Deprecated as of 0.6.0, removed in 0.7.0: `$container-padding-x` is a
+// gutter whose half was the padding of `.container`. A project that sets it
+// keeps that padding at every breakpoint, through `$container-paddings`.
 $container-padding-x: $grid-gutter-x !default;
+
+@if $container-padding-x != $grid-gutter-x {
+  $-container-padding: calc(#{$container-padding-x} * .5);
+  @if meta.type-of($container-padding-x) == "number" {
+    $-container-padding: $container-padding-x * .5;
+  }
+  @each $key, $_ in $container-paddings {
+    $container-paddings: map.set($container-paddings, $key, $-container-padding);
+  }
+  @if $enable-deprecation-messages {
+    @warn "`$container-padding-x` has been deprecated as of 0.6.0. It will be removed entirely in 0.7.0. Set `$container-paddings`, the padding of `.container` per breakpoint, instead.";
+  }
+}
 
 
 //

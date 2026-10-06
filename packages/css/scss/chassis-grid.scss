@@ -8,6 +8,8 @@
 @use "mixins/banner" with ($file: "Grid");
 
 @use "./config" as *;
+@use "./maps" as *;
+@use "./mixins" as *;
 
 // Configuration
 @use "./functions" as *;
@@ -73,4 +75,8 @@ $utilities: map-get-multiple(
   @each $name, $value in $breakpoints {
     --breakpoint-#{$name}: #{$value};
   }
+  @each $name, $value in $spaces {
+    --space-#{$name}: #{$value};
+  }
+  @include grid-root-vars();
 }

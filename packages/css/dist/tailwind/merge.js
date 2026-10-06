@@ -778,10 +778,17 @@ export const classGroups = {
   ],
   "grid-column-counts": [
     "grid-cols-1",
+    "grid-cols-10",
+    "grid-cols-11",
+    "grid-cols-12",
     "grid-cols-2",
     "grid-cols-3",
     "grid-cols-4",
-    "grid-cols-6"
+    "grid-cols-5",
+    "grid-cols-6",
+    "grid-cols-7",
+    "grid-cols-8",
+    "grid-cols-9"
   ],
   "grid-columns": [
     "grid-cols-fill"
@@ -1805,6 +1812,19 @@ export const classGroups = {
     "w-sm",
     "w-xl",
     "w-xs"
+  ],
+  "width-fraction": [
+    "w-1/12",
+    "w-10/12",
+    "w-11/12",
+    "w-2/12",
+    "w-3/12",
+    "w-4/12",
+    "w-5/12",
+    "w-6/12",
+    "w-7/12",
+    "w-8/12",
+    "w-9/12"
   ],
   "word-wrap": [
     "text-break"

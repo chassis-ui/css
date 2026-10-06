@@ -1,3 +1,4 @@
+@use "sass:list";
 @use "sass:map";
 @use "sass:math";
 @use "sass:meta";
@@ -5,21 +6,77 @@
 @use "../maps" as *;
 @use "../functions" as *;
 @use "./breakpoints" as *;
+@use "./deprecate" as *;
 
 //
 // Grid Mixins
 //
-// Generates flexbox row and column classes and the CSS Grid layout system.
-// Produces responsive column width and offset classes for every breakpoint.
+// Generates the CSS Grid layout system (`.grid` and its placement classes),
+// the `:root` custom properties the grid and the containers read, and the
+// deprecated flexbox row and column classes.
 //
-// Generate context grid columns with these mixins.
+
+$-grid-deprecated: "0.6.0" !default;
+$-grid-removed: "0.7.0" !default;
+
+// scss-docs-start grid-root-vars
+/// Emit the per-breakpoint custom properties of the layout system on `:root`:
+/// `--grid-gutter` (the gap of `.grid`), `--container-padding` (the padding of
+/// `.container`) and `--grid-columns` (the columns of `.grid`). The value of
+/// the first breakpoint is declared unconditionally; a later breakpoint is
+/// declared, in its `media-breakpoint-up()`, only where the map value changes.
+///
+/// @param {Map} $gutters [$grid-gutters] - Gutter per breakpoint
+/// @param {Map} $paddings [$container-paddings] - Container padding per breakpoint
+/// @param {Map} $columns [$grid-column-counts] - Column count per breakpoint
+/// @param {Map} $breakpoints [$breakpoints] - Breakpoint map
+@mixin grid-root-vars($gutters: $grid-gutters, $paddings: $container-paddings, $columns: $grid-column-counts, $breakpoints: $breakpoints) {
+  $vars: (
+    "grid-gutter": $gutters,
+    "container-padding": $paddings,
+    "grid-columns": $columns
+  );
+  $current: ();
+
+  @each $breakpoint in map.keys($breakpoints) {
+    $changed: ();
+
+    @each $name, $values in $vars {
+      @if map.has-key($values, $breakpoint) {
+        $value: map.get($values, $breakpoint);
+
+        @if not map.has-key($current, $name) or map.get($current, $name) != $value {
+          $changed: map.set($changed, $name, $value);
+          $current: map.set($current, $name, $value);
+        }
+      }
+    }
+
+    @if list.length($changed) > 0 {
+      @include media-breakpoint-up($breakpoint, $breakpoints) {
+        @each $name, $value in $changed {
+          --#{$name}: #{$value};
+        }
+      }
+    }
+  }
+}
+// scss-docs-end grid-root-vars
 
 // scss-docs-start make-container
-/// Generate a full-width, horizontally-centered container with configurable gutters.
+/// Generate a full-width, horizontally-centered container. Its padding is
+/// `--container-padding`, the page margin `grid-root-vars()` sets per
+/// breakpoint, read through `--gutter-x` so that an element-level
+/// `--gutter-x` keeps working until 0.7.0.
 ///
-/// @param {Number} $gutter [$container-padding-x] - Horizontal gutter (applied as left and right padding)
-@mixin make-container($gutter: $container-padding-x) {
-  --gutter-x: #{$gutter};
+/// @param {Number} $gutter [null] - Deprecated: a gutter whose half is the padding, in place of `--container-padding`
+@mixin make-container($gutter: null) {
+  @if $gutter != null {
+    @include deprecate("The `$gutter` parameter of `make-container()`", $-grid-deprecated, $-grid-removed);
+    --gutter-x: #{$gutter};
+  } @else {
+    --gutter-x: calc(var(--container-padding) * 2);
+  }
   --gutter-y: 0;
   width: 100%;
   padding-inline: calc(var(--gutter-x) * .5);
@@ -29,11 +86,13 @@
 // scss-docs-end make-container
 
 // scss-docs-start make-row
+/// Deprecated as of 0.6.0, removed in 0.7.0: use `.grid`.
 /// Create a flex row with negative margins to compensate for column gutters.
 /// Sets CSS custom properties `--cx-gutter-x` and `--cx-gutter-y`.
 ///
 /// @param {Number} $gutter [$grid-gutter-x] - Horizontal gutter width
-@mixin make-row($gutter-x: $grid-gutter-x, $gutter-y: $grid-gutter-y) {
+@mixin make-row($gutter-x: $grid-gutter-x, $gutter-y: $grid-gutter-y, $ignore-warning: false) {
+  @include deprecate("`make-row()`", $-grid-deprecated, $-grid-removed, $ignore-warning);
   --gutter-x: #{$gutter-x};
   --gutter-y: #{$gutter-y};
   display: flex;
@@ -44,9 +103,11 @@
 // scss-docs-end make-row
 
 // scss-docs-start make-col-ready
+/// Deprecated as of 0.6.0, removed in 0.7.0: use `.grid`.
 /// Prepare a grid column: set up box-sizing, flex properties, full width, and gutter padding.
 /// Call this before `make-col()` to ensure a column is fully initialized.
-@mixin make-col-ready() {
+@mixin make-col-ready($ignore-warning: false) {
+  @include deprecate("`make-col-ready()`", $-grid-deprecated, $-grid-removed, $ignore-warning);
   // Add box sizing if only the grid is loaded
   box-sizing: if(sass(meta.variable-exists(include-column-box-sizing) and $include-column-box-sizing): border-box; else: null);
   // Prevent columns from becoming too narrow when at smaller grid tiers by
@@ -61,11 +122,13 @@
 // scss-docs-end make-col-ready
 
 // scss-docs-start make-col
+/// Deprecated as of 0.6.0, removed in 0.7.0: use `.col-span-*` on a `.grid`.
 /// Set a column to a specific fraction of the grid, or to grow/shrink freely.
 ///
 /// @param {Number|false} $size [false] - Number of columns to span; `false` for a fluid flex column
 /// @param {Number} $columns [$grid-columns] - Total number of grid columns
-@mixin make-col($size: false, $columns: $grid-columns) {
+@mixin make-col($size: false, $columns: $grid-columns, $ignore-warning: false) {
+  @include deprecate("`make-col()`", $-grid-deprecated, $-grid-removed, $ignore-warning);
   @if $size {
     flex: 0 0 auto;
     width: math.percentage(math.div($size, $columns));
@@ -78,29 +141,35 @@
 // scss-docs-end make-col
 
 // scss-docs-start make-col-auto
+/// Deprecated as of 0.6.0, removed in 0.7.0: use a flex row (`d-flex`).
 /// Set a column to shrink to its content width (`width: auto`).
-@mixin make-col-auto() {
+@mixin make-col-auto($ignore-warning: false) {
+  @include deprecate("`make-col-auto()`", $-grid-deprecated, $-grid-removed, $ignore-warning);
   flex: 0 0 auto;
   width: auto;
 }
 // scss-docs-end make-col-auto
 
 // scss-docs-start make-col-offset
+/// Deprecated as of 0.6.0, removed in 0.7.0: use `.col-start-*` on a `.grid`.
 /// Push a column to the right by a given number of grid columns using `margin-inline-start`.
 ///
 /// @param {Number} $size - Number of columns to offset
 /// @param {Number} $columns [$grid-columns] - Total number of grid columns
-@mixin make-col-offset($size, $columns: $grid-columns) {
+@mixin make-col-offset($size, $columns: $grid-columns, $ignore-warning: false) {
+  @include deprecate("`make-col-offset()`", $-grid-deprecated, $-grid-removed, $ignore-warning);
   $num: math.div($size, $columns);
   margin-inline-start: if(sass($num == 0): 0; else: math.percentage($num));
 }
 // scss-docs-end make-col-offset
 
 // scss-docs-start row-cols
+/// Deprecated as of 0.6.0, removed in 0.7.0: use `.grid-cols-*` on a `.grid`.
 /// Force direct children of a flex row into an equal-width column layout.
 ///
 /// @param {Number} $count - Number of columns per row
-@mixin row-cols($count) {
+@mixin row-cols($count, $ignore-warning: false) {
+  @include deprecate("`row-cols()`", $-grid-deprecated, $-grid-removed, $ignore-warning);
   > * {
     flex: 0 0 auto;
     width: math.percentage(math.div(1, $count));
@@ -108,12 +177,14 @@
 }
 // scss-docs-end row-cols
 
+/// Deprecated as of 0.6.0, removed in 0.7.0: use `make-cssgrid()`.
 /// Generate all responsive column, offset, and row-cols utility classes for every breakpoint.
 ///
 /// @param {Number} $columns [$grid-columns] - Number of grid columns
 /// @param {Number} $gutter [$grid-gutter-x] - Gutter width
 /// @param {Map} $breakpoints [$breakpoints] - Breakpoint map
-@mixin make-grid-columns($columns: $grid-columns, $gutter: $grid-gutter-x, $breakpoints: $breakpoints) {
+@mixin make-grid-columns($columns: $grid-columns, $gutter: $grid-gutter-x, $breakpoints: $breakpoints, $ignore-warning: false) {
+  @include deprecate("`make-grid-columns()`", $-grid-deprecated, $-grid-removed, $ignore-warning);
   @each $breakpoint in map.keys($breakpoints) {
     $prefix: breakpoint-prefix($breakpoint, $breakpoints);
 
@@ -123,25 +194,25 @@
       }
 
       .#{$prefix}row-cols-auto > * {
-        @include make-col-auto();
+        @include make-col-auto($ignore-warning: true);
       }
 
       @if $grid-row-columns > 0 {
         @for $i from 1 through $grid-row-columns {
           .#{$prefix}row-cols-#{$i} {
-            @include row-cols($i);
+            @include row-cols($i, $ignore-warning: true);
           }
         }
       }
 
       .#{$prefix}col-auto {
-        @include make-col-auto();
+        @include make-col-auto($ignore-warning: true);
       }
 
       @if $columns > 0 {
         @for $i from 1 through $columns {
           .#{$prefix}col-#{$i} {
-            @include make-col($i, $columns);
+            @include make-col($i, $columns, $ignore-warning: true);
           }
         }
 
@@ -149,7 +220,7 @@
         @for $i from 0 through ($columns - 1) {
           @if not ($prefix == "" and $i == 0) { // Avoid emitting useless .offset-0
             .#{$prefix}offset-#{$i} {
-              @include make-col-offset($i, $columns);
+              @include make-col-offset($i, $columns, $ignore-warning: true);
             }
           }
         }
@@ -182,79 +253,136 @@
   }
 }
 
-@mixin make-cssgrid($columns: $grid-columns, $breakpoints: $breakpoints) {
+// scss-docs-start make-cssgrid
+/// Generate the placement classes of `.grid` for every breakpoint, with the
+/// declarations of Tailwind's utilities of the same names: `col-span-{1…$columns}`
+/// and `col-span-full` (`grid-column`), `col-start-{1…$columns + 1}`
+/// (`grid-column-start`), `row-span-{1…$rows}` (`grid-row`) and
+/// `row-start-{1…$rows + 1}` (`grid-row-start`). `g-col-{n}` and `g-start-{n}`,
+/// deprecated as of 0.6.0 and removed in 0.7.0, are second selectors of
+/// `col-span-{n}` and `col-start-{n}`.
+///
+/// @param {Number} $columns [$grid-columns] - Number of grid columns
+/// @param {Number} $rows [$grid-rows] - Number of grid rows the row classes cover
+/// @param {Map} $breakpoints [$breakpoints] - Breakpoint map
+@mixin make-cssgrid($columns: $grid-columns, $rows: $grid-rows, $breakpoints: $breakpoints) {
   @each $breakpoint in map.keys($breakpoints) {
     $prefix: breakpoint-prefix($breakpoint, $breakpoints);
 
     @include media-breakpoint-up($breakpoint, $breakpoints) {
       @if $columns > 0 {
         @for $i from 1 through $columns {
+          .#{$prefix}col-span-#{$i},
           .#{$prefix}g-col-#{$i} {
-            grid-column: auto / span $i;
+            grid-column: #{"span #{$i} / span #{$i}"};
           }
         }
 
-        // Start with `1` because `0` is an invalid value.
-        // Ends with `$columns - 1` because offsetting by the width of an entire row isn't possible.
-        @for $i from 1 through ($columns - 1) {
-          .#{$prefix}g-start-#{$i} {
-            grid-column-start: $i;
+        .#{$prefix}col-span-full {
+          grid-column: #{"1 / -1"};
+        }
+
+        // Through `$columns + 1`: the last line of the grid, so an item can
+        // be placed against the end edge with `col-start-* col-span-*`.
+        @for $i from 1 through ($columns + 1) {
+          // `g-start-*` stopped at `$columns - 1`.
+          @if $i < $columns {
+            .#{$prefix}col-start-#{$i},
+            .#{$prefix}g-start-#{$i} {
+              grid-column-start: $i;
+            }
+          } @else {
+            .#{$prefix}col-start-#{$i} {
+              grid-column-start: $i;
+            }
+          }
+        }
+      }
+
+      @if $rows > 0 {
+        @for $i from 1 through $rows {
+          .#{$prefix}row-span-#{$i} {
+            grid-row: #{"span #{$i} / span #{$i}"};
+          }
+        }
+
+        @for $i from 1 through ($rows + 1) {
+          .#{$prefix}row-start-#{$i} {
+            grid-row-start: $i;
           }
         }
       }
     }
   }
 }
+// scss-docs-end make-cssgrid
 
-/// Emit the grid layout classes: `.row` with its column prep, `.grid`,
-/// `.grid-cols-subgrid`, `.grid-fill`, and every breakpoint's column, offset,
-/// gutter, and CSS grid placement classes. Pass `$responsive: false` to skip
-/// the per-breakpoint classes, which the Tailwind entry emits as on-demand
+/// Emit the grid layout classes: `.grid`, `.grid-cols-subgrid`, `.grid-fill`
+/// and every breakpoint's placement classes, and, while `$enable-grid-classes`
+/// is true, the deprecated flexbox grid: `.row` with its column prep and every
+/// breakpoint's column, offset and gutter classes. Pass `$responsive: false` to
+/// skip the per-breakpoint classes, which the Tailwind entry emits as on-demand
 /// `@utility` rules instead (see `scss/tailwind/mixins/_grid.scss`).
 ///
 /// @param {Boolean} $responsive [true] - Include the per-breakpoint classes
 @mixin grid-layout($responsive: true) {
   @if $enable-grid-classes {
+    @if $enable-deprecation-messages {
+      @warn "The flexbox grid (`.row`, `.col-*`, `.offset-*`, `.row-cols-*`, `.g-*`) has been deprecated as of #{$-grid-deprecated}. It will be removed entirely in #{$-grid-removed}. Use `.grid` with `.col-span-*`, or set `$enable-grid-classes: false` to drop it now.";
+    }
+    @if $grid-gutter-y != 0 {
+      @include deprecate("`$grid-gutter-y`", $-grid-deprecated, $-grid-removed);
+    }
+    @if $grid-row-columns != 6 {
+      @include deprecate("`$grid-row-columns`", $-grid-deprecated, $-grid-removed);
+    }
+    @if $gutters != $spaces {
+      @include deprecate("`$gutters`", $-grid-deprecated, $-grid-removed);
+    }
+
     .row {
-      @include make-row();
+      @include make-row($ignore-warning: true);
 
       > * {
-        @include make-col-ready();
+        @include make-col-ready($ignore-warning: true);
       }
     }
 
     @if $responsive {
-      @include make-grid-columns();
+      @include make-grid-columns($ignore-warning: true);
     }
   }
 
   @if $enable-cssgrid {
+    // scss-docs-start grid-layout
     .grid {
-      --columns: var(--grid-columns, #{$grid-columns});
+      --columns: var(--grid-columns);
       --rows: var(--grid-rows, 1);
-      --gap: var(--grid-gap, #{$grid-gutter-x});
+      --gap: var(--grid-gap, var(--grid-gutter));
 
       display: grid;
-      grid-template-rows: repeat(var(--rows), 1fr);
-      grid-template-columns: repeat(var(--columns), 1fr);
+      grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
+      grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
       gap: var(--gap);
     }
+
+    .grid-cols-subgrid {
+      grid-template-columns: subgrid;
+    }
+
+    // As many columns of at least `--grid-min` as fit, the same gap as `.grid`.
+    .grid-fill {
+      --gap: var(--grid-gap, var(--grid-gutter));
+
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(var(--grid-min, 0), 1fr));
+      grid-auto-flow: row;
+      gap: var(--gap);
+    }
+    // scss-docs-end grid-layout
 
     @if $responsive {
       @include make-cssgrid();
     }
-  }
-
-  .grid-cols-subgrid {
-    grid-template-columns: subgrid;
-  }
-
-  .grid-fill {
-    --gap: #{$grid-gutter-x};
-
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-    grid-auto-flow: row;
-    gap: var(--gap);
   }
 }

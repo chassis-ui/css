@@ -1,12 +1,22 @@
 @use "sass:map";
+@use "../config" as *;
 @use "../maps" as *;
 
 //
 // Sizing Utilities
 //
 // Utility map for width, height, and max-size classes generated from the size
-// token map.
+// token map, and the responsive fraction widths.
 //
+
+// `w-{1…11}/12`, the names and declarations of Tailwind's `w-<fraction>`.
+// The keys are quoted so Sass does not divide; the value is interpolated so
+// Sass does not fold `calc(6 / 12 * 100%)` to `50%`, which the Tailwind entry
+// compares with Tailwind's own declaration.
+$-width-fractions: () !default;
+@for $i from 1 through ($grid-columns - 1) {
+  $-width-fractions: map.set($-width-fractions, "#{$i}/#{$grid-columns}", calc(#{$i} / #{$grid-columns} * 100%));
+}
 
 $utilities: (
   // Sizing utilities
@@ -24,6 +34,12 @@ $utilities: (
         auto: auto
       )
     )
+  ),
+  "width-fraction": (
+    responsive: true,
+    property: width,
+    class: w,
+    values: $-width-fractions
   ),
   "height": (
     property: height,
