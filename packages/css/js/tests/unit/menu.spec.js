@@ -504,60 +504,63 @@ describe('Menu', () => {
       })
     })
 
-    it('should toggle a menu with a valid virtual element reference', () => {
-      return new Promise(resolve => {
-        fixtureEl.innerHTML = [
-          '<div>',
-          '  <button class="button btn visually-hidden" data-cx-toggle="menu" aria-expanded="false">Menu</button>',
-          '  <div class="menu">',
-          '    <a class="menu-item" href="#">Secondary link</a>',
-          '  </div>',
-          '</div>'
-        ].join('')
+    it('should toggle a menu with a valid virtual element reference', async () => {
+      fixtureEl.innerHTML = [
+        '<div>',
+        '  <button class="button btn visually-hidden" data-cx-toggle="menu" aria-expanded="false">Menu</button>',
+        '  <div class="menu">',
+        '    <a class="menu-item" href="#">Secondary link</a>',
+        '  </div>',
+        '</div>'
+      ].join('')
 
-        const btnMenu = fixtureEl.querySelector('[data-cx-toggle="menu"]')
-        const virtualElement = {
-          nodeType: 1,
-          getBoundingClientRect() {
-            return {
-              width: 0,
-              height: 0,
-              top: 0,
-              right: 0,
-              bottom: 0,
-              left: 0
-            }
+      const btnMenu = fixtureEl.querySelector('[data-cx-toggle="menu"]')
+      const virtualElement = {
+        nodeType: 1,
+        getBoundingClientRect() {
+          return {
+            width: 0,
+            height: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0
           }
         }
+      }
 
-        expect(() => new Menu(btnMenu, {
-          reference: {}
-        })).toThrowError(TypeError, 'MENU: Option "reference" provided type "object" without a required "getBoundingClientRect" method.')
+      expect(() => new Menu(btnMenu, {
+        reference: {}
+      })).toThrowError(TypeError, 'MENU: Option "reference" provided type "object" without a required "getBoundingClientRect" method.')
 
-        expect(() => new Menu(btnMenu, {
-          reference: {
-            getBoundingClientRect: 'not-a-function'
-          }
-        })).toThrowError(TypeError, 'MENU: Option "reference" provided type "object" without a required "getBoundingClientRect" method.')
+      expect(() => new Menu(btnMenu, {
+        reference: {
+          getBoundingClientRect: 'not-a-function'
+        }
+      })).toThrowError(TypeError, 'MENU: Option "reference" provided type "object" without a required "getBoundingClientRect" method.')
 
-        const menu = new Menu(btnMenu, {
-          reference: virtualElement
-        })
-
-        const spy = spyOn(virtualElement, 'getBoundingClientRect').and.callThrough()
-
-        btnMenu.addEventListener('shown.cx.menu', () => {
-          // Floating UI calls getBoundingClientRect asynchronously
-          setTimeout(() => {
-            expect(spy).toHaveBeenCalled()
-            expect(btnMenu).toHaveClass('show')
-            expect(btnMenu.getAttribute('aria-expanded')).toEqual('true')
-            resolve()
-          }, 20)
-        })
-
-        menu.toggle()
+      const menu = new Menu(btnMenu, {
+        reference: virtualElement
       })
+
+      const spy = spyOn(virtualElement, 'getBoundingClientRect').and.callThrough()
+
+      const shownPromise = new Promise(resolve => {
+        btnMenu.addEventListener('shown.cx.menu', resolve)
+      })
+
+      menu.toggle()
+      await shownPromise
+
+      expect(btnMenu).toHaveClass('show')
+      expect(btnMenu.getAttribute('aria-expanded')).toEqual('true')
+
+      // Floating UI measures the reference from the ResizeObserver of `autoUpdate`, after
+      // .show is added — poll instead of a fixed delay, since a busy CI runner can be slow
+      // to fire the callback.
+      await vi.waitFor(() => {
+        expect(spy).toHaveBeenCalled()
+      }, { timeout: 1000, interval: 10 })
     })
 
     it('should not toggle a menu if the element is disabled', () => {
