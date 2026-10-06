@@ -8,6 +8,13 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 10
+    # A range in a package.json changes only when it does not allow the new version; an update
+    # inside the range changes the lockfile alone. The default raises every range to the new
+    # version, the peer dependency ranges of packages/css/package.json too (@floating-ui/dom is
+    # also a development dependency, for the bundle), and a stricter peer range is a breaking
+    # change (VERSIONING.md). The strategy is one for the whole entry, and two entries cannot
+    # share an ecosystem, a directory and a target branch, so it covers every dependency.
+    versioning-strategy: increase-if-necessary
     # Dependabot waits 3 days after a release by default, and passes that on to pnpm as its
     # minimum release age when it re-resolves the lockfile, so a Chassis package that develop
     # already requires would fail the whole run until it is 3 days old. Chassis releases can be
