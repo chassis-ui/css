@@ -16,6 +16,9 @@ export default defineConfig([
       '**/dist/',
       '_site/',
       'packages/css/js/coverage/',
+      // What a Playwright run leaves: Markdown and HTML that are not source
+      'packages/css/playwright-report/',
+      'packages/css/test-results/',
       'packages/site/.astro/',
       'packages/site/public/',
       'vendor/'
