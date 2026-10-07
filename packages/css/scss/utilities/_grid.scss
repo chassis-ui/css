@@ -5,6 +5,7 @@
 // Grid Utilities
 //
 // Utility map for grid layout, column counts, row counts, and auto-flow classes.
+// `$enable-grid-system: false` leaves the map empty.
 //
 
 // `grid-cols-{1…$grid-columns}`, with the declaration of Tailwind's utility
@@ -22,7 +23,7 @@ $-grid-row-counts: () !default;
   }
 }
 
-$utilities: (
+$-grid-utilities: (
   // scss-docs-start utils-grid
   "grid-column-counts": (
     responsive: true,
@@ -47,3 +48,5 @@ $utilities: (
   ),
   // scss-docs-end utils-grid
 ) !default;
+
+$utilities: if(sass($enable-grid-system): $-grid-utilities; else: ()) !default;

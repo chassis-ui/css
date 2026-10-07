@@ -55,7 +55,7 @@ Each track is `minmax(0, 1fr)`, the declaration of the Tailwind utility of the s
 
 ## Row counts
 
-`.grid-rows-{n}` sets `grid-template-rows` to `n` equal rows, from `1` to `6`. On a `.grid` it replaces the row count of `--cx-grid-rows`, for that grid only: the custom property is inherited by the grids nested in it, the class is not.
+`.grid-rows-{n}` sets `grid-template-rows` to `n` equal rows, from `1` to `6`. A `.grid` declares no rows of its own, so without the class each row is as tall as its content. The class applies to one grid, not to the grids nested in it.
 
 <Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-rows-2 text-center">
     <div class="row-span-2">.row-span-2</div>

@@ -52,7 +52,10 @@ type Curated = { testid: string; properties: string[] }
 // fraction widths, and a fraction reset with md:w-100 and lg:w-auto. The cq-*
 // cases sit in a query container narrower than the viewport: core's @sm: /
 // @md: / @lg: variants against dist/css's container classes, the gutter of
-// .grid.contained, md: and @md: on one element, and layout utilities.
+// .grid.contained, md: and @md: on one element, and layout utilities. The
+// last grid cases are the rules of the entry itself, the same Sass in both
+// builds: a definite-height .grid, and .grid-fill at its default and at an
+// inline minimum.
 //
 // dark:fg-primary is deliberately NOT here: Chassis's own utility generator
 // only flags a handful of utilities (display) with `dark: true`, so
@@ -87,6 +90,10 @@ const CURATED: Curated[] = [
   { testid: 'cq-start', properties: ['gridColumnStart', 'gridColumnEnd'] },
   { testid: 'cq-order', properties: ['gridColumnStart', 'gridColumnEnd'] },
   { testid: 'cq-flex', properties: ['display', 'flexDirection', 'columnGap'] },
+  { testid: 'grid-tall', properties: ['gridTemplateRows', 'gridTemplateColumns'] },
+  { testid: 'grid-fill', properties: ['gridTemplateColumns', 'columnGap'] },
+  { testid: 'grid-fill-min', properties: ['gridTemplateColumns'] },
+  { testid: 'contained-alone', properties: ['columnGap', 'gridTemplateColumns'] },
   { testid: 'fg-primary', properties: ['color'] },
   { testid: 'lg-font-xl', properties: ['fontSize'] },
   { testid: 'opacity-10', properties: ['opacity'] },
@@ -221,6 +228,53 @@ for (const mode of ['chassis', 'tailwind'] as const) {
       expect(styles['cq-flex'].flexDirection).toEqual(band.direction)
     })
   }
+}
+
+// What the layout rules of the entry compute to, in both builds: the parity
+// loop alone would pass on a defect the two builds share.
+for (const mode of ['chassis', 'tailwind'] as const) {
+  test(`.grid has no explicit row and .grid-fill wraps at its minimum (${mode})`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    const styles = await captureComputedStyles(page, mode)
+    const tracks = (value: string) => value.split(' ')
+
+    // Six items in three columns, 300px tall: two implicit rows of the same
+    // height. An explicit `minmax(0, 1fr)` row took all the free space.
+    const rows = tracks(styles['grid-tall'].gridTemplateRows)
+    expect(rows).toHaveLength(2)
+    expect(rows[0]).toEqual(rows[1])
+
+    // 1000px wide, a 24px gutter: four columns of at least 12rem, so the
+    // fifth item wraps; two columns of at least 20rem.
+    expect(styles['grid-fill'].columnGap).toEqual('24px')
+    expect(tracks(styles['grid-fill'].gridTemplateColumns)).toHaveLength(4)
+    expect(tracks(styles['grid-fill-min'].gridTemplateColumns)).toHaveLength(2)
+  })
+
+  test(`.contained with no query container keeps the gutter of the viewport (${mode})`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await captureComputedStyles(page, mode)
+
+    const columnGap = () =>
+      page.getByTestId('contained-alone').evaluate((el) => getComputedStyle(el).columnGap)
+
+    // The body of the fixture is a query container of the md band and up.
+    expect(await columnGap()).toEqual('24px')
+
+    // Without it no `@container` rule matches, the one of the first
+    // breakpoint included, and the grid reads the gutter of `:root`.
+    await page.evaluate(() => {
+      document.body.style.containerType = 'normal'
+    })
+    expect(await columnGap()).toEqual('24px')
+
+    // A container narrower than md under a wide viewport: its own gutter.
+    await page.evaluate(() => {
+      document.body.style.containerType = 'inline-size'
+      document.body.style.width = '600px'
+    })
+    expect(await columnGap()).toEqual('16px')
+  })
 }
 
 test('dark:d-none matches via prefers-color-scheme, the one dark: mechanism both builds share', async ({ page }) => {

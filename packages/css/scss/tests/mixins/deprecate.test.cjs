@@ -74,9 +74,13 @@ describe('grid-layout()', () => {
     expect(css).toContain('.col-span-6')
   })
 
-  it('emits nothing with $enable-cssgrid: false', () => {
-    const { css, warnings } = compile(layout('with ($enable-cssgrid: false)'))
+  it('emits nothing with $enable-grid-system: false', () => {
+    const { css, warnings } = compile(layout('with ($enable-grid-system: false)'))
     expect(warnings).toEqual([])
     expect(css).toBe('')
+  })
+
+  it('no longer has the option under its old name', () => {
+    expect(() => compile(layout('with ($enable-cssgrid: false)'))).toThrowError(/\$enable-cssgrid/)
   })
 })

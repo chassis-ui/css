@@ -377,14 +377,20 @@ describe('tailwind fixture build', () => {
       String.raw`\.\\@md\\:grid-cols-3 \{`
     )
     // The modifier is plain CSS of the entry, in `@layer layout`: the values
-    // of the first breakpoint, then a container query where a token changes.
+    // of the first breakpoint in a query that every container matches (so
+    // `:root` applies without one), then a query where a token changes.
     const componentsCss = readFileSync(path.join(root, 'dist/tailwind/components.css'), 'utf8')
     assert.match(
       componentsCss,
-      /@layer layout \{[\s\S]*?\.grid\.contained,\s*\.grid-fill\.contained \{\s*--cx-grid-gutter: [^;]+;\s*--cx-grid-columns: \d+;\s*\}\s*@container \(width >= [\d.]+rem\) \{\s*\.grid\.contained,\s*\.grid-fill\.contained \{\s*--cx-grid-/
+      /@layer layout \{[\s\S]*?@container \(width >= 0\) \{\s*\.grid\.contained,\s*\.grid-fill\.contained \{\s*--cx-grid-gutter: [^;]+;\s*--cx-grid-columns: \d+;\s*\}\s*\}\s*@container \(width >= [\d.]+rem\) \{\s*\.grid\.contained,\s*\.grid-fill\.contained \{\s*--cx-grid-/
     )
     assert.doesNotMatch(componentsCss, /\\@md\\:/, 'the entry writes no container variant itself')
     assert.match(built, /\.grid\.contained,\s*\.grid-fill\.contained \{/)
+    assert.doesNotMatch(
+      componentsCss,
+      /^ {2}\.grid\.contained,/m,
+      'no unconditional declaration of the modifier'
+    )
   })
 
   test('the flexbox grid and the g-col aliases are gone: the entry emits no grid @utility', () => {

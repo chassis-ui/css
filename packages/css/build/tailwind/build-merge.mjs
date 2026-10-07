@@ -7,8 +7,11 @@
  * conflicts between Chassis Tailwind utilities:
  *
  *   import { extendTailwindMerge } from 'tailwind-merge'
- *   import { classGroups } from '@chassis-ui/css/tailwind/merge.js'
- *   const twMerge = extendTailwindMerge({ extend: { classGroups } })
+ *   import { classGroups, overrideClassGroups } from '@chassis-ui/css/tailwind/merge.js'
+ *   const twMerge = extendTailwindMerge({
+ *     override: { classGroups: overrideClassGroups },
+ *     extend: { classGroups }
+ *   })
  *   twMerge('fg-primary', 'fg-danger') // -> 'fg-danger'
  *
  * Compiles `scss/tailwind/merge-manifest.scss` in isolation — it is not one
@@ -24,6 +27,15 @@
  * tailwind-merge's own built-in groups (e.g. "opacity") extends that group
  * instead of creating a redundant separate one.
  *
+ * Also exports `overrideClassGroups`: tailwind-merge's own groups that hold a
+ * name the Tailwind entry gives to a Chassis class (`grid`, `table`, `inline`
+ * and `list-item` in "display", `collapse` in "visibility", `static` in
+ * "position"), without that name. The names are those of
+ * `scss/tailwind/_source-exclusions.scss`, which the manifest emits as
+ * `/* EXCLUDED|<class-name> *‍/` markers, and the groups are read from the
+ * installed tailwind-merge, so neither list is written here. Without the
+ * override `twMerge('grid', 'd-flex')` drops `.grid`, the Chassis grid.
+ *
  * Copyright 2026 Ozgur Gunes
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
  */
@@ -32,6 +44,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import * as sass from 'sass'
+import { getDefaultConfig } from 'tailwind-merge'
 
 const root = path.resolve(fileURLToPath(import.meta.url), '../../..')
 const outDir = path.join(root, 'dist/tailwind')
@@ -53,6 +66,34 @@ for (const group of Object.keys(classGroups).sort()) {
   sortedGroups[group] = [...classGroups[group]].sort()
 }
 
+const excluded = new Set(
+  [...result.css.matchAll(/\/\* EXCLUDED\|([^*]+?) \*\//g)].map((match) => match[1])
+)
+if (excluded.size === 0) {
+  throw new Error('build-merge: the manifest emitted no EXCLUDED marker')
+}
+
+// A group whose only member is the excluded name (`container`) conflicts
+// with nothing else and stays as it is.
+const overrideClassGroups = {}
+const builtInGroups = getDefaultConfig().classGroups
+for (const group of Object.keys(builtInGroups).sort()) {
+  const members = builtInGroups[group]
+  const kept = members.filter((member) => !excluded.has(member))
+  if (kept.length === members.length || kept.length === 0) {
+    continue
+  }
+
+  if (kept.some((member) => typeof member !== 'string')) {
+    throw new Error(
+      `build-merge: the "${group}" group of tailwind-merge holds a member that is not a ` +
+        'class name, so its override cannot be written as data'
+    )
+  }
+
+  overrideClassGroups[group] = kept
+}
+
 mkdirSync(outDir, { recursive: true })
 
 const banner = `/*!
@@ -63,9 +104,19 @@ const banner = `/*!
  *
  * Usage:
  *   import { extendTailwindMerge } from 'tailwind-merge'
- *   import { classGroups } from '@chassis-ui/css/tailwind/merge.js'
- *   const twMerge = extendTailwindMerge({ extend: { classGroups } })
+ *   import { classGroups, overrideClassGroups } from '@chassis-ui/css/tailwind/merge.js'
+ *   const twMerge = extendTailwindMerge({
+ *     override: { classGroups: overrideClassGroups },
+ *     extend: { classGroups }
+ *   })
  *   twMerge('fg-primary', 'fg-danger') // -> 'fg-danger'
+ *   twMerge('grid', 'd-flex') // -> 'grid d-flex'
+ *
+ * \`overrideClassGroups\` holds the groups of tailwind-merge that list a name
+ * which is a Chassis class in the Tailwind entry (\`grid\`, \`table\`,
+ * \`inline\`, \`list-item\`, \`collapse\`, \`static\`), without that name: a
+ * display, visibility or position utility then leaves the Chassis class in
+ * place.
  *
  * Group ids are Chassis's own utility map keys, unprefixed — a group that
  * shares a name with a built-in tailwind-merge group (e.g. "opacity")
@@ -84,5 +135,6 @@ const banner = `/*!
 
 writeFileSync(
   path.join(outDir, 'merge.js'),
-  `${banner}\nexport const classGroups = ${JSON.stringify(sortedGroups, null, 2)}\n`
+  `${banner}\nexport const classGroups = ${JSON.stringify(sortedGroups, null, 2)}\n\n` +
+    `export const overrideClassGroups = ${JSON.stringify(overrideClassGroups, null, 2)}\n`
 )

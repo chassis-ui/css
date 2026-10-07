@@ -39,9 +39,7 @@
     );
   }
 
-  @include it("returns empty map when no keys match") {
-    @include assert-equal((), map-get-multiple((a: 1, b: 2), (x, y)));
-  }
+  // A key the map lacks warns: see `mixins/grid.test.cjs`.
 }
 
 @include describe("map-get-nested function") {

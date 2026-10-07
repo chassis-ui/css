@@ -7,8 +7,18 @@
 // `dist/tailwind/merge.js`, a tailwind-merge `classGroups` config. See
 // `generate-tailwind-merge-manifest` in `scss/tailwind/mixins/_utilities.scss`.
 //
+// The `/* EXCLUDED|<class> */` markers list the names of
+// `./_source-exclusions.scss`: Chassis classes that Tailwind core does not
+// generate in the entry, which tailwind-merge still holds in its own groups.
+//
 
+@use "sass:list";
 @use "../utilities" as *;
 @use "./mixins" as *;
+@use "./source-exclusions" as exclusions;
 
 @include generate-tailwind-merge-manifest($utilities);
+
+@each $name in list.join(exclusions.$bare-clashes, exclusions.$breakpoint-clashes) {
+  /* EXCLUDED|#{$name} */
+}

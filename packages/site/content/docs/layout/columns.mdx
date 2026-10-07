@@ -12,7 +12,7 @@ A grid item is a direct child of `.grid`. This page covers the classes that act 
 
 ## Start line
 
-`.col-start-{n}` sets `grid-column-start`, the grid line on which an item starts. Lines are numbered from `1`, the start edge of the grid, to `13`, the end edge of a twelve-column grid. An item with no start class goes into the next free tracks.
+`.col-start-{n}` sets `grid-column-start`, the grid line on which an item starts. Lines are numbered from `1`, the start edge of the grid; the classes cover `1` to `12`, the lines on which a track starts. An item with no start class goes into the next free tracks.
 
 <Example class="cxd-example-grid" code={`<div class="grid text-center">
     <div class="col-span-4">.col-span-4</div>
@@ -63,7 +63,7 @@ Breakpoint variants set the start line per breakpoint. A start line stays in eff
     <div class="col-span-3">.col-span-3</div>
   </div>`} />
 
-`.grid` has one explicit row; items that wrap create rows as tall as their content. [`.grid-rows-{n}`]([[docsref:/utilities/grid#row-counts]]) sets the number of explicit rows, from `1` to `6`, which share the height of the grid equally. `--cx-grid-rows` does the same for a grid and every grid nested in it.
+`.grid` declares no rows: each line of items creates a row as tall as its content. [`.grid-rows-{n}`]([[docsref:/utilities/grid#row-counts]]) sets the number of explicit rows, from `1` to `6`, which share the height of the grid equally.
 
 <Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-rows-3 text-center">
     <div>Row 1</div>

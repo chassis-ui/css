@@ -107,21 +107,22 @@ describe('a consumer with their own chassis-tokens and $breakpoints', () => {
     assert.doesNotMatch(built, /outline-style/)
   })
 
-  test("Tailwind core's own container stays excluded at the brand-only breakpoint", () => {
+  test("Tailwind core's own container stays excluded, and lg:container is core's at the brand breakpoint", () => {
     // Chassis authors its OWN `.container` too (see scss/_containers.scss) —
     // the exclusion's job is only to keep TAILWIND's core utility of the
     // same name from ALSO generating and merging in, not to remove
     // Chassis's own rule, so this checks for Tailwind's specific shape
-    // rather than the class name's mere presence: core `container` nests
-    // `@media` INSIDE the `.container` rule itself (CSS nesting) and reads
-    // `--container-lg` — this brand's 72rem — where Chassis's own container
-    // uses separate, sibling `@media` blocks and its own fixed (never 72rem)
-    // width scale. If the exclusion's breakpoint-prefix group were
-    // hard-coded to Chassis's own default breakpoint keys instead of built
-    // from this project's $breakpoints (fact 18/Phase 10b), that shape would
-    // leak in at "lg", a differently-valued key here than Chassis's default one.
+    // rather than the class name's mere presence: core `container` sets
+    // its `max-width` to the breakpoints — this brand's 72rem at `lg` —
+    // where Chassis's own container has its own fixed (never 72rem) width
+    // scale.
     assert.doesNotMatch(built, /\.container\s*\{[^}]*max-width: 72rem/s)
-    assert.doesNotMatch(built, /\.lg\\:container\s*\{[^}]*max-width: 72rem/s)
+
+    // `lg:container` is no Chassis class (the variants of `.container` are
+    // `.container.lg`), so the name is not excluded: it is core's `container`
+    // under core's `lg:` variant, at this project's breakpoint.
+    assert.match(built, /\.lg\\:container\s*\{\s*width: 100%;/)
+    assert.match(built, /\.lg\\:container\s*\{\s*max-width: 72rem;/)
   })
 
   test('lg:col-span-6 is generated at the brand breakpoint, by Tailwind core', () => {

@@ -186,7 +186,11 @@
 
     @include _card-exclude-strokes();
 
-    &:has(.card-image:only-child):not(.grid > [class*="col-span-"]) {
+    // A body that holds only an image, stacked or, as an item of a `.grid`,
+    // beside the next body. Without the grid system every such body stacks.
+    $-stacked: if(sass($enable-grid-system): ":not(.grid > [class*=\"col-span-\"])"; else: "");
+
+    &:has(.card-image:only-child)#{$-stacked} {
       flex-grow: 0;
       &:has(+ .card-body)  {
         padding-block-end: 0;
@@ -196,12 +200,14 @@
       }
     }
 
-    &:has(.card-image:only-child):is(.grid > [class*="col-span-"]) {
-      &:has(+ .card-body[class*="col-span-"])  {
-        padding-inline-end: 0;
-      }
-      &:is(.card-body[class*="col-span-"] + &)  {
-        padding-inline-start: 0;
+    @if $enable-grid-system {
+      &:has(.card-image:only-child):is(.grid > [class*="col-span-"]) {
+        &:has(+ .card-body[class*="col-span-"])  {
+          padding-inline-end: 0;
+        }
+        &:is(.card-body[class*="col-span-"] + &)  {
+          padding-inline-start: 0;
+        }
       }
     }
 

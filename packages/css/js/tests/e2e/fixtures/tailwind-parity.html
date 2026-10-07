@@ -128,6 +128,41 @@
       </div>
     </div>
 
+    <!-- A definite height: .grid declares no row, so the implicit rows share
+         the height equally. -->
+    <div class="grid grid-cols-3" style="height: 300px;" data-testid="grid-tall">
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>4</div>
+      <div>5</div>
+      <div>6</div>
+    </div>
+
+    <!-- .grid-fill: as many columns of the minimum width as fit, 12rem by
+         default and the cx-grid-min custom property when it is set. -->
+    <div class="grid-fill" style="width: 1000px;" data-testid="grid-fill">
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>4</div>
+      <div>5</div>
+    </div>
+
+    <div class="grid-fill" style="width: 1000px; --cx-grid-min: 20rem;" data-testid="grid-fill-min">
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>4</div>
+      <div>5</div>
+    </div>
+
+    <!-- .contained outside the wrapper above. The spec turns the body's own
+         container off to read it with no query container at all. -->
+    <div class="grid contained" data-testid="contained-alone">
+      <div class="col-span-6">contained, no container</div>
+    </div>
+
     <div class="fg-primary" data-testid="fg-primary">Text</div>
     <div class="dark:d-none" data-testid="dark-d-none">Text</div>
     <div class="lg:font-xl" data-testid="lg-font-xl">Text</div>

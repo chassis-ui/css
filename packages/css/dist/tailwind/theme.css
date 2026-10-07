@@ -41,6 +41,7 @@
 }
 @source not inline("caption-top");
 @source not inline("collapse");
+@source not inline("container");
 @source not inline("grid");
 @source not inline("grid-cols-subgrid");
 @source not inline("inline");
@@ -48,5 +49,4 @@
 @source not inline("outline");
 @source not inline("static");
 @source not inline("table");
-@source not inline("{,sm:,md:,lg:,xl:,2xl:}container");
 @source inline("d-none"); /* js/src/nav-overflow.ts toggles this class via classList.toggle('d-none', ...); Tailwind's own class-scanner never sees it in any source file, so it needs an explicit @source inline() safelist entry to be generated at all. */

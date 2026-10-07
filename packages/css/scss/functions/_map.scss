@@ -130,6 +130,8 @@
 /// Creates a new map containing only the specified keys from the original map.
 /// Useful for filtering large configuration maps to only required values.
 ///
+/// A key the map does not have is left out, with a warning.
+///
 /// @param {Map} $map - Original map to extract from
 /// @param {List} $values - List of keys to extract
 /// @return {Map} - New map containing only the requested keys and their values
@@ -137,6 +139,11 @@
 ///   map-get-multiple((a: 1, b: 2, c: 3), (a, c)) => (a: 1, c: 3)
 @function map-get-multiple($map, $values) {
   $result: ();
+  @each $key in $values {
+    @if not map.has-key($map, $key) {
+      @warn "map-get-multiple(): the map has no key `#{$key}`.";
+    }
+  }
   @each $key, $value in $map {
     @if (list.index($values, $key) != null) {
       $result: map.merge($result, ($key: $value));

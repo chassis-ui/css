@@ -40,6 +40,26 @@
   @return $changes;
 }
 
+// Every map of `$maps` (parameter name to per-breakpoint map) needs a value
+// for the first breakpoint: without it the custom property is undefined below
+// the first breakpoint the map names. A key that is no breakpoint is ignored
+// by `-grid-var-changes()`, so it is reported.
+@mixin -grid-var-maps-check($maps, $breakpoints, $mixin) {
+  $first: list.nth(map.keys($breakpoints), 1);
+
+  @each $parameter, $values in $maps {
+    @if not map.has-key($values, $first) {
+      @error "#{$mixin}: #{$parameter} has no value for `#{$first}`, the first breakpoint of $breakpoints.";
+    }
+
+    @each $key in map.keys($values) {
+      @if not map.has-key($breakpoints, $key) {
+        @warn "#{$mixin}: #{$parameter} has a value for `#{$key}`, which is not a breakpoint of $breakpoints. It is ignored.";
+      }
+    }
+  }
+}
+
 // scss-docs-start grid-root-vars
 /// Emit the per-breakpoint custom properties of the layout system on `:root`:
 /// `--grid-gutter` (the gap of `.grid`), `--container-padding` (the padding of
@@ -52,6 +72,8 @@
 /// @param {Map} $columns [$grid-column-counts] - Column count per breakpoint
 /// @param {Map} $breakpoints [$breakpoints] - Breakpoint map
 @mixin grid-root-vars($gutters: $grid-gutters, $paddings: $container-paddings, $columns: $grid-column-counts, $breakpoints: $breakpoints) {
+  @include -grid-var-maps-check(("$gutters": $gutters, "$paddings": $paddings, "$columns": $columns), $breakpoints, "grid-root-vars()");
+
   $vars: (
     "grid-gutter": $gutters,
     "container-padding": $paddings,
@@ -72,23 +94,36 @@
 /// Emit `--grid-gutter` and `--grid-columns` on the calling selector by the
 /// width of its nearest query container, where `grid-root-vars()` sets them on
 /// `:root` by the width of the viewport. The value of the first breakpoint is
-/// declared in the selector itself, so it applies when no ancestor is a query
-/// container; a later breakpoint is declared, in its
-/// `container-breakpoint-up()`, only where the map value changes.
+/// declared in `@container (width >= 0)`, which matches whenever an ancestor
+/// is a query container and never without one, so an element with no query
+/// container above it keeps the viewport's values of `:root`; a later
+/// breakpoint is declared, in its `container-breakpoint-up()`, only where the
+/// map value changes.
 ///
 /// @param {Map} $gutters [$grid-gutters] - Gutter per breakpoint
 /// @param {Map} $columns [$grid-column-counts] - Column count per breakpoint
 /// @param {Map} $breakpoints [$breakpoints] - Breakpoint map
 @mixin grid-container-vars($gutters: $grid-gutters, $columns: $grid-column-counts, $breakpoints: $breakpoints) {
+  @include -grid-var-maps-check(("$gutters": $gutters, "$columns": $columns), $breakpoints, "grid-container-vars()");
+
   $vars: (
     "grid-gutter": $gutters,
     "grid-columns": $columns
   );
 
   @each $breakpoint, $changed in -grid-var-changes($vars, $breakpoints) {
-    @include container-breakpoint-up($breakpoint, null, $breakpoints) {
-      @each $name, $value in $changed {
-        --#{$name}: #{$value};
+    @if breakpoint-min($breakpoint, $breakpoints) == null {
+      // `container-breakpoint-up()` writes no query for the first breakpoint.
+      @container (width >= 0) {
+        @each $name, $value in $changed {
+          --#{$name}: #{$value};
+        }
+      }
+    } @else {
+      @include container-breakpoint-up($breakpoint, null, $breakpoints) {
+        @each $name, $value in $changed {
+          --#{$name}: #{$value};
+        }
       }
     }
   }
@@ -120,9 +155,7 @@
       grid-column: #{"1 / -1"};
     }
 
-    // Through `$columns + 1`: the last line of the grid, so an item can
-    // be placed against the end edge with `col-start-* col-span-*`.
-    @for $i from 1 through ($columns + 1) {
+    @for $i from 1 through $columns {
       .#{$prefix}col-start-#{$i} {
         grid-column-start: $i;
       }
@@ -140,7 +173,7 @@
       }
     }
 
-    @for $i from 1 through ($rows + 1) {
+    @for $i from 1 through $rows {
       .#{$prefix}row-start-#{$i} {
         grid-row-start: $i;
       }
@@ -155,10 +188,10 @@
 // scss-docs-start make-cssgrid
 /// Generate the placement classes of `.grid` for every breakpoint, with the
 /// declarations of Tailwind's utilities of the same names: `col-span-{1…$columns}`
-/// and `col-span-full` (`grid-column`), `col-start-{1…$columns + 1}` and
+/// and `col-span-full` (`grid-column`), `col-start-{1…$columns}` and
 /// `col-start-auto` (`grid-column-start`), `row-span-{1…$rows}` (`grid-row`),
-/// `row-start-{1…$rows + 1}` and `row-start-auto` (`grid-row-start`). The
-/// `auto` classes reset a start line set at a narrower breakpoint.
+/// `row-start-{1…$rows}` and `row-start-auto` (`grid-row-start`). The `auto`
+/// classes reset a start line set at a narrower breakpoint.
 ///
 /// @param {Number} $columns [$grid-columns] - Number of grid columns
 /// @param {Number} $rows [$grid-rows] - Number of grid rows the row classes cover
@@ -206,17 +239,13 @@
 ///
 /// @param {Boolean} $responsive [true] - Include the per-breakpoint classes
 @mixin grid-layout($responsive: true) {
-  @if $enable-cssgrid {
+  @if $enable-grid-system {
     // scss-docs-start grid-layout
+    // No `grid-template-rows`: the rows are implicit, as tall as their content.
     .grid {
-      --columns: var(--grid-columns);
-      --rows: var(--grid-rows, 1);
-      --gap: var(--grid-gap, var(--grid-gutter));
-
       display: grid;
-      grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
-      grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
-      gap: var(--gap);
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      gap: var(--grid-gap, var(--grid-gutter));
     }
 
     .grid-cols-subgrid {
@@ -224,13 +253,11 @@
     }
 
     // As many columns of at least `--grid-min` as fit, the same gap as `.grid`.
+    // Empty tracks collapse, so fewer items than fit share the whole row.
     .grid-fill {
-      --gap: var(--grid-gap, var(--grid-gutter));
-
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(var(--grid-min, 0), 1fr));
-      grid-auto-flow: row;
-      gap: var(--gap);
+      grid-template-columns: repeat(auto-fit, minmax(var(--grid-min, #{$grid-fill-min}), 1fr));
+      gap: var(--grid-gap, var(--grid-gutter));
     }
     // scss-docs-end grid-layout
 

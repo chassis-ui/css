@@ -1,8 +1,10 @@
 //
 // Chassis CSS — Grid Bundle
 //
-// Standalone entry point for the grid and container system only.
-// Excludes components and non-layout utilities.
+// Standalone entry point for the grid and container system only: `.grid`
+// with its placement classes, `.container`, and the layout utilities listed
+// below, with the `:root` variables they read. Excludes components and
+// non-layout utilities.
 //
 
 @use "mixins/banner" with ($file: "Grid");
@@ -39,11 +41,12 @@ $utilities: map-get-multiple(
     "flex-shrink",
     "flex-wrap",
     "justify-content",
-    "justify-items",
     "align-items",
     "align-content",
     "align-self",
     "place-items",
+    "container",
+    "width-fraction",
     "margin",
     "margin-x",
     "margin-y",

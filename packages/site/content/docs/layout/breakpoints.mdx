@@ -206,10 +206,10 @@ Without a name, a container query always targets the nearest ancestor container.
   // The name passed to each mixin determines which container drives that query.
   .sidebar-widget {
     @include container-breakpoint-up(lg, main) { ... }
-    // => @container main (width >= 992px) { ... }
+    // => @container main (width >= ${sassBreakpointSize('lg')}) { ... }
 
     @include container-breakpoint-down(sm, sidebar) { ... }
-    // => @container sidebar (width < 576px) { ... }
+    // => @container sidebar (width < ${sassBreakpointSize('sm')}) { ... }
   }`} />
 
 The first rule fires when `main` reaches `lg`; the second fires when `sidebar` drops below `sm`. The same descendant responds to two independent containers simultaneously.

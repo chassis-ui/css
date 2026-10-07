@@ -6,9 +6,19 @@
  *
  * Usage:
  *   import { extendTailwindMerge } from 'tailwind-merge'
- *   import { classGroups } from '@chassis-ui/css/tailwind/merge.js'
- *   const twMerge = extendTailwindMerge({ extend: { classGroups } })
+ *   import { classGroups, overrideClassGroups } from '@chassis-ui/css/tailwind/merge.js'
+ *   const twMerge = extendTailwindMerge({
+ *     override: { classGroups: overrideClassGroups },
+ *     extend: { classGroups }
+ *   })
  *   twMerge('fg-primary', 'fg-danger') // -> 'fg-danger'
+ *   twMerge('grid', 'd-flex') // -> 'grid d-flex'
+ *
+ * `overrideClassGroups` holds the groups of tailwind-merge that list a name
+ * which is a Chassis class in the Tailwind entry (`grid`, `table`,
+ * `inline`, `list-item`, `collapse`, `static`), without that name: a
+ * display, visibility or position utility then leaves the Chassis class in
+ * place.
  *
  * Group ids are Chassis's own utility map keys, unprefixed — a group that
  * shares a name with a built-in tailwind-merge group (e.g. "opacity")
@@ -1725,5 +1735,37 @@ export const classGroups = {
     "z-4",
     "z-5",
     "z-n1"
+  ]
+}
+
+export const overrideClassGroups = {
+  "display": [
+    "block",
+    "inline-block",
+    "flex",
+    "inline-flex",
+    "inline-table",
+    "table-caption",
+    "table-cell",
+    "table-column",
+    "table-column-group",
+    "table-footer-group",
+    "table-header-group",
+    "table-row-group",
+    "table-row",
+    "flow-root",
+    "inline-grid",
+    "contents",
+    "hidden"
+  ],
+  "position": [
+    "fixed",
+    "absolute",
+    "relative",
+    "sticky"
+  ],
+  "visibility": [
+    "visible",
+    "invisible"
   ]
 }

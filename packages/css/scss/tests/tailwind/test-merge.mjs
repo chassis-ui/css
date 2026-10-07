@@ -23,8 +23,11 @@ import { extendTailwindMerge } from 'tailwind-merge'
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '../../..')
 
-const { classGroups } = await import(path.join(root, 'dist/tailwind/merge.js'))
-const twMerge = extendTailwindMerge({ extend: { classGroups } })
+const { classGroups, overrideClassGroups } = await import(path.join(root, 'dist/tailwind/merge.js'))
+const twMerge = extendTailwindMerge({
+  override: { classGroups: overrideClassGroups },
+  extend: { classGroups }
+})
 
 describe('dist/tailwind/merge.js', () => {
   test("groups are keyed by the utility map's own top-level keys", () => {
@@ -76,6 +79,41 @@ describe('dist/tailwind/merge.js', () => {
     assert.equal(twMerge('md:w-6/12', 'md:w-100'), 'md:w-100')
     assert.equal(twMerge('w-6/12', 'lg:w-auto'), 'w-6/12 lg:w-auto')
     assert.equal(twMerge('w-100', 'h-100'), 'w-100 h-100')
+  })
+
+  test('a Chassis class that has the name of a Tailwind utility is kept', () => {
+    // `.grid`, `.table`, `.inline`, `.list-item`, `.collapse` and `.static`
+    // are Chassis classes in the entry (`_source-exclusions.scss`), which
+    // tailwind-merge lists in its display, visibility and position groups.
+    assert.deepEqual(Object.keys(overrideClassGroups), ['display', 'position', 'visibility'])
+    for (const name of ['grid', 'table', 'inline', 'list-item']) {
+      assert.ok(!overrideClassGroups.display.includes(name), `"${name}" in the display group`)
+    }
+    assert.ok(!overrideClassGroups.visibility.includes('collapse'))
+    assert.ok(!overrideClassGroups.position.includes('static'))
+
+    assert.equal(twMerge('grid gap-md', 'd-flex'), 'grid gap-md d-flex')
+    assert.equal(twMerge('grid', 'd-grid'), 'grid d-grid')
+    assert.equal(twMerge('grid', 'md:d-none'), 'grid md:d-none')
+    assert.equal(twMerge('table', 'd-block'), 'table d-block')
+    assert.equal(twMerge('list-item', 'd-flex'), 'list-item d-flex')
+    assert.equal(twMerge('collapse', 'invisible'), 'collapse invisible')
+    assert.equal(twMerge('drawer static', 'position-relative'), 'drawer static position-relative')
+  })
+
+  test("the display utilities still resolve against each other and against Tailwind's own", () => {
+    assert.equal(twMerge('d-flex', 'd-grid'), 'd-grid')
+    assert.equal(twMerge('flex', 'd-none'), 'd-none')
+    assert.equal(twMerge('d-flex', 'hidden'), 'hidden')
+    assert.equal(twMerge('visible', 'invisible'), 'invisible')
+    assert.equal(twMerge('position-relative', 'absolute'), 'absolute')
+  })
+
+  test('without the override, the documented reason for it holds', () => {
+    // The defect the override removes; if tailwind-merge stops listing
+    // `grid` in its display group, the override can go.
+    const extendOnly = extendTailwindMerge({ extend: { classGroups } })
+    assert.equal(extendOnly('grid', 'd-flex'), 'd-flex')
   })
 
   test('classes from different groups are both kept', () => {

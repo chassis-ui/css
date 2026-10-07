@@ -7015,7 +7015,7 @@
     color: var(--cx-fg-color, var(--cx-fg-main));
     background-color: var(--cx-bg-color, var(--cx-bg-main));
   }
-  .navbar > .\32 xl\:container, .navbar > .xl\:container, .navbar > .lg\:container, .navbar > .md\:container, .navbar > .sm\:container, .navbar > .container {
+  .navbar > .container {
     display: flex;
     flex-wrap: inherit;
     align-items: center;
@@ -9620,28 +9620,24 @@
     }
   }
   .grid {
-    --cx-columns: var(--cx-grid-columns);
-    --cx-rows: var(--cx-grid-rows, 1);
-    --cx-gap: var(--cx-grid-gap, var(--cx-grid-gutter));
     display: grid;
-    grid-template-rows: repeat(var(--cx-rows), minmax(0, 1fr));
-    grid-template-columns: repeat(var(--cx-columns), minmax(0, 1fr));
-    gap: var(--cx-gap);
+    grid-template-columns: repeat(var(--cx-grid-columns), minmax(0, 1fr));
+    gap: var(--cx-grid-gap, var(--cx-grid-gutter));
   }
   .grid-cols-subgrid {
     grid-template-columns: subgrid;
   }
   .grid-fill {
-    --cx-gap: var(--cx-grid-gap, var(--cx-grid-gutter));
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(var(--cx-grid-min, 0), 1fr));
-    grid-auto-flow: row;
-    gap: var(--cx-gap);
+    grid-template-columns: repeat(auto-fit, minmax(var(--cx-grid-min, 12rem), 1fr));
+    gap: var(--cx-grid-gap, var(--cx-grid-gutter));
   }
-  .grid.contained,
-  .grid-fill.contained {
-    --cx-grid-gutter: 1rem;
-    --cx-grid-columns: 12;
+  @container (width >= 0) {
+    .grid.contained,
+    .grid-fill.contained {
+      --cx-grid-gutter: 1rem;
+      --cx-grid-columns: 12;
+    }
   }
   @container (width >= 48rem) {
     .grid.contained,
@@ -9724,9 +9720,6 @@
   .col-start-12 {
     grid-column-start: 12;
   }
-  .col-start-13 {
-    grid-column-start: 13;
-  }
   .col-start-auto {
     grid-column-start: auto;
   }
@@ -9765,9 +9758,6 @@
   }
   .row-start-6 {
     grid-row-start: 6;
-  }
-  .row-start-7 {
-    grid-row-start: 7;
   }
   .row-start-auto {
     grid-row-start: auto;
@@ -9848,9 +9838,6 @@
     .sm\:col-start-12 {
       grid-column-start: 12;
     }
-    .sm\:col-start-13 {
-      grid-column-start: 13;
-    }
     .sm\:col-start-auto {
       grid-column-start: auto;
     }
@@ -9889,9 +9876,6 @@
     }
     .sm\:row-start-6 {
       grid-row-start: 6;
-    }
-    .sm\:row-start-7 {
-      grid-row-start: 7;
     }
     .sm\:row-start-auto {
       grid-row-start: auto;
@@ -9973,9 +9957,6 @@
     .md\:col-start-12 {
       grid-column-start: 12;
     }
-    .md\:col-start-13 {
-      grid-column-start: 13;
-    }
     .md\:col-start-auto {
       grid-column-start: auto;
     }
@@ -10014,9 +9995,6 @@
     }
     .md\:row-start-6 {
       grid-row-start: 6;
-    }
-    .md\:row-start-7 {
-      grid-row-start: 7;
     }
     .md\:row-start-auto {
       grid-row-start: auto;
@@ -10098,9 +10076,6 @@
     .lg\:col-start-12 {
       grid-column-start: 12;
     }
-    .lg\:col-start-13 {
-      grid-column-start: 13;
-    }
     .lg\:col-start-auto {
       grid-column-start: auto;
     }
@@ -10139,9 +10114,6 @@
     }
     .lg\:row-start-6 {
       grid-row-start: 6;
-    }
-    .lg\:row-start-7 {
-      grid-row-start: 7;
     }
     .lg\:row-start-auto {
       grid-row-start: auto;
@@ -10223,9 +10195,6 @@
     .xl\:col-start-12 {
       grid-column-start: 12;
     }
-    .xl\:col-start-13 {
-      grid-column-start: 13;
-    }
     .xl\:col-start-auto {
       grid-column-start: auto;
     }
@@ -10264,9 +10233,6 @@
     }
     .xl\:row-start-6 {
       grid-row-start: 6;
-    }
-    .xl\:row-start-7 {
-      grid-row-start: 7;
     }
     .xl\:row-start-auto {
       grid-row-start: auto;
@@ -10348,9 +10314,6 @@
     .\32 xl\:col-start-12 {
       grid-column-start: 12;
     }
-    .\32 xl\:col-start-13 {
-      grid-column-start: 13;
-    }
     .\32 xl\:col-start-auto {
       grid-column-start: auto;
     }
@@ -10389,9 +10352,6 @@
     }
     .\32 xl\:row-start-6 {
       grid-row-start: 6;
-    }
-    .\32 xl\:row-start-7 {
-      grid-row-start: 7;
     }
     .\32 xl\:row-start-auto {
       grid-row-start: auto;
@@ -10473,9 +10433,6 @@
     .\@sm\:col-start-12 {
       grid-column-start: 12;
     }
-    .\@sm\:col-start-13 {
-      grid-column-start: 13;
-    }
     .\@sm\:col-start-auto {
       grid-column-start: auto;
     }
@@ -10514,9 +10471,6 @@
     }
     .\@sm\:row-start-6 {
       grid-row-start: 6;
-    }
-    .\@sm\:row-start-7 {
-      grid-row-start: 7;
     }
     .\@sm\:row-start-auto {
       grid-row-start: auto;
@@ -10598,9 +10552,6 @@
     .\@md\:col-start-12 {
       grid-column-start: 12;
     }
-    .\@md\:col-start-13 {
-      grid-column-start: 13;
-    }
     .\@md\:col-start-auto {
       grid-column-start: auto;
     }
@@ -10639,9 +10590,6 @@
     }
     .\@md\:row-start-6 {
       grid-row-start: 6;
-    }
-    .\@md\:row-start-7 {
-      grid-row-start: 7;
     }
     .\@md\:row-start-auto {
       grid-row-start: auto;
@@ -10723,9 +10671,6 @@
     .\@lg\:col-start-12 {
       grid-column-start: 12;
     }
-    .\@lg\:col-start-13 {
-      grid-column-start: 13;
-    }
     .\@lg\:col-start-auto {
       grid-column-start: auto;
     }
@@ -10764,9 +10709,6 @@
     }
     .\@lg\:row-start-6 {
       grid-row-start: 6;
-    }
-    .\@lg\:row-start-7 {
-      grid-row-start: 7;
     }
     .\@lg\:row-start-auto {
       grid-row-start: auto;
@@ -10848,9 +10790,6 @@
     .\@xl\:col-start-12 {
       grid-column-start: 12;
     }
-    .\@xl\:col-start-13 {
-      grid-column-start: 13;
-    }
     .\@xl\:col-start-auto {
       grid-column-start: auto;
     }
@@ -10889,9 +10828,6 @@
     }
     .\@xl\:row-start-6 {
       grid-row-start: 6;
-    }
-    .\@xl\:row-start-7 {
-      grid-row-start: 7;
     }
     .\@xl\:row-start-auto {
       grid-row-start: auto;
@@ -10973,9 +10909,6 @@
     .\@2xl\:col-start-12 {
       grid-column-start: 12;
     }
-    .\@2xl\:col-start-13 {
-      grid-column-start: 13;
-    }
     .\@2xl\:col-start-auto {
       grid-column-start: auto;
     }
@@ -11014,9 +10947,6 @@
     }
     .\@2xl\:row-start-6 {
       grid-row-start: 6;
-    }
-    .\@2xl\:row-start-7 {
-      grid-row-start: 7;
     }
     .\@2xl\:row-start-auto {
       grid-row-start: auto;
@@ -15758,6 +15688,18 @@
     .sm\:order-last {
       order: 6;
     }
+    .sm\:place-items-start {
+      place-items: start;
+    }
+    .sm\:place-items-end {
+      place-items: end;
+    }
+    .sm\:place-items-center {
+      place-items: center;
+    }
+    .sm\:place-items-stretch {
+      place-items: stretch;
+    }
     .sm\:gap-zero {
       gap: var(--cx-space-zero);
     }
@@ -17313,6 +17255,18 @@
     }
     .md\:order-last {
       order: 6;
+    }
+    .md\:place-items-start {
+      place-items: start;
+    }
+    .md\:place-items-end {
+      place-items: end;
+    }
+    .md\:place-items-center {
+      place-items: center;
+    }
+    .md\:place-items-stretch {
+      place-items: stretch;
     }
     .md\:gap-zero {
       gap: var(--cx-space-zero);
@@ -18870,6 +18824,18 @@
     .lg\:order-last {
       order: 6;
     }
+    .lg\:place-items-start {
+      place-items: start;
+    }
+    .lg\:place-items-end {
+      place-items: end;
+    }
+    .lg\:place-items-center {
+      place-items: center;
+    }
+    .lg\:place-items-stretch {
+      place-items: stretch;
+    }
     .lg\:gap-zero {
       gap: var(--cx-space-zero);
     }
@@ -20425,6 +20391,18 @@
     }
     .xl\:order-last {
       order: 6;
+    }
+    .xl\:place-items-start {
+      place-items: start;
+    }
+    .xl\:place-items-end {
+      place-items: end;
+    }
+    .xl\:place-items-center {
+      place-items: center;
+    }
+    .xl\:place-items-stretch {
+      place-items: stretch;
     }
     .xl\:gap-zero {
       gap: var(--cx-space-zero);
@@ -21982,6 +21960,18 @@
     .\32 xl\:order-last {
       order: 6;
     }
+    .\32 xl\:place-items-start {
+      place-items: start;
+    }
+    .\32 xl\:place-items-end {
+      place-items: end;
+    }
+    .\32 xl\:place-items-center {
+      place-items: center;
+    }
+    .\32 xl\:place-items-stretch {
+      place-items: stretch;
+    }
     .\32 xl\:gap-zero {
       gap: var(--cx-space-zero);
     }
@@ -23538,6 +23528,18 @@
     .\@sm\:order-last {
       order: 6;
     }
+    .\@sm\:place-items-start {
+      place-items: start;
+    }
+    .\@sm\:place-items-end {
+      place-items: end;
+    }
+    .\@sm\:place-items-center {
+      place-items: center;
+    }
+    .\@sm\:place-items-stretch {
+      place-items: stretch;
+    }
     .\@sm\:gap-zero {
       gap: var(--cx-space-zero);
     }
@@ -24078,6 +24080,18 @@
     }
     .\@md\:order-last {
       order: 6;
+    }
+    .\@md\:place-items-start {
+      place-items: start;
+    }
+    .\@md\:place-items-end {
+      place-items: end;
+    }
+    .\@md\:place-items-center {
+      place-items: center;
+    }
+    .\@md\:place-items-stretch {
+      place-items: stretch;
     }
     .\@md\:gap-zero {
       gap: var(--cx-space-zero);
@@ -24620,6 +24634,18 @@
     .\@lg\:order-last {
       order: 6;
     }
+    .\@lg\:place-items-start {
+      place-items: start;
+    }
+    .\@lg\:place-items-end {
+      place-items: end;
+    }
+    .\@lg\:place-items-center {
+      place-items: center;
+    }
+    .\@lg\:place-items-stretch {
+      place-items: stretch;
+    }
     .\@lg\:gap-zero {
       gap: var(--cx-space-zero);
     }
@@ -25161,6 +25187,18 @@
     .\@xl\:order-last {
       order: 6;
     }
+    .\@xl\:place-items-start {
+      place-items: start;
+    }
+    .\@xl\:place-items-end {
+      place-items: end;
+    }
+    .\@xl\:place-items-center {
+      place-items: center;
+    }
+    .\@xl\:place-items-stretch {
+      place-items: stretch;
+    }
     .\@xl\:gap-zero {
       gap: var(--cx-space-zero);
     }
@@ -25701,6 +25739,18 @@
     }
     .\@2xl\:order-last {
       order: 6;
+    }
+    .\@2xl\:place-items-start {
+      place-items: start;
+    }
+    .\@2xl\:place-items-end {
+      place-items: end;
+    }
+    .\@2xl\:place-items-center {
+      place-items: center;
+    }
+    .\@2xl\:place-items-stretch {
+      place-items: stretch;
     }
     .\@2xl\:gap-zero {
       gap: var(--cx-space-zero);

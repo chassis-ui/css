@@ -256,7 +256,7 @@ The Tailwind entry resets Tailwind's default theme with `@theme { --*: initial; 
 
 ### Excluded class names
 
-Some Chassis component and layout classes share a name with a Tailwind core utility: `.outline`, `.collapse`, `.container` and its responsive forms, `.grid`, `.static`, `.list-item`, `.inline`, `.table`, `.caption-top`, and `.grid-cols-subgrid`. The Tailwind entry excludes these names from Tailwind's generation with `@source not inline()`, so only the Chassis rule applies.
+Some Chassis component and layout classes share a name with a Tailwind core utility: `.outline`, `.collapse`, `.container`, `.grid`, `.static`, `.list-item`, `.inline`, `.table`, `.caption-top`, and `.grid-cols-subgrid`. The Tailwind entry excludes these names from Tailwind's generation with `@source not inline()`, so only the Chassis rule applies.
 
 <Callout type="info">
 The nav-overflow plugin toggles `.d-none` at runtime through `classList.toggle()`, which Tailwind's source scanner never sees. The Tailwind entry safelists the class with `@source inline("d-none")`, so it always generates.
@@ -277,7 +277,7 @@ In the Tailwind entry the grid is split between Chassis and Tailwind core:
 </div>
 ```
 
-Tailwind core has placement utilities the regular build does not generate, such as `col-end-*`, `row-end-*`, and arbitrary values (`col-span-[14]`). They work in the Tailwind entry; markup that has to render with both builds stays within `col-span-{1…12}`, `col-span-full`, `col-start-{1…13}`, `col-start-auto`, `row-span-{1…6}`, `row-start-{1…7}`, `row-start-auto`, `grid-cols-{1…12}`, and `grid-rows-{1…6}`.
+Tailwind core has placement utilities the regular build does not generate, such as `col-end-*`, `row-end-*`, and arbitrary values (`col-span-[14]`). They work in the Tailwind entry; markup that has to render with both builds stays within `col-span-{1…12}`, `col-span-full`, `col-start-{1…12}`, `col-start-auto`, `row-span-{1…6}`, `row-start-{1…6}`, `row-start-auto`, `grid-cols-{1…12}`, and `grid-rows-{1…6}`.
 
 Tailwind's scanner can't see class names built at runtime (`` `col-span-${n}` ``). Safelist them, for example with `@source inline("{,md:}col-span-{1..12}");`.
 
@@ -387,18 +387,24 @@ import { Dialog, Tooltip } from '@chassis-ui/css'
 
 [tailwind-merge](https://github.com/dcastil/tailwind-merge) resolves conflicting classes when you build a class string at runtime, for example when a component accepts a `className` prop that overrides a default. It needs to know which classes belong to the same conflict group. Tailwind's own utilities are built in; a project's custom `@utility` rules, Chassis's included, aren't.
 
-`@chassis-ui/css/tailwind/merge.js` exports a `classGroups` config generated from the same utility map the Tailwind entry uses. It covers every Chassis utility name; the placement classes of `.grid` are Tailwind's own, which tailwind-merge already knows. The width utilities join its group for `w-*`, so `.w-6/12` resolves against `.w-100` and `.w-auto`:
+`@chassis-ui/css/tailwind/merge.js` exports a `classGroups` config generated from the same utility map the Tailwind entry uses. It covers every Chassis utility name; the placement classes of `.grid` are Tailwind's own, which tailwind-merge already knows. The width utilities join its group for `w-*`, so `.w-6/12` resolves against `.w-100` and `.w-auto`.
+
+It also exports `overrideClassGroups`. tailwind-merge lists `grid`, `table`, `inline`, `list-item`, `collapse`, and `static` among Tailwind's display, visibility, and position utilities, and in the Tailwind entry these names are [Chassis classes](#excluded-class-names). The override takes them out of those groups, so a display utility leaves `.grid` in place. Pass both:
 
 ```js
 import { extendTailwindMerge } from 'tailwind-merge'
-import { classGroups } from '@chassis-ui/css/tailwind/merge.js'
+import { classGroups, overrideClassGroups } from '@chassis-ui/css/tailwind/merge.js'
 
-const twMerge = extendTailwindMerge({ extend: { classGroups } })
+const twMerge = extendTailwindMerge({
+  override: { classGroups: overrideClassGroups },
+  extend: { classGroups }
+})
 
 twMerge('fg-primary', 'fg-danger') // -> 'fg-danger'
 twMerge('m-sm', 'm-lg')            // -> 'm-lg'
 twMerge('col-span-6', 'col-span-4') // -> 'col-span-4'
 twMerge('w-6/12', 'w-auto')        // -> 'w-auto'
+twMerge('grid gap-md', 'd-flex')   // -> 'grid gap-md d-flex'
 ```
 
 Groups follow Chassis's utility names, not CSS properties. Utilities that set the same property from separate map entries land in separate groups and don't resolve against each other: the base, hover-elevation, and hover-color shadow utilities all set `box-shadow`, for example. Attribute-selector utilities like `.ratio-16x9` have no fixed set of class names, so the config leaves them out.

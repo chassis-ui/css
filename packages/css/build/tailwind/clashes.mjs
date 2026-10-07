@@ -169,7 +169,7 @@ function classifyClashes(clashes, breakpointPrefixes) {
 // scss/tailwind/_source-exclusions.scss (generated file) parsing/formatting
 // ---------------------------------------------------------------------------
 
-function parseSassStringList(source, varName) {
+export function parseSassStringList(source, varName) {
   const match = source.match(new RegExp(`\\$${varName}:\\s*\\(([\\s\\S]*?)\\)\\s*!default\\s*;`))
   if (!match) {
     throw new Error(`clashes: could not find $${varName} in ${sourceExclusionsPath}`)
@@ -177,11 +177,17 @@ function parseSassStringList(source, varName) {
   return [...match[1].matchAll(/"([^"]*)"/g)].map((m) => m[1])
 }
 
-function formatSassStringList(values) {
-  return values.map((value) => `  "${value}"`).join(',\n')
+// An empty list is `()` on one line: stylelint rejects the blank line a
+// multi-line list with no member would hold.
+function formatSassStringList(varName, values) {
+  if (values.length === 0) {
+    return `$${varName}: () !default;`
+  }
+
+  return `$${varName}: (\n${values.map((value) => `  "${value}"`).join(',\n')}\n) !default;`
 }
 
-function formatSourceExclusionsFile({ bare, responsive }) {
+export function formatSourceExclusionsFile({ bare, responsive }) {
   return `//
 // Chassis CSS — Tailwind Source Exclusions (generated, do not hand-edit)
 //
@@ -200,13 +206,9 @@ function formatSourceExclusionsFile({ bare, responsive }) {
 // \`pnpm css:tailwind:update-clashes\` to regenerate this file.
 //
 
-$bare-clashes: (
-${formatSassStringList(bare)}
-) !default;
+${formatSassStringList('bare-clashes', bare)}
 
-$breakpoint-clashes: (
-${formatSassStringList(responsive)}
-) !default;
+${formatSassStringList('breakpoint-clashes', responsive)}
 `
 }
 

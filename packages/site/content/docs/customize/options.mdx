@@ -24,7 +24,7 @@ To override Chassis CSS's default settings:
 ```scss
 // Your custom.scss file
 $enable-dark-mode: false;         // Disable dark mode support
-$enable-cssgrid: true;            // Keep CSS Grid system
+$enable-grid-system: true;        // Keep the grid system
 $enable-component-shadows: true;  // Enable shadow effects
 $enable-validation-icons: false;  // Remove form validation icons
 
@@ -32,7 +32,7 @@ $enable-validation-icons: false;  // Remove form validation icons
 @use "@chassis-ui/css/scss/chassis";
 ```
 
-All configuration options are defined in Chassis CSS's `scss/_settings.scss` file and use Sass's `!default` flag, meaning your custom values will always take precedence.
+All configuration options are defined in Chassis CSS's `scss/config/_settings.scss` file and use Sass's `!default` flag, meaning your custom values will always take precedence.
 
 ## Configuration Options
 
@@ -49,15 +49,16 @@ All configuration options are organized in a single alphabetical list for easier
 | `$enable-component-shadows`       | `true` (default) or `false`        | Enables predefined decorative `box-shadow` styles on various components for depth. |
 | `$enable-container-classes`       | `true` (default) or `false`        | Generates CSS classes for layout containers (`.container`, `.container.fluid`, etc.). Disable to reduce CSS size if you're using custom containers. |
 | `$enable-container-queries`       | `true` (default) or `false`        | Generates the [container-query variants]([[docsref:/layout/grid#container-queries]]) under the `@` prefix (`.@md:col-span-6`, `.@md:d-flex`) for the grid classes and for the utilities with [`container: true`]([[docsref:/utilities/api#container]]), and the `.grid.contained` modifier. Disable to reduce CSS size if you lay out by the viewport only. |
-| `$enable-cssgrid`                 | `true` (default) or `false`        | Generates the [grid system]([[docsref:/layout/grid]]): `.grid`, `.grid-fill`, `.grid-cols-subgrid`, and the span and start classes (`.col-span-6`, `.md:col-start-3`). |
 | `$enable-dark-mode`               | `true` (default) or `false`        | Implements [dark mode support]([[docsref:/customize/color-modes#dark-mode]]) throughout the framework, with automatic detection and toggle capability. |
 | `$enable-deprecation-messages`    | `true` (default) or `false`        | Shows console warnings when using deprecated features scheduled for removal in future versions. Disable in production for cleaner console output. |
 | `$enable-elevation-shadows`       | `true` (default) or `false`        | Generates elevation-specific shadow utilities that create consistent layering effects based on design tokens. |
 | `$enable-exclude-strokes`         | `true` (default), `false`, or list | Controls border width exclusion from padding for components. `true` applies to all components, `false` never applies, or provide a list like `button, badge, form-control, notification` for specific components. |
+| `$enable-grid-system`             | `true` (default) or `false`        | Generates the [grid system]([[docsref:/layout/grid]]): `.grid`, `.grid-fill`, `.grid-cols-subgrid`, the span and start classes (`.col-span-6`, `.md:col-start-3`), and the `grid-cols-*`, `grid-rows-*`, and `grid-auto-flow-*` utilities. Disable for a components-only build with a layout of its own; the containers, the gap utilities, and the fraction widths stay. Named `$enable-cssgrid` until v0.7.0. |
 | `$enable-important-utilities`     | `true` (default) or `false`        | Adds `!important` to utility classes to ensure they override component styles. Disable only if you have a carefully controlled CSS specificity strategy. |
 | `$enable-negative-margins`        | `true` (default) or `false`        | Generates [negative margin utilities]([[docsref:/utilities/margin#negative-margins]]) like `.-m-md`, `-mt-sm`. Useful for precise layout adjustments. |
+| `$enable-property-opacities`      | `true` (default) or `false`        | Generates the opacity utilities of single properties: `.fg-opacity-*`, `.bg-opacity-*`, `.border-opacity-*`, `.cue-opacity-*`, and `.text-decoration-opacity-*`. |
 | `$enable-reduced-motion`          | `true` (default) or `false`        | Respects the [`prefers-reduced-motion` media query]([[docsref:/core-concepts/accessibility#reduced-motion]]), reducing or eliminating animations for users who prefer minimal motion. Critical for vestibular disorders. |
-| `$enable-responsive-font-sizes`     | `false` (default) or `true`        | Enables [responsive size]([[docsref:/content/typography#responsive-sizes]]) utility classes for locking font sizes to specific breakpoints. |
+| `$enable-responsive-font-sizes`     | `true` (default) or `false`        | Enables [responsive size]([[docsref:/content/typography#responsive-sizes]]) utility classes for locking font sizes to specific breakpoints. |
 | `$enable-fluid-font-sizes`          | `true` (default) or `false`        | Enables [fluid sizing]([[docsref:/content/typography#fluid-sizes]]) — font sizes scale smoothly between a minimum and maximum using `clamp()`. |
 | `$enable-rounded-borders`         | `true` (default) or `false`        | Applies `border-radius` styles to various components. Disabling will override all border-radius values, including those specified by design tokens. |
 | `$enable-smooth-scroll`           | `true` (default) or `false`        | Enables `scroll-behavior: smooth` for smoother page navigation, while respecting reduced motion preferences. |
@@ -65,6 +66,7 @@ All configuration options are organized in a single alphabetical list for easier
 | `$enable-table-border-radius`     | `true` (default) or `false`        | Applies consistent border-radius values to tables from design tokens, creating visually cohesive rounded corners that match other components. |
 | `$enable-table-font-tokens`       | `true` (default) or `false`        | Uses typography values from design tokens for table headers and cells, ensuring consistent text styling that adapts with your design system. |
 | `$enable-transitions`             | `true` (default) or `false`        | Enables smooth transition animations on interactive elements. Disable for instant state changes or to reduce CSS size. |
+| `$enable-translucency`            | `true` (default) or `false`        | Enables the frosted-glass effect of `.translucent` components (`backdrop-filter` over a semi-transparent background), which already steps aside for [`prefers-reduced-transparency`]([[docsref:/core-concepts/accessibility#reduced-transparency]]). |
 | `$enable-validation-icons`        | `true` (default) or `false`        | Adds feedback icons within form elements for validation states (success, error), enhancing visual feedback for users. |
 | `$enable-visited-links`           | `true` (default) or `false`        | Applies distinct styling to visited links (`a:visited`), improving navigation by providing visual feedback about previously accessed content. |
 </CxTable>
@@ -73,44 +75,16 @@ All configuration options are organized in a single alphabetical list for easier
 
 In addition to the `$enable-*` variables above, the `$color-mode-type` variable controls how dark mode is implemented in your project:
 
-- **`data`** (default): Uses a data attribute (`data-cx-theme="dark"`) to control theme switching, allowing user preference toggles and manual control.
-- **`media-query`**: Relies solely on the `prefers-color-scheme` media query, automatically respecting the user's operating system settings.
+- **`media-query`** (default): Relies solely on the `prefers-color-scheme` media query, automatically respecting the user's operating system settings.
+- **`data`**: Uses a data attribute (`data-cx-theme="dark"`) to control theme switching, allowing user preference toggles and manual control.
 
 Choose `data` when you want to provide a theme toggle in your UI, or `media-query` when you want to exclusively follow the system preference.
 
 ## Default Configuration
 
-Below is the default configuration from `_settings.scss`. These settings are optimized for most projects, but you can override any of them based on your needs:
+Below is the default configuration from `scss/config/_settings.scss`. These settings are optimized for most projects, but you can override any of them based on your needs:
 
-```scss
-$color-mode-type:               data !default; // `data` or `media-query`
-
-$enable-accordion-sizes:        true !default;
-$enable-accordion-contexts:     true !default;
-$enable-button-pointers:        true !default;
-$enable-caret:                  true !default;
-$enable-background-gradients:    false !default;
-$enable-component-shadows:      false !default;
-$enable-container-classes:      true !default;
-$enable-cssgrid:                true !default;
-$enable-dark-mode:              true !default;
-$enable-deprecation-messages:   true !default;
-$enable-elevation-shadows:      true !default;
-$enable-exclude-strokes:        true !default;
-$enable-important-utilities:    true !default;
-$enable-negative-margins:       true !default;
-$enable-reduced-motion:         true !default;
-$enable-responsive-font-sizes:    true !default;
-$enable-fluid-font-sizes:                    true !default;
-$enable-rounded-borders:        true !default;
-$enable-smooth-scroll:          true !default;
-$enable-table-active-border:    true !default;
-$enable-table-border-radius:    true !default;
-$enable-table-font-tokens:      true !default;
-$enable-transitions:            true !default;
-$enable-validation-icons:       true !default;
-$enable-visited-links:          false !default;
-```
+<ScssDocs name="enable-options" file="scss/config/_settings.scss" />
 
 ## Performance Considerations
 

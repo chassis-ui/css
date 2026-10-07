@@ -1,0 +1,37 @@
+@use "sass:map";
+@use "../../config" as * with (
+  $enable-grid-system: false
+);
+@use "../../mixins/grid" as *;
+@use "../../utilities/grid" as grid-utilities;
+@use "../../utilities" as utilities;
+
+// `$enable-grid-system: false` in a file of its own: a module is configured
+// once per compilation.
+
+@include describe("$enable-grid-system: false") {
+  @include it("emits nothing from grid-layout") {
+    @include assert() {
+      @include output() {
+        @include grid-layout();
+      }
+
+      @include expect() {
+      }
+    }
+  }
+
+  @include it("leaves the grid utilities out of the utility map") {
+    @include assert-equal((), grid-utilities.$utilities);
+
+    @each $name in ("grid-column-counts", "grid-row-counts", "grid-auto-flow") {
+      @include assert-false(map.has-key(utilities.$utilities, $name));
+    }
+  }
+
+  @include it("keeps the gap and width utilities, which flex layouts use") {
+    @each $name in ("gap", "row-gap", "column-gap", "width-fraction") {
+      @include assert-true(map.has-key(utilities.$utilities, $name));
+    }
+  }
+}
