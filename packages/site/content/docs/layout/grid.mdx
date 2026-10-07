@@ -347,11 +347,15 @@ The gap of `.grid` differs from the gutter of `.row`: it is the gutter token of 
   --cx-grid-columns: ${sassVars('columns').xs};
 }
 
-${['sm', 'md', 'lg', 'xl', '2xl'].map((breakpoint) => `@media (width >= ${sassBreakpointSize(breakpoint)}) {
-  :root {
-    --cx-grid-gutter: ${sassVars('gutter')[breakpoint]};
-  }
-}`).join('\n\n')}`} />
+${['sm', 'md', 'lg', 'xl', '2xl'].map((breakpoint, index, breakpoints) => {
+  const previous = index ? breakpoints[index - 1] : 'xs'
+  const declarations = [['grid-gutter', 'gutter'], ['container-padding', 'margin'], ['grid-columns', 'columns']]
+    .filter(([, group]) => sassVars(group)[breakpoint] !== sassVars(group)[previous])
+    .map(([property, group]) => `    --cx-${property}: ${sassVars(group)[breakpoint]};`)
+  return declarations.length
+    ? `@media (width >= ${sassBreakpointSize(breakpoint)}) {\n  :root {\n${declarations.join('\n')}\n  }\n}`
+    : ''
+}).filter(Boolean).join('\n\n')}`} />
 
 ### Sass variables
 
@@ -384,8 +388,6 @@ Three maps, keyed by breakpoint, feed the `:root` custom properties. Override a 
 <ScssDocs name="container-tokens" file="scss/tokens/_grid.scss" />
 
 <ScssDocs name="gutter-tokens" file="scss/tokens/_grid.scss" />
-
-The margin and column tokens are placeholders until `@chassis-ui/tokens` ships them: they hold a literal value, and each will read the vendor token of the same name (`$cx-grid-margin-xsmall`, `$cx-grid-columns-xsmall`).
 
 <ScssDocs name="margin-tokens" file="scss/tokens/_grid.scss" />
 

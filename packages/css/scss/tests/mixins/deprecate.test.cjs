@@ -128,8 +128,11 @@ describe('$container-padding-x', () => {
   })
 
   it('leaves $container-paddings alone at its default', () => {
-    const { css, warnings } = compile(root('$enable-grid-classes: false'))
+    // Paddings of its own, so that the test does not depend on the margin tokens.
+    const paddings = '$container-paddings: (xs: 3rem, md: 4rem)'
+    const { css, warnings } = compile(root(`$enable-grid-classes: false, ${paddings}`))
     expect(warnings).toEqual([])
-    expect(css).toContain('--container-padding: 0.75rem;')
+    expect(css).toContain('--container-padding: 3rem;')
+    expect(css).toContain('--container-padding: 4rem;')
   })
 })
