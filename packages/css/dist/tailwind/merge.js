@@ -658,6 +658,7 @@ export const classGroups = {
     "fg-opacity-80",
     "fg-opacity-90",
     "fg-opacity-95",
+    "fg-opacity-a11y",
     "fg-opacity-slight",
     "fg-opacity-solid",
     "fg-opacity-subtle",

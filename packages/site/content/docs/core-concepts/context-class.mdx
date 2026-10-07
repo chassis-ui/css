@@ -144,6 +144,10 @@ The three style placeholders override specific semantic tokens to change the vis
 <ScssDocs name="smooth-style-placeholder-selector" file="scss/placeholders/_context.scss" />
 <ScssDocs name="outline-style-placeholder-selector" file="scss/placeholders/_context.scss" />
 
+Each placeholder computes `--cx-fg-subtle` from its own text color and `--cx-context-opacity-fg-subtle`, which the `context()` mixin sets per context. The contexts of `$a11y-contexts` take `--cx-opacity-fg-a11y`, the alpha of their `fg-subtle` tokens; the others take `--cx-opacity-fg-subtle`.
+
+<ScssDocs name="a11y-contexts" file="scss/config/_defaults.scss" />
+
 ### Component placeholder
 
 Components such as badges and notifications also extend the `%component` placeholder, which applies typography, color, border, and border-radius via the corresponding mixins:

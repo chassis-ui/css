@@ -1,3 +1,6 @@
+@use "sass:list";
+@use "../config" as *;
+
 //
 // Context Mixin
 //
@@ -49,6 +52,12 @@
   --context-dim-main: var(--#{$context}-dim-main);
   --context-dim-subtle: var(--#{$context}-dim-subtle);
   --context-dim-slight: var(--#{$context}-dim-slight);
+  // The alpha of the subtle text of the variants, which compute that color
+  @if list.index($a11y-contexts, $context) {
+    --context-opacity-fg-subtle: var(--opacity-fg-a11y);
+  } @else {
+    --context-opacity-fg-subtle: var(--opacity-fg-subtle);
+  }
   // --context-fg-idle: var(--#{$context}-fg-idle);
   // --context-fg-hover: var(--#{$context}-fg-hover);
   // --context-fg-press: var(--#{$context}-fg-press);
