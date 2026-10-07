@@ -59,8 +59,9 @@ $container-max-widths: (
 //
 // Grid
 //
-// The placement classes of `.grid` (`col-span-*`, `col-start-*`, `row-span-*`,
-// `row-start-*`) are generated up to `$grid-columns` and `$grid-rows`. The
+// The placement classes of `.grid` (`col-span-*`, `col-start-*`, `col-end-*`,
+// `row-span-*`, `row-start-*`, `row-end-*`) are generated up to `$grid-columns`
+// and `$grid-rows`, the end lines one past them. The
 // gutter and the column count of `.grid` per breakpoint, and the page margin
 // of `.container`, come from the maps below. See `scss/tokens/_grid.scss` for
 // the design tokens.
@@ -68,7 +69,7 @@ $container-max-widths: (
 // scss-docs-start grid-variables
 $grid-columns:            12 !default;
 $grid-rows:               6 !default;
-$grid-fill-min:           $fill-min !default; // minimum column width of `.grid-fill`, the fallback of `--grid-min`
+$grid-min:                12rem !default; // minimum column width of `.grid-fill`, the fallback of `--grid-min`; `@chassis-ui/tokens` has no token for it yet
 // scss-docs-end grid-variables
 
 // The gap of `.grid` and `.grid-fill` per breakpoint, from the gutter tokens.

@@ -282,10 +282,12 @@
     }
 
     // As many columns of at least `--grid-min` as fit, the same gap as `.grid`.
-    // Empty tracks collapse, so fewer items than fit share the whole row.
+    // Empty tracks collapse, so fewer items than fit share the whole row. In a
+    // grid narrower than the minimum, `min()` caps it at the grid's width, so
+    // the one column that fits does not overflow.
     .grid-fill {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(var(--grid-min, #{$grid-fill-min}), 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(var(--grid-min, #{$grid-min}), 100%), 1fr));
       gap: var(--grid-gap, var(--grid-gutter));
     }
     // scss-docs-end grid-layout

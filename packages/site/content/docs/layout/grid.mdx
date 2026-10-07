@@ -301,7 +301,7 @@ The columns are an `auto-fit` repeat: a track with no item in it collapses, so f
     <div>Item</div>
   </div>`} />
 
-`--cx-grid-min` sets another minimum width, on one grid or on an ancestor of several. `$grid-fill-min` changes the default.
+`--cx-grid-min` sets another minimum width, on one grid or on an ancestor of several. `$grid-min` changes the default.
 
 <Example class="cxd-example-grid" code={`<div class="grid-fill text-center" style="--cx-grid-min: 6rem;">
     <div>Item</div>
@@ -401,7 +401,7 @@ Custom properties configure one grid, or every grid inside an element, at runtim
 | --- | --- | --- |
 | `--cx-grid-columns` | `:root`, from `$grid-column-counts` | Number of tracks of `.grid`; set by `.contained` per container width |
 | `--cx-grid-gap` | `--cx-grid-gutter` | Gap of `.grid` and `.grid-fill`; one value, or `row-gap column-gap` |
-| `--cx-grid-min` | `12rem`, from `$grid-fill-min` | Minimum column width of `.grid-fill` |
+| `--cx-grid-min` | `12rem`, from `$grid-min` | Minimum column width of `.grid-fill` |
 | `--cx-grid-gutter` | `:root`, from `$grid-gutters` | Gutter of the current breakpoint; set by `.contained` per container width |
 | `--cx-container-padding` | `:root`, from `$container-paddings` | Page margin of `.container` at the current breakpoint |
 </CxTable>
@@ -413,7 +413,7 @@ Custom properties configure one grid, or every grid inside an element, at runtim
     <div class="col-span-2">.col-span-2</div>
   </div>`} />
 
-The span and start classes are generated up to `$grid-columns`. A grid with more columns than that needs an inline `grid-column` for the spans without a class. A span wider than the grid, such as `.col-span-8` in four columns, adds implicit tracks and overflows it: keep the spans within the count of the grid they are in.
+The span, start, and end classes are generated up to `$grid-columns`, the end lines one past it. A grid with more columns than that needs an inline `grid-column` for the spans without a class. A span wider than the grid, such as `.col-span-8` in four columns, adds implicit tracks and overflows it: keep the spans within the count of the grid they are in.
 
 ## Migrating
 
@@ -457,7 +457,7 @@ The Sass of the flexbox grid went with its classes: the mixins `make-row()`, `ma
 
 <ScssDocs name="grid-layout" file="scss/mixins/_grid.scss" />
 
-`.contained` and the `@` variants of the span and start classes are emitted when `$enable-container-queries` is `true`, the default. The same option governs the container variants of the utilities.
+`.contained` and the `@` variants of the span, start, and end classes are emitted when `$enable-container-queries` is `true`, the default. The same option governs the container variants of the utilities.
 
 <ScssDocs name="grid-contained" file="scss/mixins/_grid.scss" />
 
@@ -509,7 +509,7 @@ With the default tokens, `.contained` compiles to:
 
 ### Sass variables
 
-`$grid-columns` and `$grid-rows` set how many span and start classes are generated, and `$grid-fill-min` the minimum column width of `.grid-fill`.
+`$grid-columns` and `$grid-rows` set how many span, start, and end classes are generated, and `$grid-min` the minimum column width of `.grid-fill`, a value of its own until `@chassis-ui/tokens` has a token for it.
 
 <ScssDocs name="grid-variables" file="scss/config/_defaults.scss" />
 
@@ -542,10 +542,6 @@ Three maps, keyed by breakpoint, feed the `:root` custom properties. Override a 
 <ScssDocs name="margin-tokens" file="scss/tokens/_grid.scss" />
 
 <ScssDocs name="columns-tokens" file="scss/tokens/_grid.scss" />
-
-The minimum column width of `.grid-fill` is a placeholder until `@chassis-ui/tokens` has a token for it:
-
-<ScssDocs name="fill-tokens" file="scss/tokens/_grid.scss" />
 
 ### Sass mixins
 

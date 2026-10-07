@@ -4,7 +4,7 @@
 
 Fixes from a review of the grid system.
 
-- **`.grid-fill` wraps without a minimum set.** Its columns are at least `12rem` wide (`$grid-fill-min`, the fallback of `--cx-grid-min`), where the minimum of `0` put every child in one row, whatever their number. `--cx-grid-min` still sets the width of one grid
+- **`.grid-fill` wraps without a minimum set.** Its columns are at least `12rem` wide (`$grid-min`, the fallback of `--cx-grid-min`), where the minimum of `0` put every child in one row, whatever their number. `--cx-grid-min` still sets the width of one grid. In a grid narrower than the minimum, the one column that fits takes the width of the grid instead of overflowing it
 - **`place-items-*` has a variant per breakpoint and per container width** (`.md:place-items-center`, `.@md:place-items-center`), which its documentation described and the build did not generate
 - **The grid bundle** (`chassis-grid.css`) has `.contains-inline`, without which its `.contained` modifier and `@md:` classes had no query container to read, and the fraction widths (`.w-6/12`) with their variants. Its utility list named a `justify-items` key that does not exist; `map-get-multiple()` now warns about a key the map lacks
 - **`grid-root-vars()` and `grid-container-vars()` check their maps.** A map with no value for the first breakpoint (`$grid-gutters: (md: 1.5rem)`) stops the compile, where it left `--cx-grid-gutter` undefined below `md`; a key that is no breakpoint is reported with a warning and ignored, as before
