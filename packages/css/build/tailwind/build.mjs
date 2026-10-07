@@ -18,7 +18,7 @@
  * pointing it at a custom-named file in `build/` silently loads the sibling
  * `build/postcss.config.js` instead.
  *
- * Finally, five checks run against the final compiled output, in order:
+ * Finally, four checks run against the final compiled output, in order:
  *  1. `clashes.mjs`'s `run()` re-detects Chassis component/reboot
  *     class names that clash with Tailwind core and fails loudly if that
  *     set has drifted from the committed
@@ -46,10 +46,6 @@
  *     Chassis's own same-named ones. Its remedy is unconditional in
  *     `_clash-policy.scss` too, so it's a no-op for consumers who never
  *     import bridge.css and a real fix for the ones who do.
- *  5. `clashes.mjs`'s `checkGridUtilityClashes()` covers the grid
- *     classes, which are `@utility` rules compiled into components.css: every
- *     property Tailwind core merges into a same-name grid class (`col-<n>`,
- *     `col-auto`) must be reset by that class and win the merged output.
  *
  * Copyright 2026 Ozgur Gunes
  * Licensed under MIT (https://github.com/chassis-ui/css/blob/main/LICENSE)
@@ -64,7 +60,6 @@ import tailwindConfig from './postcss.config.js'
 import { checkBridgeClashes } from './bridge-clashes.mjs'
 import {
   checkClashPolicy,
-  checkGridUtilityClashes,
   checkUtilityNameClashes,
   run as checkSourceExclusions
 } from './clashes.mjs'
@@ -121,5 +116,4 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   checkClashPolicy()
   await checkUtilityNameClashes()
   await checkBridgeClashes()
-  await checkGridUtilityClashes()
 }

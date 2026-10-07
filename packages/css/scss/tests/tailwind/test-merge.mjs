@@ -38,35 +38,26 @@ describe('dist/tailwind/merge.js', () => {
     assert.equal(twMerge('m-sm', 'm-lg'), 'm-lg')
   })
 
-  test('grid classes resolve within their own group', () => {
-    // The grid classes are `@utility` rules too (scss/tailwind/_grid.scss),
-    // listed by `generate-tailwind-grid-merge-manifest`.
-    assert.equal(twMerge('col-6', 'col-4'), 'col-4')
-    assert.equal(twMerge('col', 'col-auto'), 'col-auto')
-    assert.equal(twMerge('md:col-6', 'md:col-4'), 'md:col-4')
-    assert.equal(twMerge('col-6', 'md:col-4'), 'col-6 md:col-4')
-    assert.equal(twMerge('row-cols-2', 'row-cols-4'), 'row-cols-4')
-    assert.equal(twMerge('offset-2', 'offset-4'), 'offset-4')
-    assert.equal(twMerge('g-md', 'g-lg'), 'g-lg')
-    assert.equal(twMerge('gx-0', 'gx-md'), 'gx-md')
-    assert.equal(twMerge('g-col-4', 'g-col-6'), 'g-col-6')
-    assert.equal(twMerge('g-start-2', 'g-start-4'), 'g-start-4')
-    assert.equal(twMerge('col-6', 'offset-2', 'g-col-4'), 'col-6 offset-2 g-col-4')
-  })
-
-  test('the deprecated g-col-*/g-start-* aliases share the groups of col-span-*/col-start-*', () => {
-    // The placement classes of `.grid` are Tailwind core utilities, which
-    // tailwind-merge groups on its own (`col-start-end`, `col-start`); the
-    // manifest adds the aliases to those groups instead of making its own.
-    assert.ok(classGroups['col-start-end'].includes('g-col-4'))
-    assert.ok(classGroups['col-start'].includes('g-start-2'))
-    assert.equal(classGroups['grid-g-col'], undefined)
-    assert.equal(classGroups['grid-g-start'], undefined)
-    assert.equal(twMerge('col-span-4', 'g-col-6'), 'g-col-6')
-    assert.equal(twMerge('g-col-4', 'col-span-6'), 'col-span-6')
-    assert.equal(twMerge('md:g-col-4', 'md:col-span-6'), 'md:col-span-6')
-    assert.equal(twMerge('col-start-2', 'g-start-4'), 'g-start-4')
-    assert.equal(twMerge('g-col-4', 'md:col-span-6'), 'g-col-4 md:col-span-6')
+  test('the placement classes of .grid resolve in the groups of tailwind-merge itself', () => {
+    // They are Tailwind core utilities, so the manifest lists none of them,
+    // and the groups of the removed flexbox grid and of its aliases are gone.
+    for (const group of [
+      'grid-col',
+      'grid-row-cols',
+      'grid-offset',
+      'grid-gutter',
+      'grid-gutter-x',
+      'grid-gutter-y',
+      'col-start-end',
+      'col-start'
+    ]) {
+      assert.equal(classGroups[group], undefined, `unexpected "${group}" group`)
+    }
+    assert.equal(twMerge('col-span-4', 'col-span-6'), 'col-span-6')
+    assert.equal(twMerge('md:col-span-4', 'md:col-span-6'), 'md:col-span-6')
+    assert.equal(twMerge('col-span-4', 'md:col-span-6'), 'col-span-4 md:col-span-6')
+    assert.equal(twMerge('col-start-2', 'col-start-auto'), 'col-start-auto')
+    assert.equal(twMerge('grid-cols-2', 'grid-cols-4'), 'grid-cols-4')
   })
 
   test("the width classes join tailwind-merge's own width group", () => {

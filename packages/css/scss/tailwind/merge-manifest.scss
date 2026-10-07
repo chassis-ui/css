@@ -5,13 +5,10 @@
 // consumers. Compiled in isolation by `build/tailwind/build-merge.mjs`,
 // which parses the `/* MERGE|<key>|<class> */` markers this emits into
 // `dist/tailwind/merge.js`, a tailwind-merge `classGroups` config. See
-// `generate-tailwind-merge-manifest` in `scss/tailwind/mixins/_utilities.scss`
-// and, for the grid classes, `generate-tailwind-grid-merge-manifest` in
-// `scss/tailwind/mixins/_grid.scss`.
+// `generate-tailwind-merge-manifest` in `scss/tailwind/mixins/_utilities.scss`.
 //
 
 @use "../utilities" as *;
 @use "./mixins" as *;
 
 @include generate-tailwind-merge-manifest($utilities);
-@include generate-tailwind-grid-merge-manifest();

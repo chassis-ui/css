@@ -672,14 +672,14 @@ describe('Collapse', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
           '<div id="accordion">',
-          '  <div class="row">',
-          '    <div class="col-large-6">',
+          '  <div class="grid">',
+          '    <div class="col-span-6">',
           '      <div class="item">',
           '        <a id="linkTrigger" data-cx-toggle="collapse" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne"></a>',
           '        <div id="collapseOne" class="collapse" role="tabpanel" data-cx-parent="#accordion"></div>',
           '      </div>',
           '    </div>',
-          '    <div class="col-large-6">',
+          '    <div class="col-span-6">',
           '      <div class="item">',
           '        <a id="linkTriggerTwo" data-cx-toggle="collapse" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"></a>',
           '        <div id="collapseTwo" class="collapse show" role="tabpanel" data-cx-parent="#accordion"></div>',

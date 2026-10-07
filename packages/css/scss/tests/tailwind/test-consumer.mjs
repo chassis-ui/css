@@ -56,8 +56,8 @@ before(async () => {
     'container',
     'lg:container',
     'outline',
-    'col-6',
-    'lg:col-6',
+    'col-span-6',
+    'lg:col-span-6',
     'w-100',
     'opacity-50',
     'fg-primary',
@@ -124,30 +124,19 @@ describe('a consumer with their own chassis-tokens and $breakpoints', () => {
     assert.doesNotMatch(built, /\.lg\\:container\s*\{[^}]*max-width: 72rem/s)
   })
 
-  test('lg:col-6 is generated at the brand breakpoint, and resets core col-6', () => {
-    // col-<n> is a Chassis @utility (scss/tailwind/_grid.scss), so Tailwind's
-    // own `lg:` variant places it at this brand's 72rem, in the
-    // `utilities.layout` sublayer. Core `col-<n>` (`grid-column: <n>`) merges
-    // into the same class; Chassis's sort pin puts its `grid-column: auto`
-    // reset last.
+  test('lg:col-span-6 is generated at the brand breakpoint, by Tailwind core', () => {
+    // The placement classes of `.grid` are Tailwind core's own utilities, so
+    // the `lg:` variant places `col-span-6` at this brand's 72rem.
     assert.match(
       built,
-      /@media \(width >= 72rem\)\s*\{[^@]*@layer layout\s*\{\s*\.lg\\:col-6\s*\{[^}]*width: 50%/s
+      /@media \(width >= 72rem\)\s*\{\s*\.lg\\:col-span-6\s*\{\s*grid-column: span 6 \/ span 6/s
     )
-    for (const selector of [String.raw`\.col-6`, String.raw`\.lg\\:col-6`]) {
-      const gridColumns = [
-        ...built.matchAll(new RegExp(String.raw`${selector}\s*\{([^}]*)\}`, 'g'))
-      ].flatMap((rule) => [...rule[1].matchAll(/grid-column:\s*([^;]+);/g)].map((d) => d[1]))
-      assert.equal(gridColumns.at(-1), 'auto', `${selector}: ${JSON.stringify(gridColumns)}`)
-    }
+    assert.match(built, /\.col-span-6\s*\{\s*grid-column: span 6 \/ span 6/)
   })
 
-  test('grid classes sit in the layout sublayer, below every utility', () => {
-    // A rule placed directly in `@layer utilities` beats the layer's own
-    // sublayers, so `w-100` overrides `lg:col-6` at any breakpoint, the way
-    // `@layer utilities` beats `@layer layout` in the regular build.
-    assert.match(built, /@layer layout\s*\{\s*\.col-6\s*\{[^}]*width: 50%/s)
-    assert.doesNotMatch(built, /@layer layout\s*\{[^}]*\.w-100/s)
+  test('utilities sit directly in the utilities layer, with no layout sublayer', () => {
+    // The `utilities.layout` sublayer held the flexbox grid, removed in 0.7.0.
+    assert.doesNotMatch(built, /@layer layout\s*\{\s*\.(lg\\:)?col-/)
     assert.match(built, /\.w-100\s*\{\s*width: 100%/)
   })
 

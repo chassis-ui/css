@@ -9,7 +9,7 @@ themselves are in [CONTRIBUTING.md](.github/CONTRIBUTING.md#releases).
 Projects depend on more than the JavaScript exports. All of these are public:
 
 - **Class names**: component, modifier, utility and helper classes, and their prefixed forms
-  (`md:d-none`, `lg:col-6`, `dark:d-none`, `print:d-none`).
+  (`md:d-none`, `lg:col-span-6`, `dark:d-none`, `print:d-none`).
 - **Custom properties**: the `--cx-*` properties that `:root` and the components declare, and the
   ones a component reads so it can be restyled (`--cx-nav-link-gap`). The `cx-` prefix itself is
   an option of the PostCSS preset.

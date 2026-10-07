@@ -1,7 +1,9 @@
 ---
 title: Grid system
 description: Twelve-column CSS Grid with gutters, column counts, and page margins from the design tokens at six breakpoints, plus span and placement classes.
-aliases: "[[docsref:/layout/css-grid]]"
+aliases:
+  - "[[docsref:/layout/css-grid]]"
+  - "[[docsref:/layout/flexbox-grid]]"
 toc: true
 css_layer: layout
 css_media: viewport
@@ -27,7 +29,7 @@ The Chassis grid system arranges content with CSS Grid. `.grid` creates a twelve
 Three items of four tracks each fill the twelve columns. The parent `.container` centers the grid and adds the page margin.
 
 <Callout type="info">
-The flexbox grid (`.row`, `.col-*`) is deprecated as of v0.6.0 and removed in v0.7.0. See [Flexbox grid]([[docsref:/layout/flexbox-grid]]) for the classes that still work and [Migrating](#migrating) for their replacements.
+The flexbox grid (`.row`, `.col-*`) was deprecated in v0.6.0 and removed in v0.7.0. See [Migrating](#migrating) for the replacement of each class.
 </Callout>
 
 ## How it works
@@ -304,7 +306,7 @@ The span and start classes are generated up to `$grid-columns`. A grid with more
 
 ## Migrating
 
-Each class of the deprecated [flexbox grid]([[docsref:/layout/flexbox-grid]]) has a replacement:
+The flexbox grid was removed in v0.7.0. Each of its classes has a replacement:
 
 <CxTable>
 | Flexbox grid | CSS Grid | Notes |
@@ -323,11 +325,13 @@ Each class of the deprecated [flexbox grid]([[docsref:/layout/flexbox-grid]]) ha
 | `.align-items-*`, `.align-self-*`, `.order-*` | Unchanged | |
 | `.col-{n}` outside a `.row` | `.w-{n}/12` | A width, as on skeletons. See [Sizing]([[docsref:/utilities/sizing#fractions]]) |
 | `.col`, `.col-auto` outside a `.row` | `.flex-fill`, `.w-auto` | |
-| `.g-col-{n}`, `.g-start-{n}` | `.col-span-{n}`, `.col-start-{n}` | The old names still work until v0.7.0 |
+| `.g-col-{n}`, `.g-start-{n}` | `.col-span-{n}`, `.col-start-{n}` | |
 | `.grid-cols-fill` | `.col-span-full` | |
 </CxTable>
 
-The gap of `.grid` differs from the gutter of `.row`: it is the gutter token of the breakpoint, not 1.5rem at every width, and it applies between rows too. Set `$enable-grid-classes: false` to compile without the flexbox grid.
+The gap of `.grid` differs from the gutter of `.row`: it is the gutter token of the breakpoint, not 1.5rem at every width, and it applies between rows too.
+
+The Sass of the flexbox grid went with its classes: the mixins `make-row()`, `make-col-ready()`, `make-col()`, `make-col-auto()`, `make-col-offset()`, `row-cols()`, and `make-grid-columns()`, the variables `$grid-gutter-x`, `$grid-gutter-y`, `$grid-row-columns`, `$gutters`, and `$container-padding-x`, and the option `$enable-grid-classes`. A `@use ... with (...)` that configures one of them no longer compiles.
 
 ## CSS
 
@@ -359,7 +363,7 @@ ${['sm', 'md', 'lg', 'xl', '2xl'].map((breakpoint, index, breakpoints) => {
 
 ### Sass variables
 
-`$grid-columns` and `$grid-rows` set how many span and start classes are generated. The other three variables belong to the deprecated flexbox grid.
+`$grid-columns` and `$grid-rows` set how many span and start classes are generated.
 
 <ScssDocs name="grid-variables" file="scss/config/_defaults.scss" />
 

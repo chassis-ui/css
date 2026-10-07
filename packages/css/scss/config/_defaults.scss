@@ -7,9 +7,7 @@
 //
 
 @use "sass:map";
-@use "sass:meta";
 @use "sass:string";
-@use "./settings" as *;
 @use "./vendor" as *;
 @use "../tokens" as *;
 @use "../functions/color" as *;
@@ -66,17 +64,10 @@ $container-max-widths: (
 // gutter and the column count of `.grid` per breakpoint, and the page margin
 // of `.container`, come from the maps below. See `scss/tokens/_grid.scss` for
 // the design tokens.
-//
-// `$grid-gutter-x`, `$grid-gutter-y` and `$grid-row-columns` belong to the
-// flexbox grid (`.row`, `.col-*`, `.g-*`, `.row-cols-*`), deprecated as of
-// 0.6.0 and removed in 0.7.0.
 
 // scss-docs-start grid-variables
 $grid-columns:            12 !default;
 $grid-rows:               6 !default;
-$grid-gutter-x:           $space-xlarge !default; // Deprecated: the flexbox grid's gutter
-$grid-gutter-y:           0 !default; // Deprecated: the flexbox grid's vertical gutter
-$grid-row-columns:        6 !default; // Deprecated: the flexbox grid's `.row-cols-*` count
 // scss-docs-end grid-variables
 
 // The gap of `.grid` and `.grid-fill` per breakpoint, from the gutter tokens.
@@ -119,24 +110,6 @@ $container-paddings: (
   2xl:          $margin-2xlarge
 ) !default;
 // scss-docs-end container-paddings
-
-// Deprecated as of 0.6.0, removed in 0.7.0: `$container-padding-x` is a
-// gutter whose half was the padding of `.container`. A project that sets it
-// keeps that padding at every breakpoint, through `$container-paddings`.
-$container-padding-x: $grid-gutter-x !default;
-
-@if $container-padding-x != $grid-gutter-x {
-  $-container-padding: calc(#{$container-padding-x} * .5);
-  @if meta.type-of($container-padding-x) == "number" {
-    $-container-padding: $container-padding-x * .5;
-  }
-  @each $key, $_ in $container-paddings {
-    $container-paddings: map.set($container-paddings, $key, $-container-padding);
-  }
-  @if $enable-deprecation-messages {
-    @warn "`$container-padding-x` has been deprecated as of 0.6.0. It will be removed entirely in 0.7.0. Set `$container-paddings`, the padding of `.container` per breakpoint, instead.";
-  }
-}
 
 
 //
@@ -1172,7 +1145,7 @@ $card-footer-fg-color:              inherit !default;
 $card-footer-bg-color:              inherit !default;
 
 $card-height:                       auto !default;
-$card-group-margin:                 $grid-gutter-x * .5 !default;
+$card-group-margin:                 calc(var(--grid-gutter) * .5) !default;
 // scss-docs-end card-variables
 
 
@@ -1252,7 +1225,7 @@ $toast-border-width:                var(--border-width-md) !default;
 $toast-border-color:                var(--border-subtle) !default;
 $toast-border-radius:               var(--border-radius-md) !default;
 $toast-box-shadow:                  var(--box-shadow-md) !default;
-$toast-spacing:                     $container-padding-x !default;
+$toast-spacing:                     $space-xlarge !default;
 
 $toast-header-fg-color:             var(--fg-main) !default;
 $toast-header-bg-color:             var(--dim-slight) !default;
