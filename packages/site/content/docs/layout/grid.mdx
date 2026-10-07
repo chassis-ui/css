@@ -339,7 +339,7 @@ A `.grid` inside a grid item is a grid of its own, with twelve tracks across the
     <div class="col-span-4">.col-span-4</div>
   </div>`} />
 
-The subgrid takes the column gap of the parent along with its tracks. Its rows stay its own: [`.grid-rows-subgrid`]([[docsref:/utilities/grid#row-counts]]) adopts the rows of the parent too, on an item that spans several. `.grid-cols-subgrid` is a utility with the variants of the column counts, so a nested grid can become a subgrid from a breakpoint (`.md:grid-cols-subgrid`).
+The subgrid has the tracks of the parent, and a gap of its own as every `.grid` does: the gutter or an inherited `--cx-grid-gap`, the same as the gap of the parent. A gap utility on the parent does not reach the subgrid, whose items then stop aligning to the outer columns: repeat the utility on the subgrid. Its rows stay its own: [`.grid-rows-subgrid`]([[docsref:/utilities/grid#row-counts]]) adopts the rows of the parent too, on an item that spans several. `.grid-cols-subgrid` is a utility with the variants of the column counts, so a nested grid can become a subgrid from a breakpoint (`.md:grid-cols-subgrid`).
 
 ## Common layouts
 
@@ -394,7 +394,7 @@ A grid sizes its tracks from the container, not from the content. For items as w
 
 ## Customizing
 
-Custom properties configure one grid, or every grid inside an element, at runtime:
+Custom properties configure every grid inside an element at runtime. Each is inherited, so one set on a `.grid` applies to the grids nested in it too — see [Nesting](#nesting). For the column count of one grid, use [`.grid-cols-{n}`](#column-counts) or a `grid-template-columns` declaration.
 
 <CxTable>
 | Property | Default | Description |
