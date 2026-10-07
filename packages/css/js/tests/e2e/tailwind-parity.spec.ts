@@ -42,21 +42,14 @@ test.beforeAll(async () => {
 type Curated = { testid: string; properties: string[] }
 
 // Buttons in all styles, card, navbar at lg (the toggler's visibility flips
-// at the lg breakpoint), table, grid row/col (flex-based) and CSS grid-cols-2
-// (the Phase 5 !important remedy -- the highest-value regression check
-// here), a container-query stack, and typical utilities spanning a
-// responsive variant and two more Phase 5 remedies. The grid cases check the
-// Tailwind entry's on-demand grid utilities (scss/tailwind/_grid.scss)
-// against dist/css's per-breakpoint classes: responsive columns, the
-// same-breakpoint precedence among grid classes, utilities overriding grid
-// classes at their own and at other breakpoints, and core col-<n>'s
-// grid-column leak into a .grid parent. The .grid cases check Tailwind
-// core's placement utilities (col-span-*, col-start-*, row-span-*,
-// grid-cols-*) against dist/css's per-breakpoint classes, the deprecated
-// g-col-* alias mixed with the class it aliases, a start line reset with
-// col-start-auto and row-start-auto, the responsive gutter of
-// .grid at each viewport, a gap utility over it, the fraction widths, and
-// a fraction reset with md:w-100 and lg:w-auto.
+// at the lg breakpoint), table, CSS grid-cols-2 (an `equal` clash since
+// 0.6.0: one merged rule, no remedy), a container-query stack, and typical
+// utilities spanning a responsive variant and two Phase 5 remedies. The
+// .grid cases check Tailwind core's placement utilities (col-span-*,
+// col-start-*, row-span-*, grid-cols-*) against dist/css's per-breakpoint
+// classes, a start line reset with col-start-auto and row-start-auto, the
+// responsive gutter of .grid at each viewport, a gap utility over it, the
+// fraction widths, and a fraction reset with md:w-100 and lg:w-auto.
 //
 // dark:fg-primary is deliberately NOT here: Chassis's own utility generator
 // only flags a handful of utilities (display) with `dark: true`, so
@@ -73,34 +66,12 @@ const CURATED: Curated[] = [
   { testid: 'card', properties: ['backgroundColor', 'borderRadius', 'boxShadow'] },
   { testid: 'navbar-toggler', properties: ['display'] },
   { testid: 'table', properties: ['borderCollapse'] },
-  { testid: 'col-6', properties: ['width'] },
-  { testid: 'col-responsive', properties: ['width', 'flexGrow', 'flexBasis'] },
-  { testid: 'col-then-fluid', properties: ['width', 'flexGrow', 'flexBasis'] },
-  { testid: 'col-auto', properties: ['flexGrow', 'flexBasis'] },
-  { testid: 'row-cols-col', properties: ['width', 'flexGrow'] },
-  { testid: 'row-cols-col-6', properties: ['width', 'flexGrow'] },
-  { testid: 'row-cols-col-wrapped', properties: ['width', 'flexGrow'] },
-  { testid: 'row-cols-responsive', properties: ['width'] },
-  { testid: 'offset-responsive', properties: ['width', 'marginLeft'] },
-  { testid: 'offset-vs-margin-utility', properties: ['marginLeft'] },
-  { testid: 'col-vs-width-utility', properties: ['width'] },
-  { testid: 'col-vs-flex-utility', properties: ['flexGrow'] },
-  { testid: 'width-utility-vs-responsive-col', properties: ['width', 'flexGrow'] },
-  { testid: 'margin-utility-vs-responsive-offset', properties: ['marginLeft'] },
-  { testid: 'flex-utility-vs-responsive-col', properties: ['flexGrow'] },
-  { testid: 'auto-margin-utility-vs-responsive-offset', properties: ['marginLeft', 'marginRight'] },
-  { testid: 'gutter-0', properties: ['paddingLeft', 'marginTop'] },
-  { testid: 'gutter-responsive', properties: ['paddingLeft', 'marginTop'] },
-  { testid: 'g-col-responsive', properties: ['gridColumnStart', 'gridColumnEnd'] },
-  { testid: 'g-col-start', properties: ['gridColumnStart', 'gridColumnEnd'] },
-  { testid: 'col-in-grid', properties: ['gridColumnStart', 'gridColumnEnd', 'width'] },
   { testid: 'grid-cols-2', properties: ['gridTemplateColumns'] },
   { testid: 'grid-cols-12', properties: ['gridTemplateColumns'] },
   { testid: 'col-span-4', properties: ['gridColumnStart', 'gridColumnEnd'] },
   { testid: 'col-span-responsive', properties: ['gridColumnStart', 'gridColumnEnd'] },
   { testid: 'col-start-3', properties: ['gridColumnStart', 'gridColumnEnd'] },
   { testid: 'row-span-2', properties: ['gridRowStart', 'gridRowEnd'] },
-  { testid: 'col-span-then-alias', properties: ['gridColumnStart', 'gridColumnEnd'] },
   { testid: 'start-reset', properties: ['gridColumnStart', 'gridColumnEnd', 'gridRowStart'] },
   { testid: 'grid-gutter', properties: ['columnGap', 'rowGap'] },
   { testid: 'grid-gap-md', properties: ['columnGap', 'rowGap'] },
@@ -229,20 +200,6 @@ test('dark:d-none matches via prefers-color-scheme, the one dark: mechanism both
 
   expect(tailwind['dark-d-none']).toEqual(chassis['dark-d-none'])
   expect(chassis['dark-d-none'].display).toEqual('none')
-})
-
-// The one known grid difference, documented in the Tailwind guide. Tailwind
-// orders `gx-*`/`gy-*` after `g-*`, so the axis class wins whatever the keys;
-// dist/css orders gutters by `$gutters` key, so `g-md` beats the earlier
-// `gx-0`. A change here means the guide needs updating too.
-test('g-* with gx-* on one element: the axis class wins in the Tailwind build only', async ({ page }) => {
-  const gutter: Curated[] = [{ testid: 'gutter-axis-after-both', properties: ['paddingLeft', 'marginTop'] }]
-  const chassis = await captureComputedStyles(page, 'chassis', gutter)
-  const tailwind = await captureComputedStyles(page, 'tailwind', gutter)
-
-  expect(tailwind['gutter-axis-after-both'].paddingLeft).toBe('0px')
-  expect(chassis['gutter-axis-after-both'].paddingLeft).not.toBe('0px')
-  expect(tailwind['gutter-axis-after-both'].marginTop).toBe(chassis['gutter-axis-after-both'].marginTop)
 })
 
 // Tailwind-only: Chassis's own CSS has no attribute-aware dark:/light:

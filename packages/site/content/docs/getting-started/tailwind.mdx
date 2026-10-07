@@ -281,24 +281,13 @@ Tailwind core has placement utilities the regular build does not generate, such 
 
 Tailwind's scanner can't see class names built at runtime (`` `col-span-${n}` ``). Safelist them, for example with `@source inline("{,md:}col-span-{1..12}");`.
 
-### Deprecated classes
+### Removed classes
 
-The classes of the deprecated [flexbox grid]([[docsref:/layout/flexbox-grid]]) (`.col-6`, `.md:col-4`, `.lg:offset-2`, `.row-cols-3`, `.g-md`) and the old names of the placement classes (`.g-col-4`, `.g-start-2`) are Tailwind utilities in the Tailwind entry until v0.7.0, generated on demand like any other. `.row` stays plain CSS in the `layout` layer.
+The flexbox grid (`.row`, `.col-6`, `.md:col-4`, `.lg:offset-2`, `.row-cols-3`, `.g-md`) and the old names of the placement classes (`.g-col-4`, `.g-start-2`) were removed in v0.7.0, with the `layout` sublayer of `utilities` that held them. See [Migrating]([[docsref:/layout/grid#migrating]]) for the replacement of each class.
 
-Utilities override the flexbox grid classes at every breakpoint, the same as in the regular build. Tailwind generates every utility inside its `utilities` layer, so the Tailwind entry places the flexbox grid classes in a `layout` sublayer of that layer. A rule placed directly in a layer always beats the layer's own sublayers, whatever the media query around it.
-
-```html
-<div class="row">
-  <div class="w-100 md:col-6">Full width at every breakpoint</div>
-</div>
-```
-
-Two results differ from the regular build:
-
-- **Gutters.** With `.g-*` and `.gx-*` or `.gy-*` on the same element at the same breakpoint, the axis-specific class wins: `class="g-md gx-0"` has no horizontal gutter. In the regular build the class with the later `$gutters` key wins instead.
-- **Components.** The sublayer sits inside `utilities`, so flexbox grid classes rank above the `content`, `components`, and `helpers` layers; the regular build's `layout` layer ranks below them. A flexbox grid class on a component's own element overrides the `flex`, `width`, or `margin-inline-start` that component sets.
-
-`.g-col-*` and `.g-start-*` carry the declarations of `col-span-*` and `col-start-*` and sort with them in the `utilities` layer, outside the sublayer.
+<Callout type="warning">
+`col-{n}` and `col-auto` are Tailwind core's own utilities again: `col-6` sets `grid-column: 6`, a column line of a grid, not half the width of a row. Markup that still carries a flexbox grid class compiles without an error in the Tailwind entry and renders something else; search for the old names before upgrading.
+</Callout>
 
 ## Variants
 
@@ -398,7 +387,7 @@ import { Dialog, Tooltip } from '@chassis-ui/css'
 
 [tailwind-merge](https://github.com/dcastil/tailwind-merge) resolves conflicting classes when you build a class string at runtime, for example when a component accepts a `className` prop that overrides a default. It needs to know which classes belong to the same conflict group. Tailwind's own utilities are built in; a project's custom `@utility` rules, Chassis's included, aren't.
 
-`@chassis-ui/css/tailwind/merge.js` exports a `classGroups` config generated from the same utility map the Tailwind entry uses. It covers every Chassis utility name and the [deprecated grid classes](#deprecated-classes); the old `g-col-*` and `g-start-*` names join tailwind-merge's own groups for `col-span-*` and `col-start-*`, and the width utilities its group for `w-*`, so `.w-6/12` resolves against `.w-100` and `.w-auto`:
+`@chassis-ui/css/tailwind/merge.js` exports a `classGroups` config generated from the same utility map the Tailwind entry uses. It covers every Chassis utility name; the placement classes of `.grid` are Tailwind's own, which tailwind-merge already knows. The width utilities join its group for `w-*`, so `.w-6/12` resolves against `.w-100` and `.w-auto`:
 
 ```js
 import { extendTailwindMerge } from 'tailwind-merge'
@@ -408,7 +397,7 @@ const twMerge = extendTailwindMerge({ extend: { classGroups } })
 
 twMerge('fg-primary', 'fg-danger') // -> 'fg-danger'
 twMerge('m-sm', 'm-lg')            // -> 'm-lg'
-twMerge('col-span-6', 'g-col-4')   // -> 'g-col-4'
+twMerge('col-span-6', 'col-span-4') // -> 'col-span-4'
 twMerge('w-6/12', 'w-auto')        // -> 'w-auto'
 ```
 

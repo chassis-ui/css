@@ -43,10 +43,6 @@ export function sassVars(str: string): Record<string, string | undefined> {
         md: variables.containerMedium,
         sm: variables.containerSmall
       }
-    case 'grid':
-      return {
-        gutter: variables.gridGutter
-      }
     case 'gutter':
       return {
         xs: variables.gutterXsmall,

@@ -1,7 +1,5 @@
 @use "sass:map";
-@use "../../config" as * with (
-  $enable-grid-classes: false
-);
+@use "../../config" as *;
 @use "../../mixins/grid" as *;
 @use "../../mixins/utilities-api" as *;
 @use "../../utilities/sizing";
@@ -80,7 +78,7 @@ $bp: (xs: 0, md: 768px, lg: 992px);
 // ─── make-container ──────────────────────────────────────────────────────────
 
 @include describe("make-container") {
-  @include it("pads with --container-padding, through the deprecated --gutter-x") {
+  @include it("pads with --container-padding") {
     @include assert() {
       @include output() {
         .container {
@@ -90,31 +88,8 @@ $bp: (xs: 0, md: 768px, lg: 992px);
 
       @include expect() {
         .container {
-          --gutter-x: calc(var(--container-padding) * 2);
-          --gutter-y: 0;
           width: 100%;
-          padding-inline: calc(var(--gutter-x) * .5);
-          margin-inline-start: auto;
-          margin-inline-end: auto;
-        }
-      }
-    }
-  }
-
-  @include it("keeps the deprecated $gutter parameter working") {
-    @include assert() {
-      @include output() {
-        .container {
-          @include make-container(2rem);
-        }
-      }
-
-      @include expect() {
-        .container {
-          --gutter-x: 2rem;
-          --gutter-y: 0;
-          width: 100%;
-          padding-inline: calc(var(--gutter-x) * .5);
+          padding-inline: var(--container-padding);
           margin-inline-start: auto;
           margin-inline-end: auto;
         }
@@ -162,20 +137,18 @@ $bp: (xs: 0, md: 768px, lg: 992px);
 // ─── make-cssgrid ────────────────────────────────────────────────────────────
 
 @include describe("make-cssgrid") {
-  @include it("emits the placement classes per breakpoint, with the start resets, and g-col and g-start as second selectors") {
+  @include it("emits the placement classes per breakpoint, with the start resets") {
     @include assert() {
       @include output() {
         @include make-cssgrid($columns: 2, $rows: 1, $breakpoints: (xs: 0, md: 768px));
       }
 
       @include expect() {
-        .col-span-1,
-        .g-col-1 {
+        .col-span-1 {
           grid-column: #{"span 1 / span 1"};
         }
 
-        .col-span-2,
-        .g-col-2 {
+        .col-span-2 {
           grid-column: #{"span 2 / span 2"};
         }
 
@@ -183,8 +156,7 @@ $bp: (xs: 0, md: 768px, lg: 992px);
           grid-column: #{"1 / -1"};
         }
 
-        .col-start-1,
-        .g-start-1 {
+        .col-start-1 {
           grid-column-start: 1;
         }
 
@@ -217,13 +189,11 @@ $bp: (xs: 0, md: 768px, lg: 992px);
         }
 
         @media (width >= 768px) {
-          .md\:col-span-1,
-          .md\:g-col-1 {
+          .md\:col-span-1 {
             grid-column: #{"span 1 / span 1"};
           }
 
-          .md\:col-span-2,
-          .md\:g-col-2 {
+          .md\:col-span-2 {
             grid-column: #{"span 2 / span 2"};
           }
 
@@ -231,8 +201,7 @@ $bp: (xs: 0, md: 768px, lg: 992px);
             grid-column: #{"1 / -1"};
           }
 
-          .md\:col-start-1,
-          .md\:g-start-1 {
+          .md\:col-start-1 {
             grid-column-start: 1;
           }
 

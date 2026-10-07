@@ -92,7 +92,7 @@ The inline padding of a container is the page margin: `--cx-container-padding`, 
 ```
 
 <Callout type="warning">
-Until v0.6.0 the padding was half of `--cx-gutter-x`, the gutter of the flexbox grid. A `--cx-gutter-x` set on a container still changes its padding, and stops doing so in v0.7.0: set `--cx-container-padding` to the padding itself, half of the old value.
+Until v0.6.0 the padding was half of `--cx-gutter-x`, the gutter of the flexbox grid. As of v0.7.0 a `--cx-gutter-x` set on a container no longer changes its padding: set `--cx-container-padding` to the padding itself, half of the old value.
 </Callout>
 
 ## CSS
@@ -111,7 +111,7 @@ Override `$container-max-widths` before importing Chassis CSS to change the `max
 
 <ScssDocs name="container-paddings" file="scss/config/_defaults.scss" />
 
-`$container-padding-x` is deprecated. A project that sets it keeps half of it as the padding at every breakpoint, and the build warns.
+`$container-padding-x` was removed in v0.7.0. Set `$container-paddings` instead, with half of the old value at every breakpoint.
 
 ### Design tokens
 

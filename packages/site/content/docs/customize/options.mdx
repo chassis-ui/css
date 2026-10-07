@@ -53,7 +53,6 @@ All configuration options are organized in a single alphabetical list for easier
 | `$enable-deprecation-messages`    | `true` (default) or `false`        | Shows console warnings when using deprecated features scheduled for removal in future versions. Disable in production for cleaner console output. |
 | `$enable-elevation-shadows`       | `true` (default) or `false`        | Generates elevation-specific shadow utilities that create consistent layering effects based on design tokens. |
 | `$enable-exclude-strokes`         | `true` (default), `false`, or list | Controls border width exclusion from padding for components. `true` applies to all components, `false` never applies, or provide a list like `button, badge, form-control, notification` for specific components. |
-| `$enable-grid-classes`            | `true` (default) or `false`        | **Deprecated.** Generates the [flexbox grid]([[docsref:/layout/flexbox-grid]]) (`.row`, `.md:col-1`, `.g-md`), which is removed in v0.7.0. Set it to `false` to drop the classes, and the deprecation notice of the build, now. |
 | `$enable-important-utilities`     | `true` (default) or `false`        | Adds `!important` to utility classes to ensure they override component styles. Disable only if you have a carefully controlled CSS specificity strategy. |
 | `$enable-negative-margins`        | `true` (default) or `false`        | Generates [negative margin utilities]([[docsref:/utilities/margin#negative-margins]]) like `.-m-md`, `-mt-sm`. Useful for precise layout adjustments. |
 | `$enable-reduced-motion`          | `true` (default) or `false`        | Respects the [`prefers-reduced-motion` media query]([[docsref:/core-concepts/accessibility#reduced-motion]]), reducing or eliminating animations for users who prefer minimal motion. Critical for vestibular disorders. |
@@ -97,7 +96,6 @@ $enable-dark-mode:              true !default;
 $enable-deprecation-messages:   true !default;
 $enable-elevation-shadows:      true !default;
 $enable-exclude-strokes:        true !default;
-$enable-grid-classes:           true !default;
 $enable-important-utilities:    true !default;
 $enable-negative-margins:       true !default;
 $enable-reduced-motion:         true !default;
@@ -121,7 +119,6 @@ Strategic configuration can significantly improve both CSS bundle size and runti
 
 For smaller CSS files, consider disabling:
 
-- **Layout Systems**: Set `$enable-grid-classes: false` once your markup no longer uses the deprecated flexbox grid (`.row`, `.col-*`)
 - **Visual Enhancements**: Disable `$enable-background-gradients` and `$enable-component-shadows` for a more minimal style
 - **Form Features**: Turn off `$enable-validation-icons` if you implement custom validation UI
 - **Transitions**: Set `$enable-transitions: false` for a more minimal build

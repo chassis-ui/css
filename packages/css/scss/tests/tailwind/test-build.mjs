@@ -296,12 +296,6 @@ describe('tailwind fixture build', () => {
       /visibility: collapse/,
       '"collapse" must not pick up Tailwind\'s core visibility utility'
     )
-    const col6 = winningValues(findAllRules(built, 'col-6'))
-    assert.equal(
-      col6.get('flex'),
-      '0 0 auto',
-      '"col-6" must stay Chassis\'s flex grid, not Tailwind\'s CSS grid-column'
-    )
     const containerRules = findAllRules(built, 'container').join(' ')
     for (const tailwindDefault of ['16rem', '20rem', '24rem', '28rem', '56rem', '72rem']) {
       assert.ok(
@@ -350,27 +344,18 @@ describe('tailwind fixture build', () => {
     assert.ok(gridCols.every((body) => !/!important/.test(body)))
   })
 
-  test('the deprecated g-col-*/g-start-* aliases carry the declaration of the class they alias, in the utilities layer itself', () => {
+  test('the flexbox grid and the g-col aliases are gone: the entry emits no grid @utility', () => {
     const componentsCss = readFileSync(path.join(root, 'dist/tailwind/components.css'), 'utf8')
-    const alias = componentsCss.match(/@utility g-col-4 \{[^}]*\}/)?.[0]
-    assert.ok(alias, 'expected @utility g-col-4 in components.css')
-    assert.doesNotMatch(
-      alias,
-      /@layer|--tw-sort/,
-      'the alias sits in no sublayer and carries no sort pin'
-    )
-    assert.equal(
-      winningValues(findExactRule(built, 'g-col-4')).get('grid-column'),
-      'span 4 / span 4'
-    )
-    assert.equal(winningValues(findExactRule(built, 'g-start-2')).get('grid-column-start'), '2')
-    assertWrapped(built, String.raw`@media \(width >= 48rem\)`, String.raw`\.md\\:g-col-6 \{`)
-    // Same sort as the class it aliases: `g-col-4` sits next to `col-span-4`,
-    // before `col-start-3` and `g-start-2` (`grid-column` < `grid-column-start`).
-    const position = (name) => built.indexOf(`.${name} {`)
-    assert.ok(position('g-col-4') > 0 && position('col-span-4') > 0)
-    assert.ok(position('g-col-4') < position('col-start-3'))
-    assert.ok(position('col-span-4') < position('g-start-2'))
+    assert.doesNotMatch(componentsCss, /@utility /, 'components.css holds no @utility rule')
+    assert.doesNotMatch(componentsCss, /\.row\s*\{|--tw-sort|--cx-gutter-[xy]/)
+    // `col-6` is Tailwind core's own utility again, `grid-column: 6`, with
+    // nothing of the flexbox column merged into it.
+    const col6 = winningValues(findExactRule(built, 'col-6'))
+    assert.equal(col6.get('grid-column'), '6')
+    assert.equal(col6.get('flex'), undefined)
+    assert.equal(col6.get('width'), undefined)
+    // `g-col-4` is no class of either: Tailwind generates nothing for it.
+    assert.equal(findAllRules(built, 'g-col-4').length, 0)
   })
 
   test('a fraction width utility is generated under its escaped selector in both forms', () => {

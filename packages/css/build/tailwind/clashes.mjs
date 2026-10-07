@@ -223,8 +223,8 @@ async function detectSourceExclusions() {
   const candidateNames = [
     ...new Set([...extractClassNames(componentsCss), ...extractClassNames(rebootCss)])
   ].sort()
-  // components.css holds `@utility` rules too: the grid classes
-  // (scss/tailwind/_grid.scss).
+  // A component partial may emit `@utility` rules of its own, so the names
+  // in components.css count too.
   const chassisUtilityNames = new Set([
     ...extractUtilityNames(utilitiesCss),
     ...extractUtilityNames(componentsCss)
@@ -574,91 +574,6 @@ export async function checkUtilityNameClashes() {
 }
 
 // ---------------------------------------------------------------------------
-// Grid utility clashes: the grid classes are `@utility` rules too
-// (scss/tailwind/_grid.scss, compiled into components.css), and Tailwind core
-// generates some of the same names (`col-<n>`, `col-auto`). Their remedy isn't
-// `!important`: the grid declarations sit in the `utilities.layout` sublayer,
-// and the mixin re-declares each property core sets, directly in
-// `@layer utilities` and sorted after core's declaration. So there is no
-// policy file to drift from. This checks the remedy itself: every property
-// core merges into a grid class must be one the class re-declares, and the
-// class's value must be the last one in the merged output.
-// ---------------------------------------------------------------------------
-
-// Like `extractOrderedDecls`, but collects every top-level `.name { ... }`
-// rule instead of the first: a sort-pinned Chassis declaration lands in a rule
-// of its own, after core's.
-function extractAllOrderedDecls(css, candidate) {
-  const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const openRe = new RegExp(`(?<=^|[{}])\\s*\\.${escaped}\\s*\\{`, 'g')
-  const decls = []
-  let m
-  while ((m = openRe.exec(css))) {
-    let depth = 1
-    let i = m.index + m[0].length
-    const start = i
-    while (depth > 0 && i < css.length) {
-      if (css[i] === '{') depth++
-      else if (css[i] === '}') depth--
-      i++
-    }
-    decls.push(...parseDecls(css.slice(start, i - 1).replace(/[^{;]*\{[^{}]*\}/g, '')))
-    openRe.lastIndex = i
-  }
-  return decls
-}
-
-export async function checkGridUtilityClashes() {
-  const themeCss = readFileSync(path.join(outDir, 'theme.css'), 'utf8')
-  const componentsCss = readFileSync(path.join(outDir, 'components.css'), 'utf8')
-  const blocks = parseChassisUtilityBlocks(componentsCss)
-  // Only the `@utility` rules: the merged build needs nothing else from
-  // components.css, and compiling all of it once per name is slow.
-  const gridUtilitiesCss = [...componentsCss.matchAll(/^@utility [^\n]*\{\n[\s\S]*?\n\}$/gm)]
-    .map((m) => m[0])
-    .join('\n')
-
-  const clashing = []
-  const failures = []
-  for (const [name, block] of blocks) {
-    const coreCss = await coreUtilityAfterReset(name, themeCss)
-    if (!coreCss) continue
-    const coreProps = [
-      ...new Set((extractOrderedDecls(coreCss, name) ?? []).map(([prop]) => prop))
-    ].filter((prop) => !prop.startsWith('--tw-'))
-    if (coreProps.length === 0) continue
-    clashing.push(name)
-
-    const mergedCss = await mergedUtility(name, themeCss, gridUtilitiesCss)
-    const mergedWinners = winningValues(extractAllOrderedDecls(mergedCss, name))
-    const ownWinners = winningValues(block.decls)
-    for (const prop of coreProps) {
-      if (!ownWinners.has(prop)) {
-        failures.push(`"${name}": Tailwind core sets "${prop}", which the grid class never resets`)
-      } else if (mergedWinners.get(prop) !== ownWinners.get(prop)) {
-        failures.push(
-          `"${name}": "${prop}" resolves to "${mergedWinners.get(prop)}", not the grid class's ` +
-            `"${ownWinners.get(prop)}"`
-        )
-      }
-    }
-  }
-
-  if (failures.length > 0) {
-    throw new Error(
-      `clashes: Tailwind core overrides a grid utility (reset the property in ` +
-        `scss/tailwind/mixins/_grid.scss, directly in the @utility and sort-pinned after core's ` +
-        `declaration):\n  ${failures.join('\n  ')}`
-    )
-  }
-
-  console.log(
-    `grid-clashes: ${clashing.length} of ${blocks.size} grid utilities share a name with ` +
-      `Tailwind core, each resetting what core sets.`
-  )
-}
-
-// ---------------------------------------------------------------------------
 // scss/tailwind/_clash-policy.scss (generated file): merges every
 // "important"-remedy entry from BOTH policy JSON files into one Sass map,
 // $important-properties, consumed by scss/tailwind/mixins/_utilities.scss's
@@ -775,7 +690,6 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   run()
     .then(() => checkClashPolicy())
     .then(checkUtilityNameClashes)
-    .then(checkGridUtilityClashes)
     .catch((error) => {
       console.error(error)
       process.exit(1)
