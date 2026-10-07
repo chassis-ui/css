@@ -13,10 +13,8 @@
 @use "./functions" as *;
 @use "./rfs" as *;
 @use "sass:map";
-
-// scss-docs-start layer-order
-@layer colors, theme, config, root, reboot, layout, content, components, custom, helpers, utilities;
-// scss-docs-end layer-order
+// check-imports-disable-next-line
+@use "./layer-order";
 
 :root {
   @if $enable-dark-mode {
@@ -69,16 +67,6 @@
   @each $name, $value in $line-heights {
     --line-height-#{$name}: #{$value};
   }
-  // Generate breakpoint variables
-  // scss-docs-start root-breakpoint-variables
-  @each $name, $value in $breakpoints {
-    --breakpoint-#{$name}: #{$value};
-  }
-  // scss-docs-end root-breakpoint-variables
-  // Generate grid variables: the gutter and columns of `.grid` and the padding of `.container`
-  // scss-docs-start root-grid-variables
-  @include grid-root-vars();
-  // scss-docs-end root-grid-variables
   // Generate sizing variables
   @each $name, $value in $sizes {
     --size-#{$name}: #{$value};
@@ -204,6 +192,18 @@
   @if $enable-dark-mode == false {
     @include form-icon-vars();
   }
+
+  // Generate breakpoint variables
+  // scss-docs-start root-breakpoint-variables
+  @each $name, $value in $breakpoints {
+    --breakpoint-#{$name}: #{$value};
+  }
+  // scss-docs-end root-breakpoint-variables
+  // Generate grid variables: the gutter and columns of `.grid` and the padding of `.container`
+  // scss-docs-start root-grid-variables
+  @include grid-root-vars();
+  // scss-docs-end root-grid-variables
+
 }
 
 // Declare light-mode icon vars at :root and also reset them when a light sub-tree

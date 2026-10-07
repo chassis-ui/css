@@ -9,6 +9,10 @@
 
 @use "mixins/banner" with ($file: "Grid");
 
+// No `_root.scss` here, which declares the layer order for the other bundles
+// check-imports-disable-next-line
+@use "./layer-order";
+
 @use "./config" as *;
 @use "./maps" as *;
 @use "./mixins" as *;

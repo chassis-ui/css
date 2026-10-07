@@ -86,7 +86,7 @@ Run the checks of the area you changed, and report the ones that fail.
 
 - Module system: `@use` / `@forward` only — never `@import`.
 - One partial per component (e.g. `_accordion.scss`), forwarded from `scss/chassis.scss`.
-- CSS layers, declared in `scss/_root.scss`: `colors, theme, config, root, reboot, layout, content, components, custom, helpers, utilities`. Component rules live inside `@layer components { ... }` (or `forms`, etc.).
+- CSS layers, declared in `scss/_layer-order.scss`: `colors, theme, config, root, reboot, layout, content, components, custom, helpers, utilities`. Component rules live inside `@layer components { ... }` (or `forms`, etc.).
 - Prefer the `border-radius()` mixin over the raw `border-radius` property — it gates rounding on the global radius toggle. Use the raw property only for shape-defining elements (circles, pills) where the radius is structural, not stylistic.
 - `--fg-color` / `--bg-color` custom properties look unused component-locally but are consumed by the context utility classes — don't remove them during cleanup without checking `scss/_context.scss` and `scss/utilities/`.
 - Component selectors may not use certain "generic" modifier class names (`small`, `large`, `primary`, `outline`, `solid`, `horizontal`, etc. — see `forbiddenGenericClasses` in [stylelint.config.js](stylelint.config.js)), enforced by stylelint.
