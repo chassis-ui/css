@@ -341,9 +341,11 @@ export default {
 }
 ```
 
-### Placeholder tokens
+### Grid tokens
 
-Two groups of grid tokens do not come from the token source yet. The page margins (`$margin-xsmall` to `$margin-2xlarge`) and the column counts (`$columns-xsmall` to `$columns-2xlarge`) are declared in `scss/tokens/_grid.scss` with literal values, until `@chassis-ui/tokens` ships `cx-grid-margin-*` and `cx-grid-columns-*`. A `_chassis-tokens.scss` of your own therefore cannot change them: set the variables themselves, or the [grid maps](#grid-maps) that read them.
+The page margins (`$margin-xsmall` to `$margin-2xlarge`) and the column counts (`$columns-xsmall` to `$columns-2xlarge`) come from the token source, as `cx-grid-margin-*` and `cx-grid-columns-*`, like the gutters, the breakpoints, and the container widths (`cx-grid-gutter-*`, `cx-grid-breakpoint-*`, `cx-grid-container-*`). `@chassis-ui/tokens` ships the margins and the column counts from 0.7.0. Rebuild a `_chassis-tokens.scss` of your own that was built with an earlier version: without the twelve variables the compile stops at an undefined variable.
+
+To change a value without a token build, set the variables of `scss/tokens/_grid.scss`, or the [grid maps](#grid-maps) that read them.
 
 ```scss
 @use "@chassis-ui/css/scss/tokens/grid" with (
@@ -352,8 +354,6 @@ Two groups of grid tokens do not come from the token source yet. The page margin
 );
 @use "@chassis-ui/css/scss/chassis";
 ```
-
-The gutters, the breakpoints, and the container widths do come from the token source, as `cx-grid-gutter-*`, `cx-grid-breakpoint-*`, and `cx-grid-container-*`.
 
 ### Configuring variables
 
