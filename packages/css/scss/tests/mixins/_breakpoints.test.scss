@@ -71,6 +71,22 @@ $bp: (xs: 0, md: 768px, lg: 992px);
   }
 }
 
+// ─── container-breakpoint-prefix ─────────────────────────────────────────────
+
+@include describe("container-breakpoint-prefix") {
+  @include it("returns an empty string for the smallest breakpoint") {
+    @include assert-equal(container-breakpoint-prefix(xs, $bp), "");
+  }
+
+  @include it("returns Tailwind's container variant prefix for other breakpoints") {
+    @include assert-equal(container-breakpoint-prefix(md, $bp), "\\@md\\:");
+  }
+
+  @include it("leaves a leading digit unescaped after the escaped @") {
+    @include assert-equal(container-breakpoint-prefix(2xl, (xs: 0, 2xl: 1536px)), "\\@2xl\\:");
+  }
+}
+
 // ─── media-breakpoint-up ─────────────────────────────────────────────────────
 
 @include describe("media-breakpoint-up") {

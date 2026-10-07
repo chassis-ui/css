@@ -2,6 +2,7 @@
 @use "../../config" as *;
 @use "../../mixins/grid" as *;
 @use "../../mixins/utilities-api" as *;
+@use "../../utilities/grid" as grid-utilities;
 @use "../../utilities/sizing";
 
 // Minimal breakpoint map used throughout — avoids coupling to global defaults.
@@ -75,6 +76,71 @@ $bp: (xs: 0, md: 768px, lg: 992px);
   }
 }
 
+// ─── grid-container-vars ─────────────────────────────────────────────────────
+
+@include describe("grid-container-vars") {
+  @include it("declares the first breakpoint's gutter and columns in the selector, then a container query only where a value changes") {
+    @include assert() {
+      @include output() {
+        .test {
+          @include grid-container-vars(
+            $gutters: (xs: 1rem, md: 1.5rem, lg: 1.5rem),
+            $columns: (xs: 12, md: 12, lg: 12),
+            $breakpoints: $bp
+          );
+        }
+      }
+
+      @include expect() {
+        .test {
+          --grid-gutter: 1rem;
+          --grid-columns: 12;
+        }
+
+        @container (width >= 768px) {
+          .test {
+            --grid-gutter: 1.5rem;
+          }
+        }
+      }
+    }
+  }
+
+  @include it("follows a column count that changes") {
+    @include assert() {
+      @include output() {
+        .test {
+          @include grid-container-vars(
+            $gutters: (xs: 1rem, md: 1rem, lg: 2rem),
+            $columns: (xs: 4, md: 8, lg: 12),
+            $breakpoints: $bp
+          );
+        }
+      }
+
+      @include expect() {
+        .test {
+          --grid-gutter: 1rem;
+          --grid-columns: 4;
+        }
+
+        @container (width >= 768px) {
+          .test {
+            --grid-columns: 8;
+          }
+        }
+
+        @container (width >= 992px) {
+          .test {
+            --grid-gutter: 2rem;
+            --grid-columns: 12;
+          }
+        }
+      }
+    }
+  }
+}
+
 // ─── make-container ──────────────────────────────────────────────────────────
 
 @include describe("make-container") {
@@ -129,6 +195,26 @@ $bp: (xs: 0, md: 768px, lg: 992px);
           grid-auto-flow: row;
           gap: var(--gap);
         }
+
+        // The modifier, from `$grid-gutters` and `$grid-column-counts`
+        .grid.contained,
+        .grid-fill.contained {
+          @include grid-container-vars();
+        }
+      }
+    }
+  }
+
+  @include it("emits the container variants of the placement classes after every viewport one") {
+    @include assert() {
+      @include output() {
+        @include grid-layout();
+      }
+
+      @include expect() {
+        @include grid-layout($responsive: false);
+        @include make-cssgrid();
+        @include make-cssgrid-container();
       }
     }
   }
@@ -249,6 +335,35 @@ $bp: (xs: 0, md: 768px, lg: 992px);
   }
 }
 
+// ─── column and row counts ───────────────────────────────────────────────────
+
+@include describe("grid count utilities") {
+  @include it("emits grid-rows-{1…$grid-rows} with the declaration of Tailwind's grid-rows-<n>") {
+    @include assert() {
+      @include output() {
+        @include generate-utility(map.get(grid-utilities.$utilities, "grid-row-counts"));
+      }
+
+      @include expect() {
+        @for $i from 1 through $grid-rows {
+          .grid-rows-#{$i} {
+            grid-template-rows: repeat(#{$i}, minmax(0, 1fr));
+          }
+        }
+      }
+    }
+  }
+
+  @include it("has a variant per breakpoint and per container width, as grid-cols has") {
+    @each $name in ("grid-column-counts", "grid-row-counts") {
+      $utility: map.get(grid-utilities.$utilities, $name);
+
+      @include assert-true(map.get($utility, responsive));
+      @include assert-true(map.get($utility, container));
+    }
+  }
+}
+
 // ─── width fractions ─────────────────────────────────────────────────────────
 
 @include describe("width-fraction utility") {
@@ -283,5 +398,122 @@ $bp: (xs: 0, md: 768px, lg: 992px);
     @include assert-true(map.get($fraction, responsive));
     @include assert-false(map.has-key($width, 100));
     @include assert-false(map.has-key($width, auto));
+  }
+}
+
+// ─── make-cssgrid-container ──────────────────────────────────────────────────
+
+@include describe("make-cssgrid-container") {
+  @include it("emits the placement classes per container breakpoint under the @ prefix, none for the first breakpoint") {
+    @include assert() {
+      @include output() {
+        @include make-cssgrid-container($columns: 2, $rows: 1, $breakpoints: (xs: 0, md: 768px, 2xl: 1536px));
+      }
+
+      @include expect() {
+        @container (width >= 768px) {
+          .\@md\:col-span-1 {
+            grid-column: #{"span 1 / span 1"};
+          }
+
+          .\@md\:col-span-2 {
+            grid-column: #{"span 2 / span 2"};
+          }
+
+          .\@md\:col-span-full {
+            grid-column: #{"1 / -1"};
+          }
+
+          .\@md\:col-start-1 {
+            grid-column-start: 1;
+          }
+
+          .\@md\:col-start-2 {
+            grid-column-start: 2;
+          }
+
+          .\@md\:col-start-3 {
+            grid-column-start: 3;
+          }
+
+          .\@md\:col-start-auto {
+            grid-column-start: auto;
+          }
+
+          .\@md\:row-span-1 {
+            grid-row: #{"span 1 / span 1"};
+          }
+
+          .\@md\:row-start-1 {
+            grid-row-start: 1;
+          }
+
+          .\@md\:row-start-2 {
+            grid-row-start: 2;
+          }
+
+          .\@md\:row-start-auto {
+            grid-row-start: auto;
+          }
+        }
+
+        @container (width >= 1536px) {
+          .\@2xl\:col-span-1 {
+            grid-column: #{"span 1 / span 1"};
+          }
+
+          .\@2xl\:col-span-2 {
+            grid-column: #{"span 2 / span 2"};
+          }
+
+          .\@2xl\:col-span-full {
+            grid-column: #{"1 / -1"};
+          }
+
+          .\@2xl\:col-start-1 {
+            grid-column-start: 1;
+          }
+
+          .\@2xl\:col-start-2 {
+            grid-column-start: 2;
+          }
+
+          .\@2xl\:col-start-3 {
+            grid-column-start: 3;
+          }
+
+          .\@2xl\:col-start-auto {
+            grid-column-start: auto;
+          }
+
+          .\@2xl\:row-span-1 {
+            grid-row: #{"span 1 / span 1"};
+          }
+
+          .\@2xl\:row-start-1 {
+            grid-row-start: 1;
+          }
+
+          .\@2xl\:row-start-2 {
+            grid-row-start: 2;
+          }
+
+          .\@2xl\:row-start-auto {
+            grid-row-start: auto;
+          }
+        }
+      }
+    }
+  }
+
+  @include it("emits nothing for zero columns and rows") {
+    @include assert() {
+      @include output() {
+        @include make-cssgrid-container($columns: 0, $rows: 0, $breakpoints: (xs: 0, md: 768px));
+      }
+
+      @include expect() {
+      }
+    }
   }
 }

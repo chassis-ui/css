@@ -279,7 +279,7 @@ One sentence describing what the mixin emits and when to use it in a custom sele
 ### 11. `<Example>` vs `<ResizableExample>`
 
 - **`<Example>`** — the default, fixed-width. Use it for everything except components whose responsiveness is driven by container queries.
-- **`<ResizableExample>`** — wraps the output in a width-resizable container. Only useful for components whose `.{breakpoint}:*` classes use container queries (`@container`), not viewport media queries — the resize control changes inline-size, which fires container-query rules but never `@media (min-width: ...)`. Using it for viewport-driven responsive classes just adds a non-functional handle.
+- **`<ResizableExample>`** — wraps the output in a width-resizable container. Only useful for components whose `.{breakpoint}:*` classes use container queries (`@container`), not viewport media queries — the resize control changes inline-size, which fires container-query rules but never `@media (min-width: ...)`. Using it for viewport-driven responsive classes just adds a non-functional handle. A page with `css_media: viewport` may use it in a section about container queries (the `@md:` variants of the grid in `layout/grid.mdx`).
 
 Mention the resize affordance in the intro paragraph the first time `<ResizableExample>` appears in a doc: "Resize the example below to preview the transition between collapsed and inline modes."
 

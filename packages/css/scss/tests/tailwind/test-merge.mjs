@@ -58,6 +58,7 @@ describe('dist/tailwind/merge.js', () => {
     assert.equal(twMerge('col-span-4', 'md:col-span-6'), 'col-span-4 md:col-span-6')
     assert.equal(twMerge('col-start-2', 'col-start-auto'), 'col-start-auto')
     assert.equal(twMerge('grid-cols-2', 'grid-cols-4'), 'grid-cols-4')
+    assert.equal(twMerge('grid-rows-2', 'grid-rows-3'), 'grid-rows-3')
   })
 
   test("the width classes join tailwind-merge's own width group", () => {

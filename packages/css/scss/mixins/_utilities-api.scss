@@ -19,6 +19,7 @@
 // - Utilities can target children via `child-selector`, wrapped in :where() for zero specificity
 // - Utilities can generate regular CSS properties and CSS custom properties
 // - Utilities can be responsive or not
+// - Utilities can have container-query variants (`container: true`, the `@md:` prefix)
 // - Utilities can have state variants (e.g., hover, focus, active)
 // - Utilities can define local CSS variables
 //
@@ -187,7 +188,7 @@
   }
 
   // Warn on unknown keys (likely typos)
-  $valid-keys: property, values, class, selector, responsive, print, dark, important, state, variables, child-selector, enabled, group;
+  $valid-keys: property, values, class, selector, responsive, container, print, dark, important, state, variables, child-selector, enabled, group;
   @each $key in map.keys($utility) {
     @if not list.index($valid-keys, $key) {
       @warn "Unknown utility key `#{$key}` found. Valid keys are: #{$valid-keys}";
@@ -195,7 +196,7 @@
   }
 
   // Validate boolean keys
-  @each $bool-key in (responsive, print, dark, important, enabled, group) {
+  @each $bool-key in (responsive, container, print, dark, important, enabled, group) {
     @if map.has-key($utility, $bool-key) {
       $val: map.get($utility, $bool-key);
       @if $val != true and $val != false {
@@ -375,7 +376,7 @@
   }
 }
 
-// Generates all utility classes: base, responsive, print, and dark.
+// Generates all utility classes: base, responsive, container, print, and dark.
 // Extracted so that tests can call this mixin directly with a custom $utilities map
 // rather than having to mirror the loop conditions inline.
 @mixin generate-utilities-loop($utilities, $breakpoints) {
@@ -387,6 +388,35 @@
       @each $key, $utility in $utilities {
         @if meta.type-of($utility) == "map" and map.get($utility, enabled) != false and (map.get($utility, responsive) or $prefix == "") {
           @include generate-utility($utility, $prefix);
+        }
+      }
+    }
+  }
+
+  // Container-query variants (`@md:d-flex`) of the utilities with
+  // `container: true`, after every viewport rule: on an element with
+  // `md:d-flex` and `@md:d-none`, both matching, the container variant applies.
+  // The first breakpoint has no variant, the unprefixed class applies at every
+  // width. Sass keeps an empty `@container` rule, so the pass runs only when a
+  // utility takes part.
+  $container-utilities: ();
+  @if $enable-container-queries {
+    @each $key, $utility in $utilities {
+      @if meta.type-of($utility) == "map" and map.get($utility, enabled) != false and map.get($utility, container) == true {
+        $container-utilities: list.append($container-utilities, $utility);
+      }
+    }
+  }
+
+  @if list.length($container-utilities) > 0 {
+    @each $breakpoint in map.keys($breakpoints) {
+      $prefix: bp.container-breakpoint-prefix($breakpoint, $breakpoints);
+
+      @if $prefix != "" {
+        @include bp.container-breakpoint-up($breakpoint, null, $breakpoints) {
+          @each $utility in $container-utilities {
+            @include generate-utility($utility, $prefix);
+          }
         }
       }
     }

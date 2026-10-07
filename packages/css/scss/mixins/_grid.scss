@@ -10,6 +10,36 @@
 // and the `:root` custom properties the grid and the containers read.
 //
 
+// Per breakpoint, the values of `$vars` (a map of custom property name to
+// per-breakpoint map) that differ from the previous breakpoint's:
+// `(xs: ("grid-gutter": 1rem, "grid-columns": 12), md: ("grid-gutter": 1.5rem))`.
+// A breakpoint where nothing changes has no entry.
+@function -grid-var-changes($vars, $breakpoints) {
+  $current: ();
+  $changes: ();
+
+  @each $breakpoint in map.keys($breakpoints) {
+    $changed: ();
+
+    @each $name, $values in $vars {
+      @if map.has-key($values, $breakpoint) {
+        $value: map.get($values, $breakpoint);
+
+        @if not map.has-key($current, $name) or map.get($current, $name) != $value {
+          $changed: map.set($changed, $name, $value);
+          $current: map.set($current, $name, $value);
+        }
+      }
+    }
+
+    @if list.length($changed) > 0 {
+      $changes: map.set($changes, $breakpoint, $changed);
+    }
+  }
+
+  @return $changes;
+}
+
 // scss-docs-start grid-root-vars
 /// Emit the per-breakpoint custom properties of the layout system on `:root`:
 /// `--grid-gutter` (the gap of `.grid`), `--container-padding` (the padding of
@@ -27,32 +57,43 @@
     "container-padding": $paddings,
     "grid-columns": $columns
   );
-  $current: ();
 
-  @each $breakpoint in map.keys($breakpoints) {
-    $changed: ();
-
-    @each $name, $values in $vars {
-      @if map.has-key($values, $breakpoint) {
-        $value: map.get($values, $breakpoint);
-
-        @if not map.has-key($current, $name) or map.get($current, $name) != $value {
-          $changed: map.set($changed, $name, $value);
-          $current: map.set($current, $name, $value);
-        }
-      }
-    }
-
-    @if list.length($changed) > 0 {
-      @include media-breakpoint-up($breakpoint, $breakpoints) {
-        @each $name, $value in $changed {
-          --#{$name}: #{$value};
-        }
+  @each $breakpoint, $changed in -grid-var-changes($vars, $breakpoints) {
+    @include media-breakpoint-up($breakpoint, $breakpoints) {
+      @each $name, $value in $changed {
+        --#{$name}: #{$value};
       }
     }
   }
 }
 // scss-docs-end grid-root-vars
+
+// scss-docs-start grid-container-vars
+/// Emit `--grid-gutter` and `--grid-columns` on the calling selector by the
+/// width of its nearest query container, where `grid-root-vars()` sets them on
+/// `:root` by the width of the viewport. The value of the first breakpoint is
+/// declared in the selector itself, so it applies when no ancestor is a query
+/// container; a later breakpoint is declared, in its
+/// `container-breakpoint-up()`, only where the map value changes.
+///
+/// @param {Map} $gutters [$grid-gutters] - Gutter per breakpoint
+/// @param {Map} $columns [$grid-column-counts] - Column count per breakpoint
+/// @param {Map} $breakpoints [$breakpoints] - Breakpoint map
+@mixin grid-container-vars($gutters: $grid-gutters, $columns: $grid-column-counts, $breakpoints: $breakpoints) {
+  $vars: (
+    "grid-gutter": $gutters,
+    "grid-columns": $columns
+  );
+
+  @each $breakpoint, $changed in -grid-var-changes($vars, $breakpoints) {
+    @include container-breakpoint-up($breakpoint, null, $breakpoints) {
+      @each $name, $value in $changed {
+        --#{$name}: #{$value};
+      }
+    }
+  }
+}
+// scss-docs-end grid-container-vars
 
 // scss-docs-start make-container
 /// Generate a full-width, horizontally-centered container. Its padding is
@@ -65,6 +106,51 @@
   margin-inline-end: auto;
 }
 // scss-docs-end make-container
+
+// The placement classes of one breakpoint, under `$prefix`.
+@mixin -cssgrid-placement($prefix, $columns, $rows) {
+  @if $columns > 0 {
+    @for $i from 1 through $columns {
+      .#{$prefix}col-span-#{$i} {
+        grid-column: #{"span #{$i} / span #{$i}"};
+      }
+    }
+
+    .#{$prefix}col-span-full {
+      grid-column: #{"1 / -1"};
+    }
+
+    // Through `$columns + 1`: the last line of the grid, so an item can
+    // be placed against the end edge with `col-start-* col-span-*`.
+    @for $i from 1 through ($columns + 1) {
+      .#{$prefix}col-start-#{$i} {
+        grid-column-start: $i;
+      }
+    }
+
+    .#{$prefix}col-start-auto {
+      grid-column-start: auto;
+    }
+  }
+
+  @if $rows > 0 {
+    @for $i from 1 through $rows {
+      .#{$prefix}row-span-#{$i} {
+        grid-row: #{"span #{$i} / span #{$i}"};
+      }
+    }
+
+    @for $i from 1 through ($rows + 1) {
+      .#{$prefix}row-start-#{$i} {
+        grid-row-start: $i;
+      }
+    }
+
+    .#{$prefix}row-start-auto {
+      grid-row-start: auto;
+    }
+  }
+}
 
 // scss-docs-start make-cssgrid
 /// Generate the placement classes of `.grid` for every breakpoint, with the
@@ -79,59 +165,44 @@
 /// @param {Map} $breakpoints [$breakpoints] - Breakpoint map
 @mixin make-cssgrid($columns: $grid-columns, $rows: $grid-rows, $breakpoints: $breakpoints) {
   @each $breakpoint in map.keys($breakpoints) {
-    $prefix: breakpoint-prefix($breakpoint, $breakpoints);
-
     @include media-breakpoint-up($breakpoint, $breakpoints) {
-      @if $columns > 0 {
-        @for $i from 1 through $columns {
-          .#{$prefix}col-span-#{$i} {
-            grid-column: #{"span #{$i} / span #{$i}"};
-          }
-        }
-
-        .#{$prefix}col-span-full {
-          grid-column: #{"1 / -1"};
-        }
-
-        // Through `$columns + 1`: the last line of the grid, so an item can
-        // be placed against the end edge with `col-start-* col-span-*`.
-        @for $i from 1 through ($columns + 1) {
-          .#{$prefix}col-start-#{$i} {
-            grid-column-start: $i;
-          }
-        }
-
-        .#{$prefix}col-start-auto {
-          grid-column-start: auto;
-        }
-      }
-
-      @if $rows > 0 {
-        @for $i from 1 through $rows {
-          .#{$prefix}row-span-#{$i} {
-            grid-row: #{"span #{$i} / span #{$i}"};
-          }
-        }
-
-        @for $i from 1 through ($rows + 1) {
-          .#{$prefix}row-start-#{$i} {
-            grid-row-start: $i;
-          }
-        }
-
-        .#{$prefix}row-start-auto {
-          grid-row-start: auto;
-        }
-      }
+      @include -cssgrid-placement(breakpoint-prefix($breakpoint, $breakpoints), $columns, $rows);
     }
   }
 }
 // scss-docs-end make-cssgrid
 
-/// Emit the grid layout classes: `.grid`, `.grid-cols-subgrid`, `.grid-fill`
-/// and every breakpoint's placement classes. Pass `$responsive: false` to skip
-/// the placement classes, which are Tailwind core's own utilities in the
-/// Tailwind entry (see `scss/tailwind/_grid.scss`).
+// scss-docs-start make-cssgrid-container
+/// Generate the container-query variants of the placement classes of
+/// `make-cssgrid()`: `@md:col-span-4` applies when the nearest query container
+/// is at least as wide as the `md` breakpoint. The first breakpoint has no
+/// variant, the unprefixed classes apply at every width.
+///
+/// @param {Number} $columns [$grid-columns] - Number of grid columns
+/// @param {Number} $rows [$grid-rows] - Number of grid rows the row classes cover
+/// @param {Map} $breakpoints [$breakpoints] - Breakpoint map
+@mixin make-cssgrid-container($columns: $grid-columns, $rows: $grid-rows, $breakpoints: $breakpoints) {
+  // Sass keeps an empty `@container` rule, where it drops an empty `@media`.
+  @if $columns > 0 or $rows > 0 {
+    @each $breakpoint in map.keys($breakpoints) {
+      $prefix: container-breakpoint-prefix($breakpoint, $breakpoints);
+
+      @if $prefix != "" {
+        @include container-breakpoint-up($breakpoint, null, $breakpoints) {
+          @include -cssgrid-placement($prefix, $columns, $rows);
+        }
+      }
+    }
+  }
+}
+// scss-docs-end make-cssgrid-container
+
+/// Emit the grid layout classes: `.grid`, `.grid-cols-subgrid`, `.grid-fill`,
+/// the `.contained` modifier and every breakpoint's placement classes, by the
+/// viewport and then by the container (`$enable-container-queries` governs the
+/// modifier and the container variants). Pass `$responsive: false` to skip the
+/// placement classes, which are Tailwind core's own utilities in the Tailwind
+/// entry, with their `@md:` variants (see `scss/tailwind/_grid.scss`).
 ///
 /// @param {Boolean} $responsive [true] - Include the per-breakpoint classes
 @mixin grid-layout($responsive: true) {
@@ -163,8 +234,25 @@
     }
     // scss-docs-end grid-layout
 
+    @if $enable-container-queries {
+      // scss-docs-start grid-contained
+      // The gutter and the column count by the width of the nearest query
+      // container, in place of the viewport's values on `:root`.
+      .grid.contained,
+      .grid-fill.contained {
+        @include grid-container-vars();
+      }
+      // scss-docs-end grid-contained
+    }
+
     @if $responsive {
       @include make-cssgrid();
+
+      // After every viewport rule: on an element with `md:col-span-6` and
+      // `@md:col-span-4`, both matching, the container variant applies.
+      @if $enable-container-queries {
+        @include make-cssgrid-container();
+      }
     }
   }
 }

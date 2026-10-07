@@ -70,4 +70,118 @@
 
     }
   }
+
+  @include it("generates the container-query variants of the utilities with `container: true`, after the viewport ones") {
+    $test-utilities: (
+      display: (
+        property: display,
+        class: d,
+        responsive: true,
+        container: true,
+        values: (flex: flex)
+      ),
+      // No viewport variants, container variants only
+      float: (
+        property: float,
+        container: true,
+        values: (none: none)
+      ),
+      margin: (
+        property: margin,
+        responsive: true,
+        container: false,
+        values: (auto: auto)
+      ),
+      padding: (
+        property: padding,
+        responsive: true,
+        values: 1rem
+      ),
+      opacity: (
+        property: opacity,
+        container: true,
+        enabled: false,
+        values: (0: 0)
+      )
+    );
+
+    $test-breakpoints: (
+      xs: 0,
+      md: 666px,
+      2xl: 999px
+    );
+
+    @include assert() {
+      @include output() {
+        @include generate-utilities-loop($test-utilities, $test-breakpoints);
+      }
+
+      @include expect() {
+        .d-flex {
+          display: flex;
+        }
+
+        .float-none {
+          float: none;
+        }
+
+        .margin-auto {
+          margin: auto;
+        }
+
+        .padding {
+          padding: 1rem;
+        }
+
+        @media (width >= 666px) {
+          .md\:d-flex {
+            display: flex;
+          }
+
+          .md\:margin-auto {
+            margin: auto;
+          }
+
+          .md\:padding {
+            padding: 1rem;
+          }
+        }
+
+        @media (width >= 999px) {
+          .\32 xl\:d-flex {
+            display: flex;
+          }
+
+          .\32 xl\:margin-auto {
+            margin: auto;
+          }
+
+          .\32 xl\:padding {
+            padding: 1rem;
+          }
+        }
+
+        // No `@xs:` variant: the first breakpoint has no minimum
+        @container (width >= 666px) {
+          .\@md\:d-flex {
+            display: flex;
+          }
+
+          .\@md\:float-none {
+            float: none;
+          }
+        }
+
+        @container (width >= 999px) {
+          .\@2xl\:d-flex {
+            display: flex;
+          }
+
+          .\@2xl\:float-none {
+            float: none;
+          }
+        }
+      }
+    }
+  }
 }

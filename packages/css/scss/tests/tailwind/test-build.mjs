@@ -342,6 +342,49 @@ describe('tailwind fixture build', () => {
     const gridCols = findExactRule(built, 'grid-cols-12')
     assert.equal(winningValues(gridCols).get('grid-template-columns'), 'repeat(12, minmax(0, 1fr))')
     assert.ok(gridCols.every((body) => !/!important/.test(body)))
+    // `grid-rows-*` likewise.
+    const gridRows = findExactRule(built, 'grid-rows-2')
+    assert.equal(winningValues(gridRows).get('grid-template-rows'), 'repeat(2, minmax(0, 1fr))')
+    assert.ok(gridRows.every((body) => !/!important/.test(body)))
+    assertWrapped(built, String.raw`@media \(width >= 48rem\)`, String.raw`\.md\\:grid-rows-3 \{`)
+  })
+
+  test("the container variants of the grid classes are core's, and .grid.contained passes through", () => {
+    // `@md:col-span-4` is core's container variant of core's utility, at the
+    // Chassis breakpoint, and it follows the viewport variant in the output,
+    // as `make-cssgrid-container()` follows `make-cssgrid()` in dist/css.
+    assertWrapped(
+      built,
+      String.raw`@container \(width >= 48rem\)`,
+      String.raw`\.\\@md\\:col-span-4 \{`
+    )
+    assert.equal(
+      winningValues(findExactRule(built, '@md:col-span-4')).get('grid-column'),
+      'span 4 / span 4'
+    )
+    assert.ok(
+      built.indexOf(String.raw`.md\:col-span-6 {`) < built.indexOf(String.raw`.\@md\:col-span-4 {`),
+      'the container variant comes after the viewport variant'
+    )
+    assertWrapped(
+      built,
+      String.raw`@container \(width >= 96rem\)`,
+      String.raw`\.\\@2xl\\:col-start-3 \{`
+    )
+    assertWrapped(
+      built,
+      String.raw`@container \(width >= 48rem\)`,
+      String.raw`\.\\@md\\:grid-cols-3 \{`
+    )
+    // The modifier is plain CSS of the entry, in `@layer layout`: the values
+    // of the first breakpoint, then a container query where a token changes.
+    const componentsCss = readFileSync(path.join(root, 'dist/tailwind/components.css'), 'utf8')
+    assert.match(
+      componentsCss,
+      /@layer layout \{[\s\S]*?\.grid\.contained,\s*\.grid-fill\.contained \{\s*--cx-grid-gutter: [^;]+;\s*--cx-grid-columns: \d+;\s*\}\s*@container \(width >= [\d.]+rem\) \{\s*\.grid\.contained,\s*\.grid-fill\.contained \{\s*--cx-grid-/
+    )
+    assert.doesNotMatch(componentsCss, /\\@md\\:/, 'the entry writes no container variant itself')
+    assert.match(built, /\.grid\.contained,\s*\.grid-fill\.contained \{/)
   })
 
   test('the flexbox grid and the g-col aliases are gone: the entry emits no grid @utility', () => {

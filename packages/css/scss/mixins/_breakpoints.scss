@@ -109,6 +109,28 @@
   @return "#{css-escape-ident($name)}\\:";
 }
 
+/// Returns a blank string for the smallest breakpoint, otherwise returns the
+/// breakpoint name as Tailwind's container variant prefix (`@md:`) for the
+/// class names of a container-query variant. The `@` and the colon are
+/// escaped; a leading digit is not, since it follows the `\@` and is no longer
+/// the first character of the identifier (`\@2xl\:` is also the selector
+/// Tailwind writes for `@2xl:col-span-4`).
+///
+/// @param {String} $name - Breakpoint name
+/// @param {Map} $breakpoints [$breakpoints] - Breakpoint map
+/// @return {String} - Empty string for the smallest breakpoint, otherwise `"\@{name}\:"`
+/// @example
+///   container-breakpoint-prefix(xs, (...))  => ""
+///   container-breakpoint-prefix(md, (...))  => "\@md\:"
+///   container-breakpoint-prefix(2xl, (...)) => "\@2xl\:"
+@function container-breakpoint-prefix($name, $breakpoints: $breakpoints) {
+  @if breakpoint-min($name, $breakpoints) == null {
+    @return "";
+  }
+
+  @return "\\@#{$name}\\:";
+}
+
 /// Converts an up-prefix to its max-variant form by prepending `max-`.
 /// Returns an empty string when `$prefix` is empty (i.e., the smallest breakpoint).
 ///

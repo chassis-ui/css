@@ -120,7 +120,7 @@ Every gap utility has breakpoint variants — `.{breakpoint}:gap-{size}`, `.{bre
 
 ## Narrow grids
 
-The gutter follows the width of the viewport, not the width of the grid. A grid that fills the page gets a gap in proportion to it; a grid in a sidebar, a card, or a grid item gets the same gap in a fraction of the width, and twelve tracks can be left with little room. Give a narrow grid a gap of its own, with `--cx-grid-gap` or a gap utility, or fewer tracks with a [column count]([[docsref:/layout/grid#column-counts]]).
+The gutter follows the width of the viewport, not the width of the grid. A grid that fills the page gets a gap in proportion to it; a grid in a sidebar, a card, or a grid item gets the same gap in a fraction of the width, and twelve tracks can be left with little room. `.contained` on the grid, inside a [query container]([[docsref:/layout/grid#query-containers]]), gives it the gutter of the width of that container — see [Contained grids]([[docsref:/layout/grid#contained-grids]]). A narrow grid can also take a gap of its own, with `--cx-grid-gap` or a gap utility, or fewer tracks with a [column count]([[docsref:/layout/grid#column-counts]]).
 
 <Example class="cxd-example-grid" code={`<div class="grid text-center">
     <div class="col-span-4">Sidebar</div>
@@ -162,7 +162,7 @@ The padding of `.container` is the page margin, `--cx-container-padding`: a valu
 <CxTable>
 | Property | Default | Description |
 | --- | --- | --- |
-| `--cx-grid-gutter` | `:root`, from `$grid-gutters` | Gutter of the current breakpoint |
+| `--cx-grid-gutter` | `:root`, from `$grid-gutters` | Gutter of the current breakpoint; `.grid.contained` sets it by the width of its query container |
 | `--cx-grid-gap` | `--cx-grid-gutter` | Gap of `.grid` and `.grid-fill`; one value, or `row-gap column-gap` |
 </CxTable>
 

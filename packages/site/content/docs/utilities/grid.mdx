@@ -1,6 +1,6 @@
 ---
 title: Grid
-description: Responsive utilities for the column count and the auto-placement of a CSS Grid container.
+description: Responsive utilities for the column count, the row count, and the auto-placement of a CSS Grid container.
 toc: true
 css_layer: utilities
 mdn: https://developer.mozilla.org/en-US/docs/Web/CSS/grid
@@ -10,7 +10,7 @@ import { getData } from '@libs/data'
 
 ## Overview
 
-Grid utilities set the number of columns of a grid and the way its items are placed. They act on `.grid`, the container of the [grid system]([[docsref:/layout/grid]]), and on any element with `display: grid` (`.d-grid`). The classes that place a single item — `.col-span-*`, `.col-start-*`, `.row-span-*`, `.row-start-*` — belong to the grid system and are covered in [Columns]([[docsref:/layout/columns]]).
+Grid utilities set the number of columns and rows of a grid and the way its items are placed. They act on `.grid`, the container of the [grid system]([[docsref:/layout/grid]]), and on any element with `display: grid` (`.d-grid`). The classes that place a single item — `.col-span-*`, `.col-start-*`, `.row-span-*`, `.row-start-*` — belong to the grid system and are covered in [Columns]([[docsref:/layout/columns]]).
 
 ## Column counts
 
@@ -53,6 +53,26 @@ Each track is `minmax(0, 1fr)`, the declaration of the Tailwind utility of the s
 `.grid-cols-fill`, which made an item span the whole grid, was removed in v0.7.0. Use `.col-span-full`.
 </Callout>
 
+## Row counts
+
+`.grid-rows-{n}` sets `grid-template-rows` to `n` equal rows, from `1` to `6`. On a `.grid` it replaces the row count of `--cx-grid-rows`, for that grid only: the custom property is inherited by the grids nested in it, the class is not.
+
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-rows-2 text-center">
+    <div class="row-span-2">.row-span-2</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+  </div>`} />
+
+Each row is `minmax(0, 1fr)`, the declaration of the Tailwind utility of the same name. Items past the last explicit row create rows as tall as their content.
+
+```css
+.grid-rows-2 {
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+```
+
 ## Auto flow
 
 `.grid-auto-flow-{value}` sets `grid-auto-flow`, the direction in which items without a start line fill the grid.
@@ -71,9 +91,9 @@ Each track is `minmax(0, 1fr)`, the declaration of the Tailwind utility of the s
 
 ### Column
 
-`.grid-auto-flow-column` fills each column in turn and adds columns as needed. `--cx-grid-rows` sets the number of rows a column holds.
+`.grid-auto-flow-column` fills each column in turn and adds columns as needed. `.grid-rows-{n}` sets the number of rows a column holds.
 
-<Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-auto-flow-column text-center" style="--cx-grid-rows: 2;">
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-rows-2 grid-auto-flow-column text-center">
     <div>Item 1</div>
     <div>Item 2</div>
     <div>Item 3</div>
@@ -113,6 +133,16 @@ Every grid utility has a variant per breakpoint.
 })}
 </ul>
 
+### Row counts
+
+<ul>
+{getData('breakpoints').map((breakpoint) => {
+  return (
+    <li><code>.{breakpoint.abbr}grid-rows-1</code> to <code>.{breakpoint.abbr}grid-rows-6</code></li>
+  )
+})}
+</ul>
+
 ### Auto flow
 
 <ul>
@@ -127,6 +157,10 @@ Every grid utility has a variant per breakpoint.
 })}
 </ul>
 
+### Container variants
+
+Every grid utility also has a variant per container width, under the `@` prefix: `.@md:grid-cols-3` applies when the nearest query container is at least as wide as the `md` breakpoint. See [Container queries]([[docsref:/layout/grid#container-queries]]).
+
 ## CSS
 
 Grid utilities are generated via the utilities API.
@@ -139,6 +173,6 @@ The table lists all grid utilities and their CSS properties.
 
 ### Utilities API
 
-Grid utilities are declared in `scss/utilities/_grid.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]). The column counts are generated from `1` to `$grid-columns`.
+Grid utilities are declared in `scss/utilities/_grid.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]). The column counts are generated from `1` to `$grid-columns`, the row counts from `1` to `$grid-rows`.
 
 <ScssDocs name="utils-grid" file="scss/utilities/_grid.scss" />

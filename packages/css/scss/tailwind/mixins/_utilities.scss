@@ -10,9 +10,11 @@
 // Walks the same `$utilities` map as `generate-utilities-loop`
 // (scss/mixins/_utilities-api.scss) but emits Tailwind `@utility` rules
 // instead of plain CSS. Tailwind's own variant engine supplies every
-// responsive/dark/print/state variant for every `@utility`, so the
-// `responsive`, `print`, `dark`, and `state` map keys are ignored here —
-// there is no per-breakpoint loop and no state-variant selector building.
+// responsive/container/dark/print/state variant for every `@utility`, so the
+// `responsive`, `container`, `print`, `dark`, and `state` map keys are ignored
+// here — there is no per-breakpoint loop and no state-variant selector
+// building. (`@md:d-flex` is core's container variant of the `d-flex`
+// `@utility`, at the Chassis breakpoint `theme.scss` gives `--container-md`.)
 // `group: true` is ignored too: the legacy generator's shared-static-rule
 // optimization only exists to avoid repeating static declarations across a
 // breakpoint x state-variant matrix that Tailwind's `@utility` doesn't have —

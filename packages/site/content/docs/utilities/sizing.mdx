@@ -46,6 +46,8 @@ Width utilities (`w-25`, `w-50`, `w-75`, `w-100`, `w-auto`) set the element's wi
 <Example class="cxd-example-flex" code={`<div class="w-6/12 lg:w-auto p-md mb-xs">.w-6/12 .lg:w-auto</div>
 <div class="w-8/12 md:w-100 p-md">.w-8/12 .md:w-100</div>`} />
 
+The fractions, `.w-100`, and `.w-auto` also have a variant per container width, under the `@` prefix: `.@md:w-6/12` applies when the nearest [query container]([[docsref:/layout/grid#query-containers]]) is at least as wide as the `md` breakpoint.
+
 The names and values are those of the Tailwind fraction widths: `.w-6/12` declares `width: calc(6 / 12 * 100%)`. In a stylesheet the slash is escaped (`.w-6\/12`); in HTML the class is written as is.
 
 A flex item with a fraction width still shrinks. Add `.flex-shrink-0` to keep the width when siblings need the room.

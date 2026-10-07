@@ -41,6 +41,7 @@ The grid has three parts — container, grid, and items — and reads its measur
 - **Items span tracks.** A direct child of `.grid` occupies one track until a class says otherwise: `.col-span-{n}` spans `n` tracks, `.col-start-{n}` places the item on a grid line. See [Columns]([[docsref:/layout/columns]]).
 - **The gutter follows the breakpoint.** `:root` declares `--cx-grid-gutter` at every breakpoint from the gutter tokens, so one grid has a narrow gap on a phone and a wide one on a desktop with no class. `--cx-grid-gap` or a gap utility overrides it per grid. See [Gutters]([[docsref:/layout/gutters]]).
 - **Breakpoints are min-width media queries.** A prefixed class like `.md:col-span-6` applies from the `md` breakpoint upward. See [Breakpoints]([[docsref:/layout/breakpoints]]).
+- **Container variants follow the container.** A class with the `@` prefix, like `.@md:col-span-6`, applies from the `md` width of the nearest query container, not of the viewport. See [Container queries](#container-queries).
 - **Class names and declarations match Tailwind's.** `col-span-6`, `col-start-3`, `row-span-2`, and `grid-cols-4` declare what the Tailwind utilities of the same names declare, so markup moves between the regular build and the [Tailwind entry]([[docsref:/getting-started/tailwind#grid-classes]]) unchanged.
 
 ## Grid options
@@ -200,6 +201,59 @@ Classes of several breakpoints on one item set its span at each of them.
     <div>Item</div>
   </div>`} />
 
+## Container queries
+
+A breakpoint class follows the viewport, and a grid in a sidebar, a card, or a grid item is narrower than the viewport. Every span, placement, and column count class has a second variant under the `@` prefix — `.@md:col-span-4`, `.@lg:grid-cols-3` — that applies when the nearest [query container](#query-containers) is at least as wide as the breakpoint. Resize the example below to preview the items going from stacked to two, then three, in a row.
+
+<ResizableExample class="cxd-example-grid" code={`<div class="contains-inline">
+    <div class="grid text-center">
+      <div class="col-span-full @sm:col-span-6 @md:col-span-4">.@sm:col-span-6 .@md:col-span-4</div>
+      <div class="col-span-full @sm:col-span-6 @md:col-span-4">.@sm:col-span-6 .@md:col-span-4</div>
+      <div class="col-span-full @sm:col-span-full @md:col-span-4">.@sm:col-span-full .@md:col-span-4</div>
+    </div>
+  </div>`} />
+
+The prefixes are `@sm:`, `@md:`, `@lg:`, `@xl:`, and `@2xl:`, at the widths of the [breakpoints](#grid-options). There is no `@xs:`: an unprefixed class applies at every width, and it is the layout of a grid with no query container above it.
+
+<CxTable>
+| Classes | Container variants |
+| --- | --- |
+| `.col-span-{1…12}`, `.col-span-full` | `.@md:col-span-6`, `.@md:col-span-full` |
+| `.col-start-{1…13}`, `.col-start-auto` | `.@md:col-start-3`, `.@md:col-start-auto` |
+| `.row-span-{1…6}`, `.row-start-{1…7}`, `.row-start-auto` | `.@md:row-span-2`, `.@md:row-start-auto` |
+| `.grid-cols-{1…12}`, `.grid-rows-{1…6}`, `.grid-auto-flow-*` | `.@md:grid-cols-3`, `.@md:grid-rows-2` |
+| `.gap-*`, `.row-gap-*`, `.column-gap-*` | `.@md:gap-lg` |
+</CxTable>
+
+The layout utilities have the same variants — display, flex, order, alignment, the fraction widths, text alignment, and float — so an element inside the container changes with it: `.@md:d-flex`, `.@md:flex-row`, `.@md:w-6/12`. See the [`container` option]([[docsref:/utilities/api#container]]) of the utilities API for the full set and for adding a utility to it.
+
+### Query containers
+
+An element is a query container when it has `container-type: inline-size`: add [`.contains-inline`]([[docsref:/utilities/container-type]]), or include `set-container()` in Sass. An element cannot query itself — a container variant reads the nearest ancestor that is a query container — so `.contains-inline` goes on an element around the grid. The classes of the grid (`.@md:grid-cols-3`, `.contained`) and of its items then read the same container.
+
+Some components are query containers already: `.navbar`, `.nav-overflow`, `.table-responsive`, and `.stepper-overflow`. A grid inside one of them reads it.
+
+With no query container among its ancestors, an element ignores its `@` classes at every width.
+
+### Contained grids
+
+The gutter and the column count of `.grid` come from `:root`, by the width of the viewport. `.contained` on a `.grid` or a `.grid-fill` takes both from the breakpoint of the query container instead, so a grid in a narrow column has the gutter of a narrow page. Resize the example below to preview the column count changing at the `sm` and `md` widths, and the gutter widening at `md`.
+
+<ResizableExample class="cxd-example-grid" code={`<div class="contains-inline">
+    <div class="grid contained grid-cols-1 @sm:grid-cols-2 @md:grid-cols-4 text-center">
+      <div>Item</div>
+      <div>Item</div>
+      <div>Item</div>
+      <div>Item</div>
+    </div>
+  </div>`} />
+
+`.contained` sets `--cx-grid-gutter` and `--cx-grid-columns` on the grid itself, from the same maps as `:root`. `--cx-grid-gap`, a gap utility, and a column count class still override them. With no query container above the grid, it keeps the values of the narrowest breakpoint.
+
+### With breakpoint classes
+
+Breakpoint and container variants work on one element. Where both apply, the container variant wins: `.md:col-span-6 .@md:col-span-4` spans six tracks on a viewport of the `md` width whose container is narrower, and four once the container reaches `md` too.
+
 ## Alignment
 
 Grid items stretch to the height of their row. `.align-items-*` on the grid and `.align-self-*` on an item change that; `.place-items-*` aligns on both axes. See [Columns]([[docsref:/layout/columns#alignment]]).
@@ -256,7 +310,7 @@ A `.grid` inside a grid item is a grid of its own, with twelve tracks across the
     </div>
   </div>`} />
 
-`--cx-grid-columns` is inherited: set on an element, it is the column count of every `.grid` inside until another element sets it again. A nested grid also has the gutter of the viewport in a fraction of its width — see [Narrow grids]([[docsref:/layout/gutters#narrow-grids]]).
+`--cx-grid-columns`, `--cx-grid-rows`, `--cx-grid-gap`, and `--cx-grid-min` are inherited: set on an element, each applies to every `.grid` inside until another element sets it again. The classes apply to one grid: `.grid-cols-{n}`, `.grid-rows-{n}`, and a gap utility leave the grids nested in it as they are. A [contained grid](#contained-grids) sets its gutter and column count on itself, so the grids nested in it inherit those of its container. Any other nested grid has the gutter of the viewport in a fraction of its width — see [Narrow grids]([[docsref:/layout/gutters#narrow-grids]]).
 
 ### Subgrid
 
@@ -287,11 +341,11 @@ Custom properties configure one grid, or every grid inside an element, at runtim
 <CxTable>
 | Property | Default | Description |
 | --- | --- | --- |
-| `--cx-grid-columns` | `:root`, from `$grid-column-counts` | Number of tracks of `.grid` |
-| `--cx-grid-rows` | `1` | Number of explicit rows of `.grid` |
+| `--cx-grid-columns` | `:root`, from `$grid-column-counts` | Number of tracks of `.grid`; set by `.contained` per container width |
+| `--cx-grid-rows` | `1` | Number of explicit rows of `.grid`; `.grid-rows-{n}` sets it for one grid |
 | `--cx-grid-gap` | `--cx-grid-gutter` | Gap of `.grid` and `.grid-fill`; one value, or `row-gap column-gap` |
 | `--cx-grid-min` | `0` | Minimum column width of `.grid-fill` |
-| `--cx-grid-gutter` | `:root`, from `$grid-gutters` | Gutter of the current breakpoint |
+| `--cx-grid-gutter` | `:root`, from `$grid-gutters` | Gutter of the current breakpoint; set by `.contained` per container width |
 | `--cx-container-padding` | `:root`, from `$container-paddings` | Page margin of `.container` at the current breakpoint |
 </CxTable>
 
@@ -340,6 +394,28 @@ The Sass of the flexbox grid went with its classes: the mixins `make-row()`, `ma
 `.grid`, `.grid-cols-subgrid`, and `.grid-fill` are emitted when `$enable-cssgrid` is `true`, the default:
 
 <ScssDocs name="grid-layout" file="scss/mixins/_grid.scss" />
+
+`.contained` and the `@` variants of the span and start classes are emitted when `$enable-container-queries` is `true`, the default. The same option governs the container variants of the utilities.
+
+<ScssDocs name="grid-contained" file="scss/mixins/_grid.scss" />
+
+With the default tokens, `.contained` compiles to:
+
+<Code lang="css" code={`.grid.contained,
+.grid-fill.contained {
+  --cx-grid-gutter: ${sassVars('gutter').xs};
+  --cx-grid-columns: ${sassVars('columns').xs};
+}
+
+${['sm', 'md', 'lg', 'xl', '2xl'].map((breakpoint, index, breakpoints) => {
+  const previous = index ? breakpoints[index - 1] : 'xs'
+  const declarations = [['grid-gutter', 'gutter'], ['grid-columns', 'columns']]
+    .filter(([, group]) => sassVars(group)[breakpoint] !== sassVars(group)[previous])
+    .map(([property, group]) => `    --cx-${property}: ${sassVars(group)[breakpoint]};`)
+  return declarations.length
+    ? `@container (width >= ${sassBreakpointSize(breakpoint)}) {\n  .grid.contained,\n  .grid-fill.contained {\n${declarations.join('\n')}\n  }\n}`
+    : ''
+}).filter(Boolean).join('\n\n')}`} />
 
 ### Custom properties
 
@@ -406,6 +482,14 @@ Three maps, keyed by breakpoint, feed the `:root` custom properties. Override a 
 `make-cssgrid()` generates the span and start classes of every breakpoint.
 
 <ScssDocs name="make-cssgrid" file="scss/mixins/_grid.scss" />
+
+`make-cssgrid-container()` generates their container variants, from the second breakpoint up.
+
+<ScssDocs name="make-cssgrid-container" file="scss/mixins/_grid.scss" />
+
+`grid-container-vars()` emits `--cx-grid-gutter` and `--cx-grid-columns` on a selector by the width of its query container, as `.contained` does. Include it in a grid on a custom selector.
+
+<ScssDocs name="grid-container-vars" file="scss/mixins/_grid.scss" />
 
 `make-container()` is covered in [Containers]([[docsref:/layout/containers#sass-mixins]]).
 

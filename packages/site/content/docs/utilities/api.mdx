@@ -24,6 +24,7 @@ The `$utilities` map contains all our utilities and is later merged with your cu
 | [`group`](#group) | Optional | `false` | Boolean. Requires `property` to be a map. Emits a single shared rule for all generated selectors containing the static (non-null) property values, then emits per-value rules with only the dynamic (null-valued) properties. Keeps repeated static declarations out of every per-value class. |
 | [`state`](#states) | Optional | null | List of pseudo-class variants (e.g., `:hover` or `:focus`) to generate as prefix-style classes. |
 | [`responsive`](#responsive) | Optional | `false` | Boolean indicating if responsive classes should be generated. |
+| [`container`](#container) | Optional | `false` | Boolean indicating if container-query classes (`.@md:opacity-25`) should be generated. |
 | [`important`](#importance) | Optional | `false` | Boolean indicating if `!important` should be added to the utility’s CSS rules. |
 | [`print`](#print) | Optional | `false` | Boolean indicating if print classes need to be generated. |
 | [`dark`](#dark) | Optional | `false` | Boolean indicating if `dark:` prefixed classes should be generated, scoped to `@media (prefers-color-scheme: dark)`. |
@@ -619,6 +620,50 @@ Output:
 }
 ```
 
+### Container
+
+Add the `container` boolean to generate container-query utilities under the `@` prefix (e.g., `.\@md\:opacity-25`). Where a responsive class follows the width of the viewport, a container class follows the width of the nearest [query container]([[docsref:/layout/grid#query-containers]]), at the same [breakpoints]([[docsref:/layout/breakpoints]]). The option is independent of `responsive`: a utility can have either set of variants, or both.
+
+```scss
+$utilities: (
+  "opacity": (
+    property: opacity,
+    container: true,
+    values: (
+      0: 0,
+      50: .5,
+      100: 1,
+    )
+  )
+);
+```
+
+Output:
+
+```css
+.opacity-0 { opacity: 0; }
+.opacity-50 { opacity: .5; }
+.opacity-100 { opacity: 1; }
+
+@container (width >= 36rem) {
+  .\@sm\:opacity-0 { opacity: 0; }
+  .\@sm\:opacity-50 { opacity: .5; }
+  .\@sm\:opacity-100 { opacity: 1; }
+}
+
+@container (width >= 48rem) {
+  .\@md\:opacity-0 { opacity: 0; }
+  .\@md\:opacity-50 { opacity: .5; }
+  .\@md\:opacity-100 { opacity: 1; }
+}
+
+/* …and the same for lg, xl, and 2xl */
+```
+
+The first breakpoint has no container variant: the unprefixed class applies at every width. The container rules come after the responsive ones, so where a responsive and a container class both apply to an element, the container class wins.
+
+The layout utilities set `container: true` by default: display, flex (direction, grow, shrink, wrap, fill), `order`, `justify-content`, `align-items`, `align-content`, `align-self`, the gap utilities, `grid-cols-*`, `grid-auto-flow-*`, `space-x-*`, `space-y-*`, `divide-x`, `divide-y`, the fraction widths with `w-100` and `w-auto`, `text-align`, `float`, and `object-fit`. The other responsive utilities — margin, padding, font size, and icon size — set `container: false`, which keeps five more sets of them out of the CSS. [Enable the option](#enable-container-variants) for the ones you need, or set `$enable-container-queries` to `false` to generate none.
+
 ### Print
 
 Enabling the `print` option will **also** generate utility classes for print, which are only applied within the `@media print { ... }` media query.
@@ -859,6 +904,31 @@ This will now generate responsive variations of `.border` and `.border-0` for ea
   .2xl\:border { ... }
   .2xl\:border-0 { ... }
 }
+```
+
+#### Enable container variants
+
+The same merge adds [container-query classes](#container) to a utility that does not have them by default. For example, to generate `.@md:p-lg` and `.@md:px-lg`:
+
+```scss
+@use "sass:map";
+@use "@chassis-ui/css/scss/utilities" as *;
+
+$utilities: map.merge(
+  $utilities,
+  (
+    "padding": map.merge(
+      map.get($utilities, "padding"),
+      ( container: true ),
+    ),
+    "padding-x": map.merge(
+      map.get($utilities, "padding-x"),
+      ( container: true ),
+    ),
+  )
+);
+
+@use "@chassis-ui/css/scss/utilities/api" with ($utilities: $utilities);
 ```
 
 #### Rename utilities

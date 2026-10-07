@@ -89,6 +89,10 @@
       <div class="col-span-6">gutter of the breakpoint</div>
     </div>
 
+    <div class="grid grid-rows-2 md:grid-rows-3" data-testid="grid-rows">
+      <div class="col-span-6">grid-rows-2 md:grid-rows-3</div>
+    </div>
+
     <div class="grid gap-md" data-testid="grid-gap-md">
       <div class="col-span-6">gap-md</div>
     </div>
@@ -100,6 +104,28 @@
     <div class="vstack md:hstack" data-testid="stack">
       <span>a</span>
       <span>b</span>
+    </div>
+
+    <!-- Container queries: the wrapper is a query container at three quarters
+         of the viewport, so its band (none, sm, lg at the three viewports of
+         the spec) is never the viewport's (xs, md, xl). The @ variants are
+         Tailwind core's in the Tailwind build; .contained sets the gutter of
+         the container's band. -->
+    <div class="contains-inline w-9/12">
+      <div class="grid contained @sm:grid-cols-2 @md:grid-cols-3" data-testid="cq-grid">
+        <div class="col-span-full @md:col-span-2" data-testid="cq-span">col-span-full @md:col-span-2</div>
+        <div class="@md:col-span-2 @lg:col-start-2" data-testid="cq-start">@md:col-span-2 @lg:col-start-2</div>
+      </div>
+
+      <!-- Both variants match at the widest viewport: the container one applies. -->
+      <div class="grid contained">
+        <div class="md:col-span-6 @md:col-span-4" data-testid="cq-order">md:col-span-6 @md:col-span-4</div>
+      </div>
+
+      <div class="d-none flex-column @sm:d-flex @md:flex-row @md:gap-md" data-testid="cq-flex">
+        <span>a</span>
+        <span>b</span>
+      </div>
     </div>
 
     <div class="fg-primary" data-testid="fg-primary">Text</div>

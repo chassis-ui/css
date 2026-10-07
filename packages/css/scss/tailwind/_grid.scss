@@ -3,14 +3,17 @@
 //
 // Chassis CSS — Tailwind Grid
 //
-// The Tailwind entry's `../grid`: `.grid`, `.grid-cols-subgrid`, and
-// `.grid-fill` stay plain CSS in `@layer layout`. The placement classes of
-// `.grid` (`col-span-*`, `col-start-*`, `row-span-*`, `row-start-*`) and
-// `grid-cols-*` are Tailwind core's own utilities, with the declarations
-// `make-cssgrid()` copies, so the entry emits none of them: Tailwind
-// generates the ones a project uses, at the breakpoints it uses them, under
-// the class names of dist/css (`lg:col-span-6` is Tailwind's `lg:` variant of
-// `col-span-6`). Forwarded by `./_components-list.scss` in place of
+// The Tailwind entry's `../grid`: `.grid`, `.grid-cols-subgrid`,
+// `.grid-fill` and the `.contained` modifier stay plain CSS in
+// `@layer layout`. The placement classes of `.grid` (`col-span-*`,
+// `col-start-*`, `row-span-*`, `row-start-*`) and `grid-cols-*` are Tailwind
+// core's own utilities, with the declarations `make-cssgrid()` copies, so the
+// entry emits none of them: Tailwind generates the ones a project uses, at
+// the breakpoints it uses them, under the class names of dist/css
+// (`lg:col-span-6` is Tailwind's `lg:` variant of `col-span-6`, and
+// `@lg:col-span-6` its container variant, which `make-cssgrid-container()`
+// writes in the native build; `theme.scss` sets `--container-lg` to the
+// Chassis breakpoint). Forwarded by `./_components-list.scss` in place of
 // `../grid`.
 //
 

@@ -776,6 +776,14 @@ export const classGroups = {
     "grid-cols-8",
     "grid-cols-9"
   ],
+  "grid-row-counts": [
+    "grid-rows-1",
+    "grid-rows-2",
+    "grid-rows-3",
+    "grid-rows-4",
+    "grid-rows-5",
+    "grid-rows-6"
+  ],
   "height": [
     "h-100",
     "h-25",

@@ -8407,6 +8407,17 @@
     grid-auto-flow: row;
     gap: var(--cx-gap);
   }
+  .grid.contained,
+  .grid-fill.contained {
+    --cx-grid-gutter: 1rem;
+    --cx-grid-columns: 12;
+  }
+  @container (width >= 48rem) {
+    .grid.contained,
+    .grid-fill.contained {
+      --cx-grid-gutter: 1.5rem;
+    }
+  }
 }
 @layer utilities {
   .bg-default.fg-contrast {

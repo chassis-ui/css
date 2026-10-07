@@ -46,10 +46,13 @@ type Curated = { testid: string; properties: string[] }
 // 0.6.0: one merged rule, no remedy), a container-query stack, and typical
 // utilities spanning a responsive variant and two Phase 5 remedies. The
 // .grid cases check Tailwind core's placement utilities (col-span-*,
-// col-start-*, row-span-*, grid-cols-*) against dist/css's per-breakpoint
+// col-start-*, row-span-*, grid-cols-*, grid-rows-*) against dist/css's per-breakpoint
 // classes, a start line reset with col-start-auto and row-start-auto, the
 // responsive gutter of .grid at each viewport, a gap utility over it, the
-// fraction widths, and a fraction reset with md:w-100 and lg:w-auto.
+// fraction widths, and a fraction reset with md:w-100 and lg:w-auto. The cq-*
+// cases sit in a query container narrower than the viewport: core's @sm: /
+// @md: / @lg: variants against dist/css's container classes, the gutter of
+// .grid.contained, md: and @md: on one element, and layout utilities.
 //
 // dark:fg-primary is deliberately NOT here: Chassis's own utility generator
 // only flags a handful of utilities (display) with `dark: true`, so
@@ -74,10 +77,16 @@ const CURATED: Curated[] = [
   { testid: 'row-span-2', properties: ['gridRowStart', 'gridRowEnd'] },
   { testid: 'start-reset', properties: ['gridColumnStart', 'gridColumnEnd', 'gridRowStart'] },
   { testid: 'grid-gutter', properties: ['columnGap', 'rowGap'] },
+  { testid: 'grid-rows', properties: ['gridTemplateRows'] },
   { testid: 'grid-gap-md', properties: ['columnGap', 'rowGap'] },
   { testid: 'skeleton-fraction', properties: ['width'] },
   { testid: 'width-reset', properties: ['width'] },
   { testid: 'stack', properties: ['flexDirection'] },
+  { testid: 'cq-grid', properties: ['gridTemplateColumns', 'columnGap', 'rowGap'] },
+  { testid: 'cq-span', properties: ['gridColumnStart', 'gridColumnEnd'] },
+  { testid: 'cq-start', properties: ['gridColumnStart', 'gridColumnEnd'] },
+  { testid: 'cq-order', properties: ['gridColumnStart', 'gridColumnEnd'] },
+  { testid: 'cq-flex', properties: ['display', 'flexDirection', 'columnGap'] },
   { testid: 'fg-primary', properties: ['color'] },
   { testid: 'lg-font-xl', properties: ['fontSize'] },
   { testid: 'opacity-10', properties: ['opacity'] },
@@ -181,6 +190,35 @@ for (const viewport of VIEWPORTS) {
         }
       }
       expect(mismatches, mismatches.join('\n')).toEqual([])
+    })
+  }
+}
+
+// The parity loop above passes when both builds ignore a class alike, so this
+// pins what the container cases compute to: the band of the container (three
+// quarters of the viewport), never the viewport's.
+const CONTAINER_BANDS = [
+  // Container about 280px: no band. The unprefixed classes only.
+  { width: 375, columnGap: '16px', spanEnd: '-1', start: 'auto', orderEnd: 'auto', display: 'none', direction: 'column' },
+  // Container 675px, the sm band, in a viewport of the md band: the gutter of
+  // sm, and md:col-span-6 without @md:col-span-4.
+  { width: 900, columnGap: '16px', spanEnd: '-1', start: 'auto', orderEnd: 'span 6', display: 'flex', direction: 'column' },
+  // Container 1080px, the lg band: the gutter of md and up, every @ variant.
+  { width: 1440, columnGap: '24px', spanEnd: 'span 2', start: '2', orderEnd: 'span 4', display: 'flex', direction: 'row' }
+]
+
+for (const mode of ['chassis', 'tailwind'] as const) {
+  for (const band of CONTAINER_BANDS) {
+    test(`the container cases follow the container, not the viewport (${mode}, ${band.width}px)`, async ({ page }) => {
+      await page.setViewportSize({ width: band.width, height: 900 })
+      const styles = await captureComputedStyles(page, mode)
+
+      expect(styles['cq-grid'].columnGap).toEqual(band.columnGap)
+      expect(styles['cq-span'].gridColumnEnd).toEqual(band.spanEnd)
+      expect(styles['cq-start'].gridColumnStart).toEqual(band.start)
+      expect(styles['cq-order'].gridColumnEnd).toEqual(band.orderEnd)
+      expect(styles['cq-flex'].display).toEqual(band.display)
+      expect(styles['cq-flex'].flexDirection).toEqual(band.direction)
     })
   }
 }

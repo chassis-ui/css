@@ -4,7 +4,7 @@
 //
 // Grid Utilities
 //
-// Utility map for grid layout, column counts, and auto-flow classes.
+// Utility map for grid layout, column counts, row counts, and auto-flow classes.
 //
 
 // `grid-cols-{1…$grid-columns}`, with the declaration of Tailwind's utility
@@ -14,16 +14,33 @@ $-grid-column-counts: () !default;
   $-grid-column-counts: map.set($-grid-column-counts, $i, repeat(#{$i}, minmax(0, 1fr)));
 }
 
+// `grid-rows-{1…$grid-rows}`, likewise.
+$-grid-row-counts: () !default;
+@if $grid-rows > 0 {
+  @for $i from 1 through $grid-rows {
+    $-grid-row-counts: map.set($-grid-row-counts, $i, repeat(#{$i}, minmax(0, 1fr)));
+  }
+}
+
 $utilities: (
   // scss-docs-start utils-grid
   "grid-column-counts": (
     responsive: true,
+    container: true,
     property: grid-template-columns,
     class: grid-cols,
     values: $-grid-column-counts
   ),
+  "grid-row-counts": (
+    responsive: true,
+    container: true,
+    property: grid-template-rows,
+    class: grid-rows,
+    values: $-grid-row-counts
+  ),
   "grid-auto-flow": (
     responsive: true,
+    container: true,
     property: grid-auto-flow,
     class: grid-auto-flow,
     values: row column dense
