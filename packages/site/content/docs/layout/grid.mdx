@@ -413,7 +413,7 @@ Custom properties configure one grid, or every grid inside an element, at runtim
     <div class="col-span-2">.col-span-2</div>
   </div>`} />
 
-The span, start, and end classes are generated up to `$grid-columns`, the end lines one past it. A grid with more columns than that needs an inline `grid-column` for the spans without a class. A span wider than the grid, such as `.col-span-8` in four columns, adds implicit tracks and overflows it: keep the spans within the count of the grid they are in.
+The span, start, and end classes are generated up to `$grid-columns`, the end lines one past it. A grid with more columns than that needs an inline `grid-column` for the spans without a class. A span wider than the grid, such as `.col-span-8` in four columns, adds implicit tracks: they are empty, their gaps take room from the tracks of the grid, and in a narrow grid they overflow it. Keep the spans within the count of the grid they are in.
 
 ## Migrating
 

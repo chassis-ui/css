@@ -44,11 +44,11 @@ The gutter is a `gap`: it sits between items only, never at the edges of the gri
 
 Two values set the row gap and the column gap, in that order:
 
-<Example class="cxd-example-grid" code={`<div class="grid text-center" style="--cx-grid-gap: .25rem 2rem;">
-    <div class="col-span-6">.col-span-6</div>
-    <div class="col-span-6">.col-span-6</div>
-    <div class="col-span-6">.col-span-6</div>
-    <div class="col-span-6">.col-span-6</div>
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-2 text-center" style="--cx-grid-gap: .25rem 2rem;">
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
   </div>`} />
 
 ## Gap utilities
@@ -74,11 +74,11 @@ The sizes of the gap utilities are fixed steps of the spacing scale. `.gap-md` i
 
 `.column-gap-{size}` sets the gap between columns and leaves the row gap at the gutter.
 
-<Example class="cxd-example-grid" code={`<div class="grid column-gap-3xl text-center">
-    <div class="col-span-6">.col-span-6</div>
-    <div class="col-span-6">.col-span-6</div>
-    <div class="col-span-6">.col-span-6</div>
-    <div class="col-span-6">.col-span-6</div>
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-2 column-gap-3xl text-center">
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div>Item</div>
   </div>`} />
 
 ### Vertical gaps
@@ -120,7 +120,9 @@ Every gap utility has breakpoint variants — `.{breakpoint}:gap-{size}`, `.{bre
 
 ## Narrow grids
 
-The gutter follows the width of the viewport, not the width of the grid. A grid that fills the page gets a gap in proportion to it; a grid in a sidebar, a card, or a grid item gets the same gap in a fraction of the width, and twelve tracks can be left with little room. `.contained` on the grid, inside a [query container]([[docsref:/layout/grid#query-containers]]), gives it the gutter of the width of that container — see [Contained grids]([[docsref:/layout/grid#contained-grids]]). A narrow grid can also take a gap of its own, with `--cx-grid-gap` or a gap utility, or fewer tracks with a [column count]([[docsref:/layout/grid#column-counts]]).
+The gutter follows the width of the viewport, not the width of the grid. A grid that fills the page gets a gap in proportion to it; a grid in a sidebar, a card, or a grid item gets the same gap in a fraction of the width. The tracks shrink to make room and the gaps do not: twelve tracks have eleven gaps between them, so a `.grid` narrower than eleven gutters overflows its parent. With the default tokens that is `11rem` below the `md` breakpoint and `16.5rem` from it.
+
+A narrow grid takes fewer tracks, with a [column count]([[docsref:/layout/grid#column-counts]]), or a gap of its own, with `--cx-grid-gap` or a gap utility. `.contained` on the grid, inside a [query container]([[docsref:/layout/grid#query-containers]]), gives it the gutter of the width of that container, which is no narrower than the gutter of the first breakpoint — see [Contained grids]([[docsref:/layout/grid#contained-grids]]).
 
 <Example class="cxd-example-grid" code={`<div class="grid text-center">
     <div class="col-span-4">Sidebar</div>
@@ -133,10 +135,6 @@ The gutter follows the width of the viewport, not the width of the grid. A grid 
       </div>
     </div>
   </div>`} />
-
-<Callout type="info">
-The examples in these docs sit in a column narrower than the viewport, so their grids stop at the gutter of the `sm` breakpoint. A grid on a full-width page continues through the steps of the table above.
-</Callout>
 
 ## Outside a grid
 

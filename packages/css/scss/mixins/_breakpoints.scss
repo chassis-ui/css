@@ -12,7 +12,7 @@
 
 // Breakpoints are defined as a map of (name: minimum width), order from small to large:
 //
-//    (xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px, 2xl: 1400px)
+//    (xs: 0, sm: 36rem, md: 48rem, lg: 64rem, xl: 80rem, 2xl: 96rem)
 //
 // The map defined in the `$breakpoints` global variable is used as the `$breakpoints` argument by default.
 
@@ -43,11 +43,11 @@
 ///
 /// @param {String} $name - Breakpoint name
 /// @param {Map} $breakpoints [$breakpoints] - Breakpoint map
-/// @return {Number|null} - Minimum width in `px`, or `null` for the smallest breakpoint
+/// @return {Number|null} - Minimum width, or `null` for the smallest breakpoint
 /// @example
 ///   breakpoint-min(xs, (...)) => null
-///   breakpoint-min(sm, (...)) => 576px
-///   breakpoint-min(md, (...)) => 768px
+///   breakpoint-min(sm, (...)) => 36rem
+///   breakpoint-min(md, (...)) => 48rem
 @function breakpoint-min($name, $breakpoints: $breakpoints) {
   $min: map.get($breakpoints, $name);
   @return if(sass($min != 0): $min; else: null);
@@ -59,12 +59,12 @@
 ///
 /// @param {String} $name - Breakpoint name
 /// @param {Map} $breakpoints [$breakpoints] - Breakpoint map
-/// @return {Number|null} - Maximum width in `px`, or `null` for the `xs` breakpoint (value 0)
+/// @return {Number|null} - Maximum width, or `null` for the `xs` breakpoint (value 0)
 /// @example
 ///   breakpoint-max(xs, (...)) => null
-///   breakpoint-max(md, (...)) => 768px
-///   breakpoint-max(lg, (...)) => 992px
-///   breakpoint-max(2xl, (...)) => 1400px
+///   breakpoint-max(md, (...)) => 48rem
+///   breakpoint-max(lg, (...)) => 64rem
+///   breakpoint-max(2xl, (...)) => 96rem
 @function breakpoint-max($name, $breakpoints: $breakpoints) {
   @if $name == null {
     @return null;
@@ -189,7 +189,7 @@
 /// @content Styles to apply at this breakpoint and wider
 /// @example
 ///   @include media-breakpoint-up(md) { ... }
-///   // => @media (width >= 768px) { ... }
+///   // => @media (width >= 48rem) { ... }
 @mixin media-breakpoint-up($name, $breakpoints: $breakpoints) {
   $min: breakpoint-min($name, $breakpoints);
   @if $min {
@@ -210,7 +210,7 @@
 /// @content Styles to apply at this breakpoint and narrower
 /// @example
 ///   @include media-breakpoint-down(md) { ... }
-///   // => @media (width < 768px) { ... }
+///   // => @media (width < 48rem) { ... }
 @mixin media-breakpoint-down($name, $breakpoints: $breakpoints) {
   $max: breakpoint-max($name, $breakpoints);
   @if $max {
@@ -231,7 +231,7 @@
 /// @content Styles to apply between the two breakpoints
 /// @example
 ///   @include media-breakpoint-between(sm, lg) { ... }
-///   // => @media (width >= 576px) and (width < 992px) { ... }
+///   // => @media (width >= 36rem) and (width < 64rem) { ... }
 @mixin media-breakpoint-between($lower, $upper, $breakpoints: $breakpoints) {
   $min: breakpoint-min($lower, $breakpoints);
   $max: breakpoint-max($upper, $breakpoints);
@@ -259,7 +259,7 @@
 /// @content Styles to apply only at this breakpoint
 /// @example
 ///   @include media-breakpoint-only(md) { ... }
-///   // => @media (width >= 768px) and (width < 992px) { ... }
+///   // => @media (width >= 48rem) and (width < 64rem) { ... }
 @mixin media-breakpoint-only($name, $breakpoints: $breakpoints) {
   $min:  breakpoint-min($name, $breakpoints);
   $next: breakpoint-next($name, $breakpoints);
@@ -313,9 +313,9 @@
 /// @content Styles to apply at this breakpoint and wider within the container
 /// @example
 ///   @include container-breakpoint-up(md) { ... }
-///   // => @container (width >= 768px) { ... }
+///   // => @container (width >= 48rem) { ... }
 ///   @include container-breakpoint-up(md, sidebar) { ... }
-///   // => @container sidebar (width >= 768px) { ... }
+///   // => @container sidebar (width >= 48rem) { ... }
 @mixin container-breakpoint-up($name, $container-name: null, $breakpoints: $breakpoints) {
   $min: breakpoint-min($name, $breakpoints);
   @if $min {
@@ -342,9 +342,9 @@
 /// @content Styles to apply at this breakpoint and narrower within the container
 /// @example
 ///   @include container-breakpoint-down(md) { ... }
-///   // => @container (width < 768px) { ... }
+///   // => @container (width < 48rem) { ... }
 ///   @include container-breakpoint-down(md, sidebar) { ... }
-///   // => @container sidebar (width < 768px) { ... }
+///   // => @container sidebar (width < 48rem) { ... }
 @mixin container-breakpoint-down($name, $container-name: null, $breakpoints: $breakpoints) {
   $max: breakpoint-max($name, $breakpoints);
   @if $max {
@@ -372,9 +372,9 @@
 /// @content Styles to apply between the two breakpoints within the container
 /// @example
 ///   @include container-breakpoint-between(sm, lg) { ... }
-///   // => @container (width >= 576px) and (width < 992px) { ... }
+///   // => @container (width >= 36rem) and (width < 64rem) { ... }
 ///   @include container-breakpoint-between(sm, lg, sidebar) { ... }
-///   // => @container sidebar (width >= 576px) and (width < 992px) { ... }
+///   // => @container sidebar (width >= 36rem) and (width < 64rem) { ... }
 @mixin container-breakpoint-between($lower, $upper, $container-name: null, $breakpoints: $breakpoints) {
   $min: breakpoint-min($lower, $breakpoints);
   $max: breakpoint-max($upper, $breakpoints);
@@ -410,9 +410,9 @@
 /// @content Styles to apply only at this breakpoint within the container
 /// @example
 ///   @include container-breakpoint-only(md) { ... }
-///   // => @container (width >= 768px) and (width < 992px) { ... }
+///   // => @container (width >= 48rem) and (width < 64rem) { ... }
 ///   @include container-breakpoint-only(md, sidebar) { ... }
-///   // => @container sidebar (width >= 768px) and (width < 992px) { ... }
+///   // => @container sidebar (width >= 48rem) and (width < 64rem) { ... }
 @mixin container-breakpoint-only($name, $container-name: null, $breakpoints: $breakpoints) {
   $min:  breakpoint-min($name, $breakpoints);
   $next: breakpoint-next($name, $breakpoints);

@@ -131,7 +131,7 @@ The tracks of `.grid` fill its width, and an item fills its cell on both axes. A
 
 ### Horizontal alignment
 
-`.justify-items-{value}` on the grid aligns every item on the inline axis of its cell, and `.justify-self-{value}` does it for one item. Available values: `start`, `end`, `center`, `stretch`, and `auto` for `.justify-self-*`. With any value but `stretch` an item is as wide as its content.
+`.justify-items-{value}` on the grid aligns every item on the inline axis of its cell, and `.justify-self-{value}` does it for one item. Available values: `start`, `end`, `center`, `stretch`, and `auto` for `.justify-self-*`. With `start`, `end`, or `center` an item is as wide as its content; `.justify-self-auto` returns an item to the alignment of the grid.
 
 <Example class="cxd-example-grid" code={`<div class="grid justify-items-start text-center">
     <div class="col-span-4 px-md">Start</div>
@@ -144,9 +144,9 @@ The tracks of `.grid` fill its width, and an item fills its cell on both axes. A
 `.place-items-{value}` on the grid aligns every item on both axes at once, and `.place-self-{value}` one item: with `start`, `center`, or `end` an item is as wide as its content and sits at that edge of its cell. `.place-content-{value}` distributes the tracks themselves, on a grid whose tracks do not fill it.
 
 <Example class="cxd-example-grid cxd-example-grid-tall" code={`<div class="grid place-items-center text-center">
-    <div class="col-span-4 px-md">Centered</div>
-    <div class="col-span-4 px-md">Centered</div>
-    <div class="col-span-4 px-md">Centered</div>
+    <div class="col-span-4 px-xs">Item</div>
+    <div class="col-span-4 px-xs">Item</div>
+    <div class="col-span-4 px-xs">Item</div>
   </div>`} />
 
 ### Horizontal position
