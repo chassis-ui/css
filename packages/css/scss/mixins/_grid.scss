@@ -155,6 +155,10 @@
       grid-column: #{"1 / -1"};
     }
 
+    .#{$prefix}col-auto {
+      grid-column: auto;
+    }
+
     @for $i from 1 through $columns {
       .#{$prefix}col-start-#{$i} {
         grid-column-start: $i;
@@ -164,6 +168,19 @@
     .#{$prefix}col-start-auto {
       grid-column-start: auto;
     }
+
+    // Through `$columns + 1`, the line after the last track. The end
+    // classes come after the span and start ones, so `col-span-3 col-end-13`
+    // keeps its end line.
+    @for $i from 1 through ($columns + 1) {
+      .#{$prefix}col-end-#{$i} {
+        grid-column-end: $i;
+      }
+    }
+
+    .#{$prefix}col-end-auto {
+      grid-column-end: auto;
+    }
   }
 
   @if $rows > 0 {
@@ -171,6 +188,10 @@
       .#{$prefix}row-span-#{$i} {
         grid-row: #{"span #{$i} / span #{$i}"};
       }
+    }
+
+    .#{$prefix}row-auto {
+      grid-row: auto;
     }
 
     @for $i from 1 through $rows {
@@ -182,16 +203,28 @@
     .#{$prefix}row-start-auto {
       grid-row-start: auto;
     }
+
+    @for $i from 1 through ($rows + 1) {
+      .#{$prefix}row-end-#{$i} {
+        grid-row-end: $i;
+      }
+    }
+
+    .#{$prefix}row-end-auto {
+      grid-row-end: auto;
+    }
   }
 }
 
 // scss-docs-start make-cssgrid
 /// Generate the placement classes of `.grid` for every breakpoint, with the
-/// declarations of Tailwind's utilities of the same names: `col-span-{1…$columns}`
-/// and `col-span-full` (`grid-column`), `col-start-{1…$columns}` and
-/// `col-start-auto` (`grid-column-start`), `row-span-{1…$rows}` (`grid-row`),
-/// `row-start-{1…$rows}` and `row-start-auto` (`grid-row-start`). The `auto`
-/// classes reset a start line set at a narrower breakpoint.
+/// declarations of Tailwind's utilities of the same names: `col-span-{1…$columns}`,
+/// `col-span-full` and `col-auto` (`grid-column`), `col-start-{1…$columns}` and
+/// `col-start-auto` (`grid-column-start`), `col-end-{1…$columns + 1}` and
+/// `col-end-auto` (`grid-column-end`), and the same on the row axis:
+/// `row-span-{1…$rows}`, `row-auto`, `row-start-{1…$rows}`, `row-start-auto`,
+/// `row-end-{1…$rows + 1}` and `row-end-auto`. The `auto` classes reset a span
+/// or a line set at a narrower breakpoint.
 ///
 /// @param {Number} $columns [$grid-columns] - Number of grid columns
 /// @param {Number} $rows [$grid-rows] - Number of grid rows the row classes cover
@@ -230,8 +263,8 @@
 }
 // scss-docs-end make-cssgrid-container
 
-/// Emit the grid layout classes: `.grid`, `.grid-cols-subgrid`, `.grid-fill`,
-/// the `.contained` modifier and every breakpoint's placement classes, by the
+/// Emit the grid layout classes: `.grid`, `.grid-fill`, the `.contained`
+/// modifier and every breakpoint's placement classes, by the
 /// viewport and then by the container (`$enable-container-queries` governs the
 /// modifier and the container variants). Pass `$responsive: false` to skip the
 /// placement classes, which are Tailwind core's own utilities in the Tailwind
@@ -246,10 +279,6 @@
       display: grid;
       grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
       gap: var(--grid-gap, var(--grid-gutter));
-    }
-
-    .grid-cols-subgrid {
-      grid-template-columns: subgrid;
     }
 
     // As many columns of at least `--grid-min` as fit, the same gap as `.grid`.

@@ -62,6 +62,31 @@ describe('dist/tailwind/merge.js', () => {
     assert.equal(twMerge('col-start-2', 'col-start-auto'), 'col-start-auto')
     assert.equal(twMerge('grid-cols-2', 'grid-cols-4'), 'grid-cols-4')
     assert.equal(twMerge('grid-rows-2', 'grid-rows-3'), 'grid-rows-3')
+    assert.equal(twMerge('grid-cols-3', 'grid-cols-subgrid'), 'grid-cols-subgrid')
+    assert.equal(twMerge('grid-rows-2', 'grid-rows-none'), 'grid-rows-none')
+    assert.equal(twMerge('col-end-13', 'col-end-auto'), 'col-end-auto')
+  })
+
+  test("the track and alignment utilities join tailwind-merge's groups of the same names", () => {
+    for (const group of [
+      'grid-flow',
+      'auto-cols',
+      'auto-rows',
+      'justify-items',
+      'justify-self',
+      'place-content',
+      'place-self'
+    ]) {
+      assert.ok(classGroups[group], `expected a "${group}" group`)
+    }
+    assert.equal(classGroups['grid-auto-flow'], undefined)
+    assert.equal(twMerge('grid-flow-row', 'grid-flow-col-dense'), 'grid-flow-col-dense')
+    assert.equal(twMerge('auto-rows-min', 'auto-rows-fr'), 'auto-rows-fr')
+    assert.equal(
+      twMerge('justify-self-start', 'md:justify-self-end'),
+      'justify-self-start md:justify-self-end'
+    )
+    assert.equal(twMerge('place-content-center', 'place-content-between'), 'place-content-between')
   })
 
   test("the width classes join tailwind-merge's own width group", () => {

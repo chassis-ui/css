@@ -157,6 +157,52 @@
       <div>5</div>
     </div>
 
+    <!-- The end line, a span reset with col-auto, and the row lines:
+         Tailwind core's placement utilities against dist/css's classes. -->
+    <div class="grid" data-testid="end-grid">
+      <div class="col-span-3 col-end-13" data-testid="col-end">col-span-3 col-end-13</div>
+      <div class="col-span-6 md:col-auto" data-testid="col-auto">col-span-6 md:col-auto</div>
+      <div class="row-start-2 row-end-4 md:row-end-auto" data-testid="row-end">row-start-2 row-end-4</div>
+    </div>
+
+    <!-- Tracks: subgrid, auto-flow under Tailwind's names, implicit columns. -->
+    <div class="grid">
+      <div class="col-span-8 grid grid-cols-subgrid" data-testid="subgrid">
+        <div class="col-span-4">subgrid</div>
+        <div class="col-span-4">subgrid</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-none grid-rows-2 grid-flow-col-dense auto-cols-fr md:grid-flow-row" data-testid="flow">
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+    </div>
+
+    <!-- Alignment of the items and of the tracks, and the ends of order. -->
+    <div class="grid justify-items-center place-content-between" style="height: 200px;" data-testid="align-grid">
+      <div class="justify-self-end md:justify-self-start" data-testid="justify-self">justify-self</div>
+      <div class="place-self-end order-first" data-testid="place-self">place-self-end order-first</div>
+      <div class="order-last" data-testid="order-last">order-last</div>
+    </div>
+
+    <!-- Right to left: the first line is the inline start, the right edge. -->
+    <div class="grid" dir="rtl" data-testid="rtl-grid">
+      <div class="col-start-1 col-span-3" data-testid="rtl-start">col-start-1</div>
+    </div>
+
+    <!-- The column count and the gap set on an ancestor reach every grid
+         inside it, a nested one included. -->
+    <div style="--cx-grid-columns: 6; --cx-grid-gap: 8px;">
+      <div class="grid">
+        <div class="col-span-3">
+          <div class="grid" data-testid="nested-grid">
+            <div class="col-span-3">nested</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- .contained outside the wrapper above. The spec turns the body's own
          container off to read it with no query container at all. -->
     <div class="grid contained" data-testid="contained-alone">

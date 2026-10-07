@@ -27,6 +27,8 @@ For SCSS-based containment on custom selectors, the `set-container()` mixin from
 
 The [grid]([[docsref:/layout/grid#container-queries]]) and the layout utilities read a query container through the `@` prefix: `.@md:col-span-4`, `.@md:d-flex`, and `.@md:gap-lg` apply when the nearest `.contains-inline` ancestor is at least as wide as the `md` breakpoint.
 
+An element with `container-type: inline-size` is no longer sized by its content on the inline axis: a `.contains-inline` element that would shrink to its content — a flex item that does not grow, a float, an inline block — needs a width of its own, or it collapses to nothing.
+
 ## Size containment
 
 `.contains-size` sets `container-type: size`, creating a containment context that covers both the inline and block axes. Descendants can respond to both the width and height of the container via `@container` queries.

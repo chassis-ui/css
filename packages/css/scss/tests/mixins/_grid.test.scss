@@ -219,10 +219,6 @@ $bp: (xs: 0, md: 768px, lg: 992px);
           gap: var(--grid-gap, var(--grid-gutter));
         }
 
-        .grid-cols-subgrid {
-          grid-template-columns: subgrid;
-        }
-
         .grid-fill {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(var(--grid-min, 12rem), 1fr));
@@ -275,6 +271,10 @@ $bp: (xs: 0, md: 768px, lg: 992px);
           grid-column: #{"1 / -1"};
         }
 
+        .col-auto {
+          grid-column: auto;
+        }
+
         .col-start-1 {
           grid-column-start: 1;
         }
@@ -287,8 +287,28 @@ $bp: (xs: 0, md: 768px, lg: 992px);
           grid-column-start: auto;
         }
 
+        .col-end-1 {
+          grid-column-end: 1;
+        }
+
+        .col-end-2 {
+          grid-column-end: 2;
+        }
+
+        .col-end-3 {
+          grid-column-end: 3;
+        }
+
+        .col-end-auto {
+          grid-column-end: auto;
+        }
+
         .row-span-1 {
           grid-row: #{"span 1 / span 1"};
+        }
+
+        .row-auto {
+          grid-row: auto;
         }
 
         .row-start-1 {
@@ -297,6 +317,18 @@ $bp: (xs: 0, md: 768px, lg: 992px);
 
         .row-start-auto {
           grid-row-start: auto;
+        }
+
+        .row-end-1 {
+          grid-row-end: 1;
+        }
+
+        .row-end-2 {
+          grid-row-end: 2;
+        }
+
+        .row-end-auto {
+          grid-row-end: auto;
         }
 
         @media (width >= 768px) {
@@ -312,6 +344,10 @@ $bp: (xs: 0, md: 768px, lg: 992px);
             grid-column: #{"1 / -1"};
           }
 
+          .md\:col-auto {
+            grid-column: auto;
+          }
+
           .md\:col-start-1 {
             grid-column-start: 1;
           }
@@ -324,8 +360,28 @@ $bp: (xs: 0, md: 768px, lg: 992px);
             grid-column-start: auto;
           }
 
+          .md\:col-end-1 {
+            grid-column-end: 1;
+          }
+
+          .md\:col-end-2 {
+            grid-column-end: 2;
+          }
+
+          .md\:col-end-3 {
+            grid-column-end: 3;
+          }
+
+          .md\:col-end-auto {
+            grid-column-end: auto;
+          }
+
           .md\:row-span-1 {
             grid-row: #{"span 1 / span 1"};
+          }
+
+          .md\:row-auto {
+            grid-row: auto;
           }
 
           .md\:row-start-1 {
@@ -334,6 +390,18 @@ $bp: (xs: 0, md: 768px, lg: 992px);
 
           .md\:row-start-auto {
             grid-row-start: auto;
+          }
+
+          .md\:row-end-1 {
+            grid-row-end: 1;
+          }
+
+          .md\:row-end-2 {
+            grid-row-end: 2;
+          }
+
+          .md\:row-end-auto {
+            grid-row-end: auto;
           }
         }
       }
@@ -355,7 +423,7 @@ $bp: (xs: 0, md: 768px, lg: 992px);
 // ─── column and row counts ───────────────────────────────────────────────────
 
 @include describe("grid count utilities") {
-  @include it("emits grid-rows-{1…$grid-rows} with the declaration of Tailwind's grid-rows-<n>") {
+  @include it("emits grid-rows-{1…$grid-rows}, none and subgrid with the declarations of Tailwind's grid-rows-*") {
     @include assert() {
       @include output() {
         @include generate-utility(map.get(grid-utilities.$utilities, "grid-row-counts"));
@@ -367,12 +435,91 @@ $bp: (xs: 0, md: 768px, lg: 992px);
             grid-template-rows: repeat(#{$i}, minmax(0, 1fr));
           }
         }
+
+        .grid-rows-none {
+          grid-template-rows: none;
+        }
+
+        .grid-rows-subgrid {
+          grid-template-rows: subgrid;
+        }
       }
     }
   }
 
+  @include it("emits grid-flow-* and the auto track sizes with Tailwind's names and declarations") {
+    @include assert() {
+      @include output() {
+        @include generate-utility(map.get(grid-utilities.$utilities, "grid-flow"));
+        @include generate-utility(map.get(grid-utilities.$utilities, "auto-cols"));
+        @include generate-utility(map.get(grid-utilities.$utilities, "auto-rows"));
+      }
+
+      @include expect() {
+        .grid-flow-row {
+          grid-auto-flow: row;
+        }
+
+        .grid-flow-col {
+          grid-auto-flow: column;
+        }
+
+        .grid-flow-dense {
+          grid-auto-flow: dense;
+        }
+
+        .grid-flow-row-dense {
+          grid-auto-flow: row dense;
+        }
+
+        .grid-flow-col-dense {
+          grid-auto-flow: column dense;
+        }
+
+        .auto-cols-auto {
+          grid-auto-columns: auto;
+        }
+
+        .auto-cols-min {
+          grid-auto-columns: min-content;
+        }
+
+        .auto-cols-max {
+          grid-auto-columns: max-content;
+        }
+
+        .auto-cols-fr {
+          grid-auto-columns: minmax(0, 1fr);
+        }
+
+        .auto-rows-auto {
+          grid-auto-rows: auto;
+        }
+
+        .auto-rows-min {
+          grid-auto-rows: min-content;
+        }
+
+        .auto-rows-max {
+          grid-auto-rows: max-content;
+        }
+
+        .auto-rows-fr {
+          grid-auto-rows: minmax(0, 1fr);
+        }
+      }
+    }
+  }
+
+  @include it("has grid-cols-none and grid-cols-subgrid in the column counts, with their variants") {
+    $columns: map.get(map.get(grid-utilities.$utilities, "grid-column-counts"), values);
+
+    @include assert-equal(none, map.get($columns, none));
+    @include assert-equal(subgrid, map.get($columns, subgrid));
+  }
+
   @include it("has a variant per breakpoint and per container width, as grid-cols has") {
-    @each $name in ("grid-column-counts", "grid-row-counts") {
+    @each $name in ("grid-column-counts", "grid-row-counts", "grid-flow", "auto-cols", "auto-rows") {
       $utility: map.get(grid-utilities.$utilities, $name);
 
       @include assert-true(map.get($utility, responsive));
@@ -441,6 +588,10 @@ $bp: (xs: 0, md: 768px, lg: 992px);
             grid-column: #{"1 / -1"};
           }
 
+          .\@md\:col-auto {
+            grid-column: auto;
+          }
+
           .\@md\:col-start-1 {
             grid-column-start: 1;
           }
@@ -453,8 +604,28 @@ $bp: (xs: 0, md: 768px, lg: 992px);
             grid-column-start: auto;
           }
 
+          .\@md\:col-end-1 {
+            grid-column-end: 1;
+          }
+
+          .\@md\:col-end-2 {
+            grid-column-end: 2;
+          }
+
+          .\@md\:col-end-3 {
+            grid-column-end: 3;
+          }
+
+          .\@md\:col-end-auto {
+            grid-column-end: auto;
+          }
+
           .\@md\:row-span-1 {
             grid-row: #{"span 1 / span 1"};
+          }
+
+          .\@md\:row-auto {
+            grid-row: auto;
           }
 
           .\@md\:row-start-1 {
@@ -463,6 +634,18 @@ $bp: (xs: 0, md: 768px, lg: 992px);
 
           .\@md\:row-start-auto {
             grid-row-start: auto;
+          }
+
+          .\@md\:row-end-1 {
+            grid-row-end: 1;
+          }
+
+          .\@md\:row-end-2 {
+            grid-row-end: 2;
+          }
+
+          .\@md\:row-end-auto {
+            grid-row-end: auto;
           }
         }
 
@@ -479,6 +662,10 @@ $bp: (xs: 0, md: 768px, lg: 992px);
             grid-column: #{"1 / -1"};
           }
 
+          .\@2xl\:col-auto {
+            grid-column: auto;
+          }
+
           .\@2xl\:col-start-1 {
             grid-column-start: 1;
           }
@@ -491,8 +678,28 @@ $bp: (xs: 0, md: 768px, lg: 992px);
             grid-column-start: auto;
           }
 
+          .\@2xl\:col-end-1 {
+            grid-column-end: 1;
+          }
+
+          .\@2xl\:col-end-2 {
+            grid-column-end: 2;
+          }
+
+          .\@2xl\:col-end-3 {
+            grid-column-end: 3;
+          }
+
+          .\@2xl\:col-end-auto {
+            grid-column-end: auto;
+          }
+
           .\@2xl\:row-span-1 {
             grid-row: #{"span 1 / span 1"};
+          }
+
+          .\@2xl\:row-auto {
+            grid-row: auto;
           }
 
           .\@2xl\:row-start-1 {
@@ -501,6 +708,18 @@ $bp: (xs: 0, md: 768px, lg: 992px);
 
           .\@2xl\:row-start-auto {
             grid-row-start: auto;
+          }
+
+          .\@2xl\:row-end-1 {
+            grid-row-end: 1;
+          }
+
+          .\@2xl\:row-end-2 {
+            grid-row-end: 2;
+          }
+
+          .\@2xl\:row-end-auto {
+            grid-row-end: auto;
           }
         }
       }

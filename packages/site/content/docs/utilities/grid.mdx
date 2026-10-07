@@ -1,6 +1,6 @@
 ---
 title: Grid
-description: Responsive utilities for the column count, the row count, and the auto-placement of a CSS Grid container.
+description: Responsive utilities for the column and row counts, the auto-placement, and the implicit tracks of a CSS Grid container.
 toc: true
 css_layer: utilities
 mdn: https://developer.mozilla.org/en-US/docs/Web/CSS/grid
@@ -10,7 +10,7 @@ import { getData } from '@libs/data'
 
 ## Overview
 
-Grid utilities set the number of columns and rows of a grid and the way its items are placed. They act on `.grid`, the container of the [grid system]([[docsref:/layout/grid]]), and on any element with `display: grid` (`.d-grid`). The classes that place a single item — `.col-span-*`, `.col-start-*`, `.row-span-*`, `.row-start-*` — belong to the grid system and are covered in [Columns]([[docsref:/layout/columns]]).
+Grid utilities set the number of columns and rows of a grid and the way its items are placed. They act on `.grid`, the container of the [grid system]([[docsref:/layout/grid]]), and on any element with `display: grid` (`.d-grid`). The classes that place a single item — `.col-span-*`, `.col-start-*`, `.col-end-*`, `.row-span-*`, `.row-start-*`, `.row-end-*` — belong to the grid system and are covered in [Columns]([[docsref:/layout/columns]]).
 
 ## Column counts
 
@@ -49,13 +49,15 @@ Each track is `minmax(0, 1fr)`, the declaration of the Tailwind utility of the s
 }
 ```
 
+`.grid-cols-none` removes the template, which leaves the columns to [auto flow](#auto-flow) and the [implicit tracks](#implicit-tracks), and `.grid-cols-subgrid` takes the tracks of the parent grid — see [Subgrid]([[docsref:/layout/grid#subgrid]]). Both have the variants of the counts, so a template can be dropped or adopted at a breakpoint (`.md:grid-cols-subgrid`).
+
 <Callout type="warning">
 `.grid-cols-fill`, which made an item span the whole grid, was removed in v0.7.0. Use `.col-span-full`.
 </Callout>
 
 ## Row counts
 
-`.grid-rows-{n}` sets `grid-template-rows` to `n` equal rows, from `1` to `6`. A `.grid` declares no rows of its own, so without the class each row is as tall as its content. The class applies to one grid, not to the grids nested in it.
+`.grid-rows-{n}` sets `grid-template-rows` to `n` equal rows, from `1` to `6`. A `.grid` declares no rows of its own, so without the class each row is as tall as its content. The class applies to one grid, not to the grids nested in it. `.grid-rows-none` removes a template set at a narrower breakpoint, and `.grid-rows-subgrid` takes the rows of the parent grid, on a nested grid that spans several of them.
 
 <Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-rows-2 text-center">
     <div class="row-span-2">.row-span-2</div>
@@ -75,13 +77,17 @@ Each row is `minmax(0, 1fr)`, the declaration of the Tailwind utility of the sam
 
 ## Auto flow
 
-`.grid-auto-flow-{value}` sets `grid-auto-flow`, the direction in which items without a start line fill the grid.
+`.grid-flow-{value}` sets `grid-auto-flow`, the direction in which items without a start line fill the grid. The values are Tailwind's: `row`, `col`, `dense`, `row-dense`, and `col-dense`.
+
+<Callout type="warning">
+Until v0.7.0 these classes were `.grid-auto-flow-row`, `.grid-auto-flow-column`, and `.grid-auto-flow-dense`. They are now `.grid-flow-row`, `.grid-flow-col`, and `.grid-flow-dense`.
+</Callout>
 
 ### Row
 
-`.grid-auto-flow-row`, the browser default, fills each row in turn and adds rows as needed.
+`.grid-flow-row`, the browser default, fills each row in turn and adds rows as needed.
 
-<Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-auto-flow-row text-center">
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-flow-row text-center">
     <div>Item 1</div>
     <div>Item 2</div>
     <div>Item 3</div>
@@ -91,9 +97,9 @@ Each row is `minmax(0, 1fr)`, the declaration of the Tailwind utility of the sam
 
 ### Column
 
-`.grid-auto-flow-column` fills each column in turn and adds columns as needed. `.grid-rows-{n}` sets the number of rows a column holds.
+`.grid-flow-col` fills each column in turn and adds columns as needed. `.grid-rows-{n}` sets the number of rows a column holds.
 
-<Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-rows-2 grid-auto-flow-column text-center">
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-rows-2 grid-flow-col text-center">
     <div>Item 1</div>
     <div>Item 2</div>
     <div>Item 3</div>
@@ -103,13 +109,35 @@ Each row is `minmax(0, 1fr)`, the declaration of the Tailwind utility of the sam
 
 ### Dense
 
-`.grid-auto-flow-dense` lets a later item fill a hole that an earlier, wider item left behind. The visual order can then differ from the DOM order.
+`.grid-flow-dense` lets a later item fill a hole that an earlier, wider item left behind. `.grid-flow-row-dense` and `.grid-flow-col-dense` name the direction with it.
 
-<Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-auto-flow-dense text-center">
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-3 grid-flow-dense text-center">
     <div class="col-span-2">Item 1 (spans 2)</div>
     <div class="col-span-2">Item 2 (spans 2)</div>
     <div>Item 3</div>
     <div>Item 4</div>
+  </div>`} />
+
+<Callout type="warning">
+Dense packing moves items out of their DOM order on screen, while keyboards and screen readers keep that order. Use it where the order carries no meaning, such as a gallery.
+</Callout>
+
+## Implicit tracks
+
+A grid creates tracks beyond its template when it has more items than cells: rows in a row flow, columns in a column flow. `.auto-rows-{value}` and `.auto-cols-{value}` set their size with `grid-auto-rows` and `grid-auto-columns`: `auto` (the default, the size of the content), `min` (`min-content`), `max` (`max-content`), and `fr` (`minmax(0, 1fr)`, equal tracks).
+
+<Example class="cxd-example-grid cxd-example-grid-tall" code={`<div class="grid grid-cols-3 auto-rows-fr text-center">
+    <div>Item 1</div>
+    <div>Item 2</div>
+    <div>Item 3</div>
+    <div>Item 4</div>
+    <div>Item 5</div>
+  </div>`} />
+
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-none grid-flow-col auto-cols-max text-center">
+    <div class="px-md">Content width</div>
+    <div class="px-md">A longer item, content width</div>
+    <div class="px-md">Item</div>
   </div>`} />
 
 ## Responsive
@@ -128,7 +156,7 @@ Every grid utility has a variant per breakpoint.
 <ul>
 {getData('breakpoints').map((breakpoint) => {
   return (
-    <li><code>.{breakpoint.abbr}grid-cols-1</code> to <code>.{breakpoint.abbr}grid-cols-12</code></li>
+    <li><code>.{breakpoint.abbr}grid-cols-1</code> to <code>.{breakpoint.abbr}grid-cols-12</code>, <code>.{breakpoint.abbr}grid-cols-none</code>, <code>.{breakpoint.abbr}grid-cols-subgrid</code></li>
   )
 })}
 </ul>
@@ -138,7 +166,7 @@ Every grid utility has a variant per breakpoint.
 <ul>
 {getData('breakpoints').map((breakpoint) => {
   return (
-    <li><code>.{breakpoint.abbr}grid-rows-1</code> to <code>.{breakpoint.abbr}grid-rows-6</code></li>
+    <li><code>.{breakpoint.abbr}grid-rows-1</code> to <code>.{breakpoint.abbr}grid-rows-6</code>, <code>.{breakpoint.abbr}grid-rows-none</code>, <code>.{breakpoint.abbr}grid-rows-subgrid</code></li>
   )
 })}
 </ul>
@@ -149,13 +177,19 @@ Every grid utility has a variant per breakpoint.
 {getData('breakpoints').map((breakpoint) => {
   return (
     <Fragment>
-      <li><code>.{breakpoint.abbr}grid-auto-flow-row</code></li>
-      <li><code>.{breakpoint.abbr}grid-auto-flow-column</code></li>
-      <li><code>.{breakpoint.abbr}grid-auto-flow-dense</code></li>
+      <li><code>.{breakpoint.abbr}grid-flow-row</code></li>
+      <li><code>.{breakpoint.abbr}grid-flow-col</code></li>
+      <li><code>.{breakpoint.abbr}grid-flow-dense</code></li>
+      <li><code>.{breakpoint.abbr}grid-flow-row-dense</code></li>
+      <li><code>.{breakpoint.abbr}grid-flow-col-dense</code></li>
     </Fragment>
   )
 })}
 </ul>
+
+### Implicit tracks
+
+The implicit track utilities have a variant per breakpoint too: `.md:auto-rows-fr`, `.lg:auto-cols-max`.
 
 ### Container variants
 
@@ -169,7 +203,7 @@ Grid utilities are generated via the utilities API.
 
 The table lists all grid utilities and their CSS properties.
 
-<UtilityReferenceTable utility="grid-" />
+<UtilityReferenceTable utility={['grid-', 'auto-cols-', 'auto-rows-']} />
 
 ### Utilities API
 

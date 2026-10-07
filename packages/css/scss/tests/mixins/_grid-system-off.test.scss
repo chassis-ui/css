@@ -24,7 +24,7 @@
   @include it("leaves the grid utilities out of the utility map") {
     @include assert-equal((), grid-utilities.$utilities);
 
-    @each $name in ("grid-column-counts", "grid-row-counts", "grid-auto-flow") {
+    @each $name in ("grid-column-counts", "grid-row-counts", "grid-flow", "auto-cols", "auto-rows") {
       @include assert-false(map.has-key(utilities.$utilities, $name));
     }
   }

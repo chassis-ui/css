@@ -256,7 +256,7 @@ The Tailwind entry resets Tailwind's default theme with `@theme { --*: initial; 
 
 ### Excluded class names
 
-Some Chassis component and layout classes share a name with a Tailwind core utility: `.outline`, `.collapse`, `.container`, `.grid`, `.static`, `.list-item`, `.inline`, `.table`, `.caption-top`, and `.grid-cols-subgrid`. The Tailwind entry excludes these names from Tailwind's generation with `@source not inline()`, so only the Chassis rule applies.
+Some Chassis component and layout classes share a name with a Tailwind core utility: `.outline`, `.collapse`, `.container`, `.grid`, `.static`, `.list-item`, `.inline`, `.table`, and `.caption-top`. The Tailwind entry excludes these names from Tailwind's generation with `@source not inline()`, so only the Chassis rule applies.
 
 <Callout type="info">
 The nav-overflow plugin toggles `.d-none` at runtime through `classList.toggle()`, which Tailwind's source scanner never sees. The Tailwind entry safelists the class with `@source inline("d-none")`, so it always generates.
@@ -266,9 +266,9 @@ The nav-overflow plugin toggles `.d-none` at runtime through `classList.toggle()
 
 In the Tailwind entry the grid is split between Chassis and Tailwind core:
 
-- **Chassis provides the grid.** `.grid`, `.grid-fill`, `.grid-cols-subgrid`, and the [`.contained`]([[docsref:/layout/grid#contained-grids]]) modifier stay plain CSS in the `layout` layer, and `:root` carries the gutter, the column count, and the container padding of each breakpoint (`--cx-grid-gutter`, `--cx-grid-columns`, `--cx-container-padding`).
-- **Tailwind core provides the placement.** `col-span-*`, `col-start-*`, `row-span-*`, and `row-start-*` are Tailwind's own utilities. The regular build declares the same properties under the same names, so markup renders the same with either build. Tailwind generates only the classes it finds in your source files, with the `sm:`–`2xl:` prefixes of the Chassis breakpoints and the `@sm:`–`@2xl:` prefixes of its [container queries]([[docsref:/layout/grid#container-queries]]), at the same widths.
-- **Chassis utilities set the tracks and the gaps.** `grid-cols-{1…12}` and `grid-rows-{1…6}` match Tailwind's declarations, and `gap-*`, `row-gap-*`, and `column-gap-*` take the sizes of the Chassis spacing scale (`gap-md`), not Tailwind's numeric scale.
+- **Chassis provides the grid.** `.grid`, `.grid-fill`, and the [`.contained`]([[docsref:/layout/grid#contained-grids]]) modifier stay plain CSS in the `layout` layer, and `:root` carries the gutter, the column count, and the container padding of each breakpoint (`--cx-grid-gutter`, `--cx-grid-columns`, `--cx-container-padding`).
+- **Tailwind core provides the placement.** `col-span-*`, `col-start-*`, `col-end-*`, `row-span-*`, `row-start-*`, `row-end-*`, `col-auto`, and `row-auto` are Tailwind's own utilities. The regular build declares the same properties under the same names, so markup renders the same with either build. Tailwind generates only the classes it finds in your source files, with the `sm:`–`2xl:` prefixes of the Chassis breakpoints and the `@sm:`–`@2xl:` prefixes of its [container queries]([[docsref:/layout/grid#container-queries]]), at the same widths.
+- **Chassis utilities set the tracks and the gaps.** `grid-cols-*`, `grid-rows-*`, `grid-flow-*`, `auto-cols-*`, and `auto-rows-*` match Tailwind's declarations, as the `justify-items-*`, `justify-self-*`, `place-content-*`, and `place-self-*` alignment utilities do, and `gap-*`, `row-gap-*`, and `column-gap-*` take the sizes of the Chassis spacing scale (`gap-md`), not Tailwind's numeric scale.
 
 ```html
 <div class="grid">
@@ -277,7 +277,7 @@ In the Tailwind entry the grid is split between Chassis and Tailwind core:
 </div>
 ```
 
-Tailwind core has placement utilities the regular build does not generate, such as `col-end-*`, `row-end-*`, and arbitrary values (`col-span-[14]`). They work in the Tailwind entry; markup that has to render with both builds stays within `col-span-{1…12}`, `col-span-full`, `col-start-{1…12}`, `col-start-auto`, `row-span-{1…6}`, `row-start-{1…6}`, `row-start-auto`, `grid-cols-{1…12}`, and `grid-rows-{1…6}`.
+Tailwind core has placement utilities the regular build does not generate, such as negative lines (`-col-end-1`), `row-span-full`, and arbitrary values (`col-span-[14]`), and numeric gaps (`gap-4`, `gap-x-2`) generate nothing, since the entry has no numeric spacing scale. Markup that has to render with both builds stays within the classes of the [grid system]([[docsref:/layout/grid]]): `col-span-{1…12}`, `col-span-full`, `col-auto`, `col-start-{1…12}`, `col-end-{1…13}`, `row-span-{1…6}`, `row-start-{1…6}`, `row-end-{1…7}`, their `auto` resets, and the grid utilities.
 
 Tailwind's scanner can't see class names built at runtime (`` `col-span-${n}` ``). Safelist them, for example with `@source inline("{,md:}col-span-{1..12}");`.
 

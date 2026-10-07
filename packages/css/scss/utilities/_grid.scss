@@ -4,8 +4,9 @@
 //
 // Grid Utilities
 //
-// Utility map for grid layout, column counts, row counts, and auto-flow classes.
-// `$enable-grid-system: false` leaves the map empty.
+// Utility map for the tracks of a grid: column and row counts, auto-flow and
+// the size of implicit tracks, with the names and declarations of Tailwind's
+// utilities. `$enable-grid-system: false` leaves the map empty.
 //
 
 // `grid-cols-{1…$grid-columns}`, with the declaration of Tailwind's utility
@@ -23,6 +24,15 @@ $-grid-row-counts: () !default;
   }
 }
 
+// `auto-cols-*` and `auto-rows-*`: the size of the tracks a grid creates
+// beyond its template.
+$-grid-auto-tracks: (
+  auto: auto,
+  min: min-content,
+  max: max-content,
+  fr: minmax(0, 1fr)
+) !default;
+
 $-grid-utilities: (
   // scss-docs-start utils-grid
   "grid-column-counts": (
@@ -30,21 +40,41 @@ $-grid-utilities: (
     container: true,
     property: grid-template-columns,
     class: grid-cols,
-    values: $-grid-column-counts
+    values: map.merge($-grid-column-counts, (none: none, subgrid: subgrid))
   ),
   "grid-row-counts": (
     responsive: true,
     container: true,
     property: grid-template-rows,
     class: grid-rows,
-    values: $-grid-row-counts
+    values: map.merge($-grid-row-counts, (none: none, subgrid: subgrid))
   ),
-  "grid-auto-flow": (
+  "grid-flow": (
     responsive: true,
     container: true,
     property: grid-auto-flow,
-    class: grid-auto-flow,
-    values: row column dense
+    class: grid-flow,
+    values: (
+      row: row,
+      col: column,
+      dense: dense,
+      row-dense: row dense,
+      col-dense: column dense
+    )
+  ),
+  "auto-cols": (
+    responsive: true,
+    container: true,
+    property: grid-auto-columns,
+    class: auto-cols,
+    values: $-grid-auto-tracks
+  ),
+  "auto-rows": (
+    responsive: true,
+    container: true,
+    property: grid-auto-rows,
+    class: auto-rows,
+    values: $-grid-auto-tracks
   ),
   // scss-docs-end utils-grid
 ) !default;

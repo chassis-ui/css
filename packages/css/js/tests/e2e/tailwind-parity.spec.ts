@@ -53,9 +53,12 @@ type Curated = { testid: string; properties: string[] }
 // cases sit in a query container narrower than the viewport: core's @sm: /
 // @md: / @lg: variants against dist/css's container classes, the gutter of
 // .grid.contained, md: and @md: on one element, and layout utilities. The
-// last grid cases are the rules of the entry itself, the same Sass in both
-// builds: a definite-height .grid, and .grid-fill at its default and at an
-// inline minimum.
+// grid cases after them are the rules of the entry itself, the same Sass in
+// both builds: a definite-height .grid, and .grid-fill at its default and at
+// an inline minimum. The last ones are the rest of the vocabulary: end lines
+// and the auto resets (core's), subgrid, grid-flow-*, auto-cols-*, the
+// justify-* and place-* alignment and the ends of order (Chassis utilities
+// equal to core's), a grid under dir="rtl" and a nested grid.
 //
 // dark:fg-primary is deliberately NOT here: Chassis's own utility generator
 // only flags a handful of utilities (display) with `dark: true`, so
@@ -94,6 +97,17 @@ const CURATED: Curated[] = [
   { testid: 'grid-fill', properties: ['gridTemplateColumns', 'columnGap'] },
   { testid: 'grid-fill-min', properties: ['gridTemplateColumns'] },
   { testid: 'contained-alone', properties: ['columnGap', 'gridTemplateColumns'] },
+  { testid: 'col-end', properties: ['gridColumnStart', 'gridColumnEnd'] },
+  { testid: 'col-auto', properties: ['gridColumnStart', 'gridColumnEnd'] },
+  { testid: 'row-end', properties: ['gridRowStart', 'gridRowEnd'] },
+  { testid: 'subgrid', properties: ['gridTemplateColumns'] },
+  { testid: 'flow', properties: ['gridAutoFlow', 'gridAutoColumns', 'gridTemplateColumns', 'gridTemplateRows'] },
+  { testid: 'align-grid', properties: ['justifyItems', 'alignContent', 'justifyContent'] },
+  { testid: 'justify-self', properties: ['justifySelf'] },
+  { testid: 'place-self', properties: ['alignSelf', 'justifySelf', 'order'] },
+  { testid: 'order-last', properties: ['order'] },
+  { testid: 'rtl-start', properties: ['gridColumnStart', 'gridColumnEnd'] },
+  { testid: 'nested-grid', properties: ['gridTemplateColumns', 'columnGap'] },
   { testid: 'fg-primary', properties: ['color'] },
   { testid: 'lg-font-xl', properties: ['fontSize'] },
   { testid: 'opacity-10', properties: ['opacity'] },
@@ -249,6 +263,40 @@ for (const mode of ['chassis', 'tailwind'] as const) {
     expect(styles['grid-fill'].columnGap).toEqual('24px')
     expect(tracks(styles['grid-fill'].gridTemplateColumns)).toHaveLength(4)
     expect(tracks(styles['grid-fill-min'].gridTemplateColumns)).toHaveLength(2)
+  })
+
+  test(`the end lines, the flow, the alignment, order, RTL and nesting compute as named (${mode})`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    const styles = await captureComputedStyles(page, mode)
+    const edges = (testid: string) =>
+      page.getByTestId(testid).evaluate((el) => {
+        const { left, right } = el.getBoundingClientRect()
+        return { left: Math.round(left), right: Math.round(right) }
+      })
+
+    // `col-span-3 col-end-13`: three tracks against the end edge.
+    expect(styles['col-end']).toEqual({ gridColumnStart: 'span 3', gridColumnEnd: '13' })
+    expect((await edges('col-end')).right).toEqual((await edges('end-grid')).right)
+    // `md:col-auto` takes the span of `col-span-6` back.
+    expect(styles['col-auto']).toEqual({ gridColumnStart: 'auto', gridColumnEnd: 'auto' })
+    expect(styles['row-end']).toEqual({ gridRowStart: '2', gridRowEnd: 'auto' })
+
+    // `md:grid-flow-row` over `grid-flow-col-dense`.
+    expect(styles.flow.gridAutoFlow).toEqual('row')
+    expect(styles.flow.gridAutoColumns).toEqual('minmax(0px, 1fr)')
+
+    expect(styles['align-grid'].justifyItems).toEqual('center')
+    expect(styles['align-grid'].alignContent).toEqual('space-between')
+    expect(styles['justify-self'].justifySelf).toEqual('start')
+    expect(styles['place-self']).toEqual({ alignSelf: 'end', justifySelf: 'end', order: '-9999' })
+    expect(styles['order-last'].order).toEqual('9999')
+
+    // Under dir="rtl" line 1 is the right edge.
+    expect((await edges('rtl-start')).right).toEqual((await edges('rtl-grid')).right)
+
+    // Six columns and an 8px gap from the ancestor, in the nested grid too.
+    expect(styles['nested-grid'].gridTemplateColumns.split(' ')).toHaveLength(6)
+    expect(styles['nested-grid'].columnGap).toEqual('8px')
   })
 
   test(`.contained with no query container keeps the gutter of the viewport (${mode})`, async ({ page }) => {

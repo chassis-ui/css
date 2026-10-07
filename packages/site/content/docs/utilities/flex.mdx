@@ -448,7 +448,7 @@ Responsive variants are available for `order`.
 }))}
 </ul>
 
-`.order-first` applies `order: -1`; `.order-last` applies `order: 6`. Responsive variants are available for both.
+`.order-first` applies `order: -9999`; `.order-last` applies `order: 9999`. Responsive variants are available for both.
 
 <ul>
 {getData('breakpoints').map((breakpoint) => ['first', 'last'].map((value) => {
@@ -683,6 +683,26 @@ Responsive variations also exist for `place-items`.
   )
 })}
 </ul>
+
+## Grid alignment
+
+Four more alignment utilities act on CSS Grid, with the values `start`, `end`, `center`, and `stretch`, a variant per breakpoint, and a variant per container width. [Columns]([[docsref:/layout/columns#alignment]]) shows them on a `.grid`.
+
+<CxTable>
+| Class | Property | On | Other values |
+| --- | --- | --- | --- |
+| `.justify-items-{value}` | `justify-items` | The grid: every item on the inline axis | |
+| `.justify-self-{value}` | `justify-self` | One item on the inline axis | `auto` |
+| `.place-self-{value}` | `place-self` | One item on both axes | `auto` |
+| `.place-content-{value}` | `place-content` | The grid: its tracks on both axes | `between`, `around`, `evenly` |
+</CxTable>
+
+```html
+<div class="d-grid justify-items-center">...</div>
+<div class="d-grid place-content-between">...</div>
+<div class="justify-self-end md:justify-self-start">...</div>
+<div class="place-self-center">...</div>
+```
 
 ## CSS
 

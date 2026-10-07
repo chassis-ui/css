@@ -124,10 +124,38 @@ describe('chassis-grid.scss', () => {
       '.contains-inline {',
       '.w-6\\/12 {',
       '.\\@md\\:w-6\\/12 {',
+      '.col-end-13 {',
+      '.grid-cols-subgrid {',
+      '.grid-flow-col-dense {',
+      '.auto-rows-fr {',
+      '.justify-items-center {',
+      '.place-self-end {',
       '.container {'
     ]) {
       expect(result.css).toContain(selector)
     }
+  })
+})
+
+describe('$grid-rows: 0', () => {
+  it('emits no row class, and none and subgrid for the row counts only', () => {
+    const { css, warnings } = compile(`
+      @use "sass:map";
+      @use "config" with ($grid-rows: 0);
+      @use "mixins" as *;
+      @use "utilities" as *;
+      @include grid-layout();
+      @include generate-utility(map.get($utilities, "grid-row-counts"));
+    `)
+    expect(warnings).toEqual([])
+    expect(css).toContain('.col-span-6')
+    expect(css).not.toContain('row-span-')
+    expect(css).not.toContain('row-start-')
+    expect(css).not.toContain('row-end-')
+    expect(css).not.toContain('.row-auto')
+    expect(css).not.toMatch(/\.grid-rows-\d/)
+    expect(css).toContain('.grid-rows-none')
+    expect(css).toContain('.grid-rows-subgrid')
   })
 })
 
@@ -151,7 +179,9 @@ describe('chassis.scss with $enable-grid-system: false', () => {
       'row-span-',
       '.grid-cols-',
       '.grid-rows-',
-      '.grid-auto-flow-'
+      '.grid-flow-',
+      '.auto-cols-',
+      '.auto-rows-'
     ]) {
       expect(css).not.toContain(absent)
     }

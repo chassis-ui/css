@@ -349,6 +349,53 @@ describe('tailwind fixture build', () => {
     assertWrapped(built, String.raw`@media \(width >= 48rem\)`, String.raw`\.md\\:grid-rows-3 \{`)
   })
 
+  test("the end lines and the auto resets are core's, the track and alignment utilities equal core's", () => {
+    const componentsCss = readFileSync(path.join(root, 'dist/tailwind/components.css'), 'utf8')
+    for (const name of ['col-end-13', 'col-end-auto', 'col-auto', 'row-end-auto', 'row-auto']) {
+      assert.doesNotMatch(componentsCss, new RegExp(`@utility ${name}\\b`))
+    }
+    assert.equal(winningValues(findExactRule(built, 'col-end-13')).get('grid-column-end'), '13')
+    assert.equal(winningValues(findExactRule(built, 'row-end-auto')).get('grid-row-end'), 'auto')
+    assertWrapped(built, String.raw`@media \(width >= 80rem\)`, String.raw`\.xl\\:col-auto \{`)
+    // A span the regular build has no class for is still core's here.
+    assert.equal(
+      winningValues(findExactRule(built, 'col-span-13')).get('grid-column'),
+      'span 13 / span 13'
+    )
+    // The end line comes after the span, as in dist/css: `col-span-3
+    // col-end-13` keeps its end.
+    assert.ok(
+      built.indexOf('.col-span-3 {') < built.indexOf('.col-end-13 {'),
+      'col-end-* comes after col-span-*'
+    )
+
+    // One merged rule each, no `!important`: `equal` clashes.
+    const equal = {
+      'grid-cols-subgrid': ['grid-template-columns', 'subgrid'],
+      'grid-flow-col-dense': ['grid-auto-flow', 'column dense'],
+      'auto-rows-fr': ['grid-auto-rows', 'minmax(0, 1fr)'],
+      'justify-items-center': ['justify-items', 'center'],
+      'place-self-end': ['place-self', 'end']
+    }
+    for (const [name, [property, value]] of Object.entries(equal)) {
+      const rules = findExactRule(built, name)
+      assert.equal(winningValues(rules).get(property), value, name)
+      assert.ok(
+        rules.every((body) => !/!important/.test(body)),
+        `${name} needs no remedy`
+      )
+    }
+
+    // `.grid-cols-subgrid` is a utility now, not a class of `@layer layout`.
+    assert.doesNotMatch(componentsCss, /\.grid-cols-subgrid/)
+  })
+
+  test("Tailwind's numeric gap utilities generate nothing: the entry has no spacing scale for them", () => {
+    assert.equal(findAllRules(built, 'gap-4').length, 0)
+    assert.equal(findAllRules(built, 'gap-x-2').length, 0)
+    assert.ok(findAllRules(built, 'gap-md').length > 0)
+  })
+
   test("the container variants of the grid classes are core's, and .grid.contained passes through", () => {
     // `@md:col-span-4` is core's container variant of core's utility, at the
     // Chassis breakpoint, and it follows the viewport variant in the output,

@@ -65,6 +65,18 @@ export const classGroups = {
     "ratio-4x3",
     "ratio-auto"
   ],
+  "auto-cols": [
+    "auto-cols-auto",
+    "auto-cols-fr",
+    "auto-cols-max",
+    "auto-cols-min"
+  ],
+  "auto-rows": [
+    "auto-rows-auto",
+    "auto-rows-fr",
+    "auto-rows-max",
+    "auto-rows-min"
+  ],
   "base-shadow": [
     "shadow",
     "shadow-emboss",
@@ -767,11 +779,6 @@ export const classGroups = {
     "gap-xs",
     "gap-zero"
   ],
-  "grid-auto-flow": [
-    "grid-auto-flow-column",
-    "grid-auto-flow-dense",
-    "grid-auto-flow-row"
-  ],
   "grid-column-counts": [
     "grid-cols-1",
     "grid-cols-10",
@@ -784,7 +791,16 @@ export const classGroups = {
     "grid-cols-6",
     "grid-cols-7",
     "grid-cols-8",
-    "grid-cols-9"
+    "grid-cols-9",
+    "grid-cols-none",
+    "grid-cols-subgrid"
+  ],
+  "grid-flow": [
+    "grid-flow-col",
+    "grid-flow-col-dense",
+    "grid-flow-dense",
+    "grid-flow-row",
+    "grid-flow-row-dense"
   ],
   "grid-row-counts": [
     "grid-rows-1",
@@ -792,7 +808,9 @@ export const classGroups = {
     "grid-rows-3",
     "grid-rows-4",
     "grid-rows-5",
-    "grid-rows-6"
+    "grid-rows-6",
+    "grid-rows-none",
+    "grid-rows-subgrid"
   ],
   "height": [
     "h-100",
@@ -894,6 +912,19 @@ export const classGroups = {
     "justify-content-end",
     "justify-content-evenly",
     "justify-content-start"
+  ],
+  "justify-items": [
+    "justify-items-center",
+    "justify-items-end",
+    "justify-items-start",
+    "justify-items-stretch"
+  ],
+  "justify-self": [
+    "justify-self-auto",
+    "justify-self-center",
+    "justify-self-end",
+    "justify-self-start",
+    "justify-self-stretch"
   ],
   "line-height": [
     "text-lh-1",
@@ -1394,11 +1425,27 @@ export const classGroups = {
     "py-xs",
     "py-zero"
   ],
+  "place-content": [
+    "place-content-around",
+    "place-content-between",
+    "place-content-center",
+    "place-content-end",
+    "place-content-evenly",
+    "place-content-start",
+    "place-content-stretch"
+  ],
   "place-items": [
     "place-items-center",
     "place-items-end",
     "place-items-start",
     "place-items-stretch"
+  ],
+  "place-self": [
+    "place-self-auto",
+    "place-self-center",
+    "place-self-end",
+    "place-self-start",
+    "place-self-stretch"
   ],
   "pointer-events": [
     "pointer-event-auto",

@@ -38,11 +38,11 @@ The grid has three parts — container, grid, and items — and reads its measur
 
 - **Containers center and pad content.** `.container` applies a `max-width` per breakpoint and a `padding-inline` of `--cx-container-padding`, the page margin. A grid does not need a container: `.grid` has no negative margins to cancel. See [Containers]([[docsref:/layout/containers]]).
 - **`.grid` defines the tracks.** It sets `display: grid` with `--cx-grid-columns` equal tracks of `minmax(0, 1fr)`, so content never widens a track, and a `gap` of `--cx-grid-gutter`. It declares no rows: each line of items creates a row as tall as its content.
-- **Items span tracks.** A direct child of `.grid` occupies one track until a class says otherwise: `.col-span-{n}` spans `n` tracks, `.col-start-{n}` places the item on a grid line. See [Columns]([[docsref:/layout/columns]]).
+- **Items span tracks.** A direct child of `.grid` occupies one track until a class says otherwise: `.col-span-{n}` spans `n` tracks, `.col-start-{n}` and `.col-end-{n}` place the item on a grid line. Lines follow the writing direction, so a layout mirrors under `dir="rtl"` with no other class. See [Columns]([[docsref:/layout/columns]]).
 - **The gutter follows the breakpoint.** `:root` declares `--cx-grid-gutter` from the gutter tokens, again at each breakpoint where the value changes, so one grid has a narrow gap on a phone and a wide one on a desktop with no class. `--cx-grid-gap` or a gap utility overrides it per grid. See [Gutters]([[docsref:/layout/gutters]]).
 - **Breakpoints are min-width media queries.** A prefixed class like `.md:col-span-6` applies from the `md` breakpoint upward. See [Breakpoints]([[docsref:/layout/breakpoints]]).
 - **Container variants follow the container.** A class with the `@` prefix, like `.@md:col-span-6`, applies from the `md` width of the nearest query container, not of the viewport. See [Container queries](#container-queries).
-- **Class names and declarations match Tailwind's.** `col-span-6`, `col-start-3`, `row-span-2`, and `grid-cols-4` declare what the Tailwind utilities of the same names declare, so markup moves between the regular build and the [Tailwind entry]([[docsref:/getting-started/tailwind#grid-classes]]) unchanged.
+- **Class names and declarations match Tailwind's.** `col-span-6`, `col-start-3`, `col-end-13`, `row-span-2`, `grid-cols-4`, and `grid-flow-dense` declare what the Tailwind utilities of the same names declare, so markup moves between the regular build and the [Tailwind entry]([[docsref:/getting-started/tailwind#grid-classes]]) unchanged.
 
 ## Grid options
 
@@ -149,7 +149,7 @@ An item that does not fit in the tracks left on a row moves to the next row. The
 
 ## Placement
 
-`.col-start-{n}` places an item on a grid line, from `1` to `12`, and `.col-start-auto` returns it to automatic placement. `.row-span-{n}` and `.row-start-{n}` do the same on the row axis, and `.order-*` changes the visual order.
+`.col-start-{n}` places an item on a grid line, from `1` to `12`, and `.col-start-auto` returns it to automatic placement. `.col-end-{n}` sets the line on which it ends, from `1` to `13`: `.col-span-3 .col-end-13` puts three tracks against the end edge. `.row-span-{n}`, `.row-start-{n}`, and `.row-end-{n}` do the same on the row axis, and `.order-*` changes the visual order.
 
 <Example class="cxd-example-grid" code={`<div class="grid text-center">
     <div class="col-span-3 col-start-2">.col-span-3 .col-start-2</div>
@@ -161,6 +161,10 @@ An item that does not fit in the tracks left on a row moves to the next row. The
 ## Responsive classes
 
 Every span and placement class has a variant per breakpoint. An unprefixed class applies at every width; a prefixed class applies from its breakpoint upward, until a class of a wider breakpoint overrides it.
+
+### Narrow viewports
+
+The column count is a design token, twelve at every breakpoint by default. On a 320px viewport, twelve tracks between the page margins and eleven gutters are about 9px each, so a span of one to three tracks holds no content there. Start from `.col-span-full` or `.col-span-6` and narrow the spans from a breakpoint up, as the examples below do, or lower the count of one grid with `.grid-cols-{n}`. A design with fewer columns on small screens sets them in the tokens or in [`$grid-column-counts`](#sass-maps), and `--cx-grid-columns` follows the breakpoint.
 
 ### All breakpoints
 
@@ -220,8 +224,11 @@ The prefixes are `@sm:`, `@md:`, `@lg:`, `@xl:`, and `@2xl:`, at the widths of t
 | --- | --- |
 | `.col-span-{1…12}`, `.col-span-full` | `.@md:col-span-6`, `.@md:col-span-full` |
 | `.col-start-{1…12}`, `.col-start-auto` | `.@md:col-start-3`, `.@md:col-start-auto` |
+| `.col-end-{1…13}`, `.col-end-auto`, `.col-auto` | `.@md:col-end-13`, `.@md:col-auto` |
 | `.row-span-{1…6}`, `.row-start-{1…6}`, `.row-start-auto` | `.@md:row-span-2`, `.@md:row-start-auto` |
-| `.grid-cols-{1…12}`, `.grid-rows-{1…6}`, `.grid-auto-flow-*` | `.@md:grid-cols-3`, `.@md:grid-rows-2` |
+| `.row-end-{1…7}`, `.row-end-auto`, `.row-auto` | `.@md:row-end-3`, `.@md:row-auto` |
+| `.grid-cols-{1…12}`, `.grid-cols-none`, `.grid-cols-subgrid`, `.grid-rows-*` | `.@md:grid-cols-3`, `.@md:grid-rows-2` |
+| `.grid-flow-*`, `.auto-cols-*`, `.auto-rows-*` | `.@md:grid-flow-col`, `.@md:auto-rows-fr` |
 | `.gap-*`, `.row-gap-*`, `.column-gap-*` | `.@md:gap-lg` |
 </CxTable>
 
@@ -332,6 +339,49 @@ A `.grid` inside a grid item is a grid of its own, with twelve tracks across the
     <div class="col-span-4">.col-span-4</div>
   </div>`} />
 
+The subgrid takes the column gap of the parent along with its tracks. Its rows stay its own: [`.grid-rows-subgrid`]([[docsref:/utilities/grid#row-counts]]) adopts the rows of the parent too, on an item that spans several. `.grid-cols-subgrid` is a utility with the variants of the column counts, so a nested grid can become a subgrid from a breakpoint (`.md:grid-cols-subgrid`).
+
+## Common layouts
+
+### Sidebar and content
+
+A sidebar that stacks above the content on narrow viewports and takes three of twelve tracks from a breakpoint. Add `position: sticky` and a `top` offset to the sidebar to keep it in view while the content scrolls.
+
+<Example class="cxd-example-grid" code={`<div class="grid text-center">
+    <div class="col-span-full md:col-span-3">Sidebar</div>
+    <div class="col-span-full md:col-span-9">Content</div>
+  </div>`} />
+
+### Header, three columns, footer
+
+Full-width items above and below a row of three. Below the breakpoint every item is a row of its own, in DOM order.
+
+<Example class="cxd-example-grid" code={`<div class="grid text-center">
+    <div class="col-span-full">Header</div>
+    <div class="col-span-full md:col-span-2">Navigation</div>
+    <div class="col-span-full md:col-span-7">Main</div>
+    <div class="col-span-full md:col-span-3">Aside</div>
+    <div class="col-span-full">Footer</div>
+  </div>`} />
+
+### Card grid
+
+Cards of equal width that wrap by themselves need no breakpoint class: see [Auto-fit](#auto-fit).
+
+### Gallery
+
+Items of different sizes packed without holes, with [dense auto flow]([[docsref:/utilities/grid#dense]]) and equal implicit rows.
+
+<Example class="cxd-example-grid" code={`<div class="grid grid-cols-4 grid-flow-dense auto-rows-fr text-center">
+    <div class="col-span-2 row-span-2">Large</div>
+    <div>Item</div>
+    <div>Item</div>
+    <div class="col-span-2">Wide</div>
+    <div>Item</div>
+    <div class="col-span-2">Wide</div>
+    <div>Item</div>
+  </div>`} />
+
 ## Content-width columns
 
 A grid sizes its tracks from the container, not from the content. For items as wide as their content beside items that take the rest of the row, use a flex row: `.d-flex` with a gap utility, and `.flex-fill` on the items that grow. `gap: var(--cx-grid-gutter)` gives a flex row the gutter of the grid. See [Flex utilities]([[docsref:/utilities/flex]]).
@@ -363,7 +413,7 @@ Custom properties configure one grid, or every grid inside an element, at runtim
     <div class="col-span-2">.col-span-2</div>
   </div>`} />
 
-The span and start classes are generated up to `$grid-columns`. A grid with more columns than that needs an inline `grid-column` for the spans without a class.
+The span and start classes are generated up to `$grid-columns`. A grid with more columns than that needs an inline `grid-column` for the spans without a class. A span wider than the grid, such as `.col-span-8` in four columns, adds implicit tracks and overflows it: keep the spans within the count of the grid they are in.
 
 ## Migrating
 
@@ -403,7 +453,7 @@ The Sass of the flexbox grid went with its classes: the mixins `make-row()`, `ma
 
 <DocsCSS name="Grid" type="system" exposed />
 
-`.grid`, `.grid-cols-subgrid`, and `.grid-fill` are emitted when `$enable-grid-system` is `true`, the default. The option governs the whole grid system: these classes, the span and start classes, `.contained`, and the `grid-cols-*`, `grid-rows-*`, and `grid-auto-flow-*` utilities. The gap utilities, the fraction widths, the containers, and the `:root` custom properties stay, as flex layouts and components read them. Until v0.7.0 the option was `$enable-cssgrid` and left the utilities in.
+`.grid` and `.grid-fill` are emitted when `$enable-grid-system` is `true`, the default. The option governs the whole grid system: these classes, the span, start, and end classes, `.contained`, and the [grid utilities]([[docsref:/utilities/grid]]) (`grid-cols-*`, `grid-rows-*`, `grid-flow-*`, `auto-cols-*`, `auto-rows-*`). The gap utilities, the fraction widths, the containers, and the `:root` custom properties stay, as flex layouts and components read them. Until v0.7.0 the option was `$enable-cssgrid` and left the utilities in.
 
 <ScssDocs name="grid-layout" file="scss/mixins/_grid.scss" />
 
@@ -493,13 +543,17 @@ Three maps, keyed by breakpoint, feed the `:root` custom properties. Override a 
 
 <ScssDocs name="columns-tokens" file="scss/tokens/_grid.scss" />
 
+The minimum column width of `.grid-fill` is a placeholder until `@chassis-ui/tokens` has a token for it:
+
+<ScssDocs name="fill-tokens" file="scss/tokens/_grid.scss" />
+
 ### Sass mixins
 
 `grid-root-vars()` emits the three `:root` custom properties from the maps. Include it in a `:root` rule when compiling the grid without `scss/_root.scss`. Each map needs a value for the first breakpoint: the compile stops on a map without one, and warns about a key that is no breakpoint.
 
 <ScssDocs name="grid-root-vars" file="scss/mixins/_grid.scss" />
 
-`make-cssgrid()` generates the span and start classes of every breakpoint.
+`make-cssgrid()` generates the span, start, and end classes of every breakpoint.
 
 <ScssDocs name="make-cssgrid" file="scss/mixins/_grid.scss" />
 
