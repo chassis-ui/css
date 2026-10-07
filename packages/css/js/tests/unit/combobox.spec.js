@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import Combobox from '../../src/combobox.js'
 import Menu from '../../src/menu.js'
 import { clearFixture, getFixture } from '../helpers/fixture.js'
@@ -995,18 +996,21 @@ describe('Combobox', () => {
 
   describe('text-input trigger mode', () => {
     it('should focus the comboInput when show() is called (via requestAnimationFrame)', () => {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         fixtureEl.innerHTML = buildInputTrigger()
         const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
         const inputEl = fixtureEl.querySelector('input.combobox-value')
         const combobox = new Combobox(toggleEl)
 
         toggleEl.addEventListener('shown.cx.combobox', () => {
-          // Focus shift is scheduled via rAF — wait for it
-          setTimeout(() => {
+          // Focus shift is scheduled via requestAnimationFrame — poll for it
+          // instead of a fixed delay, since a busy CI runner can be slow to
+          // schedule a frame.
+          vi.waitFor(() => {
             expect(document.activeElement).toEqual(inputEl)
-            resolve()
-          }, 30)
+          }, { timeout: 1000, interval: 10 })
+            .then(resolve)
+            .catch(reject)
         })
 
         combobox.show()
@@ -1014,7 +1018,7 @@ describe('Combobox', () => {
     })
 
     it('should call select() on the comboInput on show (for easy overtyping)', () => {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         fixtureEl.innerHTML = buildInputTrigger()
         const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
         const inputEl = fixtureEl.querySelector('input.combobox-value')
@@ -1023,11 +1027,13 @@ describe('Combobox', () => {
         const combobox = new Combobox(toggleEl)
 
         toggleEl.addEventListener('shown.cx.combobox', () => {
-          // select() is called inside the rAF after focus()
-          setTimeout(() => {
+          // select() is called inside the requestAnimationFrame callback, after
+          // focus() — poll for it instead of a fixed delay.
+          vi.waitFor(() => {
             expect(selectSpy).toHaveBeenCalled()
-            resolve()
-          }, 30)
+          }, { timeout: 1000, interval: 10 })
+            .then(resolve)
+            .catch(reject)
         })
 
         combobox.show()
@@ -1675,7 +1681,7 @@ describe('Combobox', () => {
     ].join('')
 
     it('should focus the first visible item on ArrowDown from the search input', () => {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         fixtureEl.innerHTML = buildButtonTriggerWithSearch()
         const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
         const searchInputEl = fixtureEl.querySelector('.combobox-search-input')
@@ -1683,12 +1689,17 @@ describe('Combobox', () => {
         const combobox = new Combobox(toggleEl)
 
         toggleEl.addEventListener('shown.cx.combobox', () => {
-          // searchInput receives focus on show via rAF — wait for it
-          setTimeout(() => {
-            searchInputEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }))
-            expect(document.activeElement).toEqual(items[0])
-            resolve()
-          }, 30)
+          // searchInput receives focus on show via requestAnimationFrame — poll
+          // for it instead of a fixed delay, then press the key.
+          vi.waitFor(() => {
+            expect(document.activeElement).toEqual(searchInputEl)
+          }, { timeout: 1000, interval: 10 })
+            .then(() => {
+              searchInputEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }))
+              expect(document.activeElement).toEqual(items[0])
+              resolve()
+            })
+            .catch(reject)
         })
 
         combobox.show()
@@ -1719,7 +1730,7 @@ describe('Combobox', () => {
     })
 
     it('should close the menu and refocus the toggle on Escape in the search input', () => {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         fixtureEl.innerHTML = buildButtonTriggerWithSearch()
         const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
         const searchInputEl = fixtureEl.querySelector('.combobox-search-input')
@@ -1727,12 +1738,18 @@ describe('Combobox', () => {
         const combobox = new Combobox(toggleEl)
 
         toggleEl.addEventListener('shown.cx.combobox', () => {
-          setTimeout(() => {
-            searchInputEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
-            expect(menuEl).not.toHaveClass('show')
-            expect(document.activeElement).toEqual(toggleEl)
-            resolve()
-          }, 30)
+          // searchInput receives focus on show via requestAnimationFrame — poll
+          // for it instead of a fixed delay, then press the key.
+          vi.waitFor(() => {
+            expect(document.activeElement).toEqual(searchInputEl)
+          }, { timeout: 1000, interval: 10 })
+            .then(() => {
+              searchInputEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+              expect(menuEl).not.toHaveClass('show')
+              expect(document.activeElement).toEqual(toggleEl)
+              resolve()
+            })
+            .catch(reject)
         })
 
         combobox.show()
