@@ -36,6 +36,14 @@
       --dialog-margin: #{$dialog-margin-sm};
     }
 
+    // A component class (`.modal`, `.alert`) sets `display`, so a closed dialog is laid out
+    // and `visibility` hides it. The browser positions it absolutely, in the area the page
+    // scrolls, where a fullscreen modal at the scale of its transition is 5% wider than the
+    // page. A fixed box adds nothing to that area.
+    &:not([open]) {
+      position: fixed;
+    }
+
     // Suppress the focus ring on the dialog container itself. Focus is moved
     // here programmatically on open so no child element (e.g. the close button)
     // appears focused — the dialog acts as a silent focus anchor.

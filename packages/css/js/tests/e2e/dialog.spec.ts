@@ -236,6 +236,22 @@ test.describe('modal dialogs', () => {
       .toEqual([Math.round(viewport.width / 2), Math.round(viewport.height / 2)])
   })
 
+  // A closed modal is laid out (`.modal` sets `display`, and `visibility` hides it) at the
+  // scale its entry transition starts from, 105% of the viewport when it is fullscreen.
+  // `position: fixed` keeps that box out of the area the page scrolls.
+  test('a closed fullscreen dialog does not make the page scroll sideways', async ({ page }) => {
+    // Below `md`, where `max-md:fullscreen` applies
+    await page.setViewportSize({ width: 375, height: 667 })
+
+    await expect(page.locator('#fullscreenModal')).toBeHidden()
+
+    const sideways = await page.evaluate(() => {
+      const root = document.documentElement
+      return root.scrollWidth - root.clientWidth
+    })
+    expect(sideways).toBe(0)
+  })
+
   test('the input with autofocus has the focus when the dialog opens', async ({ page }) => {
     await open(page, 'autofocusModal')
 
