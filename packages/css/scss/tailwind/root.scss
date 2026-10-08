@@ -4,7 +4,10 @@
 // Standalone entry point forwarding the Chassis token `:root` declarations
 // for à-la-carte Tailwind imports.
 //
+// The banner is forwarded without a `$file`, so the entries load together in
+// one stylesheet; `build/tailwind/build.mjs` names the file in `dist/tailwind/`.
+//
 
-@use "../mixins/banner" with ($file: "Tailwind Root");
+@forward "../mixins/banner";
 
 @forward "../root";

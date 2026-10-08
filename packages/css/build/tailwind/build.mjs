@@ -68,16 +68,37 @@ const root = path.resolve(fileURLToPath(import.meta.url), '../../..')
 const srcDir = path.join(root, 'scss/tailwind')
 const outDir = path.join(root, 'dist/tailwind')
 
+const sassOptions = {
+  loadPaths: [path.join(root, 'scss/vendor'), path.join(root, 'node_modules')],
+  style: 'expanded'
+}
+
+// `banner` is the file name in the banner of the compiled entry. The build
+// passes it: a module is configured once in a compilation, so an entry that
+// configured `mixins/banner` itself could not be loaded next to another one in
+// a project's stylesheet. `index.scss` forwards the banner with no file name.
 const entries = [
-  'layers.scss',
-  'theme.scss',
-  'root.scss',
-  'reboot.scss',
-  'components.scss',
-  'utilities.scss',
-  'index.scss',
-  'bridge.scss'
+  { file: 'layers.scss', banner: 'Tailwind Layer Order' },
+  { file: 'theme.scss', banner: 'Tailwind Theme' },
+  { file: 'root.scss', banner: 'Tailwind Root' },
+  { file: 'reboot.scss', banner: 'Tailwind Reboot' },
+  { file: 'components.scss', banner: 'Tailwind Components' },
+  { file: 'utilities.scss', banner: 'Tailwind Utilities' },
+  { file: 'index.scss' },
+  { file: 'bridge.scss', banner: 'Tailwind Token Bridge' }
 ]
+
+// Compiles an entry, through a stylesheet that configures the banner first
+// when the entry has a file name for it.
+function compileEntry({ file, banner }) {
+  if (!banner) return sass.compile(path.join(srcDir, file), sassOptions)
+
+  const name = path.basename(file, '.scss')
+  return sass.compileString(
+    `@use "../mixins/banner" with ($file: "${banner}");\n@use "./${name}";\n`,
+    { ...sassOptions, url: pathToFileURL(path.join(srcDir, `${name}.banner.scss`)) }
+  )
+}
 
 // The Sass + prefix compile pass, exported so
 // `update-source-exclusions.mjs` can produce a fresh
@@ -87,12 +108,8 @@ export async function compileTailwindDist() {
   mkdirSync(outDir, { recursive: true })
 
   for (const entry of entries) {
-    const result = sass.compile(path.join(srcDir, entry), {
-      loadPaths: [path.join(root, 'scss/vendor'), path.join(root, 'node_modules')],
-      style: 'expanded'
-    })
-    const outFile = path.join(outDir, entry.replace(/\.scss$/, '.css'))
-    writeFileSync(outFile, result.css)
+    const outFile = path.join(outDir, entry.file.replace(/\.scss$/, '.css'))
+    writeFileSync(outFile, compileEntry(entry).css)
   }
 
   const { plugins } = tailwindConfig({})

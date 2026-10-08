@@ -50,11 +50,13 @@ This guide assumes a project that already compiles Sass, as set up in the [Vite]
        md: 48rem,
        lg: 64rem,
        xl: 80rem,
-       "2xl": 96rem,
+       2xl: 96rem,
      ),
    );
    @use "@chassis-ui/css/scss/tailwind";
    ```
+
+   Write the `2xl` key without quotes, as the maps of Chassis do. To Sass a quoted `"2xl"` is another key, and the gutter, the page margin, and the column count of that breakpoint are then ignored, with a warning for each.
 
 ## Build it
 
@@ -224,7 +226,7 @@ Import the entry from the CSS file your Tailwind build compiles, in place of `@i
 
 [Installation]([[docsref:/getting-started/installation]]) describes the same relationship for `dist/css/chassis.css`. The prebuilt file suits a prototype; a real project follows [Setup](#setup) so its own tokens and settings apply.
 
-## À la carte imports
+## Separate modules
 
 To drop reboot or the components, `@use` the modules one by one instead of the combined entry.
 
@@ -237,9 +239,9 @@ To drop reboot or the components, `@use` the modules one by one instead of the c
 @use "@chassis-ui/css/scss/tailwind/utilities";  // Chassis utilities as @utility rules
 ```
 
-The combined `@chassis-ui/css/scss/tailwind` entry forwards these six modules in this order. Configure settings the same way, with a `@use "@chassis-ui/css/scss/config" with (…)` before the first module.
+The six rules compile to the same CSS as the combined `@chassis-ui/css/scss/tailwind` entry, which loads the same parts in this order. Keep `layers` first and the rest in the order of the list: Sass writes the CSS of a module where it's first loaded, and the layer order has to come before every other rule. Configure settings the same way, with a `@use "@chassis-ui/css/scss/config" with (…)` before the first module.
 
-The [prebuilt CSS](#prebuilt-css) has the same split. Nothing resolves the order for you there, so import `layers.css` first:
+The [prebuilt CSS](#prebuilt-css) has the same split, in the same order:
 
 ```css
 @import "@chassis-ui/css/tailwind/layers.css";

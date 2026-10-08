@@ -5,7 +5,10 @@
 // stack as `../chassis`, minus root, reboot, and the utilities-api, for
 // à-la-carte Tailwind imports. See `./_components-list.scss`.
 //
+// The banner is forwarded without a `$file`, so the entries load together in
+// one stylesheet; `build/tailwind/build.mjs` names the file in `dist/tailwind/`.
+//
 
-@use "../mixins/banner" with ($file: "Tailwind Components");
+@forward "../mixins/banner";
 
 @forward "./components-list";

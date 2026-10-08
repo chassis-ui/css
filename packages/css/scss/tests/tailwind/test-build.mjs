@@ -21,7 +21,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { before, describe, test } from 'node:test'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import * as sass from 'sass'
 import { extractOrderedDecls } from '../../../build/tailwind/clashes.mjs'
 
@@ -518,6 +518,62 @@ describe('tailwind fixture build', () => {
       policy.differs.map((d) => d.name).sort(),
       'dist/tailwind/utility-clashes.json is stale — re-run `pnpm css:tailwind` (or `pnpm dist`)'
     )
+  })
+})
+
+describe('the separate modules', () => {
+  const sassOptions = {
+    loadPaths: [path.join(root, 'scss/vendor'), path.join(root, 'node_modules')]
+  }
+
+  // A project's stylesheet that loads the modules one by one, as the Tailwind
+  // guide of the docs lists them.
+  function compileModules(names) {
+    const source = names.map((name) => `@use "./${name}";`).join('\n')
+    return sass.compileString(source, {
+      ...sassOptions,
+      url: pathToFileURL(path.join(root, 'scss/tailwind/separate-modules.test.scss'))
+    }).css
+  }
+
+  test('load together in one stylesheet, with the CSS of the combined entry', () => {
+    // Each of `layers`, `root`, `reboot` and `components` used to configure
+    // `mixins/banner` with its own `$file`, and Sass configures a module once:
+    // the second of them stopped the compile.
+    const css = compileModules(['layers', 'theme', 'root', 'reboot', 'components', 'utilities'])
+    const entry = sass.compile(path.join(root, 'scss/tailwind/index.scss'), sassOptions).css
+    assert.equal(css, entry)
+  })
+
+  test('compile without reboot and the components, under one banner and the layer order', () => {
+    const css = compileModules(['layers', 'theme', 'root', 'utilities'])
+    assert.equal(css.match(/\/\*!/g).length, 1, 'expected one banner')
+    assert.match(
+      css,
+      /^\/\*![\s\S]*?\*\/\n@layer theme, colors, config, root, base, reboot, layout, content, components, custom, helpers, utilities;/
+    )
+    assert.match(css, /@utility fg-primary \{/)
+    assert.doesNotMatch(css, /\.button \{/)
+    assert.doesNotMatch(css, /@layer reboot\s*\{/)
+  })
+
+  test('the banner of each compiled module names its file', () => {
+    const banners = {
+      'layers.css': 'Tailwind Layer Order',
+      'theme.css': 'Tailwind Theme',
+      'root.css': 'Tailwind Root',
+      'reboot.css': 'Tailwind Reboot',
+      'components.css': 'Tailwind Components',
+      'utilities.css': 'Tailwind Utilities',
+      'bridge.css': 'Tailwind Token Bridge'
+    }
+    for (const [file, name] of Object.entries(banners)) {
+      const css = readFileSync(path.join(root, 'dist/tailwind', file), 'utf8')
+      assert.ok(
+        css.includes(`\n  * Chassis CSS - ${name} v`),
+        `${file} has no banner with its name`
+      )
+    }
   })
 })
 

@@ -5,7 +5,10 @@
 // à-la-carte Tailwind imports. Tailwind Preflight is not imported (see
 // `./layers`); this is the reset Tailwind users get instead.
 //
+// The banner is forwarded without a `$file`, so the entries load together in
+// one stylesheet; `build/tailwind/build.mjs` names the file in `dist/tailwind/`.
+//
 
-@use "../mixins/banner" with ($file: "Tailwind Reboot");
+@forward "../mixins/banner";
 
 @forward "../reboot";

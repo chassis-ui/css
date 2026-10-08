@@ -4,7 +4,10 @@
 // Standalone entry point for à-la-carte Tailwind imports. Must be imported
 // before every other Chassis Tailwind file. See `./_layer-order.scss`.
 //
+// The banner is forwarded without a `$file`, so the entries load together in
+// one stylesheet; `build/tailwind/build.mjs` names the file in `dist/tailwind/`.
+//
 
-@use "../mixins/banner" with ($file: "Tailwind Layer Order");
+@forward "../mixins/banner";
 
 @forward "./layer-order";
