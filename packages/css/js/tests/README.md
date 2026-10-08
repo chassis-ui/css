@@ -3,7 +3,7 @@
 Chassis CSS uses [Vitest](https://vitest.dev/) in [browser mode](https://vitest.dev/guide/browser/), which runs each spec in a real Chromium through [Playwright](https://playwright.dev/). Each plugin has a file dedicated to its tests in `js/tests/unit/<plugin-name>.spec.js`.
 
 - `visual/` contains "visual" tests which are run interactively in real browsers and require manual verification by humans.
-- `e2e/` contains real-browser Playwright specs that drive the `visual/` fixtures with actual assertions (chromium/firefox/webkit), for components that have been converted off the manual-verification workflow: Accordion, Carousel, Combobox, Datepicker, Dialog, Menu, Tab and Toast. `e2e/a11y.spec.ts` runs axe on every page of `visual/`.
+- `e2e/` contains real-browser Playwright specs that drive the `visual/` fixtures with actual assertions (chromium/firefox/webkit), for components that have been converted off the manual-verification workflow: Accordion, Carousel, Combobox, Datepicker, Dialog, Drawer, Menu, Tab and Toast. `e2e/a11y.spec.ts` runs axe on every page of `visual/`.
 - `types/` contains compile-time type tests. They are type-checked, never executed.
 - `vitest.config.mts` holds the runner config, and `vitest-setup.js` runs before every spec.
 

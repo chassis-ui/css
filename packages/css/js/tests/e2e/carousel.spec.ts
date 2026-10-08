@@ -1,9 +1,10 @@
 import { expect, test, type Page } from '@playwright/test'
 import { openPage, TODAY } from './helpers/pages'
 
-// The carousel of js/tests/visual/carousel.html in a real layout, with the bundle the page loads:
+// The carousels of js/tests/visual/carousel.html in a real layout, with the bundle the page loads:
 // the controls, the indicators and the arrow keys, scrolling of the track, focus, the ends of the
-// track and autoplay. The options and the methods are tested in js/tests/unit/carousel.spec.js.
+// track and autoplay, and the second carousel of the page, which fades. The options and the
+// methods are tested in js/tests/unit/carousel.spec.js.
 
 const ID = '#carousel-example-generic'
 
@@ -48,14 +49,14 @@ async function offset(page: Page, number: number) {
  * the first use of a control. An instance with options is constructed as the docs say, with the
  * class of the bundle that the page loaded.
  */
-async function construct(page: Page, config: Record<string, unknown> = {}) {
+async function construct(page: Page, config: Record<string, unknown> = {}, selector = ID) {
   await page.evaluate(
     async ({ selector, options }) => {
       const bundle = document.querySelector<HTMLScriptElement>('script[type="module"]')!.src
       const { Carousel } = await import(bundle)
       Carousel.getOrCreateInstance(selector, options)
     },
-    { selector: ID, options: config }
+    { selector, options: config }
   )
 }
 
@@ -280,5 +281,166 @@ test.describe('autoplay', () => {
 
     await page.clock.runFor(3 * INTERVAL)
     await expectSlide(page, 2)
+  })
+})
+
+// `.carousel-fade`: the slides are stacked in one place, and the plugin sets the active one
+// without scrolling. The fade itself is CSS: the slide that leaves stays visible while its
+// opacity runs out, and is hidden when it has.
+test.describe('fade', () => {
+  const FADE = '#carousel-example-fade'
+
+  const fadeControl = (page: Page, name: 'Next fade slide' | 'Previous fade slide') =>
+    page.locator(FADE).getByRole('button', { name, exact: true })
+  const fadeIndicator = (page: Page, number: number) =>
+    page.locator(FADE).getByRole('button', { name: `Fade slide ${number}`, exact: true })
+  const fadeSlide = (page: Page, number: number) =>
+    page.locator(`${FADE} .carousel-item`).nth(number - 1)
+
+  /** The slide is the only one shown, opaque, and the fade of the others is over */
+  async function expectFadeSlide(page: Page, number: number) {
+    await expect(fadeSlide(page, number)).toHaveClass(/\bactive\b/)
+    await expect(page.locator(`${FADE} .carousel-item.active`)).toHaveCount(1)
+    await expect(fadeSlide(page, number)).toHaveCSS('opacity', '1')
+    await expect(fadeSlide(page, number)).toBeVisible()
+
+    for (const other of [1, 2, 3].filter((slide) => slide !== number)) {
+      await expect(fadeSlide(page, other)).toBeHidden()
+      await expect(fadeSlide(page, other)).toHaveCSS('opacity', '0')
+    }
+
+    await expect(fadeIndicator(page, number)).toHaveAttribute('aria-current', 'true')
+    await expect(page.locator(`${FADE} .carousel-indicators [aria-current]`)).toHaveCount(1)
+    // The track has not moved
+    expect(await page.locator(`${FADE} .carousel-inner`).evaluate((el) => el.scrollLeft)).toBe(0)
+  }
+
+  test('the slides are stacked in one place, and only the active one is shown', async ({
+    page
+  }) => {
+    await expectFadeSlide(page, 1)
+
+    const boxes = await Promise.all([1, 2, 3].map((number) => fadeSlide(page, number).boundingBox()))
+    expect(boxes[1]).toEqual(boxes[0])
+    expect(boxes[2]).toEqual(boxes[0])
+
+    const track = page.locator(`${FADE} .carousel-inner`)
+    expect(await track.evaluate((el) => el.scrollWidth - el.clientWidth)).toBe(0)
+  })
+
+  test('the next and previous controls fade to the slide, and the indicators follow', async ({
+    page
+  }) => {
+    await fadeControl(page, 'Next fade slide').click()
+    await expectFadeSlide(page, 2)
+
+    await fadeControl(page, 'Next fade slide').click()
+    await expectFadeSlide(page, 3)
+
+    await fadeControl(page, 'Previous fade slide').click()
+    await expectFadeSlide(page, 2)
+  })
+
+  test('the ends wrap: previous from the first slide is the last, next from it the first', async ({
+    page
+  }) => {
+    await fadeControl(page, 'Previous fade slide').click()
+    await expectFadeSlide(page, 3)
+
+    await fadeControl(page, 'Next fade slide').click()
+    await expectFadeSlide(page, 1)
+  })
+
+  test('an indicator goes to its slide', async ({ page }) => {
+    await fadeIndicator(page, 3).click()
+    await expectFadeSlide(page, 3)
+
+    await fadeIndicator(page, 1).click()
+    await expectFadeSlide(page, 1)
+  })
+
+  test('ArrowRight and ArrowLeft change the slide while focus is in the carousel', async ({
+    page
+  }) => {
+    await construct(page, {}, FADE)
+    await fadeIndicator(page, 1).focus()
+
+    await page.keyboard.press('ArrowRight')
+    await expectFadeSlide(page, 2)
+
+    await page.keyboard.press('ArrowLeft')
+    await expectFadeSlide(page, 1)
+    await expect(fadeIndicator(page, 1)).toBeFocused()
+  })
+
+  test('the button of a slide that is not shown cannot be reached', async ({ page }) => {
+    const buttons = page.locator(`${FADE} .carousel-inner`).getByRole('button')
+
+    await expect(buttons).toHaveCount(1)
+    await expect(buttons).toHaveText('Button one')
+
+    await fadeControl(page, 'Next fade slide').click()
+    await expectFadeSlide(page, 2)
+
+    await expect(buttons).toHaveCount(1)
+    await expect(buttons).toHaveText('Button two')
+
+    // From the last indicator, Tab goes to the button of the slide shown and then to the
+    // controls, over the buttons of the other slides
+    await fadeIndicator(page, 3).focus()
+    await page.keyboard.press('Tab')
+    await expect(buttons).toBeFocused()
+    await page.keyboard.press('Tab')
+    await expect(fadeControl(page, 'Previous fade slide')).toBeFocused()
+  })
+
+  // Read in the task of the click, before a frame is drawn: the transitions that the change
+  // of class has started. The slide that leaves is still visible, and is hidden by a
+  // transition of `visibility` that waits for the one of `opacity`.
+  test('the slide that leaves stays visible while it fades, the one that comes fades in', async ({
+    page
+  }) => {
+    await construct(page, {}, FADE)
+
+    const during = await page.evaluate((selector) => {
+      const [leaving, coming] = document.querySelectorAll<HTMLElement>(`${selector} .carousel-item`)
+      const properties = (item: HTMLElement) =>
+        item
+          .getAnimations()
+          .map((animation) => (animation as CSSTransition).transitionProperty)
+          .sort()
+
+      document.querySelector<HTMLElement>(`${selector} [data-cx-slide="next"]`)!.click()
+
+      return {
+        leaving: { visibility: getComputedStyle(leaving).visibility, fades: properties(leaving) },
+        coming: { visibility: getComputedStyle(coming).visibility, fades: properties(coming) }
+      }
+    }, FADE)
+
+    expect(during).toEqual({
+      leaving: { visibility: 'visible', fades: ['opacity', 'visibility'] },
+      coming: { visibility: 'visible', fades: ['opacity'] }
+    })
+    await expectFadeSlide(page, 2)
+  })
+
+  test('with reduced motion the slide changes at once', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await construct(page, {}, FADE)
+
+    const after = await page.evaluate((selector) => {
+      const [leaving, coming] = document.querySelectorAll<HTMLElement>(`${selector} .carousel-item`)
+
+      document.querySelector<HTMLElement>(`${selector} [data-cx-slide="next"]`)!.click()
+
+      return {
+        leaving: [getComputedStyle(leaving).visibility, leaving.getAnimations().length],
+        coming: [getComputedStyle(coming).opacity, coming.getAnimations().length]
+      }
+    }, FADE)
+
+    expect(after).toEqual({ leaving: ['hidden', 0], coming: ['1', 0] })
+    await expectFadeSlide(page, 2)
   })
 })

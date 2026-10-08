@@ -6,8 +6,12 @@
     <link href="../../../dist/css/chassis.min.css" rel="stylesheet">
     <title>Carousel</title>
     <style>
-      .carousel-item {
+      #carousel-example-generic .carousel-item {
         transition: transform 2s ease, opacity .5s ease;
+      }
+
+      #carousel-example-fade .carousel-item > div {
+        height: 12rem;
       }
     </style>
   </head>
@@ -41,6 +45,46 @@
         <button class="carousel-control-next" data-cx-target="#carousel-example-generic" type="button" data-cx-slide="next">
           <span class="carousel-control-next-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+
+      <h2 class="mt-lg">Fade</h2>
+
+      <p>The slides are stacked and the active one fades in over the one before it. No slide moves, and the button of a slide that is not shown cannot be reached.</p>
+
+      <div id="carousel-example-fade" class="carousel carousel-fade">
+        <div class="carousel-indicators">
+          <button type="button" data-cx-target="#carousel-example-fade" data-cx-slide-to="0" class="active" aria-current="true" aria-label="Fade slide 1"></button>
+          <button type="button" data-cx-target="#carousel-example-fade" data-cx-slide-to="1" aria-label="Fade slide 2"></button>
+          <button type="button" data-cx-target="#carousel-example-fade" data-cx-slide-to="2" aria-label="Fade slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="bg-evident p-lg">
+              <p>First fade slide</p>
+              <button type="button" class="button secondary">Button one</button>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <div class="bg-evident p-lg">
+              <p>Second fade slide</p>
+              <button type="button" class="button secondary">Button two</button>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <div class="bg-evident p-lg">
+              <p>Third fade slide</p>
+              <button type="button" class="button secondary">Button three</button>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" data-cx-target="#carousel-example-fade" type="button" data-cx-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous fade slide</span>
+        </button>
+        <button class="carousel-control-next" data-cx-target="#carousel-example-fade" type="button" data-cx-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next fade slide</span>
         </button>
       </div>
     </div>

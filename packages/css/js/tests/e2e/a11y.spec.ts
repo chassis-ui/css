@@ -45,6 +45,12 @@ const STATES: Record<string, Record<string, State>> = {
       await page.locator('[data-vc="calendar"]:visible').first().waitFor()
     }
   },
+  drawer: {
+    'start open': async (page) => {
+      await page.locator('[data-cx-target="#startDrawer"]:not(dialog *)').click()
+      await page.locator('#startDrawer[open]').waitFor()
+    }
+  },
   menu: {
     'menu open': async (page) => {
       await page.locator('button[data-cx-toggle="menu"]').first().click()

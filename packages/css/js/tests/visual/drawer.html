@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../../../dist/css/chassis.min.css" rel="stylesheet">
+    <title>Drawer</title>
+    <style>
+      #tall {
+        height: 1500px;
+        width: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-md">
+      <h1>Drawer <small>Chassis Visual Test</small></h1>
+
+      <p>A drawer slides in from its edge and out to it. While it is open the page behind it does not scroll, unless the drawer says so.</p>
+
+      <!-- Start drawer, with a trigger of another drawer inside -->
+      <dialog class="drawer drawer-start" id="startDrawer" aria-labelledby="startDrawerLabel">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="startDrawerLabel">Start drawer</h2>
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <p>Slides in from the start edge. Escape, the close button and a click on the backdrop close it.</p>
+          <p><a href="#" id="startDrawerLink">A link in the drawer</a></p>
+          <button type="button" class="button secondary" data-cx-toggle="drawer" data-cx-target="#endDrawer">Open the end drawer</button>
+        </div>
+        <div class="drawer-footer">
+          <button type="button" class="button secondary" data-cx-dismiss="drawer">Close</button>
+          <button type="button" class="button primary">Save changes</button>
+        </div>
+      </dialog>
+
+      <dialog class="drawer drawer-end" id="endDrawer" aria-labelledby="endDrawerLabel">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="endDrawerLabel">End drawer</h2>
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <p>Slides in from the end edge.</p>
+        </div>
+      </dialog>
+
+      <dialog class="drawer drawer-top" id="topDrawer" aria-labelledby="topDrawerLabel">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="topDrawerLabel">Top drawer</h2>
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <p>Slides down from the top.</p>
+        </div>
+      </dialog>
+
+      <dialog class="drawer drawer-bottom" id="bottomDrawer" aria-labelledby="bottomDrawerLabel">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="bottomDrawerLabel">Bottom drawer</h2>
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <p>Slides up from the bottom.</p>
+        </div>
+      </dialog>
+
+      <!-- Static backdrop: a click outside nudges the drawer, Escape closes it -->
+      <dialog class="drawer drawer-start" id="staticDrawer" data-cx-backdrop="static" aria-labelledby="staticDrawerLabel">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="staticDrawerLabel">Static backdrop</h2>
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <p>A click outside nudges this drawer and leaves it open.</p>
+        </div>
+      </dialog>
+
+      <!-- Static backdrop and no keyboard: only its buttons close it -->
+      <dialog class="drawer drawer-start" id="lockedDrawer" data-cx-backdrop="static" data-cx-keyboard="false" aria-labelledby="lockedDrawerLabel">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="lockedDrawerLabel">No Escape</h2>
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <p>Neither a click outside nor Escape closes this drawer.</p>
+        </div>
+      </dialog>
+
+      <!-- The page scrolls and has no backdrop: the drawer is not modal -->
+      <dialog class="drawer drawer-end" id="scrollDrawer" data-cx-scroll="true" data-cx-backdrop="false" aria-labelledby="scrollDrawerLabel">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="scrollDrawerLabel">Scrolling, no backdrop</h2>
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <p>The page behind this drawer scrolls and can be used.</p>
+        </div>
+      </dialog>
+
+      <!-- No transition -->
+      <dialog class="drawer drawer-start instant" id="instantDrawer" aria-labelledby="instantDrawerLabel">
+        <div class="drawer-header">
+          <h2 class="drawer-title" id="instantDrawerLabel">Instant drawer</h2>
+          <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+        </div>
+        <div class="drawer-body">
+          <p>Opens and closes at once.</p>
+        </div>
+      </dialog>
+
+      <div class="d-flex flex-column gap-md">
+        <div>
+          <button type="button" class="button primary lg" data-cx-toggle="drawer" data-cx-target="#startDrawer">Start drawer</button>
+          <button type="button" class="button secondary lg" data-cx-toggle="drawer" data-cx-target="#endDrawer">End drawer</button>
+          <button type="button" class="button secondary lg" data-cx-toggle="drawer" data-cx-target="#topDrawer">Top drawer</button>
+          <button type="button" class="button secondary lg" data-cx-toggle="drawer" data-cx-target="#bottomDrawer">Bottom drawer</button>
+        </div>
+
+        <div>
+          <button type="button" class="button secondary lg" data-cx-toggle="drawer" data-cx-target="#staticDrawer">Static backdrop</button>
+          <button type="button" class="button secondary lg" data-cx-toggle="drawer" data-cx-target="#lockedDrawer">No Escape</button>
+        </div>
+
+        <div>
+          <button type="button" class="button secondary lg" data-cx-toggle="drawer" data-cx-target="#scrollDrawer">Scrolling, no backdrop</button>
+          <button type="button" class="button secondary lg" data-cx-toggle="drawer" data-cx-target="#instantDrawer">Instant drawer</button>
+        </div>
+
+        <div>
+          <button type="button" class="button secondary lg" id="tall-toggle">Toggle tall content</button>
+          <button type="button" class="button info lg" id="jsOpen">Open via JavaScript</button>
+          <span id="pageClicks" aria-live="polite">Clicks on the page: 0</span>
+        </div>
+
+        <!-- A drawer below `lg`, content of the page from `lg` on -->
+        <div>
+          <button type="button" class="button secondary lg lg:d-none" data-cx-toggle="drawer" data-cx-target="#responsiveDrawer">Responsive drawer</button>
+          <dialog class="max-lg:drawer drawer-end" id="responsiveDrawer" aria-labelledby="responsiveDrawerLabel">
+            <div class="drawer-header">
+              <h2 class="drawer-title" id="responsiveDrawerLabel">Responsive drawer</h2>
+              <button type="button" class="close-button" data-cx-dismiss="drawer" aria-label="Close"></button>
+            </div>
+            <div class="drawer-body">
+              <p>A drawer below <code>lg</code>, a paragraph of the page from <code>lg</code> on.</p>
+            </div>
+          </dialog>
+        </div>
+      </div>
+
+      <br><br>
+
+      <div class="text-bg-dark p-sm" id="tall" style="display: none;">
+        Tall body content to force the page to have a scrollbar.
+      </div>
+    </div>
+
+    <script type="module">
+      import * as chassis from '../../../dist/js/chassis.bundle.js'
+
+      const tall = document.getElementById('tall')
+      document.getElementById('tall-toggle').addEventListener('click', () => {
+        tall.style.display = tall.style.display === 'none' ? 'block' : 'none'
+      })
+
+      document.getElementById('jsOpen').addEventListener('click', () => {
+        chassis.Drawer.getOrCreateInstance(document.getElementById('startDrawer')).show()
+      })
+
+      // A click that reaches the page, which a modal drawer keeps away
+      const pageClicks = document.getElementById('pageClicks')
+      let clicks = 0
+      document.addEventListener('click', event => {
+        if (!event.target.closest('dialog')) {
+          clicks++
+          pageClicks.textContent = `Clicks on the page: ${clicks}`
+        }
+      })
+
+      document.querySelectorAll('dialog').forEach(drawerEl => {
+        for (const name of ['show', 'shown', 'hide', 'hidden', 'hidePrevented']) {
+          drawerEl.addEventListener(`${name}.cx.drawer`, () => console.log(`${name}.cx.drawer`, drawerEl.id))
+        }
+      })
+    </script>
+  </body>
+</html>
