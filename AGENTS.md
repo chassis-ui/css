@@ -35,6 +35,12 @@ This repo is part of a multi-repo ecosystem (`chassis-website`, `chassis-react`,
 
 Human contributors follow [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md): dev setup, branches, what a pull request needs, and how releases are made.
 
+## Color names
+
+Name a color by its role, never by its hue. The colors of Chassis are the contexts (`default`, `alternate`, `primary`, `secondary`, `neutral`, `danger`, `success`, `warning`, `info`, `black`, `white`), and the hue of a context comes from the token source: `scss/vendor/_chassis-tokens.scss` forwards one brand of `@chassis-ui/tokens`, and a project loads its own. "Blue" for `primary` is wrong with the next brand.
+
+This holds everywhere a name is written: Sass variables, classes, custom properties, `data-cx-theme` values, test fixtures, example markup, docs prose, comments and commit messages. Write "a theme on the primary color" and `data-cx-theme="primary"`, not "a blue theme". A color value of the default tokens (`#00A4CC`) is fine as a value, where one is needed.
+
 ## Quick commands
 
 Package manager is **pnpm** (pinned in the root `package.json`), with Node.js 22.12 or later (`.nvmrc` has 24, the version of the single-version CI jobs). Run `pnpm install` first, and run every command from the repository root: the root scripts run the ones of the package in `packages/css` (`pnpm --filter @chassis-ui/css run <script>`).
