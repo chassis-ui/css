@@ -1,6 +1,7 @@
 @use "sass:string";
 @use "sass:list";
 @use "sass:map";
+@use "sass:meta";
 @use "../config" as *;
 
 //
@@ -15,6 +16,56 @@
 //    (xs: 0, sm: 36rem, md: 48rem, lg: 64rem, xl: 80rem, 2xl: 96rem)
 //
 // The map defined in the `$breakpoints` global variable is used as the `$breakpoints` argument by default.
+//
+// A name that starts with a digit is written without quotes: `2xl` is a
+// number to Sass and `"2xl"` a string, two keys of a map that print alike.
+
+/// Whether `$name` is a breakpoint of `$breakpoints`.
+///
+/// Stops when the map has the name in another Sass type, an unquoted `2xl`
+/// (a number) next to a quoted `"2xl"` (a string): the lookup would miss the
+/// key, and the two are written the same in the CSS.
+///
+/// @param {String|Number} $name - Breakpoint name
+/// @param {Map} $breakpoints [$breakpoints] - Breakpoint map
+/// @return {Boolean} - `true` for a key of the map
+/// @example
+///   is-breakpoint(md, (xs: 0, md: 48rem))     => true
+///   is-breakpoint(tablet, (xs: 0, md: 48rem)) => false
+@function is-breakpoint($name, $breakpoints: $breakpoints) {
+  @if map.has-key($breakpoints, $name) {
+    @return true;
+  }
+
+  $other-type: -breakpoint-of-other-type($name, $breakpoints);
+  @if $other-type {
+    @error $other-type;
+  }
+
+  @return false;
+}
+
+// The message for a name that the map has in another Sass type, or `null`.
+@function -breakpoint-of-other-type($name, $breakpoints) {
+  @each $key in map.keys($breakpoints) {
+    @if "#{$key}" == "#{$name}" and $key != $name {
+      @return "breakpoint `#{$name}` is a #{meta.type-of($name)} here and a #{meta.type-of($key)} in $breakpoints, two keys to Sass. Write `#{$name}` without quotes in both places.";
+    }
+  }
+
+  @return null;
+}
+
+// The width of a breakpoint. A name that is no breakpoint would give no
+// width, and a query mixin would then write its content with no query, for
+// every width.
+@function -breakpoint-width($name, $breakpoints) {
+  @if not is-breakpoint($name, $breakpoints) {
+    @error "breakpoint `#{$name}` not found in `#{map.keys($breakpoints)}`";
+  }
+
+  @return map.get($breakpoints, $name);
+}
 
 /// Name of the next breakpoint, or `null` for the last breakpoint.
 ///
@@ -29,7 +80,7 @@
 @function breakpoint-next($name, $breakpoints: $breakpoints, $breakpoint-names: map.keys($breakpoints)) {
   $n: list.index($breakpoint-names, $name);
   @if not $n {
-    @error "breakpoint `#{$name}` not found in `#{$breakpoint-names}`";
+    @error -breakpoint-of-other-type($name, $breakpoints) or "breakpoint `#{$name}` not found in `#{$breakpoint-names}`";
   }
   // Use @if/@else because list.nth would error if evaluated when $n equals list length
   @if $n < list.length($breakpoint-names) {
@@ -39,7 +90,8 @@
   }
 }
 
-/// Minimum breakpoint width, or `null` for the smallest (first) breakpoint.
+/// Minimum breakpoint width, or `null` for the smallest (first) breakpoint or a `null` name.
+/// Stops on a name that is no breakpoint of the map.
 ///
 /// @param {String} $name - Breakpoint name
 /// @param {Map} $breakpoints [$breakpoints] - Breakpoint map
@@ -49,13 +101,16 @@
 ///   breakpoint-min(sm, (...)) => 36rem
 ///   breakpoint-min(md, (...)) => 48rem
 @function breakpoint-min($name, $breakpoints: $breakpoints) {
-  $min: map.get($breakpoints, $name);
+  @if $name == null {
+    @return null;
+  }
+  $min: -breakpoint-width($name, $breakpoints);
   @return if(sass($min != 0): $min; else: null);
 }
 
 /// Maximum breakpoint width, or `null` for the `xs` breakpoint (value 0) or a `null` name.
 /// Returns the raw breakpoint value without adjustment; callers use `width <` range queries
-/// so no 0.02px offset is needed.
+/// so no 0.02px offset is needed. Stops on a name that is no breakpoint of the map.
 ///
 /// @param {String} $name - Breakpoint name
 /// @param {Map} $breakpoints [$breakpoints] - Breakpoint map
@@ -69,8 +124,8 @@
   @if $name == null {
     @return null;
   }
-  $max: map.get($breakpoints, $name);
-  @return if(sass($max and $max > 0): $max; else: null);
+  $max: -breakpoint-width($name, $breakpoints);
+  @return if(sass($max > 0): $max; else: null);
 }
 
 /// Escape a name for use at the start of a CSS identifier.

@@ -32,9 +32,13 @@ The six default breakpoints feed the grid system, responsive utilities, and all 
 `2xl` starts with a digit, which a CSS identifier cannot. The stylesheet writes the digit as an escape (`.\32 xl\:d-flex`), and the class in the markup stays `2xl:d-flex`. The name follows the scale of the sizing tokens and utility classes.
 </Callout>
 
+In Sass the name is written without quotes, as a key of `$breakpoints` and as an argument of a mixin. An unquoted `2xl` is a number to Sass and a quoted `"2xl"` is a string, two different keys of a map. The compile stops when a name and the key of `$breakpoints` differ in type.
+
 ## Media queries
 
 All queries use [CSS range syntax](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries#syntax_improvements_in_level_4), driven by the values in `$breakpoints`. The system is mobile-first: `xs` has a value of `0`, so styles defined at that level apply at all widths and no wrapping query is emitted.
+
+Every mixin takes the name of a breakpoint. A name that is not a key of `$breakpoints` stops the compile with ``breakpoint `tablet` not found``, so a misspelled name never writes its styles with no query around them.
 
 ### Min-width
 

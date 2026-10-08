@@ -35,10 +35,11 @@ Chassis CSS generates responsive surfaces — utility prefixes (`sm:d-flex`, `lg
 
 Each breakpoint dropped from the map removes its prefixed utility classes (roughly **21 KB minified** off `chassis-utilities.css`), its grid column variants, its container query block, and its `--breakpoint-*` CSS variable.
 
-Two constraints apply:
+Three things to know:
 
 - The `xs` breakpoint must remain. It carries the unprefixed mobile-first base classes that every responsive utility builds on.
-- Several Chassis components hardcode `sm`, `md`, and `lg` in their internal responsive logic. Removing any of those three breaks those components. The `xl` and `2xl` breakpoints are not hardcoded anywhere internal and are safe to remove.
+- The `sm` breakpoint must remain too. The dialog, the modal, the alert, the menu, and the card name it in their own responsive rules, and the compile stops with ``breakpoint `sm` not found`` without it. `lg` is named only when you set `$font-size-root-lg`. `md`, `xl`, and `2xl` are named nowhere and are safe to remove.
+- `$grid-gutters`, `$grid-column-counts`, `$container-paddings`, and `$container-max-widths` keep their values for the breakpoints you removed. The compile ignores each one, with a warning.
 
 ## Lean JavaScript
 

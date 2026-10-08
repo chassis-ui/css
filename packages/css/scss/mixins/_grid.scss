@@ -43,7 +43,8 @@
 // Every map of `$maps` (parameter name to per-breakpoint map) needs a value
 // for the first breakpoint: without it the custom property is undefined below
 // the first breakpoint the map names. A key that is no breakpoint is ignored
-// by `-grid-var-changes()`, so it is reported.
+// by `-grid-var-changes()`, so it is reported; `is-breakpoint()` stops on a
+// key that the breakpoints have in another Sass type (`"2xl"` for `2xl`).
 @mixin -grid-var-maps-check($maps, $breakpoints, $mixin) {
   $first: list.nth(map.keys($breakpoints), 1);
 
@@ -53,7 +54,7 @@
     }
 
     @each $key in map.keys($values) {
-      @if not map.has-key($breakpoints, $key) {
+      @if not is-breakpoint($key, $breakpoints) {
         @warn "#{$mixin}: #{$parameter} has a value for `#{$key}`, which is not a breakpoint of $breakpoints. It is ignored.";
       }
     }

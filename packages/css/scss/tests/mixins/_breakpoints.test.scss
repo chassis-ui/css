@@ -17,9 +17,28 @@ $bp: (xs: 0, md: 768px, lg: 992px);
   }
 }
 
+// ─── is-breakpoint ───────────────────────────────────────────────────────────
+
+@include describe("is-breakpoint") {
+  @include it("is true for a key of the map") {
+    @include assert-true(is-breakpoint(md, $bp));
+    @include assert-true(is-breakpoint(2xl, (xs: 0, 2xl: 1536px)));
+    @include assert-true(is-breakpoint("2xl", (xs: 0, "2xl": 1536px)));
+  }
+
+  @include it("is false for a name the map lacks") {
+    @include assert-false(is-breakpoint(tablet, $bp));
+    @include assert-false(is-breakpoint(2xl, $bp));
+  }
+}
+
 // ─── breakpoint-min ──────────────────────────────────────────────────────────
 
 @include describe("breakpoint-min") {
+  @include it("returns null for null input") {
+    @include assert-equal(breakpoint-min(null, $bp), null);
+  }
+
   @include it("returns null for the smallest breakpoint (value 0)") {
     @include assert-equal(breakpoint-min(xs, $bp), null);
   }

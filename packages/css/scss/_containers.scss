@@ -40,10 +40,22 @@
       }
     }
 
+    // A max-width of a name that is no breakpoint has no query to sit in, in
+    // a project that removed breakpoints from `$breakpoints`. It is left out.
+    $max-widths: ();
+
+    @each $breakpoint, $container-max-width in $container-max-widths {
+      @if is-breakpoint($breakpoint, $breakpoints) {
+        $max-widths: map.set($max-widths, $breakpoint, $container-max-width);
+      } @else {
+        @warn "$container-max-widths has a value for `#{$breakpoint}`, which is not a breakpoint of $breakpoints. It is ignored.";
+      }
+    }
+
     // Progressive max-widths via @extend.
     // Inner loop walks $breakpoints so xs (no min-width) maps to plain
     // .container; all others map to .container.{name} if they have a container max-width.
-    @each $breakpoint, $container-max-width in $container-max-widths {
+    @each $breakpoint, $container-max-width in $max-widths {
       @include media-breakpoint-up($breakpoint, $breakpoints) {
         %responsive-container-#{$breakpoint} {
           max-width: $container-max-width;
