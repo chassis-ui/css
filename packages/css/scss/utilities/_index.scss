@@ -1,4 +1,5 @@
 @use "sass:map";
+@use "sass:meta";
 @use "../config" as *;
 @use "../maps" as *;
 @use "../functions" as *;
@@ -7,7 +8,8 @@
 // Utilities Index
 //
 // Merges all utility maps and forwards the combined $utilities map consumed
-// by the utilities API generator.
+// by the utilities API generator. A project changes the map with
+// `$utilities-overrides`, which is merged over it at the end of this file.
 //
 
 @use "./border";
@@ -23,6 +25,83 @@
 @use "./skeleton";
 @use "./spinner";
 @use "./text";
+
+// scss-docs-start utilities-overrides
+// Changes to the utilities of `$utilities`, keyed by utility name:
+// - `null` removes the utility
+// - a map with the name of a utility is merged into its definition, option by
+//   option, so `(responsive: true)` is a complete override
+// - a map with a new name adds a utility, and needs `property` and `values`
+//
+// `values` is the one option that is merged, not replaced, when the override
+// gives a map: a new key adds a class, the key of a default value changes it,
+// and `null` removes it. A list replaces the values.
+$utilities-overrides: () !default;
+// scss-docs-end utilities-overrides
+
+// The values of a utility as the map the generators make of them: a list has
+// each value under its own name, a single value has the `null` key. Mirrors
+// `generate-utility()` in `scss/mixins/_utilities-api.scss`.
+@function -values-map($values) {
+  @if meta.type-of($values) == "map" {
+    @return $values;
+  }
+
+  @if meta.type-of($values) != "list" {
+    @return (null: $values);
+  }
+
+  $map: ();
+  @each $value in $values {
+    $map: map.merge($map, ($value: $value));
+  }
+  @return $map;
+}
+
+// Merges `$overrides` over `$utilities` by the rules of `$utilities-overrides`.
+// A changed utility keeps its place in the map, and with it the place of its
+// classes in the cascade; an added one comes last.
+@function -merge-overrides($utilities, $overrides) {
+  @if meta.type-of($overrides) != "map" and $overrides != () {
+    @error "`$utilities-overrides` should be a map of utility names and definitions, got: #{meta.inspect($overrides)}";
+  }
+
+  @each $name, $override in $overrides {
+    $utility: map.get($utilities, $name);
+
+    @if $override == null {
+      @if not map.has-key($utilities, $name) {
+        @warn "`$utilities-overrides` removes `#{$name}`, which is not a utility of `$utilities`.";
+      }
+      $utilities: map.remove($utilities, $name);
+    } @else if meta.type-of($override) != "map" {
+      @error "`$utilities-overrides`: `#{$name}` should be a map of utility options or `null`, got: #{meta.inspect($override)}";
+    } @else if meta.type-of($utility) != "map" {
+      @if not (map.has-key($override, property) and map.has-key($override, values)) {
+        @error "`$utilities-overrides`: `#{$name}` is not a utility of `$utilities`, and a new utility needs `property` and `values`.";
+      }
+      $utilities: map.merge($utilities, ($name: $override));
+    } @else {
+      $values: map.get($override, values);
+
+      @if meta.type-of($values) == "map" {
+        $merged: -values-map(map.get($utility, values));
+        @each $key, $value in $values {
+          @if $value == null {
+            $merged: map.remove($merged, $key);
+          } @else {
+            $merged: map.merge($merged, ($key: $value));
+          }
+        }
+        $override: map.merge($override, (values: $merged));
+      }
+
+      $utilities: map.merge($utilities, ($name: map.merge($utility, $override)));
+    }
+  }
+
+  @return $utilities;
+}
 
 // Aggregate utility map. Each partial contributes its own `$utilities` map; we
 // merge them and append the cross-cutting definitions below.
@@ -305,3 +384,7 @@ $utilities: map-merge-multiple(
     // scss-docs-end utils-elevation-shadow
   )
 ) !default;
+
+// Applied to a `$utilities` map the project configured, too.
+// stylelint-disable-next-line scss/dollar-variable-default
+$utilities: -merge-overrides($utilities, $utilities-overrides);

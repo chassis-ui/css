@@ -737,18 +737,12 @@ Output:
 Set `enabled: false` to suppress the output of a utility without removing it from the `$utilities` map. The definition stays available to `map.get()` calls while the utility emits no CSS.
 
 ```scss
-$utilities: map.merge(
-  chassis.$utilities,
-  (
-    "float": map.merge(
-      map.get(chassis.$utilities, "float"),
-      ( enabled: false ),
-    ),
-  )
+$utilities-overrides: (
+  "float": (enabled: false),
 );
 ```
 
-[Modify utilities](#modify-utilities) shows the file this merge belongs to.
+[Using the API](#using-the-api) shows the file this map belongs to.
 
 ## Importance
 
@@ -782,90 +776,48 @@ Output:
 
 ## Using the API
 
-`scss/_utilities-api.scss` generates the classes: it loads the `$utilities` map and passes it to the `generate-utilities-loop()` mixin inside `@layer utilities`. A project changes the generated utilities in one of three ways:
-
-- **Add utilities** beside the complete framework, with a second call of the mixin.
-- **Modify the map** in a bundle that lists its own parts: merge the changes into the default map and call the mixin with the result.
-- **Replace the map** by configuring `$utilities` before the framework loads.
-
-The complete entry point, `scss/chassis`, always generates the default utilities. Changing or removing one of them takes a bundle that loads the parts of the framework one by one — option B of [Importing]([[docsref:/customize/sass#importing]]) — and leaves `utilities-api` out.
-
-### Add utilities
-
-A second call of `generate-utilities-loop()` adds utilities to a build that loads all of Chassis CSS. The mixin takes a map of definitions and the `$breakpoints` map; `@layer utilities` puts the new classes in the layer of the default ones.
+`scss/_utilities-api.scss` generates the classes: it loads the `$utilities` map of `scss/utilities` and passes it to the `generate-utilities-loop()` mixin inside `@layer utilities`. A project changes the map before the classes are generated, with the `$utilities-overrides` variable of the same module:
 
 ```scss
 // custom.scss
-@use "@chassis-ui/css/scss/chassis";
-@use "@chassis-ui/css/scss/config" as *;
-@use "@chassis-ui/css/scss/mixins" as *;
-
-@layer utilities {
-  @include generate-utilities-loop(
-    (
-      "cursor": (
-        property: cursor,
-        class: cursor,
-        responsive: true,
-        values: auto pointer grab,
-      )
-    ),
-    $breakpoints
-  );
-}
-```
-
-### Modify utilities
-
-To change a default utility, merge the new definition into the default map with `map.merge()` and generate the classes from the merged map. The bundle loads the parts of the framework it needs and calls the mixin in place of `utilities-api`. This one adds a value to the `width` utilities:
-
-```scss
-// custom.scss
-@use "sass:map";
-@use "@chassis-ui/css/scss/config" as *;
-@use "@chassis-ui/css/scss/mixins" as *;
-@use "@chassis-ui/css/scss/utilities" as chassis;
-
-// The parts of the framework the project uses, without `utilities-api`
-@use "@chassis-ui/css/scss/root";
-@use "@chassis-ui/css/scss/reboot";
-@use "@chassis-ui/css/scss/helpers";
-
-$utilities: map.merge(
-  chassis.$utilities,
-  (
-    "width": map.merge(
-      map.get(chassis.$utilities, "width"),
-      (
-        values: map.merge(
-          map.get(chassis.$utilities, "width", "values"),
-          (10: 10%),
-        ),
-      ),
+@use "@chassis-ui/css/scss/utilities" with (
+  $utilities-overrides: (
+    // Remove the `float` utilities
+    "float": null,
+    // Make the `border` utilities responsive
+    "border": (responsive: true),
+    // Add a utility
+    "cursor": (
+      property: cursor,
+      class: cursor,
+      values: auto pointer grab,
     ),
   )
 );
-
-@layer utilities {
-  @include generate-utilities-loop($utilities, $breakpoints);
-}
+@use "@chassis-ui/css/scss/chassis";
 ```
 
-The sections below show only the `map.merge()` call; the rest of the file stays the same.
+`$utilities-overrides` is a map keyed by utility name, merged over the default map:
+
+- `null` removes the utility.
+- A map under the name of a default utility is merged into its definition, option by option. An option the map leaves out keeps its default.
+- A map under a new name adds a utility.
+
+The name of a utility is its key in the maps of `scss/utilities/`, which the CSS section of each utility page shows.
+
+Sass configures a module once, where it first loads. The `@use … with (…)` rule comes before `@use "@chassis-ui/css/scss/chassis"`, and after the `@use "@chassis-ui/css/scss/config" with (…)` rule of a project that [sets options]([[docsref:/customize/options]]). In another place, the compile stops with an error.
+
+### Modify utilities
+
+A map under the name of a default utility changes the options it lists. The sections below show only the `$utilities-overrides` map; the file around it is the one above.
 
 #### Enable responsive
 
-Merging `responsive: true` into a utility generates its breakpoint variants. This makes the `border` classes responsive:
+`responsive: true` generates the breakpoint variants of a utility. This makes the `border` classes responsive:
 
 ```scss
-$utilities: map.merge(
-  chassis.$utilities,
-  (
-    "border": map.merge(
-      map.get(chassis.$utilities, "border"),
-      ( responsive: true ),
-    ),
-  )
+$utilities-overrides: (
+  "border": (responsive: true),
 );
 ```
 
@@ -905,88 +857,129 @@ A class name cannot start with a digit in CSS, so the `2` of `2xl` is written as
 
 #### Enable container variants
 
-The same merge adds [container variants](#container) to a utility that does not have them by default. This generates `.@md:p-lg` and `.@md:px-lg`:
+`container: true` adds [container variants](#container) to a utility that does not have them by default. This generates `.@md:p-lg` and `.@md:px-lg`:
 
 ```scss
-$utilities: map.merge(
-  chassis.$utilities,
-  (
-    "padding": map.merge(
-      map.get(chassis.$utilities, "padding"),
-      ( container: true ),
-    ),
-    "padding-x": map.merge(
-      map.get(chassis.$utilities, "padding-x"),
-      ( container: true ),
-    ),
-  )
+$utilities-overrides: (
+  "padding": (container: true),
+  "padding-x": (container: true),
 );
 ```
 
 #### Rename utilities
 
-The `class` option of a merged definition renames the classes of a utility. This renames the `.ms-*` utilities to `.ml-*`:
+The `class` option renames the classes of a utility. This renames the `.ms-*` utilities to `.ml-*`:
 
 ```scss
-$utilities: map.merge(
-  chassis.$utilities,
-  (
-    "margin-start": map.merge(
-      map.get(chassis.$utilities, "margin-start"),
-      ( class: ml ),
-    ),
-  )
+$utilities-overrides: (
+  "margin-start": (class: ml),
 );
 ```
+
+#### Change values
+
+`values` is the one option that is merged with its default, when the override gives a map: a new key adds a class, the key of a default value changes that value, and `null` removes the class. This adds `.w-10` to the `width` utilities and removes `.w-25`:
+
+```scss
+$utilities-overrides: (
+  "width": (
+    values: (
+      10: 10%,
+      25: null,
+    )
+  ),
+);
+```
+
+A list of values replaces the default ones. This leaves `.user-select-none` and `.user-select-text` as the only `user-select` utilities:
+
+```scss
+$utilities-overrides: (
+  "user-select": (values: none text),
+);
+```
+
+Every other option is replaced as a whole, a `property` map included.
 
 ### Remove utilities
 
-Remove default utilities from the map with the [`map.remove()` Sass function](https://sass-lang.com/documentation/modules/map/#remove):
+`null` removes a utility from the map, with every variant of its classes:
 
 ```scss
-$utilities: map.remove(chassis.$utilities, "width", "float");
-```
-
-Setting a key to `null` in a [`map.merge()`](https://sass-lang.com/documentation/modules/map/#merge) call removes the utility too, which combines a removal with other changes:
-
-```scss
-$utilities: map.merge(
-  chassis.$utilities,
-  (
-    "width": null
-  )
+$utilities-overrides: (
+  "width": null,
+  "float": null,
 );
 ```
 
-### Add, remove, modify
+A name that is not in the map compiles with a warning. [`enabled: false`](#enabled) suppresses the classes and keeps the definition.
 
-One `map.merge()` call adds, removes, and modifies utilities together:
+### Add utilities
+
+A map under a new name adds a utility. It needs `property` and `values`, and the compile stops without them, as it does for a misspelled name of a default utility. The value can use the variables, maps, and functions of the framework that the file loads first:
 
 ```scss
-$utilities: map.merge(
-  chassis.$utilities,
-  (
-    // Remove the `width` utility
-    "width": null,
-    // Make an existing utility responsive
-    "border": map.merge(
-      map.get(chassis.$utilities, "border"),
-      ( responsive: true ),
+// custom.scss
+@use "@chassis-ui/css/scss/maps" as *;
+@use "@chassis-ui/css/scss/utilities" with (
+  $utilities-overrides: (
+    "scroll-margin-top": (
+      property: scroll-margin-top,
+      class: scroll-mt,
+      values: $spaces,
     ),
-    // Add a new utility
-    "cursor": (
-      property: cursor,
-      class: cursor,
-      responsive: true,
-      values: auto pointer grab,
-    )
   )
 );
+@use "@chassis-ui/css/scss/chassis";
 ```
+
+An added utility comes after the default ones in the `utilities` layer, and a changed one keeps its place.
+
+A second call of `generate-utilities-loop()` adds utilities too, from any stylesheet that loads after the framework. The mixin takes a map of definitions and the `$breakpoints` map; `@layer utilities` puts the new classes in the layer of the default ones.
+
+```scss
+// custom.scss
+@use "@chassis-ui/css/scss/chassis";
+@use "@chassis-ui/css/scss/config" as *;
+@use "@chassis-ui/css/scss/mixins" as *;
+
+@layer utilities {
+  @include generate-utilities-loop(
+    (
+      "cursor": (
+        property: cursor,
+        class: cursor,
+        responsive: true,
+        values: auto pointer grab,
+      )
+    ),
+    $breakpoints
+  );
+}
+```
+
+### Assign the map
+
+An override cannot read the default map: Sass evaluates a `with (…)` configuration before the module loads. For a change computed from the defaults, load `scss/utilities`, assign to its `$utilities` variable, and load the framework after the assignment. This build keeps four utilities of the map and drops every other one:
+
+```scss
+// custom.scss
+@use "@chassis-ui/css/scss/functions" as *;
+@use "@chassis-ui/css/scss/utilities" as utilities;
+
+utilities.$utilities: map-get-multiple(
+  utilities.$utilities,
+  ("display", "margin", "padding", "gap")
+);
+
+@use "@chassis-ui/css/scss/chassis";
+```
+
+The classes are generated when `scss/chassis` loads. An assignment after that rule changes nothing in the build, and Sass reports nothing.
 
 ### Replace the map
 
-`$utilities` is a `!default` variable of `scss/utilities`. Configuring it before the framework loads replaces the whole map: the build has the utilities of the configured map and none of the default ones.
+`$utilities` is a `!default` variable of `scss/utilities`. Configuring it before the framework loads replaces the whole map: the build has the utilities of the configured map and none of the default ones. `$utilities-overrides` is merged over a configured map too.
 
 ```scss
 // custom.scss
@@ -1004,3 +997,9 @@ $utilities: map.merge(
 );
 @use "@chassis-ui/css/scss/chassis";
 ```
+
+### Tailwind entry
+
+The [Tailwind entry]([[docsref:/getting-started/tailwind]]) generates its `@utility` rules from the same map. A project that compiles `scss/tailwind` with Sass configures `$utilities-overrides` in the same way, before `@use "@chassis-ui/css/scss/tailwind"`.
+
+The prebuilt `@chassis-ui/css/tailwind` stylesheet and the class groups of [`tailwind/merge.js`]([[docsref:/getting-started/tailwind#merging-classes]]) are built from the default map, and an override does not reach them. The clash check of the build covers the default class names only: [Custom utilities]([[docsref:/getting-started/tailwind#custom-utilities]]) describes what a renamed or added utility needs.

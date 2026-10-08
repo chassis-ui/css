@@ -1,0 +1,131 @@
+@use "sass:list";
+@use "sass:map";
+@use "../../mixins/utilities-api" as *;
+@use "../../utilities/border" as border-utilities;
+@use "../../utilities/margin" as margin-utilities;
+@use "../../utilities/sizing" as sizing-utilities;
+@use "../../utilities" as utilities with (
+  $utilities-overrides: (
+    "float": null,
+    "border": (responsive: true),
+    "margin-start": (class: ml),
+    "width": (values: (10: 10%, 50: 55%, 25: null)),
+    "overflow": (values: (clip: clip, scroll: null)),
+    "aspect-ratio-attr": (values: (wide: 2)),
+    "user-select": (values: none text),
+    "cursor": (
+      property: cursor,
+      class: cursor,
+      values: auto pointer grab
+    )
+  )
+);
+
+// `$utilities-overrides` in a file of its own: a module is configured once
+// per compilation. The partials give the definitions as they are by default.
+
+@include describe("$utilities-overrides") {
+  @include it("removes a utility set to null") {
+    @include assert-false(map.has-key(utilities.$utilities, "float"));
+  }
+
+  @include it("merges a map into the definition, option by option") {
+    @include assert-equal(
+      map.merge(map.get(border-utilities.$utilities, "border"), (responsive: true)),
+      map.get(utilities.$utilities, "border")
+    );
+    @include assert-equal(
+      map.merge(map.get(margin-utilities.$utilities, "margin-start"), (class: ml)),
+      map.get(utilities.$utilities, "margin-start")
+    );
+  }
+
+  @include it("merges a map of values into the values: adds, changes and removes") {
+    $default: map.get(sizing-utilities.$utilities, "width", values);
+
+    @include assert-true(map.has-key($default, 25));
+    @include assert-equal(
+      map.remove(map.merge($default, (10: 10%, 50: 55%)), 25),
+      map.get(utilities.$utilities, "width", values)
+    );
+    @include assert-equal(w, map.get(utilities.$utilities, "width", class));
+  }
+
+  @include it("reads a default list of values as the map the generator makes of it") {
+    @include assert-equal(
+      (auto: auto, hidden: hidden, visible: visible, clip: clip),
+      map.get(utilities.$utilities, "overflow", values)
+    );
+  }
+
+  @include it("reads a single default value as the value of the null key") {
+    @include assert-equal(
+      (null: var(--aspect-ratio), wide: 2),
+      map.get(utilities.$utilities, "aspect-ratio-attr", values)
+    );
+  }
+
+  @include it("replaces the values with a list") {
+    @include assert-equal(none text, map.get(utilities.$utilities, "user-select", values));
+  }
+
+  @include it("adds a utility with a new name, after the default ones") {
+    $names: map.keys(utilities.$utilities);
+
+    @include assert-equal("cursor", list.nth($names, -1));
+    @include assert-equal(auto pointer grab, map.get(utilities.$utilities, "cursor", values));
+  }
+
+  @include it("keeps a changed utility in its place") {
+    $names: map.keys(utilities.$utilities);
+
+    @include assert-equal(
+      list.index(map.keys(border-utilities.$utilities), "border"),
+      list.index($names, "border")
+    );
+    // `float` stood between them
+    @include assert-equal(list.index($names, "container") + 1, list.index($names, "overflow"));
+  }
+
+  @include it("generates the classes of the merged definitions") {
+    @include assert() {
+      @include output() {
+        @include generate-utility(map.get(utilities.$utilities, "overflow"));
+        @include generate-utility(map.get(utilities.$utilities, "user-select"));
+        @include generate-utility(map.get(utilities.$utilities, "margin-start"), "md\\:");
+      }
+
+      @include expect() {
+        .overflow-auto {
+          overflow: auto;
+        }
+
+        .overflow-hidden {
+          overflow: hidden;
+        }
+
+        .overflow-visible {
+          overflow: visible;
+        }
+
+        .overflow-clip {
+          overflow: clip;
+        }
+
+        .user-select-none {
+          user-select: none;
+        }
+
+        .user-select-text {
+          user-select: text;
+        }
+
+        @each $key, $value in map.get(margin-utilities.$utilities, "margin-start", values) {
+          .md\:ml-#{$key} {
+            margin-inline-start: $value;
+          }
+        }
+      }
+    }
+  }
+}
