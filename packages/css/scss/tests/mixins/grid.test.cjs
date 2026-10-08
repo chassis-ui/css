@@ -100,6 +100,16 @@ describe('map-get-multiple()', () => {
     expect(warnings).toEqual(['map-get-multiple(): the map has no key `x`.'])
     expect(css).toContain('content: (a: 1)')
   })
+
+  it('is silent about a key of $optional that the map lacks', () => {
+    const { css, warnings } = compile(`
+      @use "sass:meta";
+      @use "functions" as *;
+      .test { content: meta.inspect(map-get-multiple((a: 1, b: 2), (a, x, y), $optional: (x, b))); }
+    `)
+    expect(warnings).toEqual(['map-get-multiple(): the map has no key `y`.'])
+    expect(css).toContain('content: (a: 1)')
+  })
 })
 
 // The grid bundle picks its utilities by key, and a key that names nothing

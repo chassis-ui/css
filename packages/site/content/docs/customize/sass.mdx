@@ -134,7 +134,7 @@ Sass loads each module exactly once, so the configured instance is shared by eve
 
 Some variables default to `null`. Those don't emit the property unless you override them.
 
-The complete list lives in `scss/config/_defaults.scss`. `@use "@chassis-ui/css/scss/config/defaults" with (…)` configures the same variables.
+Those three places hold the complete list of variables. `@use "@chassis-ui/css/scss/config/defaults" with (…)` configures the same ones.
 
 <Callout name="info-npm-starter" />
 
@@ -346,10 +346,10 @@ export default {
 
 The page margins (`$margin-xsmall` to `$margin-2xlarge`) and the column counts (`$columns-xsmall` to `$columns-2xlarge`) come from the token source, as `cx-grid-margin-*` and `cx-grid-columns-*`, like the gutters, the breakpoints, and the container widths (`cx-grid-gutter-*`, `cx-grid-breakpoint-*`, `cx-grid-container-*`). `@chassis-ui/tokens` ships the margins and the column counts from 0.7.0. Rebuild a `_chassis-tokens.scss` of your own that was built with an earlier version: without the twelve variables the compile stops at an undefined variable.
 
-To change a value without a token build, set the variables of `scss/tokens/_grid.scss`, or the [grid maps](#grid-maps) that read them.
+To change a value without a token build, set the variables of `scss/tokens/_grid.scss`, or the [grid maps](#grid-maps) that read them. They go in your [`config` rule](#variable-defaults), with the other variables you change:
 
 ```scss
-@use "@chassis-ui/css/scss/tokens/grid" with (
+@use "@chassis-ui/css/scss/config" with (
   $margin-xsmall: 1rem,
   $columns-xsmall: 4,
 );
@@ -358,15 +358,15 @@ To change a value without a token build, set the variables of `scss/tokens/_grid
 
 ### Configuring variables
 
-For partial overrides — adjusting a handful of token values — use `@use ... with (…)` against `vendor`. Sass loads the configured instance once and shares it with every downstream module:
+For partial overrides — adjusting a handful of token values — set the tokens by name in the same [`config` rule](#variable-defaults). Sass loads the configured token source once and shares it with every downstream module:
 
 ```scss
 // custom-entry.scss
-@use "@chassis-ui/css/scss/config/vendor" with (
+@use "@chassis-ui/css/scss/config" with (
   $cx-color-base-primitive-light-primary-50: #ff385c,
   $cx-color-base-primitive-light-primary-40: #ff6a85,
 );
-// All subsequent chassis modules use the configured vendor instance
+// All subsequent chassis modules use the configured tokens
 @use "@chassis-ui/css/scss/chassis";
 ```
 

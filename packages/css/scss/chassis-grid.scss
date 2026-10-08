@@ -7,6 +7,7 @@
 // non-layout utilities.
 //
 
+@use "sass:map";
 @use "mixins/banner" with ($file: "Grid");
 
 // No `_root.scss` here, which declares the layer order for the other bundles
@@ -26,7 +27,8 @@
 @forward "./containers";
 @forward "./grid";
 
-// Only use the utilities we need
+// Only use the utilities we need. One that the project removed with
+// `$utilities-overrides` is missing without a warning.
 // stylelint-disable-next-line scss/dollar-variable-default
 $utilities: map-get-multiple(
   $utilities,
@@ -78,7 +80,8 @@ $utilities: map-get-multiple(
     "padding-end",
     "padding-bottom",
     "padding-start",
-  )
+  ),
+  map.keys($utilities-overrides)
 );
 
 // check-imports-disable-next-line

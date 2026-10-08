@@ -47,16 +47,34 @@ describe('$utilities-overrides, checked', () => {
     )
   })
 
-  it('warns about the removal of a utility the map does not have', () => {
-    const { warnings } = compile(overrides('("flaot": null)'))
-    expect(warnings).toEqual([
-      '`$utilities-overrides` removes `flaot`, which is not a utility of `$utilities`.'
-    ])
+  // An option can leave a utility out of the map (`$enable-grid-system`), so
+  // the removal of a name it does not have is no mistake.
+  it('ignores the removal of a utility the map does not have', () => {
+    expect(compile(overrides('("flaot": null)')).warnings).toEqual([])
+    expect(
+      compile(`
+        @use "config" with ($enable-grid-system: false);
+        ${overrides('("grid-flow": null)')}
+      `).warnings
+    ).toEqual([])
   })
 
   it('is silent for the default, and for the overrides of a utility the map has', () => {
     expect(compile('@use "utilities";').warnings).toEqual([])
     expect(compile(overrides('("float": null, "border": (responsive: true))')).warnings).toEqual([])
+  })
+
+  it('takes `()`, the empty map, as an override that changes nothing', () => {
+    const inspect = (map) =>
+      compile(`
+        @use "sass:map";
+        @use "sass:meta";
+        @use "utilities" as utilities with ($utilities-overrides: ${map});
+        a { border: meta.inspect(map.get(utilities.$utilities, "border")); }
+      `).css
+
+    expect(inspect('("border": ())')).toBe(inspect('()'))
+    expect(inspect('("border": (values: ()))')).toBe(inspect('()'))
   })
 
   it('is applied to a configured `$utilities` map, too', () => {
@@ -131,6 +149,15 @@ describe('chassis.scss with $utilities-overrides', () => {
     expect(layer).toContain('.md\\:border {')
   })
 
+  it('has one rule for a class whose value an override changed', () => {
+    const { css } = compile(`
+      @use "utilities" with ($utilities-overrides: ("opacity": (values: (50: .55))));
+      @use "chassis";
+    `)
+    expect(css.match(/^ {2}\.opacity-50 \{/gm)).toHaveSize(1)
+    expect(css).toMatch(/\.opacity-50 \{\s+opacity: 0\.55;/)
+  })
+
   it('cannot be configured after the framework has loaded', () => {
     expect(() =>
       compile(`
@@ -167,5 +194,19 @@ describe('chassis.scss after an assignment to $utilities', () => {
     expect(layer).not.toContain('.float-start')
     expect(layer).not.toContain('.p-lg')
     expect(layer).not.toContain('.border {')
+  })
+})
+
+// The grid bundle picks its utilities by name with map-get-multiple(), which
+// warns about a name the map lacks.
+describe('chassis-grid.scss with $utilities-overrides', () => {
+  it('leaves out a removed utility of its list without a warning', () => {
+    const { css, warnings } = compile(`
+      @use "utilities" with ($utilities-overrides: ("order": null));
+      @use "chassis-grid";
+    `)
+    expect(warnings).toEqual([])
+    expect(css).not.toContain('.order-1 {')
+    expect(css).toContain('.d-flex {')
   })
 })

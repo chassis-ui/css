@@ -807,6 +807,8 @@ The name of a utility is its key in the maps of `scss/utilities/`, which the CSS
 
 Sass configures a module once, where it first loads. The `@use … with (…)` rule comes before `@use "@chassis-ui/css/scss/chassis"`, and after the `@use "@chassis-ui/css/scss/config" with (…)` rule of a project that [sets options]([[docsref:/customize/options]]). In another place, the compile stops with an error.
 
+A file has one rule per module. A bundle that already loads `scss/utilities` among [the parts of the framework]([[docsref:/customize/sass#importing]]) adds the `with (…)` to that rule.
+
 ### Modify utilities
 
 A map under the name of a default utility changes the options it lists. The sections below show only the `$utilities-overrides` map; the file around it is the one above.
@@ -878,7 +880,7 @@ $utilities-overrides: (
 
 #### Change values
 
-`values` is the one option that is merged with its default, when the override gives a map: a new key adds a class, the key of a default value changes that value, and `null` removes the class. This adds `.w-10` to the `width` utilities and removes `.w-25`:
+`values` is the one option that is merged with its default, when the override gives a map: a new key adds a class, the key of a default value changes that value, and `null` removes the class. A key is matched by the class it names, so `25` and `"25"` are the same key. This adds `.w-10` to the `width` utilities and removes `.w-25`:
 
 ```scss
 $utilities-overrides: (
@@ -912,7 +914,7 @@ $utilities-overrides: (
 );
 ```
 
-A name that is not in the map compiles with a warning. [`enabled: false`](#enabled) suppresses the classes and keeps the definition.
+A name that is not in the map is ignored, since an [option]([[docsref:/customize/options]]) such as `$enable-grid-system` can leave a utility out. [`enabled: false`](#enabled) suppresses the classes and keeps the definition.
 
 ### Add utilities
 
@@ -1001,5 +1003,16 @@ The classes are generated when `scss/chassis` loads. An assignment after that ru
 ### Tailwind entry
 
 The [Tailwind entry]([[docsref:/getting-started/tailwind]]) generates its `@utility` rules from the same map. A project that compiles `scss/tailwind` with Sass configures `$utilities-overrides` in the same way, before `@use "@chassis-ui/css/scss/tailwind"`.
+
+A file that loads `scss/tailwind/utilities` on its own, one of the à la carte modules of the Tailwind guide, has two rules for the namespace `utilities`, and Sass stops on that. Give the configured rule another:
+
+```scss
+@use "@chassis-ui/css/scss/utilities" as chassis-utilities with (
+  $utilities-overrides: (
+    "float": null,
+  )
+);
+@use "@chassis-ui/css/scss/tailwind/utilities";
+```
 
 The prebuilt `@chassis-ui/css/tailwind` stylesheet and the class groups of [`tailwind/merge.js`]([[docsref:/getting-started/tailwind#merging-classes]]) are built from the default map, and an override does not reach them. The clash check of the build covers the default class names only: [Custom utilities]([[docsref:/getting-started/tailwind#custom-utilities]]) describes what a renamed or added utility needs.

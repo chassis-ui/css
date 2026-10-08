@@ -35,7 +35,8 @@
 //
 // `values` is the one option that is merged, not replaced, when the override
 // gives a map: a new key adds a class, the key of a default value changes it,
-// and `null` removes it. A list replaces the values.
+// and `null` removes it. A key is matched by the class it names, so `50` and
+// `"50"` are the same key. A list replaces the values.
 $utilities-overrides: () !default;
 // scss-docs-end utilities-overrides
 
@@ -58,6 +59,22 @@ $utilities-overrides: () !default;
   @return $map;
 }
 
+// The key of `$values` that names the class `$key` names. `50` and `"50"` are
+// two keys of a Sass map and one class, and the default maps have both kinds
+// (`25` in the widths, `"50"` in the opacities).
+@function -values-key($values, $key) {
+  @if $key == null or map.has-key($values, $key) {
+    @return $key;
+  }
+
+  @each $default-key in map.keys($values) {
+    @if $default-key != null and "#{$default-key}" == "#{$key}" {
+      @return $default-key;
+    }
+  }
+  @return $key;
+}
+
 // Merges `$overrides` over `$utilities` by the rules of `$utilities-overrides`.
 // A changed utility keeps its place in the map, and with it the place of its
 // classes in the cascade; an added one comes last.
@@ -69,12 +86,11 @@ $utilities-overrides: () !default;
   @each $name, $override in $overrides {
     $utility: map.get($utilities, $name);
 
+    // No warning for a name the map does not have: an option can leave a
+    // utility out (`$enable-grid-system`, `$grid-rows: 0`).
     @if $override == null {
-      @if not map.has-key($utilities, $name) {
-        @warn "`$utilities-overrides` removes `#{$name}`, which is not a utility of `$utilities`.";
-      }
       $utilities: map.remove($utilities, $name);
-    } @else if meta.type-of($override) != "map" {
+    } @else if meta.type-of($override) != "map" and $override != () {
       @error "`$utilities-overrides`: `#{$name}` should be a map of utility options or `null`, got: #{meta.inspect($override)}";
     } @else if meta.type-of($utility) != "map" {
       @if not (map.has-key($override, property) and map.has-key($override, values)) {
@@ -84,9 +100,11 @@ $utilities-overrides: () !default;
     } @else {
       $values: map.get($override, values);
 
-      @if meta.type-of($values) == "map" {
+      // `()` is the empty map: it changes no value
+      @if meta.type-of($values) == "map" or $values == () {
         $merged: -values-map(map.get($utility, values));
         @each $key, $value in $values {
+          $key: -values-key($merged, $key);
           @if $value == null {
             $merged: map.remove($merged, $key);
           } @else {

@@ -130,17 +130,19 @@
 /// Creates a new map containing only the specified keys from the original map.
 /// Useful for filtering large configuration maps to only required values.
 ///
-/// A key the map does not have is left out, with a warning.
+/// A key the map does not have is left out, with a warning, unless it is one
+/// of `$optional`.
 ///
 /// @param {Map} $map - Original map to extract from
 /// @param {List} $values - List of keys to extract
+/// @param {List} $optional - Keys the map may lack without a warning
 /// @return {Map} - New map containing only the requested keys and their values
 /// @example
 ///   map-get-multiple((a: 1, b: 2, c: 3), (a, c)) => (a: 1, c: 3)
-@function map-get-multiple($map, $values) {
+@function map-get-multiple($map, $values, $optional: ()) {
   $result: ();
   @each $key in $values {
-    @if not map.has-key($map, $key) {
+    @if not map.has-key($map, $key) and list.index($optional, $key) == null {
       @warn "map-get-multiple(): the map has no key `#{$key}`.";
     }
   }
