@@ -94,9 +94,9 @@ A skeleton is at least `1em` tall, so its height follows the font size of the el
     <span class="skeleton w-100"></span>
   </p>`} />
 
-<Callout type="warning">
-Both animations keep running when the user asks for reduced motion. A project that honors the preference sets `animation: none` on `.skeleton` and `.skeleton-wave` in a `prefers-reduced-motion: reduce` media query.
-</Callout>
+Both animations stop when the user asks for reduced motion. A skeleton inside `.skeleton-glow` rests at its highest opacity, as a `.skeleton` with no animation, and `.skeleton-wave` drops its mask, so the placeholder stays fully visible with no highlight across it.
+
+<Callout name="info-prefersreducedmotion" />
 
 ## Layout
 
