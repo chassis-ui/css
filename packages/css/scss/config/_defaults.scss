@@ -531,8 +531,11 @@ $a11y-contexts:                 ("primary", "secondary", "neutral", "danger", "s
 $solid-fg-color:                var(--context-fg-solid) !default;
 $solid-fg-active:               var(--context-fg-main) !default;
 $solid-bg-color:                var(--context-bg-solid) !default;
-$solid-bg-even:                 color-mix(in oklch, $black 10%, var(--context-base-color)) !default;
-$solid-bg-evident:              color-mix(in oklch, $black 20%, var(--context-bg-solid)) !default;
+// Mixed in oklab: with an achromatic color such as `$black` the result is the one of
+// oklch, which scales lightness and chroma and keeps the hue. In oklch the computed
+// value of an achromatic context is `oklch(L 0 none)`, which axe-core cannot parse.
+$solid-bg-even:                 color-mix(in oklab, $black 10%, var(--context-base-color)) !default;
+$solid-bg-evident:              color-mix(in oklab, $black 20%, var(--context-bg-solid)) !default;
 $solid-bg-active:               var(--context-contrast-color) !default;
 $solid-border-color:            $solid-fg-color !default;
 $solid-icon-color:              $solid-fg-color !default;

@@ -12,6 +12,8 @@ import astroPlugin from 'eslint-plugin-astro'
 export default defineConfig([
   {
     ignores: [
+      // Local files that git ignores, a checkout of the repository in .claude/worktrees/ among them
+      '.claude/',
       '**/*.min.js',
       '**/dist/',
       '_site/',

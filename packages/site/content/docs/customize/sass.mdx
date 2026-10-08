@@ -239,7 +239,12 @@ $converted: to-color(#0d6efd);
 
 $with-alpha: to-color(rgba(#0d6efd, 0.5));
 // => oklch(57.82% 0.228 260.03deg / 0.5)
+
+$achromatic: to-color(#fff);
+// => oklab(100% 0 0)
 ```
+
+A color with no chroma (white, black, a gray) has no hue, and `to-color()` writes it as `oklab()`. It is the same color: `oklch(100% 0 none)` is valid CSS with a missing hue, but tools that read computed colors, such as axe-core, cannot parse it. When you mix such a token with `color-mix(in oklch, …)`, the browser finds no chroma and takes the hue of the other color, as it does for `#fff`.
 
 Because `to-color()` outputs a string in the oklch space, it works in any browser with oklch support. To use a different color space as your default, swap calls to `to-color()` for a function that emits your preferred space (`color(display-p3 …)`, `lch(…)`, etc.).
 

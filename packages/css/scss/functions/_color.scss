@@ -76,14 +76,19 @@
 // scss-docs-start to-color
 /// Convert a color to an oklch() value with rounded channel values
 /// Converts any Sass-supported color to the OKLCh color space, rounding lightness
-/// to 2 decimal places, chroma to 3 decimal places, and hue to 2 decimal places.
+/// to 2 decimal places of a percentage, chroma to 3 decimal places, and hue to 2 decimal places.
 /// Alpha is preserved when less than 1.
 ///
+/// An achromatic color (chroma rounds to 0) has no hue, and is written as oklab()
+/// with the same lightness: the color is the same one, with no hue to write.
+///
 /// @param {Color} $color - Any Sass-compatible color value
-/// @return {Color} - An oklch() color with rounded L, C, H channels and preserved alpha
+/// @return {String} - Unquoted oklch() color with rounded L, C, H channels and preserved alpha,
+///   or oklab() for an achromatic color
 /// @example
-///   to-color(#ff0000) => oklch(0.63 0.258 29.23)
-///   to-color(rgba(#ff0000, 0.5)) => oklch(0.63 0.258 29.23 / 0.5)
+///   to-color(#ff0000) => oklch(62.8% 0.258 29.23deg)
+///   to-color(rgba(#ff0000, 0.5)) => oklch(62.8% 0.258 29.23deg / 0.5)
+///   to-color(#fff) => oklab(100% 0 0)
 @function to-color($color) {
   $oklch: color.to-space($color, oklch);
 
@@ -92,19 +97,25 @@
   $c: math.div(math.round(color.channel($oklch, "chroma", oklch) * 1000), 1000);
   $a: color.alpha($color);
 
-  // Achromatic colors (chroma rounds to 0) have no meaningful hue;
-  // skip math on the 'none' keyword to avoid calc(NaN * 1deg) output.
-  $h: none;
+  // Achromatic colors (chroma rounds to 0) have no meaningful hue, and Sass gives
+  // them the `none` keyword. `oklch(L 0 none)` is valid, but it is also the computed
+  // value, which axe-core cannot parse: its color-contrast rule then skips the page.
+  // A hue of 0 is no replacement, since color-mix(in oklch, …) and gradients
+  // interpolate towards it, where a missing hue takes the hue of the other color.
+  // oklab() has no hue to write, and a browser that converts it to oklch for an
+  // interpolation finds a chroma of 0 and treats the hue as missing again.
+  $value: "oklab(#{$l} 0 0";
   @if $c != 0 {
     $h: math.div(math.round(color.channel($oklch, "hue", oklch) * 100), 100);
+    $value: "oklch(#{$l} #{$c} #{$h}";
   }
 
   // Use string interpolation so the CSS '/' is a channel separator, not Sass division.
   @if $a < 1 {
-    @return #{"oklch(#{$l} #{$c} #{$h} / #{$a})"};
+    @return #{"#{$value} / #{$a})"};
   }
 
-  @return #{"oklch(#{$l} #{$c} #{$h})"};
+  @return #{"#{$value})"};
 }
 // scss-docs-end to-color
 

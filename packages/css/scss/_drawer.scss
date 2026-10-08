@@ -218,7 +218,9 @@
   @include loop-breakpoints-down() using ($breakpoint, $next, $prefix) {
     .#{max-prefix($prefix)}drawer::backdrop {
       @extend %drawer-css-vars;
-      background-color: color-mix(in oklch, var(--backdrop-bg) var(--backdrop-opacity), transparent);
+      // In oklab, since an achromatic backdrop mixed in oklch computes to `oklch(L 0 none / A)`,
+      // which axe-core cannot parse. Mixed with `transparent`, the color is the same in both.
+      background-color: color-mix(in oklab, var(--backdrop-bg) var(--backdrop-opacity), transparent);
       backdrop-filter: blur(var(--backdrop-blur));
       @include backdrop-transitions(var(--transition-duration), var(--transition-timing));
     }

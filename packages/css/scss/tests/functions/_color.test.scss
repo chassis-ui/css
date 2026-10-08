@@ -51,6 +51,51 @@
   }
 }
 
+@include describe("to-color function") {
+  @include it("writes a color as oklch with rounded channels") {
+    @include assert() {
+      @include output() {
+        color: to-color(#ff0000);
+      }
+      @include expect() {
+        color: oklch(62.8% 0.258 29.23deg);
+      }
+    }
+  }
+
+  @include it("keeps an alpha below 1") {
+    @include assert() {
+      @include output() {
+        color: to-color(rgba(#ff0000, .5));
+      }
+      @include expect() {
+        color: oklch(62.8% 0.258 29.23deg / 0.5);
+      }
+    }
+  }
+
+  // The computed value of `oklch(100% 0 none)` holds `none`, which axe-core cannot
+  // parse, and a hue of 0 is one that color-mix(in oklch, …) interpolates towards.
+  @include it("writes a color with no chroma as oklab, with no hue") {
+    @include assert() {
+      @include output() {
+        --white: #{to-color(#ffffff)};
+        --black: #{to-color(#000000)};
+        --gray: #{to-color(#808080)};
+        --dim: #{to-color(rgba(#000000, .7))};
+        --clear: #{to-color(rgba(#ffffff, 0))};
+      }
+      @include expect() {
+        --white: oklab(100% 0 0);
+        --black: oklab(0% 0 0);
+        --gray: oklab(59.99% 0 0);
+        --dim: oklab(0% 0 0 / 0.7);
+        --clear: oklab(100% 0 0 / 0);
+      }
+    }
+  }
+}
+
 @include describe("luminance function") {
   @include it("returns 0 for black") {
     @include assert-equal(0, luminance(#000000));
