@@ -4,27 +4,7 @@
 // capture; these specs compile the modules through the Sass API with a
 // logger and assert on what it collects.
 
-const path = require('node:path')
-const sass = require('sass')
-
-const SCSS_DIR = path.resolve(__dirname, '..', '..')
-const LOAD_PATHS = [
-  SCSS_DIR,
-  path.join(SCSS_DIR, 'vendor'),
-  path.resolve(SCSS_DIR, '..', 'node_modules')
-]
-
-function compile(source) {
-  const warnings = []
-  const { css } = sass.compileString(source, {
-    loadPaths: LOAD_PATHS,
-    logger: {
-      warn: (message) => warnings.push(message),
-      debug() {}
-    }
-  })
-  return { css, warnings }
-}
+const { compile } = require('../helpers/compile.cjs')
 
 describe('deprecate()', () => {
   it('warns with the name and both versions', () => {

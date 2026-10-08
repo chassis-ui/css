@@ -474,3 +474,22 @@
     }
   }
 }
+
+@include describe("utility-values-map") {
+  @include it("returns a map as it is") {
+    @include assert-equal((sm: .5rem, null: 1rem), utility-values-map((sm: .5rem, null: 1rem)));
+  }
+
+  @include it("puts each value of a list under its own name") {
+    @include assert-equal((auto: auto, hidden: hidden), utility-values-map(auto hidden));
+    @include assert-equal((0: 0, 1: 1), utility-values-map((0, 1)));
+  }
+
+  @include it("puts a single value under the null key") {
+    @include assert-equal((null: var(--ratio)), utility-values-map(var(--ratio)));
+  }
+
+  @include it("returns the empty map for no values") {
+    @include assert-equal((), utility-values-map(()));
+  }
+}

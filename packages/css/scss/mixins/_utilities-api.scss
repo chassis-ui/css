@@ -170,6 +170,27 @@
   }
 }
 
+// The `values` of a utility as a map of value key to value: a map as it is,
+// a list with each value under its own name, a single value under the `null`
+// key, which adds nothing to the class name. Both generators and the merge of
+// `$utilities-overrides` (`scss/utilities/_index.scss`) read the values
+// through it.
+@function utility-values-map($values) {
+  @if meta.type-of($values) == "map" {
+    @return $values;
+  }
+
+  @if meta.type-of($values) != "list" {
+    @return (null: $values);
+  }
+
+  $map: ();
+  @each $value in $values {
+    $map: map.merge($map, ($value: $value));
+  }
+  @return $map;
+}
+
 // Escapes a class name for use in a selector: the `/` of a fraction value key
 // (`w-6/12`) becomes `\/`. The Tailwind emitter (`scss/tailwind/mixins/_utilities.scss`)
 // names its `@utility` rules with the unescaped `utility-class-name()`;
@@ -224,18 +245,7 @@
   }
 
   // Get the list or map of values and ensure it's a map
-  $values: map.get($utility, values);
-  @if meta.type-of($values) != "map" {
-    @if meta.type-of($values) == "list" {
-      $list: ();
-      @each $value in $values {
-        $list: map.merge($list, ($value: $value));
-      }
-      $values: $list;
-    } @else {
-      $values: (null: $values);
-    }
-  }
+  $values: utility-values-map(map.get($utility, values));
 
   // Group mode: emit one combined selector rule containing all shared (non-null) property values,
   // then let the per-value loop emit only the dynamic (null-valued) properties per class.

@@ -3,15 +3,7 @@
 // `$utilities-overrides` reaches the Tailwind entry: `scss/tailwind/utilities.scss`
 // and the merge manifest generate from the `$utilities` map of the native build.
 
-const path = require('node:path')
-const sass = require('sass')
-
-const SCSS_DIR = path.resolve(__dirname, '..', '..')
-const LOAD_PATHS = [
-  SCSS_DIR,
-  path.join(SCSS_DIR, 'vendor'),
-  path.resolve(SCSS_DIR, '..', 'node_modules')
-]
+const { compile: compileSass } = require('../helpers/compile.cjs')
 
 const OVERRIDES = `
   @use "utilities" as chassis with (
@@ -23,9 +15,7 @@ const OVERRIDES = `
   );
 `
 
-function compile(entry) {
-  return sass.compileString(`${OVERRIDES} @use "tailwind/${entry}";`, { loadPaths: LOAD_PATHS }).css
-}
+const compile = (entry) => compileSass(`${OVERRIDES} @use "tailwind/${entry}";`).css
 
 describe('the Tailwind entry with $utilities-overrides', () => {
   it('emits the `@utility` rules of the merged map', () => {

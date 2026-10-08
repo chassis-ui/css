@@ -4,23 +4,15 @@
 // `$enable-reduced-motion` on and off: a module is configured once per
 // compilation, so each case is a compilation of its own.
 
-const path = require('node:path')
-const sass = require('sass')
-
-const SCSS_DIR = path.resolve(__dirname, '..', '..')
-const LOAD_PATHS = [
-  SCSS_DIR,
-  path.join(SCSS_DIR, 'vendor'),
-  path.resolve(SCSS_DIR, '..', 'node_modules')
-]
+const { compile: compileSass } = require('../helpers/compile.cjs')
 
 function compile(config = '') {
-  const { css } = sass.compileString(
+  const { css } = compileSass(
     `
       @use "config" ${config};
       @use "skeleton";
     `,
-    { loadPaths: LOAD_PATHS, style: 'compressed' }
+    { style: 'compressed' }
   )
   return css
 }

@@ -23,6 +23,6 @@
 - the rule goes before `@use "@chassis-ui/css/scss/chassis"` and after a `@use "@chassis-ui/css/scss/config" with (…)`; in another place Sass stops with an error
 - the overrides are merged over a configured `$utilities` map too, and reach `scss/tailwind` compiled with Sass. The prebuilt `dist/tailwind/` files and `tailwind/merge.js` are built from the default map
 
-`map-get-multiple()` takes a third argument, the keys the map may lack without a warning; the grid bundle passes it the names of the overrides, so a removed utility of its list is left out in silence.
+`utility-values-map()` returns the `values` of a utility as the map the generators read: a list with each value under its own name, a single value under the `null` key. `map-get-multiple()` takes a third argument, the keys the map may lack without a warning; the grid bundle passes it the names of the overrides, so a removed utility of its list is left out in silence.
 
 Nothing changes for a build without the variable: `dist/css/` and `dist/tailwind/` are the same files.

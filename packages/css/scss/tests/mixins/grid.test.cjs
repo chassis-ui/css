@@ -3,27 +3,7 @@
 // What sass-true cannot assert on: the `@error` and `@warn` of the grid
 // mixins, and whole entry points compiled with a configuration.
 
-const path = require('node:path')
-const sass = require('sass')
-
-const SCSS_DIR = path.resolve(__dirname, '..', '..')
-const LOAD_PATHS = [
-  SCSS_DIR,
-  path.join(SCSS_DIR, 'vendor'),
-  path.resolve(SCSS_DIR, '..', 'node_modules')
-]
-
-function compile(source) {
-  const warnings = []
-  const { css } = sass.compileString(source, {
-    loadPaths: LOAD_PATHS,
-    logger: {
-      warn: (message) => warnings.push(message),
-      debug() {}
-    }
-  })
-  return { css, warnings }
-}
+const { compile } = require('../helpers/compile.cjs')
 
 const BREAKPOINTS = '(xs: 0, md: 768px, lg: 992px)'
 

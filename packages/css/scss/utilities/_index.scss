@@ -3,6 +3,7 @@
 @use "../config" as *;
 @use "../maps" as *;
 @use "../functions" as *;
+@use "../mixins/utilities-api" as api;
 
 //
 // Utilities Index
@@ -39,25 +40,6 @@
 // `"50"` are the same key. A list replaces the values.
 $utilities-overrides: () !default;
 // scss-docs-end utilities-overrides
-
-// The values of a utility as the map the generators make of them: a list has
-// each value under its own name, a single value has the `null` key. Mirrors
-// `generate-utility()` in `scss/mixins/_utilities-api.scss`.
-@function -values-map($values) {
-  @if meta.type-of($values) == "map" {
-    @return $values;
-  }
-
-  @if meta.type-of($values) != "list" {
-    @return (null: $values);
-  }
-
-  $map: ();
-  @each $value in $values {
-    $map: map.merge($map, ($value: $value));
-  }
-  @return $map;
-}
 
 // The key of `$values` that names the class `$key` names. `50` and `"50"` are
 // two keys of a Sass map and one class, and the default maps have both kinds
@@ -102,7 +84,7 @@ $utilities-overrides: () !default;
 
       // `()` is the empty map: it changes no value
       @if meta.type-of($values) == "map" or $values == () {
-        $merged: -values-map(map.get($utility, values));
+        $merged: api.utility-values-map(map.get($utility, values));
         @each $key, $value in $values {
           $key: -values-key($merged, $key);
           @if $value == null {

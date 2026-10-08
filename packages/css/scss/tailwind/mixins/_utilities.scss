@@ -70,18 +70,7 @@
   }
 
   // Get the list or map of values and ensure it's a map (same as generate-utility)
-  $values: map.get($utility, values);
-  @if meta.type-of($values) != "map" {
-    @if meta.type-of($values) == "list" {
-      $list: ();
-      @each $value in $values {
-        $list: map.merge($list, ($value: $value));
-      }
-      $values: $list;
-    } @else {
-      $values: (null: $values);
-    }
-  }
+  $values: api.utility-values-map(map.get($utility, values));
 
   $child-sel: null;
   @if map.has-key($utility, child-selector) {
@@ -152,11 +141,11 @@
 // generated `dist/tailwind/merge.js` config exposes for tailwind-merge's
 // `extendTailwindMerge`. Not part of the public Tailwind entry point.
 //
-// Reuses `api.utility-class-name()` so listed names can't drift from what
-// `generate-tailwind-utility` above actually emits, but duplicates its
-// (small) values-map normalization and dotted-compound split since neither
-// is exposed as a standalone function — keep the two in sync by hand if
-// either changes. Attribute-selector utilities (`selector: attr-starts` /
+// Reuses `api.utility-class-name()` and `api.utility-values-map()` so listed
+// names can't drift from what `generate-tailwind-utility` above actually
+// emits, but duplicates its (small) dotted-compound split, which is not
+// exposed as a standalone function — keep the two in sync by hand if it
+// changes. Attribute-selector utilities (`selector: attr-starts` /
 // `attr-includes`, e.g. `ratio-*`) have no enumerable per-value class name
 // and are skipped.
 //
@@ -188,18 +177,7 @@ $-merge-groups: (
       }
 
       @if $selector-type == "class" {
-        $values: map.get($utility, values);
-        @if meta.type-of($values) != "map" {
-          @if meta.type-of($values) == "list" {
-            $list: ();
-            @each $value in $values {
-              $list: map.merge($list, ($value: $value));
-            }
-            $values: $list;
-          } @else {
-            $values: (null: $values);
-          }
-        }
+        $values: api.utility-values-map(map.get($utility, values));
 
         @each $value-key, $value in $values {
           @if $value != null {
