@@ -40,11 +40,11 @@ In your `custom.scss`, pull Chassis in with `@use`. Two options are available: l
 // custom.scss
 // Option B: Load parts of Chassis CSS
 
-// 1. Functions first (so you can manipulate colors, SVGs, calc, etc)
-@use "@chassis-ui/css/scss/functions" as *;
+// 1. Variables first — configure here with `@use … with (…)` if needed
+@use "@chassis-ui/css/scss/config" as *;
 
-// 2. Variables — configure here with `@use ... with (...)` if needed
-@use "@chassis-ui/css/scss/config/defaults" as *;
+// 2. Functions (so you can manipulate colors, SVGs, maps, etc)
+@use "@chassis-ui/css/scss/functions" as *;
 
 // 3. Maps and mixins
 @use "@chassis-ui/css/scss/maps" as *;
@@ -107,36 +107,40 @@ Once your CSS is compiled, include it in your HTML:
 
 ## Variable defaults
 
-Every Chassis Sass variable is declared with `!default`. Under the module system, you configure module defaults at the `@use` call site:
+Every Chassis Sass variable is declared with `!default`. Under the module system, you configure the defaults where you load the module, with `@use … with (…)`:
 
 ```scss
-@use "@chassis-ui/css/scss/config/defaults" with (
-  $bg-color: #000,
-  $fg-color: #111,
+@use "@chassis-ui/css/scss/config" with (
+  $enable-rounded-borders: false,
+  $paragraph-margin-bottom: 1.5rem,
 );
 @use "@chassis-ui/css/scss/chassis";  // picks up your configured defaults
 ```
 
-You can also override a variable from a more specific module — components, maps, etc.:
+`scss/config` is the one module to configure. It forwards the feature flags of `scss/config/_settings.scss`, the defaults of `scss/config/_defaults.scss`, and the token variables of `scss/tokens/`, such as the context colors:
 
 ```scss
-@use "@chassis-ui/css/scss/config/defaults" with (
+@use "@chassis-ui/css/scss/config" with (
   $primary: #0074d9,
   $danger: #ff4136,
 );
+@use "@chassis-ui/css/scss/chassis";
 ```
 
-Sass loads each module exactly once, so the configured instance is shared by every downstream module that imports it. The `with (…)` call must appear before any module that transitively uses the target.
+Sass loads each module exactly once, so the configured instance is shared by every downstream module that uses it. That has two consequences for your file:
+
+- The `with (…)` rule must come before any module that loads the configuration, so put it first.
+- A module is configured once. Put every variable you change in the same `with (…)`; a second one stops the compile with an error.
 
 Some variables default to `null`. Those don't emit the property unless you override them.
 
-The complete list lives in `scss/config/_defaults.scss`.
+The complete list lives in `scss/config/_defaults.scss`. `@use "@chassis-ui/css/scss/config/defaults" with (…)` configures the same variables.
 
 <Callout name="info-npm-starter" />
 
 ## Maps and loops
 
-Chassis ships several Sass maps — key/value pairs that power families of related CSS (colors, breakpoints, etc.). Every map is `!default`, so you can override or extend them through `@use ... with (...)`.
+Chassis ships several Sass maps — key/value pairs that power families of related CSS (colors, breakpoints, etc.). Every map is `!default`: you replace one through `@use … with (…)`, and you add to one or remove from one by assigning to it before the framework loads.
 
 ### Modify a map
 
@@ -149,41 +153,51 @@ Most map entries are exposed as standalone variables (`$primary`, `$danger`, etc
 );
 ```
 
-### Add to a map
+### Replace a map
 
-To extend a map (rather than replacing it), configure the map itself:
+Configure the map itself to replace it. The build then has the entries you list and none of the default ones. This leaves two [ratio utilities]([[docsref:/utilities/ratio]]), `.ratio-1x1` and `.ratio-2x1`:
 
 ```scss
-@use "sass:map";
-@use "@chassis-ui/css/scss/maps" as chassis-maps;
-@use "@chassis-ui/css/scss/maps" with (
-  $context-colors: map.merge(
-    chassis-maps.$context-colors,
-    ("custom": #900),
+@use "@chassis-ui/css/scss/config" with (
+  $aspect-ratios: (
+    "1x1": #{"1 / 1"},
+    "2x1": #{"2 / 1"},
   )
 );
+@use "@chassis-ui/css/scss/chassis";
 ```
 
-Or merge in your own code after `@use`:
+### Add to a map
+
+A `with (…)` configuration can't read the map it replaces: Sass evaluates it before the module loads. To extend a map, load its module, assign the merged map to the module's variable, and load the framework after the assignment. This adds `.ratio-2x1` to the default ratios:
 
 ```scss
 @use "sass:map";
-@use "@chassis-ui/css/scss/maps" as maps;
+@use "@chassis-ui/css/scss/config" as config;
 
-$context-colors: map.merge(maps.$context-colors, ("custom": #900));
+config.$aspect-ratios: map.merge(config.$aspect-ratios, ("2x1": #{"2 / 1"}));
+
+@use "@chassis-ui/css/scss/chassis";
 ```
+
+The assignment has to come before `@use "@chassis-ui/css/scss/chassis"`. The framework writes its CSS when it loads, so an assignment after that rule changes nothing, and Sass reports nothing. A plain `$aspect-ratios: map.merge(…)` without the `config.` namespace only creates a variable in your own file.
+
+To set variables and assign to a map in the same file, add the `with (…)` to the rule that loads the module: `@use "@chassis-ui/css/scss/config" as config with (…)`.
 
 ### Remove from a map
 
-Use `map.remove()` in the `with (…)` configuration:
+Assign the result of `map.remove()` in the same way. This removes `.ratio-4x3` and `.ratio-21x9`:
 
 ```scss
 @use "sass:map";
-@use "@chassis-ui/css/scss/maps" as chassis-maps;
-@use "@chassis-ui/css/scss/maps" with (
-  $context-colors: map.remove(chassis-maps.$context-colors, "info", "light", "dark")
-);
+@use "@chassis-ui/css/scss/config" as config;
+
+config.$aspect-ratios: map.remove(config.$aspect-ratios, "4x3", "21x9");
+
+@use "@chassis-ui/css/scss/chassis";
 ```
+
+The maps of `scss/maps/`, such as `$spaces`, take the same assignment through `@use "@chassis-ui/css/scss/maps" as maps`. For the utility classes themselves, see [`$utilities-overrides`]([[docsref:/utilities/api#using-the-api]]).
 
 ### Grid maps
 
@@ -203,6 +217,8 @@ The first breakpoint (`xs`) must be in the map: it is the value every viewport s
 
 Chassis assumes certain keys exist in some maps. For example, the framework consumes `primary`, `success`, and `danger` from `$context-colors` for links, buttons, and form states. Changing their values is safe; removing them may cause Sass compilation errors that you'll have to address in your own overrides.
 
+A context color also spans more maps than `$context-colors`: its dark value is in `$context-colors-dark`, and the palettes and the button colors have entries of their own. A key added to `$context-colors` alone stops the compile, and a key removed from it alone leaves the component rules of that color in the CSS.
+
 ## Functions
 
 ### Colors
@@ -219,10 +235,10 @@ Converts any Sass-compatible color to a rounded `oklch()` string. The framework 
 
 ```scss
 $converted: to-color(#0d6efd);
-// => oklch(0.55 0.215 262.88)
+// => oklch(57.82% 0.228 260.03deg)
 
 $with-alpha: to-color(rgba(#0d6efd, 0.5));
-// => oklch(0.55 0.215 262.88 / 0.5)
+// => oklch(57.82% 0.228 260.03deg / 0.5)
 ```
 
 Because `to-color()` outputs a string in the oklch space, it works in any browser with oklch support. To use a different color space as your default, swap calls to `to-color()` for a function that emits your preferred space (`color(display-p3 …)`, `lch(…)`, etc.).
@@ -234,13 +250,13 @@ Wraps a color or CSS variable in a CSS [relative color](https://developer.mozill
 <ScssDocs name="to-opacity" file="scss/functions/_color.scss" />
 
 ```scss
-to-opacity(var(--cx-primary), 0.5)
+$half: to-opacity(var(--cx-primary), 0.5);
 // => oklch(from var(--cx-primary) l c h / 0.5)
 
-to-opacity($white, .15)
+$faint: to-opacity(#fff, .15);
 // => oklch(from #fff l c h / 0.15)
 
-to-opacity(var(--cx-fg-main), var(--cx-fg-opacity, 1))
+$runtime: to-opacity(var(--cx-fg-main), var(--cx-fg-opacity, 1));
 // => oklch(from var(--cx-fg-main) l c h / var(--cx-fg-opacity, 1))
 ```
 
@@ -253,10 +269,10 @@ A shorthand variant of `to-opacity()` designed to work as a `map-loop` callback.
 <ScssDocs name="opacity-var" file="scss/functions/_color.scss" />
 
 ```scss
-opacity-var("primary", "bg")
+$bg: opacity-var("primary", "bg");
 // => oklch(from var(--primary) l c h / var(--bg-opacity, 1))
 
-opacity-var("fg-main", "fg")
+$fg: opacity-var("fg-main", "fg");
 // => oklch(from var(--fg-main) l c h / var(--fg-opacity, 1))
 ```
 
@@ -265,23 +281,6 @@ This function is used when generating utility classes and component styles that 
 ### Escape SVG
 
 The `escape-svg()` function escapes `<`, `>`, and `#` for SVG background images. Data URIs passed to it must be quoted.
-
-### Add and Subtract
-
-`add()` and `subtract()` wrap CSS `calc()` to dodge an annoying browser quirk: expressions like `calc(10px - 0)` are invalid in every browser even though they're mathematically fine. Use these wrappers when one operand might be a unitless `0`.
-
-```scss
-$border-radius: .25rem;
-$border-width: 0;
-
-.element {
-  border-radius: calc($border-radius - $border-width); // invalid in browsers
-}
-
-.element {
-  border-radius: subtract($border-radius, $border-width); // outputs .25rem
-}
-```
 
 ## Mixins
 
@@ -294,6 +293,8 @@ A shorthand for the `prefers-color-scheme` media query with `light` and `dark` s
 <ScssDocs name="mixin-color-scheme" file="scss/mixins/_color-scheme.scss" />
 
 ```scss
+@use "@chassis-ui/css/scss/mixins" as *;
+
 .custom-element {
   @include color-scheme(light) {
     // light mode styles

@@ -6,14 +6,17 @@
 // Override any variable before importing Chassis CSS to customize the output.
 //
 
+// Forwarded before they are used: a `with (...)` on this module, or on
+// `scss/config`, then configures them. A module that is already loaded cannot
+// be configured, and `functions/color` loads `./settings`.
+@forward "./settings";
+@forward "./vendor";
+@forward "../tokens";
 @use "sass:map";
 @use "sass:string";
 @use "./vendor" as *;
 @use "../tokens" as *;
 @use "../functions/color" as *;
-@forward "./settings";
-@forward "./vendor";
-@forward "../tokens";
 
 
 //
