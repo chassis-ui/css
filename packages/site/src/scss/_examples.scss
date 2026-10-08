@@ -341,30 +341,40 @@
 
   // scss-docs-start custom-color-mode
   [data-cx-theme="primary"] {
-    --cx-fg-color: var(--cx-white);
-    --cx-bg-color: var(--cx-primary);
-    --cx-border-subtle: var(--cx-primary-30);
+    // The colors that the theme leaves alone take their dark value
+    color-scheme: dark;
 
+    // The tokens of the body context that the theme changes
+    --cx-default-bg-main: var(--cx-primary-70);
+    --cx-default-bg-even: var(--cx-primary-60);
+    --cx-default-bg-evident: var(--cx-primary-50);
+    --cx-default-bg-highlight: var(--cx-primary-60);
+    --cx-default-fg-highlight: var(--cx-white);
+    --cx-default-border-main: var(--cx-primary-40);
+
+    // The body colors that `:root` resolved from those tokens, declared again
+    --cx-bg-main: var(--cx-default-bg-main);
+    --cx-bg-even: var(--cx-default-bg-even);
+    --cx-bg-evident: var(--cx-default-bg-evident);
+    --cx-bg-highlight: var(--cx-default-bg-highlight);
+    --cx-fg-highlight: var(--cx-default-fg-highlight);
+    --cx-border-main: var(--cx-default-border-main);
+
+    // Component variables, where a component needs a value of its own
     .menu {
-      --cx-menu-bg-color: var(--cx-primary);
-      --cx-menu-fg-color: var(--cx-primary-contrast);
-      --cx-menu-link-fg-color: var(--cx-primary-contrast);
-      --cx-menu-link-hover-fg-color: var(--cx-primary-contrast);
-      --cx-menu-link-hover-bg-color: var(--cx-primary-40);
-      --cx-menu-link-active-bg-color: var(--cx-primary-60);
-      --cx-menu-separator-color: var(--cx-primary-40);
+      --cx-menu-bg-color: var(--cx-primary-80);
     }
 
     .button.secondary {
       --cx-button-idle-bg-color: transparent;
-      --cx-button-idle-fg-color: var(--cx-primary-contrast);
-      --cx-button-idle-border-color: var(--cx-primary-contrast);
-      --cx-button-hover-bg-color: var(--cx-primary-bg-hover);
-      --cx-button-hover-fg-color: var(--cx-primary-fg-hover);
-      --cx-button-hover-border-color: var(--cx-primary-contrast);
-      --cx-button-press-bg-color: var(--cx-primary-bg-press);
-      --cx-button-press-fg-color: var(--cx-primary-fg-press);
-      --cx-button-press-border-color: var(--cx-primary-contrast);
+      --cx-button-idle-fg-color: var(--cx-white);
+      --cx-button-idle-border-color: var(--cx-white);
+      --cx-button-hover-bg-color: var(--cx-primary-60);
+      --cx-button-hover-fg-color: var(--cx-white);
+      --cx-button-hover-border-color: var(--cx-white);
+      --cx-button-press-bg-color: var(--cx-primary-50);
+      --cx-button-press-fg-color: var(--cx-white);
+      --cx-button-press-border-color: var(--cx-white);
     }
   }
   // scss-docs-end custom-color-mode

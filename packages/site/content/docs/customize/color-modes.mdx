@@ -139,15 +139,20 @@ Outputs to:
 
 ## Custom color modes
 
-While the primary use case for color modes is light and dark mode, custom color modes are also possible. Create your own `data-cx-theme` selector with a custom value as the name of your color mode, then modify the Sass and CSS variables as needed. Chassis ships a separate `_variables-dark.scss` to house dark mode Sass variables, but that's not required for custom themes.
+While the primary use case for color modes is light and dark mode, custom color modes are also possible. Create your own `data-cx-theme` selector with a custom value as the name of your color mode, then declare the CSS variables that the theme changes.
 
-For example, you can create a “blue theme” with the selector `data-cx-theme="blue"`. In your custom Sass or CSS file, add the new selector and override any global or component CSS variables as needed. If you're using Sass, you can also use Sass's functions within your CSS variable overrides.
+For example, you can create a theme on the primary color with the selector `data-cx-theme="primary"`. In your custom Sass or CSS file, add the new selector with up to four kinds of declarations:
+
+- **`color-scheme`** — every color token has a light and a dark value. Set `color-scheme` to `light` or `dark` to choose the value of every token that the theme leaves alone.
+- **Tokens** — the colors of a context, such as `--cx-default-bg-main` of the body context or `--cx-primary-fg-main`. Forms, menus, tables and every component with a context class read them.
+- **Body colors** — `--cx-bg-main`, `--cx-fg-main` and the other body colors are resolved from the tokens of the body context on `:root`. On any other element, declare the ones whose token the theme changed again, so that they follow inside the theme. A theme on the `<html>` element needs no such declaration.
+- **Component variables** — such as `--cx-menu-bg-color`, where a component needs a value of its own.
 
 <ScssDocs name="custom-color-mode" file="../site/src/scss/_examples.scss" />
 
 <Example showMarkup={false} code={`<div class="cxd-example fg-main bg-main" data-cx-theme="primary">
-  <div class="h4">Example blue theme</div>
-  <p>Some paragraph text to show how the blue theme might look with written copy.</p>
+  <div class="h4">Example primary theme</div>
+  <p>Some paragraph text to show how the primary theme might look with written copy.</p>
 
   <hr class="border-lg"/>
 
@@ -166,8 +171,10 @@ For example, you can create a “blue theme” with the selector `data-cx-theme=
   </div>
 </div>`} />
 
+The theme only declares variables. Add `.fg-main` and `.bg-main` to the element with the attribute to give it the text and background color of the theme.
+
 ```html
-<div data-cx-theme="primary">
+<div class="fg-main bg-main" data-cx-theme="primary">
   ...
 </div>
 ```
@@ -179,44 +186,6 @@ To allow visitors to toggle color modes, create a toggle element that controls t
 The JavaScript below powers it. Inspect the Chassis docs navbar to see how it's implemented using Chassis components. Include it at the top of the page to reduce screen flickering on reload. When using media queries for color modes, this script may need to be modified or removed if implicit control is preferred.
 
 <Code containerClass="cxd-example-snippet" lang="js" filePath={getPackageFilePath('js/color-modes.js')} />
-
-## Adding theme colors
-
-Adding a new color in `$context-colors` is not enough for some Chassis components like [notifications]([[docsref:/components/notification]]) and [lists]([[docsref:/components/list]]). New colors must also be defined in `$context-colors-fg-main`, `$context-colors-bg-evident`, and `$context-colors-border-subtle` for light theme; and in `$context-colors-fg-main-dark`, `$context-colors-bg-evident-dark`, and `$context-colors-border-subtle-dark` for dark theme.
-
-This is a manual process because Sass cannot generate its own Sass variables from an existing variable or map. A future version of Chassis will revisit this setup to reduce the duplication.
-
-```scss
-@use "sass:map";
-@use "@chassis-ui/css/scss/functions" as *;
-@use "@chassis-ui/css/scss/config/defaults" as *;
-
-// Add a custom color to $context-colors
-$custom-colors: (
-  "custom-color": #712cf9
-);
-$context-colors: map.merge($context-colors, $custom-colors);
-
-@use "@chassis-ui/css/scss/maps" as *;
-@use "@chassis-ui/css/scss/mixins" as *;
-
-// Define color-mode-specific theme maps for the new color
-
-// Light mode
-$context-colors-fg-main: map.merge($context-colors-fg-main, ("custom-color": #712cf9));
-$context-colors-bg-evident: map.merge($context-colors-bg-evident, ("custom-color": #e1d2fe));
-$context-colors-border-subtle: map.merge($context-colors-border-subtle, ("custom-color": #bfa1fc));
-
-// Dark mode
-$context-colors-fg-main-dark: map.merge($context-colors-fg-main-dark, ("custom-color": #e1d2f2));
-$context-colors-bg-evident-dark: map.merge($context-colors-bg-evident-dark, ("custom-color": #8951fa));
-$context-colors-border-subtle-dark: map.merge($context-colors-border-subtle-dark, ("custom-color": #e1d2f2));
-
-// Remainder of Chassis CSS
-@use "@chassis-ui/css/scss/root";
-@use "@chassis-ui/css/scss/reboot";
-// etc
-```
 
 ## CSS
 
