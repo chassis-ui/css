@@ -245,9 +245,14 @@ test.describe('modal dialogs', () => {
 
     await expect(page.locator('#fullscreenModal')).toBeHidden()
 
+    // How far the page scrolls, not `scrollWidth - clientWidth`: with `scrollbar-gutter: stable`
+    // and scrollbars that take space (Chromium on Linux), `clientWidth` of the root holds the
+    // gutter and `scrollWidth` does not, so the difference is -15 with no overflow and -6 with
+    // the 9 px of the defect. `instant`, since the reboot scrolls the root smoothly and
+    // `scrollX` would be read before the page has moved
     const sideways = await page.evaluate(() => {
-      const root = document.documentElement
-      return root.scrollWidth - root.clientWidth
+      window.scrollTo({ left: 1000, behavior: 'instant' })
+      return window.scrollX
     })
     expect(sideways).toBe(0)
   })
