@@ -86,6 +86,15 @@
         visibility 0s var(--dialog-transition-duration)
       );
 
+      // A closed dialog has no transition: the exit runs while the dialog is still open,
+      // as `.hiding`, and the plugin closes it when the exit is over. A transition that
+      // is not over at that moment ends there. Under load the timer of the plugin closes
+      // the dialog before the browser has started the exit, and WebKit then leaves the
+      // transitions at their start: a closed dialog, opaque and visible.
+      &:not([open]) {
+        @include transition(none);
+      }
+
       // Native backdrop styling with transitions
       &::backdrop {
         background-color: var(--dialog-backdrop-bg);

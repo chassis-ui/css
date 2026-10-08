@@ -257,6 +257,26 @@ test.describe('modal dialogs', () => {
     expect(sideways).toBe(0)
   })
 
+  // A closed dialog has no transition (`.dialog:not([open])`). The plugin closes the dialog
+  // when its exit is over, and a transition that has not run by then would keep the closed
+  // dialog in view: WebKit under load held the exit at its start for seconds, which failed
+  // the tests above that wait for a hidden dialog. A dialog closed with its own close()
+  // goes from open to closed in one step, and shows the same without the load.
+  test('a closed dialog is hidden at once, with no transition left to run', async ({ page }) => {
+    await open(page, 'basicModal')
+
+    const closed = await page.locator('#basicModal').evaluate((dialog: HTMLDialogElement) => {
+      dialog.close()
+
+      return {
+        visibility: getComputedStyle(dialog).visibility,
+        transitions: dialog.getAnimations().length
+      }
+    })
+
+    expect(closed).toEqual({ visibility: 'hidden', transitions: 0 })
+  })
+
   test('the input with autofocus has the focus when the dialog opens', async ({ page }) => {
     await open(page, 'autofocusModal')
 

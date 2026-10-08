@@ -109,6 +109,14 @@
         &:not(.instant) {
           @include transition(transform var(--transition-duration) var(--transition-timing), visibility 0s var(--transition-duration));
 
+          // A closed drawer has no transition, as a closed dialog (scss/_dialog.scss): the
+          // exit runs while the drawer is still open, as `.hiding`, and a transition that is
+          // not over when the plugin closes it ends there. WebKit under load left a closed
+          // drawer in view for seconds, its transitions waiting at their start.
+          &:not([open]) {
+            @include transition(none);
+          }
+
           // Off-screen transforms per placement
           &:where(.drawer-start) {
             transform: translateX(calc(-100% - var(--inset)));
