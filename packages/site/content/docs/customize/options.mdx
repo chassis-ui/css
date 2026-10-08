@@ -69,16 +69,15 @@ Every option is in one table, in alphabetical order.
 
 ## Color mode type
 
-In addition to the `$enable-*` variables above, the `$color-mode-type` variable controls how dark mode is implemented in your project:
+In addition to the `$enable-*` variables above, the `$color-mode-type` variable sets what the styles of the [`color-mode()` mixin]([[docsref:/customize/color-modes#building-with-sass]]) follow. It changes the mixin only: the colors of the framework always follow both the `data-cx-theme` attribute and the system preference.
 
-- **`media-query`** (default): Relies solely on the `prefers-color-scheme` media query, automatically respecting the user's operating system settings.
-- **`data`**: Uses a data attribute (`data-cx-theme="dark"`) to control theme switching, allowing user preference toggles and manual control.
-
-Choose `data` when you want to provide a theme toggle in your UI, or `media-query` when you want to exclusively follow the system preference.
+- **`auto`** (default): The `data-cx-theme` attribute and the `prefers-color-scheme` media query, as the colors of the framework do.
+- **`data`**: The `data-cx-theme` attribute only.
+- **`media-query`**: The `prefers-color-scheme` media query only.
 
 ## Default configuration
 
-Every option is on by default in `scss/config/_settings.scss`, and `$color-mode-type` follows the system preference:
+Every option is on by default in `scss/config/_settings.scss`, and `$color-mode-type` is `auto`:
 
 <ScssDocs name="enable-options" file="scss/config/_settings.scss" />
 
