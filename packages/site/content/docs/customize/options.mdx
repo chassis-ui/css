@@ -6,37 +6,33 @@ toc: true
 
 ## Overview
 
-Chassis CSS provides a comprehensive set of configuration options through `$enable-*` Sass variables, allowing you to toggle features based on your project's specific needs. These options give you precise control over:
+Chassis CSS turns features on and off with `$enable-*` Sass variables. Each one is a switch for a part of the compiled CSS, so the options decide:
 
-- **Bundle Size**: Disable features you don't need to reduce CSS file size
-- **Performance**: Optimize rendering by removing expensive visual effects
-- **Accessibility**: Maintain important accessibility features while customizing appearance
-- **Visual Style**: Fine-tune the appearance to match your design system
+- **Bundle size**: leave out the features your project does not use
+- **Rendering cost**: drop shadows, gradients, and transitions
+- **Accessibility**: keep or replace the framework's handling of reduced motion and reduced transparency
+- **Visual style**: rounded corners, shadows, carets, validation icons
 
-### How to Customize Settings
+### How to customize settings
 
-To override Chassis CSS's default settings:
-
-1. Create your own Sass file that modifies the variables you want to change
-2. Import this file **before** Chassis CSS's main Sass file
-3. Recompile your CSS with `pnpm build`
+The options are `!default` variables of `scss/config/_settings.scss`. Configure them with `@use … with (…)` on the `config` module, before the module that loads the framework:
 
 ```scss
-// Your custom.scss file
-$enable-dark-mode: false;         // Disable dark mode support
-$enable-grid-system: true;        // Keep the grid system
-$enable-component-shadows: true;  // Enable shadow effects
-$enable-validation-icons: false;  // Remove form validation icons
+// custom.scss
+@use "@chassis-ui/css/scss/config" with (
+  $enable-dark-mode: false,        // No dark mode
+  $enable-validation-icons: false  // No icons in validated form fields
+);
 
-// Then import Chassis CSS
+// Then load Chassis CSS
 @use "@chassis-ui/css/scss/chassis";
 ```
 
-All configuration options are defined in Chassis CSS's `scss/config/_settings.scss` file and use Sass's `!default` flag, meaning your custom values will always take precedence.
+Then recompile your CSS. A variable assigned in your file without `with (…)` belongs to your file and changes nothing in the framework — see [Variable defaults]([[docsref:/customize/sass#variable-defaults]]).
 
-## Configuration Options
+## Configuration options
 
-All configuration options are organized in a single alphabetical list for easier reference.
+Every option is in one table, in alphabetical order.
 
 <CxTable class="table table-options">
 | Variable                          | Values                             | Description                                                                            |
@@ -48,13 +44,13 @@ All configuration options are organized in a single alphabetical list for easier
 | `$enable-background-gradients`    | `true` (default) or `false`        | Applies subtle gradient backgrounds to various components via `background-image`. Disable for a flatter visual style or to reduce CSS size. |
 | `$enable-component-shadows`       | `true` (default) or `false`        | Enables predefined decorative `box-shadow` styles on various components for depth. |
 | `$enable-container-classes`       | `true` (default) or `false`        | Generates CSS classes for layout containers (`.container`, `.container.fluid`, etc.). Disable to reduce CSS size if you're using custom containers. |
-| `$enable-container-queries`       | `true` (default) or `false`        | Generates the [container-query variants]([[docsref:/layout/grid#container-queries]]) under the `@` prefix (`.@md:col-span-6`, `.@md:d-flex`) for the grid classes and for the utilities with [`container: true`]([[docsref:/utilities/api#container]]), and the `.grid.contained` modifier. Disable to reduce CSS size if you lay out by the viewport only. |
+| `$enable-container-queries`       | `true` (default) or `false`        | Generates the [container variants]([[docsref:/layout/grid#container-queries]]) under the `@` prefix (`.@md:col-span-6`, `.@md:d-flex`) for the grid classes and for the utilities with [`container: true`]([[docsref:/utilities/api#container]]), and the `.grid.contained` modifier. Disable to reduce CSS size if you lay out by the viewport only. |
 | `$enable-dark-mode`               | `true` (default) or `false`        | Implements [dark mode support]([[docsref:/customize/color-modes#dark-mode]]) throughout the framework, with automatic detection and toggle capability. |
-| `$enable-deprecation-messages`    | `true` (default) or `false`        | Shows console warnings when using deprecated features scheduled for removal in future versions. Disable in production for cleaner console output. |
+| `$enable-deprecation-messages`    | `true` (default) or `false`        | Prints a Sass warning at compile time when the build uses a mixin or variable that is deprecated and scheduled for removal. |
 | `$enable-elevation-shadows`       | `true` (default) or `false`        | Generates elevation-specific shadow utilities that create consistent layering effects based on design tokens. |
 | `$enable-exclude-strokes`         | `true` (default), `false`, or list | Controls border width exclusion from padding for components. `true` applies to all components, `false` never applies, or provide a list like `button, badge, form-control, notification` for specific components. |
 | `$enable-grid-system`             | `true` (default) or `false`        | Generates the [grid system]([[docsref:/layout/grid]]): `.grid`, `.grid-fill`, the span, start, and end classes (`.col-span-6`, `.md:col-start-3`), and the grid utilities (`grid-cols-*`, `grid-rows-*`, `grid-flow-*`, `auto-cols-*`, `auto-rows-*`). Disable for a components-only build with a layout of its own; the containers, the gap utilities, and the fraction widths stay. Named `$enable-cssgrid` until v0.7.0. |
-| `$enable-important-utilities`     | `true` (default) or `false`        | Adds `!important` to utility classes to ensure they override component styles. Disable only if you have a carefully controlled CSS specificity strategy. |
+| `$enable-important-utilities`     | `true` (default) or `false`        | Adds `!important` to the declarations of the utility placeholders (`%font`, `%font-size`, `%fg-color`, `%bg-color`, `%border-color`, `%icon-color`, `%link-color`) for a project that extends them. The utility classes take `!important` one by one, with the [`important` option]([[docsref:/utilities/api#importance]]) of the utility API. |
 | `$enable-negative-margins`        | `true` (default) or `false`        | Generates [negative margin utilities]([[docsref:/utilities/margin#negative-margins]]) like `.-m-md`, `-mt-sm`. Useful for precise layout adjustments. |
 | `$enable-property-opacities`      | `true` (default) or `false`        | Generates the opacity utilities of single properties: `.fg-opacity-*`, `.bg-opacity-*`, `.border-opacity-*`, `.cue-opacity-*`, and `.text-decoration-opacity-*`. |
 | `$enable-reduced-motion`          | `true` (default) or `false`        | Respects the [`prefers-reduced-motion` media query]([[docsref:/core-concepts/accessibility#reduced-motion]]), reducing or eliminating animations for users who prefer minimal motion. Critical for vestibular disorders. |
@@ -71,7 +67,7 @@ All configuration options are organized in a single alphabetical list for easier
 | `$enable-visited-links`           | `true` (default) or `false`        | Applies distinct styling to visited links (`a:visited`), improving navigation by providing visual feedback about previously accessed content. |
 </CxTable>
 
-## Color Mode Type
+## Color mode type
 
 In addition to the `$enable-*` variables above, the `$color-mode-type` variable controls how dark mode is implemented in your project:
 
@@ -80,36 +76,36 @@ In addition to the `$enable-*` variables above, the `$color-mode-type` variable 
 
 Choose `data` when you want to provide a theme toggle in your UI, or `media-query` when you want to exclusively follow the system preference.
 
-## Default Configuration
+## Default configuration
 
-Below is the default configuration from `scss/config/_settings.scss`. These settings are optimized for most projects, but you can override any of them based on your needs:
+Every option is on by default in `scss/config/_settings.scss`, and `$color-mode-type` follows the system preference:
 
 <ScssDocs name="enable-options" file="scss/config/_settings.scss" />
 
-## Performance Considerations
+## Performance considerations
 
-Strategic configuration can significantly improve both CSS bundle size and runtime performance:
+The options change the size of the CSS and the work the browser does to render it.
 
-### Reducing Bundle Size
+### Reducing bundle size
 
 For smaller CSS files, consider disabling:
 
-- **Visual Enhancements**: Disable `$enable-background-gradients` and `$enable-component-shadows` for a more minimal style
-- **Form Features**: Turn off `$enable-validation-icons` if you implement custom validation UI
+- **Visual effects**: Disable `$enable-background-gradients` and `$enable-component-shadows` for a more minimal style
+- **Form features**: Turn off `$enable-validation-icons` if you implement custom validation UI
 - **Transitions**: Set `$enable-transitions: false` for a more minimal build
 
-### Improving Runtime Performance
+### Runtime performance
 
 For better rendering performance, especially on lower-powered devices:
 
-- **Reduce Animations**: Set `$enable-transitions: false` to eliminate transition animations
-- **Simplify Rendering**: Disable `$enable-component-shadows` and `$enable-background-gradients` to reduce GPU/CPU load
-- **Optimize Typography**: Consider `$enable-fluid-font-sizes: false` if you don't need responsive font scaling
+- **Fewer animations**: Set `$enable-transitions: false` to eliminate transition animations
+- **Simpler rendering**: Disable `$enable-component-shadows` and `$enable-background-gradients` to reduce GPU/CPU load
+- **Typography**: Consider `$enable-fluid-font-sizes: false` if you don't need responsive font scaling
 
-### Production Optimizations
+### Production builds
 
 When deploying to production:
 
-- Set `$enable-deprecation-messages: false` to keep the console clean
+- Set `$enable-deprecation-messages: false` to keep the build output free of deprecation warnings
 - Consider `$enable-smooth-scroll: false` if you implement custom scroll behaviors
 - Audit your usage of dark mode with `$enable-dark-mode` - disable if unused

@@ -78,25 +78,25 @@ To show an element only within a range of screen sizes, combine a `.d-*-none` cl
 
 ## Display in print
 
-Print display utilities override `display` values within `@media print` contexts. The same set of values available in responsive utilities is supported.
+The display utilities have a `print:` variant, which applies within `@media print`. It has the values of the breakpoint variants:
 
-- `.d-print-none`
-- `.d-print-inline`
-- `.d-print-inline-block`
-- `.d-print-block`
-- `.d-print-grid`
-- `.d-print-inline-grid`
-- `.d-print-table`
-- `.d-print-table-row`
-- `.d-print-table-cell`
-- `.d-print-flex`
-- `.d-print-inline-flex`
+- `.print:d-none`
+- `.print:d-inline`
+- `.print:d-inline-block`
+- `.print:d-block`
+- `.print:d-grid`
+- `.print:d-inline-grid`
+- `.print:d-table`
+- `.print:d-table-row`
+- `.print:d-table-cell`
+- `.print:d-flex`
+- `.print:d-inline-flex`
 
-The print and display classes can be combined.
+The print variant combines with the other display classes on one element.
 
-<Example code={`<div class="d-print-none">Screen Only (Hide on print only)</div>
-<div class="d-none d-print-block">Print Only (Hide on screen only)</div>
-<div class="d-none lg:d-block d-print-block">Hide up to lg on screen, but always show on print</div>`} />
+<Example code={`<div class="print:d-none">Screen only (hidden in print)</div>
+<div class="d-none print:d-block">Print only (hidden on screen)</div>
+<div class="d-none lg:d-block print:d-block">Hidden below lg on screen, always shown in print</div>`} />
 
 ## CSS
 

@@ -4,6 +4,9 @@ description: The gap between grid items, set per breakpoint by the gutter tokens
 toc: true
 css_layer: layout
 css_media: viewport
+tokens:
+  scopes:
+    - gutter
 ---
 import { sassVars, sassBreakpointSize } from '@libs/sass'
 
@@ -14,12 +17,12 @@ The gutter is the gap between the items of a `.grid` or `.grid-fill`, between co
 <CxTable>
 | Breakpoint | Dimensions | Gutter |
 | --- | --- | --- |
-| XS | &lt;{sassBreakpointSize('sm')} | {sassVars('gutter').xs} |
-| SM | &ge;{sassBreakpointSize('sm')} | {sassVars('gutter').sm} |
-| MD | &ge;{sassBreakpointSize('md')} | {sassVars('gutter').md} |
-| LG | &ge;{sassBreakpointSize('lg')} | {sassVars('gutter').lg} |
-| XL | &ge;{sassBreakpointSize('xl')} | {sassVars('gutter').xl} |
-| 2XL | &ge;{sassBreakpointSize('2xl')} | {sassVars('gutter')['2xl']} |
+| `xs` | &lt;{sassBreakpointSize('sm')} | {sassVars('gutter').xs} |
+| `sm` | &ge;{sassBreakpointSize('sm')} | {sassVars('gutter').sm} |
+| `md` | &ge;{sassBreakpointSize('md')} | {sassVars('gutter').md} |
+| `lg` | &ge;{sassBreakpointSize('lg')} | {sassVars('gutter').lg} |
+| `xl` | &ge;{sassBreakpointSize('xl')} | {sassVars('gutter').xl} |
+| `2xl` | &ge;{sassBreakpointSize('2xl')} | {sassVars('gutter')['2xl']} |
 </CxTable>
 
 <Example class="cxd-example-grid" code={`<div class="grid text-center">
@@ -156,6 +159,8 @@ The padding of `.container` is the page margin, `--cx-container-padding`: a valu
 <DocsCSS name="Gutter" type="system" plural exposed />
 
 ### Custom properties
+
+Two custom properties set the gap of a grid: the gutter of the breakpoint, and the override of one grid.
 
 <CxTable>
 | Property | Default | Description |

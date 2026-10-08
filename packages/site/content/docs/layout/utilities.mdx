@@ -10,7 +10,7 @@ toc: true
 
 ## Flexbox
 
-Chassis CSS uses flexbox for most components, but sets `display: flex` only where needed rather than globally — a global default would introduce unnecessary overrides and change default browser behaviors in unexpected ways. To apply flexbox to an arbitrary element, add `.d-flex` or a responsive variant (e.g. `.sm:d-flex`). The full set of [flex utilities]([[docsref:/utilities/flex]]) — alignment, direction, wrapping, ordering, and sizing — only take effect on flex containers.
+Chassis CSS uses flexbox for most components, but sets `display: flex` only where needed rather than globally — a global default would introduce unnecessary overrides and change default browser behaviors in unexpected ways. To apply flexbox to an arbitrary element, add `.d-flex` or a breakpoint variant (`.sm:d-flex`). The full set of [flex utilities]([[docsref:/utilities/flex]]) — alignment, direction, wrapping, ordering, and sizing — takes effect only on an element with `display: flex` and on its items.
 
 ## Grid
 
@@ -22,7 +22,7 @@ Chassis CSS uses flexbox for most components, but sets `display: flex` only wher
 
 ## Container type
 
-[Container type utilities]([[docsref:/utilities/container-type]]) set the CSS `container-type` property on an element, making it a container query context for its descendants. Components whose responsive classes are implemented with `@container` queries — such as [Stepper]([[docsref:/components/stepper]]), [Card groups]([[docsref:/components/card#card-groups]]), and [List]([[docsref:/components/list]]) — require a container query ancestor. [Navbar]([[docsref:/components/navbar]]) is a query container itself and needs none.
+[Container type utilities]([[docsref:/utilities/container-type]]) set the CSS `container-type` property on an element, making it a query container for its descendants. Components whose responsive classes are implemented with `@container` queries — such as [Stepper]([[docsref:/components/stepper]]), [Card groups]([[docsref:/components/card#card-groups]]), and [List]([[docsref:/components/list]]) — require a query container among their ancestors. [Navbar]([[docsref:/components/navbar]]) is a query container itself and needs none.
 
 ## Sizing
 
@@ -34,11 +34,11 @@ Chassis CSS uses flexbox for most components, but sets `display: flex` only wher
 
 ## Space
 
-[Space utilities]([[docsref:/utilities/space]]) add consistent spacing between the direct children of an element via `margin`, without requiring a flex or grid container. Use them when a simple margin-based rhythm is preferable to a full flex or grid layout.
+[Space utilities]([[docsref:/utilities/space]]) add consistent spacing between the direct children of an element via `margin`, on an element that is neither a flex nor a grid layout. Use them when a simple margin-based rhythm is preferable to a full flex or grid layout.
 
 ## Gap
 
-[Gap utilities]([[docsref:/utilities/gap]]) apply `gap`, `row-gap`, and `column-gap` to flex and grid containers, distributing space between items without adding margin to individual children. All three use the same `$spaces` spacing scale as margin and padding, and are responsive across all six breakpoints. On a `.grid` they override the default gutter — see [Gutters]([[docsref:/layout/gutters]]).
+[Gap utilities]([[docsref:/utilities/gap]]) apply `gap`, `row-gap`, and `column-gap` to flex and grid layouts, distributing space between items without adding margin to individual children. All three use the same `$spaces` spacing scale as margin and padding, and are responsive across all six breakpoints. On a `.grid` they override the default gutter — see [Gutters]([[docsref:/layout/gutters]]).
 
 ## Position
 
@@ -54,7 +54,7 @@ Chassis CSS uses flexbox for most components, but sets `display: flex` only wher
 
 ## Vertical alignment
 
-[Vertical alignment utilities]([[docsref:/utilities/vertical-align]]) set the CSS `vertical-align` property. They apply only to inline, inline-block, and table-cell elements. For vertically centering block content inside a flex or grid container, use the [flex alignment utilities]([[docsref:/utilities/flex#align-items]]) instead.
+[Vertical alignment utilities]([[docsref:/utilities/vertical-align]]) set the CSS `vertical-align` property. They apply only to inline, inline-block, and table-cell elements. For vertically centering block content inside a flex or grid layout, use the [flex alignment utilities]([[docsref:/utilities/flex#align-items]]) instead.
 
 ## Visibility
 

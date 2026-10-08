@@ -1,6 +1,6 @@
 ---
 title: Skeleton
-description: Enhance user experience with Chassis CSS's skeleton loading system, providing smooth content placeholders during asynchronous operations and data loading states.
+description: Placeholders that take the shape of content while it loads, with glow and wave animations, context colors, and widths from the sizing utilities.
 toc: true
 tokens: context
 css_layer: components
@@ -10,44 +10,34 @@ import { getData } from '@libs/data'
 
 ## Introduction
 
-Skeleton components in Chassis CSS deliver intuitive loading experiences that maintain user engagement during content loading phases. Built with pure CSS animations and semantic markup, skeletons seamlessly integrate with your design system while providing visual continuity that reduces perceived loading times and enhances overall user experience.
+A skeleton is a placeholder that stands in for content while it loads. It keeps the shape of the interface — the lines of a paragraph, the title of a card, the width of a button — so the layout does not shift when the content arrives.
 
-Unlike traditional spinners or loading indicators, Chassis CSS skeletons preserve the visual structure of your interface, maintaining spatial relationships and content hierarchy while data loads. The component architecture uses CSS custom properties for runtime theming and supports comprehensive animation patterns for dynamic loading feedback.
+Skeletons are CSS only. `.skeleton` draws a block in the foreground color at a low opacity. The width comes from the sizing utilities, the height from the font size of the element, and two wrapper classes animate it.
 
-Chassis CSS skeletons feature a flexible, semantic approach to loading states:
+### Key features
 
-- **Pure CSS implementation** eliminates JavaScript dependencies for basic skeleton display
-- **Semantic markup** maintains accessibility and screen reader compatibility during loading
-- **Animation patterns** provide visual feedback through glow and wave effects
-- **Grid integration** enables precise width control using existing layout utilities
-- **Design system alignment** through CSS custom properties and contextual color support
+- **No JavaScript** — the classes style the placeholder; showing and removing it belongs to the code that loads the content
+- **Sized by existing utilities** — the fraction and percentage widths, and the font-size classes for the height
+- **Two animations** — `.skeleton-glow` pulses the opacity and `.skeleton-wave` moves a highlight across
+- **Context colors** — `.skeleton-{color}` takes the color of a skeleton from the context palette
+- **Component modifier** — on a `.button`, `.chip`, or `.badge`, `.skeleton` keeps the background and the height of the component
 
-### Implementation
+## Basic structure
 
-Before implementing skeleton components, consider these accessibility and performance considerations:
+Add `.skeleton` to an empty inline element and give it a width with a [width utility]([[docsref:/utilities/sizing#fractions]]) such as `.w-6/12`, which sets the width in twelfths of the parent. On a component such as `.button`, add `.skeleton` to the component itself.
 
-- Use `aria-hidden="true"` on skeleton containers to prevent screen reader interference
-- Implement custom JavaScript to manage skeleton visibility and content transitions
-- Provide appropriate `aria-live` announcements when content loads and skeletons are removed
-- Consider reduced motion preferences when implementing skeleton animations
-- Ensure skeleton dimensions match final content layout to prevent visual shifts
+<Example code={`<p aria-hidden="true">
+    <span class="skeleton w-6/12"></span>
+  </p>
 
-<Callout>
-**Enhanced accessibility approach** — Chassis CSS skeletons focus on visual loading feedback while maintaining semantic structure. The loading behavior depends on your implementation approach, and JavaScript integration may be required to inform assistive technologies of content state changes and successful data loading.
-</Callout>
+  <a class="button primary disabled skeleton w-4/12" aria-disabled="true"></a>`} />
 
-## Examples
-
-Explore practical skeleton implementations demonstrating loading patterns, animation effects, and integration techniques. These examples showcase Chassis CSS's flexible skeleton system across various interface components.
-
-### Basic structure
-
-This foundational example demonstrates essential skeleton structure with proper accessibility attributes. Skeletons replace content during loading while maintaining visual hierarchy and spacing relationships.
+The same classes build the placeholder of a whole component. The second card repeats the structure of the first with skeletons in place of its text, and `.skeleton-glow` on a parent animates the skeletons inside it.
 
 <Example class="d-flex flex-wrap gap-md" code={`<div class="card" style="width: 18rem;">
     <Placeholder width="100%" height="180" class="card-img-top" text={false} background="#20c997" />
     <div class="card-body">
-      <h4 class="card-title">Card title</h4>
+      <h3 class="card-title">Card title</h3>
       <p>Some quick example text to build on the card title and make up the bulk of the card's content.</p>
       <a href="#" class="button primary me-auto">Go somewhere</a>
     </div>
@@ -70,40 +60,17 @@ This foundational example demonstrates essential skeleton structure with proper 
     </div>
   </div>`} />
 
-### Basic implementation
+## Width
 
-Create skeleton placeholders using the `.skeleton` class combined with a [width utility]([[docsref:/utilities/sizing#fractions]]) such as `.w-6/12`, which sets the width in twelfths of the parent. Skeletons can replace text content or be applied as modifier classes to existing components.
-
-<Example code={`<p aria-hidden="true">
-    <span class="skeleton w-6/12"></span>
-  </p>
-
-  <a class="button primary disabled skeleton w-4/12" aria-disabled="true"></a>`} />
-
-<Callout>
-**Accessibility considerations for skeleton states** — The `aria-hidden="true"` attribute prevents screen readers from announcing skeleton content. Implement JavaScript to manage loading state transitions and provide appropriate `aria-live` announcements when content becomes available to ensure assistive technology users receive loading status updates.
-</Callout>
-
-### Width customization
-
-Configure skeleton width using the [fraction widths]([[docsref:/utilities/sizing#fractions]]) (`.w-6/12`, responsive as `.md:w-4/12`), the percentage [width utilities]([[docsref:/utilities/sizing]]) (`.w-75`), or inline styles for precise control based on content requirements and layout constraints.
+A skeleton takes its width from the [fraction widths]([[docsref:/utilities/sizing#fractions]]) (`.w-6/12`, with breakpoint variants such as `.md:w-4/12`), the percentage [width utilities]([[docsref:/utilities/sizing]]) (`.w-75`), or an inline style.
 
 <Example code={`<span class="skeleton w-6/12"></span>
-<span class="skeleton w-75"></span>
-<span class="skeleton" style="width: 25%;"></span>`} />
+  <span class="skeleton w-75"></span>
+  <span class="skeleton" style="width: 25%;"></span>`} />
 
-### Color themes
+## Size
 
-By default, skeletons inherit `currentColor` for seamless integration with your typography. Override with [background utilities]([[docsref:/utilities/colors]]) or custom colors to match your design system or create branded loading experiences.
-
-<Example code={[
-  `<span class="skeleton w-100"></span>`,
-  ...getData('context-colors').map((contextColor) => `<span class="skeleton w-100 bg-${contextColor.name}"></span>`)
-]} />
-
-### Size variations
-
-Skeleton dimensions automatically inherit from parent element typography. Apply [typography classes]([[docsref:/content/typography#font-size]]) or [text utilities]([[docsref:/utilities/text#font-size]]) to create skeleton variations that match your content hierarchy.
+A skeleton is at least `1em` tall, so its height follows the font size of the element. Apply the [font size classes]([[docsref:/content/typography#font-size]]) or the [text utilities]([[docsref:/utilities/text#font-size]]) to match the content the skeleton stands in for.
 
 <Example code={`<span class="skeleton w-100 font-xl"></span>
   <span class="skeleton w-100"></span>
@@ -115,9 +82,9 @@ Skeleton dimensions automatically inherit from parent element typography. Apply 
     <span class="skeleton w-3/12 text-lg"></span>
   </p>`} />
 
-### Animation effects
+## Animation
 
-Enhance skeleton loading feedback with animation patterns that convey active loading states. Apply `.skeleton-glow` for subtle pulsing effects or `.skeleton-wave` for directional motion that suggests content streaming.
+`.skeleton-glow` and `.skeleton-wave` show that loading is in progress. Both go on a parent of the skeletons: `.skeleton-glow` pulses the opacity of each skeleton inside it, and `.skeleton-wave` moves a highlight across the parent as one surface. `.skeleton-glow` also works on the skeleton itself.
 
 <Example code={`<p class="skeleton-glow">
     <span class="skeleton w-100"></span>
@@ -127,25 +94,29 @@ Enhance skeleton loading feedback with animation patterns that convey active loa
     <span class="skeleton w-100"></span>
   </p>`} />
 
-### Complex layouts
+<Callout type="warning">
+Both animations keep running when the user asks for reduced motion. A project that honors the preference sets `animation: none` on `.skeleton` and `.skeleton-wave` in a `prefers-reduced-motion: reduce` media query.
+</Callout>
 
-Build sophisticated loading states by combining multiple skeleton elements within structured layouts. This approach maintains visual hierarchy while providing comprehensive loading feedback for complex interface sections.
+## Layout
+
+Skeletons inside a [grid]([[docsref:/layout/grid]]) or a flex container build the placeholder of a section. One `.skeleton-glow` on the container animates every skeleton in it.
 
 <Example code={`<div class="grid skeleton-glow" aria-hidden="true">
     <div class="col-span-full md:col-span-3">
-      <span class="skeleton w-100 skeleton-lg" style="height: 8rem;"></span>
+      <span class="skeleton w-100" style="height: 8rem;"></span>
     </div>
     <div class="col-span-full md:col-span-9">
-      <span class="skeleton w-8/12 skeleton-lg"></span>
+      <span class="skeleton w-8/12 font-lg"></span>
       <span class="skeleton w-100"></span>
       <span class="skeleton w-10/12"></span>
       <span class="skeleton w-6/12"></span>
     </div>
   </div>`} />
 
-### Button integration
+## Buttons
 
-For interactive elements like buttons, combine skeleton classes with disabled states to maintain proper spacing and interaction feedback. Additional styling ensures height preservation when text content is absent.
+On a `.button`, `.skeleton` lowers the opacity and sets the wait cursor, and leaves the background of the button in place. An empty pseudo-element keeps the height of the button without its text, as it does for `.chip` and `.badge`. Combine it with the disabled state so the placeholder cannot be activated.
 
 <Example code={`<div class="d-flex gap-md">
     <button type="button" class="button disabled skeleton w-3/12" aria-disabled="true" aria-label="Loading"></button>
@@ -153,9 +124,23 @@ For interactive elements like buttons, combine skeleton classes with disabled st
     <button type="button" class="button secondary disabled skeleton w-3/12" aria-disabled="true" aria-label="Loading"></button>
   </div>`} />
 
-<Callout type="info">
-**Height preservation techniques** — Chassis CSS applies additional styling to `.button` elements via `::before` pseudo-elements to maintain proper height when skeleton content replaces text. Extend this pattern for custom components or add `&nbsp;` within elements to preserve height when actual content renders.
-</Callout>
+## Theming
+
+A skeleton is drawn in the foreground color of its context (`--cx-fg-color`). The `.skeleton-{color}` utilities set another color of the context palette through `--cx-skeleton-color`.
+
+<Example code={[
+  `<span class="skeleton w-100"></span>`,
+  ...getData('context-colors').map((contextColor) => `<span class="skeleton w-100 skeleton-${contextColor.name}"></span>`)
+]} />
+
+## Accessibility
+
+A skeleton carries no information, and the classes do not hide it from assistive technology. The markup and the script that loads the content do that work:
+
+- Set `aria-hidden="true"` on the skeleton, or on the container of a group of skeletons, so screen readers skip the placeholder.
+- Announce the loaded content, for example by inserting it into a region with `aria-live="polite"` or by setting `aria-busy="true"` on the region while it loads.
+- Give a skeleton the dimensions of the content it stands in for, so the page does not shift when the content replaces it.
+- A `<button>` skeleton stays focusable. The `disabled` attribute takes it out of the tab order; `aria-disabled="true"` with `.disabled` only announces and styles it as disabled.
 
 ## CSS
 

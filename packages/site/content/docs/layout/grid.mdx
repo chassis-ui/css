@@ -8,9 +8,12 @@ toc: true
 css_layer: layout
 css_media: viewport
 tokens:
-  scopes: 
+  scopes:
     - breakpoint
     - container
+    - gutter
+    - margin
+    - columns
 ---
 import { sassVars, sassBreakpointSize, sassContainerSize } from '@libs/sass'
 
@@ -48,53 +51,15 @@ The grid has three parts — container, grid, and items — and reads its measur
 
 Each breakpoint has a container `max-width`, a page margin, a gutter, and a column count, all read from the design tokens:
 
-<div class="table-responsive">
-  <table class="table mb-lg">
-    <thead>
-      <tr>
-        <th scope="col"></th>
-        <th scope="col">xs<br/><span class="font-normal">&lt;{sassBreakpointSize('sm')}</span></th>
-        <th scope="col">sm<br/><span class="font-normal">&ge;{sassBreakpointSize('sm')}</span></th>
-        <th scope="col">md<br/><span class="font-normal">&ge;{sassBreakpointSize('md')}</span></th>
-        <th scope="col">lg<br/><span class="font-normal">&ge;{sassBreakpointSize('lg')}</span></th>
-        <th scope="col">xl<br/><span class="font-normal">&ge;{sassBreakpointSize('xl')}</span></th>
-        <th scope="col">2xl<br/><span class="font-normal">&ge;{sassBreakpointSize('2xl')}</span></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th class="text-nowrap" scope="row">Container <code class="font-normal">max-width</code></th>
-        <td>None (auto)</td>
-        <td>{sassContainerSize('sm')}</td>
-        <td>{sassContainerSize('md')}</td>
-        <td>{sassContainerSize('lg')}</td>
-        <td>{sassContainerSize('xl')}</td>
-        <td>{sassContainerSize('2xl')}</td>
-      </tr>
-      <tr>
-        <th class="text-nowrap" scope="row">Page margin</th>
-        {['xs', 'sm', 'md', 'lg', 'xl', '2xl'].map((breakpoint) => <td>{sassVars('margin')[breakpoint]}</td>)}
-      </tr>
-      <tr>
-        <th class="text-nowrap" scope="row">Gutter</th>
-        {['xs', 'sm', 'md', 'lg', 'xl', '2xl'].map((breakpoint) => <td>{sassVars('gutter')[breakpoint]}</td>)}
-      </tr>
-      <tr>
-        <th class="text-nowrap" scope="row">Columns</th>
-        {['xs', 'sm', 'md', 'lg', 'xl', '2xl'].map((breakpoint) => <td>{sassVars('columns')[breakpoint]}</td>)}
-      </tr>
-      <tr>
-        <th class="text-nowrap" scope="row">Class prefix</th>
-        <td><em>None</em></td>
-        <td><code>sm:</code></td>
-        <td><code>md:</code></td>
-        <td><code>lg:</code></td>
-        <td><code>xl:</code></td>
-        <td><code>2xl:</code></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+<CxTable>
+|  | `xs`<div class="font-normal">&lt;{sassBreakpointSize('sm')}</div> | `sm`<div class="font-normal">&ge;{sassBreakpointSize('sm')}</div> | `md`<div class="font-normal">&ge;{sassBreakpointSize('md')}</div> | `lg`<div class="font-normal">&ge;{sassBreakpointSize('lg')}</div> | `xl`<div class="font-normal">&ge;{sassBreakpointSize('xl')}</div> | `2xl`<div class="font-normal">&ge;{sassBreakpointSize('2xl')}</div> |
+| --- | --- | --- | --- | --- | --- | --- |
+| Container `max-width` | None (auto) | {sassContainerSize('sm')} | {sassContainerSize('md')} | {sassContainerSize('lg')} | {sassContainerSize('xl')} | {sassContainerSize('2xl')} |
+| Page margin | {sassVars('margin').xs} | {sassVars('margin').sm} | {sassVars('margin').md} | {sassVars('margin').lg} | {sassVars('margin').xl} | {sassVars('margin')['2xl']} |
+| Gutter | {sassVars('gutter').xs} | {sassVars('gutter').sm} | {sassVars('gutter').md} | {sassVars('gutter').lg} | {sassVars('gutter').xl} | {sassVars('gutter')['2xl']} |
+| Columns | {sassVars('columns').xs} | {sassVars('columns').sm} | {sassVars('columns').md} | {sassVars('columns').lg} | {sassVars('columns').xl} | {sassVars('columns')['2xl']} |
+| Class prefix | <em>None</em> | `sm:` | `md:` | `lg:` | `xl:` | `2xl:` |
+</CxTable>
 
 ## Spanning
 
@@ -205,9 +170,13 @@ Classes of several breakpoints on one item set its span at each of them.
     <div>Item</div>
   </div>`} />
 
+### Print
+
+The span, start, and end classes have no `print:` variant. A printed page takes the classes of the breakpoint its paper width falls in, as a viewport of that width does. To lay a page out differently on paper, change the display of an element with the print display utilities — `.print:d-none`, `.print:d-block`, `.print:d-grid` — see [Display in print]([[docsref:/utilities/display#display-in-print]]).
+
 ## Container queries
 
-A breakpoint class follows the viewport, and a grid in a sidebar, a card, or a grid item is narrower than the viewport. Every span, placement, and column count class has a second variant under the `@` prefix — `.@md:col-span-4`, `.@lg:grid-cols-3` — that applies when the nearest [query container](#query-containers) is at least as wide as the breakpoint. Resize the example below to preview the items going from stacked to two, then three, in a row.
+A breakpoint variant follows the viewport, and a grid in a sidebar, a card, or a grid item is narrower than the viewport. Every span, placement, and column count class has a second variant under the `@` prefix — `.@md:col-span-4`, `.@lg:grid-cols-3` — that applies when the nearest [query container](#query-containers) is at least as wide as the breakpoint. Resize the example below to preview the items going from stacked to two, then three, in a row.
 
 <ResizableExample class="cxd-example-grid" code={`<div class="contains-inline">
     <div class="grid text-center">
@@ -257,7 +226,7 @@ The gutter and the column count of `.grid` come from `:root`, by the width of th
 
 `.contained` sets `--cx-grid-gutter` and `--cx-grid-columns` on the grid itself, from the same maps as `:root`. `--cx-grid-gap`, a gap utility, and a column count class still override them. With no query container above the grid, `.contained` sets nothing, and the grid keeps the values of the viewport, as a plain `.grid` does.
 
-### With breakpoint classes
+### With breakpoint variants
 
 Breakpoint and container variants work on one element. Where both apply, the container variant wins: `.md:col-span-6 .@md:col-span-4` spans six tracks on a viewport of the `md` width whose container is narrower, and four once the container reaches `md` too.
 
@@ -343,6 +312,8 @@ The subgrid has the tracks of the parent, and a gap of its own as every `.grid` 
 
 ## Common layouts
 
+The span, start, and flow classes cover the page layouts that come up most. Each example is the whole markup of the layout.
+
 ### Sidebar and content
 
 A sidebar that stacks above the content on narrow viewports and takes three of twelve tracks from a breakpoint. Add `position: sticky` and a `top` offset to the sidebar to keep it in view while the content scrolls.
@@ -384,7 +355,7 @@ Items of different sizes packed without holes, with [dense auto flow]([[docsref:
 
 ## Content-width columns
 
-A grid sizes its tracks from the container, not from the content. For items as wide as their content beside items that take the rest of the row, use a flex row: `.d-flex` with a gap utility, and `.flex-fill` on the items that grow. `gap: var(--cx-grid-gutter)` gives a flex row the gutter of the grid. See [Flex utilities]([[docsref:/utilities/flex]]).
+A grid sizes its tracks from its own width, not from the content. For items as wide as their content beside items that take the rest of the row, use a flex row: `.d-flex` with a gap utility, and `.flex-fill` on the items that grow. `gap: var(--cx-grid-gutter)` gives a flex row the gutter of the grid. See [Flex utilities]([[docsref:/utilities/flex]]).
 
 <Example class="cxd-example-flex" code={`<div class="d-flex gap-md text-center">
     <div class="flex-fill p-sm">.flex-fill</div>
@@ -403,7 +374,7 @@ Custom properties configure every grid inside an element at runtime. Each is inh
 | `--cx-grid-gap` | `--cx-grid-gutter` | Gap of `.grid` and `.grid-fill`; one value, or `row-gap column-gap` |
 | `--cx-grid-min` | `12rem`, from `$grid-min` | Minimum column width of `.grid-fill` |
 | `--cx-grid-gutter` | `:root`, from `$grid-gutters` | Gutter of the current breakpoint; set by `.contained` per container width |
-| `--cx-container-padding` | `:root`, from `$container-paddings` | Page margin of `.container` at the current breakpoint |
+| `--cx-container-padding` | `:root`, from `$container-paddings` | Page margin at the current breakpoint: the `padding-inline` of `.container` |
 </CxTable>
 
 `--cx-grid-gap` and `--cx-grid-min` are not declared anywhere by default; `.grid` and `.grid-fill` fall back to the value in the table until an element sets them. The rows of a grid have no custom property: [`.grid-rows-{n}`]([[docsref:/utilities/grid#row-counts]]) or a `grid-template-rows` declaration sets them.

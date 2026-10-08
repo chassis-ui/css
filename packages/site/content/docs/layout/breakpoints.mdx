@@ -20,16 +20,16 @@ The six default breakpoints feed the grid system, responsive utilities, and all 
 <CxTable>
 | Breakpoint | Class prefix | Dimensions |
 | --- | --- | --- |
-| XS | <em>None</em> | &lt;{sassBreakpointSize('sm')} |
-| SM | `sm` | &ge;{sassBreakpointSize('sm')} |
-| MD | `md` | &ge;{sassBreakpointSize('md')} |
-| LG | `lg` | &ge;{sassBreakpointSize('lg')} |
-| XL | `xl` | &ge;{sassBreakpointSize('xl')} |
-| 2XL | `2xl` | &ge;{sassBreakpointSize('2xl')} |
+| `xs` | <em>None</em> | &lt;{sassBreakpointSize('sm')} |
+| `sm` | `sm:` | &ge;{sassBreakpointSize('sm')} |
+| `md` | `md:` | &ge;{sassBreakpointSize('md')} |
+| `lg` | `lg:` | &ge;{sassBreakpointSize('lg')} |
+| `xl` | `xl:` | &ge;{sassBreakpointSize('xl')} |
+| `2xl` | `2xl:` | &ge;{sassBreakpointSize('2xl')} |
 </CxTable>
 
 <Callout type="info">
-`2xl` starts with a digit. Chassis CSS CSS-escapes the leading digit automatically when generating class names (e.g. `\32 xl\:`), producing a valid CSS identifier. The naming follows the same scale used across sizing tokens and utility classes throughout the framework.
+`2xl` starts with a digit, which a CSS identifier cannot. The stylesheet writes the digit as an escape (`.\32 xl\:d-flex`), and the class in the markup stays `2xl:d-flex`. The name follows the scale of the sizing tokens and utility classes.
 </Callout>
 
 ## Media queries

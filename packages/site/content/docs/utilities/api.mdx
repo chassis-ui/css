@@ -8,23 +8,23 @@ aliases:
 toc: true
 ---
 
-Chassis CSS utilities are generated with our utility API and can be used to modify or extend our default set of utility classes via Sass. Our utility API is based on a series of Sass maps and functions for generating families of classes with various options. If you’re unfamiliar with Sass maps, read up on the [official Sass docs](https://sass-lang.com/documentation/values/maps/) to get started.
+Chassis CSS generates its utilities with the utility API: a Sass map of definitions and the mixins that turn each definition into a family of classes. The same API adds utilities to a project and changes the default ones. The examples are written in Sass maps, which the [Sass documentation](https://sass-lang.com/documentation/values/maps/) describes.
 
-The `$utilities` map contains all our utilities and is later merged with your custom `$utilities` map, if present. The utility map contains a keyed list of utility groups which accept the following options:
+The `$utilities` map holds every utility, keyed by name. Each entry is a map that accepts these options:
 
 <CxTable class="table table-utilities">
 | Option | Type | Default&nbsp;value | Description |
 | --- | --- | --- | --- |
-| [`property`](#property) | **Required** | – | Name of the property. Can be a string, a space-separated list of strings (e.g., horizontal paddings or margins), or a **map** of property-to-default-value pairs (see [Property-Value Mapping](#property-value-mapping)). |
-| [`values`](#values) | **Required** | – | List of values, or a map if you don’t want the class name to be the same as the value. If `null` is used as map key, `class` is not prepended to the class name. |
+| [`property`](#property) | **Required** | – | Name of the property. Can be a string, a space-separated list of strings (e.g., horizontal paddings or margins), or a **map** of property-to-default-value pairs (see [Property value mapping](#property-value-mapping)). |
+| [`values`](#values) | **Required** | – | List of values, or a map when the class name differs from the value. If `null` is used as map key, `class` is not prepended to the class name. |
 | [`selector`](#selector) | Optional | `class` | Type of CSS selector in the generated CSS ruleset. Can be `class`, `attr-starts`, or `attr-includes`. |
 | [`child-selector`](#child-selector) | Optional | null | A child/descendant selector appended to the utility’s selector, wrapped in `:where()` for zero specificity. Use to target children instead of the element itself. |
 | [`class`](#class) | Optional | null | Name of the generated class. If not provided and `property` is an array of strings, `class` will default to the first element of the `property` array. If not provided and `property` is a string, the `values` keys are used for the `class` names. |
 | [`variables`](#variables) | Optional | null | List or map of CSS custom properties to generate within each utility class. When a list, each variable receives the utility value. When a map, the provided static values are used. |
 | [`group`](#group) | Optional | `false` | Boolean. Requires `property` to be a map. Emits a single shared rule for all generated selectors containing the static (non-null) property values, then emits per-value rules with only the dynamic (null-valued) properties. Keeps repeated static declarations out of every per-value class. |
 | [`state`](#states) | Optional | null | List of pseudo-class variants (e.g., `:hover` or `:focus`) to generate as prefix-style classes. |
-| [`responsive`](#responsive) | Optional | `false` | Boolean indicating if responsive classes should be generated. |
-| [`container`](#container) | Optional | `false` | Boolean indicating if container-query classes (`.@md:opacity-25`) should be generated. |
+| [`responsive`](#responsive) | Optional | `false` | Boolean indicating if a breakpoint variant of each class (`.md:opacity-25`) should be generated. |
+| [`container`](#container) | Optional | `false` | Boolean indicating if a container variant of each class (`.@md:opacity-25`) should be generated. |
 | [`important`](#importance) | Optional | `false` | Boolean indicating if `!important` should be added to the utility’s CSS rules. |
 | [`print`](#print) | Optional | `false` | Boolean indicating if print classes need to be generated. |
 | [`dark`](#dark) | Optional | `false` | Boolean indicating if `dark:` prefixed classes should be generated, scoped to `@media (prefers-color-scheme: dark)`. |
@@ -33,7 +33,7 @@ The `$utilities` map contains all our utilities and is later merged with your cu
 
 ## API explained
 
-All utility variables are added to the `$utilities` variable within our `_utilities.scss` stylesheet, which is a giant, nested Sass map. Each group of utility classes are generated from a block that looks something like this:
+Every utility is an entry of the `$utilities` map of `scss/utilities/_index.scss`, which merges the maps of the partials beside it (`_flex.scss`, `_sizing.scss`, and the others) with its own. One entry generates one group of classes:
 
 ```scss
 $utilities: (
@@ -50,7 +50,7 @@ $utilities: (
 );
 ```
 
-Which outputs the following:
+Output:
 
 ```css
 .opacity-0 { opacity: 0; }
@@ -115,10 +115,10 @@ Output:
 ```
 
 <Callout type="info">
-  Source CSS variables are used without a `--cx-` prefix, which is added in compiled CSS with [Bootstrap's PostCSS plugin](https://github.com/twbs/postcss-prefix-custom-properties).
+  The Sass source names custom properties without the `--cx-` prefix. The PostCSS preset of the package, `@chassis-ui/css/postcss`, adds it to the compiled CSS — see [Apply the `--cx-` prefix]([[docsref:/getting-started/installation#apply-the---cx--prefix]]).
 </Callout>
 
-You can also set per-value overrides. When `values` contains a nested map whose keys match properties in the `property` map, those values are used for the matching property:
+A value can also override individual properties. When `values` contains a nested map whose keys match properties in the `property` map, those values are used for the matching property:
 
 ```scss
 $utilities: (
@@ -167,13 +167,15 @@ values: (
 )
 ```
 
-As a Sass variable that sets the list or map, as in our [`position` utilities]([[docsref:/utilities/position]]):
+As a Sass variable that sets the list or map, as in the [`position` utilities]([[docsref:/utilities/position]]):
 
 ```scss
 values: $position-values
 ```
 
 ### `selector`
+
+Use the `selector` option to change the CSS selector used in the generated CSS ruleset. The default is a class selector. With an attribute selector — `attr-starts` or `attr-includes` — **the `class` option is required**. The aspect ratio utilities are built this way.
 
 <CxTable>
 | Option | Description |
@@ -184,9 +186,7 @@ values: $position-values
 | `"attr-includes"` | Matches elements with a class that includes a string |
 </CxTable>
 
-Use the `selector` option to change the CSS selector used in the generated CSS ruleset. The default option is to generate a class selector. When using an attribute selector—either `attr-starts` or `attr-includes`—**the `class` option is required**. We use these internally to simplify the construction of other utilities.
-
-For attribute selectors, you’ll most likely want the `attr-includes` as the starting attribute selector in CSS applies to the entire string of classes in an attribute’s value. For example, `[class^="name"]` would not match `class="example name"`.
+`attr-includes` is the safer of the two attribute selectors. A starts-with selector tests the whole value of the `class` attribute, so `[class^="name"]` does not match `class="example name"`.
 
 As an example, to change from `.ratio-*` to `[class*="ratio-"]`:
 
@@ -208,9 +208,9 @@ $utilities: (
 );
 ```
 
-Note that the `--ratio` custom property will automatically be prefixed to `--cx-ratio` in the compiled CSS via PostCSS.
+PostCSS prefixes the `--ratio` custom property to `--cx-ratio` in the compiled CSS.
 
-Which outputs the following:
+Output:
 
 ```css
 [class*="ratio-"] { aspect-ratio: var(--cx-ratio); }
@@ -223,9 +223,9 @@ Which outputs the following:
 
 ### `child-selector`
 
-Use the `child-selector` option to apply a CSS property to children of the element with the utility class rather than the element itself. The generated selector is wrapped in `:where()` for zero specificity, making it easy to override. This powers our built-in [`space-x/y`]([[docsref:/utilities/space]]) and [`divide-x/y`]([[docsref:/utilities/divide]]) utilities.
+Use the `child-selector` option to apply a CSS property to children of the element with the utility class rather than the element itself. The generated selector is wrapped in `:where()` for zero specificity, so any class overrides it. The built-in [`space-x/y`]([[docsref:/utilities/space]]) and [`divide-x/y`]([[docsref:/utilities/divide]]) utilities use it.
 
-For example, our `space-x` utility uses `child-selector` to add horizontal spacing between direct children:
+The `space-x` utility uses `child-selector` to add horizontal spacing between direct children:
 
 ```scss
 $utilities: (
@@ -250,7 +250,7 @@ Output:
 :where(.space-x-3 > :not(:last-child)) { margin-inline-end: 1rem; }
 ```
 
-The `child-selector` value can be any valid CSS selector. For example, you could create a striped row utility using `:nth-child()`:
+The `child-selector` value can be any valid CSS selector. A striped row utility uses `:nth-child()`:
 
 ```scss
 $utilities: (
@@ -259,7 +259,7 @@ $utilities: (
     class: striped,
     child-selector: "> :nth-child(odd)",
     values: (
-      null: var(--cx-bg-even),
+      null: var(--bg-even),
     )
   )
 );
@@ -280,7 +280,7 @@ $utilities: (
     class: child-rounded,
     child-selector: "> *",
     values: (
-      null: var(--cx-border-radius),
+      null: var(--border-radius),
       0: 0,
     )
   )
@@ -324,7 +324,7 @@ Output:
 .o-100 { opacity: 1; }
 ```
 
-If `class: null`, generates classes for each of the `values` keys:
+With `class: null`, the keys of `values` are the class names:
 
 ```scss
 $utilities: (
@@ -519,9 +519,9 @@ Output:
 
 ### States
 
-Use the `state` option to generate pseudo-class variations. Example pseudo-classes are `:hover` and `:focus`. When a list of states are provided, classnames are created for that pseudo-class with a prefix-style syntax matching the responsive prefix pattern. For example, to change opacity on hover, add `state: hover` and you’ll get `.hover\:opacity:hover` in your compiled CSS.
+Use the `state` option to generate pseudo-class variants, such as `:hover` and `:focus`. Each state generates a class with the state as its prefix, in the pattern of the breakpoint prefixes: with `state: hover`, the opacity utility also compiles to `.hover\:opacity-50:hover`.
 
-Need multiple pseudo-classes? Use a space-separated list of states: `state: hover focus`.
+For several pseudo-classes, pass a space-separated list: `state: hover focus`.
 
 ```scss
 $utilities: (
@@ -552,7 +552,7 @@ Output:
 
 ### Responsive
 
-Add the `responsive` boolean to generate responsive utilities (e.g., `.md\:opacity-25`) across [all breakpoints]([[docsref:/layout/breakpoints]]).
+Set `responsive: true` to generate a breakpoint variant of each class (`.md\:opacity-25`) for [every breakpoint]([[docsref:/layout/breakpoints]]).
 
 ```scss
 $utilities: (
@@ -622,7 +622,7 @@ Output:
 
 ### Container
 
-Add the `container` boolean to generate container-query utilities under the `@` prefix (e.g., `.\@md\:opacity-25`). Where a responsive class follows the width of the viewport, a container class follows the width of the nearest [query container]([[docsref:/layout/grid#query-containers]]), at the same [breakpoints]([[docsref:/layout/breakpoints]]). The option is independent of `responsive`: a utility can have either set of variants, or both.
+Set `container: true` to generate a container variant of each class under the `@` prefix (`.\@md\:opacity-25`). Where a breakpoint variant follows the width of the viewport, a container variant follows the width of the nearest [query container]([[docsref:/layout/grid#query-containers]]), at the same [breakpoints]([[docsref:/layout/breakpoints]]). The option is independent of `responsive`: a utility can have either set of variants, or both.
 
 ```scss
 $utilities: (
@@ -660,13 +660,13 @@ Output:
 /* …and the same for lg, xl, and 2xl */
 ```
 
-The first breakpoint has no container variant: the unprefixed class applies at every width. The container rules come after the responsive ones, so where a responsive and a container class both apply to an element, the container class wins.
+The first breakpoint has no container variant: the unprefixed class applies at every width. The container rules come after the breakpoint ones, so where a breakpoint variant and a container variant both apply to an element, the container variant wins.
 
-The layout utilities set `container: true` by default: display, flex (direction, grow, shrink, wrap, fill), `order`, `justify-content`, `align-items`, `align-content`, `align-self`, the `place-*` and `justify-*` alignment utilities, the gap utilities, `grid-cols-*`, `grid-rows-*`, `grid-flow-*`, `auto-cols-*`, `auto-rows-*`, `space-x-*`, `space-y-*`, `divide-x`, `divide-y`, the fraction widths with `w-100` and `w-auto`, `text-align`, `float`, and `object-fit`. The other responsive utilities — margin, padding, font size, and icon size — set `container: false`, which keeps five more sets of them out of the CSS. [Enable the option](#enable-container-variants) for the ones you need, or set `$enable-container-queries` to `false` to generate none.
+The layout utilities set `container: true` by default: display, flex (direction, grow, shrink, wrap, fill), `order`, `justify-content`, `align-items`, `align-content`, `align-self`, the `place-*` and `justify-*` alignment utilities, the gap utilities, `grid-cols-*`, `grid-rows-*`, `grid-flow-*`, `auto-cols-*`, `auto-rows-*`, `space-x-*`, `space-y-*`, `divide-x`, `divide-y`, the fraction widths with `w-100` and `w-auto`, `text-align`, `float`, and `object-fit`. The other responsive utilities — margin, padding, font size, and icon size — set `container: false`, which keeps five more sets of them out of the CSS. [Enable the option](#enable-container-variants) for the utilities that need it, or set `$enable-container-queries` to `false` to generate none.
 
 ### Print
 
-Enabling the `print` option will **also** generate utility classes for print, which are only applied within the `@media print { ... }` media query.
+The `print` option **also** generates a `print:` variant of each class, which applies only within `@media print { ... }`.
 
 ```scss
 $utilities: (
@@ -704,7 +704,7 @@ Output:
 
 ### Dark
 
-Enabling the `dark` option generates `dark:` prefixed classes scoped to `@media (prefers-color-scheme: dark)`. This follows the same prefix convention as responsive and print utilities.
+The `dark` option generates a `dark:` variant of each class, scoped to `@media (prefers-color-scheme: dark)`. The prefix follows the convention of the breakpoint and print variants.
 
 ```scss
 $utilities: (
@@ -734,23 +734,25 @@ Output:
 
 ### Enabled
 
-Set `enabled: false` to suppress output for a utility without removing it from the `$utilities` map. This is useful when you want to keep the utility's definition available for reference or downstream `map.get()` calls, but don't want it to emit any CSS.
+Set `enabled: false` to suppress the output of a utility without removing it from the `$utilities` map. The definition stays available to `map.get()` calls while the utility emits no CSS.
 
 ```scss
 $utilities: map.merge(
-  $utilities,
+  chassis.$utilities,
   (
     "float": map.merge(
-      map.get($utilities, "float"),
+      map.get(chassis.$utilities, "float"),
       ( enabled: false ),
     ),
   )
 );
 ```
 
+[Modify utilities](#modify-utilities) shows the file this merge belongs to.
+
 ## Importance
 
-Utilities generated by the API no longer include `!important` by default in v6. This is because we now use CSS layers to ensure utilities override components and modifier classes as intended. You can enable `!important` on a per-utility basis by setting the `important` option to `true`.
+Utilities carry no `!important`. The `utilities` [cascade layer]([[docsref:/content/reboot#css-layer]]) is declared last, so a utility overrides the components and helpers of the earlier layers whatever their specificity. Set `important: true` on a utility whose declarations must also win against unlayered CSS.
 
 ```scss
 $utilities: (
@@ -768,7 +770,7 @@ $utilities: (
 );
 ```
 
-This will generate utilities with `!important`:
+Output:
 
 ```css
 .opacity-0 { opacity: 0 !important; }
@@ -780,69 +782,63 @@ This will generate utilities with `!important`:
 
 ## Using the API
 
-Now that you’re familiar with how the utilities API works, learn how to add your own custom classes and modify our default utilities.
+`scss/_utilities-api.scss` generates the classes: it loads the `$utilities` map and passes it to the `generate-utilities-loop()` mixin inside `@layer utilities`. A project changes the generated utilities in one of three ways:
 
-The examples below use two different import styles depending on the use case:
+- **Add utilities** beside the complete framework, with a second call of the mixin.
+- **Modify the map** in a bundle that lists its own parts: merge the changes into the default map and call the mixin with the result.
+- **Replace the map** by configuring `$utilities` before the framework loads.
 
-- **`@use "@chassis-ui/css" with (...)`**—Use this when compiling the full Chassis CSS framework from a single entrypoint. Configuration is passed via `with (...)` and Chassis CSS handles merging in one step.
-- **`@use "@chassis-ui/css/scss/utilities" as *` + `@use "@chassis-ui/css/scss/utilities/api"`**—Use this for focused, utility-only builds where you need to read from or merge the existing `$utilities` map before passing it to the API layer. Using `as *` avoids a namespace prefix so you can reference `$utilities` directly.
-
-### Override utilities
-
-Override existing utilities by using the same key and passing the new definition via the `$utilities` configuration variable when loading Chassis CSS. For example, take our existing overflow utility class definition:
-
-<ScssDocs name="utils-overflow" file="scss/utilities/_index.scss" />
-
-If you want to make those responsive, and adjust the values used, you can do this:
-
-```scss
-// my-chassis.scss
-@use "@chassis-ui/css" with (
-  $utilities: (
-    "overflow": (
-      responsive: true,
-      // property: overflow,
-      values: visible hidden scroll auto,
-    ),
-  )
-);
-```
+The complete entry point, `scss/chassis`, always generates the default utilities. Changing or removing one of them takes a bundle that loads the parts of the framework one by one — option B of [Importing]([[docsref:/customize/sass#importing]]) — and leaves `utilities-api` out.
 
 ### Add utilities
 
-New utilities can be added to the default `$utilities` map by passing them via the `$utilities` configuration variable when loading Chassis CSS. Chassis CSS merges your map on top of its defaults, so only supply the new utilities you want to add.
+A second call of `generate-utilities-loop()` adds utilities to a build that loads all of Chassis CSS. The mixin takes a map of definitions and the `$breakpoints` map; `@layer utilities` puts the new classes in the layer of the default ones.
 
 ```scss
-// my-chassis.scss
-@use "@chassis-ui/css" with (
-  $utilities: (
-    "cursor": (
-      property: cursor,
-      class: cursor,
-      responsive: true,
-      values: auto pointer grab,
-    )
-  )
-);
+// custom.scss
+@use "@chassis-ui/css/scss/chassis";
+@use "@chassis-ui/css/scss/config" as *;
+@use "@chassis-ui/css/scss/mixins" as *;
+
+@layer utilities {
+  @include generate-utilities-loop(
+    (
+      "cursor": (
+        property: cursor,
+        class: cursor,
+        responsive: true,
+        values: auto pointer grab,
+      )
+    ),
+    $breakpoints
+  );
+}
 ```
 
 ### Modify utilities
 
-Modify existing utilities by passing a modified copy of the utility via the `$utilities` configuration variable. Use `map.get` and `map.merge` to build the new value from the existing definition. In the example below, we’re adding an additional value to the `width` utilities:
+To change a default utility, merge the new definition into the default map with `map.merge()` and generate the classes from the merged map. The bundle loads the parts of the framework it needs and calls the mixin in place of `utilities-api`. This one adds a value to the `width` utilities:
 
 ```scss
-// my-chassis.scss
+// custom.scss
 @use "sass:map";
-@use "@chassis-ui/css/scss/utilities" as *;
+@use "@chassis-ui/css/scss/config" as *;
+@use "@chassis-ui/css/scss/mixins" as *;
+@use "@chassis-ui/css/scss/utilities" as chassis;
+
+// The parts of the framework the project uses, without `utilities-api`
+@use "@chassis-ui/css/scss/root";
+@use "@chassis-ui/css/scss/reboot";
+@use "@chassis-ui/css/scss/helpers";
 
 $utilities: map.merge(
-  $utilities,
+  chassis.$utilities,
   (
     "width": map.merge(
-      map.get($utilities, "width"),
+      map.get(chassis.$utilities, "width"),
       (
         values: map.merge(
-          map.get(map.get($utilities, "width"), "values"),
+          map.get(chassis.$utilities, "width", "values"),
           (10: 10%),
         ),
       ),
@@ -850,31 +846,30 @@ $utilities: map.merge(
   )
 );
 
-@use "@chassis-ui/css/scss/utilities/api" with ($utilities: $utilities);
+@layer utilities {
+  @include generate-utilities-loop($utilities, $breakpoints);
+}
 ```
+
+The sections below show only the `map.merge()` call; the rest of the file stays the same.
 
 #### Enable responsive
 
-You can enable responsive classes for an existing set of utilities that are not currently responsive by default. For example, to make the `border` classes responsive:
+Merging `responsive: true` into a utility generates its breakpoint variants. This makes the `border` classes responsive:
 
 ```scss
-@use "sass:map";
-@use "@chassis-ui/css/scss/utilities" as *;
-
 $utilities: map.merge(
-  $utilities,
+  chassis.$utilities,
   (
     "border": map.merge(
-      map.get($utilities, "border"),
+      map.get(chassis.$utilities, "border"),
       ( responsive: true ),
     ),
   )
 );
-
-@use "@chassis-ui/css/scss/utilities/api" with ($utilities: $utilities);
 ```
 
-This will now generate responsive variations of `.border` and `.border-0` for each breakpoint. Your generated CSS will look like this:
+The build then has a variant of `.border` and `.border-0` for each breakpoint:
 
 ```css
 .border { ... }
@@ -901,105 +896,84 @@ This will now generate responsive variations of `.border` and `.border-0` for ea
 }
 
 @media (width >= 96rem) {
-  .2xl\:border { ... }
-  .2xl\:border-0 { ... }
+  .\32 xl\:border { ... }
+  .\32 xl\:border-0 { ... }
 }
 ```
 
+A class name cannot start with a digit in CSS, so the `2` of `2xl` is written as the escape `\32 ` in the stylesheet. The class in the markup is `2xl:border`.
+
 #### Enable container variants
 
-The same merge adds [container-query classes](#container) to a utility that does not have them by default. For example, to generate `.@md:p-lg` and `.@md:px-lg`:
+The same merge adds [container variants](#container) to a utility that does not have them by default. This generates `.@md:p-lg` and `.@md:px-lg`:
 
 ```scss
-@use "sass:map";
-@use "@chassis-ui/css/scss/utilities" as *;
-
 $utilities: map.merge(
-  $utilities,
+  chassis.$utilities,
   (
     "padding": map.merge(
-      map.get($utilities, "padding"),
+      map.get(chassis.$utilities, "padding"),
       ( container: true ),
     ),
     "padding-x": map.merge(
-      map.get($utilities, "padding-x"),
+      map.get(chassis.$utilities, "padding-x"),
       ( container: true ),
     ),
   )
 );
-
-@use "@chassis-ui/css/scss/utilities/api" with ($utilities: $utilities);
 ```
 
 #### Rename utilities
 
-Missing v4 utilities, or used to another naming convention? The utilities API can be used to override the resulting `class` of a given utility—for example, to rename `.ms-*` utilities to oldish `.ml-*`:
+The `class` option of a merged definition renames the classes of a utility. This renames the `.ms-*` utilities to `.ml-*`:
 
 ```scss
-@use "sass:map";
-@use "@chassis-ui/css/scss/utilities" as *;
-
 $utilities: map.merge(
-  $utilities,
+  chassis.$utilities,
   (
     "margin-start": map.merge(
-      map.get($utilities, "margin-start"),
+      map.get(chassis.$utilities, "margin-start"),
       ( class: ml ),
     ),
   )
 );
-
-@use "@chassis-ui/css/scss/utilities/api" with ($utilities: $utilities);
 ```
 
 ### Remove utilities
 
-Remove any of the default utilities with the [`map.remove()` Sass function](https://sass-lang.com/documentation/modules/map/#remove).
+Remove default utilities from the map with the [`map.remove()` Sass function](https://sass-lang.com/documentation/modules/map/#remove):
 
 ```scss
-@use "sass:map";
-@use "@chassis-ui/css/scss/utilities" as *;
-
-$utilities: map.remove($utilities, "width", "float");
-
-@use "@chassis-ui/css/scss/utilities/api" with ($utilities: $utilities);
+$utilities: map.remove(chassis.$utilities, "width", "float");
 ```
 
-You can also use the [`map.merge()` Sass function](https://sass-lang.com/documentation/modules/map/#merge) and set the group key to `null` to remove the utility.
+Setting a key to `null` in a [`map.merge()`](https://sass-lang.com/documentation/modules/map/#merge) call removes the utility too, which combines a removal with other changes:
 
 ```scss
-@use "sass:map";
-@use "@chassis-ui/css/scss/utilities" as *;
-
 $utilities: map.merge(
-  $utilities,
+  chassis.$utilities,
   (
     "width": null
   )
 );
-
-@use "@chassis-ui/css/scss/utilities/api" with ($utilities: $utilities);
 ```
 
 ### Add, remove, modify
 
-You can add, remove, and modify many utilities all at once with the [`map.merge()` Sass function](https://sass-lang.com/documentation/modules/map/#merge). Here’s how you can combine the previous examples into one larger map.
+One `map.merge()` call adds, removes, and modifies utilities together:
 
 ```scss
-@use "sass:map";
-@use "@chassis-ui/css/scss/utilities" as *;
-
 $utilities: map.merge(
-  $utilities,
+  chassis.$utilities,
   (
     // Remove the `width` utility
     "width": null,
     // Make an existing utility responsive
     "border": map.merge(
-      map.get($utilities, "border"),
+      map.get(chassis.$utilities, "border"),
       ( responsive: true ),
     ),
-    // Add new utilities
+    // Add a new utility
     "cursor": (
       property: cursor,
       class: cursor,
@@ -1008,6 +982,25 @@ $utilities: map.merge(
     )
   )
 );
+```
 
-@use "@chassis-ui/css/scss/utilities/api" with ($utilities: $utilities);
+### Replace the map
+
+`$utilities` is a `!default` variable of `scss/utilities`. Configuring it before the framework loads replaces the whole map: the build has the utilities of the configured map and none of the default ones.
+
+```scss
+// custom.scss
+@use "@chassis-ui/css/scss/utilities" with (
+  $utilities: (
+    "opacity": (
+      property: opacity,
+      values: (
+        0: 0,
+        50: .5,
+        100: 1,
+      )
+    )
+  )
+);
+@use "@chassis-ui/css/scss/chassis";
 ```

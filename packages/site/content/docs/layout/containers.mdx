@@ -5,9 +5,10 @@ toc: true
 css_layer: layout
 css_media: viewport
 tokens:
-  scopes: 
+  scopes:
     - breakpoint
-    - width
+    - container
+    - margin
 ---
 import { sassVars, sassBreakpointSize, sassContainerSize } from '@libs/sass'
 
@@ -22,7 +23,7 @@ Container classes differ only in when `max-width` takes effect:
 - `.container.fluid` — `width: 100%` at all breakpoints; no `max-width` cap
 
 <CxTable>
-|  | Extra sm<div class="font-normal">&lt;{sassBreakpointSize('sm')}</div> | Small<div class="font-normal">&ge;{sassBreakpointSize('sm')}</div> | Medium<div class="font-normal">&ge;{sassBreakpointSize('md')}</div> | Large<div class="font-normal">&ge;{sassBreakpointSize('lg')}</div> | X-Large<div class="font-normal">&ge;{sassBreakpointSize('xl')}</div> | 2x-Large<div class="font-normal">&ge;{sassBreakpointSize('2xl')}</div> |
+|  | `xs`<div class="font-normal">&lt;{sassBreakpointSize('sm')}</div> | `sm`<div class="font-normal">&ge;{sassBreakpointSize('sm')}</div> | `md`<div class="font-normal">&ge;{sassBreakpointSize('md')}</div> | `lg`<div class="font-normal">&ge;{sassBreakpointSize('lg')}</div> | `xl`<div class="font-normal">&ge;{sassBreakpointSize('xl')}</div> | `2xl`<div class="font-normal">&ge;{sassBreakpointSize('2xl')}</div> |
 | --- | --- | --- | --- | --- | --- | --- |
 | `.container` | <span class="fg-subtle">100%</span> | {sassContainerSize('sm')} | {sassContainerSize('md')} | {sassContainerSize('lg')} | {sassContainerSize('xl')} | {sassContainerSize('2xl')} |
 | `.container.sm` | <span class="fg-subtle">100%</span> | {sassContainerSize('sm')} | {sassContainerSize('md')} | {sassContainerSize('lg')} | {sassContainerSize('xl')} | {sassContainerSize('2xl')} |
