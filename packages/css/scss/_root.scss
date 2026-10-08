@@ -213,6 +213,15 @@
     @include form-icon-vars();
   }
 
+  // The icons are images with their color written in, so `light-dark()` cannot
+  // reach them: a page that follows the system preference, with no theme on
+  // the root, takes the dark icons here. A light theme on the root keeps its own.
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-cx-theme="light"]) {
+      @include form-icon-vars(true);
+    }
+  }
+
   [data-cx-theme="dark"] {
     color-scheme: dark;
     @include form-icon-vars(true);

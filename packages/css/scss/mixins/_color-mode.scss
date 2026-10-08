@@ -1,25 +1,72 @@
+@use "sass:list";
+@use "sass:string";
 @use "../config" as *;
 
 //
 // Color Mode Mixin
 //
-// Applies styles scoped to a specific color mode (light or dark) via either
-// a media query or a data-attribute selector based on $color-mode-type.
+// Applies styles to a color mode (light, dark or a theme of a project). With
+// the default `$color-mode-type` the styles follow the colors of the framework:
+// the system preference, unless a `data-cx-theme` attribute says otherwise.
 //
 
+// A compound selector with `$condition` on its element: before the
+// pseudo-element when it has one (`.item::before`), at the end otherwise.
+@function -with-condition($compound, $condition) {
+  $pseudo-element: string.index($compound, "::");
+
+  @if $pseudo-element {
+    @return string.slice($compound, 1, $pseudo-element - 1) + $condition + string.slice($compound, $pseudo-element);
+  }
+
+  @return $compound + $condition;
+}
+
+// The selectors of `$parent` (the `&` of a rule) with `$condition` on the
+// element each of them styles.
+@function -subjects($parent, $condition) {
+  $selectors: ();
+
+  @each $complex in $parent {
+    $last: list.length($complex);
+    $selectors: list.append(
+      $selectors,
+      list.set-nth($complex, $last, -with-condition(list.nth($complex, $last), $condition)),
+      comma
+    );
+  }
+
+  @return $selectors;
+}
+
 // scss-docs-start color-mode-mixin
-/// Apply styles for a specific color mode (light or dark).
-/// When `$color-mode-type` is `"media-query"`, wraps the content in a
-/// `@media (prefers-color-scheme: ...)` query, optionally scoped to `:root`.
-/// Otherwise, targets a `[data-cx-theme="{mode}"]` attribute selector.
+/// Apply styles for a specific color mode (`light`, `dark` or a theme of a project).
 ///
-/// @param {String} $mode [light] - Color scheme name (`light` or `dark`)
-/// @param {Boolean} $root [false] - When `true`, scopes to `:root` inside the media query
+/// `$color-mode-type` sets what the styles follow:
+/// - `auto` (default): the system preference and the `data-cx-theme` attribute,
+///   as the colors of the framework do. Inside a rule, the styles go to the
+///   element of that rule when its nearest theme is `$mode`, or when it has no
+///   theme and the system prefers `$mode`. Outside a rule, the content is
+///   written under `[data-cx-theme="{mode}"]`, and under `:root` for the system
+///   preference when the root has no theme of the other mode.
+/// - `data`: the `[data-cx-theme="{mode}"]` attribute only.
+/// - `media-query`: the `(prefers-color-scheme: {mode})` media query only.
+///
+/// A mode other than `light` and `dark` has no system preference: it follows
+/// the attribute.
+///
+/// @param {String} $mode [light] - Color mode: `light`, `dark` or the name of a theme
+/// @param {Boolean} $root [false] - With `media-query`, puts the content in `:root` inside the media query
 /// @content Styles to apply for this color mode
 /// @example
-///   @include color-mode(dark) { background: black; }
-///   // => @media (prefers-color-scheme: dark) { background: black; }
-///   //    OR: [data-cx-theme="dark"] { background: black; }
+///   .element {
+///     @include color-mode(dark) { background: black; }
+///   }
+///   // => .element[data-cx-theme="dark"],
+///   //    .element:where([data-cx-theme="dark"] *):not(:where([data-cx-theme="dark"] [data-cx-theme="light"] *)) { background: black; }
+///   //    @media (prefers-color-scheme: dark) {
+///   //      .element:not(:where([data-cx-theme="light"], [data-cx-theme="light"] *)) { background: black; }
+///   //    }
 @mixin color-mode($mode: light, $root: false) {
   @if $color-mode-type == "media-query" {
     @if $root == true {
@@ -33,9 +80,58 @@
         @content;
       }
     }
-  } @else {
+  } @else if $color-mode-type == "data" {
     [data-cx-theme="#{$mode}"] {
       @content;
+    }
+  } @else {
+    $theme: '[data-cx-theme="#{$mode}"]';
+    $parent: &;
+    // The mode that a theme of a nearer element can set against `$mode`
+    $other: null;
+
+    @if $mode == dark {
+      $other: light;
+    } @else if $mode == light {
+      $other: dark;
+    }
+
+    @if $parent {
+      // Inside a rule: the element has the theme, or is inside it with no
+      // theme of the other mode in between
+      $inside: ":where(#{$theme} *)";
+
+      @if $other {
+        $inside: $inside + ':not(:where(#{$theme} [data-cx-theme="#{$other}"] *))';
+      }
+
+      @at-root #{list.join(-subjects($parent, $theme), -subjects($parent, $inside), comma)} {
+        @content;
+      }
+
+      @if $other {
+        $no-other: ':not(:where([data-cx-theme="#{$other}"], [data-cx-theme="#{$other}"] *))';
+
+        @media (prefers-color-scheme: $mode) {
+          @at-root #{-subjects($parent, $no-other)} {
+            @content;
+          }
+        }
+      }
+    } @else {
+      #{$theme} {
+        @content;
+      }
+
+      @if $other {
+        // `:where()` keeps the weight of `:root`, so a declaration here and one
+        // of a project's own `:root` rule are decided by their order
+        @media (prefers-color-scheme: $mode) {
+          :root:where(:not([data-cx-theme="#{$other}"])) {
+            @content;
+          }
+        }
+      }
     }
   }
 }

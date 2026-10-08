@@ -41,10 +41,12 @@ $enable-translucency:           true !default;
 $enable-validation-icons:       true !default;
 $enable-visited-links:          true !default;
 
-// The strategy for applying color mode styles.
-// `data` adds a `[data-cx-theme="dark"]` attribute selector
-// `media-query` uses the `(prefers-color-scheme: dark)` media query.
-$color-mode-type:               media-query !default; // `data` or `media-query`
+// What the styles of the `color-mode()` mixin follow.
+// `auto` follows the system preference and the `data-cx-theme` attribute, as
+// the colors of the framework do.
+// `data` follows the `[data-cx-theme="dark"]` attribute only.
+// `media-query` follows the `(prefers-color-scheme: dark)` media query only.
+$color-mode-type:               auto !default; // `auto`, `data` or `media-query`
 // scss-docs-end enable-options
 
 // Customize the light and dark text colors for use in color contrast function.
