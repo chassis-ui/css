@@ -1,5 +1,142 @@
 # Changelog
 
+## 0.7.1
+
+### Patch Changes
+
+- 78a8777: No computed color holds the `none` keyword, so axe can measure contrast. White, black and the other colors with no chroma were written with a missing hue, `oklch(100% 0 none)`, which is also the computed value of every element that uses them. axe-core 4.13 cannot parse it: on a page with a white background its `color-contrast` rule stopped with `error-occurred` and reported `incomplete`, so a light page passed the audit without being measured.
+  
+  - `to-color()` writes a color with no chroma as `oklab()`: `--cx-white` is `oklab(100% 0 0)`, and so are the 172 tokens of `:root` that had `none` in one of their modes. A hue of `0` would not do, since `color-mix(in oklch, …)` interpolates towards it. A browser that converts `oklab(100% 0 0)` to oklch finds no chroma and takes the hue of the other color, as it did with `none`.
+  - `$solid-bg-even`, `$solid-bg-evident` and the backdrop of `.drawer` mix `in oklab`. In oklch they computed to `oklch(L 0 none)` for a context with no chroma, whatever the tokens say. With black or `transparent` as the other color, the two spaces give the same color.
+  
+  Nothing changes on screen. A project that interpolates one of these tokens `in hsl` or `in hwb` (the framework does not) gets a slightly different color from the mix: there a missing hue and a color with no chroma are not the same thing to the browsers.
+- 2597407: A breakpoint mixin or function stops the compile on a name that is not a key of `$breakpoints`: ``breakpoint `lgg` not found in `xs, sm, md, lg, xl, 2xl` ``. Until now the lookup gave no width, and `media-breakpoint-up()`, `media-breakpoint-down()` and the other query mixins wrote their content with no query around it, for every width.
+  
+  The compile also stops when a name and the key of `$breakpoints` differ in Sass type. An unquoted `2xl` is a number and a quoted `"2xl"` a string, two keys of a map: a `$breakpoints` with `"2xl"` lost the gutter, the page margin, the column count and the container width of that breakpoint. Write the name without quotes, in the map and in the mixins. `is-breakpoint($name, $breakpoints)` is the check the framework uses, for a stylesheet of your own.
+  
+  A build that stops after the update has a name to correct:
+  
+  - a misspelled name in a mixin (`media-breakpoint-up(xxl)`),
+  - a quoted `"2xl"` in `$breakpoints` or in a call,
+  - a `$breakpoints` without `sm`, which the dialog, the modal, the alert, the menu and the card name in their own rules, or without `lg` when `$font-size-root-lg` is set.
+  
+  `.container` no longer takes the max-widths of breakpoints that a project removed from `$breakpoints`. They were written with no query, so every container had the max-width of the largest one at every width; `$container-max-widths` warns about such a key and ignores it, as the grid maps do.
+  
+  The compiled CSS of `dist/` is the same. The source maps of `dist/css/` follow the moved lines.
+- 769206e: A closed `.dialog` no longer adds to the area the page scrolls. `.modal` and `.alert` set `display`, so a closed `<dialog>` is laid out and hidden with `visibility`, and the browser positioned it absolutely in the page:
+  
+  - a closed `.modal.fullscreen` (and `max-md:fullscreen` and the other variants below their breakpoint) made the page scroll sideways, by 9 px in a 375 px viewport and 32 px at 1280 px, because the dialog waits at `scale(1.05)`, the start of its entry transition
+  - a closed modal with content taller than the viewport made a short page scroll down by the height of that content
+  
+  A closed dialog is now `position: fixed` (`.dialog:not([open])`), as a closed `.drawer` is. An open dialog is positioned as before.
+- 58e938c: **Breaking:** the styles of the `color-mode()` mixin follow the colors of the framework: the nearest `data-cx-theme` attribute, and the system preference where no attribute is set. `$color-mode-type` has a new value for this, `auto`, and it is the default. Until now the default was `media-query`, which ignored the attribute, so the dark styles of a project did not switch with a color mode toggle.
+  
+  Inside a rule, the mixin puts the condition on the element of that rule, as the `dark:` and `light:` variants of the Tailwind entry do:
+  
+  ```scss
+  .logo {
+    @include color-mode(dark) {
+      background-image: url("logo-dark.svg");
+    }
+  }
+  ```
+  
+  ```css
+  .logo[data-cx-theme=dark],
+  .logo:where([data-cx-theme=dark] *):not(:where([data-cx-theme=dark] [data-cx-theme=light] *)) {
+    background-image: url("logo-dark.svg");
+  }
+  @media (prefers-color-scheme: dark) {
+    .logo:not(:where([data-cx-theme=light], [data-cx-theme=light] *)) {
+      background-image: url("logo-dark.svg");
+    }
+  }
+  ```
+  
+  Outside a rule, it writes its content under `[data-cx-theme="dark"]` and, inside the media query, under `:root:where(:not([data-cx-theme="light"]))`. A mode other than `light` and `dark` follows the attribute alone.
+  
+  A project that calls `color-mode()` gets the attribute selectors in addition to the media query. To keep the output of 0.7.0, set the old default:
+  
+  ```scss
+  @use "@chassis-ui/css/scss/config" with (
+    $color-mode-type: media-query
+  );
+  ```
+  
+  `data` and `media-query` write what they wrote before. The framework does not call the mixin, so the compiled CSS of `dist/` is the same.
+- c42477e: **Breaking:** the custom properties that set the font of a card title, a card subtitle, a drawer title and the datepicker header had the name of the element twice. They are named as the ones of `.card.lg` and of the modal are:
+  
+  | Before                                                                          | Now                                                           |
+  | ------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+  | `--cx-card-title-title-font-*`, `--cx-card-title-title-line-height`             | `--cx-card-title-font-*`, `--cx-card-title-line-height`       |
+  | `--cx-card-subtitle-subtitle-font-*`, `--cx-card-subtitle-subtitle-line-height` | `--cx-card-subtitle-font-*`, `--cx-card-subtitle-line-height` |
+  | `--cx-drawer-title-title-font-*`, `--cx-drawer-title-title-line-height`         | `--cx-drawer-title-font-*`, `--cx-drawer-title-line-height`   |
+  | `--cx-datepicker-header-header-font-size`, `-font-weight`                       | `--cx-datepicker-header-font-size`, `-font-weight`            |
+  
+  A project that set one of the old names sets the new one. `font-*` is `font-family`, `font-size` and `font-weight`.
+- 58e938c: The icons of form controls follow the system preference. On a system that prefers dark, a page with no `data-cx-theme` attribute was dark with the light icons: the caret of a select, the mark of a checkbox and a radio, the knob of a switch and the validation icons kept the fill of the light mode, a dark caret on a dark field. The icons are SVG images with their color written in, which `light-dark()` cannot reach, and only `[data-cx-theme="dark"]` declared the dark ones.
+  
+  `:root` now takes the dark icons inside `@media (prefers-color-scheme: dark)`, unless it has `data-cx-theme="light"`. Nothing changes for a page that sets the attribute, and nothing is written with `$enable-dark-mode: false`. `chassis.min.css` grows by 5.9 kB, 0.1 kB gzipped.
+- 05a3140: One `@use "@chassis-ui/css/scss/config" with (…)` configures every variable of the framework: the feature flags, the defaults, the token variables (`$primary`, `$danger`, `$space-medium`) and the vendor tokens. `@use "@chassis-ui/css/scss/config/defaults" with (…)` takes the same variables.
+  
+  Until now the compile stopped with `This module was already loaded, so it can't be configured using "with"` for a token variable in either rule, and for an `$enable-*` flag in `config/defaults`: `scss/config/_defaults.scss` loaded those modules before it forwarded them. A token variable had to be set with `@use "@chassis-ui/css/scss/tokens" with (…)`, placed before the `config` rule; that still works.
+  
+  The compiled CSS is the same. The source maps of `dist/css/` follow the moved lines.
+- c42477e: Fixes of declarations and selectors that wrote wrong CSS in the default build:
+  
+  - **Datepicker**: today has the weight of `$datepicker-font-today` (the rule read `--cx-day-today-font-weight`, which nothing set), and the months and the years have the font size of the days (`--cx-day-font-size`, likewise). A button of the calendar under the pointer has the color of `$datepicker-fg-hover`: the rules read `--cx-day-hover-fg-color`, which nothing set either, and `--cx-datepicker-day-hover-fg-color` now sets it.
+  - **Avatar**: the badge of an avatar has its border. The shorthand read `--cx-badge-border-style`, which nothing set, so the browser dropped the declaration. The style is `--cx-avatar-badge-border-style`, the root `--cx-border-style` by default.
+  - **Card**: `.card-title` has the color of `--cx-card-title-fg-color` (`$card-title-color`); it read a name that the card does not set. `--cx-card-height` sets the height; the declaration read `--cx-card-heading`.
+  - **Button group**: the first button of a `.button-group` is no longer moved by the width of its border, and a vertical group overlaps the borders by `--cx-border-width` of its buttons, as a horizontal one does.
+  - **Validation**:
+    - a valid or an invalid `.form-input` and `.form-floating` of an `.input-group` are above their neighbors (`z-index` 3 and 4), so the colored border is whole. The two selectors were written as one, which matched nothing.
+    - in a form with `data-cx-validate`, the floating label of a field and a `.form-check` take the color of the state from `:user-valid` and `:user-invalid`. The selectors had the `[data-cx-validate]` ancestor inside `:has()`, where it matched nothing; the `.is-valid` and `.is-invalid` classes did work.
+  - **Range**: Firefox draws the focus ring on the thumb (`::-moz-range-thumb`; the rule was written for `::-moz-slider-thumb`, which is no pseudo-element).
+  - **Checkbox, radio, switch**: a disabled legacy input reads `--cx-form-disabled-bg-regular`, the property the forms declare. The knob of a modern switch stops its transition under `prefers-reduced-motion`. A checked input takes its background and its border from `--cx-default-cue-main`, and so follows the color mode; the value of the light mode was written in.
+  - **Progress**: the bar takes its colors from `--cx-primary-base-color` and `--cx-primary-contrast-color`, and so follows the color mode; the values of the light mode were written in.
+  - **Password strength**: `.strength-text` falls back to `--cx-fg-subtle`; it read `--cx-fg-3`, which does not exist.
+  - **Link opacity**: `.link-opacity-subtle` and `.link-opacity-slight`, in the Tailwind entry too, read `--cx-opacity-fg-subtle` and `--cx-opacity-fg-slight`. They read `--cx-opacity-link-*`, which the root does not declare, so the classes set no opacity.
+  - **Outline context**: `--cx-bg-highlight` is the highlight background of the context, the pair of its `--cx-fg-highlight`, as in the smooth variant. It was the inverse background, under the highlight foreground: the active row of a table in an outline context, for one.
+  - **Accordion**: the open state styles the summary of the open item only, not the summaries of an accordion nested in it.
+  - **Chip**: the avatar of a chip has its negative margin at the start of the chip in a right-to-left page too (logical margins).
+  - **Help text**: `.form-help` after a `.check-input` no longer declares a `margin-inline-start` that read `--cx-input-size`, which nothing set. The help is where it was: `.form-check` indents it to the label, and in a `.form-field` it spans both columns.
+  
+  In Sass:
+  
+  - `$button-large-border-radius`, `$chip-large-border-radius` and `$opacity-cue-slight` read their own tokens (`$cx-border-radius-button-large`, `$cx-border-radius-chip-large`, `$cx-opacity-context-cue-slight`) and no longer the ones of the medium size and of the icons. The values of `@chassis-ui/tokens` are the same, so the compiled CSS is too.
+  - `color-contrast()`, `contrast-ratio()` and `luminance()` take a color of any color space and a translucent foreground. A channel that is no integer stopped the compile with `$n: 13.81 is not an int`, which `color-contrast(oklch(0.6 0.1 200))` and `contrast-ratio(#fff, rgba(0, 0, 0, .5))` did.
+  - `$enable-exclude-strokes` is read with `list.index()` in the card and the list, in place of the global `index()` that Sass deprecates.
+- 09eb7a9: `.skeleton-glow` and `.skeleton-wave` honor `prefers-reduced-motion: reduce`. Both animations stop: a skeleton in `.skeleton-glow` rests at `--cx-skeleton-opacity-max`, the opacity of a `.skeleton` with no animation, and `.skeleton-wave` drops its mask, so the placeholder is fully visible with no fixed highlight across it. `$enable-reduced-motion: false` leaves the rule out, as it does for the spinners and the transitions.
+- d1162a8: The modules of the Tailwind entry load together in one Sass file: `scss/tailwind/layers`, `theme`, `root`, `reboot`, `components` and `utilities`, the separate modules of the Tailwind guide. In this order they compile to the CSS of the combined `scss/tailwind` entry, and `reboot` and `components` can be left out.
+  
+  Until now the compile stopped at the second of `layers`, `root`, `reboot` and `components` with `This module was already loaded, so it can't be configured using "with"`: each configured `scss/mixins/banner` with a file name of its own. They forward the banner without one now, as the combined entry does, so a project's stylesheet starts with one banner, and the build passes the file names of `dist/tailwind/`.
+  
+  `theme.css`, `utilities.css` and `bridge.css` of `dist/tailwind/` start with the banner now, like the other files. The rules of every file of `dist/tailwind/` are the same.
+- 63f1526: `$utilities-overrides` changes the default utilities of a build that loads the complete framework. It is a map of `scss/utilities`, empty by default and merged over `$utilities`:
+  
+  ```scss
+  @use "@chassis-ui/css/scss/utilities" with (
+    $utilities-overrides: (
+      "float": null,
+      "border": (responsive: true),
+      "width": (values: (10: 10%, 25: null)),
+      "cursor": (property: cursor, class: cursor, values: auto pointer grab)
+    )
+  );
+  @use "@chassis-ui/css/scss/chassis";
+  ```
+  
+  - `null` removes a utility
+  - a map under the name of a utility is merged into its definition, option by option, so `(responsive: true)` is a complete override. A changed utility keeps its place in the `utilities` layer
+  - `values` is merged with the default values when the override gives a map: a new key adds a class, the key of a default value changes it, and `null` removes the class. A key is matched by the class it names, so `50` and `"50"` are the same key. A list replaces the values
+  - a map under a new name adds a utility after the default ones. It needs `property` and `values`, and the compile stops without them, which also catches a misspelled name
+  - the rule goes before `@use "@chassis-ui/css/scss/chassis"` and after a `@use "@chassis-ui/css/scss/config" with (…)`; in another place Sass stops with an error
+  - the overrides are merged over a configured `$utilities` map too, and reach `scss/tailwind` compiled with Sass. The prebuilt `dist/tailwind/` files and `tailwind/merge.js` are built from the default map
+  
+  `utility-values-map()` returns the `values` of a utility as the map the generators read: a list with each value under its own name, a single value under the `null` key. `map-get-multiple()` takes a third argument, the keys the map may lack without a warning; the grid bundle passes it the names of the overrides, so a removed utility of its list is left out in silence.
+  
+  Nothing changes for a build without the variable: `dist/css/` and `dist/tailwind/` are the same files.
+
 ## 0.7.0
 
 ### Minor Changes
