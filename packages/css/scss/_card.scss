@@ -1,3 +1,4 @@
+@use "sass:list";
 @use "sass:string";
 @use "sass:map";
 @use "./config" as *;
@@ -18,7 +19,7 @@
 // Internal mixin for card elements padding that accounts for border width
 // scss-docs-start _card-exclude-strokes
 @mixin _card-exclude-strokes($comp: null, $padding-factor: 1) {
-  @if $enable-exclude-strokes == true or index($enable-exclude-strokes, card) {
+  @if $enable-exclude-strokes == true or list.index($enable-exclude-strokes, card) {
     $-prefix: "";
     @if $comp {
       $-prefix: "#{$comp}-";
@@ -80,11 +81,11 @@
 
     --header-font-weight: var(--card-header-font-weight, #{$card-header-font-weight});
 
-    @include map-font($card-md-title-font, card-title, title);
-    @include map-font($card-md-subtitle-font, card-subtitle, subtitle);
+    @include map-font($card-md-title-font, card, title);
+    @include map-font($card-md-subtitle-font, card, subtitle);
     @include map-font($card-md-body-font, card);
 
-    --height: var(--card-heading, #{$card-height});
+    --height: var(--card-height, #{$card-height});
     --group-margin: var(--card-group-margin, #{$card-group-margin});
     // scss-docs-end card-css-vars
 
@@ -218,7 +219,7 @@
   }
 
   .card-title {
-    color: var(--card-title-fg-color);
+    color: var(--title-fg-color);
     @include font(title);
   }
 

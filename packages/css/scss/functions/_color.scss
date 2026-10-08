@@ -193,10 +193,13 @@
   );
 
   @each $name, $value in $rgb {
+    // A channel of a color of another space, or of a mixed color, is no
+    // integer, and is outside of 0 to 255 when the color is outside of sRGB
+    $value: math.clamp(0, $value, 255);
     @if math.div($value, 255) < .04045 {
       $value: math.div(math.div($value, 255), 12.92);
     } @else {
-      $value: list.nth($luminance-list, $value + 1);
+      $value: list.nth($luminance-list, math.round($value) + 1);
     }
     $rgb: map.merge($rgb, ($name: $value));
   }
@@ -214,6 +217,9 @@
 /// @example
 ///   opaque(#fff, rgba(0, 0, 0, .5)) => #808080
 @function opaque($background, $foreground) {
+  // color.mix() takes a color of another space with a method only
+  $background: color.to-space($background, rgb);
+  $foreground: color.to-space($foreground, rgb);
   @return color.mix(rgba($foreground, 1), $background, color.opacity($foreground) * 100%);
 }
 

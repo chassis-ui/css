@@ -1,3 +1,4 @@
+@use "sass:list";
 @use "sass:map";
 @use "./config" as *;
 @use "./mixins" as *;
@@ -100,7 +101,7 @@
     background-color: var(--bg-color);
     border: var(--border-width) solid var(--border-color);
 
-    @if $enable-exclude-strokes == true or index($enable-exclude-strokes, list) {
+    @if $enable-exclude-strokes == true or list.index($enable-exclude-strokes, list) {
       $pad-y: calc(var(--padding-y) - var(--border-width) * var(--padding-factor-y));
       $pad-x: calc(var(--padding-x) - var(--border-width) * var(--padding-factor-x));
       padding: $pad-y $pad-x;

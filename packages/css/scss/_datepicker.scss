@@ -28,12 +28,13 @@
     --day-width: var(--datepicker-day-width, #{$datepicker-day-width});
     --week-width: var(--datepicker-week-width, #{$datepicker-week-width});
     --zindex: var(--datepicker-zindex, #{$zindex-menu});
-    @include map-font-size($datepicker-font-label, datepicker-header, header);
-    @include map-font-weight($datepicker-font-label, datepicker-header, header);
+    @include map-font-size($datepicker-font-label, datepicker, header);
+    @include map-font-weight($datepicker-font-label, datepicker, header);
     --arrow-icon: var(--datepicker-arrow-icon, #{svg-icon($datepicker-arrow-icon)});
     --weekday-fg-color: var(--datepicker-weekday-fg-color, #{$datepicker-fg-idle});
     --weekday-font-size: var(--datepicker-weekday-font-size, #{$datepicker-weekday-font-size});
     --day-hover-bg-color: var(--datepicker-day-hover-bg-color, #{$datepicker-bg-hover});
+    --day-hover-fg-color: var(--datepicker-day-hover-fg-color, #{$datepicker-fg-hover});
     --day-selected-bg-color: var(--datepicker-day-selected-bg-color, #{$datepicker-bg-active});
     --day-selected-fg-color: var(--datepicker-day-selected-fg-color, #{$datepicker-fg-active});
     --day-range-bg-color: var(--datepicker-day-range-bg-color, #{$datepicker-bg-range});
@@ -260,7 +261,7 @@
     justify-content: center;
     height: 2.5rem;
     padding: .25rem;
-    @include font-size(var(--day-font-size));
+    @include font-size(var(--font-size));
     font-weight: 600;
     line-height: 1rem;
     color: var(--weekday-fg-color);
@@ -370,7 +371,7 @@
 
   // Today
   :where(.datepicker-date[aria-current="date"]) > .datepicker-date-btn {
-    font-weight: var(--day-today-font-weight);
+    font-weight: var(--today-font-weight);
     color: var(--day-today-fg-color);
     background-color: var(--day-today-bg-color);
   }

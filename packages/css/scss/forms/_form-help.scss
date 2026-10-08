@@ -22,13 +22,12 @@
     color: var(--form-idle-help-color); // Uses a lighter text color to distinguish from primary content
     @include font(); // Apply standard font styling
 
-    // Special positioning for form-help within checkbox/radio options
-    // Aligns the text with the option label by adding left margin equal to
-    // the width of the input element plus the gap
+    // Spacing for form-help within checkbox/radio options. The inline start
+    // needs no margin: `.form-check` indents its content to the label text,
+    // and in a `.form-field` the help spans both columns of the grid.
     .check-input ~ & {
       --spacing: var(--form-help-check-spacing, #{$form-help-check-spacing});
       margin-block-start: var(--spacing); // Adjust spacing for check inputs
-      margin-inline-start: calc(var(--input-size) + var(--gap));
     }
 
     // Adjusted top margin when used with range inputs

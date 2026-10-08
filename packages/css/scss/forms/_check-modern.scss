@@ -119,8 +119,7 @@
       // stylelint-disable-next-line property-disallowed-list
       border-radius: var(--toggle-border-radius);
       @include box-shadow(var(--box-shadow-sm));
-      // stylelint-disable-next-line property-disallowed-list
-      transition: inset-inline-start .15s ease-in-out;
+      @include transition(inset-inline-start .15s ease-in-out);
     }
     &:has(input:checked)::before {
       inset-inline-start: calc(100% - var(--toggle-width) - ((var(--input-height) - var(--toggle-height)) / 2));

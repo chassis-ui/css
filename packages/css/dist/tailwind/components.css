@@ -1138,7 +1138,7 @@
     --cx-bg-active: var(--cx-context-base-color);
     --cx-bg-inverse: var(--cx-context-bg-inverse);
     --cx-bg-solid: var(--cx-context-bg-solid);
-    --cx-bg-highlight: var(--cx-context-bg-inverse);
+    --cx-bg-highlight: var(--cx-context-bg-highlight);
     --cx-border-main: oklch(from var(--cx-context-base-color) l c h / var(--cx-opacity-border-main));
     --cx-border-subtle: oklch(from var(--cx-context-base-color) l c h / var(--cx-opacity-border-subtle));
     --cx-icon-main: var(--cx-context-base-color);
@@ -1790,13 +1790,13 @@
   .accordion > details > .accordion-body > p:last-child {
     margin-block-end: 0;
   }
-  .accordion > [open] summary {
+  .accordion > [open] > summary {
     background-color: var(--cx-title-bg-active);
   }
-  .accordion > [open] summary > .accordion-title {
+  .accordion > [open] > summary > .accordion-title {
     color: var(--cx-title-fg-active);
   }
-  .accordion > [open] summary > .accordion-title::before {
+  .accordion > [open] > summary > .accordion-title::before {
     background-color: var(--cx-caret-active-color);
     mask-image: var(--cx-caret-icon);
     transform: var(--cx-caret-transform);
@@ -1973,6 +1973,7 @@
     --cx-font-scale: var(--cx-avatar-font-scale, 0.4);
     --cx-badge-size: var(--cx-avatar-badge-size, calc(var(--cx-size) * .25));
     --cx-badge-border-width: var(--cx-avatar-badge-border-width, var(--cx-border-width-xl));
+    --cx-badge-border-style: var(--cx-avatar-badge-border-style, var(--cx-border-style));
     --cx-badge-border-color: var(--cx-avatar-badge-border-color, var(--cx-bg-main));
     --cx-stack-spacing: var(--cx-avatar-stack-spacing, -0.25);
     --cx-transition: var(--cx-avatar-transition, transform 0.15s ease-in-out);
@@ -2313,11 +2314,11 @@
   .button-group {
     border-radius: var(--cx-border-radius-md);
   }
-  .button-group > :not(.button-check:first-child),
+  .button-group > .button:not(:first-child),
   .button-group > .button-group:not(:first-child) {
     margin-inline-start: calc(var(--cx-border-width) * -1);
   }
-  .button-group-vertical > .button-group > :not(.button-check:first-child),
+  .button-group-vertical > .button-group > .button:not(:first-child),
   .button-group-vertical > .button-group > .button-group:not(:first-child) {
     margin-inline-start: 0;
   }
@@ -2348,7 +2349,7 @@
   }
   .button-group-vertical > .button:not(:first-child),
   .button-group-vertical > .button-group:not(:first-child) {
-    margin-block-start: calc(var(--cx-border-width-md) * -1);
+    margin-block-start: calc(var(--cx-border-width) * -1);
   }
   .button-group-vertical > .button:not(:last-child, :has(+ .menu)),
   .button-group-vertical > .button-group:not(:last-child) > .button {
@@ -2389,19 +2390,19 @@
     --cx-footer-fg-color: var(--cx-card-footer-fg-color, inherit);
     --cx-footer-bg-color: var(--cx-card-footer-bg-color, inherit);
     --cx-header-font-weight: var(--cx-card-header-font-weight, var(--cx-font-weight-strong));
-    --cx-title-font-family: var(--cx-card-title-title-font-family, var(--cx-font-family-text));
-    --cx-title-font-size: var(--cx-card-title-title-font-size, var(--cx-font-size-text-lg));
-    --cx-title-font-weight: var(--cx-card-title-title-font-weight, var(--cx-font-weight-text-strong));
-    --cx-title-line-height: var(--cx-card-title-title-line-height, var(--cx-line-height-text-lg));
-    --cx-subtitle-font-family: var(--cx-card-subtitle-subtitle-font-family, var(--cx-font-family-text));
-    --cx-subtitle-font-size: var(--cx-card-subtitle-subtitle-font-size, var(--cx-font-size-text-sm));
-    --cx-subtitle-font-weight: var(--cx-card-subtitle-subtitle-font-weight, var(--cx-font-weight-text-strong));
-    --cx-subtitle-line-height: var(--cx-card-subtitle-subtitle-line-height, var(--cx-line-height-text-sm));
+    --cx-title-font-family: var(--cx-card-title-font-family, var(--cx-font-family-text));
+    --cx-title-font-size: var(--cx-card-title-font-size, var(--cx-font-size-text-lg));
+    --cx-title-font-weight: var(--cx-card-title-font-weight, var(--cx-font-weight-text-strong));
+    --cx-title-line-height: var(--cx-card-title-line-height, var(--cx-line-height-text-lg));
+    --cx-subtitle-font-family: var(--cx-card-subtitle-font-family, var(--cx-font-family-text));
+    --cx-subtitle-font-size: var(--cx-card-subtitle-font-size, var(--cx-font-size-text-sm));
+    --cx-subtitle-font-weight: var(--cx-card-subtitle-font-weight, var(--cx-font-weight-text-strong));
+    --cx-subtitle-line-height: var(--cx-card-subtitle-line-height, var(--cx-line-height-text-sm));
     --cx-font-family: var(--cx-card-font-family, var(--cx-font-family-text));
     --cx-font-size: var(--cx-card-font-size, var(--cx-font-size-text-md));
     --cx-font-weight: var(--cx-card-font-weight, var(--cx-font-weight-text-normal));
     --cx-line-height: var(--cx-card-line-height, var(--cx-line-height-text-md));
-    --cx-height: var(--cx-card-heading, auto);
+    --cx-height: var(--cx-card-height, auto);
     --cx-group-margin: var(--cx-card-group-margin, calc(var(--cx-grid-gutter) * 0.5));
     --cx-list-padding-x: var(--cx-padding-x);
     --cx-list-border-width: var(--cx-border-width);
@@ -2508,7 +2509,7 @@
     margin-block-end: 0;
   }
   .card-title {
-    color: var(--cx-card-title-fg-color);
+    color: var(--cx-title-fg-color);
     font: var(--cx-title-font-weight) var(--cx-title-font-size)/var(--cx-title-line-height) var(--cx-title-font-family);
   }
   .card-subtitle {
@@ -2956,7 +2957,8 @@
     margin-inline-end: calc(-1 * var(--cx-nudge));
   }
   .chip .avatar {
-    margin: calc(-1 * var(--cx-nudge)) 0 calc(-1 * var(--cx-nudge)) calc(-1 * var(--cx-gap));
+    margin-block: calc(-1 * var(--cx-nudge));
+    margin-inline: calc(-1 * var(--cx-gap)) 0;
   }
   .chip.disabled .avatar {
     opacity: var(--cx-opacity-fg-slight);
@@ -3045,12 +3047,13 @@
     --cx-day-width: var(--cx-datepicker-day-width, 2rem);
     --cx-week-width: var(--cx-datepicker-week-width, 14rem);
     --cx-zindex: var(--cx-datepicker-zindex, 1000);
-    --cx-header-font-size: var(--cx-datepicker-header-header-font-size, var(--cx-font-size-sm));
-    --cx-header-font-weight: var(--cx-datepicker-header-header-font-weight, var(--cx-font-weight-strong));
+    --cx-header-font-size: var(--cx-datepicker-header-font-size, var(--cx-font-size-sm));
+    --cx-header-font-weight: var(--cx-datepicker-header-font-weight, var(--cx-font-weight-strong));
     --cx-arrow-icon: var(--cx-datepicker-arrow-icon, url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 24 24'%3e%3cpath d='M12 16c-.3 0-.5-.1-.7-.3l-6-6c-.4-.4-.4-1 0-1.4s1-.4 1.4 0l5.3 5.3 5.3-5.3c.4-.4 1-.4 1.4 0s.4 1 0 1.4l-6 6c-.2.2-.4.3-.7.3'/%3e%3c/svg%3e"));
     --cx-weekday-fg-color: var(--cx-datepicker-weekday-fg-color, var(--cx-default-fg-main));
     --cx-weekday-font-size: var(--cx-datepicker-weekday-font-size, var(--cx-font-size-text-xs));
     --cx-day-hover-bg-color: var(--cx-datepicker-day-hover-bg-color, var(--cx-default-bg-even));
+    --cx-day-hover-fg-color: var(--cx-datepicker-day-hover-fg-color, var(--cx-default-fg-main));
     --cx-day-selected-bg-color: var(--cx-datepicker-day-selected-bg-color, var(--cx-primary-base-color));
     --cx-day-selected-fg-color: var(--cx-datepicker-day-selected-fg-color, var(--cx-primary-contrast-color));
     --cx-day-range-bg-color: var(--cx-datepicker-day-range-bg-color, var(--cx-default-bg-highlight));
@@ -3239,7 +3242,7 @@
     justify-content: center;
     height: 2.5rem;
     padding: 0.25rem;
-    font-size: var(--cx-day-font-size);
+    font-size: var(--cx-font-size);
     font-weight: 600;
     line-height: 1rem;
     color: var(--cx-weekday-fg-color);
@@ -3337,7 +3340,7 @@
     pointer-events: none;
   }
   :where(.datepicker-date[aria-current=date]) > .datepicker-date-btn {
-    font-weight: var(--cx-day-today-font-weight);
+    font-weight: var(--cx-today-font-weight);
     color: var(--cx-day-today-fg-color);
     background-color: var(--cx-day-today-bg-color);
   }
@@ -3511,10 +3514,10 @@
     --cx-border-width: var(--cx-drawer-border-width, var(--cx-border-width-md));
     --cx-border-radius: var(--cx-drawer-border-radius, var(--cx-border-radius-xl));
     --cx-box-shadow: var(--cx-drawer-box-shadow, var(--cx-box-shadow-lg));
-    --cx-title-font-family: var(--cx-drawer-title-title-font-family, var(--cx-font-family-text));
-    --cx-title-font-size: var(--cx-drawer-title-title-font-size, var(--cx-font-size-text-lg));
-    --cx-title-font-weight: var(--cx-drawer-title-title-font-weight, var(--cx-font-weight-text-mass));
-    --cx-title-line-height: var(--cx-drawer-title-title-line-height, var(--cx-line-height-text-lg));
+    --cx-title-font-family: var(--cx-drawer-title-font-family, var(--cx-font-family-text));
+    --cx-title-font-size: var(--cx-drawer-title-font-size, var(--cx-font-size-text-lg));
+    --cx-title-font-weight: var(--cx-drawer-title-font-weight, var(--cx-font-weight-text-mass));
+    --cx-title-line-height: var(--cx-drawer-title-line-height, var(--cx-line-height-text-lg));
     --cx-transition-duration: var(--cx-drawer-transition-duration, 0.3s);
     --cx-transition-timing: var(--cx-drawer-transition-timing, cubic-bezier(0.22, 1, 0.36, 1));
     --cx-backdrop-bg: var(--cx-drawer-backdrop-bg, var(--cx-black-dim-main));
@@ -4554,7 +4557,6 @@
   .check-input ~ .invalid-feedback {
     --cx-spacing: var(--cx-form-help-check-spacing, 0rem);
     margin-block-start: var(--cx-spacing);
-    margin-inline-start: calc(var(--cx-input-size) + var(--cx-gap));
   }
   .form-range ~ .form-help,
   .form-range ~ .valid-feedback,
@@ -4841,8 +4843,8 @@
     box-shadow: none;
   }
   .check-input:is(input):checked {
-    --cx-bg-color: var(--cx-input-checked-bg-color, #00A4CC);
-    --cx-border-color: var(--cx-input-checked-border-color, #00A4CC);
+    --cx-bg-color: var(--cx-input-checked-bg-color, var(--cx-default-cue-main));
+    --cx-border-color: var(--cx-input-checked-border-color, var(--cx-default-cue-main));
   }
   .check-input:is(input):checked[type=checkbox] {
     --cx-icon: var(--cx-form-check-icon);
@@ -4851,12 +4853,12 @@
     --cx-icon: var(--cx-form-radio-icon);
   }
   .check-input:is(input)[type=checkbox]:indeterminate {
-    --cx-bg-color: var(--cx-input-checked-bg-color, #00A4CC);
-    --cx-border-color: var(--cx-input-checked-border-color, #00A4CC);
+    --cx-bg-color: var(--cx-input-checked-bg-color, var(--cx-default-cue-main));
+    --cx-border-color: var(--cx-input-checked-border-color, var(--cx-default-cue-main));
     --cx-icon: var(--cx-form-indeterminate-icon);
   }
   .check-input:is(input)[disabled], .check-input:is(input):disabled {
-    --cx-bg-color: var(--cx-form-disabled-bg-color, var(--cx-default-bg-disabled));
+    --cx-bg-color: var(--cx-form-disabled-bg-regular, var(--cx-default-bg-disabled));
     --cx-border-color: var(--cx-form-disabled-border-color, var(--cx-default-fg-slight));
     pointer-events: none;
     filter: none;
@@ -4871,7 +4873,7 @@
     --cx-icon: var(--cx-form-radio-icon-disabled);
   }
   .check-input:is(input)[disabled][type=checkbox]:indeterminate, .check-input:is(input):disabled[type=checkbox]:indeterminate {
-    --cx-bg-color: var(--cx-form-disabled-bg-color, var(--cx-default-bg-disabled));
+    --cx-bg-color: var(--cx-form-disabled-bg-regular, var(--cx-default-bg-disabled));
     --cx-border-color: var(--cx-form-disabled-border-color, var(--cx-default-fg-slight));
     --cx-icon: var(--cx-form-indeterminate-icon-disabled);
   }
@@ -5004,6 +5006,11 @@
     box-shadow: var(--cx-box-shadow-sm);
     transition: inset-inline-start 0.15s ease-in-out;
   }
+  @media (prefers-reduced-motion: reduce) {
+    .check-input:not(input):has([role=switch]):has(input)::before {
+      transition: none;
+    }
+  }
   .check-input:not(input):has([role=switch]):has(input:checked)::before {
     inset-inline-start: calc(100% - var(--cx-toggle-width) - (var(--cx-input-height) - var(--cx-toggle-height)) / 2);
   }
@@ -5056,7 +5063,7 @@
     outline: var(--cx-focus-ring-width) solid var(--cx-focus-ring-color);
     outline-offset: var(--cx-focus-ring-offset);
   }
-  .form-range:focus-visible::-moz-slider-thumb {
+  .form-range:focus-visible::-moz-range-thumb {
     outline: var(--cx-focus-ring-width) solid var(--cx-focus-ring-color);
     outline-offset: var(--cx-focus-ring-offset);
   }
@@ -5530,7 +5537,7 @@
     display: block;
     margin-block-start: var(--cx-strength-margin-top);
     font-size: var(--cx-strength-font-size);
-    color: var(--cx-strength-color, var(--cx-fg-3));
+    color: var(--cx-strength-color, var(--cx-fg-subtle));
     transition: color 0.2s ease-in-out;
   }
   @media (prefers-reduced-motion: reduce) {
@@ -5659,14 +5666,16 @@
   [data-cx-validate] .form-input:is(.form-floating > .form-input):user-valid, .form-input:is(.form-floating > .form-input).is-valid {
     --cx-bg-color: var(--cx-form-valid-bg-floating);
   }
-  label:has(~ [data-cx-validate] .form-input:is(.form-floating > .form-input):user-valid, ~ .form-input:is(.form-floating > .form-input).is-valid) {
+  [data-cx-validate] label:has(~ .form-input:is(.form-floating > .form-input):user-valid),
+  label:has(~ .form-input:is(.form-floating > .form-input).is-valid) {
     --cx-label-fg-color: var(--cx-form-valid-help-color);
     --cx-label-bg-color: var(--cx-form-valid-bg-floating);
   }
   [data-cx-validate] .form-input:is(.form-floating > .form-input):user-invalid, .form-input:is(.form-floating > .form-input).is-invalid {
     --cx-bg-color: var(--cx-form-invalid-bg-floating);
   }
-  label:has(~ [data-cx-validate] .form-input:is(.form-floating > .form-input):user-invalid, ~ .form-input:is(.form-floating > .form-input).is-invalid) {
+  [data-cx-validate] label:has(~ .form-input:is(.form-floating > .form-input):user-invalid),
+  label:has(~ .form-input:is(.form-floating > .form-input).is-invalid) {
     --cx-label-fg-color: var(--cx-form-invalid-help-color);
     --cx-label-bg-color: var(--cx-form-invalid-bg-floating);
   }
@@ -5678,10 +5687,15 @@
     --cx-focus-ring-color: var(--cx-form-valid-focus-ring-color);
   }
   [data-cx-validate] .check-input:user-valid:is(input) ~ label,
-  [data-cx-validate] .check-input:not(input) > input:user-valid ~ label, .form-check:has([data-cx-validate] .check-input:user-valid:is(input),
-  [data-cx-validate] .check-input:not(input) > input:user-valid, .is-valid.check-input:is(input),
-  .check-input:not(input) > input.is-valid), .is-valid.check-input:is(input) ~ label,
+  [data-cx-validate] .check-input:not(input) > input:user-valid ~ label, .is-valid.check-input:is(input) ~ label,
   .check-input:not(input) > input.is-valid ~ label {
+    --cx-fg-color: var(--cx-form-valid-help-color);
+    --cx-focus-ring-color: var(--cx-form-valid-focus-ring-color);
+  }
+  [data-cx-validate] .form-check:has(.check-input:user-valid:is(input),
+  .check-input:not(input) > input:user-valid),
+  .form-check:has(.is-valid.check-input:is(input),
+  .check-input:not(input) > input.is-valid) {
     --cx-fg-color: var(--cx-form-valid-help-color);
     --cx-focus-ring-color: var(--cx-form-valid-focus-ring-color);
   }
@@ -5693,10 +5707,15 @@
     --cx-focus-ring-color: var(--cx-form-invalid-focus-ring-color);
   }
   [data-cx-validate] .check-input:user-invalid:is(input) ~ label,
-  [data-cx-validate] .check-input:not(input) > input:user-invalid ~ label, .form-check:has([data-cx-validate] .check-input:user-invalid:is(input),
-  [data-cx-validate] .check-input:not(input) > input:user-invalid, .is-invalid.check-input:is(input),
-  .check-input:not(input) > input.is-invalid), .is-invalid.check-input:is(input) ~ label,
+  [data-cx-validate] .check-input:not(input) > input:user-invalid ~ label, .is-invalid.check-input:is(input) ~ label,
   .check-input:not(input) > input.is-invalid ~ label {
+    --cx-fg-color: var(--cx-form-invalid-help-color);
+    --cx-focus-ring-color: var(--cx-form-invalid-focus-ring-color);
+  }
+  [data-cx-validate] .form-check:has(.check-input:user-invalid:is(input),
+  .check-input:not(input) > input:user-invalid),
+  .form-check:has(.is-invalid.check-input:is(input),
+  .check-input:not(input) > input.is-invalid) {
     --cx-fg-color: var(--cx-form-invalid-help-color);
     --cx-focus-ring-color: var(--cx-form-invalid-focus-ring-color);
   }
@@ -5732,10 +5751,14 @@
   [data-cx-validate] .form-check:has(.check-input:user-invalid), .form-check:has(.check-input.is-invalid) {
     --cx-fg-color: var(--cx-form-invalid-help-color);
   }
-  [data-cx-validate] .input-group > .form-input:not(:focus) > .form-floating:not(:focus-within):user-valid, .input-group > .form-input:not(:focus) > .form-floating:not(:focus-within).is-valid {
+  [data-cx-validate] .input-group > .form-input:not(:focus):user-valid, .input-group > .form-input:not(:focus).is-valid,
+  [data-cx-validate] .input-group > .form-floating:not(:focus-within):user-valid,
+  .input-group > .form-floating:not(:focus-within).is-valid {
     z-index: 3;
   }
-  [data-cx-validate] .input-group > .form-input:not(:focus) > .form-floating:not(:focus-within):user-invalid, .input-group > .form-input:not(:focus) > .form-floating:not(:focus-within).is-invalid {
+  [data-cx-validate] .input-group > .form-input:not(:focus):user-invalid, .input-group > .form-input:not(:focus).is-invalid,
+  [data-cx-validate] .input-group > .form-floating:not(:focus-within):user-invalid,
+  .input-group > .form-floating:not(:focus-within).is-invalid {
     z-index: 4;
   }
   [data-cx-validate] .form-range:user-valid, .form-range.is-valid {
@@ -7440,8 +7463,8 @@
     --cx-bg-color: var(--cx-progress-bg-color, var(--cx-bg-even));
     --cx-border-radius: var(--cx-progress-border-radius, var(--cx-border-radius-md));
     --cx-box-shadow: var(--cx-progress-box-shadow, none);
-    --cx-bar-fg-color: var(--cx-progress-bar-fg-color, #ffffff);
-    --cx-bar-bg-color: var(--cx-progress-bar-bg-color, #00A4CC);
+    --cx-bar-fg-color: var(--cx-progress-bar-fg-color, var(--cx-primary-contrast-color));
+    --cx-bar-bg-color: var(--cx-progress-bar-bg-color, var(--cx-primary-base-color));
     --cx-bar-box-shadow: var(--cx-progress-bar-box-shadow, none);
     --cx-bar-transition: var(--cx-progress-bar-transition, width 0.6s ease);
     --cx-bar-animation-timing: var(--cx-progress-bar-animation-timing, 1s linear infinite);

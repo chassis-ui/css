@@ -82,7 +82,7 @@
     @include border-radius($button-medium-border-radius);
 
     // Prevent double borders when buttons are next to each other
-    > :not(.button-check:first-child),
+    > .button:not(:first-child),
     > .button-group:not(:first-child) {
       margin-inline-start: calc(var(--border-width) * -1);
       .button-group-vertical > & {
@@ -133,7 +133,7 @@
 
     > .button:not(:first-child),
     > .button-group:not(:first-child) {
-      margin-block-start: calc(#{$button-border-width} * -1);
+      margin-block-start: calc(var(--border-width) * -1);
     }
 
     // Reset rounded corners

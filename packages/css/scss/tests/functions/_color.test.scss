@@ -59,6 +59,16 @@
   @include it("returns 1 for white") {
     @include assert-equal(1, luminance(#ffffff));
   }
+
+  @include it("rounds the channels of a color of another space") {
+    // oklch(0.6 0.1 200) is rgb(12.81 145.75 151.68)
+    @include assert-equal(luminance(rgb(13 146 152)), luminance(oklch(.6 .1 200)));
+  }
+
+  @include it("keeps the channels of a color outside of the sRGB gamut in 0 to 255") {
+    // oklch(0.9 0.4 150) is rgb(-170.36 285.09 -54.03)
+    @include assert-equal(luminance(rgb(0 255 0)), luminance(oklch(.9 .4 150)));
+  }
 }
 
 @include describe("contrast-ratio function") {
@@ -69,6 +79,10 @@
   @include it("returns 21 for white on black (maximum contrast)") {
     @include assert-equal(21, contrast-ratio(#000000, #ffffff));
   }
+
+  @include it("accepts a translucent foreground, which mixes to channels that are no integers") {
+    @include assert-equal(contrast-ratio(#ffffff, rgb(128 128 128)), contrast-ratio(#ffffff, rgba(0, 0, 0, .5)));
+  }
 }
 
 @include describe("color-contrast function") {
@@ -78,5 +92,9 @@
 
   @include it("returns the light contrast color for a dark background") {
     @include assert-equal($color-contrast-light, color-contrast(#000000));
+  }
+
+  @include it("accepts a background of another color space") {
+    @include assert-equal($color-contrast-dark, color-contrast(oklch(.6 .1 200)));
   }
 }

@@ -72,6 +72,19 @@ $-validation-states: (
     }
   }
 
+  // The same two triggers for an element that finds the control with `:has()`,
+  // such as the label before it: `$subject` is that element and `$relation` the
+  // combinator from it to the control. The `[data-cx-validate]` ancestor stays
+  // outside of `:has()`, where it is no part of the relative selector.
+  @mixin has-validation-state($state, $class, $subject, $relation: "") {
+    @at-root {
+      [data-cx-validate] #{$subject}:has(#{$relation}#{&}:user-#{$state}),
+      #{$subject}:has(#{$relation}#{&}.#{$class}) {
+        @content;
+      }
+    }
+  }
+
   .valid-feedback,
   .invalid-feedback {
     display: none;
@@ -168,10 +181,10 @@ $-validation-states: (
     @each $state, $class in $-validation-states {
       @include in-validation-state($state, $class) {
         --bg-color: var(--form-#{$state}-bg-floating);
-        label:has(~ &) {
-          --label-fg-color: var(--form-#{$state}-help-color);
-          --label-bg-color: var(--form-#{$state}-bg-floating);
-        }
+      }
+      @include has-validation-state($state, $class, label, "~ ") {
+        --label-fg-color: var(--form-#{$state}-help-color);
+        --label-bg-color: var(--form-#{$state}-bg-floating);
       }
     }
   }
@@ -182,11 +195,14 @@ $-validation-states: (
         --bg-color: var(--form-#{$state}-bg-regular);
         --border-color: var(--form-#{$state}-border-color);
         --focus-ring-color: var(--form-#{$state}-focus-ring-color);
-        ~ label,
-        .form-check:has(&) {
+        ~ label {
           --fg-color: var(--form-#{$state}-help-color);
           --focus-ring-color: var(--form-#{$state}-focus-ring-color);
         }
+      }
+      @include has-validation-state($state, $class, ".form-check") {
+        --fg-color: var(--form-#{$state}-help-color);
+        --focus-ring-color: var(--form-#{$state}-focus-ring-color);
       }
     }
   }
@@ -225,7 +241,8 @@ $-validation-states: (
   // Input group validation z-index handling
   // Ensures that validation states correctly layer in input groups
   .input-group {
-    > .form-input:not(:focus) > .form-floating:not(:focus-within) {
+    > .form-input:not(:focus),
+    > .form-floating:not(:focus-within) {
       // Valid state gets lower z-index
       [data-cx-validate] &:user-valid,
       &.#{$form-valid-class} {
