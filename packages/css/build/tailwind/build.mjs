@@ -85,7 +85,8 @@ const entries = [
   { file: 'components.scss', banner: 'Tailwind Components' },
   { file: 'utilities.scss', banner: 'Tailwind Utilities' },
   { file: 'index.scss' },
-  { file: 'bridge.scss', banner: 'Tailwind Token Bridge' }
+  { file: 'bridge.scss', banner: 'Tailwind Token Bridge' },
+  { file: 'safelist.scss', banner: 'Tailwind Safelist' }
 ]
 
 // Compiles an entry, through a stylesheet that configures the banner first

@@ -281,7 +281,7 @@ In the Tailwind entry the grid is split between Chassis and Tailwind core:
 
 Tailwind core has placement utilities the regular build does not generate, such as negative lines (`-col-end-1`), `row-span-full`, and arbitrary values (`col-span-[14]`), and numeric gaps (`gap-4`, `gap-x-2`) generate nothing, since the entry has no numeric spacing scale. Markup that has to render with both builds stays within the classes of the [grid system]([[docsref:/layout/grid]]): `col-span-{1…12}`, `col-span-full`, `col-auto`, `col-start-{1…12}`, `col-end-{1…13}`, `row-span-{1…6}`, `row-start-{1…6}`, `row-end-{1…7}`, their `auto` resets, and the grid utilities.
 
-Tailwind's scanner can't see class names built at runtime (`` `col-span-${n}` ``). Safelist them, for example with `@source inline("{,md:}col-span-{1..12}");`.
+Tailwind's scanner can't see class names built at runtime (`` `col-span-${n}` ``). Load the [safelist](#runtime-class-names) for them.
 
 ### Removed classes
 
@@ -290,6 +290,55 @@ The flexbox grid (`.row`, `.col-6`, `.md:col-4`, `.lg:offset-2`, `.row-cols-3`, 
 <Callout type="warning">
 `col-{n}` and `col-auto` are Tailwind core's own utilities again: `col-6` sets `grid-column: 6`, a column line of a grid, not half the width of a row. Markup that still carries a flexbox grid class compiles without an error in the Tailwind entry and renders something else; search for the old names before upgrading.
 </Callout>
+
+## Runtime class names
+
+Tailwind generates a class only where its scanner finds the whole name in one of your source files. A name that JavaScript builds from parts (`` `col-span-${span}` ``, `` `${breakpoint}:flex-row` ``) is never found, so its rule is missing, and nothing warns you: the build passes and the layout is wrong. A component library that turns props into classes works this way. `<GridItem span={{ base: 6, md: 3 }}>` of `@chassis-ui/react` renders `col-span-6 md:col-span-3`, and neither name is in your source.
+
+For such a project the entry has an opt-in safelist. `@use` it after the main entry:
+
+```scss
+// src/scss/tailwind-entry.scss
+@use "@chassis-ui/css/scss/tailwind";
+@use "@chassis-ui/css/scss/tailwind/safelist";
+```
+
+With the [prebuilt CSS](#prebuilt-css), import `safelist.css` after the main entry:
+
+```css
+@import "@chassis-ui/css/tailwind";
+@import "@chassis-ui/css/tailwind/safelist.css";
+```
+
+The module holds `@source inline()` rules and nothing else. They name the responsive layout classes, the ones a component maps a layout prop to, so Tailwind generates them whether your source files mention them or not:
+
+- **The placement classes of `.grid`.** `col-span-{1…12}`, `col-span-full`, `col-auto`, `col-start-{1…12}`, `col-end-{1…13}`, `row-span-{1…6}`, `row-start-{1…6}`, `row-end-{1…7}`, `row-auto`, and the `auto` resets of the lines.
+- **The tracks and the gaps.** `grid-cols-*`, `grid-rows-*`, `grid-flow-*`, `gap-*`, `row-gap-*`, and `column-gap-*`.
+- **The flex layout.** `flex-row` and the other directions, `flex-wrap` and the other wraps, `flex-fill`, `justify-content-*`, `align-items-*`, and `align-content-*`.
+- **The widths.** `w-1/12` to `w-11/12`, `w-100`, and `w-auto`.
+
+Each class is listed without a prefix, with the `sm:`–`2xl:` prefixes, and with the `@sm:`–`@2xl:` prefixes of the container queries, as the regular build generates it. Compiled from Sass, the list follows your settings: `$breakpoints`, `$grid-columns`, `$grid-rows`, `$utilities-overrides`, `$enable-grid-system`, and `$enable-container-queries`.
+
+<Callout type="warning">
+The safelist trades on-demand generation for the whole set. With the default settings it adds about 80 KB to the minified CSS (9 KB gzipped). Load it only when class names are built at runtime: a project that writes its classes in full needs none of it.
+</Callout>
+
+Every other class is still generated on demand, where you write its whole name: the margins, the paddings, `d-*`, `order-*`, and the rest of the utilities, and every variant that isn't a breakpoint (`hover:`, `dark:`, `print:`). For one of these that your code builds at runtime, add a rule of your own:
+
+```css
+@source inline("{,md:}p-{sm,md,lg}");
+```
+
+In a Sass build you can add whole utilities instead. `$safelist-utilities-extra` takes keys of the [utilities map]([[docsref:/utilities/api]]), and each utility is listed at the prefixes the regular build generates it at:
+
+```scss
+@use "@chassis-ui/css/scss/tailwind";
+@use "@chassis-ui/css/scss/tailwind/safelist" with (
+  $safelist-utilities-extra: ("padding", "display"),
+);
+```
+
+To list fewer utilities than the default, set `$safelist-utilities` itself, which holds the keys of the list above.
 
 ## Variants
 

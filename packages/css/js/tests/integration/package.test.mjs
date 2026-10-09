@@ -47,6 +47,7 @@ const RESOLVES_TO = {
   '@chassis-ui/css/tailwind': 'dist/tailwind/index.css',
   '@chassis-ui/css/tailwind/merge.js': 'dist/tailwind/merge.js',
   '@chassis-ui/css/tailwind/bridge.css': 'dist/tailwind/bridge.css',
+  '@chassis-ui/css/tailwind/safelist.css': 'dist/tailwind/safelist.css',
   '@chassis-ui/css/package.json': 'package.json'
 }
 

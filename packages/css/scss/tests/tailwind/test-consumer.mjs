@@ -19,6 +19,11 @@
  * `@chassis-ui/css/postcss` preset (postcss/index.js), then compiled with
  * the real `@tailwindcss/node` compiler — no shortcuts at any step.
  *
+ * `consumer/safelist.scss` is the same project with the opt-in safelist
+ * (`scss/tailwind/safelist.scss`) and one more utility in it, compiled with
+ * no candidate: the classes a JavaScript layer builds at runtime are
+ * generated at the brand's breakpoints.
+ *
  * Run via `pnpm css:test:tailwind` (wired into `pnpm test`).
  *
  * Copyright 2026 Ozgur Gunes
@@ -38,12 +43,13 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '../../..')
 const consumerDir = path.join(here, 'consumer')
 
-let built
-
-before(async () => {
+// Compiles a stylesheet of the consumer as a project builds it, and returns
+// the CSS Tailwind generates for `candidates`, the class names its scanner
+// would have found.
+async function buildConsumer(file, candidates) {
   // Consumer's own token source resolves ahead of Chassis's default —
   // exactly the precedence scss/config/_vendor.scss documents.
-  const { css: sassCss } = sass.compile(path.join(consumerDir, 'styles.scss'), {
+  const { css: sassCss } = sass.compile(path.join(consumerDir, file), {
     loadPaths: [consumerDir, path.join(root, 'scss/vendor'), path.join(root, 'node_modules')],
     style: 'expanded'
   })
@@ -52,7 +58,22 @@ before(async () => {
     from: undefined
   })
 
-  const candidates = [
+  const compiler = await compile(prefixed + '\n@source not ".";\n', {
+    base: consumerDir,
+    onDependency: () => {}
+  })
+  return compiler.build(candidates)
+}
+
+// Between the header of an at-rule and a rule inside it: any rules, but no
+// other `@media` or `@container` header.
+const SAME_BLOCK = String.raw`(?:(?!@media|@container)[\s\S])*?`
+
+let built
+let builtWithSafelist
+
+before(async () => {
+  built = await buildConsumer('styles.scss', [
     'container',
     'lg:container',
     'outline',
@@ -63,12 +84,11 @@ before(async () => {
     'fg-primary',
     'lg:fg-primary',
     'dark:fg-primary'
-  ]
-  const compiler = await compile(prefixed + '\n@source not ".";\n', {
-    base: consumerDir,
-    onDependency: () => {}
-  })
-  built = compiler.build(candidates)
+  ])
+
+  // No candidate: the scanner found no class, as when every name is built at
+  // runtime.
+  builtWithSafelist = await buildConsumer('safelist.scss', [])
 })
 
 describe('a consumer with their own chassis-tokens and $breakpoints', () => {
@@ -168,5 +188,62 @@ describe('a consumer with their own chassis-tokens and $breakpoints', () => {
       firstUtilityRuleIndex > layerIndex,
       'the layer statement must precede generated rules'
     )
+  })
+})
+
+describe('the same consumer with the opt-in safelist', () => {
+  test('the placement classes of .grid are generated with no candidate, at the brand breakpoint', () => {
+    assert.match(builtWithSafelist, /\.col-span-6\s*\{\s*grid-column: span 6 \/ span 6/)
+    assert.match(
+      builtWithSafelist,
+      new RegExp(
+        String.raw`@media \(width >= 72rem\)\s*\{${SAME_BLOCK}\.lg\\:col-span-6\s*\{\s*grid-column: span 6 / span 6`,
+        's'
+      )
+    )
+  })
+
+  test('their container variants follow the brand breakpoint too', () => {
+    assert.match(
+      builtWithSafelist,
+      new RegExp(
+        String.raw`@container \(width >= 72rem\)\s*\{${SAME_BLOCK}\.\\@lg\\:col-span-6\s*\{\s*grid-column: span 6 / span 6`,
+        's'
+      )
+    )
+  })
+
+  test('a layout utility of the list is generated at the brand breakpoint', () => {
+    assert.match(
+      builtWithSafelist,
+      new RegExp(
+        String.raw`@media \(width >= 72rem\)\s*\{${SAME_BLOCK}\.lg\\:flex-column\s*\{\s*flex-direction: column`,
+        's'
+      )
+    )
+    assert.match(builtWithSafelist, /\.\\@lg\\:gap-md\s*\{/)
+  })
+
+  test('the utility of $safelist-utilities-extra is generated, at its viewport prefixes only', () => {
+    assert.match(builtWithSafelist, /\.p-md\s*\{/)
+    assert.match(
+      builtWithSafelist,
+      new RegExp(String.raw`@media \(width >= 72rem\)\s*\{${SAME_BLOCK}\.lg\\:p-md\s*\{`, 's')
+    )
+    assert.doesNotMatch(builtWithSafelist, /\.\\@lg\\:p-md\s*\{/)
+  })
+
+  test('a utility outside the list is not generated', () => {
+    assert.doesNotMatch(builtWithSafelist, /\.(?:lg\\:)?m-md\s*\{/)
+    assert.doesNotMatch(builtWithSafelist, /\.(?:lg\\:)?d-flex\s*\{/)
+  })
+
+  test('the layer order is still first, ahead of any generated rule', () => {
+    const layerIndex = builtWithSafelist.indexOf(
+      '@layer theme, colors, config, root, base, reboot,'
+    )
+    assert.ok(layerIndex > 0, 'expected the Chassis layer-order statement in the output')
+    assert.ok(builtWithSafelist.indexOf('.col-span-6') > layerIndex)
+    assert.doesNotMatch(builtWithSafelist, /@source/)
   })
 })

@@ -3,29 +3,50 @@
 //
 // Emits the fact-9 `@source not inline(...)` component-clash exclusions and
 // the fact-15 JS-toggled-class safelist for the Tailwind entry point
-// (`scss/tailwind/theme.scss`), from plain Sass data rather than editing
-// compiled output after the fact.
+// (`scss/tailwind/theme.scss`), and the opt-in safelist of the responsive
+// layout classes (`scss/tailwind/safelist.scss`), from plain Sass data rather
+// than editing compiled output after the fact.
 //
 
 @use "sass:list";
+@use "sass:map";
+@use "sass:meta";
+@use "./utilities" as *;
 
 /// Builds the brace-expansion group covering the unprefixed candidate and
 /// every non-`xs` breakpoint prefix from `$breakpoints`
 /// (e.g. `{,sm:,md:,lg:,xl:,2xl:}` for the default map), instead of a
 /// hard-coded prefix list, so a project's own custom `$breakpoints` stays
-/// correct.
-@function breakpoint-source-group($breakpoints) {
+/// correct. `$container: true` adds the container-query prefixes after them
+/// (`{,sm:,md:,@sm:,@md:}`), and `$viewport: false` leaves the viewport ones
+/// out (`{,@sm:,@md:}`). With no prefix to add there is no group, and the
+/// name stands alone.
+@function breakpoint-source-group($breakpoints, $viewport: true, $container: false) {
   $group: "";
-  @each $name, $value in $breakpoints {
-    @if $name != xs {
-      @if $group == "" {
-        $group: "#{$name}:";
-      } @else {
-        $group: "#{$group},#{$name}:";
+  @each $variant, $enabled in ("": $viewport, "@": $container) {
+    @if $enabled {
+      @each $name, $value in $breakpoints {
+        @if $name != xs {
+          $group: "#{$group},#{$variant}#{$name}:";
+        }
       }
     }
   }
-  @return "{,#{$group}}";
+  @return if(sass($group == ""): ""; else: "{#{$group}}");
+}
+
+/// Builds the brace-expansion group of `$names`: `{a,b,c}`, or the name itself
+/// when it is the only one.
+@function names-source-group($names) {
+  @if list.length($names) == 1 {
+    @return "#{list.nth($names, 1)}";
+  }
+
+  $group: "";
+  @each $name in $names {
+    $group: if(sass($group == ""): "#{$name}"; else: "#{$group},#{$name}");
+  }
+  @return "{#{$group}}";
 }
 
 /// Emits `@source not inline(...)` for `$bare` names unprefixed, for
@@ -44,5 +65,57 @@
 
   @each $entry in $safelist {
     @source inline("#{list.nth($entry, 1)}"); /* #{list.nth($entry, 2)} */
+  }
+}
+
+/// Emits `@source inline(...)` for the classes of the utilities of `$utilities`
+/// that `$keys` names, one rule per utility in the order of `$keys`, each at
+/// the prefixes the native build generates it at: unprefixed, at every
+/// breakpoint prefix with `responsive: true`, and at every container-query
+/// prefix with `container: true` when `$container` is true
+/// (`$enable-container-queries`). The names are the ones of the `@utility`
+/// rules (`tailwind-utility-names()`). A key with no enabled utility in the
+/// map has no rule: `$enable-grid-system: false` empties the grid utilities,
+/// and `$utilities-overrides` removes any. A key named twice has one.
+@mixin emit-utilities-safelist($utilities, $keys, $breakpoints, $container: true) {
+  $listed: ();
+
+  @each $key in $keys {
+    $utility: map.get($utilities, $key);
+
+    @if meta.type-of($utility) == "map" and map.get($utility, enabled) != false and not list.index($listed, $key) {
+      $listed: list.append($listed, $key);
+      $viewport: map.get($utility, responsive) == true;
+      $contained: $container and map.get($utility, container) == true;
+      $names: tailwind-utility-names($utility);
+
+      @if list.length($names) > 0 {
+        @source inline("#{breakpoint-source-group($breakpoints, $viewport, $contained)}#{names-source-group($names)}");
+      }
+    }
+  }
+}
+
+/// Emits `@source inline(...)` for the placement classes of `.grid`, the ones
+/// `make-cssgrid()` generates in the native build and Tailwind core in this
+/// entry: the spans, the start lines and the end lines of `$columns` and of
+/// `$rows` with their `auto` resets, at every breakpoint prefix, and at every
+/// container-query prefix when `$container` is true
+/// (`$enable-container-queries`). An axis with no track has no rule.
+@mixin emit-grid-safelist($columns, $rows, $breakpoints, $container: true) {
+  $group: breakpoint-source-group($breakpoints, true, $container);
+
+  @if $columns > 0 {
+    @source inline("#{$group}col-span-{1..#{$columns}}");
+    @source inline("#{$group}col-start-{1..#{$columns}}");
+    @source inline("#{$group}col-end-{1..#{$columns + 1}}");
+    @source inline("#{$group}{col-span-full,col-auto,col-start-auto,col-end-auto}");
+  }
+
+  @if $rows > 0 {
+    @source inline("#{$group}row-span-{1..#{$rows}}");
+    @source inline("#{$group}row-start-{1..#{$rows}}");
+    @source inline("#{$group}row-end-{1..#{$rows + 1}}");
+    @source inline("#{$group}{row-auto,row-start-auto,row-end-auto}");
   }
 }

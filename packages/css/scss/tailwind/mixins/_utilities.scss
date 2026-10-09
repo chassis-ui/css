@@ -141,13 +141,8 @@
 // generated `dist/tailwind/merge.js` config exposes for tailwind-merge's
 // `extendTailwindMerge`. Not part of the public Tailwind entry point.
 //
-// Reuses `api.utility-class-name()` and `api.utility-values-map()` so listed
-// names can't drift from what `generate-tailwind-utility` above actually
-// emits, but duplicates its (small) dotted-compound split, which is not
-// exposed as a standalone function — keep the two in sync by hand if it
-// changes. Attribute-selector utilities (`selector: attr-starts` /
-// `attr-includes`, e.g. `ratio-*`) have no enumerable per-value class name
-// and are skipped.
+// The names are the ones of `tailwind-utility-names()` below, so they can't
+// drift from what `generate-tailwind-utility` above emits.
 //
 // Known imprecision, accepted by design (group = utility map key, not the
 // underlying CSS property): a handful of Chassis utilities split one
@@ -171,29 +166,38 @@ $-merge-groups: (
 @mixin generate-tailwind-merge-manifest($utilities) {
   @each $key, $utility in $utilities {
     @if meta.type-of($utility) == "map" and map.get($utility, enabled) != false {
-      $selector-type: "class";
-      @if map.has-key($utility, selector) {
-        $selector-type: map.get($utility, selector);
-      }
-
-      @if $selector-type == "class" {
-        $values: api.utility-values-map(map.get($utility, values));
-
-        @each $value-key, $value in $values {
-          @if $value != null {
-            $class-name: api.utility-class-name($utility, $value-key);
-            $utility-name: $class-name;
-            $dot-index: string.index($class-name, ".");
-            @if $dot-index {
-              $utility-name: string.slice($class-name, $dot-index + 1);
-            }
-
-            /* MERGE|#{map.get($-merge-groups, $key) or $key}|#{$utility-name} */
-          }
-        }
+      @each $utility-name in tailwind-utility-names($utility) {
+        /* MERGE|#{map.get($-merge-groups, $key) or $key}|#{$utility-name} */
       }
     }
   }
+}
+
+// The names of the `@utility` rules that `generate-tailwind-utility` writes
+// for `$utility`, one per value that is not null, in the order of the values.
+// Reuses `api.utility-class-name()` and `api.utility-values-map()`, but
+// duplicates the emitter's (small) dotted-compound split, which needs the
+// companion class too: keep the two in sync by hand if it changes.
+// An attribute-selector utility (`selector: attr-starts` / `attr-includes`,
+// e.g. `ratio-*`) has no enumerable per-value class name, and no name here.
+@function tailwind-utility-names($utility) {
+  $names: ();
+
+  @if not map.has-key($utility, selector) or map.get($utility, selector) == "class" {
+    @each $key, $value in api.utility-values-map(map.get($utility, values)) {
+      @if $value != null {
+        $name: api.utility-class-name($utility, $key);
+        $dot-index: string.index($name, ".");
+        @if $dot-index {
+          $name: string.slice($name, $dot-index + 1);
+        }
+
+        $names: list.append($names, $name, comma);
+      }
+    }
+  }
+
+  @return $names;
 }
 
 // Emits the declaration body for one utility + value, wrapped in the

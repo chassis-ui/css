@@ -565,7 +565,8 @@ describe('the separate modules', () => {
       'reboot.css': 'Tailwind Reboot',
       'components.css': 'Tailwind Components',
       'utilities.css': 'Tailwind Utilities',
-      'bridge.css': 'Tailwind Token Bridge'
+      'bridge.css': 'Tailwind Token Bridge',
+      'safelist.css': 'Tailwind Safelist'
     }
     for (const [file, name] of Object.entries(banners)) {
       const css = readFileSync(path.join(root, 'dist/tailwind', file), 'utf8')

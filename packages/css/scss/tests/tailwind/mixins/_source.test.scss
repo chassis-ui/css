@@ -29,6 +29,40 @@ $custom-bp: (xs: 0, sm: 36rem, md: 48rem, lg: 64rem, "3xl": 120rem);
       "{,sm:}"
     );
   }
+
+  @include it("adds the container-query prefixes after the viewport ones") {
+    @include assert-equal(
+      breakpoint-source-group($custom-bp, $container: true),
+      "{,sm:,md:,lg:,3xl:,@sm:,@md:,@lg:,@3xl:}"
+    );
+  }
+
+  @include it("leaves the viewport prefixes out with $viewport: false") {
+    @include assert-equal(
+      breakpoint-source-group($custom-bp, $viewport: false, $container: true),
+      "{,@sm:,@md:,@lg:,@3xl:}"
+    );
+  }
+
+  @include it("returns no group when there is no prefix to add") {
+    @include assert-equal(breakpoint-source-group((xs: 0)), "");
+    @include assert-equal(breakpoint-source-group($bp, $viewport: false), "");
+  }
+}
+
+// ─── names-source-group ──────────────────────────────────────────────────────
+
+@include describe("names-source-group") {
+  @include it("builds the brace group of several names") {
+    @include assert-equal(
+      names-source-group(("d-flex", "d-none", "w-6/12", "-m-md")),
+      "{d-flex,d-none,w-6/12,-m-md}"
+    );
+  }
+
+  @include it("returns a single name as it is") {
+    @include assert-equal(names-source-group(("flex-fill",)), "flex-fill");
+  }
 }
 
 // ─── emit-source-config ──────────────────────────────────────────────────────
@@ -88,6 +122,145 @@ $custom-bp: (xs: 0, sm: 36rem, md: 48rem, lg: 64rem, "3xl": 120rem);
       @include expect() {
         @source inline("d-none"); /* reason one */
         @source inline("d-flex"); /* reason two */
+      }
+    }
+  }
+}
+
+// ─── emit-utilities-safelist ─────────────────────────────────────────────────
+
+$safelist-utilities: (
+  "display": (
+    responsive: true,
+    container: true,
+    print: true,
+    property: display,
+    class: d,
+    values: flex none
+  ),
+  "margin": (
+    responsive: true,
+    property: margin,
+    class: m,
+    values: (md: 1rem, auto: auto, none: null)
+  ),
+  "order": (
+    container: true,
+    property: order,
+    values: (first: -1)
+  ),
+  "divide-x": (
+    responsive: true,
+    property: border-inline-start-width,
+    class: divide-x,
+    values: (null: 1px, 0: 0)
+  ),
+  "font-size": (
+    responsive: true,
+    property: font-size,
+    class: "font-display.font",
+    values: (xl: 2rem)
+  ),
+  "ratio": (
+    responsive: true,
+    selector: "attr-includes",
+    property: aspect-ratio,
+    class: ratio,
+    values: (null: 1)
+  ),
+  "float": (
+    responsive: true,
+    enabled: false,
+    property: float,
+    values: left right
+  ),
+  "opacity": (
+    property: opacity,
+    values: (50: .5)
+  )
+);
+
+@include describe("emit-utilities-safelist") {
+  @include it("lists the classes of the utilities of $keys, in its order, at the prefixes the native build generates them at") {
+    @include assert() {
+      @include output() {
+        @include emit-utilities-safelist(
+          $safelist-utilities,
+          ("margin", "display", "order", "divide-x", "font-size", "opacity"),
+          $bp
+        );
+      }
+
+      @include expect() {
+        @source inline("{,sm:,md:,lg:,xl:,2xl:}{m-md,m-auto}");
+        @source inline("{,sm:,md:,lg:,xl:,2xl:,@sm:,@md:,@lg:,@xl:,@2xl:}{d-flex,d-none}");
+        @source inline("{,@sm:,@md:,@lg:,@xl:,@2xl:}order-first");
+        @source inline("{,sm:,md:,lg:,xl:,2xl:}{divide-x,divide-x-0}");
+        @source inline("{,sm:,md:,lg:,xl:,2xl:}font-xl");
+        @source inline("opacity-50");
+      }
+    }
+  }
+
+  @include it("leaves the container-query prefixes out with $container: false") {
+    @include assert() {
+      @include output() {
+        @include emit-utilities-safelist($safelist-utilities, ("display", "order"), $custom-bp, $container: false);
+      }
+
+      @include expect() {
+        @source inline("{,sm:,md:,lg:,3xl:}{d-flex,d-none}");
+        @source inline("order-first");
+      }
+    }
+  }
+
+  @include it("has no rule for a key with no utility, a disabled utility or one with no class name, and one for a key named twice") {
+    @include assert() {
+      @include output() {
+        @include emit-utilities-safelist($safelist-utilities, ("gap", "float", "ratio", "display", "display"), (xs: 0, md: 48rem));
+      }
+
+      @include expect() {
+        @source inline("{,md:,@md:}{d-flex,d-none}");
+      }
+    }
+  }
+}
+
+// ─── emit-grid-safelist ──────────────────────────────────────────────────────
+
+@include describe("emit-grid-safelist") {
+  @include it("lists the spans, the lines and the auto resets of both axes, the end lines one past the tracks") {
+    @include assert() {
+      @include output() {
+        @include emit-grid-safelist(12, 6, (xs: 0, md: 48rem));
+      }
+
+      @include expect() {
+        @source inline("{,md:,@md:}col-span-{1..12}");
+        @source inline("{,md:,@md:}col-start-{1..12}");
+        @source inline("{,md:,@md:}col-end-{1..13}");
+        @source inline("{,md:,@md:}{col-span-full,col-auto,col-start-auto,col-end-auto}");
+        @source inline("{,md:,@md:}row-span-{1..6}");
+        @source inline("{,md:,@md:}row-start-{1..6}");
+        @source inline("{,md:,@md:}row-end-{1..7}");
+        @source inline("{,md:,@md:}{row-auto,row-start-auto,row-end-auto}");
+      }
+    }
+  }
+
+  @include it("follows the track counts, with no rule for an axis that has none") {
+    @include assert() {
+      @include output() {
+        @include emit-grid-safelist(16, 0, (xs: 0, md: 48rem), $container: false);
+      }
+
+      @include expect() {
+        @source inline("{,md:}col-span-{1..16}");
+        @source inline("{,md:}col-start-{1..16}");
+        @source inline("{,md:}col-end-{1..17}");
+        @source inline("{,md:}{col-span-full,col-auto,col-start-auto,col-end-auto}");
       }
     }
   }

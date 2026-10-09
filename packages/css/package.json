@@ -70,7 +70,7 @@
     "css:tailwind:update-clashes": "node build/tailwind/update-source-exclusions.mjs",
     "css:tailwind:update-clash-policy": "node build/tailwind/update-clash-policy.mjs",
     "css:test": "jasmine --config=scss/tests/jasmine.cjs",
-    "css:test:tailwind": "node --test scss/tests/tailwind/test-build.mjs scss/tests/tailwind/test-merge.mjs scss/tests/tailwind/test-bridge.mjs scss/tests/tailwind/test-postcss.mjs scss/tests/tailwind/test-consumer.mjs",
+    "css:test:tailwind": "node --test scss/tests/tailwind/test-build.mjs scss/tests/tailwind/test-merge.mjs scss/tests/tailwind/test-bridge.mjs scss/tests/tailwind/test-postcss.mjs scss/tests/tailwind/test-consumer.mjs scss/tests/tailwind/test-safelist.mjs",
     "js": "pnpm js:compile && pnpm js:emit-types && pnpm js:minify",
     "js:compile": "run-p js:compile:standalone js:compile:bundle js:compile:plugins",
     "js:compile:standalone": "rolldown --environment BUNDLE:false --config build/rolldown.config.js --sourcemap",

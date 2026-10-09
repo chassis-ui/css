@@ -1,0 +1,15 @@
+//
+// Consumer fixture — the project of `./styles.scss` with the opt-in safelist
+//
+// What a project whose class names are built at runtime adds to its
+// stylesheet: the safelist after the entry, with the key of one more utility
+// its own components build. The safelist reads the settings `./styles.scss`
+// configured, so its prefixes are the brand's breakpoints.
+//
+
+@use "./styles"; // check-imports-disable-line (loaded for its CSS output)
+@use "../../../tailwind/safelist" with (
+  $safelist-utilities-extra: (
+    "padding"
+  )
+);

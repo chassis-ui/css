@@ -1,0 +1,67 @@
+//
+// Chassis CSS — Tailwind Safelist (opt-in)
+//
+// `@source inline(...)` rules for the responsive layout classes, and nothing
+// else: the placement classes of `.grid`, which Tailwind core generates in
+// this entry, and the utilities of `$safelist-utilities`, the ones a
+// component maps a layout prop to (tracks, gaps, direction, wrap, alignment,
+// width). Each is listed at the prefixes the native build generates it at, so
+// Tailwind generates it whether or not its scanner finds the class in a
+// source file.
+//
+// For a project whose class names are built at runtime (`col-span-${n}`, the
+// responsive props of `@chassis-ui/react`), which the scanner cannot see. Not
+// part of the default `@chassis-ui/css/tailwind` entry point, which generates
+// a class only where a project writes it: opt in by loading this file after
+// it. See the Tailwind docs guide's "Runtime class names" section.
+//
+// Not every utility with `responsive: true`: the margins, the paddings, the
+// display classes and the rest are three quarters of that set, and no
+// component builds their names. A project that writes them gets them on
+// demand, and one that builds them at runtime adds their keys with
+// `$safelist-utilities-extra`.
+//
+// Unlike `./_source-safelist.scss`, the hand-maintained list of the classes
+// the plugins toggle, which `./theme.scss` always emits, the rules are
+// generated from `$utilities`, `$breakpoints`, `$grid-columns` and
+// `$grid-rows`, and follow `$enable-grid-system` and
+// `$enable-container-queries` as the native build does.
+//
+
+@use "sass:list";
+@use "../config" as *;
+@use "../utilities" as *;
+@use "./mixins" as *;
+
+// The keys of `$utilities` whose classes are listed. A project adds keys with
+// `$safelist-utilities-extra`, and sets this one only to list fewer.
+$safelist-utilities: (
+  "grid-column-counts",
+  "grid-row-counts",
+  "grid-flow",
+  "gap",
+  "row-gap",
+  "column-gap",
+  "flex-direction",
+  "flex-wrap",
+  "flex-fill",
+  "justify-content",
+  "align-items",
+  "align-content",
+  "width-fraction"
+) !default;
+
+// The keys a project adds to the list, without naming the ones above again:
+// `@use "…/tailwind/safelist" with ($safelist-utilities-extra: ("padding"))`.
+$safelist-utilities-extra: () !default;
+
+@if $enable-grid-system {
+  @include emit-grid-safelist($grid-columns, $grid-rows, $breakpoints, $enable-container-queries);
+}
+
+@include emit-utilities-safelist(
+  $utilities,
+  list.join($safelist-utilities, $safelist-utilities-extra, comma),
+  $breakpoints,
+  $enable-container-queries
+);
