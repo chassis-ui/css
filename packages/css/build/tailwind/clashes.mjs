@@ -59,7 +59,13 @@ export const TAILWIND_UTILITIES_PROBE = '@layer utilities { @tailwind utilities;
 
 // Matches one class-selector token after a `.`: CSS identifier escapes
 // (`\XX ` hex form, or `\X` single-char form) or plain ident characters.
-const CLASS_TOKEN_RE = /\.((?:\\[0-9a-fA-F]{1,6}\s?|\\.|[a-zA-Z0-9_-])+)/g
+// The text is not parsed, so a `.` of a value or a URL matches too
+// (`chassis-ui.com` gives `com`); such a name is no utility of Tailwind and
+// costs a probe. A token that starts with a digit is left out: a class cannot
+// (`.2xl\:w-100` is written `.\32 xl\:w-100`), so it is the fraction of a
+// number, `.25rem` or the `.7.2` of the version in the banner, which changed
+// the candidates with every release.
+const CLASS_TOKEN_RE = /\.(?![0-9])((?:\\[0-9a-fA-F]{1,6}\s?|\\.|[a-zA-Z0-9_-])+)/g
 
 function unescapeCssIdent(token) {
   return token.replace(/\\([0-9a-fA-F]{1,6})\s?|\\(.)/g, (_match, hex, char) => {
@@ -68,7 +74,7 @@ function unescapeCssIdent(token) {
   })
 }
 
-function extractClassNames(css) {
+export function extractClassNames(css) {
   const found = new Set()
   let match
   while ((match = CLASS_TOKEN_RE.exec(css))) {
