@@ -84,8 +84,8 @@
     "docs:links:offline": "node build/check-links.mjs --offline",
     "changeset": "changeset",
     "changeset:version": "changeset version && node build/sync-version-refs.js",
-    "sync-submodules": "pnpm --filter chassis-css-site exec chassis-docs sync-submodules",
-    "vendor": "pnpm --filter chassis-css-site exec chassis-docs vendor"
+    "sync-submodules": "pnpm --filter chassis-css-site exec chassis-docs sync-submodules --subset latin --subset latin-ext --subset symbols2 --subset U+2190-2193 --split",
+    "vendor": "pnpm --filter chassis-css-site exec chassis-docs vendor --subset latin --subset latin-ext --subset symbols2 --subset U+2190-2193 --split"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
