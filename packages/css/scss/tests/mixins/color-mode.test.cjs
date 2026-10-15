@@ -168,9 +168,9 @@ describe('the form icons of the root', () => {
 
   // The fill of the caret of a select, in the default tokens
   const LIGHT_CARET =
-    "--form-caret: url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23161a1b'"
+    "--form-caret: url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23191b1c'"
   const DARK_CARET =
-    "--form-caret: url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23e9eced'"
+    "--form-caret: url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23ebedee'"
 
   it('takes the dark icons under the system preference, unless the root has the light theme', () => {
     const css = root()

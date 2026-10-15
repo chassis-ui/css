@@ -734,7 +734,6 @@ export const classGroups = {
   "font-family": [
     "font-code",
     "font-display",
-    "font-html",
     "font-icon",
     "font-text"
   ],
