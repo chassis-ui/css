@@ -713,7 +713,20 @@ export const classGroups = {
     "font-normal",
     "font-strong"
   ],
-  "font-display-size": [
+  "font-display-weight": [
+    "font-elegant",
+    "font-mass",
+    "font-normal",
+    "font-strong"
+  ],
+  "font-family": [
+    "font-code",
+    "font-display",
+    "font-icon",
+    "font-prose",
+    "font-ui"
+  ],
+  "font-prose-size": [
     "font-2xl",
     "font-2xs",
     "font-3xl",
@@ -725,17 +738,11 @@ export const classGroups = {
     "font-xl",
     "font-xs"
   ],
-  "font-display-weight": [
+  "font-prose-weight": [
     "font-elegant",
     "font-mass",
     "font-normal",
     "font-strong"
-  ],
-  "font-family": [
-    "font-code",
-    "font-display",
-    "font-icon",
-    "font-text"
   ],
   "font-size": [
     "font-2xl",

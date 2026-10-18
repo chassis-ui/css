@@ -70,7 +70,7 @@ function assertWrapped(built, atRuleHeader, selectorFragment) {
   assert.match(built, re, `expected ${selectorFragment} inside ${atRuleHeader} { ... }`)
 }
 
-// Like findAllRules, but excludes compound matches (`.lg\:font-xl.font-display`
+// Like findAllRules, but excludes compound matches (`.lg\:font-xl.font-prose`
 // would otherwise also match a `findAllRules(built, 'lg:font-xl')` search,
 // since dotted-compound suffixes fall inside its `[^\n{]*` prefix span) --
 // use this where a compound sibling rule could shadow the exact class's own
@@ -280,9 +280,9 @@ describe('tailwind fixture build', () => {
   test("a dotted-compound utility merges into the base name's @utility (fact 5)", () => {
     const rules = findAllRules(built, 'font-5xl')
     assert.ok(rules.some((body) => /font-size:\s*var\(--cx-font-size-5xl\)/.test(body)))
-    const compound = findAllRules(built, 'font-5xl.font-display')
+    const compound = findAllRules(built, 'font-5xl.font-prose')
     assert.ok(compound.length > 0)
-    assert.match(compound[0], /font-size:\s*var\(--cx-font-size-display-5xl\)/)
+    assert.match(compound[0], /font-size:\s*var\(--cx-font-size-prose-5xl\)/)
   })
 
   test('component/reboot names excluded from Tailwind core have no core declarations (Phase 4)', () => {

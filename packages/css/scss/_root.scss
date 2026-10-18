@@ -55,7 +55,11 @@
   @each $name, $value in $font-families {
     --font-family-#{$name}: #{meta.inspect($value)};
   }
-  --font-family-html-heading: #{meta.inspect($font-family-html-heading)};
+  @each $name, $value in $context-font-families {
+    --font-family-#{$name}: #{meta.inspect($value)};
+  }
+  // deprecated in 0.10, removed in the next breaking minor
+  --font-family-text: var(--font-family-ui);
   @each $name, $value in $typography {
     @include clamp($value, --#{$name});
   }

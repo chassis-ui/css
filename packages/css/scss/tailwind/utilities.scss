@@ -18,3 +18,8 @@
 @use "./clash-policy" as clash-policy;
 
 @include generate-tailwind-utilities($utilities, clash-policy.$important-properties);
+
+// deprecated in 0.10, removed in the next breaking minor: `font-ui`
+@utility font-text {
+  font-family: var(--font-family-ui);
+}

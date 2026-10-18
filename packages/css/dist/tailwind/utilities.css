@@ -2754,8 +2754,11 @@
 @utility spinner-3xs {
   --cx-spinner-size: 0.5rem;
 }
-@utility font-text {
-  font-family: var(--cx-font-family-text);
+@utility font-ui {
+  font-family: var(--cx-font-family-ui);
+}
+@utility font-prose {
+  font-family: var(--cx-font-family-prose);
 }
 @utility font-display {
   font-family: var(--cx-font-family-display);
@@ -2767,16 +2770,16 @@
   font-family: var(--cx-font-family-icon);
 }
 @utility font-normal {
-  font-weight: var(--cx-font-weight-text-normal);
+  font-weight: var(--cx-font-weight-ui-normal);
 }
 @utility font-strong {
-  font-weight: var(--cx-font-weight-text-strong);
+  font-weight: var(--cx-font-weight-ui-strong);
 }
 @utility font-mass {
-  font-weight: var(--cx-font-weight-text-mass);
+  font-weight: var(--cx-font-weight-ui-mass);
 }
 @utility font-elegant {
-  font-weight: var(--cx-font-weight-text-elegant);
+  font-weight: var(--cx-font-weight-ui-elegant);
 }
 @utility font-5xl {
   font-size: var(--cx-font-size-5xl);
@@ -2819,63 +2822,83 @@
   line-height: var(--cx-line-height-2xs);
 }
 @utility font-5xl {
-  &.font-display {
-    font-size: var(--cx-font-size-display-5xl);
-    line-height: var(--cx-line-height-display-5xl);
+  &.font-prose {
+    font-size: var(--cx-font-size-prose-5xl);
+    line-height: var(--cx-line-height-prose-5xl);
   }
 }
 @utility font-4xl {
-  &.font-display {
-    font-size: var(--cx-font-size-display-4xl);
-    line-height: var(--cx-line-height-display-4xl);
+  &.font-prose {
+    font-size: var(--cx-font-size-prose-4xl);
+    line-height: var(--cx-line-height-prose-4xl);
   }
 }
 @utility font-3xl {
-  &.font-display {
-    font-size: var(--cx-font-size-display-3xl);
-    line-height: var(--cx-line-height-display-3xl);
+  &.font-prose {
+    font-size: var(--cx-font-size-prose-3xl);
+    line-height: var(--cx-line-height-prose-3xl);
   }
 }
 @utility font-2xl {
-  &.font-display {
-    font-size: var(--cx-font-size-display-2xl);
-    line-height: var(--cx-line-height-display-2xl);
+  &.font-prose {
+    font-size: var(--cx-font-size-prose-2xl);
+    line-height: var(--cx-line-height-prose-2xl);
   }
 }
 @utility font-xl {
-  &.font-display {
-    font-size: var(--cx-font-size-display-xl);
-    line-height: var(--cx-line-height-display-xl);
+  &.font-prose {
+    font-size: var(--cx-font-size-prose-xl);
+    line-height: var(--cx-line-height-prose-xl);
   }
 }
 @utility font-lg {
-  &.font-display {
-    font-size: var(--cx-font-size-display-lg);
-    line-height: var(--cx-line-height-display-lg);
+  &.font-prose {
+    font-size: var(--cx-font-size-prose-lg);
+    line-height: var(--cx-line-height-prose-lg);
   }
 }
 @utility font-md {
-  &.font-display {
-    font-size: var(--cx-font-size-display-md);
-    line-height: var(--cx-line-height-display-md);
+  &.font-prose {
+    font-size: var(--cx-font-size-prose-md);
+    line-height: var(--cx-line-height-prose-md);
   }
 }
 @utility font-sm {
-  &.font-display {
-    font-size: var(--cx-font-size-display-sm);
-    line-height: var(--cx-line-height-display-sm);
+  &.font-prose {
+    font-size: var(--cx-font-size-prose-sm);
+    line-height: var(--cx-line-height-prose-sm);
   }
 }
 @utility font-xs {
-  &.font-display {
-    font-size: var(--cx-font-size-display-xs);
-    line-height: var(--cx-line-height-display-xs);
+  &.font-prose {
+    font-size: var(--cx-font-size-prose-xs);
+    line-height: var(--cx-line-height-prose-xs);
   }
 }
 @utility font-2xs {
-  &.font-display {
-    font-size: var(--cx-font-size-display-2xs);
-    line-height: var(--cx-line-height-display-2xs);
+  &.font-prose {
+    font-size: var(--cx-font-size-prose-2xs);
+    line-height: var(--cx-line-height-prose-2xs);
+  }
+}
+@utility font-normal {
+  &.font-prose {
+    font-weight: var(--cx-font-weight-prose-normal);
+  }
+}
+@utility font-strong {
+  &.font-prose {
+    font-weight: var(--cx-font-weight-prose-strong);
+  }
+}
+@utility font-mass {
+  &.font-prose {
+    font-weight: var(--cx-font-weight-prose-mass);
+  }
+}
+@utility font-elegant {
+  &.font-prose {
+    font-weight: var(--cx-font-weight-prose-elegant);
   }
 }
 @utility font-normal {
@@ -5146,6 +5169,9 @@
 }
 @utility shadow-white {
   --cx-shadow-color: oklch(from var(--cx-white) l c h / 0.2);
+}
+@utility font-text {
+  font-family: var(--cx-font-family-ui);
 }
 :root {
   --chassis-prefix: cx-;

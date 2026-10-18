@@ -157,7 +157,7 @@ describe('dist/tailwind/merge.js', () => {
   })
 
   test('a dotted-compound utility is grouped under its own key by its base class name', () => {
-    assert.ok(classGroups['font-display-size']?.includes('font-5xl'))
+    assert.ok(classGroups['font-prose-size']?.includes('font-5xl'))
   })
 
   test('disabled utility entries produce no group', () => {

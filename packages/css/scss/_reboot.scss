@@ -96,53 +96,59 @@
 
   %heading {
     margin-block: 0 $heading-margin-bottom;
-    font-family: var(--heading-font-family, #{$heading-font-family});
+    font-family: $heading-font-family;
     font-style: $heading-font-style;
-    font-weight: var(--heading-font-weight, #{$heading-font-weight});
+    font-weight: $heading-font-weight;
     color: $heading-color;
     //@include font();
   }
 
   h1,
-  .h1 {
+  .font-h1,
+  .h1 { // `.h1`: deprecated in 0.10, removed in the next breaking minor
     @extend %heading;
-    @include clamp(var(--h1-font-size, $h1-font-size), font-size);
-    @include clamp(var(--h1-line-height, $h1-line-height), line-height);
+    @include clamp($h1-font-size, font-size);
+    @include clamp($h1-line-height, line-height);
   }
 
   h2,
-  .h2 {
+  .font-h2,
+  .h2 { // `.h2`: deprecated in 0.10, removed in the next breaking minor
     @extend %heading;
-    @include clamp(var(--h2-font-size, $h2-font-size), font-size);
-    @include clamp(var(--h2-line-height, $h2-line-height), line-height);
+    @include clamp($h2-font-size, font-size);
+    @include clamp($h2-line-height, line-height);
   }
 
   h3,
-  .h3 {
+  .font-h3,
+  .h3 { // `.h3`: deprecated in 0.10, removed in the next breaking minor
     @extend %heading;
-    @include clamp(var(--h3-font-size, $h3-font-size), font-size);
-    @include clamp(var(--h3-line-height, $h3-line-height), line-height);
+    @include clamp($h3-font-size, font-size);
+    @include clamp($h3-line-height, line-height);
   }
 
   h4,
-  .h4 {
+  .font-h4,
+  .h4 { // `.h4`: deprecated in 0.10, removed in the next breaking minor
     @extend %heading;
-    @include clamp(var(--h4-font-size, $h4-font-size), font-size);
-    @include clamp(var(--h4-line-height, $h4-line-height), line-height);
+    @include clamp($h4-font-size, font-size);
+    @include clamp($h4-line-height, line-height);
   }
 
   h5,
-  .h5 {
+  .font-h5,
+  .h5 { // `.h5`: deprecated in 0.10, removed in the next breaking minor
     @extend %heading;
-    @include clamp(var(--h5-font-size, $h5-font-size), font-size);
-    @include clamp(var(--h5-line-height, $h5-line-height), line-height);
+    @include clamp($h5-font-size, font-size);
+    @include clamp($h5-line-height, line-height);
   }
 
   h6,
-  .h6 {
+  .font-h6,
+  .h6 { // `.h6`: deprecated in 0.10, removed in the next breaking minor
     @extend %heading;
-    @include clamp(var(--h6-font-size, $h6-font-size), font-size);
-    @include clamp(var(--h6-line-height, $h6-line-height), line-height);
+    @include clamp($h6-font-size, font-size);
+    @include clamp($h6-line-height, line-height);
   }
 
 

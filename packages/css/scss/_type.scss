@@ -10,8 +10,9 @@
 //
 // Typography
 //
-// Class-based counterparts for native heading elements (.h1–.h6), display sizes,
-// lead text, blockquote, and helper classes for lists and inline text styles.
+// The classes of the text roles (`.font-lead`, `.font-title-lg`…; the heading
+// roles are in `_reboot.scss`), blockquote, and helper classes for lists and
+// inline text styles.
 //
 
 @layer content {
@@ -36,8 +37,8 @@
     }
   }
 
-  // Context font classes
-  @each $name, $value in $context-fonts {
+  // Context font classes; reboot styles the heading roles with `h1`–`h6`
+  @each $name, $value in map.remove($context-fonts, "h1", "h2", "h3", "h4", "h5", "h6") {
     .font-#{$name} {
       // preserve the original scale ratio
       $-scale: $clamp-font-size-scale;

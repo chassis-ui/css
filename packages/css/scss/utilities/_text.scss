@@ -21,12 +21,12 @@ $-font-size-values: () !default;
   );
 }
 
-// Build font-size + line-height values map from $display-font-sizes.
-$-display-font-size-values: () !default;
-@each $name, $value in $display-font-sizes {
-  $-display-font-size-values: map.merge(
-    $-display-font-size-values,
-    ($name: ("font-size": var(--font-size-display-#{$name}), "line-height": var(--line-height-display-#{$name})))
+// Build font-size + line-height values map from $prose-font-sizes.
+$-prose-font-size-values: () !default;
+@each $name, $value in $prose-font-sizes {
+  $-prose-font-size-values: map.merge(
+    $-prose-font-size-values,
+    ($name: ("font-size": var(--font-size-prose-#{$name}), "line-height": var(--line-height-prose-#{$name})))
   );
 }
 
@@ -65,13 +65,18 @@ $utilities: (
   ),
   // scss-docs-end utils-font-size
   // scss-docs-start utils-font-display
-  "font-display-size": (
+  "font-prose-size": (
     property: (
       "font-size": null,
       "line-height": null
     ),
-    class: "font-display.font",
-    values: $-display-font-size-values
+    class: "font-prose.font",
+    values: $-prose-font-size-values
+  ),
+  "font-prose-weight": (
+    property: font-weight,
+    class: "font-prose.font",
+    values: map-loop($prose-font-weights, varify, "$key", "font-weight-prose")
   ),
   "font-display-weight": (
     property: font-weight,

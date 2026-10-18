@@ -56,7 +56,7 @@ function expand(pattern) {
 // The class names in the selectors of `css`, unescaped (`.\32 xl\:w-6\/12` is
 // `2xl:w-6/12`), that `filter` keeps, with the layer of each rule. Of a
 // compound selector only the first class counts: the next one is the
-// companion of a compound utility (`.font-5xl.font-display`), not a class the
+// companion of a compound utility (`.font-5xl.font-prose`), not a class the
 // rule generates.
 function classNames(css, filter) {
   const names = new Set()

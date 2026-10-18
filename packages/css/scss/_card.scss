@@ -1,10 +1,6 @@
 @use "sass:list";
-@use "sass:string";
-@use "sass:map";
 @use "./config" as *;
-@use "./maps" as *;
 @use "./mixins" as *;
-@use "./rfs" as *;
 @use "./placeholders" as *;
 
 //
@@ -34,23 +30,6 @@
   }
 }
 // scss-docs-end _card-exclude-strokes
-
-// Applies font properties from $context-fonts for a given font class name (e.g. "font-title").
-// Used to replace cross-module @extend which is not supported in the Sass module system.
-@mixin _context-font($class-name) {
-  $key: string.slice($class-name, 6); // strip "font-" prefix to get map key
-  $font: map.get($context-fonts, $key);
-  @if $font {
-    font-family: map.get($font, "font-family");
-    font-style: map.get($font, "font-style");
-    @include clamp(map.get($font, "font-size"), font-size);
-    @include clamp(map.get($font, "line-height"), line-height);
-    font-weight: map.get($font, "font-weight");
-    text-decoration: map.get($font, "text-decoration");
-    text-transform: map.get($font, "text-transform");
-    letter-spacing: map.get($font, "letter-spacing");
-  }
-}
 
 @layer components {
   .card {
