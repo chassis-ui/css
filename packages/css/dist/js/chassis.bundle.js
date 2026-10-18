@@ -1,5 +1,5 @@
 /*!
-* Chassis v0.8.0 (https://chassis-ui.com)
+* Chassis v0.9.0 (https://chassis-ui.com)
 * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
 * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
 */
@@ -506,7 +506,7 @@ var Config = class {
 /**
 * Constants
 */
-const VERSION = "0.8.0";
+const VERSION = "0.9.0";
 const disposedInstances = /* @__PURE__ */ new WeakSet();
 /**
 * Class definition

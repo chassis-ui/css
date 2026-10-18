@@ -1,5 +1,5 @@
 /*!
-* Chassis base-component.js v0.8.0 (https://chassis-ui.com)
+* Chassis base-component.js v0.9.0 (https://chassis-ui.com)
 * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
 * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
 */
@@ -17,7 +17,7 @@ import { executeAfterTransition, getElement } from "./util/index.js";
 /**
 * Constants
 */
-const VERSION = "0.8.0";
+const VERSION = "0.9.0";
 const disposedInstances = /* @__PURE__ */ new WeakSet();
 /**
 * Class definition
