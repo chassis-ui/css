@@ -46,15 +46,13 @@
       @if $name == jumbo or $name == hero {
         $clamp-font-size-scale: $clamp-hero-jumbo-scale !global;
       }
-      // apply the font properties from the map
-      font-family: map.get($value, "font-family");
-      font-style: map.get($value, "font-style");
-      @include clamp(map.get($value, "font-size"), font-size);
-      @include clamp(map.get($value, "line-height"), line-height);
-      font-weight: map.get($value, "font-weight");
-      text-decoration: map.get($value, "text-decoration");
-      text-transform: map.get($value, "text-transform");
-      letter-spacing: map.get($value, "letter-spacing");
+      // the role's size and line height, the family and weight of its group
+      $-group: map.get($context-font-groups, $name);
+      @include role-font(
+        $value,
+        $family: var(--font-family-#{$-group}),
+        $weight: var(--font-weight-#{$-group})
+      );
       // restore the original scale ratio
       $clamp-font-size-scale: $-scale !global;
     }

@@ -1,4 +1,5 @@
 @use "sass:map";
+@use "sass:meta";
 @use "../rfs" as *;
 
 //
@@ -183,3 +184,57 @@
   @include clamp($value, line-height);
 }
 // scss-docs-end line-height-mixin
+
+// scss-docs-start role-font-mixin
+/// Apply a text role (`.font-lead`, `h1`) from its font map: the family and
+/// weight, the size and line height through `clamp()`, and only the parts
+/// that differ from what the text has by default (`font-style` other than
+/// `normal`, `text-transform` and `text-decoration` other than `none`,
+/// `letter-spacing` other than zero).
+///
+/// @param {Map} $font-map - Font map of the role (`$font-lead`, an entry of `$context-fonts`)
+/// @param {*} $family [the map's] - `font-family`; the role group's property for a role (`var(--font-family-title)`), `null` for none
+/// @param {*} $weight [the map's] - `font-weight`; the role group's property for a role (`var(--font-weight-title)`), `null` for none
+/// @param {*} $size [the map's] - `font-size`, through `clamp()`
+/// @param {*} $line-height [the map's] - `line-height`, through `clamp()`
+@mixin role-font(
+  $font-map,
+  $family: map.get($font-map, "font-family"),
+  $weight: map.get($font-map, "font-weight"),
+  $size: map.get($font-map, "font-size"),
+  $line-height: map.get($font-map, "line-height")
+) {
+  $style: map.get($font-map, "font-style");
+  $transform: map.get($font-map, "text-transform");
+  $decoration: map.get($font-map, "text-decoration");
+  $spacing: map.get($font-map, "letter-spacing");
+
+  font-family: $family;
+  @if $style != normal {
+    font-style: $style;
+  }
+  @include clamp($size, font-size);
+  @include clamp($line-height, line-height);
+  font-weight: $weight;
+  @if $decoration != none {
+    text-decoration: $decoration;
+  }
+  @if $transform != none {
+    text-transform: $transform;
+  }
+  @if not -is-default-letter-spacing($spacing) {
+    letter-spacing: $spacing;
+  }
+}
+
+// `null`, `normal` and a zero of any unit (`0`, `0rem`) are the default
+@function -is-default-letter-spacing($value) {
+  @if $value == null or $value == normal {
+    @return true;
+  }
+  @if meta.type-of($value) == "number" {
+    @return $value == $value * 0;
+  }
+  @return false;
+}
+// scss-docs-end role-font-mixin

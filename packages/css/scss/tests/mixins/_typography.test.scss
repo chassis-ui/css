@@ -1,3 +1,4 @@
+@use "sass:map";
 // Import necessary files for the tests
 @use "../../rfs" as *;
 @use "../../mixins" as *;
@@ -198,6 +199,101 @@ $test-font-map: (
         }
         .test-line-height-rem {
           line-height: #{cx-clamp(4rem)};
+        }
+      }
+    }
+  }
+}
+@include describe("role-font mixin") {
+  @include it("leaves out the parts a role keeps at their defaults") {
+    @include assert() {
+      @include output() {
+        .test-role-font-defaults {
+          @include role-font($test-font-map);
+        }
+      }
+      @include expect() {
+        .test-role-font-defaults {
+          font-family: var(--font-family-test);
+          font-size: var(--font-size-test);
+          line-height: var(--line-height-test);
+          font-weight: var(--font-weight-test);
+        }
+      }
+    }
+  }
+  @include it("emits the parts a role sets, a letter spacing of any unit included") {
+    @include assert() {
+      @include output() {
+        .test-role-font-set {
+          @include role-font(map.merge($test-font-map, (
+            "font-style": italic,
+            "text-transform": uppercase,
+            "text-decoration": underline,
+            "letter-spacing": -.15625rem
+          )));
+        }
+        .test-role-font-zero-rem {
+          @include role-font(map.merge($test-font-map, ("letter-spacing": 0rem)));
+        }
+      }
+      @include expect() {
+        .test-role-font-set {
+          font-family: var(--font-family-test);
+          font-style: italic;
+          font-size: var(--font-size-test);
+          line-height: var(--line-height-test);
+          font-weight: var(--font-weight-test);
+          text-decoration: underline;
+          text-transform: uppercase;
+          letter-spacing: -.15625rem;
+        }
+        .test-role-font-zero-rem {
+          font-family: var(--font-family-test);
+          font-size: var(--font-size-test);
+          line-height: var(--line-height-test);
+          font-weight: var(--font-weight-test);
+        }
+      }
+    }
+  }
+  @include it("takes the family and weight of the role group, or none") {
+    @include assert() {
+      @include output() {
+        .test-role-font-group {
+          @include role-font($test-font-map, $family: var(--font-family-title), $weight: var(--font-weight-title));
+        }
+        .test-role-font-heading {
+          @include role-font($test-font-map, $family: null, $weight: null, $size: var(--font-size-h1));
+        }
+      }
+      @include expect() {
+        .test-role-font-group {
+          font-family: var(--font-family-title);
+          font-size: var(--font-size-test);
+          line-height: var(--line-height-test);
+          font-weight: var(--font-weight-title);
+        }
+        .test-role-font-heading {
+          font-size: var(--font-size-h1);
+          line-height: var(--line-height-test);
+        }
+      }
+    }
+  }
+  @include it("clamps a literal size, as jumbo and hero have") {
+    @include assert() {
+      @include output() {
+        .test-role-font-literal {
+          @include role-font(map.merge($test-font-map, ("font-size": 6rem, "line-height": 1.25em)));
+        }
+      }
+      @include expect() {
+        .test-role-font-literal {
+          font-family: var(--font-family-test);
+          font-size: #{cx-clamp(6rem)};
+          line-height: 1.25em;
+          font-weight: var(--font-weight-test);
         }
       }
     }
