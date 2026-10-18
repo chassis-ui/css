@@ -726,10 +726,11 @@
   --cx-info-link-visited: light-dark(oklch(47.15% 0.144 262.48deg), oklch(67.72% 0.136 263.47deg));
   --cx-black-link-visited: light-dark(oklab(0% 0 0 / 0.6), oklab(0% 0 0 / 0.6));
   --cx-white-link-visited: light-dark(oklab(100% 0 0 / 0.6), oklab(100% 0 0 / 0.6));
-  --cx-font-family-text: Inter, system-ui, -apple-system, Helvetica, Arial, sans-serif;
-  --cx-font-family-display: "Archivo Narrow", Georgia, "Times New Roman", Times, serif;
-  --cx-font-family-code: Fira Code, Menlo, Monaco, Consolas, "Courier New", monospace;
+  --cx-font-family-text: "Inter", system-ui, -apple-system, Helvetica, Arial, sans-serif;
+  --cx-font-family-display: "Montserrat", system-ui, -apple-system, Helvetica, Arial, sans-serif;
+  --cx-font-family-code: "Fira Code", Menlo, Monaco, Consolas, "Courier New", monospace;
   --cx-font-family-icon: Chassis-Icons;
+  --cx-font-family-html-heading: "Montserrat", system-ui, -apple-system, Helvetica, Arial, sans-serif;
   --cx-font-size-text-5xl: clamp(2.269rem, 2.08rem + 0.837vw, 2.75rem);
   --cx-font-size-text-4xl: clamp(1.959rem, 1.797rem + 0.723vw, 2.375rem);
   --cx-font-size-text-3xl: clamp(1.65rem, 1.513rem + 0.609vw, 2rem);
@@ -1637,7 +1638,6 @@
   .chip:focus-visible, .button:focus-visible, .button-check.chip:has(> input:focus-visible), .button-check.button:has(> input:focus-visible) {
     --cx-focus-ring-color: var(--cx-button-focus-ring-color, light-dark(oklch(from var(--cx-cue-color) l c h / var(--cx-focus-ring-light-opacity)), oklch(from var(--cx-cue-color) l c h / var(--cx-focus-ring-dark-opacity))));
     --cx-focus-ring-offset: 1px;
-    background-image: var(--cx-bg-gradient);
     outline: var(--cx-focus-ring-width) solid var(--cx-focus-ring-color);
     outline-offset: var(--cx-focus-ring-offset);
   }
@@ -1647,7 +1647,6 @@
     --cx-icon-color: var(--cx-button-press-icon-color, var(--cx-fg-press));
     --cx-border-color: var(--cx-button-press-border-color, var(--cx-border-press));
     --cx-box-shadow: var(--cx-button-active-box-shadow, none);
-    background-image: none;
   }
   .button-check.chip:has(> input:checked):focus-visible, .button-check.button:has(> input:checked):focus-visible, .chip:not(.button-check):active:focus-visible, .button:not(.button-check):active:focus-visible, .chip:first-child:active:focus-visible, .button:first-child:active:focus-visible, .active.chip:focus-visible, .active.button:focus-visible, .show.chip:focus-visible, .show.button:focus-visible {
     outline: var(--cx-focus-ring-width) solid var(--cx-focus-ring-color);
@@ -1665,7 +1664,6 @@
     --cx-icon-color: var(--cx-button-disabled-icon-color, var(--cx-fg-disabled));
     --cx-border-color: var(--cx-button-disabled-border-color, var(--cx-border-disabled));
     pointer-events: none;
-    background-image: none;
     opacity: 1;
   }
   .chip:visited, .button:visited {
@@ -2436,7 +2434,6 @@
     background-color: var(--cx-bg-color);
     border-radius: var(--cx-border-radius);
     border: var(--cx-border-width) var(--cx-border-style) var(--cx-border-color, transparent);
-    background-image: var(--cx-bg-gradient);
     transition: var(--cx-transition);
   }
   @media (prefers-reduced-motion: reduce) {
@@ -2539,7 +2536,6 @@
     text-decoration: none;
     text-wrap: nowrap;
     vertical-align: middle;
-    background-image: var(--cx-bg-gradient);
   }
   .badge.circle {
     box-sizing: border-box;
@@ -2652,7 +2648,6 @@
     user-select: none;
     padding: calc(var(--cx-padding-y) - var(--cx-border-width)) calc(var(--cx-padding-x) - var(--cx-border-width));
     cursor: pointer;
-    background-image: var(--cx-bg-gradient);
     box-shadow: var(--cx-box-shadow);
     transition: var(--cx-transition);
   }
@@ -2687,7 +2682,6 @@
     text-decoration: var(--cx-button-link-text-decoration, none);
     background-color: transparent;
     border-color: transparent;
-    background-image: none;
   }
   .button.link:hover {
     text-decoration: var(--cx-button-link-hover-decoration, );
@@ -2826,17 +2820,17 @@
     --cx-footer-bg-color: var(--cx-card-footer-bg-color, inherit);
     --cx-header-font-weight: var(--cx-card-header-font-weight, var(--cx-font-weight-strong));
     --cx-title-font-family: var(--cx-card-title-font-family, var(--cx-font-family-text));
-    --cx-title-font-size: var(--cx-card-title-font-size, var(--cx-font-size-text-lg));
-    --cx-title-font-weight: var(--cx-card-title-font-weight, var(--cx-font-weight-text-strong));
-    --cx-title-line-height: var(--cx-card-title-line-height, var(--cx-line-height-text-lg));
+    --cx-title-font-size: var(--cx-card-title-font-size, var(--cx-font-size-lg));
+    --cx-title-font-weight: var(--cx-card-title-font-weight, var(--cx-font-weight-strong));
+    --cx-title-line-height: var(--cx-card-title-line-height, var(--cx-line-height-lg));
     --cx-subtitle-font-family: var(--cx-card-subtitle-font-family, var(--cx-font-family-text));
-    --cx-subtitle-font-size: var(--cx-card-subtitle-font-size, var(--cx-font-size-text-sm));
-    --cx-subtitle-font-weight: var(--cx-card-subtitle-font-weight, var(--cx-font-weight-text-strong));
-    --cx-subtitle-line-height: var(--cx-card-subtitle-line-height, var(--cx-line-height-text-sm));
+    --cx-subtitle-font-size: var(--cx-card-subtitle-font-size, var(--cx-font-size-sm));
+    --cx-subtitle-font-weight: var(--cx-card-subtitle-font-weight, var(--cx-font-weight-strong));
+    --cx-subtitle-line-height: var(--cx-card-subtitle-line-height, var(--cx-line-height-sm));
     --cx-font-family: var(--cx-card-font-family, var(--cx-font-family-text));
-    --cx-font-size: var(--cx-card-font-size, var(--cx-font-size-text-md));
-    --cx-font-weight: var(--cx-card-font-weight, var(--cx-font-weight-text-normal));
-    --cx-line-height: var(--cx-card-line-height, var(--cx-line-height-text-md));
+    --cx-font-size: var(--cx-card-font-size, var(--cx-font-size-md));
+    --cx-font-weight: var(--cx-card-font-weight, var(--cx-font-weight-normal));
+    --cx-line-height: var(--cx-card-line-height, var(--cx-line-height-md));
     --cx-height: var(--cx-card-height, auto);
     --cx-group-margin: var(--cx-card-group-margin, calc(var(--cx-grid-gutter) * 0.5));
     --cx-list-padding-x: var(--cx-padding-x);
@@ -2862,17 +2856,17 @@
     --cx-gap-y: var(--cx-card-lg-gap-y, var(--cx-space-md));
     --cx-gap-x: var(--cx-card-lg-gap-x, var(--cx-space-md));
     --cx-title-font-family: var(--cx-card-lg-title-font-family, var(--cx-font-family-text));
-    --cx-title-font-size: var(--cx-card-lg-title-font-size, var(--cx-font-size-text-xl));
-    --cx-title-font-weight: var(--cx-card-lg-title-font-weight, var(--cx-font-weight-text-strong));
-    --cx-title-line-height: var(--cx-card-lg-title-line-height, var(--cx-line-height-text-xl));
+    --cx-title-font-size: var(--cx-card-lg-title-font-size, var(--cx-font-size-xl));
+    --cx-title-font-weight: var(--cx-card-lg-title-font-weight, var(--cx-font-weight-strong));
+    --cx-title-line-height: var(--cx-card-lg-title-line-height, var(--cx-line-height-xl));
     --cx-subtitle-font-family: var(--cx-card-lg-subtitle-font-family, var(--cx-font-family-text));
-    --cx-subtitle-font-size: var(--cx-card-lg-subtitle-font-size, var(--cx-font-size-text-md));
-    --cx-subtitle-font-weight: var(--cx-card-lg-subtitle-font-weight, var(--cx-font-weight-text-strong));
-    --cx-subtitle-line-height: var(--cx-card-lg-subtitle-line-height, var(--cx-line-height-text-md));
+    --cx-subtitle-font-size: var(--cx-card-lg-subtitle-font-size, var(--cx-font-size-md));
+    --cx-subtitle-font-weight: var(--cx-card-lg-subtitle-font-weight, var(--cx-font-weight-strong));
+    --cx-subtitle-line-height: var(--cx-card-lg-subtitle-line-height, var(--cx-line-height-md));
     --cx-font-family: var(--cx-card-lg-font-family, var(--cx-font-family-text));
-    --cx-font-size: var(--cx-card-lg-font-size, var(--cx-font-size-text-lg));
-    --cx-font-weight: var(--cx-card-lg-font-weight, var(--cx-font-weight-text-normal));
-    --cx-line-height: var(--cx-card-lg-line-height, var(--cx-line-height-text-lg));
+    --cx-font-size: var(--cx-card-lg-font-size, var(--cx-font-size-lg));
+    --cx-font-weight: var(--cx-card-lg-font-weight, var(--cx-font-weight-normal));
+    --cx-line-height: var(--cx-card-lg-line-height, var(--cx-line-height-lg));
   }
   .card.sm {
     --cx-padding-y: var(--cx-card-sm-padding-y, var(--cx-space-sm));
@@ -2884,17 +2878,17 @@
     --cx-gap-y: var(--cx-card-sm-gap-y, var(--cx-space-xs));
     --cx-gap-x: var(--cx-card-sm-gap-x, var(--cx-space-xs));
     --cx-title-font-family: var(--cx-card-sm-title-font-family, var(--cx-font-family-text));
-    --cx-title-font-size: var(--cx-card-sm-title-font-size, var(--cx-font-size-text-md));
-    --cx-title-font-weight: var(--cx-card-sm-title-font-weight, var(--cx-font-weight-text-strong));
-    --cx-title-line-height: var(--cx-card-sm-title-line-height, var(--cx-line-height-text-md));
+    --cx-title-font-size: var(--cx-card-sm-title-font-size, var(--cx-font-size-md));
+    --cx-title-font-weight: var(--cx-card-sm-title-font-weight, var(--cx-font-weight-strong));
+    --cx-title-line-height: var(--cx-card-sm-title-line-height, var(--cx-line-height-md));
     --cx-subtitle-font-family: var(--cx-card-sm-subtitle-font-family, var(--cx-font-family-text));
-    --cx-subtitle-font-size: var(--cx-card-sm-subtitle-font-size, var(--cx-font-size-text-xs));
-    --cx-subtitle-font-weight: var(--cx-card-sm-subtitle-font-weight, var(--cx-font-weight-text-strong));
-    --cx-subtitle-line-height: var(--cx-card-sm-subtitle-line-height, var(--cx-line-height-text-xs));
+    --cx-subtitle-font-size: var(--cx-card-sm-subtitle-font-size, var(--cx-font-size-xs));
+    --cx-subtitle-font-weight: var(--cx-card-sm-subtitle-font-weight, var(--cx-font-weight-strong));
+    --cx-subtitle-line-height: var(--cx-card-sm-subtitle-line-height, var(--cx-line-height-xs));
     --cx-font-family: var(--cx-card-sm-font-family, var(--cx-font-family-text));
-    --cx-font-size: var(--cx-card-sm-font-size, var(--cx-font-size-text-sm));
-    --cx-font-weight: var(--cx-card-sm-font-weight, var(--cx-font-weight-text-normal));
-    --cx-line-height: var(--cx-card-sm-line-height, var(--cx-line-height-text-sm));
+    --cx-font-size: var(--cx-card-sm-font-size, var(--cx-font-size-sm));
+    --cx-font-weight: var(--cx-card-sm-font-weight, var(--cx-font-weight-normal));
+    --cx-line-height: var(--cx-card-sm-line-height, var(--cx-line-height-sm));
   }
   .card > hr {
     margin-inline: 0;
@@ -3347,7 +3341,6 @@
     white-space: nowrap;
     vertical-align: middle;
     user-select: none;
-    background-image: var(--cx-bg-gradient);
     box-shadow: var(--cx-box-shadow);
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   }
@@ -5062,7 +5055,7 @@
     padding: var(--cx-padding-y) var(--cx-padding-x);
     pointer-events: none;
     border-inline-end-width: var(--cx-border-width);
-    background-image: var(--cx-bg-gradient), var(--cx-file-button-bg-image);
+    background-image: var(--cx-file-button-bg-image);
     border-radius: 0;
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   }
@@ -5283,7 +5276,7 @@
     border: var(--cx-border-width-md) solid var(--cx-border-color);
     print-color-adjust: exact;
     box-shadow: none;
-    background-image: var(--cx-icon), var(--cx-bg-gradient);
+    background-image: var(--cx-icon);
   }
   .check-input:is(input)[type=checkbox] {
     border-radius: 0.25rem;
@@ -5334,7 +5327,7 @@
     --cx-icon: var(--cx-form-indeterminate-icon-disabled);
   }
   .check-input:is(input)[role=switch] {
-    background-image: var(--cx-form-switch-idle-icon), var(--cx-bg-gradient);
+    background-image: var(--cx-form-switch-idle-icon);
     background-position-x: 0;
   }
   [dir=rtl] .check-input:is(input)[role=switch] {
@@ -5350,17 +5343,17 @@
     }
   }
   .check-input:is(input)[role=switch]:focus {
-    background-image: var(--cx-form-switch-focus-icon), var(--cx-bg-gradient);
+    background-image: var(--cx-form-switch-focus-icon);
   }
   .check-input:is(input)[role=switch]:checked {
-    background-image: var(--cx-form-switch-checked-icon), var(--cx-bg-gradient);
+    background-image: var(--cx-form-switch-checked-icon);
     background-position-x: 100%;
   }
   [dir=rtl] .check-input:is(input)[role=switch]:checked {
     background-position-x: 0;
   }
   .check-input:is(input)[role=switch]:disabled {
-    background-image: var(--cx-form-switch-disabled-icon), var(--cx-bg-gradient);
+    background-image: var(--cx-form-switch-disabled-icon);
   }
   .check-input:not(input) {
     --cx-margin-block: var(--cx-check-input-margin-block, calc((var(--cx-line-height) - var(--cx-input-height)) * .5));
@@ -5531,7 +5524,6 @@
     height: var(--cx-form-range-thumb-height);
     appearance: none;
     background-color: var(--cx-form-range-thumb-color);
-    background-image: var(--cx-bg-gradient);
     border: var(--cx-form-range-thumb-border);
     border-radius: var(--cx-form-range-thumb-border-radius);
     box-shadow: var(--cx-form-range-thumb-box-shadow);
@@ -5563,7 +5555,6 @@
     height: var(--cx-form-range-thumb-height);
     appearance: none;
     background-color: var(--cx-form-range-thumb-color);
-    background-image: var(--cx-bg-gradient);
     border: var(--cx-form-range-thumb-border);
     border-radius: var(--cx-form-range-thumb-border-radius);
     box-shadow: var(--cx-form-range-thumb-box-shadow);
@@ -7115,7 +7106,6 @@
   .nav-segments .nav-link.active {
     --cx-link-main-color: var(--cx-active-fg-color);
     background-color: var(--cx-active-bg-color);
-    background-image: var(--cx-bg-gradient);
     box-shadow: var(--cx-active-box-shadow);
   }
   .nav-underline {
@@ -7717,7 +7707,6 @@
     background-color: var(--cx-bg-color);
     font: var(--cx-font-weight) var(--cx-font-size)/var(--cx-line-height) var(--cx-font-family);
     border-radius: var(--cx-border-radius);
-    background-image: var(--cx-bg-gradient);
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   }
   @media (prefers-reduced-motion: reduce) {
@@ -7740,7 +7729,6 @@
     --cx-bg-color: var(--cx-active-bg-color);
     --cx-border-color: var(--cx-active-border-color);
     z-index: 3;
-    background-image: var(--cx-bg-gradient);
   }
   .pagination-link.disabled, .disabled > .pagination-link {
     --cx-fg-color: var(--cx-disabled-fg-color);
@@ -7942,7 +7930,6 @@
     text-align: center;
     white-space: nowrap;
     background-color: var(--cx-bar-bg-color);
-    background-image: var(--cx-bg-gradient);
     box-shadow: var(--cx-bar-box-shadow);
     transition: var(--cx-bar-transition);
   }
@@ -7952,7 +7939,7 @@
     }
   }
   .progress-bar.striped {
-    background-image: var(--cx-bg-gradient), linear-gradient(45deg, oklch(from #ffffff l c h / 0.15) 25%, transparent 25%, transparent 50%, oklch(from #ffffff l c h / 0.15) 50%, oklch(from #ffffff l c h / 0.15) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(45deg, oklch(from #ffffff l c h / 0.15) 25%, transparent 25%, transparent 50%, oklch(from #ffffff l c h / 0.15) 50%, oklch(from #ffffff l c h / 0.15) 75%, transparent 75%, transparent);
     background-size: var(--cx-height) var(--cx-height);
   }
   .progress-bar.animated {
@@ -8271,7 +8258,6 @@
     counter-increment: stepper;
     background-color: var(--cx-status-bg-color);
     border-radius: var(--cx-status-border-radius);
-    background-image: var(--cx-bg-gradient);
   }
   .icon-stepper > .stepper-item::before {
     --cx-status-fg-color: var(--cx-status-fg-past);
@@ -8385,7 +8371,6 @@
     border-block-end: var(--cx-border-width) solid var(--cx-header-border-color);
     border-top-left-radius: calc(var(--cx-border-radius) - var(--cx-border-width));
     border-top-right-radius: calc(var(--cx-border-radius) - var(--cx-border-width));
-    background-image: var(--cx-bg-gradient);
   }
   .toast-header > .close-button {
     --cx-close-button-fg-color: var(--cx-header-fg-color);
@@ -8496,7 +8481,6 @@
     color: var(--cx-fg-color);
     text-align: center;
     background-color: var(--cx-bg-color);
-    background-image: var(--cx-bg-gradient);
     border-radius: var(--cx-border-radius);
   }
   .no-transition {
@@ -8891,7 +8875,7 @@
   .h2, h1,
   .h1 {
     margin-block: 0 0.75rem;
-    font-family: var(--cx-heading-font-family, var(--cx-font-family-text));
+    font-family: var(--cx-heading-font-family, var(--cx-font-family-html-heading));
     font-weight: var(--cx-heading-font-weight, var(--cx-font-weight-html-heading));
   }
   h1,
@@ -9215,74 +9199,74 @@
     margin-inline-end: 0.5rem;
   }
   .font-jumbo {
-    font-family: var(--cx-font-family-text);
+    font-family: var(--cx-font-family-display);
     font-style: normal;
     font-size: clamp(3.6rem, 2.661rem + 4.174vw, 6rem);
     line-height: 1.25em;
-    font-weight: var(--cx-font-weight-text-mass);
+    font-weight: var(--cx-font-weight-display-mass);
     text-decoration: none;
     text-transform: none;
-    letter-spacing: -0.03125em;
+    letter-spacing: -0.15625rem;
   }
   .font-hero {
-    font-family: var(--cx-font-family-text);
+    font-family: var(--cx-font-family-display);
     font-style: normal;
     font-size: clamp(2.4rem, 1.774rem + 2.783vw, 4rem);
     line-height: 1.25em;
-    font-weight: var(--cx-font-weight-text-mass);
+    font-weight: var(--cx-font-weight-display-mass);
     text-decoration: none;
     text-transform: none;
-    letter-spacing: 0em;
+    letter-spacing: -0.09375rem;
   }
   .font-heading {
-    font-family: var(--cx-font-family-text);
+    font-family: var(--cx-font-family-display);
     font-style: normal;
     font-size: var(--cx-font-size-text-3xl);
     line-height: var(--cx-line-height-text-3xl);
     font-weight: var(--cx-font-weight-text-strong);
     text-decoration: none;
     text-transform: none;
-    letter-spacing: 0em;
+    letter-spacing: 0rem;
   }
   .font-lead {
     font-family: var(--cx-font-family-text);
     font-style: normal;
     font-size: var(--cx-font-size-text-xl);
     line-height: var(--cx-line-height-text-xl);
-    font-weight: var(--cx-font-weight-text-normal);
+    font-weight: var(--cx-font-weight-text-elegant);
     text-decoration: none;
     text-transform: none;
-    letter-spacing: 0em;
+    letter-spacing: 0rem;
   }
   .font-title-lg {
     font-family: var(--cx-font-family-text);
     font-style: normal;
     font-size: var(--cx-font-size-text-xl);
     line-height: var(--cx-line-height-text-xl);
-    font-weight: var(--cx-font-weight-text-strong);
+    font-weight: var(--cx-font-weight-display-strong);
     text-decoration: none;
     text-transform: none;
-    letter-spacing: 0em;
+    letter-spacing: 0rem;
   }
   .font-title {
     font-family: var(--cx-font-family-text);
     font-style: normal;
     font-size: var(--cx-font-size-text-lg);
     line-height: var(--cx-line-height-text-lg);
-    font-weight: var(--cx-font-weight-text-strong);
+    font-weight: var(--cx-font-weight-display-strong);
     text-decoration: none;
     text-transform: none;
-    letter-spacing: 0em;
+    letter-spacing: 0rem;
   }
   .font-title-sm {
     font-family: var(--cx-font-family-text);
     font-style: normal;
     font-size: var(--cx-font-size-text-md);
     line-height: var(--cx-line-height-text-md);
-    font-weight: var(--cx-font-weight-text-strong);
+    font-weight: var(--cx-font-weight-display-strong);
     text-decoration: none;
     text-transform: none;
-    letter-spacing: 0em;
+    letter-spacing: 0rem;
   }
   .font-body-lg {
     font-family: var(--cx-font-family-text);
@@ -9292,7 +9276,7 @@
     font-weight: var(--cx-font-weight-text-normal);
     text-decoration: none;
     text-transform: none;
-    letter-spacing: 0em;
+    letter-spacing: 0rem;
   }
   .font-body {
     font-family: var(--cx-font-family-text);
@@ -9302,7 +9286,7 @@
     font-weight: var(--cx-font-weight-text-normal);
     text-decoration: none;
     text-transform: none;
-    letter-spacing: 0em;
+    letter-spacing: 0rem;
   }
   .font-body-sm {
     font-family: var(--cx-font-family-text);
@@ -9312,7 +9296,7 @@
     font-weight: var(--cx-font-weight-text-normal);
     text-decoration: none;
     text-transform: none;
-    letter-spacing: 0em;
+    letter-spacing: 0rem;
   }
   .font-label-lg {
     font-family: var(--cx-font-family-text);
@@ -9322,7 +9306,7 @@
     font-weight: var(--cx-font-weight-text-strong);
     text-decoration: none;
     text-transform: none;
-    letter-spacing: 0em;
+    letter-spacing: 0rem;
   }
   .font-label {
     font-family: var(--cx-font-family-text);
@@ -9332,7 +9316,7 @@
     font-weight: var(--cx-font-weight-text-strong);
     text-decoration: none;
     text-transform: none;
-    letter-spacing: 0em;
+    letter-spacing: 0rem;
   }
   .font-label-sm {
     font-family: var(--cx-font-family-text);
@@ -9342,7 +9326,7 @@
     font-weight: var(--cx-font-weight-text-strong);
     text-decoration: none;
     text-transform: none;
-    letter-spacing: 0em;
+    letter-spacing: 0rem;
   }
   .blockquote {
     margin-block-end: 1rem;

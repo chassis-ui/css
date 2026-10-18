@@ -92,6 +92,7 @@ Run the checks of the area you changed, and report the ones that fail.
 
 - Module system: `@use` / `@forward` only — never `@import`.
 - One partial per component (e.g. `_accordion.scss`), forwarded from `scss/chassis.scss`.
+- The `$cx-*` variables of `@chassis-ui/tokens` are read only in `scss/tokens/`, which maps each one to a variable of Chassis (`$font-family-html-heading: $cx-typography-font-family-html-heading`, `$card-md-title-font: $cx-font-card-medium-title`). Everything else (`scss/config/`, `scss/maps/`, `_root.scss`, the components, the Sass of the site) uses those variables and never a `$cx-*` one, so a change of the token names touches `scss/tokens/` only. A new token gets its variable in `scss/tokens/` first. `scss/config/` forwards the token source for projects, so Sass does not stop a stray `$cx-*`; only a test that configures a token source sets them.
 - CSS layers, declared in `scss/_layer-order.scss`: `colors, theme, config, root, reboot, layout, content, components, custom, helpers, utilities`. Component rules live inside `@layer components { ... }` (or `forms`, etc.).
 - Prefer the `border-radius()` mixin over the raw `border-radius` property — it gates rounding on the global radius toggle. Use the raw property only for shape-defining elements (circles, pills) where the radius is structural, not stylistic.
 - `--fg-color` / `--bg-color` custom properties look unused component-locally but are consumed by the context utility classes — don't remove them during cleanup without checking `scss/_context.scss` and `scss/utilities/`.

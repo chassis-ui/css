@@ -14,7 +14,6 @@
 @forward "../tokens";
 @use "sass:map";
 @use "sass:string";
-@use "./vendor" as *;
 @use "../tokens" as *;
 @use "../functions/color" as *;
 
@@ -259,7 +258,7 @@ $paragraph-margin-bottom:   1rem !default;
 $bold-font-weight:          $font-weight-html-bold !default;
 
 $heading-margin-bottom:     .75rem !default;
-$heading-font-family:       map.get($cx-font-html-h1, "font-family") !default;
+$heading-font-family:       var(--font-family-html-heading) !default;
 $heading-font-weight:       var(--font-weight-html-heading) !default;
 $heading-font-style:        null !default;
 $heading-color:             null !default; // var(--heading-color, #{$fg-color}) !default;
@@ -1091,15 +1090,17 @@ $pagination-transition:                 color .15s ease-in-out, background-color
 //
 
 // scss-docs-start skeletons
-$skeleton-opacity-max:           .25 !default;
-$skeleton-opacity-min:           .15 !default;
-$skeleton-color:                 var(--fg-color) !default;
-$skeleton-opacity-wave:          .75 !default;
+$skeleton-opacity-max:              .25 !default;
+$skeleton-opacity-min:              .15 !default;
+$skeleton-color:                    var(--fg-color) !default;
+$skeleton-opacity-wave:             .75 !default;
 // scss-docs-end skeletons
 
 
 //
 // Card
+//
+// See `scss/tokens/_card.scss` for design tokens.
 //
 
 // scss-docs-start card-variables
@@ -1112,41 +1113,29 @@ $card-footer-padding-x:             var(--padding-x) !default; // card padding-x
 $card-gap-y:                        var(--space-sm) !default; // Space between title and body.
 $card-gap-x:                        var(--space-sm) !default; // Space between links & buttons.
 
-$card-lg-padding-y:              var(--space-lg) !default;
-$card-lg-padding-x:              var(--space-lg) !default;
-$card-lg-header-padding-y:       var(--space-md) !default;
-$card-lg-header-padding-x:       var(--padding-x) !default; // card padding-x is used for header
-$card-lg-footer-padding-y:       var(--space-md) !default;
-$card-lg-footer-padding-x:       var(--padding-x) !default; // card padding-x is used for footer
-$card-lg-gap-y:                  var(--space-md) !default; // Space between title and body.
-$card-lg-gap-x:                  var(--space-md) !default; // Space between links & buttons.
+$card-lg-padding-y:                 var(--space-lg) !default;
+$card-lg-padding-x:                 var(--space-lg) !default;
+$card-lg-header-padding-y:          var(--space-md) !default;
+$card-lg-header-padding-x:          var(--padding-x) !default; // card padding-x is used for header
+$card-lg-footer-padding-y:          var(--space-md) !default;
+$card-lg-footer-padding-x:          var(--padding-x) !default; // card padding-x is used for footer
+$card-lg-gap-y:                     var(--space-md) !default; // Space between title and body.
+$card-lg-gap-x:                     var(--space-md) !default; // Space between links & buttons.
 
-$card-sm-padding-y:              var(--space-sm) !default;
-$card-sm-padding-x:              var(--space-sm) !default;
-$card-sm-header-padding-y:       var(--space-xs) !default;
-$card-sm-header-padding-x:       var(--padding-x) !default; // card padding-x is used for header
-$card-sm-footer-padding-y:       var(--space-xs) !default;
-$card-sm-footer-padding-x:       var(--padding-x) !default; // card padding-x is used for footer
-$card-sm-gap-y:                  var(--space-xs) !default; // Space between title and body.
-$card-sm-gap-x:                  var(--space-xs) !default; // Space between links & buttons.
+$card-sm-padding-y:                 var(--space-sm) !default;
+$card-sm-padding-x:                 var(--space-sm) !default;
+$card-sm-header-padding-y:          var(--space-xs) !default;
+$card-sm-header-padding-x:          var(--padding-x) !default; // card padding-x is used for header
+$card-sm-footer-padding-y:          var(--space-xs) !default;
+$card-sm-footer-padding-x:          var(--padding-x) !default; // card padding-x is used for footer
+$card-sm-gap-y:                     var(--space-xs) !default; // Space between title and body.
+$card-sm-gap-x:                     var(--space-xs) !default; // Space between links & buttons.
 
 $card-border-width:                 var(--border-width-md) !default;
 $card-border-color:                 var(--border-subtle) !default;
 $card-border-radius:                var(--border-radius-md) !default;
 $card-inner-border-radius:          calc($card-border-radius - $card-border-width) !default;
 $card-box-shadow:                   none !default;
-
-$card-md-title-font:            $font-context-title-medium !default;
-$card-md-subtitle-font:         $font-context-label-medium !default;
-$card-md-body-font:             $font-context-body-medium !default;
-
-$card-lg-title-font:             $font-context-title-large !default;
-$card-lg-subtitle-font:          $font-context-label-large !default;
-$card-lg-body-font:              $font-context-body-large !default;
-
-$card-sm-title-font:             $font-context-title-small !default;
-$card-sm-subtitle-font:          $font-context-label-small !default;
-$card-sm-body-font:              $font-context-body-small !default;
 
 $card-header-font-weight:           var(--font-weight-strong) !default;
 

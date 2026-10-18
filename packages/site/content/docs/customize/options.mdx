@@ -41,7 +41,7 @@ Every option is in one table, in alphabetical order.
 | `$enable-accordion-sizes`         | `true` (default) or `false`        | Generates size variations for accordions (sm, md, lg), allowing for different visual weights in layouts. |
 | `$enable-button-pointers`         | `true` (default) or `false`        | Sets `cursor: pointer` on non-disabled buttons, providing visual feedback that elements are interactive. |
 | `$enable-caret`                   | `true` (default) or `false`        | Adds a caret automatically to native `select` elements, comboboxes, and menu toggles. |
-| `$enable-background-gradients`    | `true` (default) or `false`        | Applies subtle gradient backgrounds to various components via `background-image`. Disable for a flatter visual style or to reduce CSS size. |
+| `$enable-background-gradients`    | `true` or `false` (default)        | Applies subtle gradient backgrounds to various components via `background-image`. Off by default for a flat visual style and a smaller CSS file. |
 | `$enable-component-shadows`       | `true` (default) or `false`        | Enables predefined decorative `box-shadow` styles on various components for depth. |
 | `$enable-container-classes`       | `true` (default) or `false`        | Generates CSS classes for layout containers (`.container`, `.container.fluid`, etc.). Disable to reduce CSS size if you're using custom containers. |
 | `$enable-container-queries`       | `true` (default) or `false`        | Generates the [container variants]([[docsref:/layout/grid#container-queries]]) under the `@` prefix (`.@md:col-span-6`, `.@md:d-flex`) for the grid classes and for the utilities with [`container: true`]([[docsref:/utilities/api#container]]), and the `.grid.contained` modifier. Disable to reduce CSS size if you lay out by the viewport only. |
@@ -89,7 +89,7 @@ The options change the size of the CSS and the work the browser does to render i
 
 For smaller CSS files, consider disabling:
 
-- **Visual effects**: Disable `$enable-background-gradients` and `$enable-component-shadows` for a more minimal style
+- **Visual effects**: Disable `$enable-component-shadows` for a more minimal style, and leave `$enable-background-gradients` off, its default
 - **Form features**: Turn off `$enable-validation-icons` if you implement custom validation UI
 - **Transitions**: Set `$enable-transitions: false` for a more minimal build
 
@@ -98,7 +98,7 @@ For smaller CSS files, consider disabling:
 For better rendering performance, especially on lower-powered devices:
 
 - **Fewer animations**: Set `$enable-transitions: false` to eliminate transition animations
-- **Simpler rendering**: Disable `$enable-component-shadows` and `$enable-background-gradients` to reduce GPU/CPU load
+- **Simpler rendering**: Disable `$enable-component-shadows`, and leave `$enable-background-gradients` off, its default, to reduce GPU/CPU load
 - **Typography**: Consider `$enable-fluid-font-sizes: false` if you don't need responsive font scaling
 
 ### Production builds
