@@ -11,18 +11,18 @@ HTML elements receive typographic styles automatically; class-based utilities co
 
 ## Global settings
 
-Body text defaults to the text font family at the medium size and medium line-height. Headings use the heading font family with size and line-height scaled per level from `h1` down to `h6`. All of these defaults are driven by design tokens and can be overridden via CSS custom properties or Sass variables — see the [Design Tokens]([[docsref:/core-concepts/design-tokens]]) page for details.
+Body text defaults to the `ui` font family at the medium size and medium line-height. Headings take the family and weight of the `heading` role group, and each level from `h1` down to `h6` its own size and line-height. All of these defaults are driven by design tokens and can be overridden via CSS custom properties or Sass variables — see the [Design Tokens]([[docsref:/core-concepts/design-tokens]]) page for details.
 
 ## Headings
 
 All six HTML heading elements are styled by default with size and line-height pairs sourced from typography design tokens.
 
-<Example code={`<p class="h1">h1. Chassis CSS</p>
-  <p class="h2">h2. Chassis CSS</p>
-  <p class="h3">h3. Chassis CSS</p>
-  <p class="h4">h4. Chassis CSS</p>
-  <p class="h5">h5. Chassis CSS</p>
-  <p class="h6">h6. Chassis CSS</p>`}
+<Example code={`<p class="font-h1">h1. Chassis CSS</p>
+  <p class="font-h2">h2. Chassis CSS</p>
+  <p class="font-h3">h3. Chassis CSS</p>
+  <p class="font-h4">h4. Chassis CSS</p>
+  <p class="font-h5">h5. Chassis CSS</p>
+  <p class="font-h6">h6. Chassis CSS</p>`}
   customMarkup={`<h1>h1. Chassis CSS</h1>
   <h2>h2. Chassis CSS</h2>
   <h3>h3. Chassis CSS</h3>
@@ -33,14 +33,18 @@ All six HTML heading elements are styled by default with size and line-height pa
 
 ### Heading classes
 
-Apply `.h1` through `.h6` to any element to match the visual style of the corresponding heading without changing the document outline.
+Apply `.font-h1` through `.font-h6` to any element to match the visual style of the corresponding heading without changing the document outline.
 
-<Example code={`<p class="h1">h1. Chassis CSS</p>
-<p class="h2">h2. Chassis CSS</p>
-<p class="h3">h3. Chassis CSS</p>
-<p class="h4">h4. Chassis CSS</p>
-<p class="h5">h5. Chassis CSS</p>
-<p class="h6">h6. Chassis CSS</p>`} />
+<Example code={`<p class="font-h1">h1. Chassis CSS</p>
+<p class="font-h2">h2. Chassis CSS</p>
+<p class="font-h3">h3. Chassis CSS</p>
+<p class="font-h4">h4. Chassis CSS</p>
+<p class="font-h5">h5. Chassis CSS</p>
+<p class="font-h6">h6. Chassis CSS</p>`} />
+
+<Callout type="warning">
+`.h1` through `.h6` are deprecated in v0.10.0 and still style an element like `.font-h1` through `.font-h6`. They are removed in the next breaking release; replace each with its `.font-h*` class.
+</Callout>
 
 ### Heading with subtext
 
@@ -53,7 +57,7 @@ Nest a `<small>` element with `.fg-subtle` inside a heading to render a secondar
 
 ## Font size
 
-Font size utilities set both `font-size` and a paired `line-height` in a single class. The 10-step scale maps directly to Figma text style names, keeping class names consistent with what designers specify in handoff.
+Font size utilities set both `font-size` and a paired `line-height` in a single class. The 10-step scale is the one of the `ui` family and maps directly to Figma text style names, keeping class names consistent with what designers specify in handoff. Combined with `.font-prose`, the same classes take the sizes of the `prose` family (see [Prose font](#prose-font)).
 
 ### Available sizes
 
@@ -88,7 +92,7 @@ These classes follow a mobile-first approach: `font-{size}` sets the base (appli
 
 ## Font weight
 
-Four weight utilities map to token-defined values, with names that match the Figma text style weight names.
+Four weight utilities map to the token-defined weights of the `ui` family, with names that match the Figma text style weight names. Combined with `.font-prose`, `.font-display` or `.font-code`, they take the weights of that family.
 
 <Example code={`<p class="font-mass">Mass text.</p>
 <p class="font-strong">Strong text.</p>
@@ -244,48 +248,97 @@ Align terms and descriptions horizontally with the [grid]([[docsref:/layout/grid
 
 ## Font families
 
-Chassis ships three font family classes — text, display, and code — each setting `font-family` on the element. The text family is the body default; the others opt specific elements into a different typeface.
+Chassis names its font families by their job, never by their typeface: the typeface of each comes from the brand's design tokens.
 
-### Text font
+<CxTable>
+| Family | Job | Scale | Class |
+| --- | --- | --- | --- |
+| `ui` | Components and the body of the page | 10 sizes, 4 weights | `.font-ui` |
+| `prose` | Reading content: articles, posts, long-form text | 10 sizes, 4 weights | `.font-prose` |
+| `display` | The roles a brand sets in a display typeface: headings, jumbo, hero | 4 weights, no sizes | `.font-display` |
+| `code` | Code snippets and technical text | 3 sizes, 2 weights | `.font-code` |
+| `icon` | The icon font | — | — |
+</CxTable>
 
-`.font-text` is the body default and rarely needs to be applied explicitly. Use it to restore the text family on a child element when an ancestor has switched to a different family.
+`display` has no sizes of its own: it is reached through the text roles that use it, which hold their own sizes. `prose` has a full scale because reading content is set at many sizes. In the default tokens `prose` is the typeface of `ui`, with the same sizes.
 
-<Example code={`<p class="font-text">.font-text</p>`} />
+### UI font
+
+`.font-ui` is the body default and rarely needs to be applied explicitly. Use it to restore the `ui` family on a child element when an ancestor has switched to a different family.
+
+<Example code={`<p class="font-ui">.font-ui</p>`} />
+
+<Callout type="warning">
+`.font-text` and `--cx-font-family-text` are deprecated in v0.10.0 and are the same as `.font-ui` and `--cx-font-family-ui`. They are removed in the next breaking release.
+</Callout>
+
+### Prose font
+
+Add `.font-prose` to a reading region to switch it to the `prose` family. Combine it with `font-{size}` and `font-{weight}` utilities to take the sizes, line heights and weights of the `prose` scale.
+
+<Example code={`<p class="font-prose">Prose at the size of the surrounding text.</p>
+<p class="font-prose font-lg">Large prose text.</p>
+<p class="font-prose font-sm font-strong">Small, strong prose text.</p>`} />
+
+Prose sizes and weights use dedicated tokens, separate from the `ui` scale, so a brand can give its reading typeface its own scale. The body, lead, blockquote and cite [text roles](#text-roles) use the `prose` family by default.
 
 ### Display font
 
-Add `.font-display` to any element to switch to the display font family. All font size and weight utilities compose with it.
+Add `.font-display` to any element to switch to the display font family. Weight utilities compose with it and take the weights of the display family.
 
-<Example code={`<p class="h1 font-display">Display h1</p>
-<p class="font-display h2">Display h2</p>
-<p class="font-display font-xl">Display font-xl</p>
-<p class="font-display font-xl font-mass">Display font-mass</p>
-`} />
+<Example code={`<p class="font-display">Display text.</p>
+<p class="font-display font-mass">Display text in the mass weight.</p>`} />
 
-Display font sizes and weights use dedicated tokens, separate from the text font scale. A display font's `lg` or `strong` may map to a different numeric value than their `.font-text` equivalents, and line heights often differ to support the readability of display text.
+The display family has no size scale, so a size utility on a display element sets the size of the `ui` scale. For display text at a set size, use a [text role](#text-roles) such as `.font-hero` or `.font-h1`, which take their family from the brand.
 
 ### Code font
 
-Add `.font-code` to apply the branded monospace font family, suitable for code snippets and technical text. The code font has 3 sizes and 2 weights defined by dedicated design tokens, separate from the text font scale. Combine `.font-code` with `font-{size}` and `font-{weight}` utilities to set size and weight.
+Add `.font-code` to apply the branded monospace font family, suitable for code snippets and technical text. The code font has 3 sizes and 2 weights defined by dedicated design tokens, separate from the `ui` scale. Combine `.font-code` with `font-{size}` and `font-{weight}` utilities to set size and weight.
 
 <Example code={`<p class="font-code font-lg">Large code font.</p>
 <p class="font-code">Medium code font.</p>
 <p class="font-code font-sm">Small code font.</p>
 <p class="font-code font-strong">Strong code font.</p>`} />
 
-Code font sizes and weights use dedicated tokens, separate from the text font scale. A code font's `lg` or `strong` may map to a different numeric value than their `.font-text` equivalents, and line heights often differ to support the readability of code snippets.
+Code font sizes and weights use dedicated tokens, separate from the `ui` scale. A code font's `lg` or `strong` may map to a different numeric value than their `.font-ui` equivalents, and line heights often differ to support the readability of code snippets.
 
 <Callout type="info">
 When only the font family needs to change and sizes should inherit from surrounding text, use `.font-monospace` instead. It switches `font-family` to the code font without applying any code-specific size, weight, or line-height tokens. Pairing it with weight utilities like `font-strong` may produce unexpected results if the code font does not have that weight registered.
 </Callout>
 
-## Context font styles
+## Text roles
 
-Context font classes bundle font family, size, weight, line height, letter spacing, and text transforms into a single class. They map to specific Figma text style names via design tokens, making design-to-code handoff direct.
+A text role is a named text style of the design tokens, such as a heading level, a lead paragraph or a label. Each role class sets its family, size, line height and weight in one class, and maps to the Figma text style of the same name.
+
+- **Own size and line height**: every role holds its own values, exposed as `--cx-font-size-{role}` and `--cx-line-height-{role}` (`--cx-font-size-lead`, `--cx-line-height-title-lg`). Jumbo and hero keep their sizes in their classes.
+- **Family and weight of the role group**: roles of one group share a family and a weight, exposed as `--cx-font-family-{group}` and `--cx-font-weight-{group}`. The groups are `jumbo`, `hero`, `heading`, `lead`, `body`, `title`, `label`, `blockquote` and `cite`. Setting `--cx-font-family-title` changes the family of every title class.
+- **Only what the role sets**: a role class sets `font-style`, `text-transform`, `text-decoration` and `letter-spacing` only where the role gives them a value, such as the italic of the blockquote role. Elsewhere the element keeps what it inherits.
+
+<CxTable>
+| Role | Classes | Group | Family in the base tokens |
+| --- | --- | --- | --- |
+| Jumbo | `.font-jumbo` | `jumbo` | `ui` |
+| Hero | `.font-hero` | `hero` | `ui` |
+| Headings | `.font-h1` – `.font-h6` | `heading` | `ui` |
+| Lead | `.font-lead` | `lead` | `prose` |
+| Blockquote | `.font-blockquote` | `blockquote` | `prose` |
+| Cite | `.font-cite` | `cite` | `prose` |
+| Title | `.font-title-lg`, `.font-title`, `.font-title-sm` | `title` | `ui` |
+| Body | `.font-body-lg`, `.font-body`, `.font-body-sm` | `body` | `prose` |
+| Label | `.font-label-lg`, `.font-label`, `.font-label-sm` | `label` | `ui` |
+</CxTable>
+
+A brand moves a group to another family in its tokens: the default Chassis brand sets the jumbo, hero, heading and title groups in its display typeface.
+
+```css
+:root {
+  --cx-font-family-title: var(--cx-font-family-prose);
+}
+```
 
 ### Jumbo
 
-`.font-jumbo` targets lg-scale headlines where maximum visual impact is needed.
+`.font-jumbo` targets large-scale headlines where maximum visual impact is needed.
 
 <Example code={`<p class="font-jumbo">This is jumbo text, which can be used for headlines.</p>`} />
 
@@ -295,11 +348,9 @@ Context font classes bundle font family, size, weight, line height, letter spaci
 
 <Example code={`<p class="font-hero">This is a hero text, which can be used in hero slides.</p>`} />
 
-### Heading
+### Heading levels
 
-`.font-heading` applies the heading context style independent of the HTML heading level.
-
-<Example code={`<p class="font-heading">A special heading class.</p>`} />
+`.font-h1` through `.font-h6` are the heading roles; see [Heading classes](#heading-classes).
 
 ### Lead
 
@@ -308,6 +359,13 @@ Context font classes bundle font family, size, weight, line height, letter spaci
 <Example code={`<p class="font-lead">
     This is a lead paragraph. It stands out from regular paragraphs.
   </p>`} />
+
+### Blockquote and cite
+
+`.font-blockquote` and `.font-cite` apply the quote and attribution roles without the margins and the em dash of `.blockquote` and `.attribution`.
+
+<Example code={`<p class="font-blockquote">A well-known quote, set in the blockquote role.</p>
+<p class="font-cite">Someone famous, set in the cite role.</p>`} />
 
 ### Title
 
