@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.11.0
+
+### Minor Changes
+
+- 624776a: Chassis CSS is built with `@chassis-ui/tokens` 0.10.1, which gives the text roles `jumbo` and `hero` a line height token of their own.
+  
+  - `:root` declares `--cx-line-height-jumbo` and `--cx-line-height-hero` (`1.25em`), from the new Sass variables `$line-height-jumbo` and `$line-height-hero` and the `"jumbo"` and `"hero"` keys of `$context-line-heights`. `.font-jumbo` and `.font-hero` read them, with the line height they had. Their sizes stay in their classes.
+  - A project with its own token source builds it with `@chassis-ui/tokens` 0.10.1. `scss/tokens/` reads `$cx-typography-line-height-context-jumbo` and `-hero`, which 0.10.0 does not have.
+  - Tokens 0.10.1 changes fonts of the `chassis` brand: `.blockquote` and `.font-blockquote` are Regular Italic (`400`) instead of Light Italic (`300`), the code family ends with `ui-monospace, monospace`, and the icon family is quoted, `"Chassis-Icons"`.
+
+### Patch Changes
+
+- aa469ef: The icon of `.icon-link` is sized through `--cx-icon-size` (`1em`, `$icon-link-icon-size`) instead of a `width` and `height` of `1em`, so an SVG icon and an icon font glyph take the same room and keep the gap to the text. Until now the `1em` resolved against the font size of the icon: an SVG icon was drawn at `--cx-icon-size` (24 px with the default tokens), and a font glyph at the same size overflowed its `1em` box and touched the link text.
+  
+  - An SVG icon in an icon link is drawn at `1em` of the link text, as the docs describe: 16 px instead of 24 px in a 16 px link. Add a size class such as `.icon-lg` to the icon, or set `$icon-link-icon-size`, for a larger icon.
+  - A size class on a font icon in an icon link sizes its box too. Before, the box stayed `1em` of the link text and the glyph overflowed it.
+
 ## 0.10.0
 
 ### Minor Changes
