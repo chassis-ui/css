@@ -5,8 +5,8 @@
 //
 // Icon Link Helper
 //
-// Flex-row layout for pairing an inline SVG icon with link text. Scales
-// the icon to match current font metrics.
+// Flex-row layout for pairing an icon with link text. Sizes the icon through
+// `--icon-size`, so an SVG icon and a font glyph take the same room.
 //
 
 @layer helpers {
@@ -21,9 +21,8 @@
 
     > .icon {
       --icon-color: currentcolor;
+      --icon-size: #{$icon-link-icon-size};
       flex-shrink: 0;
-      width: $icon-link-icon-size;
-      height: $icon-link-icon-size;
       @include transition($icon-link-icon-transition);
     }
   }
