@@ -201,12 +201,14 @@ Don't edit `packages/css/CHANGELOG.md` by hand; the version step writes it from 
 The version is made on `develop`, and `.github/workflows/release.yml` publishes it when the commit
 reaches `main`:
 
-1. On `develop`, a maintainer runs `pnpm changeset:version`. It removes the changesets, bumps the
-   version in `packages/css/package.json`, writes the CHANGELOG entry, updates the version
-   references (`packages/site/config.yml`, `BaseComponent.VERSION`, the Sass banner) and rebuilds
-   `dist/` and `js/dist/`, so their banners and the CDN URLs and SRI hashes in
-   `packages/site/config.yml` match the new version. The maintainer reviews the result, commits
-   it and pushes `develop`. The Changeset check skips that push, since it changes the version.
+1. On `develop`, a maintainer stops `pnpm dev` and runs `pnpm changeset:version`. It removes
+   the changesets, bumps the version in `packages/css/package.json`, writes the CHANGELOG entry,
+   updates the version references (`packages/site/config.yml`, `BaseComponent.VERSION`, the Sass
+   banner) and rebuilds `dist/` and `js/dist/`, so their banners and the CDN URLs and SRI hashes
+   in `packages/site/config.yml` match the new version. The new version in the Sass banner starts
+   the Sass watcher of `pnpm dev`, which would write `dist/css` while the step rebuilds it; the
+   step builds twice and fails when the two differ. The maintainer reviews the result, commits it
+   and pushes `develop`. The Changeset check skips that push, since it changes the version.
 2. CI runs on that commit. When it has passed, the maintainer pushes the same commit to `main`
    (`git push origin develop:main`), and to `staging` first when a preview is wanted. Neither push
    runs CI again: the results belong to the commit, and the ruleset of `main` requires them.

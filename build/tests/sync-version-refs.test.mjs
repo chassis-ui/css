@@ -173,13 +173,13 @@ describe('sync-version-refs.js', () => {
   })
 
   describe('the output', () => {
-    test('is rebuilt, with its SRI hashes, when a banner names another version', async () => {
+    test('is rebuilt twice, then its SRI hashes written, when a banner names another version', async () => {
       setup({ version: '0.6.0', references: '0.5.2' })
 
       const { status } = await sync()
 
       assert.equal(status, 0)
-      assert.deepEqual(pnpm.calls(), ['dist', 'release:sri'])
+      assert.deepEqual(pnpm.calls(), ['dist', 'dist', 'release:sri'])
     })
 
     test('is rebuilt when only the banners are behind', async () => {
@@ -187,7 +187,7 @@ describe('sync-version-refs.js', () => {
 
       await sync()
 
-      assert.deepEqual(pnpm.calls(), ['dist', 'release:sri'])
+      assert.deepEqual(pnpm.calls(), ['dist', 'dist', 'release:sri'])
     })
 
     test('is rebuilt when one banner is behind', async () => {
@@ -199,7 +199,37 @@ describe('sync-version-refs.js', () => {
 
       await sync()
 
-      assert.deepEqual(pnpm.calls(), ['dist', 'release:sri'])
+      assert.deepEqual(pnpm.calls(), ['dist', 'dist', 'release:sri'])
+    })
+
+    test('fails when the two builds write different output, before the SRI hashes', async () => {
+      setup({ version: '0.6.0', references: '0.5.2' })
+      // A second writer, as the Sass watcher of `pnpm dev`: each build leaves other content
+      pnpm = stubPnpm(
+        dir,
+        'if [ "$1" = dist ]; then echo "/* $$ */" >> packages/css/dist/css/chassis.css; fi'
+      )
+
+      const { status, stderr } = await sync()
+
+      assert.equal(status, 1)
+      assert.match(stderr, /Two builds wrote different output/)
+      assert.match(stderr, /packages\/css\/dist\/css\/chassis\.css$/m)
+      assert.match(stderr, /Stop `pnpm dev`/)
+      assert.deepEqual(pnpm.calls(), ['dist', 'dist'])
+    })
+
+    test('leaves the source maps out of the comparison', async () => {
+      setup({ version: '0.6.0', references: '0.5.2' })
+      pnpm = stubPnpm(
+        dir,
+        'if [ "$1" = dist ]; then echo "$$" > packages/css/dist/css/chassis.css.map; fi'
+      )
+
+      const { status } = await sync()
+
+      assert.equal(status, 0)
+      assert.deepEqual(pnpm.calls(), ['dist', 'dist', 'release:sri'])
     })
 
     test('fails when the build fails', async () => {

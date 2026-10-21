@@ -11,7 +11,9 @@
  * - packages/css/scss/mixins/_banner.scss: the banner of the compiled CSS
  * - packages/css/dist/ and packages/css/js/dist/: rebuilt when a banner names another version,
  *   and the SRI hashes of the CDN files in packages/site/config.yml written again for the
- *   rebuilt files
+ *   rebuilt files. The output is built twice and has to be the same both times: another build
+ *   writing it at the same time, such as the Sass watcher of `pnpm dev`, which the new version in
+ *   _banner.scss starts, makes the two differ, and the step fails before the hashes are written.
  *
  * It also moves the hand-written `## [Unreleased]` section of packages/css/CHANGELOG.md, from
  * before the move to Changesets, into the entry `changeset version` wrote, and removes the
@@ -27,6 +29,7 @@
 
 import { execFileSync } from 'node:child_process'
 import fs from 'node:fs/promises'
+import path from 'node:path'
 
 const SEMVER_RE = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z-.]+)?$/
 
@@ -56,6 +59,14 @@ const BANNER_FILES = [
   'packages/css/js/dist/base-component.js'
 ]
 const BANNER_RE = /Chassis(?: [\w.-]+)?(?: -)? {1,2}v(\S+) \(/
+
+// The output of `pnpm dist`, compared without its source maps, as verify-dist.js does
+const OUTPUT_DIRS = [
+  'packages/css/dist/css',
+  'packages/css/dist/tailwind',
+  'packages/css/dist/js',
+  'packages/css/js/dist'
+]
 
 function regExpQuote(string) {
   return string.replace(/[$()*+-.?[\\\]^{|}]/g, '\\$&')
@@ -184,8 +195,38 @@ async function foldUnreleased(version) {
 }
 
 /**
- * Rebuilds dist/ and js/dist/ when a banner names another version, then writes the SRI hashes
- * of the rebuilt CDN files into the site's config
+ * Reads the output of the build, without the source maps
+ * @returns {Promise<Map<string, string>>} The content by path
+ */
+async function readOutput() {
+  const output = new Map()
+
+  for (const dir of OUTPUT_DIRS) {
+    const entries = await fs
+      .readdir(dir, { recursive: true, withFileTypes: true })
+      .catch((error) => {
+        if (error.code === 'ENOENT') {
+          return []
+        }
+
+        throw error
+      })
+
+    for (const entry of entries) {
+      if (entry.isFile() && !entry.name.endsWith('.map')) {
+        const file = path.join(entry.parentPath, entry.name)
+        output.set(file, await fs.readFile(file, 'utf8'))
+      }
+    }
+  }
+
+  return output
+}
+
+/**
+ * Rebuilds dist/ and js/dist/ when a banner names another version, checks that a second build
+ * writes the same output, then writes the SRI hashes of the rebuilt CDN files into the site's
+ * config
  * @returns {Promise<boolean>} True if the output was rebuilt
  */
 async function syncBuild(version) {
@@ -209,6 +250,30 @@ async function syncBuild(version) {
 
   console.log(`🔨 ${stale} banners name another version, rebuilding dist/ and js/dist/`)
   execFileSync('pnpm', ['dist'], { stdio: 'inherit' })
+  const first = await readOutput()
+
+  console.log('🔨 Building again, to check that nothing else wrote the output')
+  execFileSync('pnpm', ['dist'], { stdio: 'inherit' })
+  const second = await readOutput()
+
+  const differs = [...new Set([...first.keys(), ...second.keys()])]
+    .filter((file) => first.get(file) !== second.get(file))
+    .sort()
+
+  if (differs.length > 0) {
+    console.error(
+      '❌ Two builds wrote different output, so another build wrote it at the same time:'
+    )
+    for (const file of differs) {
+      console.error(`   ${file}`)
+    }
+
+    console.error(
+      '   Stop `pnpm dev`, then run `pnpm dist && pnpm release:sri` and review the result.'
+    )
+    process.exit(1)
+  }
+
   execFileSync('pnpm', ['release:sri'], { stdio: 'inherit' })
   return true
 }
