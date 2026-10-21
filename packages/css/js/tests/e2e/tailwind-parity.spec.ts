@@ -58,7 +58,10 @@ type Curated = { testid: string; properties: string[] }
 // an inline minimum. The last ones are the rest of the vocabulary: end lines
 // and the auto resets (core's), subgrid, grid-flow-*, auto-cols-*, the
 // justify-* and place-* alignment and the ends of order (Chassis utilities
-// equal to core's), a grid under dir="rtl" and a nested grid.
+// equal to core's), a grid under dir="rtl" and a nested grid. After the
+// single utilities come the combinations that Tailwind's property order would
+// flip: a border or side class with a width or style class, and the three
+// text decoration classes on one element.
 //
 // dark:fg-primary is deliberately NOT here: Chassis's own utility generator
 // only flags a handful of utilities (display) with `dark: true`, so
@@ -112,7 +115,12 @@ const CURATED: Curated[] = [
   { testid: 'lg-font-xl', properties: ['fontSize'] },
   { testid: 'opacity-10', properties: ['opacity'] },
   { testid: 'border', properties: ['borderTopWidth', 'borderTopStyle', 'borderTopColor'] },
-  { testid: 'rounded-full', properties: ['borderRadius'] }
+  { testid: 'rounded-full', properties: ['borderRadius'] },
+  { testid: 'border-width', properties: ['borderTopWidth', 'borderBottomWidth'] },
+  { testid: 'border-bottom-width', properties: ['borderTopWidth', 'borderBottomWidth', 'borderBottomStyle'] },
+  { testid: 'border-top-style', properties: ['borderTopStyle', 'borderBottomStyle', 'borderLeftWidth'] },
+  { testid: 'card-in-styled', properties: ['borderTopStyle'] },
+  { testid: 'text-decoration', properties: ['textDecorationLine', 'textDecorationColor', 'textDecorationThickness'] }
 ]
 
 // Parses a CSS color function's numeric arguments (rgb/rgba/oklab/oklch/...).

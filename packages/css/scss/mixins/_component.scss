@@ -59,11 +59,17 @@
 /// Apply a full border shorthand using CSS custom properties.
 /// Optionally namespaces variables under a component prefix.
 ///
+/// Without a prefix it also sets `--border-style` on the component, as the
+/// components set `--border-width`, so a `.border-style-*` class on an
+/// ancestor does not reach the components inside it.
+///
 /// @param {String|null} $comp [null] - Component namespace; prepends `{comp}-` to variable names
 @mixin border($comp: null) {
   $-prefix: "";
   @if $comp {
     $-prefix: "#{$comp}-";
+  } @else {
+    --border-style: #{$border-style};
   }
   border: var(--#{$-prefix}border-width) var(--#{$-prefix}border-style) var(--#{$-prefix}border-color, transparent);
 }

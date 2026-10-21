@@ -91,13 +91,26 @@ Or, choose from any of the `.border-opacity` utilities:
 
 ## Width
 
-Border width utilities set `border-width` using the design token scale.
+Border width utilities set the `--cx-border-width` variable from the design token scale. The border classes and the components read it, so a width class changes the border of `.border`, a side class or a component, wherever its rule comes in the stylesheet. A width class alone draws no border.
 
 <Example class="cxd-example-border-utils" code={`<span class="border border-sm"></span>
 <span class="border border-md"></span>
 <span class="border border-lg"></span>
 <span class="border border-xl"></span>
 <span class="border border-2xl"></span>`} />
+
+<Example class="cxd-example-border-utils" code={`<span class="border-bottom border-lg"></span>
+<span class="border-start border-xl"></span>`} />
+
+## Style
+
+Border style utilities set the `--cx-border-style` variable, which the border classes and the components read. They set no `border-style` declaration, so a side class keeps the other sides without a border.
+
+<Example class="cxd-example-border-utils" code={`<span class="border border-style-dashed"></span>
+<span class="border-bottom border-style-dashed"></span>
+<span class="border border-lg border-style-dashed"></span>`} />
+
+A component sets `--cx-border-style` on itself, so a style class on an ancestor does not reach the components inside it. A style class on the component itself changes the border of the component, not a border its parts draw with a fixed `solid` style, such as the one under a card header.
 
 ## Radius
 

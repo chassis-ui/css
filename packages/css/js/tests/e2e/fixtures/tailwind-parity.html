@@ -215,5 +215,20 @@
     <div class="opacity-10" data-testid="opacity-10">Text</div>
     <div class="border" data-testid="border">Text</div>
     <div class="rounded-full" data-testid="rounded-full">Text</div>
+
+    <!-- A border or side class with a width or style class. The Tailwind
+         entry sorts the shorthands of the border classes after the longhands,
+         so these hold only while the width and style classes set variables.
+         The card inside the styled wrapper checks the style does not reach
+         a component. -->
+    <div class="border border-2xl" data-testid="border-width">Text</div>
+    <div class="border-bottom border-2xl" data-testid="border-bottom-width">Text</div>
+    <div class="border-top border-style-dashed" data-testid="border-top-style">Text</div>
+    <div class="border-style-dashed">
+      <div class="card" data-testid="card-in-styled">Text</div>
+    </div>
+    <div class="text-underline text-decoration-primary text-decoration-4" data-testid="text-decoration">
+      Text
+    </div>
   </body>
 </html>
