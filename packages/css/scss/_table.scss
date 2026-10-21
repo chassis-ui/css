@@ -31,6 +31,7 @@
     --active-bg-color: var(--table-active-bg-color, #{$table-active-bg-color});
 
     --border-width: var(--table-border-width, #{$table-border-width});
+    --border-style: #{$border-style};
     --border-color: var(--table-border-color, #{$table-border-color});
     --cue-color: var(--table-cue-color, #{$table-cue-color});
     --caption-color: var(--table-caption-color, #{$table-caption-color});
@@ -84,6 +85,7 @@
         color: var(--fg-color);
         background-color: var(--bg-color);
         border-color: var(--border-color);
+        border-style: var(--border-style);
         border-block-end-width: var(--border-width);
       }
       @if $enable-table-font-tokens {
@@ -160,7 +162,7 @@
     // table's top + start sides, then bottom + end on every cell — adjacent
     // cells share a single line, no doubling.
     &.bordered {
-      border-style: solid;
+      border-style: var(--border-style);
       border-width: var(--border-width) 0 0 var(--border-width);
       > :not(caption) > * {
         border-width: 0 var(--border-width) var(--border-width) 0;
@@ -328,7 +330,7 @@
           padding: var(--stacked-row-padding-y) var(--stacked-row-padding-x);
 
           + tr {
-            border-block-start: var(--border-width) solid var(--border-color);
+            border-block-start: var(--border-width) var(--border-style) var(--border-color);
           }
 
           > td {

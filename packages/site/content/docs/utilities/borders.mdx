@@ -110,7 +110,13 @@ Border style utilities set the `--cx-border-style` variable, which the border cl
 <span class="border-bottom border-style-dashed"></span>
 <span class="border border-lg border-style-dashed"></span>`} />
 
-A component sets `--cx-border-style` on itself, so a style class on an ancestor does not reach the components inside it. A style class on the component itself changes the border of the component, not a border its parts draw with a fixed `solid` style, such as the one under a card header.
+A component sets `--cx-border-style` on itself, so a style class on an ancestor does not reach the components inside it. A style class on the component itself changes its outline and the dividers between its parts, such as the line under a card header. A line that marks a state keeps its own style: the top of the active tab, the underline of the active link.
+
+<Example code={`<div class="card border-style-dashed">
+  <div class="card-header">Header</div>
+  <div class="card-body">The outline and both dividers are dashed.</div>
+  <div class="card-footer">Footer</div>
+</div>`} />
 
 ## Radius
 

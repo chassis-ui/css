@@ -120,6 +120,7 @@
   .nav-tabs {
     // scss-docs-start nav-tabs-css-vars
     --border-width: var(--nav-tabs-border-width, #{$nav-tabs-main-border-width});
+    --border-style: #{$border-style};
     --border-color: var(--nav-tabs-border-color, #{$nav-tabs-border-color});
     --link-border-radius: var(--nav-tabs-border-radius, #{$nav-tabs-medium-border-radius});
     --active-fg-color: var(--nav-tabs-active-fg-color, #{$nav-tabs-active-fg-color});
@@ -128,7 +129,7 @@
     --active-border-top-width: var(--nav-tabs-active-border-top-width, #{$nav-tabs-active-border-top-width});
     @include map-font($nav-tabs-medium-font, nav, link);
     // scss-docs-end nav-tabs-css-vars
-    border-block-end: var(--border-width) solid var(--border-color);
+    border-block-end: var(--border-width) var(--border-style) var(--border-color);
 
     &.lg {
       @include map-font($nav-tabs-large-font, nav, link);
@@ -141,7 +142,7 @@
     .nav-link {
       padding: calc(var(--padding-y) - var(--border-width)) calc(var(--padding-x) - var(--border-width));
       margin-block-end: calc(-1 * var(--border-width));
-      border: var(--border-width) solid transparent;
+      border: var(--border-width) var(--border-style) transparent;
       @include border-top-radius(var(--link-border-radius));
       @include border-bottom-radius(0);
 
@@ -225,6 +226,7 @@
     --gap: var(--nav-underline-gap, #{$nav-underline-medium-gap});
     --link-padding-x: var(--nav-underline-link-padding-x, #{$nav-underline-link-padding-x});
     --border-width: var(--nav-underline-border-width, #{$nav-underline-border-width});
+    --border-style: #{$border-style};
     --border-color: var(--nav-underline-border-color, #{$nav-underline-border-color});
     --active-fg-color: var(--nav-underline-active-fg-color, #{$nav-underline-active-fg-color});
     --active-bg-color: var(--nav-underline-active-bg-color, #{$nav-underline-active-bg-color});
@@ -233,7 +235,7 @@
     // scss-docs-end nav-underline-css-vars
 
     gap: var(--gap);
-    border-block-end: var(--border-width) solid var(--border-color);
+    border-block-end: var(--border-width) var(--border-style) var(--border-color);
 
     &.lg {
       --nav-underline-gap: #{$nav-underline-large-gap};
