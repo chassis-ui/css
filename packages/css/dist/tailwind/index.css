@@ -8370,6 +8370,7 @@
     --cx-border-width: var(--cx-toast-border-width, var(--cx-border-width-md));
     --cx-border-color: var(--cx-toast-border-color, var(--cx-border-subtle));
     --cx-border-radius: var(--cx-toast-border-radius, var(--cx-border-radius-md));
+    --cx-inner-border-radius: var(--cx-toast-inner-border-radius, calc(var(--cx-border-radius) - var(--cx-border-width)));
     --cx-box-shadow: var(--cx-toast-box-shadow, var(--cx-box-shadow-md));
     --cx-header-fg-color: var(--cx-toast-header-fg-color, var(--cx-fg-main));
     --cx-header-bg-color: var(--cx-toast-header-bg-color, var(--cx-dim-slight));
@@ -8406,8 +8407,8 @@
     color: var(--cx-header-fg-color);
     background-color: var(--cx-header-bg-color);
     border-block-end: var(--cx-border-width) var(--cx-border-style) var(--cx-header-border-color);
-    border-top-left-radius: calc(var(--cx-border-radius) - var(--cx-border-width));
-    border-top-right-radius: calc(var(--cx-border-radius) - var(--cx-border-width));
+    border-top-left-radius: var(--cx-inner-border-radius);
+    border-top-right-radius: var(--cx-inner-border-radius);
   }
   .toast-header > .close-button {
     --cx-close-button-fg-color: var(--cx-header-fg-color);
@@ -8418,8 +8419,8 @@
     gap: var(--cx-padding-y);
     padding: var(--cx-padding-x);
     border-block-start: var(--cx-border-width) var(--cx-border-style) var(--cx-header-border-color);
-    border-end-start-radius: calc(var(--cx-border-radius) - var(--cx-border-width));
-    border-end-end-radius: calc(var(--cx-border-radius) - var(--cx-border-width));
+    border-end-start-radius: var(--cx-inner-border-radius);
+    border-end-end-radius: var(--cx-inner-border-radius);
   }
   .toast-body {
     padding: var(--cx-padding-x);
