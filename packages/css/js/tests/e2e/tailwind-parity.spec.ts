@@ -2,7 +2,8 @@ import { compile } from '@tailwindcss/node'
 import { expect, test } from '@playwright/test'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { KNOWN_PAIR_DIFFERENCES } from './helpers/parity-known'
 
 // Renders js/tests/e2e/fixtures/tailwind-parity.html twice per scenario --
 // once against dist/css/chassis.css, once against a Tailwind build compiled
@@ -27,9 +28,135 @@ function extractClasses(html: string): string[] {
   return [...found].sort()
 }
 
-test.beforeAll(async () => {
+// Two utility classes on one element that set the same property, directly or
+// through a shorthand, resolve by the order of their rules. Sass writes the
+// rules in the order of the utility maps; Tailwind sorts its utilities by its
+// own property order, so the two builds can pick different winners (issue
+// 38). The pairs are generated from dist/tailwind/: the groups of merge.js,
+// which are the keys of the utility maps, and the declarations of
+// utilities.css. A pair of groups is tested when their properties share a
+// longhand, and with one class of each whose values on it differ, so the
+// winner shows: a shorthand and its longhand (`-m-2xl mb-0`), or two
+// properties that meet on one longhand (`rounded-bottom rounded-start-2xl`).
+// Groups that declare the same property (`font-normal font-elegant`) are left
+// out: the markup sets it twice, and either winner is right. A class that only
+// sets a variable cannot be reordered into a difference and makes no pair.
+type UtilityPair = { classes: [string, string]; properties: string[] }
+let utilityPairs: UtilityPair[] = []
+
+// Classes tried per group to find two whose values differ
+const PAIR_CANDIDATES = 8
+
+function readUtilityDeclarations(): Record<string, Record<string, string[]>> {
+  const declared: Record<string, string[]> = {}
+  const css = readFileSync(path.join(root, 'dist/tailwind/utilities.css'), 'utf8')
+  for (const m of css.matchAll(/@utility ([^\s{]+) \{([\s\S]*?)\n\}/g)) {
+    declared[m[1]] = [...m[2].matchAll(/^\s*([a-z][a-z-]*)\s*:/gm)].map((d) => d[1])
+  }
+  return declared
+}
+
+async function generateUtilityPairs(page: import('@playwright/test').Page): Promise<UtilityPair[]> {
+  const { classGroups } = (await import(pathToFileURL(path.join(root, 'dist/tailwind/merge.js')).href)) as {
+    classGroups: Record<string, string[]>
+  }
+  const declared = readUtilityDeclarations()
+  const groups: Record<string, Record<string, string[]>> = {}
+  for (const [group, classes] of Object.entries(classGroups)) {
+    const candidates = classes.filter((name) => declared[name]?.length).slice(0, PAIR_CANDIDATES)
+    if (candidates.length > 0) {
+      groups[group] = Object.fromEntries(candidates.map((name) => [name, declared[name]]))
+    }
+  }
+
+  // The values come from dist/css/chassis.css, and the longhands from the browser
+  await page.goto('/js/tests/e2e/fixtures/tailwind-parity.html?mode=chassis')
+  await page.waitForSelector('html[data-css-loaded]')
+  return page.evaluate((groupsArg) => {
+    const LOGICAL: Record<string, string> = {
+      'block-start': 'top',
+      'block-end': 'bottom',
+      'inline-start': 'left',
+      'inline-end': 'right'
+    }
+    // The fixture is horizontal and left to right: a logical longhand is the physical one it sets
+    const physical = (name: string) =>
+      name
+        .replace(/block-start|block-end|inline-start|inline-end/, (m) => LOGICAL[m])
+        .replace(/^inset-(top|bottom|left|right)$/, '$1')
+        .replace(
+          /^border-(start|end)-(start|end)-radius$/,
+          (m, block, inline) => `border-${block === 'start' ? 'top' : 'bottom'}-${inline === 'start' ? 'left' : 'right'}-radius`
+        )
+    const longhands = (name: string) => {
+      const probe = document.createElement('div')
+      probe.style.setProperty(name, 'initial')
+      return ([...probe.style].length > 0 ? [...probe.style] : [name]).map(physical)
+    }
+
+    const props = Object.fromEntries(
+      Object.entries(groupsArg).map(([group, classes]) => [
+        group,
+        new Set(Object.values(classes).flat().flatMap(longhands))
+      ])
+    )
+    const allProperties = [...new Set(Object.values(props).flatMap((set) => [...set]))]
+
+    // A child too, for the classes that style the children of their element (`divide-*`)
+    const values = new Map<string, Record<string, string>>()
+    const read = (name: string, properties: string[]) => {
+      if (!values.has(name)) {
+        const el = document.createElement('div')
+        el.className = name
+        el.innerHTML = '<span></span><span></span>'
+        document.body.append(el)
+        const self = getComputedStyle(el)
+        const child = getComputedStyle(el.lastElementChild as Element)
+        const all: Record<string, string> = {}
+        for (const property of allProperties) {
+          all[property] = self.getPropertyValue(property)
+          all[`> ${property}`] = child.getPropertyValue(property)
+        }
+        el.remove()
+        values.set(name, all)
+      }
+      const all = values.get(name) as Record<string, string>
+      return properties.map((property) => all[property])
+    }
+
+    const declaredNames = Object.fromEntries(
+      Object.entries(groupsArg).map(([group, classes]) => [group, new Set(Object.values(classes).flat())])
+    )
+    const names = Object.keys(groupsArg)
+    const pairs: { classes: [string, string]; properties: string[] }[] = []
+    for (let i = 0; i < names.length; i++) {
+      for (let j = i + 1; j < names.length; j++) {
+        const shared = [...props[names[i]]].filter((property) => props[names[j]].has(property))
+        if (shared.length === 0) continue
+        if ([...declaredNames[names[i]]].some((name) => declaredNames[names[j]].has(name))) continue
+        const properties = shared.flatMap((property) => [property, `> ${property}`])
+        found: for (const a of Object.keys(groupsArg[names[i]])) {
+          const valuesA = read(a, properties)
+          for (const b of Object.keys(groupsArg[names[j]])) {
+            if (read(b, properties).some((value, k) => value !== valuesA[k])) {
+              pairs.push({ classes: [a, b], properties })
+              break found
+            }
+          }
+        }
+      }
+    }
+    return pairs
+  }, groups)
+}
+
+test.beforeAll(async ({ browser }) => {
+  const page = await browser.newPage()
+  utilityPairs = await generateUtilityPairs(page)
+  await page.close()
+
   const html = readFileSync(fixturePath, 'utf8')
-  const candidates = extractClasses(html)
+  const candidates = [...new Set([...extractClasses(html), ...utilityPairs.flatMap((pair) => pair.classes)])]
   const compiler = await compile('@import "@chassis-ui/css/tailwind";', {
     base: root,
     onDependency: () => {}
@@ -222,6 +349,49 @@ for (const viewport of VIEWPORTS) {
     })
   }
 }
+
+test('utility classes that set the same property resolve alike in both builds', async ({ page }) => {
+  // A generator that finds nothing would pass: today it finds well over a hundred pairs
+  expect(utilityPairs.length).toBeGreaterThan(50)
+
+  const capture = async (mode: 'chassis' | 'tailwind') => {
+    await page.goto(`/js/tests/e2e/fixtures/tailwind-parity.html?mode=${mode}`)
+    await page.waitForSelector('html[data-css-loaded]')
+    return page.evaluate((pairs) =>
+      pairs.map(({ classes, properties }) => {
+        const el = document.createElement('div')
+        el.className = classes.join(' ')
+        el.innerHTML = '<span></span><span></span>'
+        document.body.append(el)
+        const self = getComputedStyle(el)
+        const child = getComputedStyle(el.lastElementChild as Element)
+        return Object.fromEntries(
+          properties.map((property) => [
+            property,
+            property.startsWith('> ') ? child.getPropertyValue(property.slice(2)) : self.getPropertyValue(property)
+          ])
+        )
+      }), utilityPairs)
+  }
+
+  const chassis = await capture('chassis')
+  const tailwind = await capture('tailwind')
+
+  const differences = new Map<string, string>()
+  utilityPairs.forEach(({ classes, properties }, i) => {
+    for (const property of properties) {
+      if (!valuesMatch(chassis[i][property], tailwind[i][property])) {
+        differences.set(`${classes.join(' ')}: ${property}`, `chassis="${chassis[i][property]}" tailwind="${tailwind[i][property]}"`)
+      }
+    }
+  })
+
+  const known = new Set(KNOWN_PAIR_DIFFERENCES.map(({ classes, property }) => `${classes}: ${property}`))
+  const unknown = [...differences].filter(([key]) => !known.has(key)).map(([key, values]) => `${key} ${values}`)
+  const stale = [...known].filter((key) => !differences.has(key))
+  expect(unknown, `Differences not in helpers/parity-known.ts:\n${unknown.join('\n')}`).toEqual([])
+  expect(stale, `Entries of helpers/parity-known.ts that no longer differ:\n${stale.join('\n')}`).toEqual([])
+})
 
 // The parity loop above passes when both builds ignore a class alike, so this
 // pins what the container cases compute to: the band of the container (three
