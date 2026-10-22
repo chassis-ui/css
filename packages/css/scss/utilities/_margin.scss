@@ -31,6 +31,8 @@ $-negative-margin-values: () !default;
 $utilities: (
   // Margin utilities
   // scss-docs-start utils-margin
+  // Each negative margin follows its positive one, and the shorthands come before the
+  // longhands, so a longhand class wins over a shorthand, as in the Tailwind entry
   "margin": (
     responsive: true,
     container: false,
@@ -38,49 +40,6 @@ $utilities: (
     class: m,
     values: $-margin-values
   ),
-  "margin-x": (
-    responsive: true,
-    container: false,
-    property: margin-inline,
-    class: mx,
-    values: $-margin-values
-  ),
-  "margin-y": (
-    responsive: true,
-    container: false,
-    property: margin-block,
-    class: my,
-    values: $-margin-values
-  ),
-  "margin-top": (
-    responsive: true,
-    container: false,
-    property: margin-block-start,
-    class: mt,
-    values: $-margin-values
-  ),
-  "margin-end": (
-    responsive: true,
-    container: false,
-    property: margin-inline-end,
-    class: me,
-    values: $-margin-values
-  ),
-  "margin-bottom": (
-    responsive: true,
-    container: false,
-    property: margin-block-end,
-    class: mb,
-    values: $-margin-values
-  ),
-  "margin-start": (
-    responsive: true,
-    container: false,
-    property: margin-inline-start,
-    class: ms,
-    values: $-margin-values
-  ),
-  // Negative margin utilities
   "negative-margin": (
     responsive: true,
     container: false,
@@ -88,6 +47,13 @@ $utilities: (
     class: -m,
     enabled: $enable-negative-margins,
     values: $-negative-margin-values
+  ),
+  "margin-x": (
+    responsive: true,
+    container: false,
+    property: margin-inline,
+    class: mx,
+    values: $-margin-values
   ),
   "negative-margin-x": (
     responsive: true,
@@ -97,6 +63,13 @@ $utilities: (
     enabled: $enable-negative-margins,
     values: $-negative-margin-values
   ),
+  "margin-y": (
+    responsive: true,
+    container: false,
+    property: margin-block,
+    class: my,
+    values: $-margin-values
+  ),
   "negative-margin-y": (
     responsive: true,
     container: false,
@@ -104,6 +77,13 @@ $utilities: (
     class: -my,
     enabled: $enable-negative-margins,
     values: $-negative-margin-values
+  ),
+  "margin-top": (
+    responsive: true,
+    container: false,
+    property: margin-block-start,
+    class: mt,
+    values: $-margin-values
   ),
   "negative-margin-top": (
     responsive: true,
@@ -113,6 +93,13 @@ $utilities: (
     enabled: $enable-negative-margins,
     values: $-negative-margin-values
   ),
+  "margin-end": (
+    responsive: true,
+    container: false,
+    property: margin-inline-end,
+    class: me,
+    values: $-margin-values
+  ),
   "negative-margin-end": (
     responsive: true,
     container: false,
@@ -121,6 +108,13 @@ $utilities: (
     enabled: $enable-negative-margins,
     values: $-negative-margin-values
   ),
+  "margin-bottom": (
+    responsive: true,
+    container: false,
+    property: margin-block-end,
+    class: mb,
+    values: $-margin-values
+  ),
   "negative-margin-bottom": (
     responsive: true,
     container: false,
@@ -128,6 +122,13 @@ $utilities: (
     class: -mb,
     enabled: $enable-negative-margins,
     values: $-negative-margin-values
+  ),
+  "margin-start": (
+    responsive: true,
+    container: false,
+    property: margin-inline-start,
+    class: ms,
+    values: $-margin-values
   ),
   "negative-margin-start": (
     responsive: true,

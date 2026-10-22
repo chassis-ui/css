@@ -47,6 +47,45 @@ $utilities: (
     class: flex,
     values: wrap nowrap wrap-reverse
   ),
+  // The place-* shorthands come before the longhands they set, so a longhand class wins
+  // over them, as in the Tailwind entry
+  "place-items": (
+    responsive: true,
+    container: true,
+    property: place-items,
+    values: (
+      start: start,
+      end: end,
+      center: center,
+      stretch: stretch,
+    )
+  ),
+  "place-content": (
+    responsive: true,
+    container: true,
+    property: place-content,
+    values: (
+      start: start,
+      end: end,
+      center: center,
+      between: space-between,
+      around: space-around,
+      evenly: space-evenly,
+      stretch: stretch,
+    )
+  ),
+  "place-self": (
+    responsive: true,
+    container: true,
+    property: place-self,
+    values: (
+      auto: auto,
+      start: start,
+      end: end,
+      center: center,
+      stretch: stretch,
+    )
+  ),
   "justify-content": (
     responsive: true,
     container: true,
@@ -112,43 +151,6 @@ $utilities: (
       5: 5,
       last: 9999,
     ),
-  ),
-  "place-items": (
-    responsive: true,
-    container: true,
-    property: place-items,
-    values: (
-      start: start,
-      end: end,
-      center: center,
-      stretch: stretch,
-    )
-  ),
-  "place-content": (
-    responsive: true,
-    container: true,
-    property: place-content,
-    values: (
-      start: start,
-      end: end,
-      center: center,
-      between: space-between,
-      around: space-around,
-      evenly: space-evenly,
-      stretch: stretch,
-    )
-  ),
-  "place-self": (
-    responsive: true,
-    container: true,
-    property: place-self,
-    values: (
-      auto: auto,
-      start: start,
-      end: end,
-      center: center,
-      stretch: stretch,
-    )
   ),
   "justify-items": (
     responsive: true,
