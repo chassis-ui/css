@@ -67,11 +67,8 @@ $utilities: (
       ( "border-reset": inherit )
     )
   ),
-  // The width and style classes set only the variables the border classes
-  // read, so `border-bottom border-xl` works whichever rule comes last; the
-  // Tailwind entry sorts the shorthands after the longhands.
   "border-width": (
-    property: --border-width,
+    property: border-width,
     class: border,
     values: map-loop($border-widths, varify, "$key", "border-width")
   ),
@@ -138,7 +135,7 @@ $utilities: (
   ),
   // scss-docs-end utils-border-radius
   "border-style": (
-    property: --border-style,
+    property: border-style,
     class: border-style,
     values: (inherit, none, solid, dashed)
   )

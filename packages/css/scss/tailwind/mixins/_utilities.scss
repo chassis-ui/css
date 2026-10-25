@@ -38,12 +38,48 @@
 @mixin generate-tailwind-utilities($utilities, $important-properties: ()) {
   @each $key, $utility in $utilities {
     @if meta.type-of($utility) == "map" and map.get($utility, enabled) != false {
-      @include generate-tailwind-utility($utility, $important-properties);
+      @include generate-tailwind-utility($utility, $important-properties, -compound-selector($utilities, $key));
     }
   }
 }
 
-@mixin generate-tailwind-utility($utility, $important-properties: ()) {
+// The utilities whose classes must win over the classes of other entries on
+// the same element, keyed by `$utilities` key. Tailwind sorts `.border` and
+// the side classes after the width and style classes, since their `border`
+// and `border-block-*` shorthands are not in its property order, so a width
+// or style class gets a second rule for an element that also has one of them:
+// `.border-2xl:is(.border, .border-bottom, …)` wins on specificity in any
+// order, as the later rule does in dist/css (issue 38).
+$-compound-modifiers: (
+  "border-width": ("border", "border-top", "border-end", "border-bottom", "border-start"),
+  "border-style": ("border", "border-top", "border-end", "border-bottom", "border-start")
+) !default;
+
+// The `:is(…)` selector of the classes the utility at `$key` must win over,
+// or null.
+@function -compound-selector($utilities, $key) {
+  $targets: map.get($-compound-modifiers, $key);
+  @if not $targets {
+    @return null;
+  }
+
+  $classes: ();
+  @each $target in $targets {
+    $target-utility: map.get($utilities, $target);
+    @if meta.type-of($target-utility) == "map" and map.get($target-utility, enabled) != false {
+      @each $name in tailwind-utility-names($target-utility) {
+        $classes: list.append($classes, ".#{$name}", comma);
+      }
+    }
+  }
+
+  @if list.length($classes) == 0 {
+    @return null;
+  }
+  @return ":is(#{$classes})";
+}
+
+@mixin generate-tailwind-utility($utility, $important-properties: (), $compound: null) {
   // Validate required keys (same contract as generate-utility)
   @if not map.has-key($utility, property) {
     @error "Utility is missing required `property` key: #{$utility}";
@@ -110,6 +146,11 @@
             }
           } @else {
             @include tailwind-utility-body($utility, $property-map, $properties, $value, $child-sel, $force-important);
+          }
+          @if $compound {
+            &#{$compound} {
+              @include tailwind-utility-body($utility, $property-map, $properties, $value, $child-sel, $force-important);
+            }
           }
         }
       }

@@ -187,7 +187,7 @@ type Curated = { testid: string; properties: string[] }
 // justify-* and place-* alignment and the ends of order (Chassis utilities
 // equal to core's), a grid under dir="rtl" and a nested grid. After the
 // single utilities come the combinations that Tailwind's property order would
-// flip: a border or side class with a width or style class, and the three
+// flip: a border or side class with a width class, and the three
 // text decoration classes on one element.
 //
 // dark:fg-primary is deliberately NOT here: Chassis's own utility generator
@@ -245,8 +245,6 @@ const CURATED: Curated[] = [
   { testid: 'rounded-full', properties: ['borderRadius'] },
   { testid: 'border-width', properties: ['borderTopWidth', 'borderBottomWidth'] },
   { testid: 'border-bottom-width', properties: ['borderTopWidth', 'borderBottomWidth', 'borderBottomStyle'] },
-  { testid: 'border-top-style', properties: ['borderTopStyle', 'borderBottomStyle', 'borderLeftWidth'] },
-  { testid: 'card-in-styled', properties: ['borderTopStyle'] },
   { testid: 'text-decoration', properties: ['textDecorationLine', 'textDecorationColor', 'textDecorationThickness'] }
 ]
 

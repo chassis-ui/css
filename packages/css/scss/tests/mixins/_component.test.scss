@@ -145,7 +145,7 @@
 }
 
 @include describe("border mixin") {
-  @include it("sets the border style and applies the border without namespace") {
+  @include it("applies border with fallback values without namespace") {
     @include assert() {
       @include output() {
         .test-border-no-namespace {
@@ -154,7 +154,6 @@
       }
       @include expect() {
         .test-border-no-namespace {
-          --border-style: solid;
           border: var(--border-width) var(--border-style) var(--border-color, transparent);
         }
       }

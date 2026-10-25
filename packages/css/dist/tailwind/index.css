@@ -1622,14 +1622,12 @@
     --cx-border-width: var(--cx-border-width-lg);
     --cx-border-color: var(--cx-context-base-color);
     --cx-separator-color: var(--cx-context-base-color);
-    --cx-border-style: solid;
     border: var(--cx-border-width) var(--cx-border-style) var(--cx-border-color, transparent);
   }
   .toast, .popover, .notification, .menu, .input-addon, .form-input::file-selector-button, .datepicker, .chip, .card, .button, .breadcrumb, .badge, .alert, .form-input {
     font: var(--cx-font-weight) var(--cx-font-size)/var(--cx-line-height) var(--cx-font-family);
     color: var(--cx-fg-color);
     background-color: var(--cx-bg-color);
-    --cx-border-style: solid;
     border: var(--cx-border-width) var(--cx-border-style) var(--cx-border-color, transparent);
     border-radius: var(--cx-border-radius);
   }
@@ -2465,7 +2463,6 @@
     vertical-align: middle;
     background-color: var(--cx-bg-color);
     border-radius: var(--cx-border-radius);
-    --cx-border-style: solid;
     border: var(--cx-border-width) var(--cx-border-style) var(--cx-border-color, transparent);
     transition: var(--cx-transition);
   }
@@ -6693,7 +6690,6 @@
     width: var(--cx-image-size);
     height: var(--cx-image-size);
     object-fit: cover;
-    --cx-border-style: solid;
     border: var(--cx-border-width) var(--cx-border-style) var(--cx-border-color, transparent);
     border-radius: var(--cx-border-radius-md);
   }
@@ -7051,7 +7047,6 @@
   }
   .nav-tabs {
     --cx-border-width: var(--cx-nav-tabs-border-width, var(--cx-border-width-md));
-    --cx-border-style: solid;
     --cx-border-color: var(--cx-nav-tabs-border-color, var(--cx-border-subtle));
     --cx-link-border-radius: var(--cx-nav-tabs-border-radius, var(--cx-border-radius-md));
     --cx-active-fg-color: var(--cx-nav-tabs-active-fg-color, var(--cx-fg-main));
@@ -7147,7 +7142,6 @@
     --cx-gap: var(--cx-nav-underline-gap, var(--cx-space-md));
     --cx-link-padding-x: var(--cx-nav-underline-link-padding-x, 0);
     --cx-border-width: var(--cx-nav-underline-border-width, var(--cx-border-width-md));
-    --cx-border-style: solid;
     --cx-border-color: var(--cx-nav-underline-border-color, var(--cx-border-subtle));
     --cx-active-fg-color: var(--cx-nav-underline-active-fg-color, var(--cx-fg-main));
     --cx-active-bg-color: var(--cx-nav-underline-active-bg-color, transparent);
@@ -7776,7 +7770,6 @@
     transform: translateZ(0);
   }
   .pagination.bordered .pagination-link, .pagination.grouped .pagination-link {
-    --cx-border-style: solid;
     border: var(--cx-border-width) var(--cx-border-style) var(--cx-border-color, transparent);
   }
   .pagination.bordered {
@@ -9405,7 +9398,6 @@
     --cx-active-fg-color: var(--cx-table-active-fg-color, var(--cx-default-fg-main));
     --cx-active-bg-color: var(--cx-table-active-bg-color, var(--cx-default-bg-highlight));
     --cx-border-width: var(--cx-table-border-width, var(--cx-border-width-md));
-    --cx-border-style: solid;
     --cx-border-color: var(--cx-table-border-color, var(--cx-default-border-subtle));
     --cx-cue-color: var(--cx-table-cue-color, var(--cx-default-cue-main));
     --cx-caption-color: var(--cx-table-caption-color, var(--cx-fg-subtle));
@@ -10061,22 +10053,40 @@
   --cx-border-color: inherit;
 }
 @utility border-zero {
-  --cx-border-width: var(--cx-border-width-zero);
+  border-width: var(--cx-border-width-zero);
+  &:is(.border, .border-0, .border-top, .border-top-0, .border-end, .border-end-0, .border-bottom, .border-bottom-0, .border-start, .border-start-0) {
+    border-width: var(--cx-border-width-zero);
+  }
 }
 @utility border-sm {
-  --cx-border-width: var(--cx-border-width-sm);
+  border-width: var(--cx-border-width-sm);
+  &:is(.border, .border-0, .border-top, .border-top-0, .border-end, .border-end-0, .border-bottom, .border-bottom-0, .border-start, .border-start-0) {
+    border-width: var(--cx-border-width-sm);
+  }
 }
 @utility border-md {
-  --cx-border-width: var(--cx-border-width-md);
+  border-width: var(--cx-border-width-md);
+  &:is(.border, .border-0, .border-top, .border-top-0, .border-end, .border-end-0, .border-bottom, .border-bottom-0, .border-start, .border-start-0) {
+    border-width: var(--cx-border-width-md);
+  }
 }
 @utility border-lg {
-  --cx-border-width: var(--cx-border-width-lg);
+  border-width: var(--cx-border-width-lg);
+  &:is(.border, .border-0, .border-top, .border-top-0, .border-end, .border-end-0, .border-bottom, .border-bottom-0, .border-start, .border-start-0) {
+    border-width: var(--cx-border-width-lg);
+  }
 }
 @utility border-xl {
-  --cx-border-width: var(--cx-border-width-xl);
+  border-width: var(--cx-border-width-xl);
+  &:is(.border, .border-0, .border-top, .border-top-0, .border-end, .border-end-0, .border-bottom, .border-bottom-0, .border-start, .border-start-0) {
+    border-width: var(--cx-border-width-xl);
+  }
 }
 @utility border-2xl {
-  --cx-border-width: var(--cx-border-width-2xl);
+  border-width: var(--cx-border-width-2xl);
+  &:is(.border, .border-0, .border-top, .border-top-0, .border-end, .border-end-0, .border-bottom, .border-bottom-0, .border-start, .border-start-0) {
+    border-width: var(--cx-border-width-2xl);
+  }
 }
 @utility border-opacity-solid {
   --cx-border-opacity: var(--cx-opacity-solid);
@@ -10333,16 +10343,28 @@
   border-start-start-radius: var(--cx-border-radius-circle);
 }
 @utility border-style-inherit {
-  --cx-border-style: inherit;
+  border-style: inherit;
+  &:is(.border, .border-0, .border-top, .border-top-0, .border-end, .border-end-0, .border-bottom, .border-bottom-0, .border-start, .border-start-0) {
+    border-style: inherit;
+  }
 }
 @utility border-style-none {
-  --cx-border-style: none;
+  border-style: none;
+  &:is(.border, .border-0, .border-top, .border-top-0, .border-end, .border-end-0, .border-bottom, .border-bottom-0, .border-start, .border-start-0) {
+    border-style: none;
+  }
 }
 @utility border-style-solid {
-  --cx-border-style: solid;
+  border-style: solid;
+  &:is(.border, .border-0, .border-top, .border-top-0, .border-end, .border-end-0, .border-bottom, .border-bottom-0, .border-start, .border-start-0) {
+    border-style: solid;
+  }
 }
 @utility border-style-dashed {
-  --cx-border-style: dashed;
+  border-style: dashed;
+  &:is(.border, .border-0, .border-top, .border-top-0, .border-end, .border-end-0, .border-bottom, .border-bottom-0, .border-start, .border-start-0) {
+    border-style: dashed;
+  }
 }
 @utility flex-fill {
   flex: 1;

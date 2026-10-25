@@ -53,7 +53,7 @@ Divide content by adding a border between the direct children of an element. App
 
 ## How it works
 
-Divide utilities apply `border-inline-start` (`.divide-x`) or `border-block-start` (`.divide-y`) to every direct child except the first, via a `:not(:first-child)` child selector. The selector is wrapped in `:where()` for zero specificity, making overrides straightforward. Border appearance is controlled by `--cx-border-width`, `--cx-border-style`, and `--cx-border-color`. The border width, style and color classes set these variables, so `.border-lg`, `.border-style-dashed` or `.border-primary` on the parent changes its dividers.
+Divide utilities apply `border-inline-start` (`.divide-x`) or `border-block-start` (`.divide-y`) to every direct child except the first, via a `:not(:first-child)` child selector. The selector is wrapped in `:where()` for zero specificity, making overrides straightforward. Border appearance is controlled by `--cx-border-width`, `--cx-border-style`, and `--cx-border-color`.
 
 ```css
 :where(.divide-x > :not(:first-child)) {
