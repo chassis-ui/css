@@ -3,7 +3,7 @@
 * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
 * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
 */
-//#region js/src/dom/event-handler.ts
+// js/src/dom/event-handler.ts
 /**
 * Constants
 */
@@ -202,7 +202,6 @@ function hydrateObj(obj, meta = {}) {
 	}
 	return obj;
 }
-//#endregion
 export { EventHandler as default };
 
 //# sourceMappingURL=event-handler.js.map

@@ -7,7 +7,7 @@ import SelectorEngine from "../dom/selector-engine.js";
 import Config from "./config.js";
 import { DefaultAllowlist, sanitizeHtml } from "./sanitizer.js";
 import { execute, getElement, isElement } from "./index.js";
-//#region js/src/util/template-factory.ts
+// js/src/util/template-factory.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS util/template-factory.ts
@@ -123,7 +123,6 @@ var TemplateFactory = class extends Config {
 		templateElement.textContent = element.textContent;
 	}
 };
-//#endregion
 export { TemplateFactory as default };
 
 //# sourceMappingURL=template-factory.js.map

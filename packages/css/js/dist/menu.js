@@ -9,7 +9,7 @@ import EventHandler from "./dom/event-handler.js";
 import Manipulator from "./dom/manipulator.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import { ARROW_DOWN_KEY, ARROW_LEFT_KEY, ARROW_RIGHT_KEY, ARROW_UP_KEY, END_KEY, ENTER_KEY, ESCAPE_KEY, HOME_KEY, SPACE_KEY, TAB_KEY, getElement, getNextActiveElement, isDisabled, isElement, isRTL, isVisible, noop } from "./util/index.js";
-//#region js/src/menu.ts
+// js/src/menu.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS menu.ts
@@ -691,7 +691,6 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function(e
 	event._chassisMenuToggled = true;
 	instance.toggle();
 });
-//#endregion
 export { Menu as default };
 
 //# sourceMappingURL=menu.js.map

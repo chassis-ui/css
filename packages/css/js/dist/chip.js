@@ -7,7 +7,7 @@ import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import { enableDismissTrigger } from "./util/component-functions.js";
 import { setAriaAttribute } from "./util/index.js";
-//#region js/src/chip.ts
+// js/src/chip.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS chip.ts
@@ -52,7 +52,6 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, (event) =>
 	Chip.getOrCreateInstance(chip).toggle();
 });
 enableDismissTrigger(Chip, "close");
-//#endregion
 export { Chip as default };
 
 //# sourceMappingURL=chip.js.map

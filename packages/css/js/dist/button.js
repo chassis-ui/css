@@ -6,7 +6,7 @@
 import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import { setAriaAttribute } from "./util/index.js";
-//#region js/src/button.ts
+// js/src/button.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS button.ts
@@ -41,7 +41,6 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, (event) =>
 	const button = event.target.closest(SELECTOR_DATA_TOGGLE);
 	Button.getOrCreateInstance(button).toggle();
 });
-//#endregion
 export { Button as default };
 
 //# sourceMappingURL=button.js.map

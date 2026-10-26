@@ -6,7 +6,7 @@
 import EventHandler from "../dom/event-handler.js";
 import SelectorEngine from "../dom/selector-engine.js";
 import { isDisabled, preventNavigationForAnchor } from "./index.js";
-//#region js/src/util/component-functions.ts
+// js/src/util/component-functions.ts
 const enableDismissTrigger = (component, method = "hide") => {
 	const clickEvent = `click.dismiss${component.EVENT_KEY}`;
 	const name = component.NAME;
@@ -39,7 +39,6 @@ const eventAction = (onEvent, stringSelector, callback) => {
 		});
 	});
 };
-//#endregion
 export { enableDismissTrigger, eventActionOnPlugin };
 
 //# sourceMappingURL=component-functions.js.map

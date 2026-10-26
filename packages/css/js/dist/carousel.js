@@ -8,7 +8,7 @@ import EventHandler from "./dom/event-handler.js";
 import Manipulator from "./dom/manipulator.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import { ARROW_LEFT_KEY, ARROW_RIGHT_KEY, cssVar, isRTL, isVisible } from "./util/index.js";
-//#region js/src/carousel.ts
+// js/src/carousel.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS carousel.ts
@@ -541,7 +541,6 @@ EventHandler.on(window, EVENT_LOAD_DATA_API, () => {
 	const carousels = SelectorEngine.find(SELECTOR_DATA_AUTOPLAY);
 	for (const carousel of carousels) Carousel.getOrCreateInstance(carousel);
 });
-//#endregion
 export { Carousel as default };
 
 //# sourceMappingURL=carousel.js.map

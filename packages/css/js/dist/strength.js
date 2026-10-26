@@ -7,7 +7,7 @@ import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import { cssVar } from "./util/index.js";
-//#region js/src/strength.ts
+// js/src/strength.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS strength.ts
@@ -167,7 +167,6 @@ var Strength = class extends BaseComponent {
 EventHandler.on(document, `DOMContentLoaded${EVENT_KEY}${DATA_API_KEY}`, () => {
 	for (const element of SelectorEngine.find(SELECTOR_DATA_STRENGTH)) Strength.getOrCreateInstance(element);
 });
-//#endregion
 export { Strength as default };
 
 //# sourceMappingURL=strength.js.map

@@ -6,7 +6,7 @@
 import { arrow, flip, offset, shift } from "@floating-ui/dom";
 import BaseComponent from "./base-component.js";
 import { cssVar, execute } from "./util/index.js";
-//#region js/src/floating-base.ts
+// js/src/floating-base.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS floating-base.ts
@@ -150,7 +150,6 @@ var FloatingBase = class FloatingBase extends BaseComponent {
 		}
 	}
 };
-//#endregion
 export { FloatingBase as default };
 
 //# sourceMappingURL=floating-base.js.map

@@ -7,7 +7,7 @@ import { Calendar } from "vanilla-calendar-pro";
 import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import { isDisabled } from "./util/index.js";
-//#region js/src/datepicker.ts
+// js/src/datepicker.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS datepicker.ts
@@ -380,7 +380,6 @@ EventHandler.on(document, EVENT_FOCUSIN_DATA_API, SELECTOR_DATA_TOGGLE, function
 EventHandler.on(document, `DOMContentLoaded${EVENT_KEY}${DATA_API_KEY}`, () => {
 	for (const element of document.querySelectorAll(`${SELECTOR_DATA_TOGGLE}[data-cx-inline="true"]`)) Datepicker.getOrCreateInstance(element);
 });
-//#endregion
 export { Datepicker as default };
 
 //# sourceMappingURL=datepicker.js.map

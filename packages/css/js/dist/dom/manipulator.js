@@ -3,7 +3,7 @@
 * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
 * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
 */
-//#region js/src/dom/manipulator.ts
+// js/src/dom/manipulator.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS dom/manipulator.ts
@@ -47,7 +47,6 @@ const Manipulator = {
 		return normalizeData(element.getAttribute(`data-cx-${normalizeDataKey(key)}`));
 	}
 };
-//#endregion
 export { Manipulator as default };
 
 //# sourceMappingURL=manipulator.js.map

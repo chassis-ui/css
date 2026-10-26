@@ -3,7 +3,7 @@
 * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
 * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
 */
-//#region js/src/util/index.ts
+// js/src/util/index.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS util/index.ts
@@ -175,7 +175,6 @@ const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed
 const cssVar = (name) => {
 	return `--${getComputedStyle(document.documentElement).getPropertyValue("--chassis-prefix").trim()}${name}`;
 };
-//#endregion
 export { ARROW_DOWN_KEY, ARROW_LEFT_KEY, ARROW_RIGHT_KEY, ARROW_UP_KEY, BACKSPACE_KEY, DELETE_KEY, END_KEY, ENTER_KEY, ESCAPE_KEY, HOME_KEY, SPACE_KEY, TAB_KEY, cssVar, execute, executeAfterTransition, findShadowRoot, getClipboardText, getElement, getNextActiveElement, getTransitionDurationFromElement, getUID, isDisabled, isElement, isRTL, isVisible, noop, onDOMContentLoaded, parseSelector, preventNavigationForAnchor, reflow, setAriaAttribute, toType, triggerTransitionEnd };
 
 //# sourceMappingURL=index.js.map

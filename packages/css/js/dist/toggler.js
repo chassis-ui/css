@@ -6,7 +6,7 @@
 import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import { eventActionOnPlugin } from "./util/component-functions.js";
-//#region js/src/toggler.ts
+// js/src/toggler.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS toggler.ts
@@ -67,7 +67,6 @@ var Toggler = class extends BaseComponent {
 * Data API implementation
 */
 eventActionOnPlugin(Toggler, EVENT_CLICK, SELECTOR_DATA_TOGGLE, "toggle");
-//#endregion
 export { Toggler as default };
 
 //# sourceMappingURL=toggler.js.map

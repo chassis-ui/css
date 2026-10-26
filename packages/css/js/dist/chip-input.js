@@ -8,7 +8,7 @@ import Chip from "./chip.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import { ARROW_LEFT_KEY, ARROW_RIGHT_KEY, BACKSPACE_KEY, DELETE_KEY, END_KEY, ENTER_KEY, ESCAPE_KEY, HOME_KEY, getClipboardText } from "./util/index.js";
-//#region js/src/chip-input.ts
+// js/src/chip-input.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS chip-input.ts
@@ -437,7 +437,6 @@ var ChipInput = class extends BaseComponent {
 EventHandler.on(document, `DOMContentLoaded${EVENT_KEY}${DATA_API_KEY}`, () => {
 	for (const element of SelectorEngine.find(SELECTOR_DATA_CHIP_INPUT)) ChipInput.getOrCreateInstance(element);
 });
-//#endregion
 export { ChipInput as default };
 
 //# sourceMappingURL=chip-input.js.map

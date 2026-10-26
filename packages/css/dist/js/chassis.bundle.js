@@ -3,7 +3,7 @@
 * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
 * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
 */
-//#region js/src/dom/data.ts
+// js/src/dom/data.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS dom/data.ts
@@ -34,8 +34,7 @@ var data_default = {
 		if (instanceMap.size === 0) elementMap.delete(element);
 	}
 };
-//#endregion
-//#region js/src/dom/event-handler.ts
+// js/src/dom/event-handler.ts
 /**
 * Constants
 */
@@ -234,8 +233,7 @@ function hydrateObj(obj, meta = {}) {
 	}
 	return obj;
 }
-//#endregion
-//#region js/src/dom/manipulator.ts
+// js/src/dom/manipulator.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS dom/manipulator.ts
@@ -279,8 +277,7 @@ const Manipulator = {
 		return normalizeData(element.getAttribute(`data-cx-${normalizeDataKey(key)}`));
 	}
 };
-//#endregion
-//#region js/src/util/index.ts
+// js/src/util/index.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS util/index.ts
@@ -440,8 +437,7 @@ const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed
 const cssVar = (name) => {
 	return `--${getComputedStyle(document.documentElement).getPropertyValue("--chassis-prefix").trim()}${name}`;
 };
-//#endregion
-//#region js/src/util/config.ts
+// js/src/util/config.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS util/config.ts
@@ -495,8 +491,7 @@ var Config = class {
 		}
 	}
 };
-//#endregion
-//#region js/src/base-component.ts
+// js/src/base-component.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS base-component.ts
@@ -557,8 +552,7 @@ var BaseComponent = class extends Config {
 		return `${name}${this.EVENT_KEY}`;
 	}
 };
-//#endregion
-//#region js/src/dom/selector-engine.ts
+// js/src/dom/selector-engine.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS dom/selector-engine.ts
@@ -637,8 +631,7 @@ const SelectorEngine = {
 		return selector ? SelectorEngine.find(selector) : [];
 	}
 };
-//#endregion
-//#region js/src/accordion.ts
+// js/src/accordion.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS accordion.ts
@@ -751,8 +744,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$10, SELECTOR_DETAILS, function() 
 	const name = this.getAttribute("name");
 	if (name) for (const sibling of SelectorEngine.find(`details[name="${CSS.escape(name)}"]`, this.parentElement)) Accordion.getOrCreateInstance(sibling);
 });
-//#endregion
-//#region js/src/button.ts
+// js/src/button.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS button.ts
@@ -787,8 +779,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$9, SELECTOR_DATA_TOGGLE$11, (even
 	const button = event.target.closest(SELECTOR_DATA_TOGGLE$11);
 	Button.getOrCreateInstance(button).toggle();
 });
-//#endregion
-//#region js/src/carousel.ts
+// js/src/carousel.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS carousel.ts
@@ -1321,8 +1312,7 @@ EventHandler.on(window, EVENT_LOAD_DATA_API$3, () => {
 	const carousels = SelectorEngine.find(SELECTOR_DATA_AUTOPLAY);
 	for (const carousel of carousels) Carousel.getOrCreateInstance(carousel);
 });
-//#endregion
-//#region js/src/util/component-functions.ts
+// js/src/util/component-functions.ts
 const enableDismissTrigger = (component, method = "hide") => {
 	const clickEvent = `click.dismiss${component.EVENT_KEY}`;
 	const name = component.NAME;
@@ -1355,8 +1345,7 @@ const eventAction = (onEvent, stringSelector, callback) => {
 		});
 	});
 };
-//#endregion
-//#region js/src/chip.ts
+// js/src/chip.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS chip.ts
@@ -1401,8 +1390,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$7, SELECTOR_DATA_TOGGLE$10, (even
 	Chip.getOrCreateInstance(chip).toggle();
 });
 enableDismissTrigger(Chip, "close");
-//#endregion
-//#region js/src/chip-input.ts
+// js/src/chip-input.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS chip-input.ts
@@ -1831,8 +1819,7 @@ var ChipInput = class extends BaseComponent {
 EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$15}${DATA_API_KEY$9}`, () => {
 	for (const element of SelectorEngine.find(SELECTOR_DATA_CHIP_INPUT)) ChipInput.getOrCreateInstance(element);
 });
-//#endregion
-//#region js/src/collapse.ts
+// js/src/collapse.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS collapse.ts
@@ -1983,8 +1970,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$6, SELECTOR_DATA_TOGGLE$9, functi
 	if (event.target.tagName === "A" || event.delegateTarget && event.delegateTarget.tagName === "A") event.preventDefault();
 	for (const element of SelectorEngine.getMultipleElementsFromSelector(this)) Collapse.getOrCreateInstance(element, { toggle: false }).toggle();
 });
-//#endregion
-//#region ../../node_modules/.pnpm/@floating-ui+utils@0.2.12/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
+// ../../node_modules/.pnpm/@floating-ui+utils@0.2.12/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
 const min = Math.min;
 const max = Math.max;
 const round = Math.round;
@@ -2102,8 +2088,7 @@ function rectToClientRect(rect) {
 		y
 	};
 }
-//#endregion
-//#region ../../node_modules/.pnpm/@floating-ui+core@1.8.0/node_modules/@floating-ui/core/dist/floating-ui.core.mjs
+// ../../node_modules/.pnpm/@floating-ui+core@1.8.0/node_modules/@floating-ui/core/dist/floating-ui.core.mjs
 function computeCoordsFromPlacement(_ref, placement, rtl) {
 	let { reference, floating } = _ref;
 	const sideAxis = getSideAxis(placement);
@@ -2490,8 +2475,7 @@ const shift$1 = function(options) {
 		}
 	};
 };
-//#endregion
-//#region ../../node_modules/.pnpm/@floating-ui+utils@0.2.12/node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
+// ../../node_modules/.pnpm/@floating-ui+utils@0.2.12/node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
 function hasWindow() {
 	return typeof window !== "undefined";
 }
@@ -2603,8 +2587,7 @@ function getOverflowAncestors(node, list, traverseIframes) {
 function getFrameElement(win) {
 	return win.parent && Object.getPrototypeOf(win.parent) ? win.frameElement : null;
 }
-//#endregion
-//#region ../../node_modules/.pnpm/@floating-ui+dom@1.8.0/node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs
+// ../../node_modules/.pnpm/@floating-ui+dom@1.8.0/node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs
 function getCssDimensions(element) {
 	const css = getComputedStyle$1(element);
 	let width = parseFloat(css.width) || 0;
@@ -3120,8 +3103,7 @@ const computePosition = (reference, floating, options) => {
 		platform: platformWithCache
 	});
 };
-//#endregion
-//#region js/src/floating-base.ts
+// js/src/floating-base.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS floating-base.ts
@@ -3265,8 +3247,7 @@ var FloatingBase = class FloatingBase extends BaseComponent {
 		}
 	}
 };
-//#endregion
-//#region js/src/menu.ts
+// js/src/menu.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS menu.ts
@@ -3948,8 +3929,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$5, SELECTOR_DATA_TOGGLE$8, functi
 	event._chassisMenuToggled = true;
 	instance.toggle();
 });
-//#endregion
-//#region js/src/combobox.ts
+// js/src/combobox.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS combobox.ts
@@ -4352,8 +4332,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$4, SELECTOR_DATA_TOGGLE$7, Combob
 EventHandler.on(document, "DOMContentLoaded", () => {
 	for (const toggle of SelectorEngine.find(SELECTOR_DATA_TOGGLE$7)) Combobox.getOrCreateInstance(toggle);
 });
-//#endregion
-//#region ../../node_modules/.pnpm/vanilla-calendar-pro@3.1.0/node_modules/vanilla-calendar-pro/index.mjs
+// ../../node_modules/.pnpm/vanilla-calendar-pro@3.1.0/node_modules/vanilla-calendar-pro/index.mjs
 /*! name: vanilla-calendar-pro v3.1.0 | url: https://github.com/uvarov-frontend/vanilla-calendar-pro */
 var __defProp = Object.defineProperty;
 var __defProps = Object.defineProperties;
@@ -5578,8 +5557,7 @@ const _Calendar = class e extends OptionsCalendar {
 };
 __publicField(_Calendar, "memoizedElements", /* @__PURE__ */ new Map());
 let Calendar = _Calendar;
-//#endregion
-//#region js/src/datepicker.ts
+// js/src/datepicker.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS datepicker.ts
@@ -5952,8 +5930,7 @@ EventHandler.on(document, EVENT_FOCUSIN_DATA_API, SELECTOR_DATA_TOGGLE$6, functi
 EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$11}${DATA_API_KEY$5}`, () => {
 	for (const element of document.querySelectorAll(`${SELECTOR_DATA_TOGGLE$6}[data-cx-inline="true"]`)) Datepicker.getOrCreateInstance(element);
 });
-//#endregion
-//#region js/src/dialog-base.ts
+// js/src/dialog-base.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS dialog-base.ts
@@ -6135,8 +6112,7 @@ var DialogBase = class extends BaseComponent {
 		});
 	}
 };
-//#endregion
-//#region js/src/dialog.ts
+// js/src/dialog.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS dialog.ts
@@ -6233,8 +6209,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$2, SELECTOR_DATA_TOGGLE$5, functi
 	Dialog.getOrCreateInstance(target, config).toggle(this);
 });
 enableDismissTrigger(Dialog);
-//#endregion
-//#region js/src/util/swipe.ts
+// js/src/util/swipe.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS util/swipe.ts
@@ -6362,8 +6337,7 @@ var Swipe = class Swipe extends Config {
 		return "ontouchstart" in document.documentElement || navigator.maxTouchPoints > 0;
 	}
 };
-//#endregion
-//#region js/src/drawer.ts
+// js/src/drawer.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS drawer.ts
@@ -6465,8 +6439,7 @@ EventHandler.on(document, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, function(e
 	if (!target) return;
 	Drawer.getOrCreateInstance(target).hide();
 });
-//#endregion
-//#region js/src/util/sanitizer.ts
+// js/src/util/sanitizer.ts
 const ARIA_ATTRIBUTE_PATTERN = /^aria-[\w-]*$/i;
 const DefaultAllowlist = {
 	"*": [
@@ -6646,8 +6619,7 @@ function sanitizeHtml(unsafeHtml, allowList, sanitizeFunction) {
 	}
 	return createdDocument.body.innerHTML;
 }
-//#endregion
-//#region js/src/nav-overflow.ts
+// js/src/nav-overflow.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS nav-overflow.ts
@@ -6880,8 +6852,7 @@ var NavOverflow = class extends BaseComponent {
 EventHandler.on(document, "DOMContentLoaded", () => {
 	for (const element of SelectorEngine.find("[data-cx-toggle=\"nav-overflow\"]")) NavOverflow.getOrCreateInstance(element);
 });
-//#endregion
-//#region js/src/notification.ts
+// js/src/notification.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS notification.ts
@@ -6920,8 +6891,7 @@ var Notification = class extends BaseComponent {
 * Data API implementation
 */
 enableDismissTrigger(Notification, "close");
-//#endregion
-//#region js/src/otp-input.ts
+// js/src/otp-input.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS otp-input.ts
@@ -7067,8 +7037,7 @@ var OtpInput = class extends BaseComponent {
 EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$5}${DATA_API_KEY$2}`, () => {
 	for (const element of SelectorEngine.find(SELECTOR_DATA_OTP)) OtpInput.getOrCreateInstance(element);
 });
-//#endregion
-//#region js/src/util/template-factory.ts
+// js/src/util/template-factory.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS util/template-factory.ts
@@ -7184,8 +7153,7 @@ var TemplateFactory = class extends Config {
 		templateElement.textContent = element.textContent;
 	}
 };
-//#endregion
-//#region js/src/tooltip.ts
+// js/src/tooltip.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS tooltip.ts
@@ -7561,8 +7529,7 @@ const initTooltip = (event) => {
 };
 EventHandler.on(document, EVENT_FOCUSIN$2, SELECTOR_DATA_TOGGLE$3, initTooltip);
 EventHandler.on(document, EVENT_MOUSEENTER$1, SELECTOR_DATA_TOGGLE$3, initTooltip);
-//#endregion
-//#region js/src/popover.ts
+// js/src/popover.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS popover.ts
@@ -7632,8 +7599,7 @@ const initPopover = (event) => {
 EventHandler.on(document, EVENT_CLICK$2, SELECTOR_DATA_TOGGLE$2, initPopover);
 EventHandler.on(document, EVENT_FOCUSIN$1, SELECTOR_DATA_TOGGLE$2, initPopover);
 EventHandler.on(document, EVENT_MOUSEENTER, SELECTOR_DATA_TOGGLE$2, initPopover);
-//#endregion
-//#region js/src/scrollspy.ts
+// js/src/scrollspy.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS scrollspy.ts
@@ -7808,8 +7774,7 @@ var ScrollSpy = class extends BaseComponent {
 EventHandler.on(window, EVENT_LOAD_DATA_API$1, () => {
 	for (const spy of SelectorEngine.find(SELECTOR_DATA_SPY)) ScrollSpy.getOrCreateInstance(spy);
 });
-//#endregion
-//#region js/src/strength.ts
+// js/src/strength.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS strength.ts
@@ -7969,8 +7934,7 @@ var Strength = class extends BaseComponent {
 EventHandler.on(document, `DOMContentLoaded${EVENT_KEY$3}${DATA_API_KEY}`, () => {
 	for (const element of SelectorEngine.find(SELECTOR_DATA_STRENGTH)) Strength.getOrCreateInstance(element);
 });
-//#endregion
-//#region js/src/tab.ts
+// js/src/tab.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS tab.ts
@@ -8142,8 +8106,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE$1, function
 EventHandler.on(window, EVENT_LOAD_DATA_API, () => {
 	for (const element of SelectorEngine.find(SELECTOR_DATA_TOGGLE_ACTIVE)) Tab.getOrCreateInstance(element);
 });
-//#endregion
-//#region js/src/toast.ts
+// js/src/toast.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS toast.ts
@@ -8270,8 +8233,7 @@ var Toast = class extends BaseComponent {
 * Data API implementation
 */
 enableDismissTrigger(Toast);
-//#endregion
-//#region js/src/toggler.ts
+// js/src/toggler.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS toggler.ts
@@ -8332,7 +8294,6 @@ var Toggler = class extends BaseComponent {
 * Data API implementation
 */
 eventActionOnPlugin(Toggler, EVENT_CLICK, SELECTOR_DATA_TOGGLE, "toggle");
-//#endregion
 export { Accordion, Button, Carousel, Chip, ChipInput, Collapse, Combobox, Datepicker, Dialog, Drawer, Menu, NavOverflow, Notification, OtpInput, Popover, ScrollSpy, Strength, Tab, Toast, Toggler, Tooltip };
 
 //# sourceMappingURL=chassis.bundle.js.map

@@ -5,7 +5,7 @@
 */
 import Tooltip from "./tooltip.js";
 import EventHandler from "./dom/event-handler.js";
-//#region js/src/popover.ts
+// js/src/popover.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS popover.ts
@@ -75,7 +75,6 @@ const initPopover = (event) => {
 EventHandler.on(document, EVENT_CLICK, SELECTOR_DATA_TOGGLE, initPopover);
 EventHandler.on(document, EVENT_FOCUSIN, SELECTOR_DATA_TOGGLE, initPopover);
 EventHandler.on(document, EVENT_MOUSEENTER, SELECTOR_DATA_TOGGLE, initPopover);
-//#endregion
 export { Popover as default };
 
 //# sourceMappingURL=popover.js.map

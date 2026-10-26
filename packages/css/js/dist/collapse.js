@@ -7,7 +7,7 @@ import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import { getElement, reflow, setAriaAttribute } from "./util/index.js";
-//#region js/src/collapse.ts
+// js/src/collapse.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS collapse.ts
@@ -158,7 +158,6 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function(e
 	if (event.target.tagName === "A" || event.delegateTarget && event.delegateTarget.tagName === "A") event.preventDefault();
 	for (const element of SelectorEngine.getMultipleElementsFromSelector(this)) Collapse.getOrCreateInstance(element, { toggle: false }).toggle();
 });
-//#endregion
 export { Collapse as default };
 
 //# sourceMappingURL=collapse.js.map

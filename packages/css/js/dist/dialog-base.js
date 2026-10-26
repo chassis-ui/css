@@ -8,7 +8,7 @@ import Data from "./dom/data.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import { isVisible } from "./util/index.js";
-//#region js/src/dialog-base.ts
+// js/src/dialog-base.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS dialog-base.ts
@@ -190,7 +190,6 @@ var DialogBase = class extends BaseComponent {
 		});
 	}
 };
-//#endregion
 export { DialogBase as default };
 
 //# sourceMappingURL=dialog-base.js.map

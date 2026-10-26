@@ -5,7 +5,7 @@
 */
 import Manipulator from "../dom/manipulator.js";
 import { isElement, toType } from "./index.js";
-//#region js/src/util/config.ts
+// js/src/util/config.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS util/config.ts
@@ -59,7 +59,6 @@ var Config = class {
 		}
 	}
 };
-//#endregion
 export { Config as default };
 
 //# sourceMappingURL=config.js.map

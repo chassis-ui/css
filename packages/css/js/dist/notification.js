@@ -6,7 +6,7 @@
 import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import { enableDismissTrigger } from "./util/component-functions.js";
-//#region js/src/notification.ts
+// js/src/notification.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS notification.ts
@@ -45,7 +45,6 @@ var Notification = class extends BaseComponent {
 * Data API implementation
 */
 enableDismissTrigger(Notification, "close");
-//#endregion
 export { Notification as default };
 
 //# sourceMappingURL=notification.js.map

@@ -4,7 +4,7 @@
 * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
 */
 import { isDisabled, isVisible, parseSelector } from "../util/index.js";
-//#region js/src/dom/selector-engine.ts
+// js/src/dom/selector-engine.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS dom/selector-engine.ts
@@ -83,7 +83,6 @@ const SelectorEngine = {
 		return selector ? SelectorEngine.find(selector) : [];
 	}
 };
-//#endregion
 export { SelectorEngine as default };
 
 //# sourceMappingURL=selector-engine.js.map

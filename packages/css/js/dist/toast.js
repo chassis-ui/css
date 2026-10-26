@@ -7,7 +7,7 @@ import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import { enableDismissTrigger } from "./util/component-functions.js";
 import { reflow } from "./util/index.js";
-//#region js/src/toast.ts
+// js/src/toast.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS toast.ts
@@ -134,7 +134,6 @@ var Toast = class extends BaseComponent {
 * Data API implementation
 */
 enableDismissTrigger(Toast);
-//#endregion
 export { Toast as default };
 
 //# sourceMappingURL=toast.js.map

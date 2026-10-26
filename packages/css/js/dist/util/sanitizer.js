@@ -3,7 +3,7 @@
 * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
 * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
 */
-//#region js/src/util/sanitizer.ts
+// js/src/util/sanitizer.ts
 const ARIA_ATTRIBUTE_PATTERN = /^aria-[\w-]*$/i;
 const DefaultAllowlist = {
 	"*": [
@@ -183,7 +183,6 @@ function sanitizeHtml(unsafeHtml, allowList, sanitizeFunction) {
 	}
 	return createdDocument.body.innerHTML;
 }
-//#endregion
 export { DefaultAllowlist, DefaultIconAllowlist, sanitizeHtml };
 
 //# sourceMappingURL=sanitizer.js.map

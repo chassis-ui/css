@@ -7,7 +7,7 @@ import Data from "./dom/data.js";
 import EventHandler from "./dom/event-handler.js";
 import Config from "./util/config.js";
 import { executeAfterTransition, getElement } from "./util/index.js";
-//#region js/src/base-component.ts
+// js/src/base-component.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS base-component.ts
@@ -68,7 +68,6 @@ var BaseComponent = class extends Config {
 		return `${name}${this.EVENT_KEY}`;
 	}
 };
-//#endregion
 export { BaseComponent as default };
 
 //# sourceMappingURL=base-component.js.map

@@ -3,7 +3,7 @@
 * Copyright 2026 Ozgur Gunes <o.gunes@gmail.com>
 * Licensed under MIT (https://github.com/chassis-ui/css/raw/main/LICENSE)
 */
-//#region js/src/dom/data.ts
+// js/src/dom/data.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS dom/data.ts
@@ -34,7 +34,6 @@ var data_default = {
 		if (instanceMap.size === 0) elementMap.delete(element);
 	}
 };
-//#endregion
 export { data_default as default };
 
 //# sourceMappingURL=data.js.map

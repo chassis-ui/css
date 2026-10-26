@@ -6,7 +6,7 @@
 import EventHandler from "../dom/event-handler.js";
 import Config from "./config.js";
 import { execute } from "./index.js";
-//#region js/src/util/swipe.ts
+// js/src/util/swipe.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS util/swipe.ts
@@ -134,7 +134,6 @@ var Swipe = class Swipe extends Config {
 		return "ontouchstart" in document.documentElement || navigator.maxTouchPoints > 0;
 	}
 };
-//#endregion
 export { Swipe as default };
 
 //# sourceMappingURL=swipe.js.map

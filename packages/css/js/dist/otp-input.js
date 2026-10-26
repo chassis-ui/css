@@ -7,7 +7,7 @@ import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import { ARROW_LEFT_KEY, ARROW_RIGHT_KEY, BACKSPACE_KEY, DELETE_KEY, getClipboardText } from "./util/index.js";
-//#region js/src/otp-input.ts
+// js/src/otp-input.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS otp-input.ts
@@ -153,7 +153,6 @@ var OtpInput = class extends BaseComponent {
 EventHandler.on(document, `DOMContentLoaded${EVENT_KEY}${DATA_API_KEY}`, () => {
 	for (const element of SelectorEngine.find(SELECTOR_DATA_OTP)) OtpInput.getOrCreateInstance(element);
 });
-//#endregion
 export { OtpInput as default };
 
 //# sourceMappingURL=otp-input.js.map

@@ -8,7 +8,7 @@ import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import { cssVar, isDisabled } from "./util/index.js";
 import { DefaultIconAllowlist, sanitizeHtml } from "./util/sanitizer.js";
-//#region js/src/nav-overflow.ts
+// js/src/nav-overflow.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS nav-overflow.ts
@@ -241,7 +241,6 @@ var NavOverflow = class extends BaseComponent {
 EventHandler.on(document, "DOMContentLoaded", () => {
 	for (const element of SelectorEngine.find("[data-cx-toggle=\"nav-overflow\"]")) NavOverflow.getOrCreateInstance(element);
 });
-//#endregion
 export { NavOverflow as default };
 
 //# sourceMappingURL=nav-overflow.js.map

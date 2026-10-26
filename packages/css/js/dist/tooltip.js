@@ -10,7 +10,7 @@ import Manipulator from "./dom/manipulator.js";
 import { execute, findShadowRoot, getElement, getUID, isRTL, noop } from "./util/index.js";
 import { DefaultAllowlist } from "./util/sanitizer.js";
 import TemplateFactory from "./util/template-factory.js";
-//#region js/src/tooltip.ts
+// js/src/tooltip.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS tooltip.ts
@@ -386,7 +386,6 @@ const initTooltip = (event) => {
 };
 EventHandler.on(document, EVENT_FOCUSIN, SELECTOR_DATA_TOGGLE, initTooltip);
 EventHandler.on(document, EVENT_MOUSEENTER, SELECTOR_DATA_TOGGLE, initTooltip);
-//#endregion
 export { Tooltip as default };
 
 //# sourceMappingURL=tooltip.js.map

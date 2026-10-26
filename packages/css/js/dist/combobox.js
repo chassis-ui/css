@@ -8,7 +8,7 @@ import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import Menu from "./menu.js";
 import { ARROW_DOWN_KEY, ARROW_UP_KEY, END_KEY, ENTER_KEY, ESCAPE_KEY, HOME_KEY, SPACE_KEY, TAB_KEY, getNextActiveElement, isDisabled, isVisible } from "./util/index.js";
-//#region js/src/combobox.ts
+// js/src/combobox.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS combobox.ts
@@ -411,7 +411,6 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, Combobox.d
 EventHandler.on(document, "DOMContentLoaded", () => {
 	for (const toggle of SelectorEngine.find(SELECTOR_DATA_TOGGLE)) Combobox.getOrCreateInstance(toggle);
 });
-//#endregion
 export { Combobox as default };
 
 //# sourceMappingURL=combobox.js.map

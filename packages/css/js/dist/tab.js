@@ -7,7 +7,7 @@ import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import { ARROW_DOWN_KEY, ARROW_LEFT_KEY, ARROW_RIGHT_KEY, ARROW_UP_KEY, END_KEY, HOME_KEY, getNextActiveElement, isDisabled, preventNavigationForAnchor, setAriaAttribute } from "./util/index.js";
-//#region js/src/tab.ts
+// js/src/tab.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS tab.ts
@@ -179,7 +179,6 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function(e
 EventHandler.on(window, EVENT_LOAD_DATA_API, () => {
 	for (const element of SelectorEngine.find(SELECTOR_DATA_TOGGLE_ACTIVE)) Tab.getOrCreateInstance(element);
 });
-//#endregion
 export { Tab as default };
 
 //# sourceMappingURL=tab.js.map

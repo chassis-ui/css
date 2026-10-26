@@ -7,7 +7,7 @@ import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import { getElement, isDisabled, isVisible } from "./util/index.js";
-//#region js/src/scrollspy.ts
+// js/src/scrollspy.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS scrollspy.ts
@@ -182,7 +182,6 @@ var ScrollSpy = class extends BaseComponent {
 EventHandler.on(window, EVENT_LOAD_DATA_API, () => {
 	for (const spy of SelectorEngine.find(SELECTOR_DATA_SPY)) ScrollSpy.getOrCreateInstance(spy);
 });
-//#endregion
 export { ScrollSpy as default };
 
 //# sourceMappingURL=scrollspy.js.map

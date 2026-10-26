@@ -8,7 +8,7 @@ import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import Swipe from "./util/swipe.js";
 import { isDisabled, isRTL, preventNavigationForAnchor } from "./util/index.js";
-//#region js/src/drawer.ts
+// js/src/drawer.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS drawer.ts
@@ -110,7 +110,6 @@ EventHandler.on(document, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, function(e
 	if (!target) return;
 	Drawer.getOrCreateInstance(target).hide();
 });
-//#endregion
 export { Drawer as default };
 
 //# sourceMappingURL=drawer.js.map

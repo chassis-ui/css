@@ -9,7 +9,7 @@ import Manipulator from "./dom/manipulator.js";
 import SelectorEngine from "./dom/selector-engine.js";
 import { enableDismissTrigger } from "./util/component-functions.js";
 import { preventNavigationForAnchor } from "./util/index.js";
-//#region js/src/dialog.ts
+// js/src/dialog.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS dialog.ts
@@ -106,7 +106,6 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function(e
 	Dialog.getOrCreateInstance(target, config).toggle(this);
 });
 enableDismissTrigger(Dialog);
-//#endregion
 export { Dialog as default };
 
 //# sourceMappingURL=dialog.js.map

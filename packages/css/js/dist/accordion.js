@@ -6,7 +6,7 @@
 import BaseComponent from "./base-component.js";
 import EventHandler from "./dom/event-handler.js";
 import SelectorEngine from "./dom/selector-engine.js";
-//#region js/src/accordion.ts
+// js/src/accordion.ts
 /**
 * --------------------------------------------------------------------------
 * Chassis CSS accordion.ts
@@ -119,7 +119,6 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DETAILS, function() {
 	const name = this.getAttribute("name");
 	if (name) for (const sibling of SelectorEngine.find(`details[name="${CSS.escape(name)}"]`, this.parentElement)) Accordion.getOrCreateInstance(sibling);
 });
-//#endregion
 export { Accordion as default };
 
 //# sourceMappingURL=accordion.js.map
