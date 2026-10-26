@@ -54,8 +54,8 @@ importers:
         specifier: ^5.5.6
         version: 5.5.6(eslint-config-prettier@10.1.8(eslint@10.12.0(jiti@2.7.0)))(eslint@10.12.0(jiti@2.7.0))(prettier@3.9.10)
       eslint-plugin-unicorn:
-        specifier: ^77.0.0
-        version: 77.0.0(eslint@10.12.0(jiti@2.7.0))
+        specifier: ^78.0.0
+        version: 78.0.0(eslint@10.12.0(jiti@2.7.0))(typescript@6.0.3)
       find-unused-sass-variables:
         specifier: ^6.2.1
         version: 6.2.1
@@ -1281,8 +1281,8 @@ packages:
     resolution: {integrity: sha512-MwcE1P+AZ4C6DWlpin/OmOA54mmIZ/+xZuJiQd4SyB29oAJjN30UW9wkKNptW2ctp4cEsvhlLY/CsQ1uoHDloQ==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  '@eslint/css-tree@4.1.1':
-    resolution: {integrity: sha512-A+s89eP+yDAPkKjnIOfjlkGifg5J7GPn01nWx14UjBVWktfkxOU4975F9ZZ13xNxkGiblNcBaAqgKhnQrW6SWA==}
+  '@eslint/css-tree@4.1.2':
+    resolution: {integrity: sha512-rVcxLmwSkEL3aWS3vAgsTRrQHoYE1b0XcgDtKHDJ92XOkyUpcbS/g0tUJKhvCtlEhYzgKBWsgDd+Z/aPhd166w==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
   '@eslint/js@10.0.1':
@@ -3207,11 +3207,15 @@ packages:
       eslint-config-prettier:
         optional: true
 
-  eslint-plugin-unicorn@77.0.0:
-    resolution: {integrity: sha512-aayznMCKTXlPAsoyUjRok862sz3BJAfxpQX/t79AT/uVQTmWsCx3FXfXo+9hfhL8aR2mMZQYyXoDZo3/ly6lJw==}
+  eslint-plugin-unicorn@78.0.0:
+    resolution: {integrity: sha512-XTDqxcJeAmh2lhgU75TpuMDdFtPDnAU+DCW56nR5UzXTG+uOyvOGjV80O11my7kNb2bYSCPlWa8c4K8/rwlYog==}
     engines: {node: '>=22'}
     peerDependencies:
       eslint: '>=10.4'
+      typescript: '*'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   eslint-scope@9.1.2:
     resolution: {integrity: sha512-xS90H51cKw0jltxmvmHy2Iai1LIqrfbw57b79w/J7MfvDfkIkFZ+kj6zC3BjtUwh150HsSSdxXZcsuv72miDFQ==}
@@ -4307,8 +4311,8 @@ packages:
   mdn-data@2.27.1:
     resolution: {integrity: sha512-9Yubnt3e8A0OKwxYSXyhLymGW4sCufcLG6VdiDdUGVkPhpqLxlvP5vl1983gQjJl3tqbrM731mjaZaP68AgosQ==}
 
-  mdn-data@2.35.0:
-    resolution: {integrity: sha512-k+1+dEIm2z/BEfdvYzT/fIyAGeDBo/1AJNJI4ilFXJRYoxP/3Ds+GP8shAOIq8jYXY9N5nGB3Ag104NsagmLAA==}
+  mdn-data@2.37.2:
+    resolution: {integrity: sha512-rz9YOBGItdSbe7HcSArUbhiAv4SB/4DKRYg96CSFS2CcIYMbUvBtZlzA1NCbk2AdgbmYwMqwNblLpR441lLeiQ==}
 
   medium-zoom@1.1.2:
     resolution: {integrity: sha512-0wTqeCQ4NGzjPghi7i2lMI6RyGj9N60fGvzY9HiNcxDTcvOw7S+ri7K3xVkrIZ+2uzUg4w/KSVMDdZXYMtHkdw==}
@@ -4327,9 +4331,6 @@ packages:
   merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
-
-  micromark-core-commonmark@2.0.3:
-    resolution: {integrity: sha512-RDBrHEMSxVFLg6xvnXmb1Ayr2WzLAWjeSATAoxwKYJV94TeNavgoIdA0a9ytzDSVzBy2YKFK+emCPOEibLeCrg==}
 
   micromark-core-commonmark@2.0.4:
     resolution: {integrity: sha512-wxEeE8v8XVvOrxn1TZj74qYhAtTQsSqufHVS3uNVyT1MupXxhyaHk8/9xDNPh9BmL77QNDgWTkZ3RsYHB2ry7w==}
@@ -4447,9 +4448,6 @@ packages:
 
   micromark-util-types@2.0.3:
     resolution: {integrity: sha512-oxB2Ik03hI0gv+VNn9tnh1t1YEe9MDPptViAEgfdf3YQHsn0pzGTgCdlSCJXcwhqm8phaEuM7zeEu3QQzVBrPg==}
-
-  micromark@4.0.2:
-    resolution: {integrity: sha512-zpe98Q6kvavpCr1NPVSCMebCKfD7CA2NqZ+rykeNhONIJBpc1tFKt9hucLGwha3jNTNI8lHpctWJWoimVF4PfA==}
 
   micromark@4.0.3:
     resolution: {integrity: sha512-oGYfQzHSG5dOMovQcJ3fyTmZlWAWpi0XA0sJwJs+i6OT88o1+Jtw/8z0CmdowSLxGhhFK89rQ/oXph/wN02PNw==}
@@ -4680,6 +4678,9 @@ packages:
 
   parse5@7.3.0:
     resolution: {integrity: sha512-IInvU7fabl34qmi9gY8XOVxhYyMyuH2xUNpb2q8/Y+7552KlejkRvqvD19nMoUW/uQGGbqNpA6Tufu5FL5BZgw==}
+
+  parse5@8.0.1:
+    resolution: {integrity: sha512-z1e/HMG90obSGeidlli3hj7cbocou0/wa5HacvI3ASx34PecNjNQeaHNo5WIZpWofN9kgkqV1q5YvXe3F0FoPw==}
 
   path-browserify@1.0.1:
     resolution: {integrity: sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==}
@@ -4954,8 +4955,8 @@ packages:
     resolution: {integrity: sha512-dYqgNSZbDwkaJ2ceRd9ojCGjBq+mOm9LmtXnAnEGyHhN/5R7iDW2TRw3h+o/jCFxus3P2LfWIIiwowAjANm7IA==}
     engines: {node: '>= 0.4'}
 
-  regjsparser@0.13.3:
-    resolution: {integrity: sha512-ycwFAS14Jw4mppvmK4GR/J6u3WpWpjkEApehuHtLc/8VpPNpDMbQ4WjqwplXifGeyKOzHSFLmSPqzksDQE2Sfg==}
+  regjsparser@0.13.4:
+    resolution: {integrity: sha512-EWV80YgFaVgFrjGCAsV7oybp4GOxbls5RzBg8OB0nKEVXsBJR1JlV8Di1JhCROg3MzTfe1RI8yitIm1eOs68iA==}
     hasBin: true
 
   rehype-autolink-headings@7.1.0:
@@ -7084,9 +7085,9 @@ snapshots:
     dependencies:
       '@types/json-schema': 7.0.15
 
-  '@eslint/css-tree@4.1.1':
+  '@eslint/css-tree@4.1.2':
     dependencies:
-      mdn-data: 2.35.0
+      mdn-data: 2.37.2
       source-map-js: 1.2.2
 
   '@eslint/js@10.0.1(eslint@10.12.0(jiti@2.7.0))':
@@ -9136,10 +9137,10 @@ snapshots:
     optionalDependencies:
       eslint-config-prettier: 10.1.8(eslint@10.12.0(jiti@2.7.0))
 
-  eslint-plugin-unicorn@77.0.0(eslint@10.12.0(jiti@2.7.0)):
+  eslint-plugin-unicorn@78.0.0(eslint@10.12.0(jiti@2.7.0))(typescript@6.0.3):
     dependencies:
       '@eslint-community/eslint-utils': 4.10.1(eslint@10.12.0(jiti@2.7.0))
-      '@eslint/css-tree': 4.1.1
+      '@eslint/css-tree': 4.1.2
       browserslist: 4.29.4
       change-case: 5.4.4
       ci-info: 4.4.0
@@ -9152,13 +9153,19 @@ snapshots:
       identifier-regex: 1.1.0
       indent-string: 5.0.0
       is-builtin-module: 5.0.0
+      micromark: 4.0.3
+      parse5: 8.0.1
       pluralize: 8.0.0
       quote-js-string: 0.1.0
-      regjsparser: 0.13.3
+      regjsparser: 0.13.4
       reserved-identifiers: 1.2.0
       semver: 7.8.5
       strip-indent: 4.1.1
       yaml: 2.9.1
+    optionalDependencies:
+      typescript: 6.0.3
+    transitivePeerDependencies:
+      - supports-color
 
   eslint-scope@9.1.2:
     dependencies:
@@ -10225,7 +10232,7 @@ snapshots:
       decode-named-character-reference: 1.3.0
       devlop: 1.1.0
       mdast-util-to-string: 4.0.0
-      micromark: 4.0.2
+      micromark: 4.0.3
       micromark-util-decode-numeric-character-reference: 2.0.2
       micromark-util-decode-string: 2.0.1
       micromark-util-normalize-identifier: 2.0.1
@@ -10432,7 +10439,7 @@ snapshots:
 
   mdn-data@2.27.1: {}
 
-  mdn-data@2.35.0: {}
+  mdn-data@2.37.2: {}
 
   medium-zoom@1.1.2: {}
 
@@ -10443,25 +10450,6 @@ snapshots:
   merge-stream@2.0.0: {}
 
   merge2@1.4.1: {}
-
-  micromark-core-commonmark@2.0.3:
-    dependencies:
-      decode-named-character-reference: 1.3.0
-      devlop: 1.1.0
-      micromark-factory-destination: 2.0.1
-      micromark-factory-label: 2.0.1
-      micromark-factory-space: 2.0.1
-      micromark-factory-title: 2.0.1
-      micromark-factory-whitespace: 2.0.1
-      micromark-util-character: 2.1.1
-      micromark-util-chunked: 2.0.1
-      micromark-util-classify-character: 2.0.1
-      micromark-util-html-tag-name: 2.0.1
-      micromark-util-normalize-identifier: 2.0.1
-      micromark-util-resolve-all: 2.0.1
-      micromark-util-subtokenize: 2.1.0
-      micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.3
 
   micromark-core-commonmark@2.0.4:
     dependencies:
@@ -10500,8 +10488,8 @@ snapshots:
   micromark-extension-gfm-footnote@2.1.0:
     dependencies:
       devlop: 1.1.0
-      micromark-core-commonmark: 2.0.3
-      micromark-factory-space: 2.0.1
+      micromark-core-commonmark: 2.0.4
+      micromark-factory-space: 2.1.0
       micromark-util-character: 2.1.1
       micromark-util-normalize-identifier: 2.0.1
       micromark-util-sanitize-uri: 2.0.1
@@ -10520,7 +10508,7 @@ snapshots:
   micromark-extension-gfm-table@2.1.1:
     dependencies:
       devlop: 1.1.0
-      micromark-factory-space: 2.0.1
+      micromark-factory-space: 2.1.0
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
       micromark-util-types: 2.0.3
@@ -10532,7 +10520,7 @@ snapshots:
   micromark-extension-gfm-task-list-item@2.1.0:
     dependencies:
       devlop: 1.1.0
-      micromark-factory-space: 2.0.1
+      micromark-factory-space: 2.1.0
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
       micromark-util-types: 2.0.3
@@ -10733,28 +10721,6 @@ snapshots:
   micromark-util-types@2.0.2: {}
 
   micromark-util-types@2.0.3: {}
-
-  micromark@4.0.2:
-    dependencies:
-      '@types/debug': 4.1.13
-      debug: 4.4.3(supports-color@5.5.0)
-      decode-named-character-reference: 1.3.0
-      devlop: 1.1.0
-      micromark-core-commonmark: 2.0.3
-      micromark-factory-space: 2.0.1
-      micromark-util-character: 2.1.1
-      micromark-util-chunked: 2.0.1
-      micromark-util-combine-extensions: 2.0.1
-      micromark-util-decode-numeric-character-reference: 2.0.2
-      micromark-util-encode: 2.0.1
-      micromark-util-normalize-identifier: 2.0.1
-      micromark-util-resolve-all: 2.0.1
-      micromark-util-sanitize-uri: 2.0.1
-      micromark-util-subtokenize: 2.1.0
-      micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.3
-    transitivePeerDependencies:
-      - supports-color
 
   micromark@4.0.3:
     dependencies:
@@ -11045,6 +11011,10 @@ snapshots:
     dependencies:
       entities: 6.0.1
 
+  parse5@8.0.1:
+    dependencies:
+      entities: 8.1.0
+
   path-browserify@1.0.1: {}
 
   path-exists@4.0.0: {}
@@ -11304,7 +11274,7 @@ snapshots:
       gopd: 1.2.0
       set-function-name: 2.0.2
 
-  regjsparser@0.13.3:
+  regjsparser@0.13.4:
     dependencies:
       jsesc: 3.1.0
 
@@ -11888,7 +11858,7 @@ snapshots:
       css-tree: 3.2.1
       is-plain-object: 5.0.0
       known-css-properties: 0.37.0
-      mdn-data: 2.35.0
+      mdn-data: 2.37.2
       postcss-media-query-parser: 0.2.3
       postcss-resolve-nested-selector: 0.1.6
       postcss-selector-parser: 7.1.6
