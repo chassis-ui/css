@@ -33,9 +33,6 @@ The toggle is a wrapper `<div class="form-input combobox">` with a text input in
 <Example code={`<div class="form-input combobox"
        data-cx-toggle="combobox"
        data-cx-name="option">
-    <span class="input-adorn">
-      <Icon name="search-outline" />
-    </span>
     <input type="text" class="combobox-value" placeholder="Select an item…" autocomplete="off">
   </div>
   <div class="menu" role="listbox">
@@ -46,20 +43,20 @@ The toggle is a wrapper `<div class="form-input combobox">` with a text input in
 
 ### Button trigger
 
-The toggle is itself a `<button class="form-input combobox">`. The user cannot type into the toggle, so the menu opens like a native `<select>`. Use `data-cx-placeholder` to set the text shown when nothing is selected — the JS restores it to the `.combobox-value` element after the selection is cleared.
+The toggle is itself a `<button class="form-input combobox">`. The user cannot type into the toggle, so the menu opens like a native `<select>`. Give it `role="combobox"`, `aria-expanded="false"` and an `aria-controls` that points at the menu: the accessible name then comes from the label alone, and the text of the toggle is read as its value. Use `data-cx-placeholder` to set the text shown when nothing is selected — the JS restores it to the `.combobox-value` element after the selection is cleared.
 
 <Example code={`<button class="form-input combobox"
           type="button"
+          role="combobox"
           aria-label="Select an item"
+          aria-controls="comboButtonMenu"
+          aria-expanded="false"
           data-cx-toggle="combobox"
           data-cx-name="option"
           data-cx-placeholder="Select an item…">
-    <span class="input-adorn">
-      <Icon name="search-outline" />
-    </span>
     <span class="combobox-value"></span>
   </button>
-  <div class="menu" role="listbox">
+  <div class="menu" id="comboButtonMenu" role="listbox">
     <button class="menu-item" type="button" role="option" data-cx-value="1">Option one</button>
     <button class="menu-item" type="button" role="option" data-cx-value="2">Option two</button>
     <button class="menu-item" type="button" role="option" data-cx-value="3">Option three</button>
@@ -147,13 +144,16 @@ The hidden input is also disabled, so the value is excluded from form submission
 
   <button class="form-input combobox"
           type="button"
+          role="combobox"
           aria-label="Select an item"
+          aria-controls="comboDisabledMenu"
+          aria-expanded="false"
           data-cx-toggle="combobox"
           data-cx-placeholder="Unavailable…"
           disabled>
     <span class="combobox-value"></span>
   </button>
-  <div class="menu" role="listbox">
+  <div class="menu" id="comboDisabledMenu" role="listbox">
     <button class="menu-item" type="button" role="option" data-cx-value="1">Option one</button>
     <button class="menu-item" type="button" role="option" data-cx-value="2">Option two</button>
   </div>`} />
@@ -365,13 +365,16 @@ For button-trigger comboboxes, add a `.combobox-search-input` inside the menu. W
 
 <Example code={`<button class="form-input combobox"
           type="button"
+          role="combobox"
           aria-label="Select a country"
+          aria-controls="comboSearchMenu"
+          aria-expanded="false"
           data-cx-toggle="combobox"
           data-cx-name="country"
           data-cx-placeholder="Select a country…">
     <span class="combobox-value"></span>
   </button>
-  <div class="menu" role="listbox">
+  <div class="menu" id="comboSearchMenu" role="listbox">
     <div class="combobox-search">
       <input type="text" class="form-input combobox-search-input sm" placeholder="Search…" autocomplete="off" aria-label="Filter countries">
     </div>
@@ -447,6 +450,7 @@ The JS keeps the following ARIA state in sync without any extra markup:
 The semantics that identify the combobox and its options to assistive tech must be authored — the JS does not add them:
 
 - **Accessible name for the combobox.** Either a visible `<label for="…">` pointing to the input/button id, or `aria-label`/`aria-labelledby` on the toggle. The [In a form field](#in-a-form-field) section shows the canonical labelled pattern.
+- **`role="combobox"`, `aria-controls` and `aria-expanded="false"`** on a button trigger, with `aria-controls` naming the `id` of the `.menu`. The role requires `aria-expanded` before the menu first opens; the JS keeps it in sync after that. Without the role, a `<button>` is named by its text, and a label that does not hold the placeholder or the selected value breaks [WCAG 2.5.3 Label in Name](https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html).
 - **`role="listbox"`** on the `.menu`. When labelled, also add `aria-label` (or `aria-labelledby`) matching the toggle's accessible name. For multi-select, add `aria-multiselectable="true"`.
 - **`role="option"`** on each `.menu-item`, and `aria-selected="true"` on any pre-selected items. The JS keeps `aria-selected` in sync after that.
 - **`role="presentation"`** on `.menu-header` so headers are skipped by screen readers.
