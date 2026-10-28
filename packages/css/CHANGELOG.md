@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.12.0
+
+### Minor Changes
+
+- bab8350: **Breaking:** The border width and style classes set `border-width` and `border-style` again, as in 0.11.0, instead of the `--cx-border-width` and `--cx-border-style` variables of 0.11.1. The variables are inherited, so a width or style class reached every border inside its element: in `<div class="border border-xl"><p class="border-bottom">…</p></div>` the inner border was `xl` too. A class now changes only the element it is on.
+  
+  - `border border-2xl`, `border-bottom border-2xl` and `border border-style-dashed` keep working in the Tailwind entry: a width or style class wins over `.border` and the side classes in whichever order Tailwind sorts them (issue 38).
+  - On a component, a width or style class changes the outline only, as in 0.11.0. To change the dividers and inner corners too, set the component's variable, such as `--cx-card-border-width`.
+  - A style class with a side class draws all four sides again: `border-top border-style-dashed` dashes the other three sides too, at the initial `medium` width.
+  - The components no longer set `--cx-border-style` on themselves, so `--cx-border-style` set on `:root` or on an ancestor reaches them again.
+  - `.border-style-inherit` sets `border-style: inherit` again.
+  - A width or style class on the parent of `.divide-*` no longer changes the dividers. Set `--cx-border-width` or `--cx-border-style` on the parent.
+- d350ed1: **Breaking:** In `dist/css/chassis.css` a longhand utility wins over a shorthand utility on the same element, as it does in the Tailwind entry and as `mt-*` already did over `m-*`. Two utility maps had the shorthands last:
+  
+  - The `place-*` classes came after `justify-content-*`, `align-items-*`, `align-content-*` and `align-self-*`, so `place-items-center align-items-baseline` aligned the items to the center. The longhand class now wins: `baseline`.
+  - The negative margins came after every positive margin, so `-m-2xl mb-0` gave a bottom margin of `-2xl`. Each negative margin now follows its positive one, shorthands first, and the longhand wins: `mb-0` gives `0`.
+  
+  Only an element with both classes changes. The Tailwind parity test compares every such pair of utilities in both builds since issue 44.
+- efea2b5: Toast declares its inner radius the way card, accordion and popover do (issue 43): the new Sass variable `$toast-inner-border-radius` (`calc(var(--cx-border-radius) - var(--cx-border-width))`) sets `--cx-inner-border-radius` on `.toast`, through the new hook `--cx-toast-inner-border-radius`, and the header and footer read it. Until now the calculation was written into the header and footer, so a project could not change it. The corners compute as before.
+
+### Patch Changes
+
+- d2e7eda: The dividers inside card, popover, toast, `.nav-tabs`, `.nav-underline` and `.table` read `--cx-border-style` instead of a fixed `solid`, as the outline of the component does (issue 39). Until now `--cx-border-style: dashed` on a card dashed its outline and left the header and footer dividers solid.
+  
+  - Card: the header and footer dividers, and the lines of a `.list.flush` inside it. Popover: the header divider. Toast: the header and footer dividers.
+  - `.nav-tabs` and `.nav-underline`: the bar, and the side borders of the active tab, which join it.
+  - `.table`: the cells, the outline of `.bordered` and the rows of `.stacked`, instead of the `solid` of Reboot.
+  - A line that marks a state keeps its own style: the top of the active tab, the underline of the active link, the active row indicator and `.table-divider`. The arrow of a popover is drawn with borders and stays solid.
+  
+  With the default `$border-style` every line is solid as before.
+- d845e84: The JavaScript plugins fix the 34 reported defects (issues 46 to 78, and 80), each with a unit test.
+  
+  - `EventHandler`: a namespaced `mouseenter` and `mouseleave` (`mouseenter.cx.carousel`) gets the enter and leave semantics of the plain name, so a carousel with `pause: "hover"` no longer pauses and resumes on every child the pointer crosses (issue 46).
+  - Tooltip and Popover: a `customClass` with a doubled, leading or trailing space no longer throws, and the tip renders (issue 47). `hide()`, `toggle()` or `dispose()` right after `show()` end hidden, with the events `show`, `hide`, `hidden` and no `shown`, and the pending show of a disposed instance returns quietly instead of rejecting (issue 68). A function-valued `offset` is read as the documented `[skidding, distance]`, in Menu too (issue 62).
+  - Popover: the data API prevents the default of a click on the trigger only when `trigger` includes `click`, so a link or a submit button with `data-cx-trigger="hover"` or `"focus"` keeps its action (issue 70).
+  - Swipe: the touch fallback measures the drag from its start, so a short drag of several `touchmove` events fires no direction callback (issue 48).
+  - Combobox: a query with no match closes the menu and keeps the typed text; the value is restored only on a close the user makes (issue 49). `disabled` on a button toggle is read, mirrored to the hidden input and the `aria-disabled` of the toggle, and cleared by `enable()` (issue 53). A navigation key pressed within the filter debounce runs the pending filter first, so it lands on an item the query keeps (issue 54).
+  - Strength and OtpInput: `dispose()` removes the listeners of the password field and of the OTP fields, so a keystroke after it no longer throws (issues 50 and 51).
+  - OtpInput: Delete, Backspace into the previous field and paste fire `input.cx.otp-input` with the index of the field that changed, before `complete` (issue 61).
+  - Datepicker: a date-only value (`2026-01-15`) is parsed as a local date, so it selects that day in every time zone (issue 52). The default `locale` is the full `navigator.language` (`en-GB`, not `en`), so the input is formatted for the region (issue 55). `setSelectedDates()` writes the input, the hidden input and the display element (issue 60).
+  - ChipInput: pre-existing chips keep their classes; `data-cx-chips` applies to the chips added at runtime only, as documented (issue 56). `clear()` honors `preventDefault()` on `remove.cx.chip-input` and fires `change` with the values left (issue 57). A click, Backspace out of the input or an arrow key fires `select.cx.chip-input` once, no longer first with an empty selection (issue 58). Backspace or Delete on a chip reached with Tab removes it (issue 59).
+  - Dialog and Drawer: a drag that starts in the content and ends on the backdrop no longer closes the dialog; only a `mousedown` and a `click` both on the backdrop do (issue 63). `backdrop: false` is honored: a Drawer opens non-modal with `show()`, no backdrop and the page interactive, and locks the body scroll unless `scroll: true`; a modal Dialog draws no backdrop (`.backdropless`), and a click outside neither closes it nor bounces it (issue 64). A `<dialog class="drawer" open>` in the markup is shown through the plugin on load, with its backdrop, body class and events (issue 66). A native `close()` or a `<form method="dialog">` submit during the exit transition releases `dialog-open` on `<body>`, and `hidden` fires once (issue 67).
+  - Menu: the keydown data API resolves the toggle from the menu's own instance, so a menu in a `container`, or given by the `menu` option, no longer opens or closes the first menu of the document (issue 65). Leaving the menu from a third-level item closes every submenu the pointer has left (issue 69). The toggle is focused with `preventScroll`, so a menu in a sticky header no longer scrolls the page on open and on Escape (issue 80).
+  - ScrollSpy: `dispose()` removes the `smoothScroll` click listener from the target, and two instances on one target keep their own listeners (issue 71).
+  - Accordion: a toggle during the transition takes it over from the height it has reached, with a consistent event stream (`open`, `close`, `closed`, or `close`, `open`, `opened`); a toggle the same way is ignored (issue 74).
+  - NavOverflow: `dispose()` keeps a toggle and menu written in the markup, puts a custom icon element back where it was, and removes only the class and order data it set (issue 77).
+  - Carousel: autoplay that stops at the last slide under `ends: "stop"` shows the paused state on the play/pause control (issue 72). In scroll mode the viewport starts on the slide marked `.active`, and the observer no longer undoes it with a spurious `slid` (issue 73). A move of several slides fires one `slid` when it completes, with the `from` and `to` of its `slide`; a scroll by the user still fires `slid` for each slide it makes active (issue 75). ArrowLeft and ArrowRight are swapped in RTL, where the next slide lies to the left (issue 76). A `prev()` into the loop while a scroll is still animating re-aligns by the width of the prepended clone instead of snapping to the slide (issue 78).
+- d00232c: The inner corners of card, accordion and popover follow the component's own border radius and width. `$card-inner-border-radius`, `$accordion-inner-border-radius` and `$popover-inner-border-radius` default to `calc(var(--cx-border-radius) - var(--cx-border-width))`, which the component resolves on itself, instead of the difference of the `-md` tokens. Until now `--cx-card-border-radius: 2rem` on a card rounded its outside and left the header and footer at the default inner radius (5px with the default tokens). With the default radius and width nothing changes.
+  
+  `.rounded-*` and `.border-{size}` on a component change only its outside: they set `border-radius` and `border-width`, not the variables.
+- 4e6fb94: The wrapper of a responsive table, `.table-responsive` and `.max-{breakpoint}:table-responsive`, is positioned (`position: relative`), so it is the containing block of what it scrolls (issue 79). An absolutely positioned descendant, such as the `.visually-hidden` label of an actions column or the hidden header of a `.stacked` table, kept its place at the end of the scrolled row and widened the page on a phone. It now stays in the scroll area.
+  
+  - A menu in a responsive table with the default `strategy: 'absolute'` opens inside the scroll area too, so one in the last rows is clipped at the bottom edge of the table. Give its toggle `data-cx-strategy="fixed"` or `data-cx-container="body"` to open it above the table.
+
 ## 0.11.1
 
 ### Patch Changes
