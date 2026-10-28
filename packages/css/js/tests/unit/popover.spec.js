@@ -660,10 +660,20 @@ describe('Popover', () => {
 
       const popoverEl = fixtureEl.querySelector('[data-cx-toggle="popover"]')
       const clickEvent = createEvent('click', { cancelable: true })
+      let preventedByPlugin
 
+      // The data API listens on document in the capture phase, so a listener on the trigger
+      // runs after it; it stops the navigation that would unload the test page
+      const onClick = event => {
+        preventedByPlugin = event.defaultPrevented
+        event.preventDefault()
+      }
+
+      popoverEl.addEventListener('click', onClick)
       popoverEl.dispatchEvent(clickEvent)
+      popoverEl.removeEventListener('click', onClick)
 
-      expect(clickEvent.defaultPrevented).toBeFalse()
+      expect(preventedByPlugin).toBeFalse()
       expect(Popover.getInstance(popoverEl)).not.toBeNull()
     })
 
@@ -673,10 +683,20 @@ describe('Popover', () => {
 
       const popoverEl = fixtureEl.querySelector('[data-cx-toggle="popover"]')
       const clickEvent = createEvent('click', { cancelable: true })
+      let preventedByPlugin
 
+      // The data API listens on document in the capture phase, so a listener on the trigger
+      // runs after it; it stops the submit that would reload the test page
+      const onClick = event => {
+        preventedByPlugin = event.defaultPrevented
+        event.preventDefault()
+      }
+
+      popoverEl.addEventListener('click', onClick)
       popoverEl.dispatchEvent(clickEvent)
+      popoverEl.removeEventListener('click', onClick)
 
-      expect(clickEvent.defaultPrevented).toBeFalse()
+      expect(preventedByPlugin).toBeFalse()
       expect(Popover.getInstance(popoverEl)).not.toBeNull()
     })
   })
