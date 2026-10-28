@@ -102,7 +102,29 @@ Border width utilities set `border-width` using the design token scale.
 <Example class="cxd-example-border-utils" code={`<span class="border-bottom border-lg"></span>
 <span class="border-start border-xl"></span>`} />
 
+## Style
+
+Border style utilities set `border-style`: `.border-style-solid`, `.border-style-dashed` and `.border-style-none`.
+
+<Example class="cxd-example-border-utils" code={`<span class="border border-style-solid"></span>
+<span class="border border-style-dashed"></span>
+<span class="border border-style-none"></span>`} />
+
+### Inherit
+
+`.border-style-inherit` sets `border-style: inherit`, so the element takes the border style of its parent element. This is how a component follows the style of the container it sits in; without the class, a component takes its style from `--cx-border-style`, which `$border-style` sets on `:root`.
+
+<Example code={`<div class="border border-style-dashed p-md">
+  <div class="card border-style-inherit">
+    <div class="card-body">Dashed, as its parent</div>
+  </div>
+</div>`} />
+
+The style comes from the parent element only, not from a further ancestor: a parent that draws no border has the style `none`, and the class removes the border of the element.
+
 ## Radius
+
+Radius utilities round the corners of an element. `.rounded` applies the radius of `--cx-border-radius`, and the side classes round the two corners of one side.
 
 <Example class="cxd-example-rounded-utils" code={`<Placeholder width="75" height="75" class="rounded" title="Example rounded image" />
 <Placeholder width="75" height="75" class="rounded-top" title="Example top rounded image" />
@@ -124,6 +146,14 @@ Border-radius utilities apply rounded corners using the design token scale. Valu
 <Placeholder width="75" height="75" class="rounded-3xl" title="Example extra extra lg rounded image" />
 <Placeholder width="75" height="75" class="rounded-full" title="Completely round image" />
 <Placeholder width="150" height="75" class="rounded-full" title="Rounded pill image" />`} />
+
+A radius class sets `border-radius` only, so on a component it rounds the outside alone: the header and footer of a card keep their inner corners. To round a component inside and out, set its radius through its own custom property, such as `--cx-card-border-radius`. The inner corners of card, accordion and popover follow it.
+
+<Example code={`<div class="card" style="--cx-card-border-radius: var(--cx-border-radius-2xl)">
+  <div class="card-header">Header</div>
+  <div class="card-body">Body</div>
+  <div class="card-footer">Footer</div>
+</div>`} />
 
 <Example class="cxd-example-rounded-utils" code={`<Placeholder width="75" height="75" class="rounded-bottom-xs" title="Example sm rounded image" />
 <Placeholder width="75" height="75" class="rounded-start-md" title="Example default left rounded image" />

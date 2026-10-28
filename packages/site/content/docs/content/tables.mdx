@@ -392,7 +392,7 @@ Responsive tables allow tables to be scrolled horizontally with ease. Make any t
 
 <Callout type="warning">
 **Vertical clipping/truncation**  
-Responsive tables make use of `overflow-y: hidden`, which clips off any content that goes beyond the bottom or top edges of the table. In particular, this can clip off dropdown menus and other third-party widgets.
+A responsive table scrolls inside its wrapper, which is positioned, so everything the table holds stays in it, absolutely positioned content included: a `.visually-hidden` header never widens the page. A menu in the last rows therefore opens inside the scroll area and is clipped at its bottom edge. Give its toggle `data-cx-strategy="fixed"` or `data-cx-container="body"` so the menu opens above the table.
 </Callout>
 
 ### Always responsive

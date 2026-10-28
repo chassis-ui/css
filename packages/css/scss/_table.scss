@@ -287,7 +287,11 @@
   // Generate `.table-responsive` classes that act as container query contexts
   // and enable horizontal scrolling when table content overflows.
 
+  // Positioned, so the wrapper is the containing block of what it scrolls: an absolutely
+  // positioned descendant, such as a `.visually-hidden` header, otherwise keeps its place at
+  // the end of the scrolled row and widens the page
   %table-responsive {
+    position: relative;
     container-type: inline-size;
   }
 
