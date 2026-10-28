@@ -50,6 +50,8 @@ var Swipe = class Swipe extends Config {
 		this._element = element;
 		if (!element || !Swipe.isSupported()) return;
 		this._config = this._getConfig(config);
+		this._startX = 0;
+		this._startY = 0;
 		this._deltaX = 0;
 		this._deltaY = 0;
 		this._supportPointerEvents = Boolean(window.PointerEvent);
@@ -68,20 +70,22 @@ var Swipe = class Swipe extends Config {
 		EventHandler.off(this._element, EVENT_KEY);
 	}
 	_start(event) {
+		this._deltaX = 0;
+		this._deltaY = 0;
 		if (!this._supportPointerEvents) {
-			this._deltaX = event.touches[0].clientX;
-			this._deltaY = event.touches[0].clientY;
+			this._startX = event.touches[0].clientX;
+			this._startY = event.touches[0].clientY;
 			return;
 		}
 		if (this._eventIsPointerPenTouch(event)) {
-			this._deltaX = event.clientX;
-			this._deltaY = event.clientY;
+			this._startX = event.clientX;
+			this._startY = event.clientY;
 		}
 	}
 	_end(event) {
 		if (this._eventIsPointerPenTouch(event)) {
-			this._deltaX = event.clientX - this._deltaX;
-			this._deltaY = event.clientY - this._deltaY;
+			this._deltaX = event.clientX - this._startX;
+			this._deltaY = event.clientY - this._startY;
 		}
 		this._handleSwipe();
 		execute(this._config.endCallback);
@@ -92,8 +96,8 @@ var Swipe = class Swipe extends Config {
 			this._deltaY = 0;
 			return;
 		}
-		this._deltaX = event.touches[0].clientX - this._deltaX;
-		this._deltaY = event.touches[0].clientY - this._deltaY;
+		this._deltaX = event.touches[0].clientX - this._startX;
+		this._deltaY = event.touches[0].clientY - this._startY;
 	}
 	_handleSwipe() {
 		const absDeltaX = Math.abs(this._deltaX);

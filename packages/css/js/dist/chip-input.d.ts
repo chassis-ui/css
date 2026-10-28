@@ -48,6 +48,7 @@ declare class ChipInput extends BaseComponent {
     protected _initializeExistingChips(): void;
     protected _setupChip(chip: HTMLElement): void;
     protected _createChip(value: string): HTMLElement;
+    protected _detachChip(chip: HTMLElement): void;
     protected _createDismissButton(): HTMLButtonElement;
     protected _findChipByValue(value: string): HTMLElement | undefined;
     protected _getChipValue(chip: HTMLElement): string;

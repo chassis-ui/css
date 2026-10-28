@@ -126,6 +126,7 @@ class Tooltip extends FloatingBase {
   protected declare _isEnabled: boolean
   protected declare _timeout: ReturnType<typeof setTimeout> | number
   protected declare _isHovered: boolean | null
+  protected declare _isShowPending: boolean
   protected declare _activeTrigger: Record<string, boolean>
   protected declare _templateFactory: TemplateFactory | null
   protected declare _newContent: Record<string, TemplateContentEntry> | null
@@ -143,6 +144,7 @@ class Tooltip extends FloatingBase {
     this._isEnabled = true
     this._timeout = 0
     this._isHovered = null
+    this._isShowPending = false
     this._activeTrigger = {}
     this._templateFactory = null
     this._newContent = null
@@ -254,8 +256,25 @@ class Tooltip extends FloatingBase {
       EventHandler.trigger(this._element, this.constructor.eventName(EVENT_INSERTED))
     }
 
-    await this._createFloating(tip)
+    // The position is computed asynchronously. The tooltip counts as shown
+    // from here on, so that hide(), toggle() or dispose() in the same task act
+    // on it instead of seeing it as hidden.
+    this._isShowPending = true
 
+    try {
+      await this._createFloating(tip)
+    } catch (error) {
+      this._isShowPending = false
+      throw error
+    }
+
+    // hide() cleared the flag, setContent() replaced the tip or dispose() ran
+    // while the position was computed: the show was cancelled.
+    if (this.isDisposed() || !this._isShowPending || this.tip !== tip) {
+      return
+    }
+
+    this._isShowPending = false
     tip.classList.add(CLASS_NAME_SHOW)
 
     // If this is a touch-enabled device we add extra
@@ -293,6 +312,7 @@ class Tooltip extends FloatingBase {
 
     const tip = this._getTipElement()
     tip.classList.remove(CLASS_NAME_SHOW)
+    this._isShowPending = false
 
     // If this is a touch-enabled device we remove the extra
     // empty mouseover listeners we added for iOS support
@@ -403,7 +423,7 @@ class Tooltip extends FloatingBase {
   }
 
   protected override _isShown(): boolean {
-    return Boolean(this.tip && this.tip.classList.contains(CLASS_NAME_SHOW))
+    return this._isShowPending || Boolean(this.tip && this.tip.classList.contains(CLASS_NAME_SHOW))
   }
 
   protected _getPlacement(tip: HTMLElement): string {
@@ -433,6 +453,12 @@ class Tooltip extends FloatingBase {
 
     // Initial position update
     await this._updateFloatingPosition(tip, placement, arrowElement)
+
+    // The instance was disposed, or the tip removed or replaced, while the
+    // position was computed: nothing to keep updated
+    if (this.isDisposed() || this.tip !== tip) {
+      return
+    }
 
     // Set up auto-update for scroll/resize
     this._floatingCleanup = autoUpdate(
@@ -594,6 +620,12 @@ class Tooltip extends FloatingBase {
 
   protected _isWithActiveTrigger(): boolean {
     return Object.values(this._activeTrigger).includes(true)
+  }
+
+  // Whether the `trigger` option includes the given trigger. Not protected:
+  // the data API of Popover reads it on the instance it created.
+  _hasTrigger(trigger: string): boolean {
+    return this._config.trigger.split(' ').includes(trigger)
   }
 
   protected override _excludedConfigKeys(): string[] {

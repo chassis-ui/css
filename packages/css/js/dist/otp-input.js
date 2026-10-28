@@ -22,6 +22,9 @@ const EVENT_KEY = `.cx.otp-input`;
 const DATA_API_KEY = ".data-api";
 const EVENT_COMPLETE = `complete${EVENT_KEY}`;
 const EVENT_INPUT = `input${EVENT_KEY}`;
+const EVENT_KEYDOWN = `keydown${EVENT_KEY}`;
+const EVENT_PASTE = `paste${EVENT_KEY}`;
+const EVENT_FOCUS = `focus${EVENT_KEY}`;
 const SELECTOR_DATA_OTP = "[data-cx-otp]";
 const SELECTOR_INPUT = "input";
 const Default = {
@@ -55,8 +58,7 @@ var OtpInput = class extends BaseComponent {
 		return this._inputs.map((input) => input.value).join("");
 	}
 	setValue(value) {
-		const chars = [...String(value)];
-		for (const [index, input] of this._inputs.entries()) input.value = chars[index] || "";
+		this._fill(value);
 		this._checkComplete();
 	}
 	clear() {
@@ -67,6 +69,14 @@ var OtpInput = class extends BaseComponent {
 		const emptyInput = this._inputs.find((input) => !input.value);
 		if (emptyInput) emptyInput.focus();
 		else this._inputs.at(-1)?.focus();
+	}
+	dispose() {
+		for (const input of this._inputs) EventHandler.off(input, EVENT_KEY);
+		super.dispose();
+	}
+	_fill(value) {
+		const chars = [...String(value)];
+		for (const [index, input] of this._inputs.entries()) input.value = chars[index] || "";
 	}
 	_setupInputs() {
 		for (const input of this._inputs) {
@@ -80,11 +90,17 @@ var OtpInput = class extends BaseComponent {
 	}
 	_addEventListeners() {
 		for (const [index, input] of this._inputs.entries()) {
-			EventHandler.on(input, "input", (event) => this._handleInput(event, index));
-			EventHandler.on(input, "keydown", (event) => this._handleKeydown(event, index));
-			EventHandler.on(input, "paste", (event) => this._handlePaste(event));
-			EventHandler.on(input, "focus", (event) => this._handleFocus(event));
+			EventHandler.on(input, EVENT_INPUT, (event) => this._handleInput(event, index));
+			EventHandler.on(input, EVENT_KEYDOWN, (event) => this._handleKeydown(event, index));
+			EventHandler.on(input, EVENT_PASTE, (event) => this._handlePaste(event, index));
+			EventHandler.on(input, EVENT_FOCUS, (event) => this._handleFocus(event));
 		}
+	}
+	_triggerInput(index) {
+		EventHandler.trigger(this._element, EVENT_INPUT, {
+			value: this.getValue(),
+			index
+		});
 	}
 	_handleInput(event, index) {
 		const input = event.target;
@@ -97,10 +113,7 @@ var OtpInput = class extends BaseComponent {
 			const nextIndex = Math.min(index + chars.length, this._inputs.length - 1);
 			this._inputs[nextIndex].focus();
 		} else if (value && index < this._inputs.length - 1) this._inputs[index + 1].focus();
-		EventHandler.trigger(this._element, EVENT_INPUT, {
-			value: this.getValue(),
-			index
-		});
+		this._triggerInput(index);
 		this._checkComplete();
 	}
 	_handleKeydown(event, index) {
@@ -111,12 +124,14 @@ var OtpInput = class extends BaseComponent {
 					event.preventDefault();
 					this._inputs[index - 1].value = "";
 					this._inputs[index - 1].focus();
+					this._triggerInput(index - 1);
 				}
 				break;
 			case DELETE_KEY:
 				event.preventDefault();
 				for (let i = index; i < this._inputs.length - 1; i++) this._inputs[i].value = this._inputs[i + 1].value;
 				this._inputs.at(-1).value = "";
+				this._triggerInput(index);
 				break;
 			case ARROW_LEFT_KEY:
 				if (index > 0) {
@@ -130,13 +145,15 @@ var OtpInput = class extends BaseComponent {
 			}
 		}
 	}
-	_handlePaste(event) {
+	_handlePaste(event, index) {
 		event.preventDefault();
 		const digits = getClipboardText(event).replace(/\D/g, "").slice(0, this._inputs.length);
 		if (digits) {
-			this.setValue(digits);
+			this._fill(digits);
 			const lastIndex = Math.min(digits.length, this._inputs.length) - 1;
 			this._inputs[lastIndex].focus();
+			this._triggerInput(index);
+			this._checkComplete();
 		}
 	}
 	_handleFocus(event) {

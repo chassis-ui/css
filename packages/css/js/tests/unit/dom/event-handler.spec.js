@@ -154,6 +154,39 @@ describe('EventHandler', () => {
         }, 20)
       })
     })
+
+    it('should handle a namespaced mouseenter/mouseleave like the native counterpart', () => {
+      fixtureEl.innerHTML = [
+        '<div class="outer">',
+        '<div class="child-a"></div>',
+        '<div class="child-b"></div>',
+        '</div>'
+      ].join('')
+
+      const outer = fixtureEl.querySelector('.outer')
+      const childA = fixtureEl.querySelector('.child-a')
+      const childB = fixtureEl.querySelector('.child-b')
+
+      const enterSpy = jasmine.createSpy('mouseenter')
+      const leaveSpy = jasmine.createSpy('mouseleave')
+
+      EventHandler.on(outer, 'mouseenter.cx.carousel', enterSpy)
+      EventHandler.on(outer, 'mouseleave.cx.carousel', leaveSpy)
+
+      // the pointer crosses from one child to the other: it never leaves outer
+      childA.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, relatedTarget: childB }))
+      childB.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, relatedTarget: childA }))
+
+      expect(enterSpy).not.toHaveBeenCalled()
+      expect(leaveSpy).not.toHaveBeenCalled()
+
+      // the pointer comes from outside outer and goes back out
+      childA.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, relatedTarget: fixtureEl }))
+      childA.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, relatedTarget: fixtureEl }))
+
+      expect(enterSpy).toHaveBeenCalledTimes(1)
+      expect(leaveSpy).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('one', () => {
@@ -397,6 +430,28 @@ describe('EventHandler', () => {
 
       // listener removed again
       expect(i).toEqual(5)
+    })
+
+    it('should remove a namespaced mouseenter listener by its name and by its namespace', () => {
+      fixtureEl.innerHTML = '<div></div>'
+
+      const div = fixtureEl.querySelector('div')
+      const byName = jasmine.createSpy('byName')
+      const byNamespace = jasmine.createSpy('byNamespace')
+      const kept = jasmine.createSpy('kept')
+
+      EventHandler.on(div, 'mouseenter.cx.carousel', byName)
+      EventHandler.on(div, 'mouseenter.cx.tooltip', byNamespace)
+      EventHandler.on(div, 'mouseenter.cx.kept', kept)
+
+      EventHandler.off(div, 'mouseenter.cx.carousel')
+      EventHandler.off(div, '.cx.tooltip')
+
+      div.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, relatedTarget: fixtureEl }))
+
+      expect(byName).not.toHaveBeenCalled()
+      expect(byNamespace).not.toHaveBeenCalled()
+      expect(kept).toHaveBeenCalledTimes(1)
     })
   })
 

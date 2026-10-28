@@ -102,6 +102,23 @@ describe('ChipInput', () => {
       expect(chip).toHaveClass('primary')
       expect(chip).toHaveClass('smooth')
     })
+
+    it('should not apply data-cx-chips classes to pre-existing chips', () => {
+      fixtureEl.innerHTML = '<div data-cx-chips="primary smooth"><span class="chip default">Low</span><input type="text" class="ghost-input"></div>'
+      const el = fixtureEl.querySelector('[data-cx-chips]')
+      const instance = new ChipInput(el)
+
+      const existing = el.querySelector('.chip')
+      expect(existing).toHaveClass('default')
+      expect(existing).not.toHaveClass('primary')
+      expect(existing).not.toHaveClass('smooth')
+      expect(existing.getAttribute('tabindex')).toEqual('0')
+      expect(existing.querySelector('.close-button')).not.toBeNull()
+
+      const added = instance.add('High')
+      expect(added).toHaveClass('primary')
+      expect(added).toHaveClass('smooth')
+    })
   })
 
   describe('add', () => {
@@ -433,6 +450,28 @@ describe('ChipInput', () => {
 
       expect(changeCount).toEqual(1)
     })
+
+    it('should keep a chip whose remove event is prevented', () => {
+      const el = makeContainer()
+      const instance = new ChipInput(el)
+      let changeEvent
+
+      const a = instance.add('a')
+      instance.add('b')
+      instance.selectChip(a)
+      el.addEventListener('remove.cx.chip-input', event => {
+        if (event.value === 'a') {
+          event.preventDefault()
+        }
+      })
+      el.addEventListener('change.cx.chip-input', event => { changeEvent = event })
+      instance.clear()
+
+      expect(instance.getValues()).toEqual(['a'])
+      expect(Chip.getInstance(a)).toBeInstanceOf(Chip)
+      expect(instance.getSelectedValues()).toEqual(['a'])
+      expect(changeEvent.values).toEqual(['a'])
+    })
   })
 
   describe('clearSelection', () => {
@@ -589,6 +628,19 @@ describe('ChipInput', () => {
       expect(chip).toHaveClass('active')
     })
 
+    it('should fire a single select event on Backspace with empty input', () => {
+      const el = makeContainer()
+      const instance = new ChipInput(el)
+      const selections = []
+
+      instance.add('foo')
+      instance._input.value = ''
+      el.addEventListener('select.cx.chip-input', event => selections.push(event.selected))
+      keydown(instance._input, 'Backspace')
+
+      expect(selections).toEqual([['foo']])
+    })
+
     it('should not select chip on Backspace when input has value', () => {
       const el = makeContainer()
       const instance = new ChipInput(el)
@@ -644,6 +696,61 @@ describe('ChipInput', () => {
       keydown(chip, 'Backspace')
 
       expect(instance.getValues()).toEqual([])
+    })
+
+    it('should remove the focused chip on Backspace when nothing is selected', () => {
+      const el = makeContainer(['Low', 'Mid'])
+      const instance = new ChipInput(el)
+      const removed = []
+      const chips = el.querySelectorAll('.chip')
+
+      el.addEventListener('remove.cx.chip-input', event => removed.push(event.value))
+      chips[1].focus()
+      keydown(chips[1], 'Backspace')
+
+      expect(removed).toEqual(['Mid'])
+      expect(instance.getValues()).toEqual(['Low'])
+      expect(document.activeElement).toEqual(chips[0])
+    })
+
+    it('should remove the focused chip on Delete when nothing is selected', () => {
+      const el = makeContainer(['Low', 'Mid'])
+      const instance = new ChipInput(el)
+      const chips = el.querySelectorAll('.chip')
+
+      chips[0].focus()
+      keydown(chips[0], 'Delete')
+
+      expect(instance.getValues()).toEqual(['Mid'])
+    })
+
+    it('should not remove the focused chip when its remove event is prevented', () => {
+      const el = makeContainer(['Low'])
+      const instance = new ChipInput(el)
+      const chip = el.querySelector('.chip')
+
+      el.addEventListener('remove.cx.chip-input', event => event.preventDefault())
+      chip.focus()
+      keydown(chip, 'Backspace')
+
+      expect(instance.getValues()).toEqual(['Low'])
+    })
+
+    it('should fire a single select event on ArrowLeft', () => {
+      const el = makeContainer()
+      const instance = new ChipInput(el)
+      const selections = []
+
+      instance.add('a')
+      instance.add('b')
+      const chips = el.querySelectorAll('.chip')
+
+      instance.selectChip(chips[1])
+      chips[1].focus()
+      el.addEventListener('select.cx.chip-input', event => selections.push(event.selected))
+      keydown(chips[1], 'ArrowLeft')
+
+      expect(selections).toEqual([['a']])
     })
 
     it('should navigate to previous chip on ArrowLeft', () => {
@@ -880,6 +987,20 @@ describe('ChipInput', () => {
       chip.click()
 
       expect(chip).toHaveClass('active')
+    })
+
+    it('should fire a single select event on click', () => {
+      const el = makeContainer()
+      const instance = new ChipInput(el)
+      const selections = []
+
+      const a = instance.add('a')
+      const b = instance.add('b')
+      instance.selectChip(a)
+      el.addEventListener('select.cx.chip-input', event => selections.push(event.selected))
+      b.click()
+
+      expect(selections).toEqual([['b']])
     })
 
     it('should not select chip when dismiss button is clicked', () => {

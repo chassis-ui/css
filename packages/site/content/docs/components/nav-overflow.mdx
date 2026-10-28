@@ -220,7 +220,7 @@ new chassis.NavOverflow(nav, {
 })
 ```
 
-Alternatively, place an element with `data-cx-overflow-icon` directly inside the nav. The component will pick it up, use it as the toggle icon, and remove the original element from the DOM. This takes priority over the `moreIcon` option.
+Alternatively, place an element with `data-cx-overflow-icon` directly inside the nav. The component will pick it up, use it as the toggle icon, and remove the original element from the DOM until `dispose` puts it back. This takes priority over the `moreIcon` option.
 
 ```html
 <div class="nav-overflow" data-cx-toggle="nav-overflow">
@@ -347,7 +347,7 @@ const navOverflow = new chassis.NavOverflow('#myNav', {
 <CxTable>
 | Method | Description |
 | --- | --- |
-| `dispose` | Destroys the nav overflow instance and restores items to their original positions. |
+| `dispose` | Destroys the nav overflow instance and restores items to their original positions. A toggle the component built is removed; a toggle, menu or icon element written in the markup stays where it was. |
 | `getInstance` | *Static* method to get the nav overflow instance associated with a DOM element. |
 | `getOrCreateInstance` | *Static* method to get the nav overflow instance or create a new one if not initialized. |
 | `update` | Manually recalculates which items should overflow. Called automatically on resize. |

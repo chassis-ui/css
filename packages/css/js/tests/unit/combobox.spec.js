@@ -536,6 +536,41 @@ describe('Combobox', () => {
       expect(toggleEl).toHaveClass('disabled')
       expect(toggleEl.getAttribute('aria-disabled')).toEqual('true')
     })
+
+    it('should detect existing disabled state from the disabled attribute of a button toggle on construction', () => {
+      fixtureEl.innerHTML = buildButtonTrigger({ name: 'plan', preSelected: '2', disabled: true })
+      const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
+      const combobox = new Combobox(toggleEl)
+
+      expect(toggleEl).toHaveClass('disabled')
+      expect(toggleEl.getAttribute('aria-disabled')).toEqual('true')
+      // The value of a disabled combobox is not submitted
+      expect(combobox._hiddenInput.value).toEqual('2')
+      expect(combobox._hiddenInput.disabled).toBeTrue()
+    })
+
+    it('should clear the disabled attribute of a button toggle on enable()', () => {
+      fixtureEl.innerHTML = buildButtonTrigger({ disabled: true })
+      const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
+      const menuEl = fixtureEl.querySelector('.menu')
+      const combobox = new Combobox(toggleEl)
+
+      combobox.enable()
+      expect(toggleEl.disabled).toBeFalse()
+      expect(toggleEl).not.toHaveClass('disabled')
+
+      combobox.show()
+      expect(menuEl).toHaveClass('show')
+    })
+
+    it('should set the disabled attribute of a button toggle on disable()', () => {
+      fixtureEl.innerHTML = buildButtonTrigger()
+      const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
+      const combobox = new Combobox(toggleEl)
+
+      combobox.disable()
+      expect(toggleEl.disabled).toBeTrue()
+    })
   })
 
   // ---------------------------------------------------------------------------
@@ -1206,6 +1241,84 @@ describe('Combobox', () => {
       })
     })
 
+    it('should keep the typed text when a no-match query auto-hides the menu', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = buildInputTrigger()
+        const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
+        const inputEl = fixtureEl.querySelector('input.combobox-value')
+        const menuEl = fixtureEl.querySelector('.menu')
+        const combobox = new Combobox(toggleEl)
+
+        toggleEl.addEventListener('shown.cx.combobox', () => {
+          inputEl.value = 'zzz'
+          inputEl.dispatchEvent(new Event('input', { bubbles: true }))
+
+          setTimeout(() => {
+            // The menu closed on its own, not the user: the query is still being typed
+            expect(menuEl).not.toHaveClass('show')
+            expect(inputEl.value).toEqual('zzz')
+            resolve()
+          }, 300)
+        })
+
+        combobox.show()
+      })
+    })
+
+    it('should keep the typed text when a no-match query auto-hides the menu of a combobox with a selection', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = buildInputTrigger()
+        const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
+        const inputEl = fixtureEl.querySelector('input.combobox-value')
+        const items = fixtureEl.querySelectorAll('.menu-item')
+        items[1].classList.add('selected')
+        const combobox = new Combobox(toggleEl)
+
+        toggleEl.addEventListener('shown.cx.combobox', () => {
+          inputEl.value = 'zzz'
+          inputEl.dispatchEvent(new Event('input', { bubbles: true }))
+
+          setTimeout(() => {
+            expect(inputEl.value).toEqual('zzz')
+
+            // A close the user makes restores the label of the selection
+            inputEl.value = 'two'
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }))
+            setTimeout(() => {
+              combobox.hide()
+              expect(inputEl.value).toEqual('Option two')
+              resolve()
+            }, 300)
+          }, 300)
+        })
+
+        combobox.show()
+      })
+    })
+
+    it('should focus the first item the pending filter keeps on ArrowDown right after typing', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = buildInputTrigger()
+        const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
+        const inputEl = fixtureEl.querySelector('input.combobox-value')
+        const items = fixtureEl.querySelectorAll('.menu-item')
+        const combobox = new Combobox(toggleEl)
+
+        toggleEl.addEventListener('shown.cx.combobox', () => {
+          inputEl.value = 'two'
+          inputEl.dispatchEvent(new Event('input', { bubbles: true }))
+          // Same tick: the filter is still waiting on its debounce
+          inputEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }))
+
+          expect(items[0].style.display).toEqual('none')
+          expect(document.activeElement).toEqual(items[1])
+          resolve()
+        })
+
+        combobox.show()
+      })
+    })
+
     it('should restore the input value to the selected item label on close', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = buildInputTrigger()
@@ -1700,6 +1813,51 @@ describe('Combobox', () => {
               resolve()
             })
             .catch(reject)
+        })
+
+        combobox.show()
+      })
+    })
+
+    it('should focus the first item the pending filter keeps on ArrowDown right after typing in the search input', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = buildButtonTriggerWithSearch()
+        const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
+        const searchInputEl = fixtureEl.querySelector('.combobox-search-input')
+        const items = fixtureEl.querySelectorAll('.menu-item')
+        const combobox = new Combobox(toggleEl)
+
+        toggleEl.addEventListener('shown.cx.combobox', () => {
+          searchInputEl.value = 'two'
+          searchInputEl.dispatchEvent(new Event('input', { bubbles: true }))
+          // Same tick: the filter is still waiting on its debounce
+          searchInputEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }))
+
+          expect(items[0].style.display).toEqual('none')
+          expect(document.activeElement).toEqual(items[1])
+          resolve()
+        })
+
+        combobox.show()
+      })
+    })
+
+    it('should jump to the last item the pending filter keeps on End right after typing in the search input', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = buildButtonTriggerWithSearch()
+        const toggleEl = fixtureEl.querySelector('[data-cx-toggle="combobox"]')
+        const searchInputEl = fixtureEl.querySelector('.combobox-search-input')
+        const items = fixtureEl.querySelectorAll('.menu-item')
+        const combobox = new Combobox(toggleEl)
+
+        toggleEl.addEventListener('shown.cx.combobox', () => {
+          searchInputEl.value = 'one'
+          searchInputEl.dispatchEvent(new Event('input', { bubbles: true }))
+          searchInputEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true, cancelable: true }))
+
+          expect(items[1].style.display).toEqual('none')
+          expect(document.activeElement).toEqual(items[0])
+          resolve()
         })
 
         combobox.show()

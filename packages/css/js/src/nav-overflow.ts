@@ -80,6 +80,11 @@ class NavOverflow extends BaseComponent {
   protected declare _resizeHandler: (() => void) | null
   protected declare _collapseBelow: number
   protected declare _resizeRAF: number | null
+  // What the author wrote, which dispose() leaves as it found it
+  protected declare _toggleFromMarkup: boolean
+  protected declare _toggleItemHidden: boolean
+  protected declare _wrapperMarked: boolean
+  protected declare _customIcon: { element: HTMLElement, parent: ParentNode, next: ChildNode | null } | null
 
   constructor(element?: string | Element | null, config?: Partial<NavOverflowConfig> | null) {
     super(element, config)
@@ -99,6 +104,10 @@ class NavOverflow extends BaseComponent {
     this._resizeHandler = null
     this._collapseBelow = 0
     this._resizeRAF = null
+    this._toggleFromMarkup = false
+    this._toggleItemHidden = false
+    this._wrapperMarked = false
+    this._customIcon = null
 
     this._init()
   }
@@ -139,9 +148,33 @@ class NavOverflow extends BaseComponent {
     // Move items back to original positions
     this._restoreItems()
 
-    // Remove overflow menu
-    if (this._overflowToggle && this._overflowToggle.parentElement) {
-      this._overflowToggle.parentElement.remove()
+    for (const item of this._items) {
+      delete item.dataset.cxNavOrder
+    }
+
+    // Remove the overflow menu the plugin built; a toggle and menu from the markup stay,
+    // the menu emptied by _restoreItems(), the toggle's item hidden as it was
+    const overflowItem = this._overflowToggle?.closest<HTMLElement>(SELECTOR_NAV_ITEM) ?? null
+    if (overflowItem) {
+      if (this._toggleFromMarkup) {
+        overflowItem.classList.toggle(CLASS_NAME_HIDDEN, this._toggleItemHidden)
+      } else {
+        overflowItem.remove()
+      }
+    }
+
+    // Put a custom icon element back where it was
+    if (this._customIcon) {
+      const { element, parent, next } = this._customIcon
+      if (next && next.parentNode === parent) {
+        next.before(element)
+      } else {
+        parent.append(element)
+      }
+    }
+
+    if (!this._wrapperMarked) {
+      this._element.classList.remove(CLASS_NAME_OVERFLOW)
     }
 
     super.dispose()
@@ -150,6 +183,7 @@ class NavOverflow extends BaseComponent {
   // Private
   protected _init(): void {
     // Mark the wrapper so its nav stops wrapping and starts collapsing
+    this._wrapperMarked = this._element.classList.contains(CLASS_NAME_OVERFLOW)
     this._element.classList.add(CLASS_NAME_OVERFLOW)
 
     // Get all nav items, minus a toggle the author already wrote
@@ -180,6 +214,8 @@ class NavOverflow extends BaseComponent {
 
     if (this._overflowToggle) {
       this._overflowMenu = SelectorEngine.findOne(SELECTOR_OVERFLOW_MENU, this._element)
+      this._toggleFromMarkup = true
+      this._toggleItemHidden = this._overflowToggle.closest(SELECTOR_NAV_ITEM)?.classList.contains(CLASS_NAME_HIDDEN) ?? false
       return
     }
 
@@ -243,6 +279,12 @@ class NavOverflow extends BaseComponent {
     iconClone.removeAttribute('data-cx-overflow-icon')
     const iconHtml = iconClone.outerHTML
 
+    // Taken out of the page while the instance lives; dispose() puts it back
+    this._customIcon = {
+      element: customIconElement,
+      parent: customIconElement.parentNode!,
+      next: customIconElement.nextSibling
+    }
     customIconElement.remove()
 
     // Returned HTML is sanitized in `_createOverflowMenu` before insertion.

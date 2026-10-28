@@ -90,9 +90,11 @@ class Drawer extends DialogBase {
   // Protected — hook overrides
 
   protected override _getShowOptions(): { modal: boolean, preventBodyScroll: boolean } {
-    const useModal = Boolean(this._config.backdrop) || !this._config.scroll
+    // `backdrop` decides between showModal() and show(): `true` and `'static'` open a
+    // modal drawer with the native ::backdrop, `false` a non-modal one with no backdrop.
+    // `scroll` locks the body scroll on its own, for a non-modal drawer too.
     return {
-      modal: useModal,
+      modal: Boolean(this._config.backdrop),
       preventBodyScroll: !this._config.scroll
     }
   }
@@ -159,8 +161,14 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (
   Drawer.getOrCreateInstance(target).toggle(this)
 })
 
+// A drawer with the `open` attribute in its markup is open natively: non-modal, with no
+// backdrop and no state of the plugin. Close it natively, with no event of the plugin, and
+// show it through the plugin, so the page ends in the shown state: the configured modal
+// mode and backdrop, the body scroll lock and the outside click. The native close event
+// of that close() comes later, with the drawer open again, and the plugin ignores it.
 EventHandler.on(window, EVENT_LOAD_DATA_API, () => {
-  for (const element of SelectorEngine.find(SELECTOR_OPEN_DRAWER)) {
+  for (const element of SelectorEngine.find<HTMLDialogElement>(SELECTOR_OPEN_DRAWER)) {
+    element.close()
     Drawer.getOrCreateInstance(element).show()
   }
 })

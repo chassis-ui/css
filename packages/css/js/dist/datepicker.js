@@ -38,7 +38,7 @@ const Default = {
 	displayMonthsCount: 1,
 	firstWeekday: 1,
 	inline: false,
-	locale: navigator.language.substring(0, 2),
+	locale: navigator.language,
 	positionElement: null,
 	selectedDates: [],
 	selectionMode: "single",
@@ -169,7 +169,9 @@ var Datepicker = class extends BaseComponent {
 		return dates ? [...dates] : [];
 	}
 	setSelectedDates(dates) {
-		if (this._calendar) this._calendar.set({ selectedDates: dates });
+		if (!this._calendar) return;
+		this._calendar.set({ selectedDates: dates });
+		this._updateOutputs(dates);
 	}
 	_configAfterMerge(config) {
 		config.selectedDates = [...config.selectedDates];
@@ -341,6 +343,9 @@ var Datepicker = class extends BaseComponent {
 		const [year, month, day] = dateStr.split("-");
 		return new Date(Number(year), Number(month) - 1, Number(day));
 	}
+	_toDateString(date) {
+		return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+	}
 	_formatDate(dateStr) {
 		const date = this._parseDate(dateStr);
 		const locale = this._config.locale === "default" ? void 0 : this._config.locale;
@@ -358,11 +363,12 @@ var Datepicker = class extends BaseComponent {
 	_parseInputValue() {
 		const value = this._element.value.trim();
 		if (!value) return;
-		const date = new Date(value);
-		if (!Number.isNaN(date.getTime())) {
-			const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-			this._calendar.set({ selectedDates: [formatted] });
-		}
+		const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(value);
+		const date = isDateOnly ? this._parseDate(value) : new Date(value);
+		if (Number.isNaN(date.getTime())) return;
+		const formatted = this._toDateString(date);
+		if (isDateOnly && formatted !== value) return;
+		this._calendar.set({ selectedDates: [formatted] });
 	}
 };
 /**

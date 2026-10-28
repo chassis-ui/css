@@ -27,6 +27,7 @@ const EVENT_CANCEL = `cancel${EVENT_KEY}`
 const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`
 
 const CLASS_NAME_NONMODAL = 'nonmodal'
+const CLASS_NAME_BACKDROPLESS = 'backdropless'
 const CLASS_NAME_INSTANT = 'instant'
 const CLASS_NAME_SWAP_IN = 'swap-in'
 
@@ -89,11 +90,15 @@ class Dialog extends DialogBase {
   protected override _onBeforeShow(): void {
     if (!this._config.modal) {
       this._element.classList.add(CLASS_NAME_NONMODAL)
+    } else if (!this._config.backdrop) {
+      // A modal dialog with `backdrop: false` keeps the top layer and the inert page:
+      // the class makes its ::backdrop invisible
+      this._element.classList.add(CLASS_NAME_BACKDROPLESS)
     }
   }
 
   protected override _onAfterHide(): void {
-    this._element.classList.remove(CLASS_NAME_NONMODAL)
+    this._element.classList.remove(CLASS_NAME_NONMODAL, CLASS_NAME_BACKDROPLESS)
   }
 
   protected override _onCancel(): void {

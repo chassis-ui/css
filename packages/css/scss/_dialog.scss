@@ -117,6 +117,15 @@
       }
     }
 
+    // `backdrop: false` on a modal dialog: the plugin adds the class while the dialog is
+    // open. The dialog keeps the top layer and the inert page, and the native ::backdrop
+    // draws nothing — not even its entry and exit fades.
+    &.backdropless::backdrop {
+      background-color: transparent;
+      backdrop-filter: none;
+      @include transition(none);
+    }
+
     // Open state base — restores visibility and overflow.
     // opacity/transform are intentionally omitted here so component classes
     // (e.g. .modal) can own the animation without being overridden.

@@ -27,6 +27,7 @@ const EVENT_HIDDEN = `hidden${EVENT_KEY}`;
 const EVENT_CANCEL = `cancel${EVENT_KEY}`;
 const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`;
 const CLASS_NAME_NONMODAL = "nonmodal";
+const CLASS_NAME_BACKDROPLESS = "backdropless";
 const CLASS_NAME_INSTANT = "instant";
 const CLASS_NAME_SWAP_IN = "swap-in";
 const SELECTOR_DATA_TOGGLE = "[data-cx-toggle=\"dialog\"]";
@@ -65,9 +66,10 @@ var Dialog = class extends DialogBase {
 	}
 	_onBeforeShow() {
 		if (!this._config.modal) this._element.classList.add(CLASS_NAME_NONMODAL);
+		else if (!this._config.backdrop) this._element.classList.add(CLASS_NAME_BACKDROPLESS);
 	}
 	_onAfterHide() {
-		this._element.classList.remove(CLASS_NAME_NONMODAL);
+		this._element.classList.remove(CLASS_NAME_NONMODAL, CLASS_NAME_BACKDROPLESS);
 	}
 	_onCancel() {
 		EventHandler.trigger(this._element, EVENT_CANCEL);

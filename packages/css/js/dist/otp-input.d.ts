@@ -24,11 +24,14 @@ declare class OtpInput extends BaseComponent {
     setValue(value: string | number): void;
     clear(): void;
     focus(): void;
+    dispose(): void;
+    protected _fill(value: string | number): void;
     protected _setupInputs(): void;
     protected _addEventListeners(): void;
+    protected _triggerInput(index: number): void;
     protected _handleInput(event: ChassisEvent, index: number): void;
     protected _handleKeydown(event: ChassisEvent, index: number): void;
-    protected _handlePaste(event: ChassisEvent): void;
+    protected _handlePaste(event: ChassisEvent, index: number): void;
     protected _handleFocus(event: ChassisEvent): void;
     protected _checkComplete(): void;
 }

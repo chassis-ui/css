@@ -1127,6 +1127,138 @@ describe('NavOverflow', () => {
       }
     })
 
+    it('should keep a toggle and menu written in the markup on dispose', () => {
+      fixtureEl.innerHTML = [
+        '<div class="nav-overflow" data-cx-toggle="nav-overflow">',
+        '  <ul class="nav">',
+        '    <li class="nav-item"><a class="nav-link" href="#">Link 1</a></li>',
+        '    <li class="nav-item nav-overflow-item d-none">',
+        '      <button class="nav-link nav-overflow-toggle" type="button" data-cx-toggle="menu">More</button>',
+        '      <div class="nav-overflow-menu menu"></div>',
+        '    </li>',
+        '  </ul>',
+        '</div>'
+      ].join('')
+
+      const wrapperEl = fixtureEl.querySelector('[data-cx-toggle="nav-overflow"]')
+      const existingToggle = wrapperEl.querySelector('.nav-overflow-toggle')
+      const existingMenu = wrapperEl.querySelector('.nav-overflow-menu')
+      const navOverflow = new NavOverflow(wrapperEl)
+
+      // Measured, so shown while the instance lives
+      expect(existingToggle.parentElement).not.toHaveClass('d-none')
+
+      navOverflow.dispose()
+
+      expect(wrapperEl.querySelector('.nav-overflow-toggle')).toBe(existingToggle)
+      expect(wrapperEl.querySelector('.nav-overflow-menu')).toBe(existingMenu)
+      expect(existingMenu.children).toHaveSize(0)
+      expect(existingToggle.parentElement).toHaveClass('d-none')
+
+      // A later instance finds the author's toggle again, instead of building one
+      const next = NavOverflow.getOrCreateInstance(wrapperEl)
+      const toggles = wrapperEl.querySelectorAll('.nav-overflow-toggle')
+      expect(toggles).toHaveSize(1)
+      expect(toggles[0]).toBe(existingToggle)
+      expect(existingToggle.querySelector('.nav-overflow-icon')).toBeNull()
+
+      next.dispose()
+    })
+
+    it('should put a custom icon element back where it was on dispose', () => {
+      fixtureEl.innerHTML = [
+        '<div class="nav-overflow" data-cx-toggle="nav-overflow">',
+        '  <ul class="nav">',
+        '    <li class="nav-item"><a class="nav-link" href="#">Link 1</a></li>',
+        '    <svg data-cx-overflow-icon class="from-markup" width="16" height="16"><circle cx="8" cy="8" r="8"/></svg>',
+        '    <li class="nav-item"><a class="nav-link" href="#">Link 2</a></li>',
+        '  </ul>',
+        '</div>'
+      ].join('')
+
+      const wrapperEl = fixtureEl.querySelector('[data-cx-toggle="nav-overflow"]')
+      const navEl = wrapperEl.querySelector('.nav')
+      const iconEl = wrapperEl.querySelector('[data-cx-overflow-icon]')
+      const [item1, item2] = wrapperEl.querySelectorAll('.nav-item')
+      const navOverflow = new NavOverflow(wrapperEl)
+
+      expect(iconEl.isConnected).toBeFalse()
+
+      navOverflow.dispose()
+
+      // The same element, in its place, still marked for the next instance
+      expect(wrapperEl.querySelector('[data-cx-overflow-icon]')).toBe(iconEl)
+      expect(iconEl.parentNode).toBe(navEl)
+      expect(iconEl.previousElementSibling).toBe(item1)
+      expect(iconEl.nextElementSibling).toBe(item2)
+      expect(wrapperEl.querySelector('.nav-overflow-icon')).toBeNull()
+
+      const next = NavOverflow.getOrCreateInstance(wrapperEl)
+      expect(wrapperEl.querySelector('.nav-overflow-icon .from-markup')).not.toBeNull()
+      next.dispose()
+    })
+
+    it('should put a custom icon element back at the end of its parent when its next sibling is gone', () => {
+      fixtureEl.innerHTML = [
+        '<div class="nav-overflow" data-cx-toggle="nav-overflow">',
+        '  <ul class="nav">',
+        '    <li class="nav-item"><a class="nav-link" href="#">Link 1</a></li>',
+        '  </ul>',
+        '  <svg data-cx-overflow-icon width="16" height="16"><circle cx="8" cy="8" r="8"/></svg>',
+        '  <p id="after">after</p>',
+        '</div>'
+      ].join('')
+
+      const wrapperEl = fixtureEl.querySelector('[data-cx-toggle="nav-overflow"]')
+      const iconEl = wrapperEl.querySelector('[data-cx-overflow-icon]')
+      const navOverflow = new NavOverflow(wrapperEl)
+
+      wrapperEl.querySelector('#after').remove()
+      navOverflow.dispose()
+
+      expect(iconEl.parentNode).toBe(wrapperEl)
+      expect(wrapperEl.lastElementChild).toBe(iconEl)
+    })
+
+    it('should remove the class and the order data it set on dispose', () => {
+      fixtureEl.innerHTML = [
+        '<div data-cx-toggle="nav-overflow">',
+        '  <ul class="nav">',
+        '    <li class="nav-item"><a class="nav-link" href="#">Link 1</a></li>',
+        '    <li class="nav-item"><a class="nav-link" href="#">Link 2</a></li>',
+        '  </ul>',
+        '</div>'
+      ].join('')
+
+      const wrapperEl = fixtureEl.querySelector('[data-cx-toggle="nav-overflow"]')
+      const navOverflow = new NavOverflow(wrapperEl)
+
+      expect(wrapperEl).toHaveClass('nav-overflow')
+      expect(wrapperEl.querySelectorAll('[data-cx-nav-order]')).toHaveSize(2)
+
+      navOverflow.dispose()
+
+      expect(wrapperEl).not.toHaveClass('nav-overflow')
+      expect(wrapperEl.querySelectorAll('[data-cx-nav-order]')).toHaveSize(0)
+    })
+
+    it('should keep the nav-overflow class of the wrapper that had it on dispose', () => {
+      fixtureEl.innerHTML = [
+        '<div class="nav-overflow" data-cx-toggle="nav-overflow">',
+        '  <ul class="nav">',
+        '    <li class="nav-item"><a class="nav-link" href="#">Link 1</a></li>',
+        '  </ul>',
+        '</div>'
+      ].join('')
+
+      const wrapperEl = fixtureEl.querySelector('[data-cx-toggle="nav-overflow"]')
+      const navOverflow = new NavOverflow(wrapperEl)
+
+      navOverflow.dispose()
+
+      expect(wrapperEl).toHaveClass('nav-overflow')
+    })
+
     it('should restore hidden items on dispose', () => {
       fixtureEl.innerHTML = [
         '<div class="nav-overflow" style="width: 250px;" data-cx-toggle="nav-overflow">',

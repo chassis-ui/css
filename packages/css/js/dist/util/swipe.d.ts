@@ -19,6 +19,8 @@ type SwipeConfig = {
 declare class Swipe extends Config<SwipeConfig> {
     protected _element: HTMLElement;
     protected _config: SwipeConfig;
+    protected _startX: number;
+    protected _startY: number;
     protected _deltaX: number;
     protected _deltaY: number;
     protected _supportPointerEvents: boolean;

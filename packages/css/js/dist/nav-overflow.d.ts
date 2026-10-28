@@ -27,6 +27,14 @@ declare class NavOverflow extends BaseComponent {
     protected _resizeHandler: (() => void) | null;
     protected _collapseBelow: number;
     protected _resizeRAF: number | null;
+    protected _toggleFromMarkup: boolean;
+    protected _toggleItemHidden: boolean;
+    protected _wrapperMarked: boolean;
+    protected _customIcon: {
+        element: HTMLElement;
+        parent: ParentNode;
+        next: ChildNode | null;
+    } | null;
     constructor(element?: string | Element | null, config?: Partial<NavOverflowConfig> | null);
     static get Default(): NavOverflowConfig;
     static get DefaultType(): Record<string, string>;

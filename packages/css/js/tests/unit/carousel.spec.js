@@ -205,6 +205,71 @@ describe('Carousel', () => {
       expect(carousel._activeIndex).toEqual(1)
     })
 
+    // Rects stubbed on the DOM before the instance exists (`stubLayout` needs
+    // one), so the constructor measures a real-looking layout.
+    const stubMarkupLayout = () => {
+      const rect = (left, width) => ({
+        left, width, right: left + width, top: 0, bottom: 0, height: 0, x: left, y: 0, toJSON() {}
+      })
+
+      spyOn(fixtureEl.querySelector('.carousel-inner'), 'getBoundingClientRect').and.returnValue(rect(0, 300))
+      for (const [index, item] of fixtureEl.querySelectorAll('.carousel-item').entries()) {
+        spyOn(item, 'getBoundingClientRect').and.returnValue(rect(index * 100, 100))
+      }
+    }
+
+    const secondActiveMarkup = (classes = 'carousel slide') => [
+      `<div id="myCarousel" class="${classes}">`,
+      '  <div class="carousel-inner">',
+      '    <div id="item1" class="carousel-item">item 1</div>',
+      '    <div id="item2" class="carousel-item active">item 2</div>',
+      '    <div id="item3" class="carousel-item">item 3</div>',
+      '  </div>',
+      '</div>'
+    ].join('')
+
+    it('should scroll the viewport to the marked active item, before the observer reports the first one', () => {
+      fixtureEl.innerHTML = secondActiveMarkup()
+      stubMarkupLayout()
+
+      const carouselEl = fixtureEl.querySelector('#myCarousel')
+      const slidSpy = jasmine.createSpy('slid')
+      EventHandler.on(carouselEl, 'slid.cx.carousel', slidSpy)
+
+      const carousel = new Carousel(carouselEl)
+
+      // An instant jump of one item-width, with snapping restored afterwards
+      expect(Element.prototype.scrollBy).toHaveBeenCalledWith({ left: 100, top: 0, behavior: 'instant' })
+      expect(carousel._viewport.style.scrollSnapType).toEqual('')
+
+      // The first delivery of the observer then sees the marked item, and nothing changes
+      intersect(carousel, [0, 1, 0])
+
+      expect(carousel._activeIndex).toEqual(1)
+      expect(fixtureEl.querySelector('#item2')).toHaveClass('active')
+      expect(fixtureEl.querySelector('#item1')).not.toHaveClass('active')
+      expect(slidSpy).not.toHaveBeenCalled()
+    })
+
+    it('should not scroll the viewport when the first item is the active one', () => {
+      fixtureEl.innerHTML = basicMarkup()
+      stubMarkupLayout()
+
+      new Carousel('#myCarousel') // eslint-disable-line no-new
+
+      expect(Element.prototype.scrollBy).not.toHaveBeenCalled()
+    })
+
+    it('should not scroll the viewport to the active item in fade mode', () => {
+      fixtureEl.innerHTML = secondActiveMarkup('carousel slide carousel-fade')
+      stubMarkupLayout()
+
+      const carousel = new Carousel('#myCarousel')
+
+      expect(Element.prototype.scrollBy).not.toHaveBeenCalled()
+      expect(carousel._activeIndex).toEqual(1)
+    })
+
     it('should start cycling if `autoplay` is `true`', () => {
       fixtureEl.innerHTML = basicMarkup({ autoplay: true })
 
@@ -678,6 +743,57 @@ describe('Carousel', () => {
       expect(slidSpy.calls.mostRecent().args[0].direction).toEqual('right')
     })
 
+    it('should re-align by the shift of the prepended clone, so a second prev() keeps an in-flight scroll where it is', () => {
+      fixtureEl.innerHTML = basicMarkup()
+
+      const carouselEl = fixtureEl.querySelector('#myCarousel')
+      const carousel = new Carousel(carouselEl, { ends: 'loop' })
+      const rect = (left, width) => ({
+        left, width, right: left + width, top: 0, bottom: 0, height: 0, x: left, y: 0, toJSON() {}
+      })
+
+      // The viewport rests on item 2; `offset` is where the slides stand while a
+      // scroll is under way, `shift` what prepending a clone pushes them by.
+      let offset = -100
+      let shift = 0
+      spyOn(carousel._viewport, 'getBoundingClientRect').and.returnValue(rect(0, 300))
+      for (const [index, item] of carousel._getItems().entries()) {
+        spyOn(item, 'getBoundingClientRect').and.callFake(() => rect((index * 100) + offset + shift, 100))
+      }
+
+      spyOn(carousel._viewport, 'prepend').and.callFake(node => {
+        Element.prototype.prepend.call(carousel._viewport, node)
+        shift = 100
+      })
+      const slidSpy = jasmine.createSpy('slid')
+      EventHandler.on(carouselEl, 'slid.cx.carousel', slidSpy)
+      carousel._activeIndex = 1
+
+      carousel.prev()
+
+      // Half-way back to item 1 the observer has already made it active, and
+      // the key repeats
+      offset = -40
+      intersect(carousel, [0.6, 0.4, 0])
+      expect(carousel._activeIndex).toEqual(0)
+
+      carousel.prev()
+
+      expect(carousel._viewport.querySelector('.carousel-item-clone')).not.toBeNull()
+      // The jump undoes the shift of the prepend (100), not the 40px the scroll
+      // had left to go: the loop animation covers those.
+      expect(Element.prototype.scrollBy).toHaveBeenCalledTimes(1)
+      expect(Element.prototype.scrollBy.calls.mostRecent().args[0]).toEqual({ left: 100, top: 0, behavior: 'instant' })
+
+      settleScroll()
+
+      // The move the loop took over fires no `slid` of its own
+      expect(carousel._activeIndex).toEqual(2)
+      expect(slidSpy).toHaveBeenCalledTimes(1)
+      expect(slidSpy.calls.mostRecent().args[0].from).toEqual(0)
+      expect(slidSpy.calls.mostRecent().args[0].to).toEqual(2)
+    })
+
     it('should report mirrored loop directions in RTL', () => {
       fixtureEl.innerHTML = basicMarkup()
       document.documentElement.dir = 'rtl'
@@ -1083,6 +1199,106 @@ describe('Carousel', () => {
       expect(carousel._activeIndex).toEqual(1)
     })
 
+    it('should fire `slid` once for a multi-slide jump, when the move completes', () => {
+      fixtureEl.innerHTML = basicMarkup({ indicators: true })
+
+      const carouselEl = fixtureEl.querySelector('#myCarousel')
+      const carousel = new Carousel(carouselEl)
+      stubLayout(carousel)
+      const slideSpy = jasmine.createSpy('slide')
+      const slidSpy = jasmine.createSpy('slid')
+      EventHandler.on(carouselEl, 'slide.cx.carousel', slideSpy)
+      EventHandler.on(carouselEl, 'slid.cx.carousel', slidSpy)
+
+      carousel.to(2)
+
+      expect(slideSpy).toHaveBeenCalledTimes(1)
+
+      // The viewport passes item 2 on its way: the active class and the
+      // indicator follow it, `slid` does not fire for it.
+      intersect(carousel, [0, 1, 0])
+
+      expect(fixtureEl.querySelector('#item2')).toHaveClass('active')
+      expect(fixtureEl.querySelector('.carousel-indicators .active').getAttribute('data-cx-slide-to')).toEqual('1')
+      expect(slidSpy).not.toHaveBeenCalled()
+
+      intersect(carousel, [0, 0, 1])
+
+      expect(fixtureEl.querySelector('#item3')).toHaveClass('active')
+      expect(slidSpy).not.toHaveBeenCalled()
+
+      settleScroll()
+
+      expect(slidSpy).toHaveBeenCalledTimes(1)
+      const detail = slidSpy.calls.mostRecent().args[0]
+      expect(detail.from).toEqual(0)
+      expect(detail.to).toEqual(2)
+      expect(detail.direction).toEqual('left')
+      expect(detail.relatedTarget).toEqual(fixtureEl.querySelector('#item3'))
+    })
+
+    it('should fire `slid` exactly once for a single step', () => {
+      fixtureEl.innerHTML = basicMarkup()
+
+      const carouselEl = fixtureEl.querySelector('#myCarousel')
+      const carousel = new Carousel(carouselEl)
+      stubLayout(carousel)
+      const slidSpy = jasmine.createSpy('slid')
+      EventHandler.on(carouselEl, 'slid.cx.carousel', slidSpy)
+
+      carousel.next()
+      intersect(carousel, [0, 1, 0])
+      settleScroll()
+
+      expect(slidSpy).toHaveBeenCalledTimes(1)
+      expect(slidSpy.calls.mostRecent().args[0].from).toEqual(0)
+      expect(slidSpy.calls.mostRecent().args[0].to).toEqual(1)
+      expect(carousel._activeIndex).toEqual(1)
+    })
+
+    it('should sync the active slide when the move completes before the observer has caught up', () => {
+      fixtureEl.innerHTML = basicMarkup()
+
+      const carouselEl = fixtureEl.querySelector('#myCarousel')
+      const carousel = new Carousel(carouselEl)
+      stubLayout(carousel)
+      const slidSpy = jasmine.createSpy('slid')
+      EventHandler.on(carouselEl, 'slid.cx.carousel', slidSpy)
+
+      carousel.to(2)
+      settleScroll()
+
+      expect(carousel._activeIndex).toEqual(2)
+      expect(fixtureEl.querySelector('#item3')).toHaveClass('active')
+      expect(slidSpy).toHaveBeenCalledTimes(1)
+
+      // A late delivery of the observer for the position reached fires nothing more
+      intersect(carousel, [0, 0, 1])
+
+      expect(slidSpy).toHaveBeenCalledTimes(1)
+    })
+
+    it('should fire `slid` for each slide a scroll by the user makes active', () => {
+      fixtureEl.innerHTML = basicMarkup()
+
+      const carouselEl = fixtureEl.querySelector('#myCarousel')
+      const carousel = new Carousel(carouselEl)
+      stubLayout(carousel)
+      const slideSpy = jasmine.createSpy('slide')
+      const slidSpy = jasmine.createSpy('slid')
+      EventHandler.on(carouselEl, 'slide.cx.carousel', slideSpy)
+      EventHandler.on(carouselEl, 'slid.cx.carousel', slidSpy)
+
+      // A drag has no `slide` event: the observer alone reports where it went
+      intersect(carousel, [0, 1, 0])
+      intersect(carousel, [0, 0, 1])
+
+      expect(slideSpy).not.toHaveBeenCalled()
+      expect(slidSpy).toHaveBeenCalledTimes(2)
+      expect(slidSpy.calls.argsFor(0)[0].to).toEqual(1)
+      expect(slidSpy.calls.argsFor(1)[0].to).toEqual(2)
+    })
+
     it('should sync the active slide and fire `slid` after settling when there is no observer', () => {
       const original = window.IntersectionObserver
       window.IntersectionObserver = undefined
@@ -1389,6 +1605,30 @@ describe('Carousel', () => {
       expect(prevSpy).toHaveBeenCalled()
     })
 
+    it('should swap the arrow keys in RTL, where the next item lies to the left', () => {
+      fixtureEl.innerHTML = basicMarkup()
+      document.documentElement.dir = 'rtl'
+
+      const carouselEl = fixtureEl.querySelector('#myCarousel')
+      const carousel = new Carousel(carouselEl)
+      const nextSpy = spyOn(carousel, 'next')
+      const prevSpy = spyOn(carousel, 'prev')
+
+      const left = createEvent('keydown')
+      left.key = 'ArrowLeft'
+      carouselEl.dispatchEvent(left)
+
+      expect(nextSpy).toHaveBeenCalledTimes(1)
+      expect(prevSpy).not.toHaveBeenCalled()
+
+      const right = createEvent('keydown')
+      right.key = 'ArrowRight'
+      carouselEl.dispatchEvent(right)
+
+      expect(prevSpy).toHaveBeenCalledTimes(1)
+      expect(nextSpy).toHaveBeenCalledTimes(1)
+    })
+
     it('should ignore keystrokes from inputs and textareas', () => {
       fixtureEl.innerHTML = [
         '<div id="myCarousel" class="carousel slide">',
@@ -1469,6 +1709,39 @@ describe('Carousel', () => {
       expect(carousel._playing).toBeTrue()
       expect(control).not.toHaveClass('paused')
       expect(control.getAttribute('aria-label')).toEqual('Pause')
+    })
+
+    it('should show the paused state once autoplay stops at the last slide when `ends` is `stop`', () => {
+      jasmine.clock().install()
+
+      try {
+        fixtureEl.innerHTML = playPauseMarkup({ autoplay: true })
+
+        const carousel = new Carousel('#myCarousel', { ends: 'stop', interval: 1000 })
+        const control = fixtureEl.querySelector('.carousel-control-play-pause')
+        carousel._activeIndex = 1
+        carousel.cycle()
+
+        jasmine.clock().tick(1001)
+
+        expect(carousel._interval).toBeNull()
+        expect(carousel._playing).toBeFalse()
+        expect(control).toHaveClass('paused')
+        expect(control.getAttribute('aria-label')).toEqual('Play')
+
+        // Leaving the carousel does not re-arm a timer that would stop again at once
+        carousel._maybeEnableCycle()
+        expect(carousel._interval).toBeNull()
+
+        // The first click of the control starts playing again
+        control.click()
+        expect(carousel._playing).toBeTrue()
+        expect(carousel._interval).not.toBeNull()
+        expect(control).not.toHaveClass('paused')
+        expect(control.getAttribute('aria-label')).toEqual('Pause')
+      } finally {
+        jasmine.clock().uninstall()
+      }
     })
 
     it('should let the control start autoplay on an otherwise static carousel', () => {

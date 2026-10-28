@@ -23,6 +23,8 @@ const EVENT_CLICK = 'click'
 const EVENT_FOCUSIN = 'focusin'
 const EVENT_MOUSEENTER = 'mouseenter'
 
+const TRIGGER_CLICK = 'click'
+
 type PopoverConfig = TooltipConfig & {
   content: string | Element | ((...args: any[]) => string | Element) | null
 }
@@ -103,16 +105,19 @@ const initPopover = (event: ChassisEvent): void => {
     return
   }
 
-  // Prevent default for click events to avoid navigation (e.g. <a href="#">)
-  if (event.type === 'click') {
-    event.preventDefault()
-  }
-
   // Lazily create the instance. The instance's own `_setListeners()` registers
   // the appropriate listeners on the element for the configured triggers
   // (click/focus/hover), so we don't toggle or call `_enter` here — doing so
   // would duplicate handlers and leave stale state on `_activeTrigger`.
-  Popover.getOrCreateInstance(target)
+  const popover = Popover.getOrCreateInstance(target)
+
+  // A click that toggles the popover does not also follow the link
+  // (e.g. <a href="#">). With another trigger the click keeps its default:
+  // a link with a hover popover navigates, a submit button with a focus
+  // popover submits.
+  if (event.type === 'click' && popover._hasTrigger(TRIGGER_CLICK)) {
+    event.preventDefault()
+  }
 }
 
 // Auto-initialize popovers on first interaction for click, hover, and focus triggers

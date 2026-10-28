@@ -502,6 +502,126 @@ describe('OtpInput', () => {
         inputs[0].dispatchEvent(createEvent('input'))
       })
     })
+
+    it('should trigger input event when Delete shifts the values left', () => {
+      fixtureEl.innerHTML = getOtpHtml()
+
+      const otpEl = fixtureEl.querySelector('.form-otp')
+      const otp = new OtpInput(otpEl)
+      const inputs = otpEl.querySelectorAll('input')
+      const inputSpy = jasmine.createSpy('input')
+
+      otp.setValue('123')
+      otpEl.addEventListener('input.cx.otp-input', inputSpy)
+      inputs[1].focus()
+      inputs[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete', bubbles: true }))
+
+      expect(otp.getValue()).toEqual('13')
+      expect(inputSpy).toHaveBeenCalledTimes(1)
+      expect(inputSpy.calls.mostRecent().args[0].value).toEqual('13')
+      expect(inputSpy.calls.mostRecent().args[0].index).toEqual(1)
+    })
+
+    it('should trigger input event when Backspace clears the previous input', () => {
+      fixtureEl.innerHTML = getOtpHtml()
+
+      const otpEl = fixtureEl.querySelector('.form-otp')
+      const otp = new OtpInput(otpEl)
+      const inputs = otpEl.querySelectorAll('input')
+      const inputSpy = jasmine.createSpy('input')
+
+      otp.setValue('12')
+      otpEl.addEventListener('input.cx.otp-input', inputSpy)
+      inputs[2].focus()
+      inputs[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true }))
+
+      expect(otp.getValue()).toEqual('1')
+      expect(document.activeElement).toEqual(inputs[1])
+      expect(inputSpy).toHaveBeenCalledTimes(1)
+      expect(inputSpy.calls.mostRecent().args[0].value).toEqual('1')
+      expect(inputSpy.calls.mostRecent().args[0].index).toEqual(1)
+    })
+
+    it('should not trigger input event on Backspace when the input has a value', () => {
+      fixtureEl.innerHTML = getOtpHtml()
+
+      const otpEl = fixtureEl.querySelector('.form-otp')
+      const otp = new OtpInput(otpEl)
+      const inputs = otpEl.querySelectorAll('input')
+      const inputSpy = jasmine.createSpy('input')
+
+      otp.setValue('12')
+      otpEl.addEventListener('input.cx.otp-input', inputSpy)
+      inputs[1].focus()
+      inputs[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true }))
+
+      // The browser clears the value and fires a native input event
+      expect(inputSpy).not.toHaveBeenCalled()
+    })
+
+    it('should trigger input event before complete event on paste', () => {
+      fixtureEl.innerHTML = getOtpHtml()
+
+      const otpEl = fixtureEl.querySelector('.form-otp')
+      new OtpInput(otpEl) // eslint-disable-line no-new
+      const inputs = otpEl.querySelectorAll('input')
+      const events = []
+
+      otpEl.addEventListener('input.cx.otp-input', event => {
+        events.push({ type: 'input', value: event.value, index: event.index })
+      })
+      otpEl.addEventListener('complete.cx.otp-input', event => {
+        events.push({ type: 'complete', value: event.value })
+      })
+
+      inputs[0].focus()
+
+      const pasteEvent = new ClipboardEvent('paste', {
+        bubbles: true,
+        clipboardData: new DataTransfer()
+      })
+      pasteEvent.clipboardData.setData('text', '987654')
+      inputs[0].dispatchEvent(pasteEvent)
+
+      expect(events).toEqual([
+        { type: 'input', value: '987654', index: 0 },
+        { type: 'complete', value: '987654' }
+      ])
+    })
+
+    it('should not trigger input event on paste without digits', () => {
+      fixtureEl.innerHTML = getOtpHtml()
+
+      const otpEl = fixtureEl.querySelector('.form-otp')
+      new OtpInput(otpEl) // eslint-disable-line no-new
+      const inputs = otpEl.querySelectorAll('input')
+      const inputSpy = jasmine.createSpy('input')
+
+      otpEl.addEventListener('input.cx.otp-input', inputSpy)
+      inputs[0].focus()
+
+      const pasteEvent = new ClipboardEvent('paste', {
+        bubbles: true,
+        clipboardData: new DataTransfer()
+      })
+      pasteEvent.clipboardData.setData('text', 'abc')
+      inputs[0].dispatchEvent(pasteEvent)
+
+      expect(inputSpy).not.toHaveBeenCalled()
+    })
+
+    it('should not trigger input event from setValue', () => {
+      fixtureEl.innerHTML = getOtpHtml()
+
+      const otpEl = fixtureEl.querySelector('.form-otp')
+      const otp = new OtpInput(otpEl)
+      const inputSpy = jasmine.createSpy('input')
+
+      otpEl.addEventListener('input.cx.otp-input', inputSpy)
+      otp.setValue('123')
+
+      expect(inputSpy).not.toHaveBeenCalled()
+    })
   })
 
   describe('dispose', () => {
@@ -516,6 +636,42 @@ describe('OtpInput', () => {
       otp.dispose()
 
       expect(OtpInput.getInstance(otpEl)).toBeNull()
+    })
+
+    it('should remove the listeners from the inputs', () => {
+      fixtureEl.innerHTML = getOtpHtml()
+
+      const otpEl = fixtureEl.querySelector('.form-otp')
+      const otp = new OtpInput(otpEl)
+      const inputs = otpEl.querySelectorAll('input')
+      const inputSpy = spyOn(OtpInput.prototype, '_handleInput').and.callThrough()
+      const keydownSpy = spyOn(OtpInput.prototype, '_handleKeydown').and.callThrough()
+      const pasteSpy = spyOn(OtpInput.prototype, '_handlePaste').and.callThrough()
+      const focusSpy = spyOn(OtpInput.prototype, '_handleFocus').and.callThrough()
+      const eventSpy = jasmine.createSpy('input')
+
+      otpEl.addEventListener('input.cx.otp-input', eventSpy)
+      otp.dispose()
+
+      inputs[0].focus()
+      inputs[0].value = '1'
+      inputs[0].dispatchEvent(createEvent('input'))
+      inputs[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
+
+      const pasteEvent = new ClipboardEvent('paste', {
+        bubbles: true,
+        clipboardData: new DataTransfer()
+      })
+      pasteEvent.clipboardData.setData('text', '123456')
+      inputs[0].dispatchEvent(pasteEvent)
+
+      expect(inputSpy).not.toHaveBeenCalled()
+      expect(keydownSpy).not.toHaveBeenCalled()
+      expect(pasteSpy).not.toHaveBeenCalled()
+      expect(focusSpy).not.toHaveBeenCalled()
+      expect(eventSpy).not.toHaveBeenCalled()
+      expect(document.activeElement).toEqual(inputs[0])
+      expect(inputs[1].value).toEqual('')
     })
   })
 

@@ -367,6 +367,155 @@ describe('Dialog', () => {
         dialog.show()
       })
     })
+
+    it('should not close dialog when a drag starts in the content and ends on the backdrop', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = [
+          '<dialog class="dialog">',
+          '  <div class="dialog-body">Content</div>',
+          '</dialog>'
+        ].join('')
+
+        const dialogEl = fixtureEl.querySelector('.dialog')
+        const dialogBody = fixtureEl.querySelector('.dialog-body')
+        const dialog = new Dialog(dialogEl)
+
+        const spy = spyOn(dialog, 'hide')
+
+        dialogEl.addEventListener('shown.cx.dialog', () => {
+          // The mouse goes down on the content and comes up on the backdrop: the browser
+          // fires the click on their nearest common ancestor, the dialog itself
+          dialogBody.dispatchEvent(createEvent('mousedown', { bubbles: true }))
+          const clickEvent = createEvent('click')
+          Object.defineProperty(clickEvent, 'target', { value: dialogEl })
+          dialogEl.dispatchEvent(clickEvent)
+
+          setTimeout(() => {
+            expect(spy).not.toHaveBeenCalled()
+            expect(dialogEl.open).toBeTrue()
+            resolve()
+          }, 10)
+        })
+
+        dialog.show()
+      })
+    })
+
+    it('should close dialog when the mousedown and the click are both on the backdrop', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = [
+          '<dialog class="dialog">',
+          '  <div class="dialog-body">Content</div>',
+          '</dialog>'
+        ].join('')
+
+        const dialogEl = fixtureEl.querySelector('.dialog')
+        const dialog = new Dialog(dialogEl)
+
+        const spy = spyOn(dialog, 'hide').and.callThrough()
+
+        dialogEl.addEventListener('shown.cx.dialog', () => {
+          const mousedownEvent = createEvent('mousedown')
+          Object.defineProperty(mousedownEvent, 'target', { value: dialogEl })
+          dialogEl.dispatchEvent(mousedownEvent)
+          const clickEvent = createEvent('click')
+          Object.defineProperty(clickEvent, 'target', { value: dialogEl })
+          dialogEl.dispatchEvent(clickEvent)
+        })
+
+        dialogEl.addEventListener('hidden.cx.dialog', () => {
+          expect(spy).toHaveBeenCalled()
+          resolve()
+        })
+
+        dialog.show()
+      })
+    })
+  })
+
+  describe('backdrop: false', () => {
+    it('should add backdropless while a modal dialog is open and remove it on hide', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = '<dialog class="dialog"></dialog>'
+
+        const dialogEl = fixtureEl.querySelector('.dialog')
+        const dialog = new Dialog(dialogEl, {
+          backdrop: false
+        })
+
+        dialogEl.addEventListener('shown.cx.dialog', () => {
+          expect(dialogEl.open).toBeTrue()
+          expect(dialogEl.matches(':modal')).toBeTrue()
+          expect(dialogEl).toHaveClass('backdropless')
+          expect(dialogEl).not.toHaveClass('nonmodal')
+          expect(document.body).toHaveClass('dialog-open')
+          dialog.hide()
+        })
+
+        dialogEl.addEventListener('hidden.cx.dialog', () => {
+          expect(dialogEl).not.toHaveClass('backdropless')
+          resolve()
+        })
+
+        dialog.show()
+      })
+    })
+
+    it('should not add backdropless to a non-modal dialog', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = '<dialog class="dialog"></dialog>'
+
+        const dialogEl = fixtureEl.querySelector('.dialog')
+        const dialog = new Dialog(dialogEl, {
+          backdrop: false,
+          modal: false
+        })
+
+        dialogEl.addEventListener('shown.cx.dialog', () => {
+          expect(dialogEl).toHaveClass('nonmodal')
+          expect(dialogEl).not.toHaveClass('backdropless')
+          resolve()
+        })
+
+        dialog.show()
+      })
+    })
+
+    it('should neither close nor bounce when the element is clicked', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = '<dialog class="dialog"></dialog>'
+
+        const dialogEl = fixtureEl.querySelector('.dialog')
+        const dialog = new Dialog(dialogEl, {
+          backdrop: false
+        })
+
+        const hideSpy = spyOn(dialog, 'hide')
+        const bounceSpy = spyOn(dialog, '_triggerBackdropTransition')
+        const hidePreventedSpy = jasmine.createSpy('hidePrevented')
+        dialogEl.addEventListener('hidePrevented.cx.dialog', hidePreventedSpy)
+
+        dialogEl.addEventListener('shown.cx.dialog', () => {
+          const mousedownEvent = createEvent('mousedown')
+          Object.defineProperty(mousedownEvent, 'target', { value: dialogEl })
+          dialogEl.dispatchEvent(mousedownEvent)
+          const clickEvent = createEvent('click')
+          Object.defineProperty(clickEvent, 'target', { value: dialogEl })
+          dialogEl.dispatchEvent(clickEvent)
+
+          setTimeout(() => {
+            expect(hideSpy).not.toHaveBeenCalled()
+            expect(bounceSpy).not.toHaveBeenCalled()
+            expect(hidePreventedSpy).not.toHaveBeenCalled()
+            expect(dialogEl).not.toHaveClass('dialog-static')
+            expect(dialogEl.open).toBeTrue()
+            resolve()
+          }, 10)
+        })
+
+        dialog.show()
+      })
+    })
   })
 
   describe('backdrop static', () => {
@@ -1293,6 +1442,39 @@ describe('Dialog', () => {
           })
 
           dialogEl.close()
+        })
+
+        dialog.show()
+      })
+    })
+
+    it('should release the body when the dialog is closed natively during the exit transition', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = '<dialog class="dialog"></dialog>'
+
+        const dialogEl = fixtureEl.querySelector('.dialog')
+        const dialog = new Dialog(dialogEl)
+        let hidden = 0
+
+        dialogEl.addEventListener('hidden.cx.dialog', () => {
+          hidden++
+        })
+
+        dialogEl.addEventListener('shown.cx.dialog', () => {
+          expect(document.body).toHaveClass('dialog-open')
+
+          // hide() waits for the exit transition; app code closes the dialog before it ends
+          dialog.hide()
+          dialogEl.close()
+
+          setTimeout(() => {
+            expect(hidden).toEqual(1)
+            expect(dialogEl.open).toBeFalse()
+            expect(dialogEl).not.toHaveClass('hiding')
+            expect(document.body).not.toHaveClass('dialog-open')
+            expect(dialog._isTransitioning).toBeFalse()
+            resolve()
+          }, 50)
         })
 
         dialog.show()

@@ -6,7 +6,7 @@
  */
 
 import BaseComponent from './base-component.js'
-import EventHandler from './dom/event-handler.js'
+import EventHandler, { type ChassisEvent, type EventCallable } from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
 import type { ComponentConfig } from './util/config.js'
 import {
@@ -71,6 +71,7 @@ class ScrollSpy extends BaseComponent {
   protected declare _activeTarget: HTMLElement | null
   protected declare _observer: IntersectionObserver | null
   protected declare _previousScrollData: { visibleEntryTop: number, parentScrollTop: number }
+  protected declare _smoothScrollHandler: EventCallable | null
 
   constructor(element?: string | Element | null, config?: Partial<ScrollSpyConfig> | null) {
     super(element, config)
@@ -85,6 +86,7 @@ class ScrollSpy extends BaseComponent {
       visibleEntryTop: 0,
       parentScrollTop: 0
     }
+    this._smoothScrollHandler = null
     this.refresh() // initialize
   }
 
@@ -119,6 +121,12 @@ class ScrollSpy extends BaseComponent {
 
   override dispose(): void {
     this._observer!.disconnect()
+
+    // The click listener lives on the target, not on the element super.dispose() clears
+    if (this._smoothScrollHandler) {
+      EventHandler.off(this._config.target as HTMLElement, EVENT_CLICK, SELECTOR_TARGET_LINKS, this._smoothScrollHandler)
+    }
+
     super.dispose()
   }
 
@@ -138,10 +146,9 @@ class ScrollSpy extends BaseComponent {
       return
     }
 
-    // unregister any previous listeners
-    EventHandler.off(this._config.target as HTMLElement, EVENT_CLICK)
-
-    EventHandler.on(this._config.target as HTMLElement, EVENT_CLICK, SELECTOR_TARGET_LINKS, event => {
+    // One handler per instance, registered once: EventHandler ignores a second `on` with the
+    // same handler, and another instance on the same target keeps its own listener
+    this._smoothScrollHandler ??= (event: ChassisEvent): void => {
       const observableSection = this._observableSections.get((event.target as HTMLAnchorElement).hash)
       if (observableSection) {
         event.preventDefault()
@@ -155,7 +162,9 @@ class ScrollSpy extends BaseComponent {
         // Chrome 60 doesn't support `scrollTo`
         root.scrollTop = height
       }
-    })
+    }
+
+    EventHandler.on(this._config.target as HTMLElement, EVENT_CLICK, SELECTOR_TARGET_LINKS, this._smoothScrollHandler)
   }
 
   protected _getNewObserver(): IntersectionObserver {

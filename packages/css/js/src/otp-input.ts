@@ -21,6 +21,9 @@ const DATA_API_KEY = '.data-api'
 
 const EVENT_COMPLETE = `complete${EVENT_KEY}`
 const EVENT_INPUT = `input${EVENT_KEY}`
+const EVENT_KEYDOWN = `keydown${EVENT_KEY}`
+const EVENT_PASTE = `paste${EVENT_KEY}`
+const EVENT_FOCUS = `focus${EVENT_KEY}`
 
 const SELECTOR_DATA_OTP = '[data-cx-otp]'
 const SELECTOR_INPUT = 'input'
@@ -75,11 +78,7 @@ class OtpInput extends BaseComponent {
   }
 
   setValue(value: string | number): void {
-    const chars = [...String(value)]
-    for (const [index, input] of this._inputs.entries()) {
-      input.value = chars[index] || ''
-    }
-
+    this._fill(value)
     this._checkComplete()
   }
 
@@ -101,7 +100,22 @@ class OtpInput extends BaseComponent {
     }
   }
 
+  override dispose(): void {
+    for (const input of this._inputs) {
+      EventHandler.off(input, EVENT_KEY)
+    }
+
+    super.dispose()
+  }
+
   // Private
+  protected _fill(value: string | number): void {
+    const chars = [...String(value)]
+    for (const [index, input] of this._inputs.entries()) {
+      input.value = chars[index] || ''
+    }
+  }
+
   protected _setupInputs(): void {
     for (const input of this._inputs) {
       // Set attributes for proper OTP handling
@@ -125,11 +139,18 @@ class OtpInput extends BaseComponent {
 
   protected _addEventListeners(): void {
     for (const [index, input] of this._inputs.entries()) {
-      EventHandler.on(input, 'input', event => this._handleInput(event, index))
-      EventHandler.on(input, 'keydown', event => this._handleKeydown(event, index))
-      EventHandler.on(input, 'paste', event => this._handlePaste(event))
-      EventHandler.on(input, 'focus', event => this._handleFocus(event))
+      EventHandler.on(input, EVENT_INPUT, event => this._handleInput(event, index))
+      EventHandler.on(input, EVENT_KEYDOWN, event => this._handleKeydown(event, index))
+      EventHandler.on(input, EVENT_PASTE, event => this._handlePaste(event, index))
+      EventHandler.on(input, EVENT_FOCUS, event => this._handleFocus(event))
     }
+  }
+
+  protected _triggerInput(index: number): void {
+    EventHandler.trigger(this._element, EVENT_INPUT, {
+      value: this.getValue(),
+      index
+    })
   }
 
   protected _handleInput(event: ChassisEvent, index: number): void {
@@ -160,11 +181,7 @@ class OtpInput extends BaseComponent {
       this._inputs[index + 1].focus()
     }
 
-    EventHandler.trigger(this._element, EVENT_INPUT, {
-      value: this.getValue(),
-      index
-    })
-
+    this._triggerInput(index)
     this._checkComplete()
   }
 
@@ -178,6 +195,7 @@ class OtpInput extends BaseComponent {
           event.preventDefault()
           this._inputs[index - 1].value = ''
           this._inputs[index - 1].focus()
+          this._triggerInput(index - 1)
         }
 
         break
@@ -191,6 +209,7 @@ class OtpInput extends BaseComponent {
         }
 
         this._inputs.at(-1)!.value = ''
+        this._triggerInput(index)
         break
       }
 
@@ -216,17 +235,20 @@ class OtpInput extends BaseComponent {
     }
   }
 
-  protected _handlePaste(event: ChassisEvent): void {
+  protected _handlePaste(event: ChassisEvent, index: number): void {
     event.preventDefault()
     const pastedData = getClipboardText(event)
     const digits = pastedData.replace(/\D/g, '').slice(0, this._inputs.length)
 
     if (digits) {
-      this.setValue(digits)
+      this._fill(digits)
 
       // Focus last filled input or last input
       const lastIndex = Math.min(digits.length, this._inputs.length) - 1
       this._inputs[lastIndex].focus()
+
+      this._triggerInput(index)
+      this._checkComplete()
     }
   }
 

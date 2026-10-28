@@ -20,6 +20,8 @@ const EVENT_KEY = `.${DATA_KEY}`
 const DATA_API_KEY = '.data-api'
 
 const EVENT_STRENGTH_CHANGE = `strengthChange${EVENT_KEY}`
+const EVENT_INPUT = `input${EVENT_KEY}`
+const EVENT_CHANGE = `change${EVENT_KEY}`
 
 const SELECTOR_DATA_STRENGTH = '[data-cx-strength]'
 
@@ -114,6 +116,14 @@ class Strength extends BaseComponent {
     this._evaluate()
   }
 
+  override dispose(): void {
+    if (this._input) {
+      EventHandler.off(this._input, EVENT_KEY)
+    }
+
+    super.dispose()
+  }
+
   // Private
   protected _getInput(): HTMLInputElement | null {
     if (this._config.input) {
@@ -128,8 +138,8 @@ class Strength extends BaseComponent {
   }
 
   protected _addEventListeners(): void {
-    EventHandler.on(this._input, 'input', () => this._evaluate())
-    EventHandler.on(this._input, 'change', () => this._evaluate())
+    EventHandler.on(this._input, EVENT_INPUT, () => this._evaluate())
+    EventHandler.on(this._input, EVENT_CHANGE, () => this._evaluate())
   }
 
   protected _evaluate(): void {

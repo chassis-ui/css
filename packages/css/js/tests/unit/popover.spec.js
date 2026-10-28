@@ -346,6 +346,35 @@ describe('Popover', () => {
   })
 
   describe('hide', () => {
+    it('should hide a popover when called right after show()', async () => {
+      fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="Popover content">Chassis CSS</a>'
+
+      const popoverEl = fixtureEl.querySelector('a')
+      const popover = new Popover(popoverEl)
+      const events = []
+
+      for (const name of ['show', 'shown', 'hide', 'hidden']) {
+        popoverEl.addEventListener(`${name}.cx.popover`, () => events.push(name))
+      }
+
+      const hidden = new Promise(resolve => {
+        popoverEl.addEventListener('hidden.cx.popover', resolve)
+      })
+
+      const shown = popover.show()
+      popover.hide()
+
+      await shown
+
+      expect(events).toEqual(['show', 'hide'])
+
+      await hidden
+
+      expect(events).toEqual(['show', 'hide', 'hidden'])
+      expect(document.querySelector('.popover')).toBeNull()
+      expect(popoverEl.getAttribute('aria-describedby')).toBeNull()
+    })
+
     it('should hide a popover', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = '<a href="#" title="Popover" data-cx-content="https://x.com/chassis_ui">Chassis UI X</a>'
@@ -611,6 +640,44 @@ describe('Popover', () => {
       popoverEl.dispatchEvent(clickEvent)
 
       expect(preventDefaultSpy).toHaveBeenCalled()
+    })
+
+    it('should prevent default on click via data-api when the trigger includes click among others', () => {
+      fixtureEl.innerHTML = '<a href="#test" data-cx-toggle="popover" data-cx-trigger="hover click" title="Popover Title" data-cx-content="Popover content">Click me</a>'
+
+      const popoverEl = fixtureEl.querySelector('[data-cx-toggle="popover"]')
+      const clickEvent = createEvent('click', { cancelable: true })
+
+      popoverEl.dispatchEvent(clickEvent)
+
+      expect(clickEvent.defaultPrevented).toBeTrue()
+      expect(Popover.getInstance(popoverEl)).not.toBeNull()
+    })
+
+    it('should not prevent default on click via data-api when the trigger is hover', () => {
+      // A link with a hover popover keeps navigating on click
+      fixtureEl.innerHTML = '<a href="/help" data-cx-toggle="popover" data-cx-trigger="hover" title="Popover Title" data-cx-content="Popover content">Help</a>'
+
+      const popoverEl = fixtureEl.querySelector('[data-cx-toggle="popover"]')
+      const clickEvent = createEvent('click', { cancelable: true })
+
+      popoverEl.dispatchEvent(clickEvent)
+
+      expect(clickEvent.defaultPrevented).toBeFalse()
+      expect(Popover.getInstance(popoverEl)).not.toBeNull()
+    })
+
+    it('should not prevent default on click via data-api when the trigger is focus', () => {
+      // A submit button with a focus popover keeps submitting on click
+      fixtureEl.innerHTML = '<form><button type="submit" data-cx-toggle="popover" data-cx-trigger="focus" title="Popover Title" data-cx-content="Popover content">Send</button></form>'
+
+      const popoverEl = fixtureEl.querySelector('[data-cx-toggle="popover"]')
+      const clickEvent = createEvent('click', { cancelable: true })
+
+      popoverEl.dispatchEvent(clickEvent)
+
+      expect(clickEvent.defaultPrevented).toBeFalse()
+      expect(Popover.getInstance(popoverEl)).not.toBeNull()
     })
   })
 })

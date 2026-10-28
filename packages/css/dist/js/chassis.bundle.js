@@ -146,7 +146,7 @@ function addHandler(element, originalTypeEvent, handler, delegationFunction, one
 	if (typeof originalTypeEvent !== "string" || !element) return;
 	const [isDelegated, initialCallable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction);
 	let callable = initialCallable;
-	if (originalTypeEvent in customEvents) {
+	if (originalTypeEvent.replace(stripNameRegex, "") in customEvents) {
 		const wrapFunction = (fn) => {
 			return function(event) {
 				if (!event.relatedTarget || event.relatedTarget !== event.delegateTarget && !event.delegateTarget.contains(event.relatedTarget)) return fn.call(this, event);
@@ -286,7 +286,7 @@ const Manipulator = {
 */
 const MAX_UID = 1e6;
 const MILLISECONDS_MULTIPLIER = 1e3;
-const TRANSITION_END = "transitionend";
+const TRANSITION_END$1 = "transitionend";
 const ESCAPE_KEY = "Escape";
 const ENTER_KEY = "Enter";
 const BACKSPACE_KEY = "Backspace";
@@ -325,7 +325,7 @@ const getTransitionDurationFromElement = (element) => {
 	return (Number.parseFloat(transitionDuration) + Number.parseFloat(transitionDelay)) * MILLISECONDS_MULTIPLIER;
 };
 const triggerTransitionEnd = (element) => {
-	element.dispatchEvent(new Event(TRANSITION_END));
+	element.dispatchEvent(new Event(TRANSITION_END$1));
 };
 const isElement$1 = (object) => {
 	if (!object || typeof object !== "object") return false;
@@ -397,10 +397,10 @@ const executeAfterTransition = (callback, transitionElement, waitForTransition =
 	const handler = ({ target }) => {
 		if (target !== transitionElement) return;
 		called = true;
-		transitionElement.removeEventListener(TRANSITION_END, handler);
+		transitionElement.removeEventListener(TRANSITION_END$1, handler);
 		execute(callback);
 	};
-	transitionElement.addEventListener(TRANSITION_END, handler);
+	transitionElement.addEventListener(TRANSITION_END$1, handler);
 	setTimeout(() => {
 		if (!called) triggerTransitionEnd(transitionElement);
 	}, emulatedDuration);
@@ -653,6 +653,8 @@ const SELECTOR_DETAILS = `[data-cx-accordion] > details:not([${ATTR_CLONE}])`;
 const SELECTOR_SUMMARY = "summary";
 const SELECTOR_CONTENT$1 = ".accordion-body";
 const EVENT_CLICK_DATA_API$10 = `click${EVENT_KEY$19}${DATA_API_KEY$13}`;
+const TRANSITION_END = "transitionend";
+const DURATION_PADDING = 5;
 /**
 * Class definition
 */
@@ -665,6 +667,7 @@ var Accordion = class extends BaseComponent {
 		this._summary = SelectorEngine.findOne(SELECTOR_SUMMARY, this._element);
 		this._content = SelectorEngine.findOne(SELECTOR_CONTENT$1, this._element);
 		this._isTransitioning = false;
+		this._transition = null;
 		if (!this._summary || !this._content) return;
 		this._observer = this._createObserver();
 		this._observer.observe(this._element, { attributes: true });
@@ -674,35 +677,35 @@ var Accordion = class extends BaseComponent {
 		else this.open();
 	}
 	open() {
-		if (!this._summary || !this._content || this._isTransitioning) return;
+		if (!this._summary || !this._content || this._transition?.opening) return;
 		if (EventHandler.trigger(this._element, EVENT_OPEN).defaultPrevented) return;
-		this._isTransitioning = true;
 		const element = this._element;
+		const fromHeight = this._transition?.clone?.offsetHeight ?? this._summary.offsetHeight;
+		this._dropTransition();
 		element.style.overflow = "clip";
-		element.style.height = `${this._summary.offsetHeight}px`;
+		element.style.height = `${fromHeight}px`;
 		element.style.height = `${this._summary.offsetHeight + this._content.offsetHeight}px`;
-		this._queueCallback(() => {
+		this._startTransition(true, null, () => {
 			element.style.overflow = "";
 			element.style.height = "";
-			this._isTransitioning = false;
 			EventHandler.trigger(element, EVENT_OPENED);
-		}, element, true);
+		});
 	}
 	close() {
-		if (!this._summary || !this._content) return;
-		const closeEvent = EventHandler.trigger(this._element, EVENT_CLOSE$2);
-		if (this._isTransitioning || closeEvent.defaultPrevented) return;
-		this._isTransitioning = true;
+		if (!this._summary || !this._content || this._transition && !this._transition.opening) return;
+		if (EventHandler.trigger(this._element, EVENT_CLOSE$2).defaultPrevented) return;
 		const element = this._element;
-		const clone = this._createClone();
+		const fromHeight = this._transition ? element.offsetHeight : null;
+		this._dropTransition();
+		const clone = this._createClone(fromHeight);
 		element.style.height = `${this._summary.offsetHeight + this._content.offsetHeight}px`;
 		element.style.height = `${this._summary.offsetHeight}px`;
-		this._queueCallback(() => {
+		this._startTransition(false, clone, () => {
+			element.style.overflow = "";
 			element.style.height = "";
 			clone.remove();
-			this._isTransitioning = false;
 			EventHandler.trigger(element, EVENT_CLOSED$1);
-		}, element, true);
+		});
 	}
 	dispose() {
 		if (this._observer) this._observer.disconnect();
@@ -717,7 +720,51 @@ var Accordion = class extends BaseComponent {
 			}
 		});
 	}
-	_createClone() {
+	_startTransition(opening, clone, settle) {
+		this._isTransitioning = true;
+		this._transition = {
+			opening,
+			clone,
+			cancel: this._afterTransition(this._element, () => {
+				this._isTransitioning = false;
+				this._transition = null;
+				settle();
+			})
+		};
+	}
+	_dropTransition() {
+		if (!this._transition) return;
+		this._transition.cancel();
+		this._transition.clone?.remove();
+		this._transition = null;
+		this._isTransitioning = false;
+	}
+	_afterTransition(element, callback) {
+		let settled = false;
+		const settle = () => {
+			if (!settled) {
+				settled = true;
+				callback();
+			}
+		};
+		const onTransitionEnd = ({ target }) => {
+			if (target === element) {
+				element.removeEventListener(TRANSITION_END, onTransitionEnd);
+				settle();
+			}
+		};
+		element.addEventListener(TRANSITION_END, onTransitionEnd);
+		const timer = setTimeout(() => {
+			element.removeEventListener(TRANSITION_END, onTransitionEnd);
+			settle();
+		}, getTransitionDurationFromElement(element) + DURATION_PADDING);
+		return () => {
+			settled = true;
+			clearTimeout(timer);
+			element.removeEventListener(TRANSITION_END, onTransitionEnd);
+		};
+	}
+	_createClone(height = null) {
 		const clone = this._element.cloneNode(true);
 		clone.name = "";
 		clone.open = true;
@@ -730,7 +777,7 @@ var Accordion = class extends BaseComponent {
 		clone.style.background = "none";
 		clone.style.border = "0";
 		clone.style.width = `${this._element.offsetWidth}px`;
-		clone.style.height = `${clone.offsetHeight}px`;
+		clone.style.height = `${height ?? clone.offsetHeight}px`;
 		cloneSummary.style.visibility = "hidden";
 		clone.style.height = `${this._summary.offsetHeight}px`;
 		return clone;
@@ -796,7 +843,7 @@ const DIRECTION_LEFT = "left";
 const DIRECTION_RIGHT = "right";
 const EVENT_SLIDE = `slide${EVENT_KEY$17}`;
 const EVENT_SLID = `slid${EVENT_KEY$17}`;
-const EVENT_KEYDOWN$1 = `keydown${EVENT_KEY$17}`;
+const EVENT_KEYDOWN$2 = `keydown${EVENT_KEY$17}`;
 const EVENT_MOUSEENTER$2 = `mouseenter${EVENT_KEY$17}`;
 const EVENT_MOUSELEAVE$1 = `mouseleave${EVENT_KEY$17}`;
 const EVENT_POINTERDOWN$1 = `pointerdown${EVENT_KEY$17}`;
@@ -862,8 +909,10 @@ var Carousel = class Carousel extends BaseComponent {
 		this._looping = false;
 		this._visibility = /* @__PURE__ */ new Map();
 		this._playing = this._config.autoplay;
+		this._pendingSlide = null;
 		this._activeIndex = this._initialActiveIndex();
 		this._addEventListeners();
+		this._scrollToInitialItem();
 		this._observeItems();
 		this._refreshActiveState();
 		if (this._playing) this.cycle();
@@ -918,9 +967,10 @@ var Carousel = class Carousel extends BaseComponent {
 		const targetIndex = this._normalizeIndex(rawIndex, items.length);
 		const currentIndex = this._navIndex(items);
 		if (targetIndex === null || targetIndex === currentIndex) return;
+		const direction = this._direction(currentIndex, targetIndex);
 		if (EventHandler.trigger(this._element, EVENT_SLIDE, {
 			relatedTarget: items[targetIndex],
-			direction: this._direction(currentIndex, targetIndex),
+			direction,
 			from: currentIndex,
 			to: targetIndex
 		}).defaultPrevented) return;
@@ -928,6 +978,11 @@ var Carousel = class Carousel extends BaseComponent {
 			this._fadeTo(targetIndex, items);
 			return;
 		}
+		this._pendingSlide = {
+			from: currentIndex,
+			to: targetIndex,
+			direction
+		};
 		this._scrollToIndex(targetIndex, items);
 	}
 	dispose() {
@@ -953,7 +1008,7 @@ var Carousel = class Carousel extends BaseComponent {
 		return Math.max(index, 0);
 	}
 	_addEventListeners() {
-		if (this._config.keyboard) EventHandler.on(this._element, EVENT_KEYDOWN$1, (event) => this._keydown(event));
+		if (this._config.keyboard) EventHandler.on(this._element, EVENT_KEYDOWN$2, (event) => this._keydown(event));
 		if (this._config.pause === "hover") {
 			EventHandler.on(this._element, EVENT_MOUSEENTER$2, () => this.pause());
 			EventHandler.on(this._element, EVENT_MOUSELEAVE$1, () => this._maybeEnableCycle());
@@ -966,9 +1021,16 @@ var Carousel = class Carousel extends BaseComponent {
 		if (direction) {
 			event.preventDefault();
 			this._pauseFromInteraction();
-			if (direction === DIRECTION_RIGHT) this.prev();
+			if (direction === DIRECTION_RIGHT !== isRTL$1()) this.prev();
 			else this.next();
 		}
+	}
+	_scrollToInitialItem() {
+		if (this._isFade() || this._activeIndex === 0) return;
+		const delta = this._scrollDelta(this._getItems()[this._activeIndex]);
+		if (Math.abs(delta) < 1) return;
+		this._jumpScroll(delta);
+		this._viewport.style.scrollSnapType = "";
 	}
 	_observeItems() {
 		if (this._isFade() || typeof IntersectionObserver === "undefined") return;
@@ -1011,15 +1073,29 @@ var Carousel = class Carousel extends BaseComponent {
 	}
 	_scrollToIndex(index, items = this._getItems()) {
 		const item = items[index];
-		if (!item) return;
-		const left = this._scrollDelta(item);
-		if (Math.abs(left) < 1) return;
+		const left = item ? this._scrollDelta(item) : 0;
+		if (Math.abs(left) < 1) {
+			this._pendingSlide = null;
+			return;
+		}
 		const targetLeft = this._viewport.scrollLeft + left;
 		this._viewport.style.scrollSnapType = "none";
 		this._animateScroll(targetLeft, () => {
 			this._viewport.style.scrollSnapType = "";
-			if (!this._observer) this._setActive(index);
-			this._updateEndControls();
+			this._completeSlide(index, items);
+			this._updateEndControls(items);
+		});
+	}
+	_completeSlide(index, items = this._getItems()) {
+		this._setActive(index, items);
+		const pending = this._pendingSlide;
+		if (!pending) return;
+		this._pendingSlide = null;
+		EventHandler.trigger(this._element, EVENT_SLID, {
+			relatedTarget: items[pending.to],
+			direction: pending.direction,
+			from: pending.from,
+			to: pending.to
 		});
 	}
 	_animateScroll(targetLeft, onComplete) {
@@ -1076,6 +1152,7 @@ var Carousel = class Carousel extends BaseComponent {
 			to: toIndex
 		}).defaultPrevented) return;
 		this._looping = true;
+		this._pendingSlide = null;
 		const clone = (isNext ? items[0] : items[last]).cloneNode(true);
 		clone.classList.add(CLASS_NAME_CLONE);
 		clone.classList.remove(CLASS_NAME_ACTIVE$4);
@@ -1086,8 +1163,9 @@ var Carousel = class Carousel extends BaseComponent {
 		this._viewport.style.scrollSnapType = "none";
 		if (isNext) this._viewport.append(clone);
 		else {
+			const before = items[fromIndex].getBoundingClientRect().left;
 			this._viewport.prepend(clone);
-			this._jumpScroll(this._scrollDelta(items[fromIndex]));
+			this._jumpScroll(items[fromIndex].getBoundingClientRect().left - before);
 		}
 		this._animateScroll(this._viewport.scrollLeft + this._scrollDelta(clone), () => {
 			clone.remove();
@@ -1124,6 +1202,7 @@ var Carousel = class Carousel extends BaseComponent {
 		const from = this._activeIndex;
 		this._activeIndex = index;
 		this._refreshActiveState(items);
+		if (this._pendingSlide) return;
 		EventHandler.trigger(this._element, EVENT_SLID, {
 			relatedTarget: items[index],
 			direction: this._direction(from, index),
@@ -1220,7 +1299,7 @@ var Carousel = class Carousel extends BaseComponent {
 				return;
 			}
 			if (upcoming === null) {
-				this.pause();
+				this._stopPlaying();
 				return;
 			}
 			this._scheduleAutoplay(upcoming);
@@ -1244,6 +1323,9 @@ var Carousel = class Carousel extends BaseComponent {
 		this.cycle();
 	}
 	_pauseFromInteraction() {
+		this._stopPlaying();
+	}
+	_stopPlaying() {
 		this._playing = false;
 		this.pause();
 		this._updatePlayPauseControl();
@@ -1405,7 +1487,7 @@ const EVENT_KEY$15 = `.cx.chip-input`;
 const DATA_API_KEY$9 = ".data-api";
 const EVENT_ADD = `add${EVENT_KEY$15}`;
 const EVENT_REMOVE = `remove${EVENT_KEY$15}`;
-const EVENT_CHANGE$2 = `change${EVENT_KEY$15}`;
+const EVENT_CHANGE$3 = `change${EVENT_KEY$15}`;
 const EVENT_SELECT = `select${EVENT_KEY$15}`;
 const SELECTOR_DATA_CHIP_INPUT = "[data-cx-chips]";
 const SELECTOR_GHOST_INPUT = ".ghost-input";
@@ -1470,7 +1552,7 @@ var ChipInput = class extends BaseComponent {
 		}).defaultPrevented) return null;
 		const chip = this._createChip(trimmedValue);
 		this._element.insertBefore(chip, this._input);
-		EventHandler.trigger(this._element, EVENT_CHANGE$2, { values: this.getValues() });
+		EventHandler.trigger(this._element, EVENT_CHANGE$3, { values: this.getValues() });
 		return chip;
 	}
 	remove(chipOrValue) {
@@ -1490,11 +1572,8 @@ var ChipInput = class extends BaseComponent {
 			chip,
 			relatedTarget: this._input
 		}).defaultPrevented) return false;
-		this._selectedChips.delete(chip);
-		if (this._anchorChip === chip) this._anchorChip = null;
-		Chip.getInstance(chip)?.dispose();
-		chip.remove();
-		EventHandler.trigger(this._element, EVENT_CHANGE$2, { values: this.getValues() });
+		this._detachChip(chip);
+		EventHandler.trigger(this._element, EVENT_CHANGE$3, { values: this.getValues() });
 		return true;
 	}
 	removeSelected() {
@@ -1509,19 +1588,12 @@ var ChipInput = class extends BaseComponent {
 		return [...this._selectedChips].map((chip) => this._getChipValue(chip));
 	}
 	clear() {
-		const chips = SelectorEngine.find(SELECTOR_CHIP, this._element);
-		for (const chip of chips) {
-			EventHandler.trigger(this._element, EVENT_REMOVE, {
-				value: this._getChipValue(chip),
-				chip,
-				relatedTarget: this._input
-			});
-			Chip.getInstance(chip)?.dispose();
-			chip.remove();
-		}
-		this._selectedChips.clear();
-		this._anchorChip = null;
-		EventHandler.trigger(this._element, EVENT_CHANGE$2, { values: [] });
+		for (const chip of this._getChipElements()) if (!EventHandler.trigger(this._element, EVENT_REMOVE, {
+			value: this._getChipValue(chip),
+			chip,
+			relatedTarget: this._input
+		}).defaultPrevented) this._detachChip(chip);
+		EventHandler.trigger(this._element, EVENT_CHANGE$3, { values: this.getValues() });
 	}
 	clearSelection(silent = false) {
 		for (const chip of this._selectedChips) {
@@ -1559,7 +1631,7 @@ var ChipInput = class extends BaseComponent {
 				this._anchorChip = chip;
 			}
 		} else {
-			this.clearSelection();
+			this.clearSelection(true);
 			this._selectedChips.add(chip);
 			chip.classList.add(CLASS_NAME_ACTIVE$2);
 			chip.setAttribute("aria-selected", "true");
@@ -1599,7 +1671,6 @@ var ChipInput = class extends BaseComponent {
 	_setupChip(chip) {
 		chip.setAttribute("tabindex", "0");
 		chip.setAttribute("aria-selected", "false");
-		for (const cls of this._config.chipClass.split(/\s+/).filter(Boolean)) chip.classList.add(cls);
 		if (this._config.dismissible && !SelectorEngine.findOne(SELECTOR_CHIP_DISMISS, chip)) chip.append(this._createDismissButton());
 		Chip.getOrCreateInstance(chip);
 	}
@@ -1607,9 +1678,16 @@ var ChipInput = class extends BaseComponent {
 		const chip = document.createElement("span");
 		chip.className = CLASS_NAME_CHIP;
 		chip.dataset.cxChipValue = value;
+		for (const cls of this._config.chipClass.split(/\s+/).filter(Boolean)) chip.classList.add(cls);
 		chip.append(document.createTextNode(value));
 		this._setupChip(chip);
 		return chip;
+	}
+	_detachChip(chip) {
+		this._selectedChips.delete(chip);
+		if (this._anchorChip === chip) this._anchorChip = null;
+		Chip.getInstance(chip)?.dispose();
+		chip.remove();
 	}
 	_createDismissButton() {
 		const button = document.createElement("button");
@@ -1744,7 +1822,8 @@ var ChipInput = class extends BaseComponent {
 		}
 	}
 	_handleChipDelete(currentIndex, chips) {
-		if (this._selectedChips.size === 0) return;
+		if (currentIndex < 0) return;
+		if (this._selectedChips.size === 0) this.selectChip(chips[currentIndex]);
 		const nextIndex = Math.min(currentIndex, chips.length - this._selectedChips.size - 1);
 		this.removeSelected();
 		const remainingChips = this._getChipElements();
@@ -3204,11 +3283,15 @@ var FloatingBase = class FloatingBase extends BaseComponent {
 		const { offset: offsetConfig } = this._config;
 		if (typeof offsetConfig === "string") return offsetConfig.split(",").map((value) => Number.parseInt(value, 10));
 		if (typeof offsetConfig === "function") return ({ placement, rects }) => {
-			return offsetConfig({
+			const result = offsetConfig({
 				placement,
 				reference: rects.reference,
 				floating: rects.floating
 			}, this._element);
+			return Array.isArray(result) ? {
+				mainAxis: result[1] || 0,
+				crossAxis: result[0] || 0
+			} : result;
 		};
 		return offsetConfig;
 	}
@@ -3300,6 +3383,7 @@ const Default$14 = {
 	submenuTrigger: "both",
 	submenuDelay: SUBMENU_CLOSE_DELAY
 };
+const menuInstances = /* @__PURE__ */ new WeakMap();
 const DefaultType$14 = {
 	autoClose: "(boolean|string)",
 	boundary: "(string|element)",
@@ -3331,6 +3415,7 @@ var Menu = class Menu extends FloatingBase {
 		this._pendingMouseEvent = null;
 		this._menu = this._config.menu || this._findMenu();
 		this._menuOriginalParent = this._menu?.parentNode;
+		if (this._menu) menuInstances.set(this._menu, this);
 		this._parseResponsivePlacements();
 		this._setupSubmenuListeners();
 	}
@@ -3353,7 +3438,10 @@ var Menu = class Menu extends FloatingBase {
 		this._moveMenuToContainer();
 		this._createFloating();
 		if ("ontouchstart" in document.documentElement && !this._parent.closest(SELECTOR_NAVBAR_NAV)) for (const element of document.body.children) EventHandler.on(element, "mouseover", noop);
-		this._element.focus({ focusVisible: false });
+		this._element.focus({
+			focusVisible: false,
+			preventScroll: true
+		});
 		this._element.setAttribute("aria-expanded", "true");
 		this._menu.classList.add(CLASS_NAME_SHOW$5);
 		this._element.classList.add(CLASS_NAME_SHOW$5);
@@ -3378,6 +3466,7 @@ var Menu = class Menu extends FloatingBase {
 		this._restoreMenuToOriginalParent();
 		this._disposeMediaQueryListeners();
 		if (this._menu) {
+			if (menuInstances.get(this._menu) === this) menuInstances.delete(this._menu);
 			EventHandler.off(this._menu, "mouseenter");
 			EventHandler.off(this._menu, "mouseleave");
 			EventHandler.off(this._menu, "mousemove");
@@ -3612,11 +3701,14 @@ var Menu = class Menu extends FloatingBase {
 		this._openSubmenu(trigger, submenu, submenuWrapper);
 	}
 	_onSubmenuLeave(event) {
-		const submenuWrapper = event.target.closest(SELECTOR_SUBMENU);
-		const submenu = SelectorEngine.findOne(SELECTOR_MENU$2, submenuWrapper);
-		if (!submenu || !this._openSubmenus.has(submenu)) return;
-		if (this._isMovingTowardSubmenu(event, submenu)) return;
-		this._scheduleSubmenuClose(submenu, submenuWrapper);
+		const relatedTarget = event.relatedTarget;
+		let submenuWrapper = event.target.closest(SELECTOR_SUBMENU);
+		while (submenuWrapper && this._menu.contains(submenuWrapper)) {
+			if (relatedTarget && submenuWrapper.contains(relatedTarget)) return;
+			const submenu = SelectorEngine.findOne(SELECTOR_MENU$2, submenuWrapper);
+			if (submenu && this._openSubmenus.has(submenu) && !this._isMovingTowardSubmenu(event, submenu)) this._scheduleSubmenuClose(submenu, submenuWrapper);
+			submenuWrapper = submenuWrapper.parentElement?.closest(SELECTOR_SUBMENU) ?? null;
+		}
 	}
 	_onSubmenuTriggerClick(event) {
 		const trigger = event.target.closest(SELECTOR_SUBMENU_TOGGLE);
@@ -3851,7 +3943,20 @@ var Menu = class Menu extends FloatingBase {
 		if (!instance) return;
 		event.preventDefault();
 		instance.hide();
-		if (!instance._isShown()) instance._element.focus();
+		if (!instance._isShown()) instance._element.focus({ preventScroll: true });
+	}
+	static _findToggleOfMenu(menu) {
+		let rootMenu = menu;
+		let enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU);
+		while (enclosingSubmenu) {
+			const enclosingMenu = enclosingSubmenu.closest(SELECTOR_MENU$2);
+			if (!enclosingMenu || enclosingMenu === rootMenu) break;
+			rootMenu = enclosingMenu;
+			enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU);
+		}
+		const instance = menuInstances.get(rootMenu);
+		if (instance) return instance._element.matches(SELECTOR_DATA_TOGGLE$8) ? instance._element : null;
+		return SelectorEngine.prev(rootMenu, SELECTOR_DATA_TOGGLE$8)[0] || SelectorEngine.next(rootMenu, SELECTOR_DATA_TOGGLE$8)[0] || SelectorEngine.findOne(SELECTOR_DATA_TOGGLE$8, rootMenu.parentNode);
 	}
 	static dataApiKeydownHandler(event) {
 		const isInput = /input|textarea/i.test(event.target.tagName);
@@ -3863,19 +3968,8 @@ var Menu = class Menu extends FloatingBase {
 		const isSubmenuTrigger = event.target.matches(SELECTOR_SUBMENU_TOGGLE);
 		if (!isUpOrDownEvent && !isEscapeEvent && !isLeftOrRightEvent && !isHomeOrEndEvent && !(isEnterOrSpaceEvent && isSubmenuTrigger)) return;
 		if (isInput && !isEscapeEvent) return;
-		let getToggleButton = this.matches(SELECTOR_DATA_TOGGLE$8) ? this : SelectorEngine.prev(this, SELECTOR_DATA_TOGGLE$8)[0] || SelectorEngine.next(this, SELECTOR_DATA_TOGGLE$8)[0] || SelectorEngine.findOne(SELECTOR_DATA_TOGGLE$8, event.delegateTarget.parentNode);
-		if (!getToggleButton) {
-			let rootMenu = this;
-			let enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU);
-			while (enclosingSubmenu) {
-				const enclosingMenu = enclosingSubmenu.closest(SELECTOR_MENU$2);
-				if (!enclosingMenu || enclosingMenu === rootMenu) break;
-				rootMenu = enclosingMenu;
-				enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU);
-			}
-			if (rootMenu !== this) getToggleButton = SelectorEngine.prev(rootMenu, SELECTOR_DATA_TOGGLE$8)[0] || SelectorEngine.next(rootMenu, SELECTOR_DATA_TOGGLE$8)[0] || SelectorEngine.findOne(SELECTOR_DATA_TOGGLE$8, rootMenu.parentNode);
-			if (!getToggleButton) return;
-		}
+		const getToggleButton = this.matches(SELECTOR_DATA_TOGGLE$8) ? this : Menu._findToggleOfMenu(this);
+		if (!getToggleButton) return;
 		const instance = Menu.getOrCreateInstance(getToggleButton);
 		if ((isLeftOrRightEvent || isHomeOrEndEvent || isEnterOrSpaceEvent && isSubmenuTrigger) && instance._handleSubmenuKeydown(event)) return;
 		if (isUpOrDownEvent) {
@@ -3897,7 +3991,7 @@ var Menu = class Menu extends FloatingBase {
 				return;
 			}
 			instance.hide();
-			getToggleButton.focus();
+			getToggleButton.focus({ preventScroll: true });
 		}
 	}
 };
@@ -3942,7 +4036,7 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$5, SELECTOR_DATA_TOGGLE$8, functi
 const NAME$15 = "combobox";
 const EVENT_KEY$12 = `.cx.combobox`;
 const DATA_API_KEY$6 = ".data-api";
-const EVENT_CHANGE$1 = `change${EVENT_KEY$12}`;
+const EVENT_CHANGE$2 = `change${EVENT_KEY$12}`;
 const EVENT_SHOW$5 = `show${EVENT_KEY$12}`;
 const EVENT_SHOWN$4 = `shown${EVENT_KEY$12}`;
 const EVENT_HIDE$4 = `hide${EVENT_KEY$12}`;
@@ -3993,6 +4087,8 @@ var Combobox = class Combobox extends BaseComponent {
 		this._menuInstance = null;
 		this._ignoreNextFocus = false;
 		this._filterDebounceTimer = null;
+		this._pendingFilter = null;
+		this._keepQueryOnHide = false;
 		this._createHiddenInput();
 		this._createMenuInstance();
 		this._syncDisabledState();
@@ -4064,8 +4160,9 @@ var Combobox = class Combobox extends BaseComponent {
 		return this._menu.classList.contains(CLASS_NAME_SHOW$4);
 	}
 	_syncDisabledState(disabled) {
+		const toggleButton = this._toggle instanceof HTMLButtonElement ? this._toggle : null;
 		if (disabled === void 0) {
-			const toggleDisabled = this._toggle.classList.contains("disabled") || this._toggle.getAttribute("aria-disabled") === "true";
+			const toggleDisabled = this._toggle.classList.contains("disabled") || this._toggle.getAttribute("aria-disabled") === "true" || (toggleButton?.disabled ?? false);
 			const inputDisabled = this._comboInput?.disabled ?? false;
 			disabled = toggleDisabled || inputDisabled;
 		}
@@ -4073,6 +4170,7 @@ var Combobox = class Combobox extends BaseComponent {
 		if (disabled) this._toggle.setAttribute("aria-disabled", "true");
 		else this._toggle.removeAttribute("aria-disabled");
 		if (this._comboInput) this._comboInput.disabled = disabled;
+		if (toggleButton) toggleButton.disabled = disabled;
 		if (this._hiddenInput) this._hiddenInput.disabled = disabled;
 	}
 	_createHiddenInput() {
@@ -4101,7 +4199,7 @@ var Combobox = class Combobox extends BaseComponent {
 		} else this._showPlaceholder();
 	}
 	_restoreAfterClose() {
-		if (!this._comboInput) return;
+		if (!this._comboInput || this._keepQueryOnHide) return;
 		this._cancelFilterDebounce();
 		this._filterItems("");
 		if (this._getSelectedItems().length > 0) this._updateToggleText();
@@ -4135,7 +4233,11 @@ var Combobox = class Combobox extends BaseComponent {
 			EventHandler.on(this._comboInput, `input${EVENT_KEY$12}`, () => {
 				this._scheduleFilter(this._comboInput.value, (visibleCount) => {
 					if (visibleCount > 0 && !this._isShown()) this._menuInstance.show();
-					else if (visibleCount === 0 && this._isShown()) this._menuInstance.hide();
+					else if (visibleCount === 0 && this._isShown()) {
+						this._keepQueryOnHide = true;
+						this._menuInstance.hide();
+						this._keepQueryOnHide = false;
+					}
 				});
 			});
 		}
@@ -4147,6 +4249,7 @@ var Combobox = class Combobox extends BaseComponent {
 				if (event.key === "ArrowDown") {
 					event.preventDefault();
 					event.stopPropagation();
+					this._flushFilter();
 					const items = this._getVisibleItems();
 					if (items.length > 0) items[0].focus();
 				}
@@ -4175,7 +4278,7 @@ var Combobox = class Combobox extends BaseComponent {
 		this._updateToggleText();
 		this._updateHiddenInput();
 		const value = this._config.multiple ? this._getSelectedItems().map((el) => el.dataset.cxValue) : item.dataset.cxValue;
-		EventHandler.trigger(this._toggle, EVENT_CHANGE$1, {
+		EventHandler.trigger(this._toggle, EVENT_CHANGE$2, {
 			value,
 			item
 		});
@@ -4225,16 +4328,27 @@ var Combobox = class Combobox extends BaseComponent {
 	}
 	_scheduleFilter(query, onFiltered) {
 		this._cancelFilterDebounce();
-		this._filterDebounceTimer = setTimeout(() => {
+		const run = () => {
 			this._filterDebounceTimer = null;
+			this._pendingFilter = null;
 			const visibleCount = this._filterItems(query);
 			onFiltered?.(visibleCount);
-		}, FILTER_DEBOUNCE_DELAY);
+		};
+		this._pendingFilter = run;
+		this._filterDebounceTimer = setTimeout(run, FILTER_DEBOUNCE_DELAY);
 	}
 	_cancelFilterDebounce() {
 		if (this._filterDebounceTimer !== null) {
 			clearTimeout(this._filterDebounceTimer);
 			this._filterDebounceTimer = null;
+		}
+		this._pendingFilter = null;
+	}
+	_flushFilter() {
+		const run = this._pendingFilter;
+		if (run) {
+			this._cancelFilterDebounce();
+			run();
 		}
 	}
 	_filterItems(query) {
@@ -4258,6 +4372,7 @@ var Combobox = class Combobox extends BaseComponent {
 		const { key } = event;
 		if (key === "ArrowDown" || key === "ArrowUp") {
 			event.preventDefault();
+			this._flushFilter();
 			if (!this._isShown()) this._show(false);
 			const items = this._getVisibleItems();
 			if (items.length > 0) (key === "ArrowDown" ? items[0] : items.at(-1)).focus();
@@ -4299,12 +4414,14 @@ var Combobox = class Combobox extends BaseComponent {
 		const isInput = target.matches("input");
 		if (key === "ArrowDown" || key === "ArrowUp") {
 			event.preventDefault();
+			this._flushFilter();
 			const items = this._getVisibleItems();
 			if (items.length > 0) getNextActiveElement(items, target, key === ARROW_DOWN_KEY, true).focus();
 			return;
 		}
 		if (key === "Home" || key === "End") {
 			event.preventDefault();
+			this._flushFilter();
 			const items = this._getVisibleItems();
 			if (items.length > 0) (key === "Home" ? items[0] : items.at(-1)).focus();
 			return;
@@ -5570,7 +5687,7 @@ let Calendar = _Calendar;
 const NAME$14 = "datepicker";
 const EVENT_KEY$11 = `.cx.datepicker`;
 const DATA_API_KEY$5 = ".data-api";
-const EVENT_CHANGE = `change${EVENT_KEY$11}`;
+const EVENT_CHANGE$1 = `change${EVENT_KEY$11}`;
 const EVENT_SHOW$4 = `show${EVENT_KEY$11}`;
 const EVENT_SHOWN$3 = `shown${EVENT_KEY$11}`;
 const EVENT_HIDE$3 = `hide${EVENT_KEY$11}`;
@@ -5588,7 +5705,7 @@ const Default$12 = {
 	displayMonthsCount: 1,
 	firstWeekday: 1,
 	inline: false,
-	locale: navigator.language.substring(0, 2),
+	locale: navigator.language,
 	positionElement: null,
 	selectedDates: [],
 	selectionMode: "single",
@@ -5719,7 +5836,9 @@ var Datepicker = class extends BaseComponent {
 		return dates ? [...dates] : [];
 	}
 	setSelectedDates(dates) {
-		if (this._calendar) this._calendar.set({ selectedDates: dates });
+		if (!this._calendar) return;
+		this._calendar.set({ selectedDates: dates });
+		this._updateOutputs(dates);
 	}
 	_configAfterMerge(config) {
 		config.selectedDates = [...config.selectedDates];
@@ -5877,7 +5996,7 @@ var Datepicker = class extends BaseComponent {
 	_handleDateClick(self, event) {
 		const selectedDates = [...self.context.selectedDates];
 		if (selectedDates.length > 0) this._updateOutputs(selectedDates);
-		EventHandler.trigger(this._element, EVENT_CHANGE, {
+		EventHandler.trigger(this._element, EVENT_CHANGE$1, {
 			dates: selectedDates,
 			event
 		});
@@ -5890,6 +6009,9 @@ var Datepicker = class extends BaseComponent {
 	_parseDate(dateStr) {
 		const [year, month, day] = dateStr.split("-");
 		return new Date(Number(year), Number(month) - 1, Number(day));
+	}
+	_toDateString(date) {
+		return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 	}
 	_formatDate(dateStr) {
 		const date = this._parseDate(dateStr);
@@ -5908,11 +6030,12 @@ var Datepicker = class extends BaseComponent {
 	_parseInputValue() {
 		const value = this._element.value.trim();
 		if (!value) return;
-		const date = new Date(value);
-		if (!Number.isNaN(date.getTime())) {
-			const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-			this._calendar.set({ selectedDates: [formatted] });
-		}
+		const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(value);
+		const date = isDateOnly ? this._parseDate(value) : new Date(value);
+		if (Number.isNaN(date.getTime())) return;
+		const formatted = this._toDateString(date);
+		if (isDateOnly && formatted !== value) return;
+		this._calendar.set({ selectedDates: [formatted] });
 	}
 };
 /**
@@ -5961,6 +6084,7 @@ var DialogBase = class extends BaseComponent {
 		this._isTransitioning = false;
 		this._openedAsModal = false;
 		this._closeExpected = false;
+		this._closedWhileHiding = false;
 		this._nativeCloseHandler = () => this._onNativeClose();
 		this._addDialogListeners();
 	}
@@ -6001,7 +6125,9 @@ var DialogBase = class extends BaseComponent {
 		this._isTransitioning = true;
 		this._hideElement();
 		this._queueCallback(() => {
-			if (this._element.open) this._closeAndCleanup();
+			if (!this._element.open && !this._closedWhileHiding) this._closeExpected = true;
+			this._closedWhileHiding = false;
+			this._closeAndCleanup();
 			this._element.classList.remove("hiding");
 			this._onAfterHide();
 			this._isTransitioning = false;
@@ -6061,11 +6187,18 @@ var DialogBase = class extends BaseComponent {
 		}, this._element);
 	}
 	_onNativeClose() {
+		if (this._element.open) {
+			this._closeExpected = false;
+			return;
+		}
 		if (this._closeExpected) {
 			this._closeExpected = false;
 			return;
 		}
-		if (this._isTransitioning && this._element.classList.contains("hiding")) return;
+		if (this._isTransitioning && this._element.classList.contains("hiding")) {
+			this._closedWhileHiding = true;
+			return;
+		}
 		this._hideChildComponents();
 		this._closeAndCleanup();
 		this._onAfterHide();
@@ -6102,8 +6235,14 @@ var DialogBase = class extends BaseComponent {
 			this._handleEscape();
 		});
 		this._element.addEventListener("close", this._nativeCloseHandler);
+		let mousedownTarget = null;
+		EventHandler.on(this._element, `mousedown${eventKey}`, (event) => {
+			mousedownTarget = event.target;
+		});
 		EventHandler.on(this._element, `click${eventKey}`, (event) => {
-			if (event.target !== this._element || !this._openedAsModal) return;
+			const downTarget = mousedownTarget;
+			mousedownTarget = null;
+			if (event.target !== this._element || downTarget !== null && downTarget !== this._element || !this._openedAsModal || !this._config.backdrop) return;
 			if (this._config.backdrop === "static") {
 				this._triggerBackdropTransition();
 				return;
@@ -6130,6 +6269,7 @@ const EVENT_HIDDEN$3 = `hidden${EVENT_KEY$10}`;
 const EVENT_CANCEL = `cancel${EVENT_KEY$10}`;
 const EVENT_CLICK_DATA_API$2 = `click${EVENT_KEY$10}${DATA_API_KEY$4}`;
 const CLASS_NAME_NONMODAL = "nonmodal";
+const CLASS_NAME_BACKDROPLESS = "backdropless";
 const CLASS_NAME_INSTANT = "instant";
 const CLASS_NAME_SWAP_IN = "swap-in";
 const SELECTOR_DATA_TOGGLE$5 = "[data-cx-toggle=\"dialog\"]";
@@ -6168,9 +6308,10 @@ var Dialog = class extends DialogBase {
 	}
 	_onBeforeShow() {
 		if (!this._config.modal) this._element.classList.add(CLASS_NAME_NONMODAL);
+		else if (!this._config.backdrop) this._element.classList.add(CLASS_NAME_BACKDROPLESS);
 	}
 	_onAfterHide() {
-		this._element.classList.remove(CLASS_NAME_NONMODAL);
+		this._element.classList.remove(CLASS_NAME_NONMODAL, CLASS_NAME_BACKDROPLESS);
 	}
 	_onCancel() {
 		EventHandler.trigger(this._element, EVENT_CANCEL);
@@ -6253,6 +6394,8 @@ var Swipe = class Swipe extends Config {
 		this._element = element;
 		if (!element || !Swipe.isSupported()) return;
 		this._config = this._getConfig(config);
+		this._startX = 0;
+		this._startY = 0;
 		this._deltaX = 0;
 		this._deltaY = 0;
 		this._supportPointerEvents = Boolean(window.PointerEvent);
@@ -6271,20 +6414,22 @@ var Swipe = class Swipe extends Config {
 		EventHandler.off(this._element, EVENT_KEY$9);
 	}
 	_start(event) {
+		this._deltaX = 0;
+		this._deltaY = 0;
 		if (!this._supportPointerEvents) {
-			this._deltaX = event.touches[0].clientX;
-			this._deltaY = event.touches[0].clientY;
+			this._startX = event.touches[0].clientX;
+			this._startY = event.touches[0].clientY;
 			return;
 		}
 		if (this._eventIsPointerPenTouch(event)) {
-			this._deltaX = event.clientX;
-			this._deltaY = event.clientY;
+			this._startX = event.clientX;
+			this._startY = event.clientY;
 		}
 	}
 	_end(event) {
 		if (this._eventIsPointerPenTouch(event)) {
-			this._deltaX = event.clientX - this._deltaX;
-			this._deltaY = event.clientY - this._deltaY;
+			this._deltaX = event.clientX - this._startX;
+			this._deltaY = event.clientY - this._startY;
 		}
 		this._handleSwipe();
 		execute(this._config.endCallback);
@@ -6295,8 +6440,8 @@ var Swipe = class Swipe extends Config {
 			this._deltaY = 0;
 			return;
 		}
-		this._deltaX = event.touches[0].clientX - this._deltaX;
-		this._deltaY = event.touches[0].clientY - this._deltaY;
+		this._deltaX = event.touches[0].clientX - this._startX;
+		this._deltaY = event.touches[0].clientY - this._startY;
 	}
 	_handleSwipe() {
 		const absDeltaX = Math.abs(this._deltaX);
@@ -6392,7 +6537,7 @@ var Drawer = class extends DialogBase {
 	}
 	_getShowOptions() {
 		return {
-			modal: Boolean(this._config.backdrop) || !this._config.scroll,
+			modal: Boolean(this._config.backdrop),
 			preventBodyScroll: !this._config.scroll
 		};
 	}
@@ -6427,7 +6572,10 @@ EventHandler.on(document, EVENT_CLICK_DATA_API$1, SELECTOR_DATA_TOGGLE$4, functi
 	Drawer.getOrCreateInstance(target).toggle(this);
 });
 EventHandler.on(window, EVENT_LOAD_DATA_API$2, () => {
-	for (const element of SelectorEngine.find(SELECTOR_OPEN_DRAWER)) Drawer.getOrCreateInstance(element).show();
+	for (const element of SelectorEngine.find(SELECTOR_OPEN_DRAWER)) {
+		element.close();
+		Drawer.getOrCreateInstance(element).show();
+	}
 });
 EventHandler.on(window, EVENT_RESIZE$1, () => {
 	for (const element of SelectorEngine.find(SELECTOR_RESPONSIVE_OPEN)) if (getComputedStyle(element).position !== "fixed") Drawer.getOrCreateInstance(element).hide();
@@ -6678,6 +6826,10 @@ var NavOverflow = class extends BaseComponent {
 		this._resizeHandler = null;
 		this._collapseBelow = 0;
 		this._resizeRAF = null;
+		this._toggleFromMarkup = false;
+		this._toggleItemHidden = false;
+		this._wrapperMarked = false;
+		this._customIcon = null;
 		this._init();
 	}
 	static get Default() {
@@ -6698,10 +6850,22 @@ var NavOverflow = class extends BaseComponent {
 		if (this._resizeHandler) EventHandler.off(window, EVENT_RESIZE, this._resizeHandler);
 		if (this._resizeRAF !== null) cancelAnimationFrame(this._resizeRAF);
 		this._restoreItems();
-		if (this._overflowToggle && this._overflowToggle.parentElement) this._overflowToggle.parentElement.remove();
+		for (const item of this._items) delete item.dataset.cxNavOrder;
+		const overflowItem = this._overflowToggle?.closest(SELECTOR_NAV_ITEM) ?? null;
+		if (overflowItem) {
+			if (this._toggleFromMarkup) overflowItem.classList.toggle(CLASS_NAME_HIDDEN, this._toggleItemHidden);
+			else overflowItem.remove();
+		}
+		if (this._customIcon) {
+			const { element, parent, next } = this._customIcon;
+			if (next && next.parentNode === parent) next.before(element);
+			else parent.append(element);
+		}
+		if (!this._wrapperMarked) this._element.classList.remove(CLASS_NAME_OVERFLOW);
 		super.dispose();
 	}
 	_init() {
+		this._wrapperMarked = this._element.classList.contains(CLASS_NAME_OVERFLOW);
 		this._element.classList.add(CLASS_NAME_OVERFLOW);
 		this._items = SelectorEngine.find(SELECTOR_NAV_ITEM, this._nav).filter((item) => !item.querySelector(SELECTOR_OVERFLOW_TOGGLE));
 		for (const [index, item] of this._items.entries()) item.dataset.cxNavOrder = String(index);
@@ -6714,6 +6878,8 @@ var NavOverflow = class extends BaseComponent {
 		this._overflowToggle = SelectorEngine.findOne(SELECTOR_OVERFLOW_TOGGLE, this._element);
 		if (this._overflowToggle) {
 			this._overflowMenu = SelectorEngine.findOne(SELECTOR_OVERFLOW_MENU, this._element);
+			this._toggleFromMarkup = true;
+			this._toggleItemHidden = this._overflowToggle.closest(SELECTOR_NAV_ITEM)?.classList.contains(CLASS_NAME_HIDDEN) ?? false;
 			return;
 		}
 		const { moreText } = this._config;
@@ -6751,6 +6917,11 @@ var NavOverflow = class extends BaseComponent {
 		const iconClone = customIconElement.cloneNode(true);
 		iconClone.removeAttribute("data-cx-overflow-icon");
 		const iconHtml = iconClone.outerHTML;
+		this._customIcon = {
+			element: customIconElement,
+			parent: customIconElement.parentNode,
+			next: customIconElement.nextSibling
+		};
 		customIconElement.remove();
 		return iconHtml;
 	}
@@ -6905,7 +7076,10 @@ const NAME$8 = "otpInput";
 const EVENT_KEY$5 = `.cx.otp-input`;
 const DATA_API_KEY$2 = ".data-api";
 const EVENT_COMPLETE = `complete${EVENT_KEY$5}`;
-const EVENT_INPUT = `input${EVENT_KEY$5}`;
+const EVENT_INPUT$1 = `input${EVENT_KEY$5}`;
+const EVENT_KEYDOWN$1 = `keydown${EVENT_KEY$5}`;
+const EVENT_PASTE = `paste${EVENT_KEY$5}`;
+const EVENT_FOCUS = `focus${EVENT_KEY$5}`;
 const SELECTOR_DATA_OTP = "[data-cx-otp]";
 const SELECTOR_INPUT = "input";
 const Default$7 = {
@@ -6939,8 +7113,7 @@ var OtpInput = class extends BaseComponent {
 		return this._inputs.map((input) => input.value).join("");
 	}
 	setValue(value) {
-		const chars = [...String(value)];
-		for (const [index, input] of this._inputs.entries()) input.value = chars[index] || "";
+		this._fill(value);
 		this._checkComplete();
 	}
 	clear() {
@@ -6951,6 +7124,14 @@ var OtpInput = class extends BaseComponent {
 		const emptyInput = this._inputs.find((input) => !input.value);
 		if (emptyInput) emptyInput.focus();
 		else this._inputs.at(-1)?.focus();
+	}
+	dispose() {
+		for (const input of this._inputs) EventHandler.off(input, EVENT_KEY$5);
+		super.dispose();
+	}
+	_fill(value) {
+		const chars = [...String(value)];
+		for (const [index, input] of this._inputs.entries()) input.value = chars[index] || "";
 	}
 	_setupInputs() {
 		for (const input of this._inputs) {
@@ -6964,11 +7145,17 @@ var OtpInput = class extends BaseComponent {
 	}
 	_addEventListeners() {
 		for (const [index, input] of this._inputs.entries()) {
-			EventHandler.on(input, "input", (event) => this._handleInput(event, index));
-			EventHandler.on(input, "keydown", (event) => this._handleKeydown(event, index));
-			EventHandler.on(input, "paste", (event) => this._handlePaste(event));
-			EventHandler.on(input, "focus", (event) => this._handleFocus(event));
+			EventHandler.on(input, EVENT_INPUT$1, (event) => this._handleInput(event, index));
+			EventHandler.on(input, EVENT_KEYDOWN$1, (event) => this._handleKeydown(event, index));
+			EventHandler.on(input, EVENT_PASTE, (event) => this._handlePaste(event, index));
+			EventHandler.on(input, EVENT_FOCUS, (event) => this._handleFocus(event));
 		}
+	}
+	_triggerInput(index) {
+		EventHandler.trigger(this._element, EVENT_INPUT$1, {
+			value: this.getValue(),
+			index
+		});
 	}
 	_handleInput(event, index) {
 		const input = event.target;
@@ -6981,10 +7168,7 @@ var OtpInput = class extends BaseComponent {
 			const nextIndex = Math.min(index + chars.length, this._inputs.length - 1);
 			this._inputs[nextIndex].focus();
 		} else if (value && index < this._inputs.length - 1) this._inputs[index + 1].focus();
-		EventHandler.trigger(this._element, EVENT_INPUT, {
-			value: this.getValue(),
-			index
-		});
+		this._triggerInput(index);
 		this._checkComplete();
 	}
 	_handleKeydown(event, index) {
@@ -6995,12 +7179,14 @@ var OtpInput = class extends BaseComponent {
 					event.preventDefault();
 					this._inputs[index - 1].value = "";
 					this._inputs[index - 1].focus();
+					this._triggerInput(index - 1);
 				}
 				break;
 			case DELETE_KEY:
 				event.preventDefault();
 				for (let i = index; i < this._inputs.length - 1; i++) this._inputs[i].value = this._inputs[i + 1].value;
 				this._inputs.at(-1).value = "";
+				this._triggerInput(index);
 				break;
 			case ARROW_LEFT_KEY:
 				if (index > 0) {
@@ -7014,13 +7200,15 @@ var OtpInput = class extends BaseComponent {
 			}
 		}
 	}
-	_handlePaste(event) {
+	_handlePaste(event, index) {
 		event.preventDefault();
 		const digits = getClipboardText(event).replace(/\D/g, "").slice(0, this._inputs.length);
 		if (digits) {
-			this.setValue(digits);
+			this._fill(digits);
 			const lastIndex = Math.min(digits.length, this._inputs.length) - 1;
 			this._inputs[lastIndex].focus();
+			this._triggerInput(index);
+			this._checkComplete();
 		}
 	}
 	_handleFocus(event) {
@@ -7107,7 +7295,7 @@ var TemplateFactory = class extends Config {
 		for (const [selector, text] of Object.entries(this._config.content)) this._setContent(templateWrapper, text, selector);
 		const template = templateWrapper.children[0];
 		const extraClass = this._resolvePossibleFunction(this._config.extraClass);
-		if (extraClass) template.classList.add(...extraClass.split(" "));
+		if (extraClass) template.classList.add(...extraClass.split(/\s+/).filter(Boolean));
 		return template;
 	}
 	_typeCheckConfig(config) {
@@ -7178,7 +7366,7 @@ const SELECTOR_DATA_TOGGLE$3 = "[data-cx-toggle=\"tooltip\"]";
 const EVENT_MODAL_HIDE = "hide.cx.modal";
 const TRIGGER_HOVER = "hover";
 const TRIGGER_FOCUS = "focus";
-const TRIGGER_CLICK = "click";
+const TRIGGER_CLICK$1 = "click";
 const TRIGGER_MANUAL = "manual";
 const EVENT_HIDE$2 = "hide";
 const EVENT_HIDDEN$2 = "hidden";
@@ -7243,6 +7431,7 @@ var Tooltip = class extends FloatingBase {
 		this._isEnabled = true;
 		this._timeout = 0;
 		this._isHovered = null;
+		this._isShowPending = false;
 		this._activeTrigger = {};
 		this._templateFactory = null;
 		this._newContent = null;
@@ -7304,7 +7493,15 @@ var Tooltip = class extends FloatingBase {
 			container.append(tip);
 			EventHandler.trigger(this._element, this.constructor.eventName(EVENT_INSERTED));
 		}
-		await this._createFloating(tip);
+		this._isShowPending = true;
+		try {
+			await this._createFloating(tip);
+		} catch (error) {
+			this._isShowPending = false;
+			throw error;
+		}
+		if (this.isDisposed() || !this._isShowPending || this.tip !== tip) return;
+		this._isShowPending = false;
 		tip.classList.add(CLASS_NAME_SHOW$2);
 		if ("ontouchstart" in document.documentElement) for (const element of document.body.children) EventHandler.on(element, "mouseover", noop);
 		const complete = () => {
@@ -7318,8 +7515,9 @@ var Tooltip = class extends FloatingBase {
 		if (!this._isShown()) return;
 		if (EventHandler.trigger(this._element, this.constructor.eventName(EVENT_HIDE$2)).defaultPrevented) return;
 		this._getTipElement().classList.remove(CLASS_NAME_SHOW$2);
+		this._isShowPending = false;
 		if ("ontouchstart" in document.documentElement) for (const element of document.body.children) EventHandler.off(element, "mouseover", noop);
-		this._activeTrigger[TRIGGER_CLICK] = false;
+		this._activeTrigger[TRIGGER_CLICK$1] = false;
 		this._activeTrigger[TRIGGER_FOCUS] = false;
 		this._activeTrigger[TRIGGER_HOVER] = false;
 		this._isHovered = null;
@@ -7379,7 +7577,7 @@ var Tooltip = class extends FloatingBase {
 		return this._config.animation || this.tip !== null && this.tip.classList.contains(CLASS_NAME_FADE$2);
 	}
 	_isShown() {
-		return Boolean(this.tip && this.tip.classList.contains(CLASS_NAME_SHOW$2));
+		return this._isShowPending || Boolean(this.tip && this.tip.classList.contains(CLASS_NAME_SHOW$2));
 	}
 	_getPlacement(tip) {
 		const toPhysical = (placement) => {
@@ -7404,6 +7602,7 @@ var Tooltip = class extends FloatingBase {
 		const placement = this._getPlacement(tip);
 		const arrowElement = tip.querySelector(`.${this.constructor.NAME}-arrow`);
 		await this._updateFloatingPosition(tip, placement, arrowElement);
+		if (this.isDisposed() || this.tip !== tip) return;
 		this._floatingCleanup = autoUpdate(this._element, tip, () => this._updateFloatingPosition(tip, null, arrowElement));
 	}
 	async _updateFloatingPosition(tip = this.tip, placement = null, arrowElement = null) {
@@ -7438,7 +7637,7 @@ var Tooltip = class extends FloatingBase {
 		const triggers = this._config.trigger.split(" ");
 		for (const trigger of triggers) if (trigger === "click") EventHandler.on(this._element, this.constructor.eventName(EVENT_CLICK$3), this._config.selector, (event) => {
 			const context = this._initializeOnDelegatedTarget(event);
-			context._activeTrigger[TRIGGER_CLICK] = !(context._isShown() && context._activeTrigger[TRIGGER_CLICK]);
+			context._activeTrigger[TRIGGER_CLICK$1] = !(context._isShown() && context._activeTrigger[TRIGGER_CLICK$1]);
 			context.toggle();
 		});
 		else if (trigger !== TRIGGER_MANUAL) {
@@ -7490,6 +7689,9 @@ var Tooltip = class extends FloatingBase {
 	}
 	_isWithActiveTrigger() {
 		return Object.values(this._activeTrigger).includes(true);
+	}
+	_hasTrigger(trigger) {
+		return this._config.trigger.split(" ").includes(trigger);
 	}
 	_excludedConfigKeys() {
 		return [...DISALLOWED_ATTRIBUTES];
@@ -7546,6 +7748,7 @@ const SELECTOR_DATA_TOGGLE$2 = "[data-cx-toggle=\"popover\"]";
 const EVENT_CLICK$2 = "click";
 const EVENT_FOCUSIN$1 = "focusin";
 const EVENT_MOUSEENTER = "mouseenter";
+const TRIGGER_CLICK = "click";
 const Default$4 = {
 	...Tooltip.Default,
 	content: "",
@@ -7593,8 +7796,8 @@ var Popover = class extends Tooltip {
 const initPopover = (event) => {
 	const target = event.target.closest(SELECTOR_DATA_TOGGLE$2);
 	if (!target) return;
-	if (event.type === "click") event.preventDefault();
-	Popover.getOrCreateInstance(target);
+	const popover = Popover.getOrCreateInstance(target);
+	if (event.type === "click" && popover._hasTrigger(TRIGGER_CLICK)) event.preventDefault();
 };
 EventHandler.on(document, EVENT_CLICK$2, SELECTOR_DATA_TOGGLE$2, initPopover);
 EventHandler.on(document, EVENT_FOCUSIN$1, SELECTOR_DATA_TOGGLE$2, initPopover);
@@ -7654,6 +7857,7 @@ var ScrollSpy = class extends BaseComponent {
 			visibleEntryTop: 0,
 			parentScrollTop: 0
 		};
+		this._smoothScrollHandler = null;
 		this.refresh();
 	}
 	static get Default() {
@@ -7674,6 +7878,7 @@ var ScrollSpy = class extends BaseComponent {
 	}
 	dispose() {
 		this._observer.disconnect();
+		if (this._smoothScrollHandler) EventHandler.off(this._config.target, EVENT_CLICK$1, SELECTOR_TARGET_LINKS, this._smoothScrollHandler);
 		super.dispose();
 	}
 	_configAfterMerge(config) {
@@ -7683,8 +7888,7 @@ var ScrollSpy = class extends BaseComponent {
 	}
 	_maybeEnableSmoothScroll() {
 		if (!this._config.smoothScroll) return;
-		EventHandler.off(this._config.target, EVENT_CLICK$1);
-		EventHandler.on(this._config.target, EVENT_CLICK$1, SELECTOR_TARGET_LINKS, (event) => {
+		this._smoothScrollHandler ??= (event) => {
 			const observableSection = this._observableSections.get(event.target.hash);
 			if (observableSection) {
 				event.preventDefault();
@@ -7699,7 +7903,8 @@ var ScrollSpy = class extends BaseComponent {
 				}
 				root.scrollTop = height;
 			}
-		});
+		};
+		EventHandler.on(this._config.target, EVENT_CLICK$1, SELECTOR_TARGET_LINKS, this._smoothScrollHandler);
 	}
 	_getNewObserver() {
 		const options = {
@@ -7788,6 +7993,8 @@ const NAME$3 = "strength";
 const EVENT_KEY$3 = `.cx.strength`;
 const DATA_API_KEY = ".data-api";
 const EVENT_STRENGTH_CHANGE = `strengthChange${EVENT_KEY$3}`;
+const EVENT_INPUT = `input${EVENT_KEY$3}`;
+const EVENT_CHANGE = `change${EVENT_KEY$3}`;
 const SELECTOR_DATA_STRENGTH = "[data-cx-strength]";
 const STRENGTH_LEVELS = [
 	"weak",
@@ -7859,14 +8066,18 @@ var Strength = class extends BaseComponent {
 	evaluate() {
 		this._evaluate();
 	}
+	dispose() {
+		if (this._input) EventHandler.off(this._input, EVENT_KEY$3);
+		super.dispose();
+	}
 	_getInput() {
 		if (this._config.input) return typeof this._config.input === "string" ? SelectorEngine.findOne(this._config.input) : this._config.input;
 		const parent = this._element.parentElement;
 		return SelectorEngine.findOne("input[type=\"password\"]", parent);
 	}
 	_addEventListeners() {
-		EventHandler.on(this._input, "input", () => this._evaluate());
-		EventHandler.on(this._input, "change", () => this._evaluate());
+		EventHandler.on(this._input, EVENT_INPUT, () => this._evaluate());
+		EventHandler.on(this._input, EVENT_CHANGE, () => this._evaluate());
 	}
 	_evaluate() {
 		const password = this._input.value;

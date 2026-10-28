@@ -31,6 +31,8 @@ declare class Combobox extends BaseComponent {
     protected _menuInstance: Menu | null;
     protected _ignoreNextFocus: boolean;
     protected _filterDebounceTimer: ReturnType<typeof setTimeout> | null;
+    protected _pendingFilter: (() => void) | null;
+    protected _keepQueryOnHide: boolean;
     constructor(element?: string | Element | null, config?: Partial<ComboboxConfig> | null);
     static get Default(): ComboboxConfig;
     static get DefaultType(): Record<string, string>;
@@ -57,6 +59,7 @@ declare class Combobox extends BaseComponent {
     protected _getVisibleItems(): HTMLElement[];
     protected _scheduleFilter(query: string, onFiltered?: (visibleCount: number) => void): void;
     protected _cancelFilterDebounce(): void;
+    protected _flushFilter(): void;
     protected _filterItems(query: string): number;
     protected _normalizeText(text: string): string;
     protected _handleToggleKeydown(event: ChassisEvent): void;

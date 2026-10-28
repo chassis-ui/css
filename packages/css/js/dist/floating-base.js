@@ -107,11 +107,15 @@ var FloatingBase = class FloatingBase extends BaseComponent {
 		const { offset: offsetConfig } = this._config;
 		if (typeof offsetConfig === "string") return offsetConfig.split(",").map((value) => Number.parseInt(value, 10));
 		if (typeof offsetConfig === "function") return ({ placement, rects }) => {
-			return offsetConfig({
+			const result = offsetConfig({
 				placement,
 				reference: rects.reference,
 				floating: rects.floating
 			}, this._element);
+			return Array.isArray(result) ? {
+				mainAxis: result[1] || 0,
+				crossAxis: result[0] || 0
+			} : result;
 		};
 		return offsetConfig;
 	}

@@ -14,6 +14,11 @@ type CarouselConfig = {
     keyboard: boolean;
     pause: string | boolean;
 };
+type PendingSlide = {
+    from: number;
+    to: number;
+    direction: string;
+};
 /**
  * Class definition
  */
@@ -32,6 +37,7 @@ declare class Carousel extends BaseComponent {
     protected _visibility: Map<Element, number>;
     protected _playing: boolean;
     protected _activeIndex: number;
+    protected _pendingSlide: PendingSlide | null;
     constructor(element?: string | Element | null, config?: Partial<CarouselConfig> | null);
     static get Default(): CarouselConfig;
     static get DefaultType(): Record<string, string>;
@@ -47,10 +53,12 @@ declare class Carousel extends BaseComponent {
     protected _initialActiveIndex(): number;
     protected _addEventListeners(): void;
     protected _keydown(event: ChassisEvent): void;
+    protected _scrollToInitialItem(): void;
     protected _observeItems(): void;
     protected _handleIntersection(entries: IntersectionObserverEntry[]): void;
     protected _navIndex(items?: HTMLElement[]): number;
     protected _scrollToIndex(index: number, items?: HTMLElement[]): void;
+    protected _completeSlide(index: number, items?: HTMLElement[]): void;
     protected _animateScroll(targetLeft: number, onComplete: () => void): void;
     protected _scrollDelta(element: Element, viewportRect?: DOMRect): number;
     protected _loopTransition(isNext: boolean, items: HTMLElement[]): void;
@@ -77,6 +85,7 @@ declare class Carousel extends BaseComponent {
     protected _itemInterval(index?: number): number;
     protected _maybeEnableCycle(): void;
     protected _pauseFromInteraction(): void;
+    protected _stopPlaying(): void;
     protected _togglePlayPause(): void;
     protected _updatePlayPauseControl(): void;
     protected _isFade(): boolean;

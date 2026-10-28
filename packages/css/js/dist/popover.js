@@ -22,6 +22,7 @@ const SELECTOR_DATA_TOGGLE = "[data-cx-toggle=\"popover\"]";
 const EVENT_CLICK = "click";
 const EVENT_FOCUSIN = "focusin";
 const EVENT_MOUSEENTER = "mouseenter";
+const TRIGGER_CLICK = "click";
 const Default = {
 	...Tooltip.Default,
 	content: "",
@@ -69,8 +70,8 @@ var Popover = class extends Tooltip {
 const initPopover = (event) => {
 	const target = event.target.closest(SELECTOR_DATA_TOGGLE);
 	if (!target) return;
-	if (event.type === "click") event.preventDefault();
-	Popover.getOrCreateInstance(target);
+	const popover = Popover.getOrCreateInstance(target);
+	if (event.type === "click" && popover._hasTrigger(TRIGGER_CLICK)) event.preventDefault();
 };
 EventHandler.on(document, EVENT_CLICK, SELECTOR_DATA_TOGGLE, initPopover);
 EventHandler.on(document, EVENT_FOCUSIN, SELECTOR_DATA_TOGGLE, initPopover);

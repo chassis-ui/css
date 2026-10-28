@@ -102,6 +102,8 @@ class Combobox extends BaseComponent {
   protected declare _menuInstance: Menu | null
   protected declare _ignoreNextFocus: boolean
   protected declare _filterDebounceTimer: ReturnType<typeof setTimeout> | null
+  protected declare _pendingFilter: (() => void) | null
+  protected declare _keepQueryOnHide: boolean
 
   constructor(element?: string | Element | null, config?: Partial<ComboboxConfig> | null) {
     super(element, config)
@@ -118,6 +120,8 @@ class Combobox extends BaseComponent {
     this._menuInstance = null
     this._ignoreNextFocus = false
     this._filterDebounceTimer = null
+    this._pendingFilter = null
+    this._keepQueryOnHide = false
 
     this._createHiddenInput()
     this._createMenuInstance()
@@ -249,10 +253,13 @@ class Combobox extends BaseComponent {
   }
 
   protected _syncDisabledState(disabled?: boolean): void {
-    // If called without an argument, read the current state from either source
+    const toggleButton = this._toggle instanceof HTMLButtonElement ? this._toggle : null
+
+    // If called without an argument, read the current state from any source
     if (disabled === undefined) {
       const toggleDisabled = this._toggle.classList.contains('disabled') ||
-        this._toggle.getAttribute('aria-disabled') === 'true'
+        this._toggle.getAttribute('aria-disabled') === 'true' ||
+        (toggleButton?.disabled ?? false)
       const inputDisabled = this._comboInput?.disabled ?? false
       disabled = toggleDisabled || inputDisabled
     }
@@ -267,9 +274,14 @@ class Combobox extends BaseComponent {
       this._toggle.removeAttribute('aria-disabled')
     }
 
-    // Sync comboInput
+    // Sync the native `disabled` of the trigger: the embedded input of an
+    // input trigger, the button of a button trigger
     if (this._comboInput) {
       this._comboInput.disabled = disabled
+    }
+
+    if (toggleButton) {
+      toggleButton.disabled = disabled
     }
 
     // Exclude hidden input from form submission when disabled
@@ -318,7 +330,9 @@ class Combobox extends BaseComponent {
   }
 
   protected _restoreAfterClose(): void {
-    if (!this._comboInput) {
+    // The menu closed on its own under a query with no match: the user is
+    // still typing, and what they typed stays
+    if (!this._comboInput || this._keepQueryOnHide) {
       return
     }
 
@@ -389,7 +403,11 @@ class Combobox extends BaseComponent {
           if (visibleCount > 0 && !this._isShown()) {
             this._menuInstance!.show()
           } else if (visibleCount === 0 && this._isShown()) {
+            // hidden.cx.menu runs _restoreAfterClose synchronously: not for
+            // this close, which is not one the user made
+            this._keepQueryOnHide = true
             this._menuInstance!.hide()
+            this._keepQueryOnHide = false
           }
         })
       })
@@ -404,6 +422,7 @@ class Combobox extends BaseComponent {
         if (event.key === ARROW_DOWN_KEY) {
           event.preventDefault()
           event.stopPropagation() // Prevent the menu keydown handler from also processing this
+          this._flushFilter()
           const items = this._getVisibleItems()
           if (items.length > 0) {
             items[0].focus()
@@ -518,21 +537,37 @@ class Combobox extends BaseComponent {
   protected _scheduleFilter(query: string, onFiltered?: (visibleCount: number) => void): void {
     this._cancelFilterDebounce()
 
-    this._filterDebounceTimer = setTimeout(() => {
+    const run = () => {
       this._filterDebounceTimer = null
+      this._pendingFilter = null
       // `onFiltered?.(this._filterItems(query))` would short-circuit and skip
       // calling `_filterItems` entirely when `onFiltered` is undefined (the
       // searchInput call site never passes one) — optional chaining on the
       // callee short-circuits the whole expression, including the argument.
       const visibleCount = this._filterItems(query)
       onFiltered?.(visibleCount)
-    }, FILTER_DEBOUNCE_DELAY)
+    }
+
+    this._pendingFilter = run
+    this._filterDebounceTimer = setTimeout(run, FILTER_DEBOUNCE_DELAY)
   }
 
   protected _cancelFilterDebounce(): void {
     if (this._filterDebounceTimer !== null) {
       clearTimeout(this._filterDebounceTimer)
       this._filterDebounceTimer = null
+    }
+
+    this._pendingFilter = null
+  }
+
+  // A navigation key reads the visible items now: a filter still waiting on
+  // the debounce runs first, so the key lands on an item the query keeps
+  protected _flushFilter(): void {
+    const run = this._pendingFilter
+    if (run) {
+      this._cancelFilterDebounce()
+      run()
     }
   }
 
@@ -570,6 +605,7 @@ class Combobox extends BaseComponent {
 
     if (key === ARROW_DOWN_KEY || key === ARROW_UP_KEY) {
       event.preventDefault()
+      this._flushFilter()
       if (!this._isShown()) {
         this._show(false)
       }
@@ -633,6 +669,7 @@ class Combobox extends BaseComponent {
 
     if (key === ARROW_DOWN_KEY || key === ARROW_UP_KEY) {
       event.preventDefault()
+      this._flushFilter()
       const items = this._getVisibleItems()
       if (items.length > 0) {
         getNextActiveElement(items, target as HTMLElement, key === ARROW_DOWN_KEY, true).focus()
@@ -643,6 +680,7 @@ class Combobox extends BaseComponent {
 
     if (key === HOME_KEY || key === END_KEY) {
       event.preventDefault()
+      this._flushFilter()
       const items = this._getVisibleItems()
       if (items.length > 0) {
         const targetItem = key === HOME_KEY ? items[0] : items.at(-1)!

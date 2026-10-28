@@ -1,4 +1,5 @@
 import FloatingBase from '../../src/floating-base.js'
+import { clearFixture, getFixture } from '../helpers/fixture.js'
 
 const {
   BREAKPOINTS,
@@ -240,6 +241,73 @@ describe('FloatingBase', () => {
 
     it('should handle empty array', () => {
       expect(() => disposeBreakpointListeners([])).not.toThrow()
+    })
+  })
+
+  describe('_getFloatingMiddleware', () => {
+    class TestFloating extends FloatingBase {
+      static get NAME() {
+        return 'testfloating'
+      }
+
+      _isShown() {
+        return false
+      }
+
+      _updateFloatingPosition() {}
+    }
+
+    let fixtureEl
+
+    beforeAll(() => {
+      fixtureEl = getFixture()
+    })
+
+    afterEach(() => {
+      clearFixture()
+    })
+
+    const runOffset = async (instance, placement = 'bottom') => {
+      const [offsetMiddleware] = instance._getFloatingMiddleware()
+      const rect = { x: 0, y: 0, width: 100, height: 20 }
+
+      expect(offsetMiddleware.name).toBe('offset')
+
+      return offsetMiddleware.fn({
+        x: 0,
+        y: 0,
+        placement,
+        strategy: 'absolute',
+        platform: { isRTL: () => false },
+        elements: { reference: instance._element, floating: instance._element },
+        rects: { reference: rect, floating: rect },
+        middlewareData: {}
+      })
+    }
+
+    it('should offset by the skidding and distance of an array', async () => {
+      fixtureEl.innerHTML = '<div></div>'
+      const instance = new TestFloating(fixtureEl.querySelector('div'), { offset: [10, 20] })
+
+      const result = await runOffset(instance)
+
+      expect(result.x).toBe(10)
+      expect(result.y).toBe(20)
+    })
+
+    it('should offset by the skidding and distance a function returns', async () => {
+      fixtureEl.innerHTML = '<div></div>'
+      const element = fixtureEl.querySelector('div')
+      const getOffset = jasmine.createSpy('getOffset').and.returnValue([10, 20])
+      const instance = new TestFloating(element, { offset: getOffset })
+
+      const result = await runOffset(instance)
+
+      expect(getOffset).toHaveBeenCalledTimes(1)
+      expect(getOffset.calls.argsFor(0)[0].placement).toBe('bottom')
+      expect(getOffset.calls.argsFor(0)[1]).toBe(element)
+      expect(result.x).toBe(10)
+      expect(result.y).toBe(20)
     })
   })
 })

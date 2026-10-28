@@ -108,10 +108,7 @@ var ChipInput = class extends BaseComponent {
 			chip,
 			relatedTarget: this._input
 		}).defaultPrevented) return false;
-		this._selectedChips.delete(chip);
-		if (this._anchorChip === chip) this._anchorChip = null;
-		Chip.getInstance(chip)?.dispose();
-		chip.remove();
+		this._detachChip(chip);
 		EventHandler.trigger(this._element, EVENT_CHANGE, { values: this.getValues() });
 		return true;
 	}
@@ -127,19 +124,12 @@ var ChipInput = class extends BaseComponent {
 		return [...this._selectedChips].map((chip) => this._getChipValue(chip));
 	}
 	clear() {
-		const chips = SelectorEngine.find(SELECTOR_CHIP, this._element);
-		for (const chip of chips) {
-			EventHandler.trigger(this._element, EVENT_REMOVE, {
-				value: this._getChipValue(chip),
-				chip,
-				relatedTarget: this._input
-			});
-			Chip.getInstance(chip)?.dispose();
-			chip.remove();
-		}
-		this._selectedChips.clear();
-		this._anchorChip = null;
-		EventHandler.trigger(this._element, EVENT_CHANGE, { values: [] });
+		for (const chip of this._getChipElements()) if (!EventHandler.trigger(this._element, EVENT_REMOVE, {
+			value: this._getChipValue(chip),
+			chip,
+			relatedTarget: this._input
+		}).defaultPrevented) this._detachChip(chip);
+		EventHandler.trigger(this._element, EVENT_CHANGE, { values: this.getValues() });
 	}
 	clearSelection(silent = false) {
 		for (const chip of this._selectedChips) {
@@ -177,7 +167,7 @@ var ChipInput = class extends BaseComponent {
 				this._anchorChip = chip;
 			}
 		} else {
-			this.clearSelection();
+			this.clearSelection(true);
 			this._selectedChips.add(chip);
 			chip.classList.add(CLASS_NAME_ACTIVE);
 			chip.setAttribute("aria-selected", "true");
@@ -217,7 +207,6 @@ var ChipInput = class extends BaseComponent {
 	_setupChip(chip) {
 		chip.setAttribute("tabindex", "0");
 		chip.setAttribute("aria-selected", "false");
-		for (const cls of this._config.chipClass.split(/\s+/).filter(Boolean)) chip.classList.add(cls);
 		if (this._config.dismissible && !SelectorEngine.findOne(SELECTOR_CHIP_DISMISS, chip)) chip.append(this._createDismissButton());
 		Chip.getOrCreateInstance(chip);
 	}
@@ -225,9 +214,16 @@ var ChipInput = class extends BaseComponent {
 		const chip = document.createElement("span");
 		chip.className = CLASS_NAME_CHIP;
 		chip.dataset.cxChipValue = value;
+		for (const cls of this._config.chipClass.split(/\s+/).filter(Boolean)) chip.classList.add(cls);
 		chip.append(document.createTextNode(value));
 		this._setupChip(chip);
 		return chip;
+	}
+	_detachChip(chip) {
+		this._selectedChips.delete(chip);
+		if (this._anchorChip === chip) this._anchorChip = null;
+		Chip.getInstance(chip)?.dispose();
+		chip.remove();
 	}
 	_createDismissButton() {
 		const button = document.createElement("button");
@@ -362,7 +358,8 @@ var ChipInput = class extends BaseComponent {
 		}
 	}
 	_handleChipDelete(currentIndex, chips) {
-		if (this._selectedChips.size === 0) return;
+		if (currentIndex < 0) return;
+		if (this._selectedChips.size === 0) this.selectChip(chips[currentIndex]);
 		const nextIndex = Math.min(currentIndex, chips.length - this._selectedChips.size - 1);
 		this.removeSelected();
 		const remainingChips = this._getChipElements();

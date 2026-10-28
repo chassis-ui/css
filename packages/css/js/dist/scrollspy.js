@@ -62,6 +62,7 @@ var ScrollSpy = class extends BaseComponent {
 			visibleEntryTop: 0,
 			parentScrollTop: 0
 		};
+		this._smoothScrollHandler = null;
 		this.refresh();
 	}
 	static get Default() {
@@ -82,6 +83,7 @@ var ScrollSpy = class extends BaseComponent {
 	}
 	dispose() {
 		this._observer.disconnect();
+		if (this._smoothScrollHandler) EventHandler.off(this._config.target, EVENT_CLICK, SELECTOR_TARGET_LINKS, this._smoothScrollHandler);
 		super.dispose();
 	}
 	_configAfterMerge(config) {
@@ -91,8 +93,7 @@ var ScrollSpy = class extends BaseComponent {
 	}
 	_maybeEnableSmoothScroll() {
 		if (!this._config.smoothScroll) return;
-		EventHandler.off(this._config.target, EVENT_CLICK);
-		EventHandler.on(this._config.target, EVENT_CLICK, SELECTOR_TARGET_LINKS, (event) => {
+		this._smoothScrollHandler ??= (event) => {
 			const observableSection = this._observableSections.get(event.target.hash);
 			if (observableSection) {
 				event.preventDefault();
@@ -107,7 +108,8 @@ var ScrollSpy = class extends BaseComponent {
 				}
 				root.scrollTop = height;
 			}
-		});
+		};
+		EventHandler.on(this._config.target, EVENT_CLICK, SELECTOR_TARGET_LINKS, this._smoothScrollHandler);
 	}
 	_getNewObserver() {
 		const options = {

@@ -187,7 +187,9 @@ abstract class FloatingBase extends BaseComponent {
     if (typeof offsetConfig === 'function') {
       return ({ placement, rects }: MiddlewareState) => {
         const result = offsetConfig({ placement, reference: rects.reference, floating: rects.floating }, this._element)
-        return result
+
+        // the function returns [skidding, distance], like the array form; Floating UI expects its own shape
+        return Array.isArray(result) ? { mainAxis: result[1] || 0, crossAxis: result[0] || 0 } : result
       }
     }
 

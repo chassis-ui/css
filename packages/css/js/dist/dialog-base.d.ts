@@ -29,6 +29,7 @@ declare class DialogBase extends BaseComponent {
     protected _isTransitioning: boolean;
     protected _openedAsModal: boolean;
     protected _closeExpected: boolean;
+    protected _closedWhileHiding: boolean;
     protected _nativeCloseHandler: () => void;
     constructor(element?: string | Element | null, config?: Partial<DialogBaseConfig> | null);
     static get NAME(): string;

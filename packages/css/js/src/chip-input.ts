@@ -198,15 +198,7 @@ class ChipInput extends BaseComponent {
       return false
     }
 
-    // Remove from selection
-    this._selectedChips.delete(chip)
-    if (this._anchorChip === chip) {
-      this._anchorChip = null
-    }
-
-    // Remove from DOM
-    Chip.getInstance(chip)?.dispose()
-    chip.remove()
+    this._detachChip(chip)
 
     EventHandler.trigger(this._element, EVENT_CHANGE, {
       values: this.getValues()
@@ -233,22 +225,21 @@ class ChipInput extends BaseComponent {
   }
 
   clear(): void {
-    const chips = SelectorEngine.find(SELECTOR_CHIP, this._element)
-    for (const chip of chips) {
-      EventHandler.trigger(this._element, EVENT_REMOVE, {
+    for (const chip of this._getChipElements()) {
+      const removeEvent = EventHandler.trigger(this._element, EVENT_REMOVE, {
         value: this._getChipValue(chip),
         chip,
         relatedTarget: this._input
       })
-      Chip.getInstance(chip)?.dispose()
-      chip.remove()
+
+      // A listener keeps the chip by preventing the event, as it does in remove()
+      if (!removeEvent.defaultPrevented) {
+        this._detachChip(chip)
+      }
     }
 
-    this._selectedChips.clear()
-    this._anchorChip = null
-
     EventHandler.trigger(this._element, EVENT_CHANGE, {
-      values: []
+      values: this.getValues()
     })
   }
 
@@ -305,8 +296,8 @@ class ChipInput extends BaseComponent {
         this._anchorChip = chip
       }
     } else {
-      // Single selection
-      this.clearSelection()
+      // Single selection: silent, the select event below carries the new selection
+      this.clearSelection(true)
       this._selectedChips.add(chip)
       chip.classList.add(CLASS_NAME_ACTIVE)
       chip.setAttribute('aria-selected', 'true')
@@ -362,15 +353,12 @@ class ChipInput extends BaseComponent {
     }
   }
 
+  // Shared by the chips of the markup and the chips added at runtime. The classes of
+  // chipClass are applied in _createChip() only: a pre-existing chip keeps its own.
   protected _setupChip(chip: HTMLElement): void {
     // Make chip focusable
     chip.setAttribute('tabindex', '0')
     chip.setAttribute('aria-selected', 'false')
-
-    // Apply chip variant classes from config
-    for (const cls of this._config.chipClass.split(/\s+/).filter(Boolean)) {
-      chip.classList.add(cls)
-    }
 
     // Add dismiss button if needed
     if (this._config.dismissible && !SelectorEngine.findOne(SELECTOR_CHIP_DISMISS, chip)) {
@@ -385,6 +373,11 @@ class ChipInput extends BaseComponent {
     chip.className = CLASS_NAME_CHIP
     chip.dataset.cxChipValue = value
 
+    // Apply chip variant classes from config
+    for (const cls of this._config.chipClass.split(/\s+/).filter(Boolean)) {
+      chip.classList.add(cls)
+    }
+
     // Add text node
     chip.append(document.createTextNode(value))
 
@@ -392,6 +385,17 @@ class ChipInput extends BaseComponent {
     this._setupChip(chip)
 
     return chip
+  }
+
+  // Takes the chip out of the selection and the DOM, with no event: the callers fire them
+  protected _detachChip(chip: HTMLElement): void {
+    this._selectedChips.delete(chip)
+    if (this._anchorChip === chip) {
+      this._anchorChip = null
+    }
+
+    Chip.getInstance(chip)?.dispose()
+    chip.remove()
   }
 
   protected _createDismissButton(): HTMLButtonElement {
@@ -598,8 +602,13 @@ class ChipInput extends BaseComponent {
   }
 
   protected _handleChipDelete(currentIndex: number, chips: HTMLElement[]): void {
-    if (this._selectedChips.size === 0) {
+    if (currentIndex < 0) {
       return
+    }
+
+    // A chip reached with Tab is focused but not selected: the key acts on it
+    if (this._selectedChips.size === 0) {
+      this.selectChip(chips[currentIndex])
     }
 
     const nextIndex = Math.min(currentIndex, chips.length - this._selectedChips.size - 1)

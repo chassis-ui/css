@@ -36,7 +36,7 @@ describe('Datepicker', () => {
       expect(Datepicker.Default.dateMax).toBeNull()
       expect(Datepicker.Default.selectionMode).toEqual('single')
       expect(Datepicker.Default.firstWeekday).toEqual(1)
-      expect(Datepicker.Default.locale).toEqual(navigator.language.substring(0, 2))
+      expect(Datepicker.Default.locale).toEqual(navigator.language)
       expect(Datepicker.Default.placement).toEqual('left')
       expect(Datepicker.Default.inline).toBeFalse()
       expect(Datepicker.Default.displayMonthsCount).toEqual(1)
@@ -415,6 +415,53 @@ describe('Datepicker', () => {
       expect(datepicker.getSelectedDates()).toEqual(dates)
     })
 
+    it('should write the selected dates to the input', () => {
+      fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker">'
+
+      const inputEl = fixtureEl.querySelector('input')
+      const datepicker = new Datepicker(inputEl, { locale: 'en-US' })
+
+      datepicker.setSelectedDates(['2026-01-15'])
+
+      expect(inputEl.value).toEqual('1/15/2026')
+
+      datepicker.setSelectedDates([])
+
+      expect(inputEl.value).toEqual('')
+    })
+
+    it('should write the selected dates to the hidden input of an inline calendar', () => {
+      fixtureEl.innerHTML = [
+        '<div data-cx-toggle="datepicker" data-cx-inline="true">',
+        '  <input type="hidden" name="date">',
+        '</div>'
+      ].join('')
+
+      const divEl = fixtureEl.querySelector('div')
+      const hiddenEl = fixtureEl.querySelector('input')
+      const datepicker = new Datepicker(divEl, { selectionMode: 'multiple' })
+
+      datepicker.setSelectedDates(['2026-01-15', '2026-01-20'])
+
+      expect(hiddenEl.value).toEqual('2026-01-15,2026-01-20')
+    })
+
+    it('should write the selected dates to the display element', () => {
+      fixtureEl.innerHTML = [
+        '<button type="button" data-cx-toggle="datepicker">',
+        '  <span data-cx-datepicker-display>Pick a date</span>',
+        '</button>'
+      ].join('')
+
+      const buttonEl = fixtureEl.querySelector('button')
+      const displayEl = fixtureEl.querySelector('span')
+      const datepicker = new Datepicker(buttonEl, { locale: 'en-US' })
+
+      datepicker.setSelectedDates(['2026-01-15'])
+
+      expect(displayEl.textContent).toEqual('1/15/2026')
+    })
+
     it('should return copy of dates array, not reference', () => {
       fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker">'
 
@@ -691,6 +738,29 @@ describe('Datepicker', () => {
       expect(result.length).toBeGreaterThan(0)
     })
 
+    it('should format the input with the region of the locale', () => {
+      fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker">'
+
+      const inputEl = fixtureEl.querySelector('input')
+      const datepicker = new Datepicker(inputEl, {
+        locale: 'en-GB',
+        selectedDates: ['2026-01-15']
+      })
+
+      expect(inputEl.value).toEqual('15/01/2026')
+      expect(datepicker._formatDate('2026-01-15')).toEqual('15/01/2026')
+    })
+
+    it('should pass the full language tag of the browser to the calendar by default', () => {
+      fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker">'
+
+      const inputEl = fixtureEl.querySelector('input')
+      const datepicker = new Datepicker(inputEl)
+
+      expect(datepicker._config.locale).toEqual(navigator.language)
+      expect(datepicker._calendar.locale).toEqual(navigator.language)
+    })
+
     it('should format date with custom dateFormat options', () => {
       fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker">'
 
@@ -919,16 +989,45 @@ describe('Datepicker', () => {
   })
 
   describe('input value parsing', () => {
-    it('should parse initial input value', () => {
+    it('should parse initial input value as a local date', () => {
       fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker" value="2026-01-15">'
+
+      const inputEl = fixtureEl.querySelector('input')
+      // `new Date('2026-01-15')` is UTC midnight, the 14th in a time zone west of UTC: the
+      // value is read by the parser of the calendar's own strings, whatever the time zone
+      const parseDate = spyOn(Datepicker.prototype, '_parseDate').and.callThrough()
+      const datepicker = new Datepicker(inputEl)
+
+      expect(datepicker.getSelectedDates()).toEqual(['2026-01-15'])
+      expect(parseDate).toHaveBeenCalledWith('2026-01-15')
+      expect(parseDate.calls.mostRecent().returnValue).toEqual(new Date(2026, 0, 15))
+    })
+
+    it('should select the day of a date-only value on the last day of a month', () => {
+      fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker" value="2026-03-01">'
 
       const inputEl = fixtureEl.querySelector('input')
       const datepicker = new Datepicker(inputEl)
 
-      // Should have one date selected (exact date may vary due to timezone)
-      const dates = datepicker.getSelectedDates()
-      expect(dates.length).toEqual(1)
-      expect(dates[0]).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+      expect(datepicker.getSelectedDates()).toEqual(['2026-03-01'])
+    })
+
+    it('should ignore a date-only value whose parts are out of range', () => {
+      fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker" value="2026-13-45">'
+
+      const inputEl = fixtureEl.querySelector('input')
+      const datepicker = new Datepicker(inputEl)
+
+      expect(datepicker.getSelectedDates()).toEqual([])
+    })
+
+    it('should parse a value with a time as a local date', () => {
+      fixtureEl.innerHTML = '<input type="text" data-cx-toggle="datepicker" value="2026-01-15T10:30:00">'
+
+      const inputEl = fixtureEl.querySelector('input')
+      const datepicker = new Datepicker(inputEl)
+
+      expect(datepicker.getSelectedDates()).toEqual(['2026-01-15'])
     })
 
     it('should handle invalid input value gracefully', () => {

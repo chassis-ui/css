@@ -91,8 +91,10 @@ var Carousel = class Carousel extends BaseComponent {
 		this._looping = false;
 		this._visibility = /* @__PURE__ */ new Map();
 		this._playing = this._config.autoplay;
+		this._pendingSlide = null;
 		this._activeIndex = this._initialActiveIndex();
 		this._addEventListeners();
+		this._scrollToInitialItem();
 		this._observeItems();
 		this._refreshActiveState();
 		if (this._playing) this.cycle();
@@ -147,9 +149,10 @@ var Carousel = class Carousel extends BaseComponent {
 		const targetIndex = this._normalizeIndex(rawIndex, items.length);
 		const currentIndex = this._navIndex(items);
 		if (targetIndex === null || targetIndex === currentIndex) return;
+		const direction = this._direction(currentIndex, targetIndex);
 		if (EventHandler.trigger(this._element, EVENT_SLIDE, {
 			relatedTarget: items[targetIndex],
-			direction: this._direction(currentIndex, targetIndex),
+			direction,
 			from: currentIndex,
 			to: targetIndex
 		}).defaultPrevented) return;
@@ -157,6 +160,11 @@ var Carousel = class Carousel extends BaseComponent {
 			this._fadeTo(targetIndex, items);
 			return;
 		}
+		this._pendingSlide = {
+			from: currentIndex,
+			to: targetIndex,
+			direction
+		};
 		this._scrollToIndex(targetIndex, items);
 	}
 	dispose() {
@@ -195,9 +203,16 @@ var Carousel = class Carousel extends BaseComponent {
 		if (direction) {
 			event.preventDefault();
 			this._pauseFromInteraction();
-			if (direction === DIRECTION_RIGHT) this.prev();
+			if (direction === DIRECTION_RIGHT !== isRTL()) this.prev();
 			else this.next();
 		}
+	}
+	_scrollToInitialItem() {
+		if (this._isFade() || this._activeIndex === 0) return;
+		const delta = this._scrollDelta(this._getItems()[this._activeIndex]);
+		if (Math.abs(delta) < 1) return;
+		this._jumpScroll(delta);
+		this._viewport.style.scrollSnapType = "";
 	}
 	_observeItems() {
 		if (this._isFade() || typeof IntersectionObserver === "undefined") return;
@@ -240,15 +255,29 @@ var Carousel = class Carousel extends BaseComponent {
 	}
 	_scrollToIndex(index, items = this._getItems()) {
 		const item = items[index];
-		if (!item) return;
-		const left = this._scrollDelta(item);
-		if (Math.abs(left) < 1) return;
+		const left = item ? this._scrollDelta(item) : 0;
+		if (Math.abs(left) < 1) {
+			this._pendingSlide = null;
+			return;
+		}
 		const targetLeft = this._viewport.scrollLeft + left;
 		this._viewport.style.scrollSnapType = "none";
 		this._animateScroll(targetLeft, () => {
 			this._viewport.style.scrollSnapType = "";
-			if (!this._observer) this._setActive(index);
-			this._updateEndControls();
+			this._completeSlide(index, items);
+			this._updateEndControls(items);
+		});
+	}
+	_completeSlide(index, items = this._getItems()) {
+		this._setActive(index, items);
+		const pending = this._pendingSlide;
+		if (!pending) return;
+		this._pendingSlide = null;
+		EventHandler.trigger(this._element, EVENT_SLID, {
+			relatedTarget: items[pending.to],
+			direction: pending.direction,
+			from: pending.from,
+			to: pending.to
 		});
 	}
 	_animateScroll(targetLeft, onComplete) {
@@ -305,6 +334,7 @@ var Carousel = class Carousel extends BaseComponent {
 			to: toIndex
 		}).defaultPrevented) return;
 		this._looping = true;
+		this._pendingSlide = null;
 		const clone = (isNext ? items[0] : items[last]).cloneNode(true);
 		clone.classList.add(CLASS_NAME_CLONE);
 		clone.classList.remove(CLASS_NAME_ACTIVE);
@@ -315,8 +345,9 @@ var Carousel = class Carousel extends BaseComponent {
 		this._viewport.style.scrollSnapType = "none";
 		if (isNext) this._viewport.append(clone);
 		else {
+			const before = items[fromIndex].getBoundingClientRect().left;
 			this._viewport.prepend(clone);
-			this._jumpScroll(this._scrollDelta(items[fromIndex]));
+			this._jumpScroll(items[fromIndex].getBoundingClientRect().left - before);
 		}
 		this._animateScroll(this._viewport.scrollLeft + this._scrollDelta(clone), () => {
 			clone.remove();
@@ -353,6 +384,7 @@ var Carousel = class Carousel extends BaseComponent {
 		const from = this._activeIndex;
 		this._activeIndex = index;
 		this._refreshActiveState(items);
+		if (this._pendingSlide) return;
 		EventHandler.trigger(this._element, EVENT_SLID, {
 			relatedTarget: items[index],
 			direction: this._direction(from, index),
@@ -449,7 +481,7 @@ var Carousel = class Carousel extends BaseComponent {
 				return;
 			}
 			if (upcoming === null) {
-				this.pause();
+				this._stopPlaying();
 				return;
 			}
 			this._scheduleAutoplay(upcoming);
@@ -473,6 +505,9 @@ var Carousel = class Carousel extends BaseComponent {
 		this.cycle();
 	}
 	_pauseFromInteraction() {
+		this._stopPlaying();
+	}
+	_stopPlaying() {
 		this._playing = false;
 		this.pause();
 		this._updatePlayPauseControl();

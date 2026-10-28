@@ -9,6 +9,7 @@ import BaseComponent from './base-component.js'
 import EventHandler from './dom/event-handler.js'
 import SelectorEngine from './dom/selector-engine.js'
 import type { ComponentConfig } from './util/config.js'
+import { getTransitionDurationFromElement } from './util/index.js'
 
 /**
  * Constants
@@ -32,6 +33,16 @@ const SELECTOR_SUMMARY = 'summary'
 const SELECTOR_CONTENT = '.accordion-body'
 const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`
 
+const TRANSITION_END = 'transitionend'
+const DURATION_PADDING = 5
+
+// The transition in progress, so that a toggle the other way can take it over
+type Transition = {
+  opening: boolean
+  clone: HTMLDetailsElement | null // the stand-in of a closing item
+  cancel: () => void // drops the wait for its end
+}
+
 /**
  * Class definition
  */
@@ -41,6 +52,7 @@ class Accordion extends BaseComponent {
   protected declare _summary: HTMLElement | null
   protected declare _content: HTMLElement | null
   protected declare _isTransitioning: boolean
+  protected declare _transition: Transition | null
   protected declare _observer: MutationObserver | undefined
 
   // Getters
@@ -54,6 +66,7 @@ class Accordion extends BaseComponent {
     this._summary = SelectorEngine.findOne(SELECTOR_SUMMARY, this._element)
     this._content = SelectorEngine.findOne(SELECTOR_CONTENT, this._element)
     this._isTransitioning = false
+    this._transition = null
 
     if (!this._summary || !this._content) {
       return // bail on malformed markup before setting up observer
@@ -74,8 +87,12 @@ class Accordion extends BaseComponent {
     }
   }
 
+  // A toggle while the item is already moving the same way does nothing. One the other way
+  // takes the transition over: the browser has toggled <details> already, so the item turns
+  // around from the height it has reached, and the callback of the transition it replaces
+  // never runs (no `opened` on an item that closed meanwhile, and no `closed` on an open one).
   open(): void {
-    if (!this._summary || !this._content || this._isTransitioning) {
+    if (!this._summary || !this._content || this._transition?.opening) {
       return
     }
 
@@ -84,38 +101,37 @@ class Accordion extends BaseComponent {
       return
     }
 
-    this._isTransitioning = true
-
     // Captured locally so the queued callback below never has to read
     // `this._element` — if dispose() runs mid-transition, that property is
     // nulled out and would throw before the callback finished its cleanup.
     const element = this._element
 
+    // Taking over a close: grow again from the height its stand-in has reached
+    const fromHeight = this._transition?.clone?.offsetHeight ?? this._summary.offsetHeight
+    this._dropTransition()
+
     // overflow:clip avoids a new BFC (unlike hidden), so interior margins
     // and stacking contexts are unaffected during the transition.
     element.style.overflow = 'clip'
-    element.style.height = `${this._summary.offsetHeight}px`
+    element.style.height = `${fromHeight}px`
     element.style.height = `${this._summary.offsetHeight + this._content.offsetHeight}px`
 
-    this._queueCallback(() => {
+    this._startTransition(true, null, () => {
       element.style.overflow = ''
       element.style.height = ''
-      this._isTransitioning = false
       EventHandler.trigger(element, EVENT_OPENED)
-    }, element, true)
+    })
   }
 
   close(): void {
-    if (!this._summary || !this._content) {
+    if (!this._summary || !this._content || (this._transition && !this._transition.opening)) {
       return
     }
 
     const closeEvent = EventHandler.trigger(this._element, EVENT_CLOSE)
-    if (this._isTransitioning || closeEvent.defaultPrevented) {
+    if (closeEvent.defaultPrevented) {
       return
     }
-
-    this._isTransitioning = true
 
     // Captured locally so the queued callback below never has to read
     // `this._element` — if dispose() runs mid-transition, that property is
@@ -123,19 +139,23 @@ class Accordion extends BaseComponent {
     // leaking the clone permanently.
     const element = this._element
 
+    // Taking over an open: the stand-in shrinks from the height the item has reached
+    const fromHeight = this._transition ? element.offsetHeight : null
+    this._dropTransition()
+
     // <details> collapses content instantly on open=false; insert a clone
     // as a visual stand-in for the duration of the height transition.
-    const clone = this._createClone()
+    const clone = this._createClone(fromHeight)
 
     element.style.height = `${this._summary.offsetHeight + this._content.offsetHeight}px`
     element.style.height = `${this._summary.offsetHeight}px`
 
-    this._queueCallback(() => {
+    this._startTransition(false, clone, () => {
+      element.style.overflow = ''
       element.style.height = ''
       clone.remove()
-      this._isTransitioning = false
       EventHandler.trigger(element, EVENT_CLOSED)
-    }, element, true)
+    })
   }
 
   override dispose(): void {
@@ -163,7 +183,66 @@ class Accordion extends BaseComponent {
     })
   }
 
-  protected _createClone(): HTMLDetailsElement {
+  protected _startTransition(opening: boolean, clone: HTMLDetailsElement | null, settle: () => void): void {
+    this._isTransitioning = true
+    this._transition = {
+      opening,
+      clone,
+      cancel: this._afterTransition(this._element, () => {
+        this._isTransitioning = false
+        this._transition = null
+        settle()
+      })
+    }
+  }
+
+  // Abandons the transition in progress, for the one the other way that takes it over
+  protected _dropTransition(): void {
+    if (!this._transition) {
+      return
+    }
+
+    this._transition.cancel()
+    this._transition.clone?.remove()
+    this._transition = null
+    this._isTransitioning = false
+  }
+
+  // Runs the callback when the element's transition ends, or after its duration when no
+  // transitionend comes, and returns a function that drops the wait. executeAfterTransition
+  // cannot be dropped: its timer would end the transition that took over early, with a
+  // synthetic transitionend on the same element.
+  protected _afterTransition(element: HTMLElement, callback: () => void): () => void {
+    let settled = false
+    const settle = (): void => {
+      if (!settled) {
+        settled = true
+        callback()
+      }
+    }
+
+    const onTransitionEnd = ({ target }: Event): void => {
+      if (target === element) {
+        element.removeEventListener(TRANSITION_END, onTransitionEnd)
+        settle()
+      }
+    }
+
+    element.addEventListener(TRANSITION_END, onTransitionEnd)
+    const timer = setTimeout(() => {
+      element.removeEventListener(TRANSITION_END, onTransitionEnd)
+      settle()
+    }, getTransitionDurationFromElement(element) + DURATION_PADDING)
+
+    return () => {
+      settled = true
+      clearTimeout(timer)
+      element.removeEventListener(TRANSITION_END, onTransitionEnd)
+    }
+  }
+
+  // The stand-in starts at `height`, or at its own open height
+  protected _createClone(height: number | null = null): HTMLDetailsElement {
     const clone = this._element.cloneNode(true) as HTMLDetailsElement
     clone.name = ''
     clone.open = true
@@ -177,7 +256,7 @@ class Accordion extends BaseComponent {
     clone.style.background = 'none'
     clone.style.border = '0'
     clone.style.width = `${this._element.offsetWidth}px`
-    clone.style.height = `${clone.offsetHeight}px`
+    clone.style.height = `${height ?? clone.offsetHeight}px`
     cloneSummary.style.visibility = 'hidden'
     clone.style.height = `${this._summary!.offsetHeight}px`
 

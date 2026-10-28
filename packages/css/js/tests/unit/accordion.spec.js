@@ -149,13 +149,36 @@ describe('Accordion', () => {
     })
   })
 
+  // Records the events of an item in the order they fire
+  function recordEvents(detailsEl) {
+    const events = []
+
+    for (const type of ['open', 'opened', 'close', 'closed']) {
+      detailsEl.addEventListener(`${type}.cx.accordion`, () => {
+        events.push(type)
+      })
+    }
+
+    return events
+  }
+
+  // Resolves when the item fires opened or closed, whichever comes first
+  const settled = detailsEl => new Promise(resolve => {
+    detailsEl.addEventListener('opened.cx.accordion', resolve, { once: true })
+    detailsEl.addEventListener('closed.cx.accordion', resolve, { once: true })
+  })
+
+  const wait = (delay = 20) => new Promise(resolve => {
+    setTimeout(resolve, delay)
+  })
+
   describe('open', () => {
-    it('should do nothing if already transitioning', () => {
+    it('should do nothing if already opening', () => {
       fixtureEl.innerHTML = makeAccordionHTML()
 
       const detailsEl = fixtureEl.querySelector('details')
       const accordion = new Accordion(detailsEl)
-      accordion._isTransitioning = true
+      accordion.open()
 
       const spy = spyOn(EventHandler, 'trigger')
 
@@ -278,18 +301,20 @@ describe('Accordion', () => {
       expect(spy).not.toHaveBeenCalled()
     })
 
-    it('should not start close transition if already transitioning', () => {
+    it('should not start another close transition if already closing', () => {
       fixtureEl.innerHTML = makeAccordionHTML(true)
 
       const detailsEl = fixtureEl.querySelector('details')
       const accordion = new Accordion(detailsEl)
-      accordion._isTransitioning = true
+      accordion.close()
 
       const spy = spyOn(accordion, '_createClone')
+      const triggerSpy = spyOn(EventHandler, 'trigger')
 
       accordion.close()
 
       expect(spy).not.toHaveBeenCalled()
+      expect(triggerSpy).not.toHaveBeenCalled()
     })
 
     it('should fire close.cx.accordion before closing', () => {
@@ -406,6 +431,96 @@ describe('Accordion', () => {
 
         accordion.close()
       })
+    })
+  })
+
+  describe('toggle during a transition', () => {
+    // The browser toggles <details> on a click; the plugin follows through its MutationObserver
+    it('should take a close over from an open in progress, with a consistent event stream', async () => {
+      fixtureEl.innerHTML = makeAccordionHTML()
+
+      const detailsEl = fixtureEl.querySelector('details')
+      const summaryEl = fixtureEl.querySelector('summary')
+      const accordionEl = fixtureEl.querySelector('.accordion')
+      detailsEl.style.transition = 'height 100ms linear'
+      const events = recordEvents(detailsEl)
+      // eslint-disable-next-line no-new
+      new Accordion(detailsEl)
+
+      summaryEl.click()
+      await wait()
+      expect(events).toEqual(['open'])
+      expect(detailsEl.open).toBeTrue()
+
+      summaryEl.click()
+      await wait()
+      expect(events).toEqual(['open', 'close'])
+      expect(detailsEl.open).toBeFalse()
+      // The stand-in of the closing item is there, and the item no longer holds its open height
+      expect(accordionEl.querySelector('details[data-cx-clone]')).not.toBeNull()
+      expect(detailsEl.style.height).toEqual(`${summaryEl.offsetHeight}px`)
+
+      await settled(detailsEl)
+      await wait(150) // nothing of the open transition fires late
+      expect(events).toEqual(['open', 'close', 'closed'])
+      expect(detailsEl.open).toBeFalse()
+      expect(detailsEl.style.height).toEqual('')
+      expect(detailsEl.style.overflow).toEqual('')
+      expect(accordionEl.querySelector('details[data-cx-clone]')).toBeNull()
+    })
+
+    it('should take an open over from a close in progress, with a consistent event stream', async () => {
+      fixtureEl.innerHTML = makeAccordionHTML(true)
+
+      const detailsEl = fixtureEl.querySelector('details')
+      const summaryEl = fixtureEl.querySelector('summary')
+      const accordionEl = fixtureEl.querySelector('.accordion')
+      detailsEl.style.transition = 'height 100ms linear'
+      const events = recordEvents(detailsEl)
+      // eslint-disable-next-line no-new
+      new Accordion(detailsEl)
+
+      summaryEl.click()
+      await wait()
+      expect(events).toEqual(['close'])
+      expect(accordionEl.querySelector('details[data-cx-clone]')).not.toBeNull()
+
+      summaryEl.click()
+      await wait()
+      expect(events).toEqual(['close', 'open'])
+      expect(detailsEl.open).toBeTrue()
+      // The stand-in of the abandoned close is gone right away
+      expect(accordionEl.querySelector('details[data-cx-clone]')).toBeNull()
+
+      await settled(detailsEl)
+      await wait(150) // nothing of the close transition fires late
+      expect(events).toEqual(['close', 'open', 'opened'])
+      expect(detailsEl.open).toBeTrue()
+      expect(detailsEl.style.height).toEqual('')
+      expect(detailsEl.style.overflow).toEqual('')
+    })
+
+    it('should let a close that is prevented leave the open transition to finish', async () => {
+      fixtureEl.innerHTML = makeAccordionHTML()
+
+      const detailsEl = fixtureEl.querySelector('details')
+      const summaryEl = fixtureEl.querySelector('summary')
+      detailsEl.style.transition = 'height 100ms linear'
+      const events = recordEvents(detailsEl)
+      detailsEl.addEventListener('close.cx.accordion', event => {
+        event.preventDefault()
+      })
+      // eslint-disable-next-line no-new
+      new Accordion(detailsEl)
+
+      summaryEl.click()
+      await wait()
+      summaryEl.click()
+      await settled(detailsEl)
+      await wait(150)
+
+      expect(events).toEqual(['open', 'close', 'opened'])
+      expect(detailsEl.style.height).toEqual('')
     })
   })
 

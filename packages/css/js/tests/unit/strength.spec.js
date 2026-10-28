@@ -456,6 +456,29 @@ describe('Strength', () => {
 
       expect(Strength.getInstance(strengthEl)).toBeNull()
     })
+
+    it('should remove the listeners from the password input', () => {
+      fixtureEl.innerHTML = getStrengthHtml({ withText: true })
+
+      const strengthEl = fixtureEl.querySelector('.strength')
+      const passwordInput = fixtureEl.querySelector('input[type="password"]')
+      const textEl = fixtureEl.querySelector('.strength-text')
+      const strength = new Strength(strengthEl)
+      const evaluateSpy = spyOn(Strength.prototype, '_evaluate').and.callThrough()
+      const changeSpy = jasmine.createSpy('strengthChange')
+
+      strengthEl.addEventListener('strengthChange.cx.strength', changeSpy)
+      strength.dispose()
+
+      passwordInput.value = 'password'
+      passwordInput.dispatchEvent(createEvent('input'))
+      passwordInput.dispatchEvent(createEvent('change'))
+
+      expect(evaluateSpy).not.toHaveBeenCalled()
+      expect(changeSpy).not.toHaveBeenCalled()
+      expect(strengthEl.querySelector('.strength-segment.active')).toBeNull()
+      expect(textEl.textContent).toEqual('')
+    })
   })
 
   describe('getInstance', () => {

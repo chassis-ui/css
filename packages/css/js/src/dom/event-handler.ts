@@ -165,9 +165,9 @@ function addHandler(element: Element, originalTypeEvent: string, handler?: strin
   const [isDelegated, initialCallable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction)
   let callable = initialCallable
 
-  // in case of mouseenter or mouseleave wrap the handler within a function that checks for its DOM position
+  // in case of mouseenter or mouseleave (namespaced or not) wrap the handler within a function that checks for its DOM position
   // this prevents the handler from being dispatched the same way as mouseover or mouseout does
-  if (originalTypeEvent in customEvents) {
+  if (originalTypeEvent.replace(stripNameRegex, '') in customEvents) {
     const wrapFunction = (fn: EventCallable): EventCallable => {
       return function (this: any, event: ChassisEvent) {
         if (!event.relatedTarget || (event.relatedTarget !== event.delegateTarget && !event.delegateTarget.contains(event.relatedTarget))) {

@@ -72,6 +72,8 @@ var Combobox = class Combobox extends BaseComponent {
 		this._menuInstance = null;
 		this._ignoreNextFocus = false;
 		this._filterDebounceTimer = null;
+		this._pendingFilter = null;
+		this._keepQueryOnHide = false;
 		this._createHiddenInput();
 		this._createMenuInstance();
 		this._syncDisabledState();
@@ -143,8 +145,9 @@ var Combobox = class Combobox extends BaseComponent {
 		return this._menu.classList.contains(CLASS_NAME_SHOW);
 	}
 	_syncDisabledState(disabled) {
+		const toggleButton = this._toggle instanceof HTMLButtonElement ? this._toggle : null;
 		if (disabled === void 0) {
-			const toggleDisabled = this._toggle.classList.contains("disabled") || this._toggle.getAttribute("aria-disabled") === "true";
+			const toggleDisabled = this._toggle.classList.contains("disabled") || this._toggle.getAttribute("aria-disabled") === "true" || (toggleButton?.disabled ?? false);
 			const inputDisabled = this._comboInput?.disabled ?? false;
 			disabled = toggleDisabled || inputDisabled;
 		}
@@ -152,6 +155,7 @@ var Combobox = class Combobox extends BaseComponent {
 		if (disabled) this._toggle.setAttribute("aria-disabled", "true");
 		else this._toggle.removeAttribute("aria-disabled");
 		if (this._comboInput) this._comboInput.disabled = disabled;
+		if (toggleButton) toggleButton.disabled = disabled;
 		if (this._hiddenInput) this._hiddenInput.disabled = disabled;
 	}
 	_createHiddenInput() {
@@ -180,7 +184,7 @@ var Combobox = class Combobox extends BaseComponent {
 		} else this._showPlaceholder();
 	}
 	_restoreAfterClose() {
-		if (!this._comboInput) return;
+		if (!this._comboInput || this._keepQueryOnHide) return;
 		this._cancelFilterDebounce();
 		this._filterItems("");
 		if (this._getSelectedItems().length > 0) this._updateToggleText();
@@ -214,7 +218,11 @@ var Combobox = class Combobox extends BaseComponent {
 			EventHandler.on(this._comboInput, `input${EVENT_KEY}`, () => {
 				this._scheduleFilter(this._comboInput.value, (visibleCount) => {
 					if (visibleCount > 0 && !this._isShown()) this._menuInstance.show();
-					else if (visibleCount === 0 && this._isShown()) this._menuInstance.hide();
+					else if (visibleCount === 0 && this._isShown()) {
+						this._keepQueryOnHide = true;
+						this._menuInstance.hide();
+						this._keepQueryOnHide = false;
+					}
 				});
 			});
 		}
@@ -226,6 +234,7 @@ var Combobox = class Combobox extends BaseComponent {
 				if (event.key === ARROW_DOWN_KEY) {
 					event.preventDefault();
 					event.stopPropagation();
+					this._flushFilter();
 					const items = this._getVisibleItems();
 					if (items.length > 0) items[0].focus();
 				}
@@ -304,16 +313,27 @@ var Combobox = class Combobox extends BaseComponent {
 	}
 	_scheduleFilter(query, onFiltered) {
 		this._cancelFilterDebounce();
-		this._filterDebounceTimer = setTimeout(() => {
+		const run = () => {
 			this._filterDebounceTimer = null;
+			this._pendingFilter = null;
 			const visibleCount = this._filterItems(query);
 			onFiltered?.(visibleCount);
-		}, FILTER_DEBOUNCE_DELAY);
+		};
+		this._pendingFilter = run;
+		this._filterDebounceTimer = setTimeout(run, FILTER_DEBOUNCE_DELAY);
 	}
 	_cancelFilterDebounce() {
 		if (this._filterDebounceTimer !== null) {
 			clearTimeout(this._filterDebounceTimer);
 			this._filterDebounceTimer = null;
+		}
+		this._pendingFilter = null;
+	}
+	_flushFilter() {
+		const run = this._pendingFilter;
+		if (run) {
+			this._cancelFilterDebounce();
+			run();
 		}
 	}
 	_filterItems(query) {
@@ -337,6 +357,7 @@ var Combobox = class Combobox extends BaseComponent {
 		const { key } = event;
 		if (key === ARROW_DOWN_KEY || key === ARROW_UP_KEY) {
 			event.preventDefault();
+			this._flushFilter();
 			if (!this._isShown()) this._show(false);
 			const items = this._getVisibleItems();
 			if (items.length > 0) (key === ARROW_DOWN_KEY ? items[0] : items.at(-1)).focus();
@@ -378,12 +399,14 @@ var Combobox = class Combobox extends BaseComponent {
 		const isInput = target.matches("input");
 		if (key === ARROW_DOWN_KEY || key === ARROW_UP_KEY) {
 			event.preventDefault();
+			this._flushFilter();
 			const items = this._getVisibleItems();
 			if (items.length > 0) getNextActiveElement(items, target, key === ARROW_DOWN_KEY, true).focus();
 			return;
 		}
 		if (key === HOME_KEY || key === END_KEY) {
 			event.preventDefault();
+			this._flushFilter();
 			const items = this._getVisibleItems();
 			if (items.length > 0) (key === HOME_KEY ? items[0] : items.at(-1)).focus();
 			return;

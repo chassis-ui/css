@@ -100,6 +100,7 @@ var Tooltip = class extends FloatingBase {
 		this._isEnabled = true;
 		this._timeout = 0;
 		this._isHovered = null;
+		this._isShowPending = false;
 		this._activeTrigger = {};
 		this._templateFactory = null;
 		this._newContent = null;
@@ -161,7 +162,15 @@ var Tooltip = class extends FloatingBase {
 			container.append(tip);
 			EventHandler.trigger(this._element, this.constructor.eventName(EVENT_INSERTED));
 		}
-		await this._createFloating(tip);
+		this._isShowPending = true;
+		try {
+			await this._createFloating(tip);
+		} catch (error) {
+			this._isShowPending = false;
+			throw error;
+		}
+		if (this.isDisposed() || !this._isShowPending || this.tip !== tip) return;
+		this._isShowPending = false;
 		tip.classList.add(CLASS_NAME_SHOW);
 		if ("ontouchstart" in document.documentElement) for (const element of document.body.children) EventHandler.on(element, "mouseover", noop);
 		const complete = () => {
@@ -175,6 +184,7 @@ var Tooltip = class extends FloatingBase {
 		if (!this._isShown()) return;
 		if (EventHandler.trigger(this._element, this.constructor.eventName(EVENT_HIDE)).defaultPrevented) return;
 		this._getTipElement().classList.remove(CLASS_NAME_SHOW);
+		this._isShowPending = false;
 		if ("ontouchstart" in document.documentElement) for (const element of document.body.children) EventHandler.off(element, "mouseover", noop);
 		this._activeTrigger[TRIGGER_CLICK] = false;
 		this._activeTrigger[TRIGGER_FOCUS] = false;
@@ -236,7 +246,7 @@ var Tooltip = class extends FloatingBase {
 		return this._config.animation || this.tip !== null && this.tip.classList.contains(CLASS_NAME_FADE);
 	}
 	_isShown() {
-		return Boolean(this.tip && this.tip.classList.contains(CLASS_NAME_SHOW));
+		return this._isShowPending || Boolean(this.tip && this.tip.classList.contains(CLASS_NAME_SHOW));
 	}
 	_getPlacement(tip) {
 		const toPhysical = (placement) => {
@@ -261,6 +271,7 @@ var Tooltip = class extends FloatingBase {
 		const placement = this._getPlacement(tip);
 		const arrowElement = tip.querySelector(`.${this.constructor.NAME}-arrow`);
 		await this._updateFloatingPosition(tip, placement, arrowElement);
+		if (this.isDisposed() || this.tip !== tip) return;
 		this._floatingCleanup = autoUpdate(this._element, tip, () => this._updateFloatingPosition(tip, null, arrowElement));
 	}
 	async _updateFloatingPosition(tip = this.tip, placement = null, arrowElement = null) {
@@ -347,6 +358,9 @@ var Tooltip = class extends FloatingBase {
 	}
 	_isWithActiveTrigger() {
 		return Object.values(this._activeTrigger).includes(true);
+	}
+	_hasTrigger(trigger) {
+		return this._config.trigger.split(" ").includes(trigger);
 	}
 	_excludedConfigKeys() {
 		return [...DISALLOWED_ATTRIBUTES];

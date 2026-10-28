@@ -107,7 +107,7 @@ class TemplateFactory extends Config<TemplateFactoryConfig> {
     const extraClass = this._resolvePossibleFunction(this._config.extraClass)
 
     if (extraClass) {
-      template.classList.add(...extraClass.split(' '))
+      template.classList.add(...extraClass.split(/\s+/).filter(Boolean))
     }
 
     return template

@@ -40,6 +40,7 @@ declare class Tooltip extends FloatingBase {
     protected _isEnabled: boolean;
     protected _timeout: ReturnType<typeof setTimeout> | number;
     protected _isHovered: boolean | null;
+    protected _isShowPending: boolean;
     protected _activeTrigger: Record<string, boolean>;
     protected _templateFactory: TemplateFactory | null;
     protected _newContent: Record<string, TemplateContentEntry> | null;
@@ -79,6 +80,7 @@ declare class Tooltip extends FloatingBase {
     protected _leave(): void;
     protected _setTimeout(handler: () => void, timeout: number): void;
     protected _isWithActiveTrigger(): boolean;
+    _hasTrigger(trigger: string): boolean;
     protected _excludedConfigKeys(): string[];
     protected _configAfterMerge(config: ComponentConfig): ComponentConfig;
     protected _getDelegateConfig(): ComponentConfig;

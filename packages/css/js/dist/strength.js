@@ -21,6 +21,8 @@ const NAME = "strength";
 const EVENT_KEY = `.cx.strength`;
 const DATA_API_KEY = ".data-api";
 const EVENT_STRENGTH_CHANGE = `strengthChange${EVENT_KEY}`;
+const EVENT_INPUT = `input${EVENT_KEY}`;
+const EVENT_CHANGE = `change${EVENT_KEY}`;
 const SELECTOR_DATA_STRENGTH = "[data-cx-strength]";
 const STRENGTH_LEVELS = [
 	"weak",
@@ -92,14 +94,18 @@ var Strength = class extends BaseComponent {
 	evaluate() {
 		this._evaluate();
 	}
+	dispose() {
+		if (this._input) EventHandler.off(this._input, EVENT_KEY);
+		super.dispose();
+	}
 	_getInput() {
 		if (this._config.input) return typeof this._config.input === "string" ? SelectorEngine.findOne(this._config.input) : this._config.input;
 		const parent = this._element.parentElement;
 		return SelectorEngine.findOne("input[type=\"password\"]", parent);
 	}
 	_addEventListeners() {
-		EventHandler.on(this._input, "input", () => this._evaluate());
-		EventHandler.on(this._input, "change", () => this._evaluate());
+		EventHandler.on(this._input, EVENT_INPUT, () => this._evaluate());
+		EventHandler.on(this._input, EVENT_CHANGE, () => this._evaluate());
 	}
 	_evaluate() {
 		const password = this._input.value;

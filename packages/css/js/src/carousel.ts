@@ -111,6 +111,15 @@ const DefaultType = {
   pause: '(string|boolean)'
 }
 
+// A programmatic move in scroll mode, from its `slide` event until the scroll
+// completes: `slid` fires once for it then, with the same `from` and `to`,
+// however many slides the viewport passes on its way.
+type PendingSlide = {
+  from: number
+  to: number
+  direction: string
+}
+
 // Standard ease-in-out cubic, so the JS-driven scroll accelerates and
 // decelerates like a native smooth scroll rather than moving linearly.
 const easeInOutCubic = (progress: number): number => (progress < 0.5 ?
@@ -136,6 +145,7 @@ class Carousel extends BaseComponent {
   protected declare _visibility: Map<Element, number>
   protected declare _playing: boolean
   protected declare _activeIndex: number
+  protected declare _pendingSlide: PendingSlide | null
 
   constructor(element?: string | Element | null, config?: Partial<CarouselConfig> | null) {
     super(element, config)
@@ -164,10 +174,15 @@ class Carousel extends BaseComponent {
     // swipes/drags, or presses pause) so we don't move content out from under
     // them (WCAG 2.2.2 Pause, Stop, Hide).
     this._playing = this._config.autoplay
+    this._pendingSlide = null
 
     this._activeIndex = this._initialActiveIndex()
 
     this._addEventListeners()
+    // Rest the viewport on the marked slide before the observer attaches: its
+    // first delivery reports the slide the viewport shows, and would otherwise
+    // move the active state back to the first one.
+    this._scrollToInitialItem()
     this._observeItems()
     this._refreshActiveState()
 
@@ -262,9 +277,10 @@ class Carousel extends BaseComponent {
       return
     }
 
+    const direction = this._direction(currentIndex, targetIndex)
     const slideEvent = EventHandler.trigger(this._element, EVENT_SLIDE, {
       relatedTarget: items[targetIndex],
-      direction: this._direction(currentIndex, targetIndex),
+      direction,
       from: currentIndex,
       to: targetIndex
     })
@@ -278,8 +294,9 @@ class Carousel extends BaseComponent {
       return
     }
 
-    // Scroll mode: the IntersectionObserver fires `slid` and syncs state once
-    // the new slide settles into view.
+    // Scroll mode: the IntersectionObserver keeps the active slide in step with
+    // the viewport on the way; `slid` fires once, when the scroll completes.
+    this._pendingSlide = { from: currentIndex, to: targetIndex, direction }
     this._scrollToIndex(targetIndex, items)
   }
 
@@ -353,12 +370,33 @@ class Carousel extends BaseComponent {
     if (direction) {
       event.preventDefault()
       this._pauseFromInteraction()
-      if (direction === DIRECTION_RIGHT) {
+      // The slides move right for the previous one in LTR, where it lies to the
+      // left; in RTL they run the other way, so the arrow keys swap.
+      const isPrev = (direction === DIRECTION_RIGHT) !== isRTL()
+      if (isPrev) {
         this.prev()
       } else {
         this.next()
       }
     }
+  }
+
+  // Scroll mode starts with the viewport at its scroll origin, whichever slide
+  // carries `.active`: jump to that slide, without animation, so the viewport
+  // shows what the markup says is active.
+  protected _scrollToInitialItem(): void {
+    if (this._isFade() || this._activeIndex === 0) {
+      return
+    }
+
+    // `_initialActiveIndex()` leaves 0 unless the slide at the index exists
+    const delta = this._scrollDelta(this._getItems()[this._activeIndex])
+    if (Math.abs(delta) < 1) {
+      return
+    }
+
+    this._jumpScroll(delta)
+    this._viewport.style.scrollSnapType = ''
   }
 
   protected _observeItems(): void {
@@ -445,12 +483,11 @@ class Carousel extends BaseComponent {
 
   protected _scrollToIndex(index: number, items: HTMLElement[] = this._getItems()): void {
     const item = items[index]
-    if (!item) {
-      return
-    }
-
-    const left = this._scrollDelta(item)
+    const left = item ? this._scrollDelta(item) : 0
     if (Math.abs(left) < 1) {
+      // Nothing to scroll (no such slide, no layout to measure, or the slide is
+      // in place): there is no completion for a pending move to wait for.
+      this._pendingSlide = null
       return
     }
 
@@ -463,17 +500,33 @@ class Carousel extends BaseComponent {
     this._viewport.style.scrollSnapType = 'none'
     this._animateScroll(targetLeft, () => {
       this._viewport.style.scrollSnapType = ''
-      // Without IntersectionObserver nothing else fires `slid`/updates the active
-      // slide after a programmatic scroll, so do it here. With the observer
-      // present this is a no-op (it already moved the active index to `index`).
-      if (!this._observer) {
-        this._setActive(index)
-      }
+      this._completeSlide(index, items)
 
       // The IntersectionObserver doesn't fire once the viewport has stopped, so
       // refresh the end controls here to catch the final settle landing exactly
       // on the scroll extent (e.g. disabling `next` at the last view).
-      this._updateEndControls()
+      this._updateEndControls(items)
+    })
+  }
+
+  // The end of a programmatic scroll: make the slide it targeted the active one
+  // (the observer is a frame behind the viewport, and there may be none), then
+  // fire the one `slid` of the move. A scroll with no move pending (a direct
+  // `_scrollToIndex`) fires `slid` through `_setActive`, as a drag does.
+  protected _completeSlide(index: number, items: HTMLElement[] = this._getItems()): void {
+    this._setActive(index, items)
+
+    const pending = this._pendingSlide
+    if (!pending) {
+      return
+    }
+
+    this._pendingSlide = null
+    EventHandler.trigger(this._element, EVENT_SLID, {
+      relatedTarget: items[pending.to],
+      direction: pending.direction,
+      from: pending.from,
+      to: pending.to
     })
   }
 
@@ -570,6 +623,9 @@ class Carousel extends BaseComponent {
     }
 
     this._looping = true
+    // A move still scrolling is taken over by this transition, which fires the
+    // `slid` of what it completes.
+    this._pendingSlide = null
 
     const clone = (isNext ? items[0] : items[last]).cloneNode(true) as HTMLElement
     clone.classList.add(CLASS_NAME_CLONE)
@@ -589,10 +645,14 @@ class Carousel extends BaseComponent {
     if (isNext) {
       this._viewport.append(clone)
     } else {
+      // Prepending shifts the real slides along by the clone; instantly scroll
+      // by that shift so the insertion doesn't flash before we animate. The
+      // shift is measured, not the offset of the current slide: a scroll that
+      // is still under way (a repeated key) keeps the distance it has left to
+      // go, and the loop animation covers it, instead of snapping it away.
+      const before = items[fromIndex].getBoundingClientRect().left
       this._viewport.prepend(clone)
-      // Prepending shifts the real slides to the right; instantly re-align the
-      // current slide so the insertion doesn't flash before we animate.
-      this._jumpScroll(this._scrollDelta(items[fromIndex]))
+      this._jumpScroll(items[fromIndex].getBoundingClientRect().left - before)
     }
 
     this._animateScroll(this._viewport.scrollLeft + this._scrollDelta(clone), () => {
@@ -653,6 +713,12 @@ class Carousel extends BaseComponent {
 
     this._activeIndex = index
     this._refreshActiveState(items)
+
+    // On the way of a programmatic move the active slide follows the viewport
+    // without a `slid` of its own: the move fires one when it completes.
+    if (this._pendingSlide) {
+      return
+    }
 
     EventHandler.trigger(this._element, EVENT_SLID, {
       relatedTarget: items[index],
@@ -852,10 +918,11 @@ class Carousel extends BaseComponent {
         return
       }
 
-      // Nothing comes after the last slide when `ends: 'stop'`; stop cycling
-      // instead of re-arming a timer that can never advance.
+      // Nothing comes after the last slide when `ends: 'stop'`; stop playing
+      // instead of re-arming a timer that can never advance, so the play/pause
+      // control shows the stop and a mouse leaving does not start it over.
       if (upcoming === null) {
-        this.pause()
+        this._stopPlaying()
         return
       }
 
@@ -902,6 +969,13 @@ class Carousel extends BaseComponent {
 
   // Turn autoplay off for good once the user interacts with the carousel.
   protected _pauseFromInteraction(): void {
+    this._stopPlaying()
+  }
+
+  // Turn autoplay off, as opposed to `pause()`, which holds it: the carousel
+  // stays stopped when the pointer leaves, and the play/pause control offers
+  // to start it again.
+  protected _stopPlaying(): void {
     this._playing = false
     this.pause()
     this._updatePlayPauseControl()

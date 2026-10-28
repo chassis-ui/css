@@ -5248,4 +5248,325 @@ describe('Menu', () => {
       expect(keydown.defaultPrevented).toBeFalse()
     })
   })
+
+  describe('keydown data-api with a container', () => {
+    const twoMenus = () => {
+      fixtureEl.innerHTML = [
+        '<div>',
+        '  <button class="button first-toggle" data-cx-toggle="menu">First</button>',
+        '  <div class="menu first-menu">',
+        '    <a class="menu-item" href="#">First item</a>',
+        '  </div>',
+        '</div>',
+        '<div>',
+        '  <button class="button second-toggle" data-cx-toggle="menu" data-cx-container="body">Second</button>',
+        '  <div class="menu second-menu">',
+        '    <a class="menu-item second-item-a" href="#">Second item A</a>',
+        '    <a class="menu-item second-item-b" href="#">Second item B</a>',
+        '  </div>',
+        '</div>'
+      ].join('')
+
+      return {
+        firstToggle: fixtureEl.querySelector('.first-toggle'),
+        firstMenu: fixtureEl.querySelector('.first-menu'),
+        secondToggle: fixtureEl.querySelector('.second-toggle'),
+        secondMenu: fixtureEl.querySelector('.second-menu'),
+        itemA: fixtureEl.querySelector('.second-item-a'),
+        itemB: fixtureEl.querySelector('.second-item-b')
+      }
+    }
+
+    it('should move the focus inside a contained menu that is not the first in the document on ArrowDown', () => {
+      return new Promise(resolve => {
+        const { firstToggle, firstMenu, secondToggle, secondMenu, itemA, itemB } = twoMenus()
+        const menu = new Menu(secondToggle)
+
+        secondToggle.addEventListener('shown.cx.menu', () => {
+          expect(secondMenu.parentNode).toEqual(document.body)
+
+          itemA.focus()
+          itemA.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }))
+
+          expect(document.activeElement).toEqual(itemB)
+          expect(firstMenu).not.toHaveClass('show')
+          expect(firstToggle).not.toHaveClass('show')
+          expect(Menu.getInstance(firstToggle)).toBeNull()
+          expect(menu._isShown()).toBeTrue()
+          resolve()
+        })
+
+        menu.show()
+      })
+    })
+
+    it('should hide the contained menu that is not the first in the document on Escape, and leave the first one alone', () => {
+      return new Promise(resolve => {
+        const { firstToggle, firstMenu, secondToggle, secondMenu, itemA } = twoMenus()
+        const firstInstance = new Menu(firstToggle)
+        const menu = new Menu(secondToggle)
+
+        firstToggle.addEventListener('shown.cx.menu', () => {
+          menu.show()
+        })
+
+        secondToggle.addEventListener('shown.cx.menu', () => {
+          expect(firstMenu).toHaveClass('show')
+
+          itemA.focus()
+          itemA.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+
+          expect(secondMenu).not.toHaveClass('show')
+          expect(firstMenu).toHaveClass('show')
+          expect(firstInstance._isShown()).toBeTrue()
+          expect(document.activeElement).toEqual(secondToggle)
+          resolve()
+        })
+
+        firstInstance.show()
+      })
+    })
+
+    it('should resolve the toggle of a menu given by the menu option', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = [
+          '<button class="button other-toggle" data-cx-toggle="menu">Other</button>',
+          '<div class="menu other-menu">',
+          '  <a class="menu-item" href="#">Other item</a>',
+          '</div>',
+          '<div class="menu detached-menu">',
+          '  <a class="menu-item detached-item-a" href="#">Item A</a>',
+          '  <a class="menu-item detached-item-b" href="#">Item B</a>',
+          '</div>',
+          '<button class="button detached-toggle" data-cx-toggle="menu">Detached</button>'
+        ].join('')
+
+        const otherToggle = fixtureEl.querySelector('.other-toggle')
+        const otherMenu = fixtureEl.querySelector('.other-menu')
+        const detachedToggle = fixtureEl.querySelector('.detached-toggle')
+        const detachedMenu = fixtureEl.querySelector('.detached-menu')
+        const itemA = fixtureEl.querySelector('.detached-item-a')
+        const itemB = fixtureEl.querySelector('.detached-item-b')
+        const menu = new Menu(detachedToggle, { menu: detachedMenu })
+
+        detachedToggle.addEventListener('shown.cx.menu', () => {
+          itemA.focus()
+          itemA.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }))
+
+          expect(document.activeElement).toEqual(itemB)
+          expect(otherMenu).not.toHaveClass('show')
+          expect(Menu.getInstance(otherToggle)).toBeNull()
+          resolve()
+        })
+
+        menu.show()
+      })
+    })
+
+    it('should leave the keys of a menu whose toggle is not a data-api toggle to its listeners', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = [
+          '<button class="button own-toggle">Own</button>',
+          '<div class="menu own-menu">',
+          '  <a class="menu-item own-item" href="#">Own item</a>',
+          '</div>',
+          '<button class="button other-toggle" data-cx-toggle="menu">Other</button>',
+          '<div class="menu other-menu">',
+          '  <a class="menu-item" href="#">Other item</a>',
+          '</div>'
+        ].join('')
+
+        const ownToggle = fixtureEl.querySelector('.own-toggle')
+        const ownMenu = fixtureEl.querySelector('.own-menu')
+        const ownItem = fixtureEl.querySelector('.own-item')
+        const otherToggle = fixtureEl.querySelector('.other-toggle')
+        const otherMenu = fixtureEl.querySelector('.other-menu')
+        const menu = new Menu(ownToggle)
+        const keys = []
+        ownMenu.addEventListener('keydown', event => keys.push(event.key))
+
+        ownToggle.addEventListener('shown.cx.menu', () => {
+          ownItem.focus()
+          ownItem.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+
+          // The delegated handler runs first, in the capture phase: it neither
+          // handles the key nor stops it
+          expect(keys).toEqual(['Escape'])
+          expect(ownMenu).toHaveClass('show')
+          expect(document.activeElement).toEqual(ownItem)
+          expect(otherMenu).not.toHaveClass('show')
+          expect(Menu.getInstance(otherToggle)).toBeNull()
+          resolve()
+        })
+
+        menu.show()
+      })
+    })
+  })
+
+  describe('hover leave from a nested submenu', () => {
+    const threeLevels = () => {
+      fixtureEl.innerHTML = [
+        '<div>',
+        '  <button class="button" data-cx-toggle="menu">Menu</button>',
+        '  <div class="menu">',
+        '    <a class="menu-item" href="#">Level 1 - Action</a>',
+        '    <div class="submenu level-1">',
+        '      <button class="menu-item level-1-trigger" type="button">Level 1 - Submenu</button>',
+        '      <div class="menu level-1-menu">',
+        '        <a class="menu-item" href="#">Level 2 - Action</a>',
+        '        <div class="submenu level-2">',
+        '          <button class="menu-item level-2-trigger" type="button">Level 2 - Submenu</button>',
+        '          <div class="menu level-2-menu">',
+        '            <a class="menu-item level-3-item" href="#">Level 3 - Action A</a>',
+        '            <a class="menu-item" href="#">Level 3 - Action B</a>',
+        '          </div>',
+        '        </div>',
+        '        <a class="menu-item level-2-another" href="#">Level 2 - Another</a>',
+        '      </div>',
+        '    </div>',
+        '  </div>',
+        '</div>'
+      ].join('')
+
+      // The hover listeners are attached only where a pointer can hover
+      const originalMatchMedia = window.matchMedia
+      spyOn(window, 'matchMedia').and.callFake(query =>
+        query === '(hover: hover)' ? { matches: true, addEventListener: noop, removeEventListener: noop } : originalMatchMedia.call(window, query)
+      )
+
+      const btnMenu = fixtureEl.querySelector('[data-cx-toggle="menu"]')
+      const menu = new Menu(btnMenu, { submenuTrigger: 'hover', submenuDelay: 30 })
+      const level1Wrapper = fixtureEl.querySelector('.level-1')
+      const level1Menu = fixtureEl.querySelector('.level-1-menu')
+      const level2Wrapper = fixtureEl.querySelector('.level-2')
+      const level2Menu = fixtureEl.querySelector('.level-2-menu')
+
+      return new Promise(resolve => {
+        btnMenu.addEventListener('shown.cx.menu', () => {
+          menu._openSubmenu(fixtureEl.querySelector('.level-1-trigger'), level1Menu, level1Wrapper)
+          menu._openSubmenu(fixtureEl.querySelector('.level-2-trigger'), level2Menu, level2Wrapper)
+          expect(level1Menu).toHaveClass('show')
+          expect(level2Menu).toHaveClass('show')
+
+          resolve({ menu, level1Menu, level2Menu })
+        })
+
+        menu.show()
+      })
+    }
+
+    const leave = (from, to) => {
+      from.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, relatedTarget: to }))
+    }
+
+    it('should close every open submenu when the pointer leaves the menu from a third-level item', async () => {
+      const { menu, level1Menu, level2Menu } = await threeLevels()
+
+      leave(fixtureEl.querySelector('.level-3-item'), document.body)
+
+      expect(menu._submenuCloseTimeouts.has(level2Menu)).toBeTrue()
+      expect(menu._submenuCloseTimeouts.has(level1Menu)).toBeTrue()
+
+      await new Promise(resolve => {
+        setTimeout(resolve, 60)
+      })
+
+      expect(level2Menu).not.toHaveClass('show')
+      expect(level1Menu).not.toHaveClass('show')
+      expect(menu._openSubmenus.size).toEqual(0)
+    })
+
+    it('should close only the submenus the pointer has left when it moves from a third-level item to the second level', async () => {
+      const { menu, level1Menu, level2Menu } = await threeLevels()
+
+      leave(fixtureEl.querySelector('.level-3-item'), fixtureEl.querySelector('.level-2-another'))
+
+      expect(menu._submenuCloseTimeouts.has(level2Menu)).toBeTrue()
+      expect(menu._submenuCloseTimeouts.has(level1Menu)).toBeFalse()
+
+      await new Promise(resolve => {
+        setTimeout(resolve, 60)
+      })
+
+      expect(level2Menu).not.toHaveClass('show')
+      expect(level1Menu).toHaveClass('show')
+    })
+  })
+
+  describe('focus of the toggle', () => {
+    const oneMenu = () => {
+      fixtureEl.innerHTML = [
+        '<div>',
+        '  <button class="button" data-cx-toggle="menu" data-cx-auto-close="outside">Toggle</button>',
+        '  <div class="menu">',
+        '    <button class="menu-item" type="button">Item</button>',
+        '  </div>',
+        '</div>'
+      ].join('')
+
+      const btnMenu = fixtureEl.querySelector('[data-cx-toggle="menu"]')
+
+      return {
+        btnMenu,
+        item: fixtureEl.querySelector('.menu-item'),
+        menu: new Menu(btnMenu),
+        focusSpy: vi.spyOn(btnMenu, 'focus')
+      }
+    }
+
+    it('should focus the toggle without scrolling on show', () => {
+      return new Promise(resolve => {
+        const { btnMenu, menu, focusSpy } = oneMenu()
+
+        btnMenu.addEventListener('shown.cx.menu', () => {
+          expect(focusSpy).toHaveBeenCalledTimes(1)
+          expect(focusSpy).toHaveBeenCalledWith(jasmine.objectContaining({ preventScroll: true }))
+          resolve()
+        })
+
+        menu.show()
+      })
+    })
+
+    it('should focus the toggle without scrolling on Escape in the menu', () => {
+      return new Promise(resolve => {
+        const { btnMenu, item, menu, focusSpy } = oneMenu()
+
+        btnMenu.addEventListener('shown.cx.menu', () => {
+          focusSpy.mockClear()
+          item.focus()
+          item.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+
+          expect(menu._isShown()).toBeFalse()
+          expect(document.activeElement).toEqual(btnMenu)
+          expect(focusSpy).toHaveBeenCalledTimes(1)
+          expect(focusSpy).toHaveBeenCalledWith(jasmine.objectContaining({ preventScroll: true }))
+          resolve()
+        })
+
+        menu.show()
+      })
+    })
+
+    it('should focus the toggle without scrolling on Escape with the focus on the body', () => {
+      return new Promise(resolve => {
+        const { btnMenu, menu, focusSpy } = oneMenu()
+
+        btnMenu.addEventListener('shown.cx.menu', () => {
+          focusSpy.mockClear()
+          btnMenu.blur()
+          document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+
+          expect(menu._isShown()).toBeFalse()
+          expect(document.activeElement).toEqual(btnMenu)
+          expect(focusSpy).toHaveBeenCalledTimes(1)
+          expect(focusSpy).toHaveBeenCalledWith(jasmine.objectContaining({ preventScroll: true }))
+          resolve()
+        })
+
+        menu.show()
+      })
+    })
+  })
 })

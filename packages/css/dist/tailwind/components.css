@@ -3423,6 +3423,11 @@
     background-color: var(--cx-dialog-backdrop-bg);
     backdrop-filter: blur(var(--cx-dialog-backdrop-blur));
   }
+  .dialog.backdropless::backdrop {
+    background-color: transparent;
+    backdrop-filter: none;
+    transition: none;
+  }
   .dialog[open]:not(.hiding) {
     overflow: visible;
     visibility: visible;

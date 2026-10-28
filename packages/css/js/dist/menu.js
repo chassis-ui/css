@@ -62,6 +62,7 @@ const Default = {
 	submenuTrigger: "both",
 	submenuDelay: SUBMENU_CLOSE_DELAY
 };
+const menuInstances = /* @__PURE__ */ new WeakMap();
 const DefaultType = {
 	autoClose: "(boolean|string)",
 	boundary: "(string|element)",
@@ -93,6 +94,7 @@ var Menu = class Menu extends FloatingBase {
 		this._pendingMouseEvent = null;
 		this._menu = this._config.menu || this._findMenu();
 		this._menuOriginalParent = this._menu?.parentNode;
+		if (this._menu) menuInstances.set(this._menu, this);
 		this._parseResponsivePlacements();
 		this._setupSubmenuListeners();
 	}
@@ -115,7 +117,10 @@ var Menu = class Menu extends FloatingBase {
 		this._moveMenuToContainer();
 		this._createFloating();
 		if ("ontouchstart" in document.documentElement && !this._parent.closest(SELECTOR_NAVBAR_NAV)) for (const element of document.body.children) EventHandler.on(element, "mouseover", noop);
-		this._element.focus({ focusVisible: false });
+		this._element.focus({
+			focusVisible: false,
+			preventScroll: true
+		});
 		this._element.setAttribute("aria-expanded", "true");
 		this._menu.classList.add(CLASS_NAME_SHOW);
 		this._element.classList.add(CLASS_NAME_SHOW);
@@ -140,6 +145,7 @@ var Menu = class Menu extends FloatingBase {
 		this._restoreMenuToOriginalParent();
 		this._disposeMediaQueryListeners();
 		if (this._menu) {
+			if (menuInstances.get(this._menu) === this) menuInstances.delete(this._menu);
 			EventHandler.off(this._menu, "mouseenter");
 			EventHandler.off(this._menu, "mouseleave");
 			EventHandler.off(this._menu, "mousemove");
@@ -374,11 +380,14 @@ var Menu = class Menu extends FloatingBase {
 		this._openSubmenu(trigger, submenu, submenuWrapper);
 	}
 	_onSubmenuLeave(event) {
-		const submenuWrapper = event.target.closest(SELECTOR_SUBMENU);
-		const submenu = SelectorEngine.findOne(SELECTOR_MENU, submenuWrapper);
-		if (!submenu || !this._openSubmenus.has(submenu)) return;
-		if (this._isMovingTowardSubmenu(event, submenu)) return;
-		this._scheduleSubmenuClose(submenu, submenuWrapper);
+		const relatedTarget = event.relatedTarget;
+		let submenuWrapper = event.target.closest(SELECTOR_SUBMENU);
+		while (submenuWrapper && this._menu.contains(submenuWrapper)) {
+			if (relatedTarget && submenuWrapper.contains(relatedTarget)) return;
+			const submenu = SelectorEngine.findOne(SELECTOR_MENU, submenuWrapper);
+			if (submenu && this._openSubmenus.has(submenu) && !this._isMovingTowardSubmenu(event, submenu)) this._scheduleSubmenuClose(submenu, submenuWrapper);
+			submenuWrapper = submenuWrapper.parentElement?.closest(SELECTOR_SUBMENU) ?? null;
+		}
 	}
 	_onSubmenuTriggerClick(event) {
 		const trigger = event.target.closest(SELECTOR_SUBMENU_TOGGLE);
@@ -613,7 +622,20 @@ var Menu = class Menu extends FloatingBase {
 		if (!instance) return;
 		event.preventDefault();
 		instance.hide();
-		if (!instance._isShown()) instance._element.focus();
+		if (!instance._isShown()) instance._element.focus({ preventScroll: true });
+	}
+	static _findToggleOfMenu(menu) {
+		let rootMenu = menu;
+		let enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU);
+		while (enclosingSubmenu) {
+			const enclosingMenu = enclosingSubmenu.closest(SELECTOR_MENU);
+			if (!enclosingMenu || enclosingMenu === rootMenu) break;
+			rootMenu = enclosingMenu;
+			enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU);
+		}
+		const instance = menuInstances.get(rootMenu);
+		if (instance) return instance._element.matches(SELECTOR_DATA_TOGGLE) ? instance._element : null;
+		return SelectorEngine.prev(rootMenu, SELECTOR_DATA_TOGGLE)[0] || SelectorEngine.next(rootMenu, SELECTOR_DATA_TOGGLE)[0] || SelectorEngine.findOne(SELECTOR_DATA_TOGGLE, rootMenu.parentNode);
 	}
 	static dataApiKeydownHandler(event) {
 		const isInput = /input|textarea/i.test(event.target.tagName);
@@ -625,19 +647,8 @@ var Menu = class Menu extends FloatingBase {
 		const isSubmenuTrigger = event.target.matches(SELECTOR_SUBMENU_TOGGLE);
 		if (!isUpOrDownEvent && !isEscapeEvent && !isLeftOrRightEvent && !isHomeOrEndEvent && !(isEnterOrSpaceEvent && isSubmenuTrigger)) return;
 		if (isInput && !isEscapeEvent) return;
-		let getToggleButton = this.matches(SELECTOR_DATA_TOGGLE) ? this : SelectorEngine.prev(this, SELECTOR_DATA_TOGGLE)[0] || SelectorEngine.next(this, SELECTOR_DATA_TOGGLE)[0] || SelectorEngine.findOne(SELECTOR_DATA_TOGGLE, event.delegateTarget.parentNode);
-		if (!getToggleButton) {
-			let rootMenu = this;
-			let enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU);
-			while (enclosingSubmenu) {
-				const enclosingMenu = enclosingSubmenu.closest(SELECTOR_MENU);
-				if (!enclosingMenu || enclosingMenu === rootMenu) break;
-				rootMenu = enclosingMenu;
-				enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU);
-			}
-			if (rootMenu !== this) getToggleButton = SelectorEngine.prev(rootMenu, SELECTOR_DATA_TOGGLE)[0] || SelectorEngine.next(rootMenu, SELECTOR_DATA_TOGGLE)[0] || SelectorEngine.findOne(SELECTOR_DATA_TOGGLE, rootMenu.parentNode);
-			if (!getToggleButton) return;
-		}
+		const getToggleButton = this.matches(SELECTOR_DATA_TOGGLE) ? this : Menu._findToggleOfMenu(this);
+		if (!getToggleButton) return;
 		const instance = Menu.getOrCreateInstance(getToggleButton);
 		if ((isLeftOrRightEvent || isHomeOrEndEvent || isEnterOrSpaceEvent && isSubmenuTrigger) && instance._handleSubmenuKeydown(event)) return;
 		if (isUpOrDownEvent) {
@@ -659,7 +670,7 @@ var Menu = class Menu extends FloatingBase {
 				return;
 			}
 			instance.hide();
-			getToggleButton.focus();
+			getToggleButton.focus({ preventScroll: true });
 		}
 	}
 };

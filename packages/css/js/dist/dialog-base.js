@@ -39,6 +39,7 @@ var DialogBase = class extends BaseComponent {
 		this._isTransitioning = false;
 		this._openedAsModal = false;
 		this._closeExpected = false;
+		this._closedWhileHiding = false;
 		this._nativeCloseHandler = () => this._onNativeClose();
 		this._addDialogListeners();
 	}
@@ -79,7 +80,9 @@ var DialogBase = class extends BaseComponent {
 		this._isTransitioning = true;
 		this._hideElement();
 		this._queueCallback(() => {
-			if (this._element.open) this._closeAndCleanup();
+			if (!this._element.open && !this._closedWhileHiding) this._closeExpected = true;
+			this._closedWhileHiding = false;
+			this._closeAndCleanup();
 			this._element.classList.remove("hiding");
 			this._onAfterHide();
 			this._isTransitioning = false;
@@ -139,11 +142,18 @@ var DialogBase = class extends BaseComponent {
 		}, this._element);
 	}
 	_onNativeClose() {
+		if (this._element.open) {
+			this._closeExpected = false;
+			return;
+		}
 		if (this._closeExpected) {
 			this._closeExpected = false;
 			return;
 		}
-		if (this._isTransitioning && this._element.classList.contains("hiding")) return;
+		if (this._isTransitioning && this._element.classList.contains("hiding")) {
+			this._closedWhileHiding = true;
+			return;
+		}
 		this._hideChildComponents();
 		this._closeAndCleanup();
 		this._onAfterHide();
@@ -180,8 +190,14 @@ var DialogBase = class extends BaseComponent {
 			this._handleEscape();
 		});
 		this._element.addEventListener("close", this._nativeCloseHandler);
+		let mousedownTarget = null;
+		EventHandler.on(this._element, `mousedown${eventKey}`, (event) => {
+			mousedownTarget = event.target;
+		});
 		EventHandler.on(this._element, `click${eventKey}`, (event) => {
-			if (event.target !== this._element || !this._openedAsModal) return;
+			const downTarget = mousedownTarget;
+			mousedownTarget = null;
+			if (event.target !== this._element || downTarget !== null && downTarget !== this._element || !this._openedAsModal || !this._config.backdrop) return;
 			if (this._config.backdrop === "static") {
 				this._triggerBackdropTransition();
 				return;

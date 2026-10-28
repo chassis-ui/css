@@ -159,6 +159,68 @@ describe('Swipe', () => {
     })
   })
 
+  describe('Functionality on touch events', () => {
+    // The touch fallback reads `event.touches[0]`, so a hydrated Event is enough
+    const touch = (type, clientX, clientY = 10) => {
+      EventHandler.trigger(swipeEl, type, { touches: [{ clientX, clientY }] })
+    }
+
+    it('should not call a direction callback for a short drag made of several touchmove events', () => {
+      clearPointerEvents()
+      defineDocumentElementOntouchstart()
+
+      const spyLeft = jasmine.createSpy('leftCallback')
+      const spyRight = jasmine.createSpy('rightCallback')
+      const spyEnd = jasmine.createSpy('endCallback')
+
+      // eslint-disable-next-line no-new
+      new Swipe(swipeEl, {
+        leftCallback: spyLeft,
+        rightCallback: spyRight,
+        endCallback: spyEnd
+      })
+
+      touch('touchstart', 100)
+      touch('touchmove', 110)
+      touch('touchmove', 120)
+      touch('touchend', 120)
+
+      expect(spyLeft).not.toHaveBeenCalled()
+      expect(spyRight).not.toHaveBeenCalled()
+      expect(spyEnd).toHaveBeenCalledTimes(1)
+    })
+
+    it('should call the direction callback of a long drag made of several touchmove events', () => {
+      clearPointerEvents()
+      defineDocumentElementOntouchstart()
+
+      const spyLeft = jasmine.createSpy('leftCallback')
+      const spyRight = jasmine.createSpy('rightCallback')
+
+      // eslint-disable-next-line no-new
+      new Swipe(swipeEl, {
+        leftCallback: spyLeft,
+        rightCallback: spyRight
+      })
+
+      touch('touchstart', 200)
+      touch('touchmove', 180)
+      touch('touchmove', 100)
+      touch('touchend', 100)
+
+      expect(spyLeft).toHaveBeenCalledTimes(1)
+      expect(spyRight).not.toHaveBeenCalled()
+
+      touch('touchstart', 100)
+      touch('touchmove', 130)
+      touch('touchmove', 160)
+      touch('touchend', 160)
+
+      expect(spyLeft).toHaveBeenCalledTimes(1)
+      expect(spyRight).toHaveBeenCalledTimes(1)
+    })
+  })
+
   describe('Functionality on PointerEvents', () => {
     it('should not allow pinch with touch events', () => {
       Simulator.setType('touch')

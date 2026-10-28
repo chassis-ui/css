@@ -217,7 +217,7 @@ The data-attribute API initializes and configures popovers without writing JavaS
 | `data-cx-title` | Title text rendered in `.popover-header`. Optional when `data-cx-content` is set. A native `title` attribute is moved to `data-cx-original-title` on init. |
 | `data-cx-content` | Body text rendered in `.popover-body`. Optional when `data-cx-title` is set. |
 | `data-cx-placement` | Preferred placement. Logical: `start`, `end` (adapt to text direction). Physical: `top`, `bottom`, `left`, `right`. Default: `right`. Accepts responsive prefixes. |
-| `data-cx-trigger` | Events that show and hide the popover: `click`, `hover`, `focus`, `manual`. Default: `click`. |
+| `data-cx-trigger` | Events that show and hide the popover: `click`, `hover`, `focus`, `manual`. Default: `click`. When `click` is among them, a click on the trigger element toggles the popover instead of following its link or submitting its form; with the other triggers the click keeps its default. |
 | `data-cx-container` | CSS selector or DOM element to append the generated popover to. Default resolves to `document.body`. |
 | `data-cx-custom-class` | Extra class names added to the popover element. |
 | `data-cx-html` | When `true`, renders HTML in title and body content. |
@@ -264,7 +264,7 @@ The following methods are available on each `Popover` instance:
 | `enable` | Restores the popover after `disable`. Popovers are enabled by default. |
 | `getInstance` | *Static.* Returns the existing `Popover` instance bound to a DOM element, or `null`. |
 | `getOrCreateInstance` | *Static.* Returns the existing `Popover` instance, or creates and returns a new one. |
-| `hide` | Hides the popover. Returns before the `hidden.cx.popover` event fires. |
+| `hide` | Hides the popover. Returns before the `hidden.cx.popover` event fires. Called right after `show`, it cancels the show: the popover never appears and `shown.cx.popover` does not fire. |
 | `setContent` | Updates the popover's title and body content after initialization. |
 | `show` | Shows the popover. Returns before the `shown.cx.popover` event fires. A popover with empty title and content is never shown. |
 | `toggle` | Toggles the popover. Returns before the show or hide event fires. |

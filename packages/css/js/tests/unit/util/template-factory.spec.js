@@ -114,6 +114,16 @@ describe('TemplateFactory', () => {
 
         expect(factory.toHtml()).toHaveClass('testClass')
       })
+
+      it('should ignore doubled, leading and trailing spaces in extra classes', () => {
+        const factory = new TemplateFactory({
+          extraClass: ' testClass  testClass2 '
+        })
+
+        const template = factory.toHtml()
+
+        expect([...template.classList]).toEqual(['testClass', 'testClass2'])
+      })
     })
   })
 

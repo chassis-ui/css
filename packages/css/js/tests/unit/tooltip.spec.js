@@ -478,6 +478,30 @@ describe('Tooltip', () => {
       tooltip2.dispose()
       expect(tooltipWithoutTitleEl.getAttribute('title')).toBeNull()
     })
+
+    it('should destroy a tooltip right after show() without rejecting the pending show', async () => {
+      fixtureEl.innerHTML = '<a href="#" rel="tooltip" title="Another tooltip"></a>'
+
+      const tooltipEl = fixtureEl.querySelector('a')
+      const tooltip = new Tooltip(tooltipEl)
+      let shownCount = 0
+
+      tooltipEl.addEventListener('shown.cx.tooltip', () => {
+        shownCount++
+      })
+
+      // show() positions the tip asynchronously; dispose() runs before that
+      // continuation, which must then return quietly instead of reading the
+      // nulled properties and rejecting the promise show() returned.
+      const shown = tooltip.show()
+      tooltip.dispose()
+
+      await expect(shown).resolves.toBeUndefined()
+
+      expect(shownCount).toBe(0)
+      expect(Tooltip.getInstance(tooltipEl)).toBeNull()
+      expect(document.querySelector('.tooltip')).toBeNull()
+    })
   })
 
   describe('show', () => {
@@ -1004,6 +1028,51 @@ describe('Tooltip', () => {
   })
 
   describe('hide', () => {
+    it('should hide a tooltip when called right after show()', async () => {
+      fixtureEl.innerHTML = '<a href="#" rel="tooltip" title="Another tooltip"></a>'
+
+      const tooltipEl = fixtureEl.querySelector('a')
+      const tooltip = new Tooltip(tooltipEl)
+      const events = []
+
+      for (const name of ['show', 'shown', 'hide', 'hidden']) {
+        tooltipEl.addEventListener(`${name}.cx.tooltip`, () => events.push(name))
+      }
+
+      const hidden = new Promise(resolve => {
+        tooltipEl.addEventListener('hidden.cx.tooltip', resolve)
+      })
+
+      // show() positions the tip asynchronously, but the tooltip counts as
+      // shown from the call on, so hide() in the same task cancels it: the tip
+      // never gets the show class and `shown` does not fire.
+      const shown = tooltip.show()
+      tooltip.hide()
+
+      await shown
+
+      expect(events).toEqual(['show', 'hide'])
+
+      await hidden
+
+      expect(events).toEqual(['show', 'hide', 'hidden'])
+      expect(document.querySelector('.tooltip')).toBeNull()
+      expect(tooltipEl.getAttribute('aria-describedby')).toBeNull()
+    })
+
+    it('should not keep a tooltip marked as shown when positioning fails', async () => {
+      fixtureEl.innerHTML = '<a href="#" rel="tooltip" title="Another tooltip"></a>'
+
+      const tooltipEl = fixtureEl.querySelector('a')
+      const tooltip = new Tooltip(tooltipEl)
+
+      spyOn(tooltip, '_createFloating').and.returnValue(Promise.reject(new Error('positioning')))
+
+      await expect(tooltip.show()).rejects.toThrow('positioning')
+
+      expect(tooltip._isShown()).toBeFalse()
+    })
+
     it('should hide a tooltip', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = '<a href="#" rel="tooltip" title="Another tooltip"></a>'

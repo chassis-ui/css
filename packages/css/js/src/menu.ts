@@ -131,6 +131,10 @@ const Default: MenuConfig = {
   submenuDelay: SUBMENU_CLOSE_DELAY
 }
 
+// The instance of a menu element, for the keydown data API: a menu moved to a
+// container, or given by the `menu` option, has no toggle among its siblings.
+const menuInstances = new WeakMap<Element, Menu>()
+
 const DefaultType = {
   autoClose: '(boolean|string)',
   boundary: '(string|element)',
@@ -183,6 +187,10 @@ class Menu extends FloatingBase {
 
     this._menuOriginalParent = this._menu?.parentNode
 
+    if (this._menu) {
+      menuInstances.set(this._menu, this)
+    }
+
     this._parseResponsivePlacements()
     this._setupSubmenuListeners()
   }
@@ -229,7 +237,8 @@ class Menu extends FloatingBase {
       }
     }
 
-    this._element.focus({ focusVisible: false })
+    // preventScroll: a toggle in a sticky header would scroll the page by the scroll padding
+    this._element.focus({ focusVisible: false, preventScroll: true })
     this._element.setAttribute('aria-expanded', 'true')
 
     this._menu.classList.add(CLASS_NAME_SHOW)
@@ -271,6 +280,10 @@ class Menu extends FloatingBase {
     this._disposeMediaQueryListeners()
 
     if (this._menu) {
+      if (menuInstances.get(this._menu) === this) {
+        menuInstances.delete(this._menu)
+      }
+
       EventHandler.off(this._menu, 'mouseenter')
       EventHandler.off(this._menu, 'mouseleave')
       EventHandler.off(this._menu, 'mousemove')
@@ -557,18 +570,26 @@ class Menu extends FloatingBase {
     this._openSubmenu(trigger, submenu, submenuWrapper)
   }
 
+  // The delegation delivers the leave to the innermost .submenu around the target only.
+  // Leaving a third-level item leaves its ancestors too, so every open submenu the pointer
+  // is no longer in is scheduled to close, from the innermost up to the first one that
+  // still holds the pointer: that one and its ancestors stay open.
   protected _onSubmenuLeave(event: ChassisEvent): void {
-    const submenuWrapper = (event.target as Element).closest(SELECTOR_SUBMENU)!
-    const submenu = SelectorEngine.findOne(SELECTOR_MENU, submenuWrapper)
-    if (!submenu || !this._openSubmenus.has(submenu)) {
-      return
-    }
+    const relatedTarget = event.relatedTarget as Node | null
+    let submenuWrapper = (event.target as Element).closest(SELECTOR_SUBMENU)
 
-    if (this._isMovingTowardSubmenu(event, submenu)) {
-      return
-    }
+    while (submenuWrapper && this._menu.contains(submenuWrapper)) {
+      if (relatedTarget && submenuWrapper.contains(relatedTarget)) {
+        return
+      }
 
-    this._scheduleSubmenuClose(submenu, submenuWrapper)
+      const submenu = SelectorEngine.findOne(SELECTOR_MENU, submenuWrapper)
+      if (submenu && this._openSubmenus.has(submenu) && !this._isMovingTowardSubmenu(event, submenu)) {
+        this._scheduleSubmenuClose(submenu, submenuWrapper)
+      }
+
+      submenuWrapper = submenuWrapper.parentElement?.closest(SELECTOR_SUBMENU) ?? null
+    }
   }
 
   protected _onSubmenuTriggerClick(event: ChassisEvent): void {
@@ -947,8 +968,40 @@ class Menu extends FloatingBase {
     instance.hide()
 
     if (!instance._isShown()) {
-      instance._element.focus()
+      instance._element.focus({ preventScroll: true })
     }
+  }
+
+  // The toggle of the menu a key was pressed in. Inside a nested submenu the menu
+  // is the inner .menu, so the walk up through every enclosing .submenu reaches
+  // the outermost .menu first. An initialized menu knows its instance, and so its
+  // toggle, wherever the menu is: in a container, or given by the `menu` option.
+  // Without one, the toggle is a sibling of the menu, or a descendant of its parent.
+  protected static _findToggleOfMenu(menu: Element): HTMLElement | null {
+    let rootMenu = menu
+    let enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU)
+
+    while (enclosingSubmenu) {
+      const enclosingMenu = enclosingSubmenu.closest(SELECTOR_MENU)
+      if (!enclosingMenu || enclosingMenu === rootMenu) {
+        break
+      }
+
+      rootMenu = enclosingMenu
+      enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU)
+    }
+
+    // The delegated handler runs in the capture phase, before the listeners of the
+    // menu itself. A menu created by another component on a toggle of its own
+    // (Combobox) handles its keys there, so it is left alone here.
+    const instance = menuInstances.get(rootMenu)
+    if (instance) {
+      return instance._element.matches(SELECTOR_DATA_TOGGLE) ? instance._element : null
+    }
+
+    return (SelectorEngine.prev(rootMenu, SELECTOR_DATA_TOGGLE)[0] ||
+      SelectorEngine.next(rootMenu, SELECTOR_DATA_TOGGLE)[0] ||
+      SelectorEngine.findOne(SELECTOR_DATA_TOGGLE, rootMenu.parentNode as ParentNode)) as HTMLElement | null
   }
 
   static dataApiKeydownHandler(this: HTMLElement, event: ChassisEvent): void {
@@ -970,43 +1023,13 @@ class Menu extends FloatingBase {
       return
     }
 
-    // Find the toggle button that owns the menu containing this event. The
-    // common cases (toggle as prev/next sibling of the matched .menu, or
-    // descendant of its parent) cover top-level menus. The walk-up fallback
-    // covers events fired inside nested submenus, where `this` is the inner
-    // .menu — its siblings are submenu content, not the toggle. We walk
-    // through every enclosing .submenu to reach the outermost .menu, whose
-    // prev sibling is the original toggle.
-    let getToggleButton: HTMLElement | null = this.matches(SELECTOR_DATA_TOGGLE) ?
+    // The toggle button that owns the menu containing this event
+    const getToggleButton: HTMLElement | null = this.matches(SELECTOR_DATA_TOGGLE) ?
       this :
-      ((SelectorEngine.prev(this, SELECTOR_DATA_TOGGLE)[0] ||
-        SelectorEngine.next(this, SELECTOR_DATA_TOGGLE)[0] ||
-        SelectorEngine.findOne(SELECTOR_DATA_TOGGLE, event.delegateTarget.parentNode)) as HTMLElement | null)
+      Menu._findToggleOfMenu(this)
 
     if (!getToggleButton) {
-      // eslint-disable-next-line @typescript-eslint/no-this-alias -- walking up from `this` to find the enclosing top-level .menu
-      let rootMenu: Element = this
-      let enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU)
-      while (enclosingSubmenu) {
-        const enclosingMenu = enclosingSubmenu.closest(SELECTOR_MENU)
-        if (!enclosingMenu || enclosingMenu === rootMenu) {
-          break
-        }
-
-        rootMenu = enclosingMenu
-        enclosingSubmenu = rootMenu.parentElement?.closest(SELECTOR_SUBMENU)
-      }
-
-      if (rootMenu !== this) {
-        getToggleButton =
-          (SelectorEngine.prev(rootMenu, SELECTOR_DATA_TOGGLE)[0] ||
-          SelectorEngine.next(rootMenu, SELECTOR_DATA_TOGGLE)[0] ||
-          SelectorEngine.findOne(SELECTOR_DATA_TOGGLE, rootMenu.parentNode as ParentNode)) as HTMLElement | null
-      }
-
-      if (!getToggleButton) {
-        return
-      }
+      return
     }
 
     const instance = Menu.getOrCreateInstance(getToggleButton)
@@ -1041,7 +1064,7 @@ class Menu extends FloatingBase {
       }
 
       instance.hide()
-      getToggleButton.focus()
+      getToggleButton.focus({ preventScroll: true })
     }
   }
 }

@@ -12,7 +12,7 @@ js: required
 
 A drawer is a `<dialog>` element styled with `.drawer` and a placement modifier, activated by the Drawer plugin. The placement modifier determines which edge the panel slides in from; the plugin manages the open/close lifecycle, backdrop, keyboard handling, body scroll, and focus.
 
-The plugin calls `showModal()` to place the element in the browser's [top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer), which provides automatic `position: fixed` and a native `::backdrop`. Body scroll is locked while a drawer is open (configurable via `data-cx-scroll`). Pressing Escape or clicking the backdrop closes the drawer by default (configurable via `data-cx-keyboard` and `data-cx-backdrop`). Touch swipe in the natural direction for each placement also dismisses it. When a second drawer opens while one is already open, the first closes automatically.
+The plugin calls `showModal()` to place the element in the browser's [top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer), which provides automatic `position: fixed` and a native `::backdrop` (with `data-cx-backdrop="false"`, it calls `show()` instead: no backdrop, and the page stays interactive). Body scroll is locked while a drawer is open (configurable via `data-cx-scroll`). Pressing Escape or clicking the backdrop closes the drawer by default (configurable via `data-cx-keyboard` and `data-cx-backdrop`). Touch swipe in the natural direction for each placement also dismisses it. When a second drawer opens while one is already open, the first closes automatically.
 
 <Example class="cxd-example-drawer bg-evident" code={`<dialog class="drawer drawer-start" id="exampleDrawerIntro" aria-labelledby="exampleDrawerIntroLabel">
   <div class="drawer-header">
@@ -151,6 +151,8 @@ Drawer behavior and appearance are configurable with data attributes on the `<di
 ### Body scroll
 
 By default, body scroll is locked while a drawer is open. Set `data-cx-scroll="true"` on the `<dialog>` to allow the page to scroll while the drawer is open. Combine with `data-cx-backdrop="false"` to remove the backdrop entirely.
+
+The two options are independent. `data-cx-backdrop="false"` opens the drawer non-modal, with `show()` instead of `showModal()`: no backdrop, and the page behind it stays interactive. On its own it still locks body scroll; `data-cx-scroll="true"` on its own keeps the backdrop and lets the page scroll behind it.
 
 <Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerScrolling">Scrolling, no backdrop</button>
 <button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerScrollBackdrop">Scrolling with backdrop</button>
@@ -368,9 +370,9 @@ const drawer = new Drawer('#myDrawer', {
 <CxTable>
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `backdrop` | `boolean \| 'static'` | `true` | Show a backdrop while open. `'static'` prevents closing on backdrop click. |
+| `backdrop` | `boolean \| 'static'` | `true` | Show a backdrop while open. `'static'` prevents closing on backdrop click. `false` opens the drawer non-modal, with `show()`: no backdrop, and the page stays interactive. |
 | `keyboard` | `boolean` | `true` | Close on Escape key. |
-| `scroll` | `boolean` | `false` | Allow body scroll while the drawer is open. |
+| `scroll` | `boolean` | `false` | Allow body scroll while the drawer is open. Independent of `backdrop`: `false` locks the scroll behind a non-modal drawer too. |
 </CxTable>
 
 ### Methods

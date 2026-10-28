@@ -237,7 +237,7 @@ The following methods are available on each `Tooltip` instance:
 | `enable` | Restores the tooltip after `disable`. Tooltips are enabled by default. |
 | `getInstance` | *Static.* Returns the existing `Tooltip` instance associated with a DOM element, or `null`. |
 | `getOrCreateInstance` | *Static.* Returns the existing `Tooltip` instance, or creates and returns a new one. |
-| `hide` | Hides the tooltip. Returns before the `hidden.cx.tooltip` event fires. |
+| `hide` | Hides the tooltip. Returns before the `hidden.cx.tooltip` event fires. Called right after `show`, it cancels the show: the tooltip never appears and `shown.cx.tooltip` does not fire. |
 | `setContent` | Updates the tooltip content after initialization. |
 | `show` | Shows the tooltip. Returns before the `shown.cx.tooltip` event fires. Tooltips with empty content are not shown. |
 | `toggle` | Toggles the tooltip. Returns before the show or hide event fires. |

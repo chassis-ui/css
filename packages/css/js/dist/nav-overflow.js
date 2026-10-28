@@ -67,6 +67,10 @@ var NavOverflow = class extends BaseComponent {
 		this._resizeHandler = null;
 		this._collapseBelow = 0;
 		this._resizeRAF = null;
+		this._toggleFromMarkup = false;
+		this._toggleItemHidden = false;
+		this._wrapperMarked = false;
+		this._customIcon = null;
 		this._init();
 	}
 	static get Default() {
@@ -87,10 +91,22 @@ var NavOverflow = class extends BaseComponent {
 		if (this._resizeHandler) EventHandler.off(window, EVENT_RESIZE, this._resizeHandler);
 		if (this._resizeRAF !== null) cancelAnimationFrame(this._resizeRAF);
 		this._restoreItems();
-		if (this._overflowToggle && this._overflowToggle.parentElement) this._overflowToggle.parentElement.remove();
+		for (const item of this._items) delete item.dataset.cxNavOrder;
+		const overflowItem = this._overflowToggle?.closest(SELECTOR_NAV_ITEM) ?? null;
+		if (overflowItem) {
+			if (this._toggleFromMarkup) overflowItem.classList.toggle(CLASS_NAME_HIDDEN, this._toggleItemHidden);
+			else overflowItem.remove();
+		}
+		if (this._customIcon) {
+			const { element, parent, next } = this._customIcon;
+			if (next && next.parentNode === parent) next.before(element);
+			else parent.append(element);
+		}
+		if (!this._wrapperMarked) this._element.classList.remove(CLASS_NAME_OVERFLOW);
 		super.dispose();
 	}
 	_init() {
+		this._wrapperMarked = this._element.classList.contains(CLASS_NAME_OVERFLOW);
 		this._element.classList.add(CLASS_NAME_OVERFLOW);
 		this._items = SelectorEngine.find(SELECTOR_NAV_ITEM, this._nav).filter((item) => !item.querySelector(SELECTOR_OVERFLOW_TOGGLE));
 		for (const [index, item] of this._items.entries()) item.dataset.cxNavOrder = String(index);
@@ -103,6 +119,8 @@ var NavOverflow = class extends BaseComponent {
 		this._overflowToggle = SelectorEngine.findOne(SELECTOR_OVERFLOW_TOGGLE, this._element);
 		if (this._overflowToggle) {
 			this._overflowMenu = SelectorEngine.findOne(SELECTOR_OVERFLOW_MENU, this._element);
+			this._toggleFromMarkup = true;
+			this._toggleItemHidden = this._overflowToggle.closest(SELECTOR_NAV_ITEM)?.classList.contains(CLASS_NAME_HIDDEN) ?? false;
 			return;
 		}
 		const { moreText } = this._config;
@@ -140,6 +158,11 @@ var NavOverflow = class extends BaseComponent {
 		const iconClone = customIconElement.cloneNode(true);
 		iconClone.removeAttribute("data-cx-overflow-icon");
 		const iconHtml = iconClone.outerHTML;
+		this._customIcon = {
+			element: customIconElement,
+			parent: customIconElement.parentNode,
+			next: customIconElement.nextSibling
+		};
 		customIconElement.remove();
 		return iconHtml;
 	}

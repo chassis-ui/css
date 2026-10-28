@@ -71,6 +71,7 @@ declare class Datepicker extends BaseComponent {
     protected _handleDateClick(self: Calendar, event: MouseEvent): void;
     protected _maybeHideAfterSelection(selectedDates: string[]): void;
     protected _parseDate(dateStr: string): Date;
+    protected _toDateString(date: Date): string;
     protected _formatDate(dateStr: string): string;
     protected _formatDateForInput(dates: string[]): string;
     protected _parseInputValue(): void;

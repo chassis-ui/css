@@ -56,6 +56,8 @@ const DefaultType = {
 class Swipe extends Config<SwipeConfig> {
   protected declare _element: HTMLElement
   protected declare _config: SwipeConfig
+  protected declare _startX: number
+  protected declare _startY: number
   protected declare _deltaX: number
   protected declare _deltaY: number
   protected declare _supportPointerEvents: boolean
@@ -69,6 +71,8 @@ class Swipe extends Config<SwipeConfig> {
     }
 
     this._config = this._getConfig(config)
+    this._startX = 0
+    this._startY = 0
     this._deltaX = 0
     this._deltaY = 0
     this._supportPointerEvents = Boolean(window.PointerEvent)
@@ -95,23 +99,26 @@ class Swipe extends Config<SwipeConfig> {
 
   // Private
   protected _start(event: ChassisEvent): void {
+    this._deltaX = 0
+    this._deltaY = 0
+
     if (!this._supportPointerEvents) {
-      this._deltaX = event.touches[0].clientX
-      this._deltaY = event.touches[0].clientY
+      this._startX = event.touches[0].clientX
+      this._startY = event.touches[0].clientY
 
       return
     }
 
     if (this._eventIsPointerPenTouch(event)) {
-      this._deltaX = event.clientX
-      this._deltaY = event.clientY
+      this._startX = event.clientX
+      this._startY = event.clientY
     }
   }
 
   protected _end(event: ChassisEvent): void {
     if (this._eventIsPointerPenTouch(event)) {
-      this._deltaX = event.clientX - this._deltaX
-      this._deltaY = event.clientY - this._deltaY
+      this._deltaX = event.clientX - this._startX
+      this._deltaY = event.clientY - this._startY
     }
 
     this._handleSwipe()
@@ -125,8 +132,10 @@ class Swipe extends Config<SwipeConfig> {
       return
     }
 
-    this._deltaX = event.touches[0].clientX - this._deltaX
-    this._deltaY = event.touches[0].clientY - this._deltaY
+    // the delta of the whole drag so far, from the touchstart coordinate: a touchmove
+    // fires many times during one drag
+    this._deltaX = event.touches[0].clientX - this._startX
+    this._deltaY = event.touches[0].clientY - this._startY
   }
 
   protected _handleSwipe(): void {

@@ -344,6 +344,108 @@ describe('Drawer', () => {
         drawer.show()
       })
     })
+
+    it('should not close drawer when a drag starts in the content and ends on the backdrop', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = [
+          '<dialog class="drawer">',
+          '  <div class="drawer-body">Content</div>',
+          '</dialog>'
+        ].join('')
+
+        const drawerEl = fixtureEl.querySelector('.drawer')
+        const drawerBody = fixtureEl.querySelector('.drawer-body')
+        const drawer = new Drawer(drawerEl)
+
+        const spy = spyOn(drawer, 'hide')
+
+        drawerEl.addEventListener('shown.cx.drawer', () => {
+          // The mouse goes down on the content and comes up on the backdrop: the browser
+          // fires the click on their nearest common ancestor, the drawer itself
+          drawerBody.dispatchEvent(createEvent('mousedown', { bubbles: true }))
+          const clickEvent = createEvent('click')
+          Object.defineProperty(clickEvent, 'target', { value: drawerEl })
+          drawerEl.dispatchEvent(clickEvent)
+
+          setTimeout(() => {
+            expect(spy).not.toHaveBeenCalled()
+            expect(drawerEl.open).toBeTrue()
+            resolve()
+          }, 10)
+        })
+
+        drawer.show()
+      })
+    })
+
+    it('should close drawer when the mousedown and the click are both on the backdrop', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = [
+          '<dialog class="drawer">',
+          '  <div class="drawer-body">Content</div>',
+          '</dialog>'
+        ].join('')
+
+        const drawerEl = fixtureEl.querySelector('.drawer')
+        const drawer = new Drawer(drawerEl)
+
+        const spy = spyOn(drawer, 'hide').and.callThrough()
+
+        drawerEl.addEventListener('shown.cx.drawer', () => {
+          const mousedownEvent = createEvent('mousedown')
+          Object.defineProperty(mousedownEvent, 'target', { value: drawerEl })
+          drawerEl.dispatchEvent(mousedownEvent)
+          const clickEvent = createEvent('click')
+          Object.defineProperty(clickEvent, 'target', { value: drawerEl })
+          drawerEl.dispatchEvent(clickEvent)
+        })
+
+        drawerEl.addEventListener('hidden.cx.drawer', () => {
+          expect(spy).toHaveBeenCalled()
+          resolve()
+        })
+
+        drawer.show()
+      })
+    })
+
+    it('if backdrop is false, should open a non-modal drawer and still lock the body scroll', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = '<dialog class="drawer"></dialog>'
+
+        const drawerEl = fixtureEl.querySelector('.drawer')
+        const drawer = new Drawer(drawerEl, { backdrop: false })
+
+        drawerEl.addEventListener('shown.cx.drawer', () => {
+          expect(drawerEl.open).toBeTrue()
+          expect(drawerEl.matches(':modal')).toBeFalse()
+          expect(drawer._openedAsModal).toBeFalse()
+          expect(document.body.classList.contains('dialog-open')).toBeTrue()
+          drawer.hide()
+        })
+        drawerEl.addEventListener('hidden.cx.drawer', () => {
+          expect(document.body.classList.contains('dialog-open')).toBeFalse()
+          resolve()
+        })
+        drawer.show()
+      })
+    })
+
+    it('if backdrop is static, should open a modal drawer', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = '<dialog class="drawer"></dialog>'
+
+        const drawerEl = fixtureEl.querySelector('.drawer')
+        const drawer = new Drawer(drawerEl, { backdrop: 'static', scroll: true })
+
+        drawerEl.addEventListener('shown.cx.drawer', () => {
+          expect(drawerEl.matches(':modal')).toBeTrue()
+          expect(document.body.classList.contains('dialog-open')).toBeFalse()
+          resolve()
+        })
+        drawer.show()
+      })
+    })
   })
 
   describe('toggle', () => {
@@ -460,17 +562,50 @@ describe('Drawer', () => {
       })
     })
 
-    it('on window load, should call show on a drawer element, if its markup contains open attribute', () => {
-      fixtureEl.innerHTML = '<dialog class="drawer" open></dialog>'
+    it('on window load, should show a drawer whose markup contains the open attribute', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = '<dialog class="drawer" open></dialog>'
 
-      const drawerEl = fixtureEl.querySelector('dialog')
-      const spy = spyOn(Drawer.prototype, 'show').and.callThrough()
+        const drawerEl = fixtureEl.querySelector('dialog')
+        const showSpy = jasmine.createSpy('show')
+        drawerEl.addEventListener('show.cx.drawer', showSpy)
 
-      window.dispatchEvent(createEvent('load'))
+        drawerEl.addEventListener('shown.cx.drawer', () => {
+          // The native close event of the markup-open state comes in a task of its own
+          setTimeout(() => {
+            const instance = Drawer.getInstance(drawerEl)
+            expect(instance).not.toBeNull()
+            expect(showSpy).toHaveBeenCalled()
+            expect(drawerEl.open).toBeTrue()
+            expect(drawerEl.matches(':modal')).toBeTrue()
+            expect(instance._openedAsModal).toBeTrue()
+            expect(instance._isTransitioning).toBeFalse()
+            expect(document.body).toHaveClass('dialog-open')
+            resolve()
+          }, 30)
+        })
 
-      const instance = Drawer.getInstance(drawerEl)
-      expect(instance).not.toBeNull()
-      expect(spy).toHaveBeenCalled()
+        window.dispatchEvent(createEvent('load'))
+      })
+    })
+
+    it('on window load, should show a non-modal drawer whose markup contains the open attribute and data-cx-backdrop="false"', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = '<dialog class="drawer" data-cx-backdrop="false" data-cx-scroll="true" open></dialog>'
+
+        const drawerEl = fixtureEl.querySelector('dialog')
+
+        drawerEl.addEventListener('shown.cx.drawer', () => {
+          setTimeout(() => {
+            expect(drawerEl.open).toBeTrue()
+            expect(drawerEl.matches(':modal')).toBeFalse()
+            expect(document.body).not.toHaveClass('dialog-open')
+            resolve()
+          }, 30)
+        })
+
+        window.dispatchEvent(createEvent('load'))
+      })
     })
   })
 
@@ -547,6 +682,41 @@ describe('Drawer', () => {
 
         drawerEl.addEventListener('shown.cx.drawer', () => {
           drawer.hide()
+        })
+
+        drawer.show()
+      })
+    })
+  })
+
+  describe('a drawer closed by the browser', () => {
+    it('should release the body when the drawer is closed natively during the exit transition', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = '<dialog class="drawer"></dialog>'
+
+        const drawerEl = fixtureEl.querySelector('.drawer')
+        const drawer = new Drawer(drawerEl)
+        let hidden = 0
+
+        drawerEl.addEventListener('hidden.cx.drawer', () => {
+          hidden++
+        })
+
+        drawerEl.addEventListener('shown.cx.drawer', () => {
+          expect(document.body).toHaveClass('dialog-open')
+
+          // hide() waits for the exit transition; app code closes the drawer before it ends
+          drawer.hide()
+          drawerEl.close()
+
+          setTimeout(() => {
+            expect(hidden).toEqual(1)
+            expect(drawerEl.open).toBeFalse()
+            expect(drawerEl).not.toHaveClass('hiding')
+            expect(document.body).not.toHaveClass('dialog-open')
+            expect(drawer._isTransitioning).toBeFalse()
+            resolve()
+          }, 50)
         })
 
         drawer.show()

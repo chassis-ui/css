@@ -357,7 +357,7 @@ Filtering hides items whose visible text does not match the current query. The m
 
 ### Inline filtering
 
-For input-trigger comboboxes, filtering is built in. As text is typed into the `.combobox-value` input, items whose visible text does not match are hidden. No extra markup required.
+For input-trigger comboboxes, filtering is built in. As text is typed into the `.combobox-value` input, items whose visible text does not match are hidden. No extra markup required. When nothing matches, the menu closes and the typed text stays; the menu opens again as soon as the text matches an item.
 
 ### Search field
 
@@ -443,7 +443,7 @@ The JS keeps the following ARIA state in sync without any extra markup:
 
 - `aria-expanded` is set on the toggle when the menu opens (`true`) and closes (`false`).
 - `aria-selected` is set on each `.menu-item` after a selection change — `"true"` on selected items, `"false"` on others.
-- The toggle's `.disabled` class, `aria-disabled` attribute, and the `disabled` attribute on the embedded input are kept in sync. The hidden input's `disabled` is mirrored so disabled comboboxes do not submit a value.
+- The toggle's `.disabled` class, `aria-disabled` attribute, and the `disabled` attribute on the trigger (the button, or the embedded input) are kept in sync. The hidden input's `disabled` is mirrored so disabled comboboxes do not submit a value.
 
 ### Required markup
 

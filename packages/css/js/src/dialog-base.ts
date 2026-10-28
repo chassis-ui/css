@@ -43,6 +43,7 @@ class DialogBase extends BaseComponent {
   protected declare _isTransitioning: boolean
   protected declare _openedAsModal: boolean
   protected declare _closeExpected: boolean
+  protected declare _closedWhileHiding: boolean
   protected declare _nativeCloseHandler: () => void
 
   constructor(element?: string | Element | null, config?: Partial<DialogBaseConfig> | null) {
@@ -51,6 +52,7 @@ class DialogBase extends BaseComponent {
     this._isTransitioning = false
     this._openedAsModal = false
     this._closeExpected = false
+    this._closedWhileHiding = false
     this._nativeCloseHandler = () => this._onNativeClose()
     this._addDialogListeners()
   }
@@ -141,10 +143,18 @@ class DialogBase extends BaseComponent {
     this._queueCallback(() => {
       // For subclasses that defer close() until the exit transition ends
       // (so the dialog stays in the top layer with its ::backdrop), close()
-      // happens here instead of in _hideElement().
-      if (this._element.open) {
-        this._closeAndCleanup()
+      // happens here instead of in _hideElement(). Unconditionally: when the
+      // dialog was closed natively during the transition (`close()` from app
+      // code, a `<form method="dialog">`), close() is a no-op, and the body
+      // still has its scroll lock to release. The native close event of that
+      // close is taken care of: seen already, or expected when it is still to
+      // come, as Chromium fires it at the next frame.
+      if (!this._element.open && !this._closedWhileHiding) {
+        this._closeExpected = true
       }
+
+      this._closedWhileHiding = false
+      this._closeAndCleanup()
 
       this._element.classList.remove('hiding')
       this._onAfterHide()
@@ -279,6 +289,13 @@ class DialogBase extends BaseComponent {
   // prevented or `close()` was called on the element: hide() did not run, so the body would
   // keep its scroll lock and no event would tell that the dialog is closed
   protected _onNativeClose(): void {
+    // The event of a close() the dialog was shown again after, in the same task: the
+    // dialog is open, and there is nothing to clean up
+    if (this._element.open) {
+      this._closeExpected = false
+      return
+    }
+
     if (this._closeExpected) {
       this._closeExpected = false
       return
@@ -286,6 +303,7 @@ class DialogBase extends BaseComponent {
 
     // hide() is waiting for its transition, and finishes the work when it ends
     if (this._isTransitioning && this._element.classList.contains('hiding')) {
+      this._closedWhileHiding = true
       return
     }
 
@@ -361,9 +379,25 @@ class DialogBase extends BaseComponent {
     // does not take it for the native event
     this._element.addEventListener('close', this._nativeCloseHandler)
 
-    // Handle backdrop clicks — only applies to modal dialogs
+    // Handle backdrop clicks — only applies to modal dialogs with a backdrop. A click
+    // counts as one on the backdrop when the mouse went down there too: when it goes down
+    // on the content and comes up on the backdrop, the browser fires the click on their
+    // nearest common ancestor, the dialog itself, and that must not close it.
+    let mousedownTarget: EventTarget | null = null
+    EventHandler.on(this._element, `mousedown${eventKey}`, event => {
+      mousedownTarget = event.target
+    })
+
     EventHandler.on(this._element, `click${eventKey}`, event => {
-      if (event.target !== this._element || !this._openedAsModal) {
+      const downTarget = mousedownTarget
+      mousedownTarget = null
+
+      if (
+        event.target !== this._element
+        || (downTarget !== null && downTarget !== this._element)
+        || !this._openedAsModal
+        || !this._config.backdrop
+      ) {
         return
       }
 

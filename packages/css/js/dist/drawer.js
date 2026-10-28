@@ -63,7 +63,7 @@ var Drawer = class extends DialogBase {
 	}
 	_getShowOptions() {
 		return {
-			modal: Boolean(this._config.backdrop) || !this._config.scroll,
+			modal: Boolean(this._config.backdrop),
 			preventBodyScroll: !this._config.scroll
 		};
 	}
@@ -98,7 +98,10 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function(e
 	Drawer.getOrCreateInstance(target).toggle(this);
 });
 EventHandler.on(window, EVENT_LOAD_DATA_API, () => {
-	for (const element of SelectorEngine.find(SELECTOR_OPEN_DRAWER)) Drawer.getOrCreateInstance(element).show();
+	for (const element of SelectorEngine.find(SELECTOR_OPEN_DRAWER)) {
+		element.close();
+		Drawer.getOrCreateInstance(element).show();
+	}
 });
 EventHandler.on(window, EVENT_RESIZE, () => {
 	for (const element of SelectorEngine.find(SELECTOR_RESPONSIVE_OPEN)) if (getComputedStyle(element).position !== "fixed") Drawer.getOrCreateInstance(element).hide();

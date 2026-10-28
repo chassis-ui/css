@@ -460,7 +460,7 @@ Carousel accessibility centers on keyboard control, focus preservation at the en
 
 ### Keyboard navigation
 
-With the `keyboard` option enabled (the default), Left Arrow and Right Arrow move to the previous and next slide while focus is inside the carousel; either key turns autoplay off for good, the same as a control click. Arrow keys inside a nested `<input>`, `<textarea>`, `<select>`, or `[contenteditable]` element are left alone so native form navigation keeps working.
+With the `keyboard` option enabled (the default), Left Arrow and Right Arrow move to the previous and next slide while focus is inside the carousel, swapped in RTL, where the next slide lies to the left; either key turns autoplay off for good, the same as a control click. Arrow keys inside a nested `<input>`, `<textarea>`, `<select>`, or `[contenteditable]` element are left alone so native form navigation keeps working.
 
 ### Focus at the ends
 
@@ -577,8 +577,10 @@ All events fire on the `.carousel` element and are cancelable — calling `event
 | Event | Description |
 | --- | --- |
 | `slide.cx.carousel` | Fires immediately when a transition begins. Cancelable. |
-| `slid.cx.carousel` | Fires once the transition completes and the new slide is active. |
+| `slid.cx.carousel` | Fires once the transition completes and the new slide is active: one `slid` per `slide`, whatever the number of slides the move passes. |
 </CxTable>
+
+A scroll by the user (a drag, a swipe, the wheel) starts no transition and fires no `slide`; `slid` fires each time it makes another slide the active one.
 
 Both events carry the same detail:
 

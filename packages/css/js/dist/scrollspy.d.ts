@@ -5,6 +5,7 @@
  * --------------------------------------------------------------------------
  */
 import BaseComponent from './base-component.js';
+import { type EventCallable } from './dom/event-handler.js';
 import type { ComponentConfig } from './util/config.js';
 type ScrollSpyConfig = {
     rootMargin: string;
@@ -26,6 +27,7 @@ declare class ScrollSpy extends BaseComponent {
         visibleEntryTop: number;
         parentScrollTop: number;
     };
+    protected _smoothScrollHandler: EventCallable | null;
     constructor(element?: string | Element | null, config?: Partial<ScrollSpyConfig> | null);
     static get Default(): ScrollSpyConfig;
     static get DefaultType(): Record<string, string>;

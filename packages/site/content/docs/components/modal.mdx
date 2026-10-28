@@ -382,6 +382,8 @@ The animation is driven by three CSS custom properties. Set them as inline style
 
 By default clicking the backdrop or pressing Escape closes the modal. `data-cx-backdrop="static"` blocks closing on backdrop click — the modal scales briefly to indicate it requires explicit action. Add `data-cx-keyboard="false"` to also block the Escape key.
 
+`data-cx-backdrop="false"` draws no backdrop. The modal still opens in the top layer and the page behind it stays inert, so a click outside the modal does nothing — neither closing nor the static scale. To leave the page interactive as well, open the dialog [non-modal](#non-modal) instead.
+
 <Example class="button-examples" code={`<button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#staticBackdropModal">Static backdrop</button>
 <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#staticFullLockModal">Static + no keyboard</button>
   <!-- Static backdrop -->
@@ -639,9 +641,9 @@ const dialog = new Dialog('#myModal', {
 <CxTable>
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `backdrop` | `boolean \| 'static'` | `true` | Show a backdrop. `'static'` blocks closing on backdrop click. |
+| `backdrop` | `boolean \| 'static'` | `true` | Show a backdrop. `'static'` blocks closing on backdrop click. `false` draws no backdrop; the modal stays modal, and a click outside it does nothing. |
 | `keyboard` | `boolean` | `true` | Close the modal when Escape is pressed. |
-| `modal` | `boolean` | `true` | Open via `showModal()` (top-layer). `false` uses `show()` with no backdrop. |
+| `modal` | `boolean` | `true` | Open via `showModal()` (top-layer). `false` uses `show()`: no backdrop, and the page stays interactive. |
 </CxTable>
 
 ### Methods

@@ -115,7 +115,7 @@ function addHandler(element, originalTypeEvent, handler, delegationFunction, one
 	if (typeof originalTypeEvent !== "string" || !element) return;
 	const [isDelegated, initialCallable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction);
 	let callable = initialCallable;
-	if (originalTypeEvent in customEvents) {
+	if (originalTypeEvent.replace(stripNameRegex, "") in customEvents) {
 		const wrapFunction = (fn) => {
 			return function(event) {
 				if (!event.relatedTarget || event.relatedTarget !== event.delegateTarget && !event.delegateTarget.contains(event.relatedTarget)) return fn.call(this, event);

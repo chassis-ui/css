@@ -757,8 +757,78 @@ describe('ScrollSpy', () => {
         smoothScroll: true
       })
 
-      expect(offSpy).toHaveBeenCalledWith(target, 'click.cx.scrollspy')
+      // Never an un-keyed off, which would remove the listener of another instance on the same target
+      expect(offSpy).not.toHaveBeenCalledWith(target, 'click.cx.scrollspy')
       expect(onSpy).toHaveBeenCalledWith(target, 'click.cx.scrollspy', '[href]', jasmine.any(Function))
+    })
+
+    it('should remove the smoothScroll click listener from the target on dispose', () => {
+      fixtureEl.innerHTML = getDummyFixture()
+
+      const div = fixtureEl.querySelector('.content')
+      const link = fixtureEl.querySelector('[href="#div-jsm-1"]')
+      const scrollSpy = new ScrollSpy(div, {
+        smoothScroll: true
+      })
+
+      scrollSpy.dispose()
+
+      // An exception in a listener is reported on window, not thrown to the dispatcher
+      const errors = []
+      const onError = event => {
+        event.preventDefault()
+        errors.push(event.error)
+      }
+
+      // Runs after the listener of the target: records what it did, then keeps the page in place
+      let preventedByScrollSpy = null
+      fixtureEl.addEventListener('click', event => {
+        preventedByScrollSpy = event.defaultPrevented
+        event.preventDefault()
+      }, { once: true })
+
+      window.addEventListener('error', onError)
+      link.click()
+      window.removeEventListener('error', onError)
+
+      expect(errors).toHaveSize(0)
+      // The handler is gone: the link keeps its native navigation
+      expect(preventedByScrollSpy).toBeFalse()
+    })
+
+    it('should keep the smoothScroll listener of another instance on the same target', () => {
+      fixtureEl.innerHTML = [
+        '<nav id="navBar" class="navbar">',
+        '  <ul class="nav">',
+        '    <li class="nav-item"><a class="nav-link" href="#div-a">div a</a></li>',
+        '    <li class="nav-item"><a class="nav-link" href="#div-b">div b</a></li>',
+        '  </ul>',
+        '</nav>',
+        '<div id="content-a" style="overflow-y: auto"><div id="div-a">div a</div></div>',
+        '<div id="content-b" style="overflow-y: auto"><div id="div-b">div b</div></div>'
+      ].join('')
+
+      const contentA = fixtureEl.querySelector('#content-a')
+      const contentB = fixtureEl.querySelector('#content-b')
+      const scrollSpyA = getElementScrollSpy(contentA)
+      const scrollSpyB = getElementScrollSpy(contentB)
+      const linkA = fixtureEl.querySelector('[href="#div-a"]')
+      const linkB = fixtureEl.querySelector('[href="#div-b"]')
+
+      // eslint-disable-next-line no-new
+      new ScrollSpy(contentA, { target: '#navBar', smoothScroll: true })
+      const spyB = new ScrollSpy(contentB, { target: '#navBar', smoothScroll: true })
+
+      // Constructing the second instance left the first one's listener in place
+      linkA.click()
+      expect(scrollSpyA).toHaveBeenCalledTimes(1)
+      linkB.click()
+      expect(scrollSpyB).toHaveBeenCalledTimes(1)
+
+      // Disposing one instance leaves the other one's listener in place
+      spyB.dispose()
+      linkA.click()
+      expect(scrollSpyA).toHaveBeenCalledTimes(2)
     })
 
     it('should not smoothScroll to element if it not handles a scrollspy section', () => {
