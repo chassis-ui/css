@@ -442,13 +442,15 @@ describe('Accordion', () => {
       const detailsEl = fixtureEl.querySelector('details')
       const summaryEl = fixtureEl.querySelector('summary')
       const accordionEl = fixtureEl.querySelector('.accordion')
-      detailsEl.style.transition = 'height 100ms linear'
+      detailsEl.style.transition = 'height 400ms linear'
       const events = recordEvents(detailsEl)
       // eslint-disable-next-line no-new
       new Accordion(detailsEl)
 
       summaryEl.click()
-      await wait()
+      // The transition that takes over is shortened to the time this one ran, as CSS reverses
+      // a transition, so this one runs long enough for the takeover to be seen in progress
+      await wait(200)
       expect(events).toEqual(['open'])
       expect(detailsEl.open).toBeTrue()
 
@@ -475,13 +477,15 @@ describe('Accordion', () => {
       const detailsEl = fixtureEl.querySelector('details')
       const summaryEl = fixtureEl.querySelector('summary')
       const accordionEl = fixtureEl.querySelector('.accordion')
-      detailsEl.style.transition = 'height 100ms linear'
+      detailsEl.style.transition = 'height 400ms linear'
       const events = recordEvents(detailsEl)
       // eslint-disable-next-line no-new
       new Accordion(detailsEl)
 
       summaryEl.click()
-      await wait()
+      // The transition that takes over is shortened to the time this one ran, as CSS reverses
+      // a transition, so this one runs long enough for the takeover to be seen in progress
+      await wait(200)
       expect(events).toEqual(['close'])
       expect(accordionEl.querySelector('details[data-cx-clone]')).not.toBeNull()
 
