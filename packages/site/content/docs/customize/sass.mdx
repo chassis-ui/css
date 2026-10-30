@@ -315,7 +315,7 @@ A shorthand for the `prefers-color-scheme` media query with `light` and `dark` s
 
 Chassis loads its design tokens through a single override point — a Sass module named `chassis-tokens`, which `scss/config/_vendor.scss` forwards and Sass finds on its `loadPaths`. The framework's default is `scss/vendor/_chassis-tokens.scss`, so swapping the entire token feed is a one-line change in a file you control.
 
-By default `_chassis-tokens.scss` forwards from `@chassis-ui/tokens/dist/web/docs/chassis/main`. Sass loads each module exactly once, so every downstream module — variables, maps, components — picks up whatever your override produces.
+By default `_chassis-tokens.scss` forwards from `@chassis-ui/website-tokens/dist/web/docs/chassis/main`. Sass loads each module exactly once, so every downstream module — variables, maps, components — picks up whatever your override produces.
 
 ### Switching token source
 
@@ -323,10 +323,10 @@ Create a `_chassis-tokens.scss` file in your project that forwards your preferre
 
 ```scss
 // my-project/sass-overrides/_chassis-tokens.scss
-@forward "@chassis-ui/tokens/dist/web/docs/sinefil/main";
+@forward "@chassis-ui/website-tokens/dist/web/docs/sinefil/main";
 ```
 
-Then configure your build tool to search your override directory before the Chassis defaults. Because `_chassis-tokens.scss` sits at the root of the token dependency tree, all downstream modules pick up your token values automatically.
+Then configure your build tool to search your override directory before the Chassis defaults. Because `_chassis-tokens.scss` sits at the root of the token dependency tree, all downstream modules pick up your token values automatically. A token set of your own is built with `@chassis-ui/tokens` and its `chassis-tokens` command, and forwarded the same way.
 
 ```js
 // vite.config.ts (or astro.config.ts)
@@ -339,7 +339,7 @@ export default {
         loadPaths: [
           path.resolve('./sass-overrides/'),                            // your _chassis-tokens.scss first
           path.resolve('./node_modules/@chassis-ui/css/scss/vendor'), // framework fallback
-          path.resolve('./node_modules'),                               // bare package specifiers (@chassis-ui/tokens/…)
+          path.resolve('./node_modules'),                               // bare package specifiers (@chassis-ui/website-tokens/…)
         ],
       },
     },
@@ -349,7 +349,7 @@ export default {
 
 ### Grid tokens
 
-The page margins (`$margin-xsmall` to `$margin-2xlarge`) and the column counts (`$columns-xsmall` to `$columns-2xlarge`) come from the token source, as `cx-grid-margin-*` and `cx-grid-columns-*`, like the gutters, the breakpoints, and the container widths (`cx-grid-gutter-*`, `cx-grid-breakpoint-*`, `cx-grid-container-*`). `@chassis-ui/tokens` ships the margins and the column counts from 0.7.0. Rebuild a `_chassis-tokens.scss` of your own that was built with an earlier version: without the twelve variables the compile stops at an undefined variable.
+The page margins (`$margin-xsmall` to `$margin-2xlarge`) and the column counts (`$columns-xsmall` to `$columns-2xlarge`) come from the token source, as `cx-grid-margin-*` and `cx-grid-columns-*`, like the gutters, the breakpoints, and the container widths (`cx-grid-gutter-*`, `cx-grid-breakpoint-*`, `cx-grid-container-*`). `@chassis-ui/website-tokens` ships the margins and the column counts. Rebuild a token set of your own that was built with `@chassis-ui/tokens` before 0.7.0: without the twelve variables the compile stops at an undefined variable.
 
 To change a value without a token build, set the variables of `scss/tokens/_grid.scss`, or the [grid maps](#grid-maps) that read them. They go in your [`config` rule](#variable-defaults), with the other variables you change:
 

@@ -28,7 +28,7 @@ This guide assumes Node.js is installed and you're comfortable in a terminal.
 3. **Install Chassis CSS and its tokens.** Add the optional peer dependencies for the components that need them, or omit both and use `chassis.bundle.*` which includes them.
 
    ```bash
-   pnpm add @chassis-ui/css @chassis-ui/tokens
+   pnpm add @chassis-ui/css @chassis-ui/website-tokens
    pnpm add @floating-ui/dom vanilla-calendar-pro   # optional
    ```
 
@@ -114,7 +114,7 @@ Parcel needs a Sass entry point and a `.sassrc.js` config file that sets `loadPa
      loadPaths: [
        path.resolve(__dirname, 'src/scss'),                                    // project token override
        path.resolve(__dirname, 'node_modules/@chassis-ui/css/scss/vendor'),    // framework's default tokens
-       path.resolve(__dirname, 'node_modules')                                 // bare package specifiers (@chassis-ui/tokens/…)
+       path.resolve(__dirname, 'node_modules')                                 // bare package specifiers (@chassis-ui/website-tokens/…)
      ]
    }
    ```

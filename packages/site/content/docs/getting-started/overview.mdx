@@ -11,7 +11,7 @@ sections:
   - title: Quick Start
     description: Load the compiled CSS from a CDN into a single HTML file and try Chassis in a browser — no npm, no bundler, no configuration.
   - title: Installation
-    description: Install `@chassis-ui/css` and its `@chassis-ui/tokens` peer with pnpm or npm. Covers the import order, settings overrides, and what the package ships.
+    description: Install `@chassis-ui/css` and its `@chassis-ui/website-tokens` peer with pnpm or npm. Covers the import order, settings overrides, and what the package ships.
   - title: Clone and Customize
     slug: clone-customize
     description: For teams who want to own the framework — clone Chassis, point it at your own token build, and ship a CSS bundle that's entirely yours.
@@ -43,7 +43,7 @@ The pages have a deliberate order:
 
 1. **[What is Chassis CSS?]([[docsref:/getting-started/what-is-chassis]])** — The conceptual frame: Chassis isn't a stylesheet, it's a system rooted in Chassis Tokens. Read this first to understand the rest of the docs.
 2. **[Quick Start]([[docsref:/getting-started/quick-start]])** — Load the compiled CSS from a CDN and see Chassis render in a browser. No npm, no build step. Use it to evaluate Chassis or prototype before investing in a build.
-3. **[Installation]([[docsref:/getting-started/installation]])** — The real setup: install `@chassis-ui/css` from npm, install the `@chassis-ui/tokens` peer, and import them in the right order. This is the page most projects actually need.
+3. **[Installation]([[docsref:/getting-started/installation]])** — The real setup: install `@chassis-ui/css` from npm, install the `@chassis-ui/website-tokens` peer, and import them in the right order. This is the page most projects actually need.
 4. **[Clone and Customize]([[docsref:/getting-started/clone-customize]])** — For teams building a long-lived design system. Clone the framework, swap in your own token build, configure settings, and ship a CSS bundle that belongs to your product.
 5. **[Webpack]([[docsref:/getting-started/webpack]])**, **[Parcel]([[docsref:/getting-started/parcel]])**, **[Vite]([[docsref:/getting-started/vite]])** — Bundler-specific recipes once you know the import order. Pick the one that matches your project.
 6. **[Tailwind]([[docsref:/getting-started/tailwind]])** — For projects using Tailwind CSS v4, a separate entry point that exposes Chassis components and utilities through Tailwind's own variant engine.
@@ -60,7 +60,7 @@ The remaining pages are reference material — read them when you need them.
 
 Most CSS frameworks are a single stylesheet you drop into a `<link>` tag, possibly with a Sass entry point and a small set of override variables. Chassis adds two things on top of that:
 
-- **Tokens are a separate package.** Every visual value — colors, spacing, typography, motion — comes from `@chassis-ui/tokens`, which Chassis CSS imports as a peer dependency. Replace that package with your own token build and the same Chassis CSS code becomes your design system.
+- **Tokens are a separate package.** Every visual value — colors, spacing, typography, motion — comes from `@chassis-ui/website-tokens`, which Chassis CSS imports as a peer dependency. Replace that package with your own token build, made with `@chassis-ui/tokens` and its `chassis-tokens` command, and the same Chassis CSS code becomes your design system.
 - **The framework is meant to be cloned.** For long-running products, the recommended path isn't to install Chassis as an npm dependency and override variables. It's to fork the repository, point the `_vendor.scss` import at your own tokens, and own the CSS build. Chassis is designed to disappear into your design system, not sit on top of it as a dependency.
 
 Both paths are documented. Quick Start and Installation cover the dependency path; Clone and Customize covers the fork path. Pick the one that fits the lifespan of what you're building.

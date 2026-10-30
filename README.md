@@ -14,7 +14,7 @@ Starting with inspiration from Bootstrap but evolving into something entirely ne
 
 ## Features
 
-- **Design Token System**: Chassis creates a single source of truth through design tokens that define every aspect of your UI, from colors and typography to spacing and component styles. The tokens come from [`@chassis-ui/tokens`](https://github.com/chassis-ui/tokens).
+- **Design Token System**: Chassis creates a single source of truth through design tokens that define every aspect of your UI, from colors and typography to spacing and component styles. The default tokens come from [`@chassis-ui/website-tokens`](https://github.com/chassis-ui/website-tokens), and [`@chassis-ui/tokens`](https://github.com/chassis-ui/tokens) builds a set of your own.
 
 - **Advanced Color System**: Beyond simple palettes, Chassis introduces context-based semantics. Base colors derived from the brand feed context colors (`primary`, `success`, `danger`, and more), each with a palette of states such as hover, active, subtle, and contrast that keep their meaning in light and dark modes.
 
@@ -137,15 +137,16 @@ Visit [chassis-ui.com/css](https://chassis-ui.com/css/) for the full documentati
 
 This project is part of the Chassis Design System's multi-repository architecture:
 
-| Project                                                  | Description                                               |
-| -------------------------------------------------------- | --------------------------------------------------------- |
-| [chassis-website](https://github.com/chassis-ui/website) | Main website and shared documentation package             |
-| **chassis-css**                                          | **CSS framework and component library (this repository)** |
-| [chassis-react](https://github.com/chassis-ui/react)     | React component library                                   |
-| [chassis-tokens](https://github.com/chassis-ui/tokens)   | Design token generation and management                    |
-| [chassis-icons](https://github.com/chassis-ui/icons)     | Icon library and build toolkit                            |
-| [chassis-assets](https://github.com/chassis-ui/assets)   | Multi-platform asset management                           |
-| [chassis-figma](https://github.com/chassis-ui/figma)     | Figma component documentation                             |
+| Project                                                                | Description                                               |
+| ---------------------------------------------------------------------- | --------------------------------------------------------- |
+| [chassis-website](https://github.com/chassis-ui/website)               | Main website and shared documentation package             |
+| **chassis-css**                                                        | **CSS framework and component library (this repository)** |
+| [chassis-react](https://github.com/chassis-ui/react)                   | React component library                                   |
+| [chassis-tokens](https://github.com/chassis-ui/tokens)                 | Design token generation and management                    |
+| [chassis-website-tokens](https://github.com/chassis-ui/website-tokens) | Design tokens of the Chassis sites and apps               |
+| [chassis-icons](https://github.com/chassis-ui/icons)                   | Icon library and build toolkit                            |
+| [chassis-assets](https://github.com/chassis-ui/assets)                 | Multi-platform asset management                           |
+| [chassis-figma](https://github.com/chassis-ui/figma)                   | Figma component documentation                             |
 
 All documentation sites share the `@chassis-ui/docs` package for consistent layouts, components, and styling.
 

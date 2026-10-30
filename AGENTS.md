@@ -31,13 +31,13 @@ The three deliverables:
 - **JS components** — TypeScript in `js/src/`, compiled to per-component ES modules with declarations in `js/dist/` and combined builds in `dist/js/` (`chassis.js` with the peer dependencies external, `chassis.bundle.js` with them bundled in). The package entry is `js/dist/index.js`, compiled from the barrel `js/src/index.ts`.
 - **Documentation site** — an Astro site in `packages/site/`, built to `_site/`, using the shared `@chassis-ui/docs` package for layout/components.
 
-This repo is part of a multi-repo ecosystem (`chassis-website`, `chassis-react`, `chassis-tokens`, `chassis-icons`, `chassis-assets`, `chassis-figma`). See [README.md](README.md) for the full picture.
+This repo is part of a multi-repo ecosystem (`chassis-website`, `chassis-react`, `chassis-tokens`, `chassis-website-tokens`, `chassis-icons`, `chassis-assets`, `chassis-figma`). See [README.md](README.md) for the full picture.
 
 Human contributors follow [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md): dev setup, branches, what a pull request needs, and how releases are made.
 
 ## Color names
 
-Name a color by its role, never by its hue. The colors of Chassis are the contexts (`default`, `alternate`, `primary`, `secondary`, `neutral`, `danger`, `success`, `warning`, `info`, `black`, `white`), and the hue of a context comes from the token source: `scss/vendor/_chassis-tokens.scss` forwards one brand of `@chassis-ui/tokens`, and a project loads its own. "Blue" for `primary` is wrong with the next brand.
+Name a color by its role, never by its hue. The colors of Chassis are the contexts (`default`, `alternate`, `primary`, `secondary`, `neutral`, `danger`, `success`, `warning`, `info`, `black`, `white`), and the hue of a context comes from the token source: `scss/vendor/_chassis-tokens.scss` forwards one brand of `@chassis-ui/website-tokens`, and a project loads its own. "Blue" for `primary` is wrong with the next brand.
 
 This holds everywhere a name is written: Sass variables, classes, custom properties, `data-cx-theme` values, test fixtures, example markup, docs prose, comments and commit messages. Write "a theme on the primary color" and `data-cx-theme="primary"`, not "a blue theme". A color value of the default tokens (`#00A4CC`) is fine as a value, where one is needed.
 
@@ -92,7 +92,7 @@ Run the checks of the area you changed, and report the ones that fail.
 
 - Module system: `@use` / `@forward` only — never `@import`.
 - One partial per component (e.g. `_accordion.scss`), forwarded from `scss/chassis.scss`.
-- The `$cx-*` variables of `@chassis-ui/tokens` are read only in `scss/tokens/`, which maps each one to a variable of Chassis (`$font-family-html-heading: $cx-typography-font-family-html-heading`, `$card-md-title-font: $cx-font-card-medium-title`). Everything else (`scss/config/`, `scss/maps/`, `_root.scss`, the components, the Sass of the site) uses those variables and never a `$cx-*` one, so a change of the token names touches `scss/tokens/` only. A new token gets its variable in `scss/tokens/` first. `scss/config/` forwards the token source for projects, so Sass does not stop a stray `$cx-*`; only a test that configures a token source sets them.
+- The `$cx-*` variables of `@chassis-ui/website-tokens` are read only in `scss/tokens/`, which maps each one to a variable of Chassis (`$font-family-html-heading: $cx-typography-font-family-html-heading`, `$card-md-title-font: $cx-font-card-medium-title`). Everything else (`scss/config/`, `scss/maps/`, `_root.scss`, the components, the Sass of the site) uses those variables and never a `$cx-*` one, so a change of the token names touches `scss/tokens/` only. A new token gets its variable in `scss/tokens/` first. `scss/config/` forwards the token source for projects, so Sass does not stop a stray `$cx-*`; only a test that configures a token source sets them.
 - CSS layers, declared in `scss/_layer-order.scss`: `colors, theme, config, root, reboot, layout, content, components, custom, helpers, utilities`. Component rules live inside `@layer components { ... }` (or `forms`, etc.).
 - Prefer the `border-radius()` mixin over the raw `border-radius` property — it gates rounding on the global radius toggle. Use the raw property only for shape-defining elements (circles, pills) where the radius is structural, not stylistic.
 - `--fg-color` / `--bg-color` custom properties look unused component-locally but are consumed by the context utility classes — don't remove them during cleanup without checking `scss/_context.scss` and `scss/utilities/`.

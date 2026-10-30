@@ -7,7 +7,7 @@ aliases:
   - "[[docsref:/getting-started/contents]]"
 ---
 
-This page covers the project-as-dependency path: install `@chassis-ui/css` from npm, install the matching `@chassis-ui/tokens` build, and import them in the right order. If you intend to fork Chassis and own the framework yourself, read [Clone and Customize]([[docsref:/getting-started/clone-customize]]) instead.
+This page covers the project-as-dependency path: install `@chassis-ui/css` from npm, install the matching `@chassis-ui/website-tokens` build, and import them in the right order. If you intend to fork Chassis and own the framework yourself, read [Clone and Customize]([[docsref:/getting-started/clone-customize]]) instead.
 
 ## Prerequisites
 
@@ -17,24 +17,24 @@ This page covers the project-as-dependency path: install `@chassis-ui/css` from 
 
 ## Install the packages
 
-Chassis CSS is published to npm as `@chassis-ui/css`. The framework consumes design tokens from a separate package, `@chassis-ui/tokens`, which you install alongside it. Two optional peer dependencies cover specific component groups — install only what you use, or use `chassis.bundle.*` which includes both.
+Chassis CSS is published to npm as `@chassis-ui/css`. The framework consumes design tokens from a separate package, `@chassis-ui/website-tokens`, which you install alongside it. Two optional peer dependencies cover specific component groups — install only what you use, or use `chassis.bundle.*` which includes both.
 
 ```bash
 # pnpm
-pnpm add @chassis-ui/css @chassis-ui/tokens
+pnpm add @chassis-ui/css @chassis-ui/website-tokens
 pnpm add @floating-ui/dom      # menus, popovers, tooltips
 pnpm add vanilla-calendar-pro  # datepicker
 
 # npm
-npm install @chassis-ui/css @chassis-ui/tokens
+npm install @chassis-ui/css @chassis-ui/website-tokens
 npm install @floating-ui/dom vanilla-calendar-pro
 
 # yarn
-yarn add @chassis-ui/css @chassis-ui/tokens
+yarn add @chassis-ui/css @chassis-ui/website-tokens
 yarn add @floating-ui/dom vanilla-calendar-pro
 ```
 
-`@chassis-ui/tokens` ships pre-built token files in `dist/web/{app}/{brand}/`. The default `docs/chassis` build is included so the framework works out of the box; switching to a different token set is a configuration change covered under [Customize → Sass]([[docsref:/customize/sass#token-sources]]).
+`@chassis-ui/website-tokens` ships pre-built token files in `dist/web/{app}/{brand}/`. The default `docs/chassis` build is included so the framework works out of the box; switching to a different token set is a configuration change covered under [Customize → Sass]([[docsref:/customize/sass#token-sources]]).
 
 ## Import order
 

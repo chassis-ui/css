@@ -6,7 +6,7 @@ toc: true
 
 Chassis CSS ships a separate entry point for [Tailwind CSS](https://tailwindcss.com/) v4 projects. It keeps Chassis components (`.button.outline`, `.card`, `.navbar`) as plain CSS and emits Chassis utilities (`.fg-primary`, `.font-xl`) as Tailwind `@utility` rules, so every Tailwind variant (`dark:`, `lg:`, `hover:`, `@md:`, `print:`) works on them. The entry also resets Tailwind's default theme, which leaves Chassis tokens as the only source of design values.
 
-The Tailwind entry point ships as Sass source, like the regular Chassis entry. Compile it in your own build so your `@chassis-ui/tokens` build and settings apply. [Installation]([[docsref:/getting-started/installation]]) covers the parts every Chassis project shares; this guide covers what's specific to Tailwind.
+The Tailwind entry point ships as Sass source, like the regular Chassis entry. Compile it in your own build so your token build and settings apply. [Installation]([[docsref:/getting-started/installation]]) covers the parts every Chassis project shares; this guide covers what's specific to Tailwind.
 
 ## Setup
 
@@ -15,7 +15,7 @@ This guide assumes a project that already compiles Sass, as set up in the [Vite]
 1. **Install Chassis CSS, its tokens, and Tailwind.** `postcss` and `postcss-prefix-custom-properties` run the `--cx-` prefix step described in [Build it](#build-it).
 
    ```bash
-   pnpm add @chassis-ui/css @chassis-ui/tokens
+   pnpm add @chassis-ui/css @chassis-ui/website-tokens
    pnpm add -D sass tailwindcss postcss postcss-prefix-custom-properties
    ```
 
@@ -23,7 +23,7 @@ This guide assumes a project that already compiles Sass, as set up in the [Vite]
 
    ```scss
    // src/scss/_chassis-tokens.scss
-   @forward "@chassis-ui/tokens/dist/web/docs/chassis/main" hide $prefix
+   @forward "@chassis-ui/website-tokens/dist/web/docs/chassis/main" hide $prefix
    with (
      $cx-color-base-context-light-primary-base-color: #ff6b35,
      $cx-color-base-context-dark-primary-base-color: #ff6b35,

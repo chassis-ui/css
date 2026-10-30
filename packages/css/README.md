@@ -1,6 +1,6 @@
 # @chassis-ui/css
 
-The CSS framework of the [Chassis Design System](https://chassis-ui.com): tokenized components, context classes for color, and TypeScript-typed JavaScript plugins, built on the design tokens of [`@chassis-ui/tokens`](https://github.com/chassis-ui/tokens).
+The CSS framework of the [Chassis Design System](https://chassis-ui.com): tokenized components, context classes for color, and TypeScript-typed JavaScript plugins, built on the design tokens of [`@chassis-ui/website-tokens`](https://github.com/chassis-ui/website-tokens).
 
 ```shell
 npm install @chassis-ui/css

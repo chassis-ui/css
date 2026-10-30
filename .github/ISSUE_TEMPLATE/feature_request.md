@@ -29,5 +29,5 @@ needs new API or better docs.
 
 <!--
 Chassis styles come from Chassis Tokens. If the request needs a new token or a new token value,
-say so; that part may belong in https://github.com/chassis-ui/tokens.
+say so; that part may belong in https://github.com/chassis-ui/website-tokens.
 -->

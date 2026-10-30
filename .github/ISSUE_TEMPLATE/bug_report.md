@@ -26,13 +26,13 @@ smallest markup that still shows the problem.
 
 ## Environment
 
-|                      |                                                                               |
-| -------------------- | ----------------------------------------------------------------------------- |
-| `@chassis-ui/css`    | <!-- e.g. 0.5.2 -->                                                           |
-| `@chassis-ui/tokens` | <!-- e.g. 0.5.3, and the app and brand if you build your own -->              |
-| How you load Chassis | <!-- dist/css from a CDN, Sass from source, the Tailwind entry, a bundler --> |
-| Browser and OS       | <!-- e.g. Safari 18 on iOS, Chrome 140 on Windows -->                         |
-| Build tools, if any  | <!-- e.g. Vite 7, Dart Sass 1.9x, Tailwind CSS 4.1 -->                        |
+|                              |                                                                               |
+| ---------------------------- | ----------------------------------------------------------------------------- |
+| `@chassis-ui/css`            | <!-- e.g. 0.5.2 -->                                                           |
+| `@chassis-ui/website-tokens` | <!-- e.g. 0.1.0, or your own package with its app and brand -->               |
+| How you load Chassis         | <!-- dist/css from a CDN, Sass from source, the Tailwind entry, a bundler --> |
+| Browser and OS               | <!-- e.g. Safari 18 on iOS, Chrome 140 on Windows -->                         |
+| Build tools, if any          | <!-- e.g. Vite 7, Dart Sass 1.9x, Tailwind CSS 4.1 -->                        |
 
 ## Anything else
 
