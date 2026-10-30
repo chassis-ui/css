@@ -77,21 +77,6 @@
       }
     }
 
-    // Context variants — controlled by $enable-accordion-contexts
-    @if $enable-accordion-contexts {
-      &.context {
-        --accordion-border-color: #{$accordion-border-color-context};
-        --accordion-item-fg-color: #{$accordion-item-fg-color-context};
-        --accordion-item-bg-color: #{$accordion-item-bg-color-context};
-        --accordion-title-fg-color: #{$accordion-title-fg-color-context};
-        --accordion-title-bg-color: #{$accordion-title-bg-color-context};
-        --accordion-title-fg-active: #{$accordion-title-fg-active-context};
-        --accordion-title-bg-active: #{$accordion-title-bg-active-context};
-        --accordion-caret-idle-color: #{$accordion-caret-idle-context};
-        --accordion-caret-active-color: #{$accordion-caret-active-context};
-      }
-    }
-
     > details {
       color: var(--item-fg-color);
       background-color: var(--item-bg-color);
@@ -194,7 +179,7 @@
       }
     }
 
-    // Transitions (suppressed by .no-transition)
+    // Transitions (enabled by the data-cx-accordion attribute)
     &[data-cx-accordion] > details {
       @include transition(var(--transition));
       > summary {
@@ -205,8 +190,12 @@
       }
     }
 
-    // Flush variant — removes borders and radius for edge-to-edge layouts
+    // Flush variant — removes backgrounds, borders and radius for edge-to-edge layouts
     &.flush {
+      --accordion-item-bg-color: transparent;
+      --accordion-title-bg-color: transparent;
+      --accordion-title-bg-active: transparent;
+
       border: 0;
       @include border-radius(0);
       > details {
@@ -226,6 +215,22 @@
           padding-inline-start: calc(var(--body-padding-s) - var(--title-padding-x));
           padding-inline-end: 0;
         }
+      }
+    }
+
+    // Context variants — controlled by $enable-accordion-contexts. After the flush variant,
+    // which has the same specificity, so that a context keeps its colors.
+    @if $enable-accordion-contexts {
+      &.context {
+        --accordion-border-color: #{$accordion-border-color-context};
+        --accordion-item-fg-color: #{$accordion-item-fg-color-context};
+        --accordion-item-bg-color: #{$accordion-item-bg-color-context};
+        --accordion-title-fg-color: #{$accordion-title-fg-color-context};
+        --accordion-title-bg-color: #{$accordion-title-bg-color-context};
+        --accordion-title-fg-active: #{$accordion-title-fg-active-context};
+        --accordion-title-bg-active: #{$accordion-title-bg-active-context};
+        --accordion-caret-idle-color: #{$accordion-caret-idle-context};
+        --accordion-caret-active-color: #{$accordion-caret-active-context};
       }
     }
 
