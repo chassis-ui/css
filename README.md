@@ -137,16 +137,16 @@ Visit [chassis-ui.com/css](https://chassis-ui.com/css/) for the full documentati
 
 This project is part of the Chassis Design System's multi-repository architecture:
 
-| Project                                                                | Description                                               |
-| ---------------------------------------------------------------------- | --------------------------------------------------------- |
-| [chassis-website](https://github.com/chassis-ui/website)               | Main website and shared documentation package             |
-| **chassis-css**                                                        | **CSS framework and component library (this repository)** |
-| [chassis-react](https://github.com/chassis-ui/react)                   | React component library                                   |
-| [chassis-tokens](https://github.com/chassis-ui/tokens)                 | Design token generation and management                    |
-| [chassis-website-tokens](https://github.com/chassis-ui/website-tokens) | Design tokens of the Chassis sites and apps               |
-| [chassis-icons](https://github.com/chassis-ui/icons)                   | Icon library and build toolkit                            |
-| [chassis-assets](https://github.com/chassis-ui/assets)                 | Multi-platform asset management                           |
-| [chassis-figma](https://github.com/chassis-ui/figma)                   | Figma component documentation                             |
+| Project                                                                   | Description                                               |
+| ------------------------------------------------------------------------- | --------------------------------------------------------- |
+| [chassis-ui/website](https://github.com/chassis-ui/website)               | Main website and shared documentation package             |
+| **chassis-ui/css**                                                        | **CSS framework and component library (this repository)** |
+| [chassis-ui/react](https://github.com/chassis-ui/react)                   | React component library                                   |
+| [chassis-ui/tokens](https://github.com/chassis-ui/tokens)                 | Design token generation and management                    |
+| [chassis-ui/website-tokens](https://github.com/chassis-ui/website-tokens) | Design tokens of the Chassis sites and apps               |
+| [chassis-ui/icons](https://github.com/chassis-ui/icons)                   | Icon library and build toolkit                            |
+| [chassis-ui/assets](https://github.com/chassis-ui/assets)                 | Multi-platform asset management                           |
+| [chassis-ui/figma](https://github.com/chassis-ui/figma)                   | Figma component documentation                             |
 
 All documentation sites share the `@chassis-ui/docs` package for consistent layouts, components, and styling.
 

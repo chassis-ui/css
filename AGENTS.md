@@ -6,7 +6,7 @@ Guidance for AI coding agents working in this repository.
 
 Chassis CSS (`@chassis-ui/css`) is a tokenized CSS framework that bridges design tokens from Figma to production code. It is derived from Bootstrap's Sass architecture and JS component system but has been substantially reworked around a context-based color system and design-token pipeline.
 
-The repository is a pnpm workspace in the layout of `chassis-tokens` and `chassis-react`:
+The repository is a pnpm workspace in the layout of `chassis-ui/tokens` and `chassis-ui/react`:
 
 ```
 packages/
@@ -31,7 +31,7 @@ The three deliverables:
 - **JS components** — TypeScript in `js/src/`, compiled to per-component ES modules with declarations in `js/dist/` and combined builds in `dist/js/` (`chassis.js` with the peer dependencies external, `chassis.bundle.js` with them bundled in). The package entry is `js/dist/index.js`, compiled from the barrel `js/src/index.ts`.
 - **Documentation site** — an Astro site in `packages/site/`, built to `_site/`, using the shared `@chassis-ui/docs` package for layout/components.
 
-This repo is part of a multi-repo ecosystem (`chassis-website`, `chassis-react`, `chassis-tokens`, `chassis-website-tokens`, `chassis-icons`, `chassis-assets`, `chassis-figma`). See [README.md](README.md) for the full picture.
+This repo is part of a multi-repo ecosystem (`chassis-ui/website`, `chassis-ui/react`, `chassis-ui/tokens`, `chassis-ui/website-tokens`, `chassis-ui/icons`, `chassis-ui/assets`, `chassis-ui/figma`). See [README.md](README.md) for the full picture.
 
 Human contributors follow [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md): dev setup, branches, what a pull request needs, and how releases are made.
 
@@ -126,6 +126,7 @@ Run the checks of the area you changed, and report the ones that fail.
 - Reference implementations: `components/stepper.mdx`, `components/navbar.mdx`, `helpers/focus-ring.mdx`, `customize/optimize.mdx`.
 - The site's static files (`packages/site/public/static/`, built to `_site/static/`) are requested under the shared `/static` path, the same URLs on every Chassis site (chassis-ui.com routes them by the `Referer` header), so `staticPath` stays unset. The files that Astro builds are the exception: `build.assets` of `packages/site/astro.config.ts` is `css/static/astro`, in every name pattern of its Rolldown output too, so they are written to `_site/css/static/astro/` and requested as `/css/static/astro/…`, a path of this site that chassis-ui.com routes by path, with no prefix option and no rewrite. Write a static URL with `getStaticPath()` of `@chassis-ui/docs/site`, never as `/static/…`.
 - `pnpm vendor` builds `vendor/assets` at the pinned commit (`pnpm site:build` and `pnpm start` run it); `pnpm sync-submodules` moves the pin to the latest `app/docs`, to commit on its own. Both are `chassis-docs` commands of `@chassis-ui/docs`, as are the two HTML validators of `pnpm site:lint`; the site's exceptions for them are in `packages/site/html-validate.json` and `packages/site/vnu-filters.txt`.
+- Name a sibling repository by its GitHub repository (`chassis-ui/tokens`), never by a local folder name or a relative path: both differ per contributor.
 - Run `pnpm site:lint` (eslint + prettier + vnu and html-validate HTML validation + the link check) after editing `packages/site/`.
 
 ## Formatting
@@ -146,4 +147,4 @@ Never commit, merge or push without being asked. CI runs on `develop` and on pul
 
 - Generated output: `dist/`, `js/dist/` (rebuild them, see [Generated and committed output](#generated-and-committed-output)), `_site/`, `packages/site/public/`, `.cache/`.
 - Written by the version step (`pnpm changeset:version`): `packages/css/CHANGELOG.md`, the version in `packages/css/package.json`, and the version references in `packages/site/config.yml` (with the CDN URLs and their SRI hashes), `js/src/base-component.ts` and `scss/mixins/_banner.scss`.
-- Git submodule (synced from `chassis-assets`, not owned by this repo): `vendor/assets/`.
+- Git submodule (synced from `chassis-ui/assets`, not owned by this repo): `vendor/assets/`.

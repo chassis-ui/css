@@ -1,6 +1,6 @@
 # Documentation Style Guide
 
-How to write component, helper, and concept docs for chassis-css. This guide codifies conventions established across the docs (`packages/site/content/docs/**/*.mdx`) so contributors and reviewers have one place to reference.
+How to write component, helper, and concept docs for `chassis-ui/css`. This guide codifies conventions established across the docs (`packages/site/content/docs/**/*.mdx`) so contributors and reviewers have one place to reference.
 
 ## How this guide is organized
 

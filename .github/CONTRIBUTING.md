@@ -10,8 +10,8 @@ You need Node.js 22.12 or later (`.nvmrc` names the version CI uses, 24) and pnp
 `package.json`; `corepack enable` picks it up).
 
 ```sh
-git clone https://github.com/chassis-ui/css.git chassis-css
-cd chassis-css
+git clone https://github.com/chassis-ui/css.git
+cd css
 pnpm install
 pnpm start
 ```
