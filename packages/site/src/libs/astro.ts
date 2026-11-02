@@ -9,6 +9,7 @@ import {
   getChassisCSSFsPath,
   getChassisIconsFsPath
 } from '@chassis-ui/docs'
+import { writeBrandCSS } from '@chassis-ui/docs/integration'
 import type { ChassisConfig } from '@chassis-ui/docs/schema'
 
 // A list of static file paths that will be aliased to a different path.
@@ -81,7 +82,7 @@ export function chassis({
           if (cmd === 'sync') return
           cleanPublicDirectory(publicDir)
           copyStatic(path.join(root, 'static'), publicDir)
-          copyChassisCSS(chassisCSS, publicDir)
+          copyChassisCSS(root, chassisCSS, publicDir)
           copyChassisAssets(root, publicDir)
           copyChassisIcons(root, publicDir)
           aliasStatic(root, publicDir)
@@ -176,11 +177,14 @@ function cleanPublicDirectory(dir: string) {
 
 // Copy the `dist` folder of the workspace package, the latest build of Chassis CSS, to make it
 // available from the `/static` URL.
-function copyChassisCSS(source: string, publicDir: string) {
+function copyChassisCSS(root: string, source: string, publicDir: string) {
   const destination = path.join(publicDir, 'static')
 
   fs.mkdirSync(destination, { recursive: true })
   fs.cpSync(source, destination, { recursive: true })
+  // The files of `dist` hold the tokens of the default brand. Compiles them for another one, for
+  // a preview with `CHASSIS_BRAND`, and does nothing for the default brand.
+  writeBrandCSS({ root, destination })
 }
 
 function copyChassisAssets(root: string, publicDir: string) {

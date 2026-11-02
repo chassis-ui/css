@@ -16,9 +16,10 @@ pnpm install
 pnpm start
 ```
 
-`pnpm start` builds `dist/`, checks out the assets submodule in `vendor/assets` at the pinned commit
-and builds it (the docs site needs it; `pnpm sync-submodules` moves the pin to the latest
-`app/docs`) and then runs `pnpm dev`: CSS and JavaScript in watch mode and the docs site at
+`pnpm start` builds `dist/`, unpacks the pinned release of the assets into `vendor/assets` (the docs
+site needs it; `pnpm sync-assets` moves the pin in `vendor/assets.json` to the latest release of
+[chassis-ui/website-assets](https://github.com/chassis-ui/website-assets)) and then runs `pnpm dev`:
+CSS and JavaScript in watch mode and the docs site at
 `http://localhost:4323/css/`. After the first run, `pnpm dev` is enough.
 
 Run every command from the root of the repository. The scripts of the root `package.json` run the
@@ -30,18 +31,18 @@ The repository is a pnpm workspace of two packages: `packages/css`, which is pub
 the CSS framework and the JavaScript plugins, and `packages/site`, the documentation site. In the
 rest of this guide, `scss/`, `js/`, `postcss/` and `dist/` are the folders in `packages/css/`.
 
-| Path                | What it is                                                                                                                                                                                         |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/css/`     | The published package, `@chassis-ui/css`. The folders of the next rows are inside it                                                                                                               |
-| `scss/`             | The Sass source. `chassis.scss` and the other `chassis-*.scss` files are the entries; one partial per component. `scss/tailwind/` is the Tailwind CSS v4 entry. `scss/tests/` holds the Sass tests |
-| `js/src/`           | The TypeScript source of the plugins, one module per component; `index.ts` re-exports them                                                                                                         |
-| `js/tests/`         | Unit tests (`unit/`), end-to-end tests (`e2e/`), bundle and package tests (`integration/`) and type tests (`types/`). See [js/tests/README.md](../packages/css/js/tests/README.md)                 |
-| `dist/`, `js/dist/` | The build output, **committed and published**. See [Committed build output](#committed-build-output)                                                                                               |
-| `postcss/`          | The PostCSS preset published as `@chassis-ui/css/postcss`; it adds the `--cx-` prefix                                                                                                              |
-| `build/`            | The build of the package: Rolldown, PostCSS, the Tailwind entry and `pnpm verify`                                                                                                                  |
-| `packages/site/`    | The Astro documentation site, published at [chassis-ui.com/css](https://chassis-ui.com/css/). A private package that depends on the one in `packages/css/`                                         |
-| `build/` (root)     | The scripts of the repository: the link check, version references, release notes                                                                                                                   |
-| `vendor/assets`     | A git submodule of [chassis-ui/assets](https://github.com/chassis-ui/assets); changes belong there                                                                                                 |
+| Path                | What it is                                                                                                                                                                                              |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/css/`     | The published package, `@chassis-ui/css`. The folders of the next rows are inside it                                                                                                                    |
+| `scss/`             | The Sass source. `chassis.scss` and the other `chassis-*.scss` files are the entries; one partial per component. `scss/tailwind/` is the Tailwind CSS v4 entry. `scss/tests/` holds the Sass tests      |
+| `js/src/`           | The TypeScript source of the plugins, one module per component; `index.ts` re-exports them                                                                                                              |
+| `js/tests/`         | Unit tests (`unit/`), end-to-end tests (`e2e/`), bundle and package tests (`integration/`) and type tests (`types/`). See [js/tests/README.md](../packages/css/js/tests/README.md)                      |
+| `dist/`, `js/dist/` | The build output, **committed and published**. See [Committed build output](#committed-build-output)                                                                                                    |
+| `postcss/`          | The PostCSS preset published as `@chassis-ui/css/postcss`; it adds the `--cx-` prefix                                                                                                                   |
+| `build/`            | The build of the package: Rolldown, PostCSS, the Tailwind entry and `pnpm verify`                                                                                                                       |
+| `packages/site/`    | The Astro documentation site, published at [chassis-ui.com/css](https://chassis-ui.com/css/). A private package that depends on the one in `packages/css/`                                              |
+| `build/` (root)     | The scripts of the repository: the link check, version references, release notes                                                                                                                        |
+| `vendor/assets`     | The assets of the docs site, unpacked from the release of [chassis-ui/website-assets](https://github.com/chassis-ui/website-assets) that `vendor/assets.json` pins; not committed, changes belong there |
 
 ## Branch and commit conventions
 

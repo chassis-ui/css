@@ -232,8 +232,8 @@ importers:
         specifier: workspace:*
         version: link:../css
       '@chassis-ui/docs':
-        specifier: ^0.12.0
-        version: 0.12.0(@astrojs/markdown-remark@7.3.4)(@chassis-ui/css@packages+css)(@pagefind/component-ui@1.5.2)(@shikijs/transformers@4.5.0)(astro@7.4.2(@astrojs/markdown-remark@7.3.4)(@types/node@26.6.5)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.106.1)(terser@5.51.2)(yaml@2.9.1))(html-validate@11.17.0(@vitest/expect@4.1.11)(vitest@5.0.5))(htmlparser2@12.0.0)(rehype-autolink-headings@7.1.0)(sass@1.106.1)(shiki@4.5.0)(vnu-jar@26.10.12)
+        specifier: ^0.13.0
+        version: 0.13.0(@astrojs/markdown-remark@7.3.4)(@chassis-ui/css@packages+css)(@pagefind/component-ui@1.5.2)(@shikijs/transformers@4.5.0)(astro@7.4.2(@astrojs/markdown-remark@7.3.4)(@types/node@26.6.5)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.106.1)(terser@5.51.2)(yaml@2.9.1))(autoprefixer@10.6.1(postcss@8.5.31))(html-validate@11.17.0(@vitest/expect@4.1.11)(vitest@5.0.5))(htmlparser2@12.0.0)(postcss-prefix-custom-properties@0.1.0(postcss@8.5.31))(postcss@8.5.31)(rehype-autolink-headings@7.1.0)(sass@1.106.1)(shiki@4.5.0)(vnu-jar@26.10.12)
       '@chassis-ui/icons':
         specifier: ^0.3.1
         version: 0.3.1
@@ -738,8 +738,8 @@ packages:
     resolution: {integrity: sha512-q/ThtP9gcnEP6xlv7LrY26C2mHqdGBti/MmOVngt/M/oIGYkssmQGxPK9WzBNt2juVcH/vml2WQ+ra8LXYOTaA==}
     engines: {node: ^22.11 || ^24 || >=26}
 
-  '@chassis-ui/docs@0.12.0':
-    resolution: {integrity: sha512-0lnUtipCi2aV25OuCme1Go02Gd/gySRzOSEMzjZ6UaSwnxDk7JZR3Gu7Ux4+VQlNYJyZuWoXBM7e4Q3G3J537A==}
+  '@chassis-ui/docs@0.13.0':
+    resolution: {integrity: sha512-uW/VAIaSpb+mjrBhBSx7Vw5ktQkkxn79NVv0mbmTYEz+H57HiA535R0xkM+YjebIMjrXxsF+Lric/lmzA+Q1wQ==}
     engines: {node: '>=22.12.0'}
     hasBin: true
     peerDependencies:
@@ -748,14 +748,23 @@ packages:
       '@pagefind/component-ui': ^1.0.0
       '@shikijs/transformers': ^4.3.1
       astro: ^7.0.0
+      autoprefixer: ^10.0.0
       html-validate: ^11.0.0
       htmlparser2: ^12.0.0
+      postcss: ^8.0.0
+      postcss-prefix-custom-properties: ^0.1.0
       rehype-autolink-headings: ^7.0.0
       sass: ^1.101.0
       shiki: ^4.3.1
       vnu-jar: '>=26.0.0'
     peerDependenciesMeta:
+      autoprefixer:
+        optional: true
       html-validate:
+        optional: true
+      postcss:
+        optional: true
+      postcss-prefix-custom-properties:
         optional: true
       vnu-jar:
         optional: true
@@ -6625,7 +6634,7 @@ snapshots:
       '@changesets/types': 7.0.0
       human-id: 4.2.1
 
-  '@chassis-ui/docs@0.12.0(@astrojs/markdown-remark@7.3.4)(@chassis-ui/css@packages+css)(@pagefind/component-ui@1.5.2)(@shikijs/transformers@4.5.0)(astro@7.4.2(@astrojs/markdown-remark@7.3.4)(@types/node@26.6.5)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.106.1)(terser@5.51.2)(yaml@2.9.1))(html-validate@11.17.0(@vitest/expect@4.1.11)(vitest@5.0.5))(htmlparser2@12.0.0)(rehype-autolink-headings@7.1.0)(sass@1.106.1)(shiki@4.5.0)(vnu-jar@26.10.12)':
+  '@chassis-ui/docs@0.13.0(@astrojs/markdown-remark@7.3.4)(@chassis-ui/css@packages+css)(@pagefind/component-ui@1.5.2)(@shikijs/transformers@4.5.0)(astro@7.4.2(@astrojs/markdown-remark@7.3.4)(@types/node@26.6.5)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.106.1)(terser@5.51.2)(yaml@2.9.1))(autoprefixer@10.6.1(postcss@8.5.31))(html-validate@11.17.0(@vitest/expect@4.1.11)(vitest@5.0.5))(htmlparser2@12.0.0)(postcss-prefix-custom-properties@0.1.0(postcss@8.5.31))(postcss@8.5.31)(rehype-autolink-headings@7.1.0)(sass@1.106.1)(shiki@4.5.0)(vnu-jar@26.10.12)':
     dependencies:
       '@astrojs/markdown-remark': 7.3.4
       '@chassis-ui/css': link:packages/css
@@ -6635,6 +6644,7 @@ snapshots:
       '@types/mdast': 4.0.4
       astro: 7.4.2(@astrojs/markdown-remark@7.3.4)(@types/node@26.6.5)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.106.1)(terser@5.51.2)(yaml@2.9.1)
       clipboard: 2.0.11
+      fflate: 0.8.3
       github-slugger: 2.0.0
       htmlparser2: 12.0.0
       image-size: 2.0.4
@@ -6651,7 +6661,10 @@ snapshots:
       unified: 11.0.5
       unist-util-visit: 5.2.0
     optionalDependencies:
+      autoprefixer: 10.6.1(postcss@8.5.31)
       html-validate: 11.17.0(@vitest/expect@4.1.11)(vitest@5.0.5)
+      postcss: 8.5.31
+      postcss-prefix-custom-properties: 0.1.0(postcss@8.5.31)
       vnu-jar: 26.10.12
     transitivePeerDependencies:
       - supports-color
