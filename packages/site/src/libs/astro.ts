@@ -69,6 +69,10 @@ export function chassis({
             const [src, dest] = pair
             fs.mkdirSync(path.dirname(dest), { recursive: true })
             fs.copyFileSync(src, dest)
+            // The rebuilt file holds the tokens of the default brand, as in `copyChassisCSS()`.
+            if (src === watchPairs[0][0]) {
+              writeBrandCSS({ root, destination: path.join(publicDir, 'static') })
+            }
             server.ws.send({ type: 'full-reload' })
           })
         },
