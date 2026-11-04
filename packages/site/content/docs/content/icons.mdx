@@ -6,17 +6,19 @@ toc: true
 
 import { getData } from '@libs/data'
 
-Chassis CSS does not include an icon set by default. [Chassis Icons](https://chassis-ui.com/icons) is the companion icon library for Chassis-based projects, generating icon fonts, SVG sprites, and individual optimized SVG files from a set of SVG source glyphs. SVG implementations are preferred over icon fonts for vector fidelity and accessibility.
+Chassis CSS does not include an icon set by default. [Chassis Icons](https://chassis-ui.com/icons) is the companion icon library for Chassis-based projects: a builder that generates icon fonts, SVG sprites, and individual optimized SVG files from a set of SVG source glyphs, and the icon set of Chassis built with it. SVG implementations are preferred over icon fonts for vector fidelity and accessibility.
 
 ## Chassis Icons
 
-Chassis Icons converts source SVG glyphs into distribution assets: an icon font (WOFF and WOFF2), an SVG sprite, individual optimized SVG files, and CSS and SCSS stylesheets. Install the package from npm to access all formats:
+Chassis Icons converts source SVG glyphs into distribution assets: an icon font (WOFF and WOFF2), an SVG sprite, individual optimized SVG files, and CSS and SCSS stylesheets. The icon set of Chassis is built this way in the [chassis-ui/website-icons](https://github.com/chassis-ui/website-icons) repository and published to npm as `@chassis-ui/website-icons`. Install the package from npm to access all formats:
 
 ```bash
-npm install @chassis-ui/icons
+npm install @chassis-ui/website-icons
 ```
 
-The generated files in `node_modules/@chassis-ui/icons/icons/` should be copied or served via a bundler. The paths in the examples below assume assets have been placed in a public `assets/icons/` directory.
+The icon font, the SVG sprite and the stylesheets are in `node_modules/@chassis-ui/website-icons/dist/web/`, and should be copied or served via a bundler. The paths in the examples below assume these files have been placed in a public `assets/icons/` directory, and the individual SVG files in `assets/icons/svgs/`.
+
+To build an icon set from other SVG files, use the builder, published to npm as `@chassis-ui/icons` with the `chassis-icons` command.
 
 ### Icon font
 
@@ -45,7 +47,7 @@ The symbol ID matches the icon filename without its `.svg` extension. SVG sprite
 
 ### Individual SVGs
 
-Optimized individual SVG files ship in the `svgs/` directory of the package. Embed them as images when neither the icon font nor the sprite is practical.
+Optimized individual SVG files ship in the `dist/svgs/` directory of the package. Embed them as images when neither the icon font nor the sprite is practical.
 
 ```html
 <img src="/assets/icons/svgs/bell-outline.svg" alt="Notifications" width="24" height="24">

@@ -199,9 +199,10 @@ function copyChassisAssets(root: string, publicDir: string) {
   fs.cpSync(source, destination, { recursive: true })
 }
 
-// Copy the `icons` folder of `@chassis-ui/icons` to make it available from the `/static/icons` URL.
+// Copy the `dist/web` folder of `@chassis-ui/website-icons` to make it available from the
+// `/static/icons` URL.
 function copyChassisIcons(root: string, publicDir: string) {
-  const source = path.join(getChassisIconsFsPath({ root }), 'icons')
+  const source = getChassisIconsFsPath({ root })
   const destination = path.join(publicDir, 'static', 'icons')
 
   fs.mkdirSync(destination, { recursive: true })
