@@ -103,8 +103,8 @@ test.describe('tabs with nav links (with fade)', () => {
   })
 })
 
-test.describe('tabs with list-group (with fade)', () => {
-  test('clicking a list-group item switches the active tab panel', async ({ page }) => {
+test.describe('tabs with list (with fade)', () => {
+  test('clicking a list item switches the active tab panel', async ({ page }) => {
     await expect(page.locator('#list-home-list')).toHaveClass(/active/)
     await expect(pane(page, 'list-home')).toHaveClass(/\bactive\b/)
 

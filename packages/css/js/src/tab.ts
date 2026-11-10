@@ -44,7 +44,7 @@ const SELECTOR_MENU_TOGGLE = '[data-cx-toggle="menu"]'
 const SELECTOR_MENU = '.menu'
 const NOT_SELECTOR_MENU_TOGGLE = `:not(${SELECTOR_MENU_TOGGLE})`
 
-const SELECTOR_TAB_PANEL = '.list-group, .nav, [role="tablist"]'
+const SELECTOR_TAB_PANEL = '.list, .nav, [role="tablist"]'
 const SELECTOR_OUTER = '.nav-item, .list-item'
 const SELECTOR_INNER = `.nav-link${NOT_SELECTOR_MENU_TOGGLE}, .list-item${NOT_SELECTOR_MENU_TOGGLE}, [role="tab"]${NOT_SELECTOR_MENU_TOGGLE}`
 const SELECTOR_DATA_TOGGLE = '[data-cx-toggle="tab"]'

@@ -27,7 +27,7 @@ const CLASS_NAME_MENU_ITEM = "menu-item";
 const CLASS_NAME_ACTIVE = "active";
 const SELECTOR_DATA_SPY = "[data-cx-spy=\"scroll\"]";
 const SELECTOR_TARGET_LINKS = "[href]";
-const SELECTOR_NAV_LIST_GROUP = ".nav, .list-group";
+const SELECTOR_NAV_LIST = ".nav, .list";
 const SELECTOR_NAV_LINKS = ".nav-link";
 const SELECTOR_LINK_ITEMS = `${SELECTOR_NAV_LINKS}, .nav-item > ${SELECTOR_NAV_LINKS}, .list-item`;
 const SELECTOR_MENU_TOGGLE = "[data-cx-toggle=\"menu\"]";
@@ -170,7 +170,7 @@ var ScrollSpy = class extends BaseComponent {
 			if (menuToggle?.matches(SELECTOR_MENU_TOGGLE)) menuToggle.classList.add(CLASS_NAME_ACTIVE);
 			return;
 		}
-		for (const listGroup of SelectorEngine.parents(target, SELECTOR_NAV_LIST_GROUP)) for (const item of SelectorEngine.prev(listGroup, SELECTOR_LINK_ITEMS)) item.classList.add(CLASS_NAME_ACTIVE);
+		for (const list of SelectorEngine.parents(target, SELECTOR_NAV_LIST)) for (const item of SelectorEngine.prev(list, SELECTOR_LINK_ITEMS)) item.classList.add(CLASS_NAME_ACTIVE);
 	}
 	_clearActiveClass(parent) {
 		parent.classList.remove(CLASS_NAME_ACTIVE);

@@ -409,11 +409,11 @@ describe('ScrollSpy', () => {
       })
     })
 
-    it('should add to list-group, the active class to the correct element (list-group markup)', () => {
+    it('should add the active class to the correct element (list markup)', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
           '<nav class="navbar">',
-          '  <div class="list-group">',
+          '  <div class="list">',
           '    <a class="list-item" id="a-1" href="#div-1">div 1</a>',
           '    <a class="list-item" id="a-2" href="#div-2">div 2</a>',
           '  </div>',
@@ -442,6 +442,41 @@ describe('ScrollSpy', () => {
               scrollSpy,
               cb: resolve
             })
+          }
+        })
+      })
+    })
+
+    it('should add the active class to the link before a nested list (list markup)', () => {
+      return new Promise(resolve => {
+        fixtureEl.innerHTML = [
+          '<nav class="navbar">',
+          '  <div class="list">',
+          '    <a class="list-item" id="a-1" href="#div-1">div 1</a>',
+          '    <div class="list">',
+          '      <a class="list-item" id="a-2" href="#div-2">div 2</a>',
+          '    </div>',
+          '  </div>',
+          '</nav>',
+          '<div class="content" style="overflow: auto; height: 50px">',
+          '  <div id="div-1" style="height: 100px; padding: 0; margin: 0">div 1</div>',
+          '  <div id="div-2" style="height: 200px; padding: 0; margin: 0">div 2</div>',
+          '</div>'
+        ].join('')
+
+        const contentEl = fixtureEl.querySelector('.content')
+        const scrollSpy = new ScrollSpy(contentEl, {
+          target: '.navbar'
+        })
+
+        testElementIsActiveAfterScroll({
+          elementSelector: '#a-2',
+          targetSelector: '#div-2',
+          contentEl,
+          scrollSpy,
+          cb() {
+            expect(fixtureEl.querySelector('#a-1')).toHaveClass('active')
+            resolve()
           }
         })
       })

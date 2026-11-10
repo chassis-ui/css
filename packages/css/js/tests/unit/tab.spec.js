@@ -154,10 +154,29 @@ describe('Tab', () => {
       })
     })
 
-    it('should activate element by tab id in list group', () => {
+    it('should find a list as the tab list and give it the tablist role', () => {
+      fixtureEl.innerHTML = [
+        '<div class="list">',
+        '  <a class="list-item" id="triggerHome" href="#home">Home</a>',
+        '  <a class="list-item" href="#profile">Profile</a>',
+        '</div>',
+        '<div>',
+        '  <div id="home"></div>',
+        '  <div id="profile"></div>',
+        '</div>'
+      ].join('')
+
+      const tab = new Tab(fixtureEl.querySelector('#triggerHome'))
+
+      expect(tab._parent).toEqual(fixtureEl.querySelector('.list'))
+      expect(fixtureEl.querySelector('.list').getAttribute('role')).toEqual('tablist')
+      expect(fixtureEl.querySelector('#triggerHome').getAttribute('role')).toEqual('tab')
+    })
+
+    it('should activate element by tab id in a list', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
-          '<div class="list-group" role="tablist">',
+          '<div class="list" role="tablist">',
           '  <button type="button" data-cx-target="#home" role="tab">Home</button>',
           '  <button type="button" id="triggerProfile" data-cx-target="#profile" role="tab">Profile</button>',
           '</div>',

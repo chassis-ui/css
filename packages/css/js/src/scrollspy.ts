@@ -31,7 +31,7 @@ const CLASS_NAME_ACTIVE = 'active'
 
 const SELECTOR_DATA_SPY = '[data-cx-spy="scroll"]'
 const SELECTOR_TARGET_LINKS = '[href]'
-const SELECTOR_NAV_LIST_GROUP = '.nav, .list-group'
+const SELECTOR_NAV_LIST = '.nav, .list'
 const SELECTOR_NAV_LINKS = '.nav-link'
 const SELECTOR_NAV_ITEMS = '.nav-item'
 const SELECTOR_LIST_ITEMS = '.list-item'
@@ -262,10 +262,10 @@ class ScrollSpy extends BaseComponent {
       return
     }
 
-    for (const listGroup of SelectorEngine.parents(target, SELECTOR_NAV_LIST_GROUP)) {
+    for (const list of SelectorEngine.parents(target, SELECTOR_NAV_LIST)) {
       // Set triggered links parents as active
       // With both <ul> and <nav> markup a parent is the previous sibling of any nav ancestor
-      for (const item of SelectorEngine.prev(listGroup, SELECTOR_LINK_ITEMS)) {
+      for (const item of SelectorEngine.prev(list, SELECTOR_LINK_ITEMS)) {
         item.classList.add(CLASS_NAME_ACTIVE)
       }
     }
