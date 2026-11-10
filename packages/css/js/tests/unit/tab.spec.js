@@ -248,8 +248,8 @@ describe('Tab', () => {
       return new Promise((resolve, reject) => {
         fixtureEl.innerHTML = [
           '<ul class="nav nav-tabs" role="tablist">',
-          '  <li class="nav-item" role="presentation"><button type="button" data-cx-target="#home" class="nav-link active" role="tab" aria-selected="true">Home</button></li>',
-          '  <li class="nav-item" role="presentation"><button type="button" data-cx-target="#profile" class="nav-link" role="tab">Profile</button></li>',
+          '  <li class="nav-item" role="none"><button type="button" data-cx-target="#home" class="nav-link active" role="tab" aria-selected="true">Home</button></li>',
+          '  <li class="nav-item" role="none"><button type="button" data-cx-target="#profile" class="nav-link" role="tab">Profile</button></li>',
           '</ul>',
           '<div class="tab-content">',
           '  <div class="tab-pane active" id="home" role="tabpanel"></div>',
@@ -276,8 +276,8 @@ describe('Tab', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
           '<ul class="nav nav-tabs" role="tablist">',
-          '  <li class="nav-item" role="presentation"><button type="button" data-cx-target="#home" class="nav-link active" role="tab" aria-selected="true">Home</button></li>',
-          '  <li class="nav-item" role="presentation"><button type="button" id="triggerProfile" data-cx-target="#profile" class="nav-link" role="tab">Profile</button></li>',
+          '  <li class="nav-item" role="none"><button type="button" data-cx-target="#home" class="nav-link active" role="tab" aria-selected="true">Home</button></li>',
+          '  <li class="nav-item" role="none"><button type="button" id="triggerProfile" data-cx-target="#profile" class="nav-link" role="tab">Profile</button></li>',
           '</ul>',
           '<div class="tab-content">',
           '  <div class="tab-pane active" id="home" role="tabpanel"></div>',
@@ -376,17 +376,17 @@ describe('Tab', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
           '<ul class="nav nav-tabs" role="tablist">',
-          '  <li class="nav-item" role="presentation">',
+          '  <li class="nav-item" role="none">',
           '    <a class="nav-link nav-tab" href="#profile" role="tab" data-cx-toggle="tab">',
           '      <button class="close-button" aria-label="Close"></button>',
           '    </a>',
           '  </li>',
-          '  <li class="nav-item" role="presentation">',
+          '  <li class="nav-item" role="none">',
           '    <a id="secondNav" class="nav-link nav-tab" href="#buzz" role="tab" data-cx-toggle="tab">',
           '      <button class="close-button" aria-label="Close"></button>',
           '    </a>',
           '  </li>',
-          '  <li class="nav-item" role="presentation">',
+          '  <li class="nav-item" role="none">',
           '    <a class="nav-link nav-tab" href="#references" role="tab" data-cx-toggle="tab">',
           '      <button id="btnClose" class="close-button" aria-label="Close"></button>',
           '    </a>',
@@ -488,6 +488,25 @@ describe('Tab', () => {
   })
 
   describe('_setInitialAttributes', () => {
+    it('should give the element around a tab the none role', () => {
+      fixtureEl.innerHTML = [
+        '<ul class="nav">',
+        '  <li class="nav-item"><button type="button" class="nav-link" data-cx-target="#panel"></button></li>',
+        '</ul>',
+        '<div id="panel"></div>'
+      ].join('')
+
+      const tabEl = fixtureEl.querySelector('.nav-link')
+      const item = fixtureEl.querySelector('.nav-item')
+
+      expect(item.getAttribute('role')).toEqual(null)
+      const tab = new Tab(tabEl)
+      tab._setInitialAttributes(fixtureEl.querySelector('.nav'), [tabEl])
+
+      expect(item.getAttribute('role')).toEqual('none')
+      expect(tabEl.getAttribute('role')).toEqual('tab')
+    })
+
     it('should put aria attributes', () => {
       fixtureEl.innerHTML = [
         '<ul class="nav">',
@@ -872,8 +891,8 @@ describe('Tab', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
           '<ul class="nav nav-tabs" role="tablist">',
-          '  <li class="nav-item" role="presentation"><button type="button" data-cx-target="#home" class="nav-link active" role="tab" aria-selected="true">Home</button></li>',
-          '  <li class="nav-item" role="presentation"><button type="button" id="triggerProfile" data-cx-toggle="tab" data-cx-target="#profile" class="nav-link" role="tab">Profile</button></li>',
+          '  <li class="nav-item" role="none"><button type="button" data-cx-target="#home" class="nav-link active" role="tab" aria-selected="true">Home</button></li>',
+          '  <li class="nav-item" role="none"><button type="button" id="triggerProfile" data-cx-toggle="tab" data-cx-target="#profile" class="nav-link" role="tab">Profile</button></li>',
           '</ul>',
           '<div class="tab-content">',
           '  <div class="tab-pane active" id="home" role="tabpanel"></div>',
@@ -1020,8 +1039,8 @@ describe('Tab', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
           '<ul class="nav nav-tabs" role="tablist">',
-          '  <li class="nav-item" role="presentation"><button type="button" id="tab-home" data-cx-target="#home" class="nav-link" data-cx-toggle="tab" role="tab">Home</button></li>',
-          '  <li class="nav-item" role="presentation"><button type="button" id="tab-profile" data-cx-target="#profile" class="nav-link" data-cx-toggle="tab" role="tab">Profile</button></li>',
+          '  <li class="nav-item" role="none"><button type="button" id="tab-home" data-cx-target="#home" class="nav-link" data-cx-toggle="tab" role="tab">Home</button></li>',
+          '  <li class="nav-item" role="none"><button type="button" id="tab-profile" data-cx-target="#profile" class="nav-link" data-cx-toggle="tab" role="tab">Profile</button></li>',
           '</ul>',
           '<div class="tab-content">',
           '  <div class="tab-pane fade" id="home" role="tabpanel"></div>',
@@ -1062,10 +1081,10 @@ describe('Tab', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
           '<ul class="nav nav-tabs" role="tablist">',
-          '  <li class="nav-item" role="presentation">',
+          '  <li class="nav-item" role="none">',
           '    <button type="button" class="nav-link nav-tab" data-cx-target="#home" role="tab" data-cx-toggle="tab">Home</button>',
           '  </li>',
-          '  <li class="nav-item" role="presentation">',
+          '  <li class="nav-item" role="none">',
           '    <button type="button" id="secondNav" class="nav-link nav-tab" data-cx-target="#profile" role="tab" data-cx-toggle="tab">Profile</button>',
           '  </li>',
           '</ul>',
@@ -1090,10 +1109,10 @@ describe('Tab', () => {
       return new Promise(resolve => {
         fixtureEl.innerHTML = [
           '<ul class="nav nav-tabs" role="tablist">',
-          '  <li class="nav-item" role="presentation">',
+          '  <li class="nav-item" role="none">',
           '    <button type="button" class="nav-link nav-tab" data-cx-target="#home" role="tab" data-cx-toggle="tab">Home</button>',
           '  </li>',
-          '  <li class="nav-item" role="presentation">',
+          '  <li class="nav-item" role="none">',
           '    <button type="button" id="secondNav" class="nav-link nav-tab" data-cx-target="#profile" role="tab" data-cx-toggle="tab">Profile</button>',
           '  </li>',
           '</ul>',
@@ -1142,8 +1161,8 @@ describe('Tab', () => {
       return new Promise((resolve, reject) => {
         fixtureEl.innerHTML = [
           '<ul class="nav nav-tabs" role="tablist">',
-          '  <li class="nav-item" role="presentation"><button type="button" data-cx-target="#home" class="nav-link active" role="tab" aria-selected="true">Home</button></li>',
-          '  <li class="nav-item" role="presentation"><button type="button" data-cx-target="#profile" class="nav-link" disabled role="tab">Profile</button></li>',
+          '  <li class="nav-item" role="none"><button type="button" data-cx-target="#home" class="nav-link active" role="tab" aria-selected="true">Home</button></li>',
+          '  <li class="nav-item" role="none"><button type="button" data-cx-target="#profile" class="nav-link" disabled role="tab">Profile</button></li>',
           '</ul>',
           '<div class="tab-content">',
           '  <div class="tab-pane active" id="home" role="tabpanel"></div>',
@@ -1168,8 +1187,8 @@ describe('Tab', () => {
       return new Promise((resolve, reject) => {
         fixtureEl.innerHTML = [
           '<ul class="nav nav-tabs" role="tablist">',
-          '  <li class="nav-item" role="presentation"><a href="#home" class="nav-link active" role="tab" aria-selected="true">Home</a></li>',
-          '  <li class="nav-item" role="presentation"><a href="#profile" class="nav-link disabled" role="tab">Profile</a></li>',
+          '  <li class="nav-item" role="none"><a href="#home" class="nav-link active" role="tab" aria-selected="true">Home</a></li>',
+          '  <li class="nav-item" role="none"><a href="#profile" class="nav-link disabled" role="tab">Profile</a></li>',
           '</ul>',
           '<div class="tab-content">',
           '  <div class="tab-pane active" id="home" role="tabpanel"></div>',
