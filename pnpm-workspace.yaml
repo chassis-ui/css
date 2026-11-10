@@ -7,3 +7,12 @@ packages:
 # in .github/dependabot.yml, which exempts the same packages.
 minimumReleaseAgeExclude:
   - '@chassis-ui/*'
+
+# @astrojs/astro2tsx (under @astrojs/check) depends on @emnapi/core 1.11.3 but leaves
+# @emnapi/runtime, a peer of its @napi-rs/wasm-runtime, to the tree. Once another package brings
+# in @emnapi/runtime 2.0.0-beta (the wasm32 binding of rolldown 1.3), pnpm hands it that beta, which
+# does not work with core 1.x, and `astro check` fails to load @astrojs/check.
+packageExtensions:
+  '@astrojs/astro2tsx@0.1.3':
+    dependencies:
+      '@emnapi/runtime': 1.11.3
