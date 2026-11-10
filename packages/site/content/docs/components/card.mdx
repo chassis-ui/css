@@ -1,6 +1,6 @@
 ---
 title: Card
-description: Flexible content containers with support for headers, footers, and various content types with consistent spacing and visual styling.
+description: Content containers with headers, footers, images, and lists, with consistent spacing and visual styling.
 toc: true
 tokens:
   scopes:
@@ -152,7 +152,7 @@ The `.card-overlay` class fills the entire card surface. Place the background im
   </div>`} />
 
 <Callout type="warning">
-Content that exceeds the image height will be clipped. Since `.card-overlay` uses `overflow: hidden`, there is no scroll or overflow — excess content is silently cut off.
+`.card-overlay` uses `overflow: hidden`, so content taller than the image is clipped: there is no scroll, and the excess is cut off without notice.
 </Callout>
 
 ## Size variants
@@ -180,7 +180,7 @@ The `.sm` and `.lg` modifiers re-declare the padding, gap, and typography CSS cu
 
 ## Layout options
 
-Cards have no intrinsic width and expand to fill their container. Width is controlled via the grid, sizing utilities, or inline styles; horizontal layouts switch between stacked and side-by-side using responsive flex utilities; `.card-group` joins cards edge-to-edge.
+Cards have no intrinsic width and expand to fill their container. The grid, sizing utilities, or inline styles control the width; horizontal layouts switch between stacked and side-by-side using responsive flex utilities; `.card-group` joins cards edge-to-edge.
 
 ### Width control
 
@@ -495,7 +495,7 @@ The card manages borders and rounded corners automatically when the list follows
     </div>
   </div>`} />
 
-Lists also compose with image caps and card body for richer card layouts.
+Lists also compose with image caps and a `.card-body` in the same card.
 
 <Example code={`<div class="card" style="width: 18rem;">
     <Placeholder width="100%" height="180" class="card-image-top" text="Image cap" aria-hidden="true" />
@@ -638,11 +638,11 @@ Background-color, foreground-color, and border utility classes target individual
 
 ## CSS
 
-<DocsCSS component="Card" />
+<DocsCSS name="Card" />
 
 ### Custom properties
 
-<DocsCSSVars component="Card" />
+<DocsCSSVars name="Card" />
 
 <ScssDocs name="card-css-vars" file="scss/_card.scss" />
 
@@ -654,7 +654,7 @@ Size variants declare their own CSS custom property overrides:
 
 ### Sass variables
 
-<DocsSASSVars component="Card" />
+<DocsSASSVars name="Card" />
 
 <ScssDocs name="card-variables" file="scss/config/_defaults.scss" />
 

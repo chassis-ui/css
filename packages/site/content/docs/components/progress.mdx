@@ -1,6 +1,6 @@
 ---
 title: Progress
-description: Visualize completion status with Chassis CSS's progress component system, featuring accessible markup, stacked displays, and comprehensive theming support.
+description: Show the completion of a task with progress bars that take labels, context colors, stacked segments, and animated stripes.
 toc: true
 tokens: context
 css_layer: components
@@ -8,35 +8,20 @@ css_layer: components
 
 ## Introduction
 
-Progress bars in Chassis CSS provide visual feedback for user actions, system processes, and completion status through accessible, customizable components. Built with semantic HTML and comprehensive ARIA support, progress bars integrate seamlessly with your design system while maintaining optimal performance and accessibility standards.
+Progress bars show how much of a task or process is complete. The component is built from two `<div>` elements instead of the HTML `<progress>` element, which makes room for labels inside the bar, stacked segments, and striped or animated backgrounds.
 
-Unlike the HTML5 `<progress>` element, Chassis CSS progress components offer enhanced styling flexibility and support for advanced features like stacked progress displays, animated backgrounds, and custom content overlays. The component architecture uses CSS custom properties for runtime theming while maintaining consistent visual hierarchy across your application.
+### Key features
 
-Chassis CSS progress bars feature a two-element structure for optimal flexibility:
+The component is made of these parts:
 
-- **Wrapper element** (`.progress`) defines the maximum value and accessibility context
-- **Bar element** (`.progress-bar`) handles visual presentation and progress indication
-- **Stacked layouts** (`.progress-stacked`) enable multi-segment progress visualization
-- **Accessibility integration** through proper ARIA attributes and semantic markup
-- **CSS custom properties** for seamless theming and brand consistency
+- **Wrapper** (`.progress`) — the track, which carries the `progressbar` role and the ARIA values.
+- **Bar** (`.progress-bar`) — the filled part, whose width shows the progress.
+- **Stack** (`.progress-stacked`) — a track that holds several segments.
+- **Modifiers** (`.striped`, `.animated`) — a striped background on the bar, and its animation.
 
-### Implementation
+## Basic structure
 
-Before implementing progress bars, ensure these accessibility and markup considerations are addressed:
-
-- Include proper `role="progressbar"` on wrapper elements for screen reader compatibility
-- Provide descriptive labels using `aria-label`, `aria-labelledby`, or similar attributes
-- Set appropriate `aria-valuenow`, `aria-valuemin`, and `aria-valuemax` values for current progress state
-- Use inline styles, utility classes, or custom CSS to control visual width representation
-- Consider color contrast requirements when implementing custom themes or background colors
-
-## Examples
-
-Explore practical progress bar implementations demonstrating structure variations, sizing options, and styling techniques. These examples showcase Chassis CSS's flexible progress system across various use cases.
-
-### Basic implementation
-
-This foundational example demonstrates essential progress bar structure with proper accessibility attributes. Progress values are controlled through `aria-valuenow` and visual width styling.
+Wrap a `.progress-bar` in a `.progress` element. The wrapper carries `role="progressbar"`, a label, and the `aria-valuenow`, `aria-valuemin`, and `aria-valuemax` attributes; the width of the bar shows the value and is set separately, here with an inline style.
 
 <Example code={`<div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
     <div class="progress-bar" style="width: 0%"></div>
@@ -54,17 +39,17 @@ This foundational example demonstrates essential progress bar structure with pro
     <div class="progress-bar" style="width: 100%"></div>
   </div>`} />
 
-### Width control
+## Width
 
-Configure progress bar width using Chassis CSS's [sizing utilities]([[docsref:/utilities/sizing]]) or custom CSS for dynamic width management based on your application requirements.
+Set the width of the bar with an inline style, a [sizing utility]([[docsref:/utilities/sizing]]), or custom CSS. Keep it in step with `aria-valuenow`.
 
 <Example code={`<div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
     <div class="progress-bar w-75"></div>
   </div>`} />
 
-### Height customization
+## Height
 
-Adjust progress bar height by setting a `height` value on the `.progress` container. The inner `.progress-bar` automatically adapts to maintain proper proportions and visual consistency.
+Set a `height` on the `.progress` wrapper to change the height of the track. The `.progress-bar` inside stretches to fill it.
 
 <Example code={`<div class="progress" role="progressbar" aria-label="Example 1px high" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 1px">
     <div class="progress-bar" style="width: 25%"></div>
@@ -73,25 +58,25 @@ Adjust progress bar height by setting a `height` value on the `.progress` contai
     <div class="progress-bar" style="width: 25%"></div>
   </div>`} />
 
-### Content labels
+## Labels
 
-Enhance progress bars with descriptive text by placing content within the `.progress-bar` element. Text automatically inherits appropriate styling for optimal readability.
+Place text inside the `.progress-bar` element to label it. The label is centered in the bar by default and takes the foreground color of the bar.
 
 <Example code={`<div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
     <div class="progress-bar text-end" style="width: 25%"><span class="mx-2xs">25%</span></div>
   </div>`} />
 
-### Long label handling
+### Long labels
 
-Content within `.progress-bar` uses `overflow: hidden` by default to prevent visual overflow. For longer labels, apply [overflow utilities]([[docsref:/utilities/overflow]]) like `.overflow-visible` to modify this behavior as needed.
+The `.progress-bar` element has `overflow: hidden`, which cuts off a label that is wider than the bar. An [overflow utility]([[docsref:/utilities/overflow]]) such as `.overflow-visible` lets the label extend past the bar.
 
 <Callout type="warning">
-**Consider accessibility when using visible overflow.** Labels extending beyond progress bars may not provide adequate color contrast with both the `.progress` background and `.progress-bar` colors. For optimal accessibility, consider displaying labels outside the progress bar structure when content length varies significantly.
+  A label that extends past the bar sits partly on the `.progress` background and partly on the `.progress-bar` color, and may not have enough contrast with both. When the length of a label varies, place it outside the progress bar.
 </Callout>
 
-### Color themes
+## Colors
 
-Apply [background utilities]([[docsref:/utilities/colors]]) to customize progress bar appearance with your brand colors and semantic meaning indicators.
+The bar uses the primary color by default. Apply a [background utility]([[docsref:/utilities/colors]]) to the `.progress-bar` to give it the color of another context.
 
 <Example code={`<div class="progress" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
     <div class="progress-bar bg-success" style="width: 25%"></div>
@@ -108,9 +93,9 @@ Apply [background utilities]([[docsref:/utilities/colors]]) to customize progres
 
 <Callout name="warning-color-assistive-technologies" />
 
-### Accessible color labeling
+### Label contrast
 
-When using custom background colors with labels, ensure sufficient contrast by applying [contrast utilities]([[docsref:/helpers/contrast]]) for optimal readability.
+A label on a bar with a background utility needs a matching foreground color. Add the `.fg-contrast` class of the [contrast helper]([[docsref:/helpers/contrast]]) so the label stays readable on the background.
 
 <Example code={`<div class="progress" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
     <div class="progress-bar fg-contrast bg-success" style="width: 25%">25%</div>
@@ -125,9 +110,9 @@ When using custom background colors with labels, ensure sufficient contrast by a
     <div class="progress-bar fg-contrast bg-danger" style="width: 100%">100%</div>
   </div>`} />
 
-### Multi-segment displays
+## Stacked bars
 
-Create complex progress visualizations using `.progress-stacked` containers with multiple progress components. Each segment maintains individual accessibility attributes while contributing to the overall progress indication.
+Place several `.progress` elements in a `.progress-stacked` container to show segments in one track. In a stack the width goes on each `.progress` element, whose bar fills it, and each segment keeps its own role, label, and ARIA values.
 
 <Example code={`<div class="progress-stacked">
     <div class="progress" role="progressbar" aria-label="Segment one" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" style="width: 15%">
@@ -141,9 +126,9 @@ Create complex progress visualizations using `.progress-stacked` containers with
     </div>
   </div>`} />
 
-### Striped patterns
+## Striped bars
 
-Apply `.striped` to any `.progress-bar` to create visual texture through CSS gradient patterns over the background color.
+Add `.striped` to a `.progress-bar` to lay a striped gradient over its background color.
 
 <Example code={`<div class="progress" role="progressbar" aria-label="Default striped example" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
     <div class="progress-bar striped" style="width: 10%"></div>
@@ -163,11 +148,22 @@ Apply `.striped` to any `.progress-bar` to create visual texture through CSS gra
 
 ### Animated stripes
 
-Enhance striped progress bars with motion by adding `.animated` to create flowing stripe animations using CSS3 transforms.
+Add `.animated` to a striped bar to move the stripes along the bar with a CSS animation.
 
 <Example code={`<div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
     <div class="progress-bar striped animated" style="width: 75%"></div>
   </div>`} />
+
+<Callout name="info-prefersreducedmotion" />
+
+## Accessibility
+
+A progress bar built from `<div>` elements has no native semantics, so the markup has to supply them:
+
+- Add `role="progressbar"` to the `.progress` wrapper, not to the bar.
+- Label the wrapper with `aria-label` or `aria-labelledby`.
+- Set `aria-valuenow` to the current value, and `aria-valuemin` and `aria-valuemax` to the range. Update `aria-valuenow` together with the width of the bar.
+- Check the contrast of a label against the bar, and of the bar against the track, when a background utility or a custom color is used.
 
 ## CSS
 
@@ -185,8 +181,8 @@ Enhance striped progress bars with motion by adding `.animated` to create flowin
 
 <ScssDocs name="progress-variables" file="scss/config/_defaults.scss" />
 
-### Animation keyframes
+### Keyframes
 
-CSS animations for progress bar are defined within the progress component stylesheet, providing smooth stripe motion effects.
+The `progress-bar-stripes` keyframes move the striped background by the height of the bar. The `.animated` modifier uses them, and they are emitted only when `$enable-transitions` is on.
 
 <ScssDocs name="progress-keyframes" file="scss/_progress.scss" />

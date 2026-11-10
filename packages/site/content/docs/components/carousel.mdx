@@ -11,7 +11,7 @@ js: required
 
 Chassis CSS carousels are content sliders built on `.carousel-inner`, a real horizontally-scrolling container using CSS scroll-snap, rather than JavaScript-driven position transforms. The browser handles touch, trackpad, and mouse-drag scrolling natively; the `Carousel` plugin layers on keyboard navigation, autoplay, the prev/next and indicator controls, and end-of-track behavior.
 
-Carousels require explicit JavaScript initialization — construct an instance with the [`Carousel` class](#initialization) before user interaction. A carousel decorated with `data-cx-autoplay="true"` initializes automatically on page load; constructing it again manually creates a second instance without disposing the first, leaving its listeners and `IntersectionObserver` active, so pick one initialization path per carousel.
+A carousel gets its instance on page load when it has `data-cx-autoplay="true"`, and otherwise on the first click of one of its `data-cx-slide` or `data-cx-slide-to` controls. Keyboard navigation and the state of the controls and indicators start with the instance, so construct one with the [`Carousel` class](#initialization) to have them before that first click. Constructing an instance manually for a carousel that initializes on page load creates a second instance without disposing the first, leaving its listeners and `IntersectionObserver` active, so pick one initialization path per carousel.
 
 Nested carousels are not supported: prev/next controls and indicators are located by scanning the entire carousel subtree, so an inner carousel's controls would also be picked up by the outer instance. Provide an alternative navigation pattern for carousel-like content nested inside another carousel.
 
@@ -19,7 +19,7 @@ Nested carousels are not supported: prev/next controls and indicators are locate
 
 ## Basic structure
 
-This foundational example shows the essential carousel structure: navigation controls, indicators, and slides. Controls work as semantic `<button>` elements; `<a>` elements are also supported as controls but need `role="button"`, since they carry no `href`.
+A carousel is a `.carousel` element with its slides, the `.carousel-item` elements, in a `.carousel-inner` scroll container, plus optional navigation controls and indicators. Controls work as semantic `<button>` elements; `<a>` elements are also supported as controls but need `role="button"`, since they carry no `href`.
 
 <Example code={`<div id="carouselExample" class="carousel slide">
     <div class="d-flex justify-content-between align-items-center">
@@ -124,7 +124,7 @@ Wrap controls and indicators in a `.carousel-overlay` container to overlay them 
 
 ## Fade transitions
 
-Replace the scroll transition with a crossfade using `.carousel-fade`. Fade mode stacks every slide instead of scrolling between them, fading the active one in over `--carousel-fade-duration`; for optimal crossfading with certain content types, consider adding `.bg-main` or a custom background to `.carousel-item`.
+Replace the scroll transition with a crossfade using `.carousel-fade`. Fade mode stacks every slide instead of scrolling between them, fading the active one in over `--cx-carousel-fade-duration`; for optimal crossfading with certain content types, consider adding `.bg-main` or a custom background to `.carousel-item`.
 
 <Example code={`<div id="carouselExampleFade" class="carousel slide carousel-fade">
     <div class="carousel-inner">
@@ -154,13 +154,11 @@ Replace the scroll transition with a crossfade using `.carousel-fade`. Fade mode
 
 Set the `autoplay` option to `true` (or add `data-cx-autoplay="true"`) to cycle a carousel automatically on page load. Autoplay pauses on `mouseenter` by default (the `pause` option) and stops advancing once the page or the carousel itself isn't visible, per the [Page Visibility API](https://www.w3.org/TR/page-visibility/). The first control click, arrow-key press, or track drag/tap turns autoplay off for good, so content doesn't keep moving out from under someone who's just started interacting with it — part of complying with [WCAG 2.2 Success Criterion 2.2.2 Pause, Stop, Hide](https://www.w3.org/TR/WCAG/#pause-stop-hide).
 
-<Callout>
-Chassis CSS recommends providing explicit pause/stop controls for autoplaying carousels to ensure compliance with [WCAG 2.2 Success Criterion 2.2.2 Pause, Stop, Hide](https://www.w3.org/TR/WCAG/#pause-stop-hide) and improve user experience for all users.
-
-Add a button with `.carousel-control-play-pause` class (shown below) to allow users to toggle autoplay on and off. The button automatically updates its icon and accessible name to reflect the current state.
+<Callout type="warning">
+Give an autoplaying carousel an explicit pause/stop control: [WCAG 2.2 Success Criterion 2.2.2 Pause, Stop, Hide](https://www.w3.org/TR/WCAG/#pause-stop-hide) requires one for content that moves for more than five seconds. A button with the `.carousel-control-play-pause` class toggles autoplay on and off.
 </Callout>
 
-The play/pause button toggles autoplay and reflects the current state automatically—a pause icon while playing, a play icon while stopped. Give each state an accessible name with the `data-cx-play-label` and `data-cx-pause-label` attributes. While playing, the active indicator fills like a progress bar over the current slide's [interval](#timing-control) as a visual countdown; the fill pauses with autoplay and is skipped entirely under reduced motion. Set its color with the `--cx-carousel-indicator-active-color` CSS variable.
+The play/pause button toggles autoplay and reflects the current state automatically—a pause icon while playing, a play icon while stopped. Give each state an accessible name with the `data-cx-play-label` and `data-cx-pause-label` attributes. While playing, the active indicator fills like a progress bar over the current slide's [interval](#timing-control) as a visual countdown; the fill pauses with autoplay and is skipped entirely under reduced motion. Set its color with the `--cx-carousel-indicator-active-color` custom property.
 
 <Example code={`<div id="carouselExampleAutoplaying" class="carousel slide" data-cx-autoplay="true">
     <div class="carousel-inner">
@@ -316,7 +314,7 @@ With `data-cx-ends="stop"` the carousel hard-stops at the first and last slide. 
 
 ## Content sizing
 
-Any markup can go inside a `.carousel-item`, and CSS custom properties on `.carousel` control how many slides show at once and how they're sized—no extra JavaScript beyond the base plugin.
+Custom properties on `.carousel` control how many slides show at once and how they are sized; the plugin needs no extra configuration for them.
 
 ### Custom content
 
@@ -521,21 +519,9 @@ const carousel = new Carousel('#myCarousel', {
 })
 ```
 
-### Options
-
-<JsDataAttributes />
-
-<CxTable>
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `autoplay` | boolean | `false` | Autoplays the carousel on load. |
-| `ends` | string | `"loop"` | Behavior at the first/last slide. `"stop"` hard-stops and disables the previous control on the first slide and the next control on the last (via the native `disabled` attribute — `<a>` controls get `aria-disabled` instead, since they have no `disabled` IDL property). `"wrap"` jumps from the last slide back to the first, and vice versa. `"loop"` continues seamlessly past the ends for single-slide carousels, falling back to `"wrap"` for multi-item, peek, centered, or variable-width layouts, and under reduced motion. |
-| `interval` | number | `5000` | Milliseconds to wait before automatically advancing to the next item. |
-| `keyboard` | boolean | `true` | Whether Left/Right arrow keys navigate the carousel. |
-| `pause` | string, boolean | `"hover"` | `"hover"` pauses cycling on `mouseenter` and resumes it on `mouseleave`. `false` disables pause-on-hover. |
-</CxTable>
-
 ### Methods
+
+The plugin exposes instance methods for navigation, autoplay control, and teardown.
 
 <Callout name="danger-async-methods" type="danger" />
 
@@ -568,6 +554,20 @@ carousel.dispose()
 const instance = Carousel.getInstance('#myCarousel')
 const instance = Carousel.getOrCreateInstance('#myCarousel')
 ```
+
+### Options
+
+<JsDataAttributes />
+
+<CxTable>
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `autoplay` | boolean | `false` | Autoplays the carousel on load. |
+| `ends` | string | `"loop"` | Behavior at the first/last slide. `"stop"` hard-stops and disables the previous control on the first slide and the next control on the last (via the native `disabled` attribute — `<a>` controls get `aria-disabled` instead, since they have no `disabled` IDL property). `"wrap"` jumps from the last slide back to the first, and vice versa. `"loop"` continues seamlessly past the ends for single-slide carousels, falling back to `"wrap"` for multi-item, peek, centered, or variable-width layouts, and under reduced motion. |
+| `interval` | number | `5000` | Milliseconds to wait before automatically advancing to the next item. |
+| `keyboard` | boolean | `true` | Whether Left/Right arrow keys navigate the carousel. |
+| `pause` | string, boolean | `"hover"` | `"hover"` pauses cycling on `mouseenter` and resumes it on `mouseleave`. `false` disables pause-on-hover. |
+</CxTable>
 
 ### Events
 

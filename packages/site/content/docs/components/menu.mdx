@@ -28,7 +28,7 @@ The plugin adds `.show` to the `.menu` element, the toggle button, and the toggl
 
 ## Basic structure
 
-Use [button]([[docsref:/components/button]]) elements with `.caret` [helper]([[docsref:/helpers/carets]]) as toggle triggers wherever possible — they handle keyboard activation natively. When a link element is used as a trigger, add `role="button"` to communicate its purpose to assistive technology. 
+Use [button]([[docsref:/components/button]]) elements with `.caret` [helper]([[docsref:/helpers/carets]]) as toggle triggers wherever possible — they handle keyboard activation natively. When a link element is used as a trigger, add `role="button"` to communicate its purpose to assistive technology.
 
 <Example code={`<button type="button" class="button primary caret" data-cx-toggle="menu" aria-expanded="false">
     Toggle menu
@@ -243,7 +243,7 @@ A `.menu` can contain any HTML form content. Apply spacing utilities to set inte
     </div>
     <div class="form-check">
       <input type="checkbox" class="check-input" id="menuRemember" />
-      <label for="menuRemember" class="check-label">Remember me</label>
+      <label for="menuRemember">Remember me</label>
     </div>
     <div class="vstack gap-sm">
       <button type="submit" class="button primary">Sign in</button>
@@ -255,7 +255,7 @@ A `.menu` can contain any HTML form content. Apply spacing utilities to set inte
 
 Set `data-cx-placement` on the toggle element to control which side of the trigger the menu opens on. [Floating UI](https://floating-ui.com/) positions the menu and flips it automatically when viewport space is limited.
 
-Two placement families are supported:
+The attribute takes two families of placements:
 
 - **Physical placements:** `top`, `bottom`, `left`, `right` — fixed directions regardless of reading direction.
 - **Logical placements:** `start`, `end` — flip automatically in RTL contexts. In LTR, `start` maps to `left` and `end` maps to `right`.
@@ -329,11 +329,7 @@ Menus can scroll when content overflows, stack submenus into a slide-in panel on
 
 ### Scrollable menus
 
-Add `.scrollable` alongside `.menu` to cap the panel height at `80dvh` and enable internal scrolling. Set `--cx-menu-max-height` directly on the element to use a fixed height instead.
-
-<Callout type="info">
-`.scrollable` sets `max-height: 80dvh`, so the panel only scrolls when its content exceeds the available viewport height. The example below uses an explicit `--cx-menu-max-height` to illustrate the scrolling appearance.
-</Callout>
+Add `.scrollable` alongside `.menu` to cap the panel height at `80dvh` and enable internal scrolling. With the class, the panel scrolls only when its content is taller than that. For a fixed height, set `--cx-menu-max-height` and `--cx-menu-overflow-y: auto` on the element instead of the class, as the example does to show the scrolling.
 
 <Example code={`<div class="menu show position-static" style="--cx-menu-max-height: 145px; --cx-menu-overflow-y: auto;">
   <button class="menu-item" type="button">New file</button>
@@ -524,7 +520,7 @@ Apply `data-cx-theme="dark"` to the `.menu` or any ancestor element to opt the m
 
 ### Translucent
 
-Add `.translucent` alongside `.menu` to blur and saturate the background. The variant applies `backdrop-filter: blur()` and tints the background using `--opacity-dim-main`. Browser support for `backdrop-filter` varies; the menu remains visible without blur on unsupported browsers.
+Add `.translucent` alongside `.menu` to blur and saturate the background. The variant applies `backdrop-filter` with `blur()` and `saturate()`, and makes the background color translucent by `--cx-translucent-opacity`. Browser support for `backdrop-filter` varies; the menu remains visible without blur on unsupported browsers.
 
 <Example code={`<button class="button secondary" type="button" data-cx-toggle="menu" aria-expanded="false">
   Menu button

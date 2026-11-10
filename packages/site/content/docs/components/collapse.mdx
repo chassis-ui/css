@@ -1,6 +1,6 @@
 ---
 title: Collapse
-description: Create smooth, accessible content toggles with Chassis CSS's collapse component, featuring height and width animations with comprehensive JavaScript controls.
+description: Toggle the visibility of content with the collapse plugin, which animates the height or the width of an element and keeps the state of its triggers in sync.
 toc: true
 tokens: context
 css_layer: components
@@ -9,23 +9,17 @@ js: required
 
 ## Introduction
 
-Collapse components provide flexible content visibility toggles using CSS transforms for smooth animations. The component supports multiple trigger-target relationships and requires explicit initialization for optimal performance.
+Collapse shows and hides an element with an animation of its height or its width. Buttons or links act as triggers for one or more collapsible elements, and the plugin keeps `aria-expanded` on every trigger in sync with the state of its target.
 
-### How it work
+### How it works
 
-Chassis CSS collapse uses JavaScript to show and hide content through smooth transitions. Buttons or links serve as triggers that control specific collapsible elements. The component animates `height` or `width` from its current value to `zero` using CSS transforms for optimal performance. Due to CSS animation constraints, avoid applying padding directly to `.collapse` elements and use the class as an independent wrapper instead.
+The plugin moves an element through three classes: `.collapse` hides it, `.collapsing` is applied while it animates, and `.collapse.show` displays it. During the animation the plugin sets an inline `height` (or `width`) and a CSS transition moves it between `0` and the size of the content. Padding on the `.collapse` element itself stays visible at a height of `0`, so keep `.collapse` as a wrapper of its own and put the padding on an element inside it.
 
 <Callout name="info-prefersreducedmotion" />
 
-## Examples
+## Basic structure
 
-Explore practical collapse implementations showcasing Chassis CSS's flexible architecture and comprehensive feature set. These examples demonstrate real-world usage patterns from basic content toggles to complex multi-target interactions.
-
-### Basic structure
-
-This foundational example demonstrates essential collapse functionality with multiple trigger types. Chassis CSS supports both button and link triggers, though semantic `<button>` elements are recommended for optimal accessibility.
-
-The `.collapse` class hides content by default, `.collapsing` is applied during transition animations, and `.collapse.show` displays content in expanded state. Chassis CSS recommends semantic `<button>` elements with `data-cx-target` attributes. Link elements (`<a>`) with `href` attributes are supported but require `role="button"` for accessibility. Both approaches require `data-cx-toggle="collapse"`.
+A collapse is an element with the `.collapse` class and an `id`, and a trigger with `data-cx-toggle="collapse"` that points at it. A `<button>` names its target in `data-cx-target`; an `<a>` names it in `href` and takes `role="button"`. Add `.show` to the element to render it expanded on load.
 
 <Example code={`<p class="d-inline-flex gap-2xs">
     <a class="button primary" data-cx-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
@@ -41,14 +35,12 @@ The `.collapse` class hides content by default, `.collapsing` is applied during 
     </div>
   </div>`} />
 
-### Horizontal collapse
+## Horizontal collapse
 
-Transform collapse behavior for width-based animations using `.collapse-horizontal`. This modifier transitions element width instead of height, enabling sophisticated layout patterns and responsive design implementations.
+Add `.collapse-horizontal` to animate the `width` of the element instead of its `height`. The immediate child needs an explicit `width`, set with a [width utility]([[docsref:/utilities/sizing]]), custom CSS, or an inline style.
 
-Set explicit `width` values on immediate child elements using Chassis CSS [width utilities]([[docsref:/utilities/sizing]]), custom CSS, or inline styles for width control.
-
-<Callout>
-The example below includes `min-height` styling to prevent layout shifts in documentation. In production implementations, only the child element's `width` property is required for proper horizontal collapse functionality.
+<Callout type="info">
+  The example below sets a `min-height` on a wrapper to keep the page from shifting as the element opens. Only the `width` of the child element is required.
 </Callout>
 
 <Example code={`<p>
@@ -64,11 +56,9 @@ The example below includes `min-height` styling to prevent layout shifts in docu
     </div>
   </div>`} />
 
-### Multiple targets and triggers
+## Multiple targets
 
-Demonstrate advanced collapse functionality with complex trigger-target relationships. Single triggers can control multiple elements, and multiple triggers can control individual elements, enabling sophisticated interface patterns.
-
-Use CSS selectors in `data-cx-target` or `href` attributes to control multiple collapse elements simultaneously. Reference the same target element from multiple triggers using consistent `data-cx-target` or `href` values for flexible interface control.
+A trigger opens every element that its selector matches, and an element can have several triggers. Use a selector that matches more than one element in `data-cx-target` or `href` to toggle them together, and point several triggers at the same selector to toggle one element from more than one place.
 
 <Example code={`<p class="d-inline-flex gap-2xs">
     <button type="button" class="button primary" data-cx-toggle="collapse" data-cx-target="#multiCollapseExample1" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle first element</button>
@@ -94,23 +84,92 @@ Use CSS selectors in `data-cx-target` or `href` attributes to control multiple c
 
 ## Accessibility
 
-Collapse components in Chassis CSS prioritize accessibility through semantic markup, proper ARIA attributes, and keyboard navigation support. These features ensure collapse functionality enhances rather than hinders the user experience for all users.
+The state of a collapse is conveyed by attributes on its triggers, which the markup provides and the plugin updates.
 
 ### ARIA attributes
 
-Proper ARIA implementation ensures collapse components communicate state changes effectively to assistive technologies. The `aria-expanded` attribute explicitly conveys current collapse state to screen readers and is required on control elements. For single targets, include `aria-controls` with target element IDs to enable assistive technology navigation shortcuts. When using non-button elements (like `<a>` or `<div>`) as triggers, add `role="button"` for proper semantic meaning.
+Add `aria-expanded` to every trigger, set to `"false"` for a collapsed target and to `"true"` for one that starts with `.show`. The plugin updates the attribute, and toggles a `.collapsed` class on the trigger, each time the target opens or closes. A trigger with a single target also takes `aria-controls` with the `id` of that target, and a trigger that is not a `<button>` takes `role="button"`.
 
-Chassis CSS automatically updates `aria-expanded` values based on collapse state changes, maintaining accessibility compliance without manual intervention.
+### Keyboard interaction
 
-### Keyboard navigation
+The plugin adds no keyboard handling of its own. A `<button>` trigger is focusable and responds to <kbd>Enter</kbd> and <kbd>Space</kbd> natively, and focus stays on the trigger after it is activated, so prefer `<button>` over other elements. Patterns with more keyboard support, such as arrow-key navigation between the headers of an accordion, follow the [ARIA Authoring Practices Guide accordion pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) and need custom JavaScript.
 
-Chassis CSS collapse supports standard keyboard interaction patterns for comprehensive accessibility. All collapse triggers respond to standard button activation methods (Space, Enter keys) when properly implemented with semantic button elements. Focus remains on trigger elements after activation, maintaining predictable navigation patterns for keyboard users.
+## JavaScript API
 
-### Implementation guidelines
+The Collapse plugin toggles collapsible elements, syncs the state of their triggers and fires events around each transition. Chassis JS ships as an ES module — import the `Collapse` class:
 
-Follow these practices to ensure collapse components remain accessible across all user scenarios. Prioritize `<button>` elements for triggers to ensure inherent keyboard accessibility and proper screen reader announcement. When controlling single elements, always include `aria-controls` with target element IDs to enable assistive technology navigation shortcuts.
+```js
+import { Collapse } from '@chassis-ui/css'
+```
 
-For advanced keyboard patterns (like accordion-style navigation), implement custom JavaScript following [ARIA Authoring Practices Guide accordion patterns](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) as Chassis CSS focuses on core collapse functionality.
+### Triggers
+
+The data-attribute API needs no JavaScript on the page beyond the plugin. Add `data-cx-toggle="collapse"` to a trigger, and a selector for one or more `.collapse` elements in `data-cx-target`, or in `href` on a link. Add `data-cx-parent` with a selector to the collapsible elements of a group to close the open ones when another opens.
+
+### Initialization
+
+For programmatic access — calling methods or listening to events — instantiate each element with the `Collapse` class:
+
+```js
+const collapseElementList = document.querySelectorAll('.collapse')
+const collapseList = [...collapseElementList].map(collapseEl => new Collapse(collapseEl))
+```
+
+The constructor toggles the element right away unless the `toggle` option is `false`:
+
+```js
+const cxCollapse = new Collapse('#myCollapse', {
+  toggle: false
+})
+```
+
+### Methods
+
+The plugin exposes instance methods for programmatic control, and the static methods shared by all plugins:
+
+<Callout name="danger-async-methods" type="danger" />
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `dispose` | Destroys the collapse instance of an element and removes the data stored on it. |
+| `getInstance` | Static — returns the collapse instance of a DOM element, or `null`: `Collapse.getInstance(element)`. |
+| `getOrCreateInstance` | Static — returns the collapse instance of a DOM element, or creates one when it was not initialized: `Collapse.getOrCreateInstance(element)`. |
+| `hide` | Hides a collapsible element. **Returns to the caller before the element is hidden**, that is, before the `hidden.cx.collapse` event. |
+| `show` | Shows a collapsible element. **Returns to the caller before the element is shown**, that is, before the `shown.cx.collapse` event. |
+| `toggle` | Shows a hidden collapsible element and hides a shown one. **Returns to the caller before the transition ends**, that is, before the `shown.cx.collapse` or `hidden.cx.collapse` event. |
+</CxTable>
+
+### Options
+
+<JsDataAttributes />
+
+<CxTable>
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `parent` | selector, DOM element | `null` | Closes the open collapsible elements under the given parent when this element is shown, as an accordion does. Set it on the collapsible element. |
+| `toggle` | boolean | `true` | Toggles the collapsible element when the instance is created. |
+</CxTable>
+
+### Events
+
+The plugin fires its events on the collapsible element. Calling `event.preventDefault()` on `show.cx.collapse` or `hide.cx.collapse` cancels the transition.
+
+<CxTable>
+| Event type | Description |
+| --- | --- |
+| `hide.cx.collapse` | Fires immediately when the `hide` method is called. |
+| `hidden.cx.collapse` | Fires when the element is hidden, after its CSS transition has ended. |
+| `show.cx.collapse` | Fires immediately when the `show` method is called. |
+| `shown.cx.collapse` | Fires when the element is visible, after its CSS transition has ended. |
+</CxTable>
+
+```js
+const myCollapsible = document.getElementById('myCollapsible')
+myCollapsible.addEventListener('hidden.cx.collapse', event => {
+  document.getElementById('myCollapseTrigger').focus()
+})
+```
 
 ## CSS
 
@@ -124,81 +183,6 @@ For advanced keyboard patterns (like accordion-style navigation), implement cust
 
 ### Classes
 
-Collapse animation states are defined in `scss/_transitions.scss` as these classes are shared across multiple components (collapse and accordion).
+The state classes of collapse are defined in `scss/_transitions.scss`, next to the other transition classes.
 
 <ScssDocs name="collapse-classes" file="scss/_transitions.scss" />
-
-## JavaScript API
-
-Chassis CSS collapse provides comprehensive JavaScript controls for dynamic content management. The API supports both declarative data attributes and programmatic initialization for flexible integration with modern applications.
-
-### Data attributes
-
-Implement collapse functionality using declarative HTML data attributes for streamlined initialization and configuration. Add `data-cx-toggle="collapse"` and `data-cx-target` to control elements for automatic collapse binding. The `data-cx-target` attribute accepts CSS selectors to control one or more collapsible elements.
-
-Apply the `collapse` class to collapsible elements. Add the `show` class for elements that should be expanded by default. For accordion-style group management where opening one element closes others, add `data-cx-parent="#selector"`. Refer to the [accordion documentation](../accordion) for comprehensive group control patterns.
-
-### Initialization
-
-Initialize collapse components programmatically for dynamic content or advanced configuration requirements.
-
-```js
-const collapseElementList = document.querySelectorAll('.collapse')
-const collapseList = [...collapseElementList].map(collapseEl => new chassis.Collapse(collapseEl))
-```
-
-You can create a collapse instance with the constructor, for example:
-
-```js
-const cxCollapse = new chassis.Collapse('#myCollapse', {
-  toggle: false
-})
-```
-
-### Configuration options
-
-<JsDataAttributes />
-
-<CxTable>
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-`parent` | selector, DOM element | `null` | If parent is provided, then all collapsible elements under the specified parent will be closed when this collapsible item is shown. (similar to traditional accordion behavior - this is dependent on the `card` class). The attribute has to be set on the target collapsible area. |
-`toggle` | boolean | `true` | Toggles the collapsible element on invocation. |
-</CxTable>
-
-### Methods
-
-Chassis CSS collapse provides comprehensive instance methods for programmatic control and integration with application logic:
-
-<Callout name="danger-async-methods" type="danger" />
-
-<CxTable>
-| Method | Description |
-| --- | --- |
-| `dispose` | Destroys an element's collapse. (Removes stored data on the DOM element) |
-| `getInstance` | Static method which allows you to get the collapse instance associated to a DOM element, you can use it like this: `chassis.Collapse.getInstance(element)`. |
-| `getOrCreateInstance` | Static method which returns a collapse instance associated to a DOM element or create a new one in case it wasn't initialized. You can use it like this: `chassis.Collapse.getOrCreateInstance(element)`. |
-| `hide` | Hides a collapsible element. **Returns to the caller before the collapsible element has actually been hidden** (e.g., before the `hidden.cx.collapse` event occurs). |
-| `show` | Shows a collapsible element. **Returns to the caller before the collapsible element has actually been shown** (e.g., before the `shown.cx.collapse` event occurs). |
-| `toggle` | Toggles a collapsible element to shown or hidden. **Returns to the caller before the collapsible element has actually been shown or hidden** (i.e. before the `shown.cx.collapse` or `hidden.cx.collapse` event occurs). |
-</CxTable>
-
-### Events
-
-Chassis CSS collapse exposes comprehensive events for hooking into collapse functionality and integrating with application logic:
-
-<CxTable>
-| Event type | Description |
-| --- | --- |
-| `hide.cx.collapse` | This event is fired immediately when the `hide` method has been called. |
-| `hidden.cx.collapse` | This event is fired when a collapse element has been hidden from the user (will wait for CSS transitions to complete). |
-| `show.cx.collapse` | This event fires immediately when the `show` instance method is called. |
-| `shown.cx.collapse` | This event is fired when a collapse element has been made visible to the user (will wait for CSS transitions to complete). |
-</CxTable>
-
-```js
-const myCollapsible = document.getElementById('myCollapsible')
-myCollapsible.addEventListener('hidden.cx.collapse', event => {
-  // do something...
-})
-```

@@ -11,7 +11,7 @@ css_media: container
 
 Steppers communicate progress through a sequence of discrete stages. The component is built with CSS Grid and an `<ol>` element so each step receives an automatic counter, while the `.active` class combined with the `:has()` relational selector drives the past, current, and next status colors without requiring per-item modifier classes.
 
-## Basic implementation
+## Basic structure
 
 Wrap an ordered list in the `.stepper` class and apply `.stepper-item` to each `<li>`. Steps stack vertically by default and are connected by a track that renders automatically between adjacent items. Mark the current step with the `.active` class — items positioned before any active step are styled as completed (past), items after the last active step are styled as upcoming (next), and active items themselves adopt the current colors.
 
@@ -37,7 +37,7 @@ Apply the `.horizontal` modifier to display steps side-by-side. The layout switc
 
 ### Responsive variants
 
-Responsive `.{breakpoint}:horizontal` classes switch a vertical stepper into the horizontal layout at a given breakpoint. The stepper must be placed inside a container query context — typically a parent element carrying the `.contains-inline` utility — because the modifier relies on container queries rather than viewport media queries.
+Responsive `.{breakpoint}:horizontal` classes switch a vertical stepper into the horizontal layout at a given breakpoint. The stepper must be placed inside a container query context — typically a parent element carrying the `.contains-inline` utility — because the modifier relies on container queries rather than viewport media queries. Resize the example below to preview the switch between the vertical and the horizontal layout.
 
 <ResizableExample code={`<div class="contains-inline">
     <ol class="stepper sm:horizontal">
@@ -234,7 +234,7 @@ Apply `.w-100` to stretch the stepper to its container's full width. Step items 
 
 ## Icon steppers
 
-Add `.icon-stepper` to the `.stepper` to replace the default counters with icons. The status icon for each step is controlled by the `--status-icon` custom property, which can be set inline or through a stylesheet. The example below uses Unicode code points from an icon font, but any valid CSS content value is supported — including emoji, SVGs, or inline images.
+Add `.icon-stepper` to the `.stepper` to replace the default counters with icons. The status icon for each step is controlled by the `--cx-status-icon` custom property, which can be set inline or through a stylesheet. The example below uses Unicode code points from an icon font, but any valid CSS content value is supported — including emoji, SVGs, or inline images.
 
 <Example code={`<ol class="stepper horizontal icon-stepper">
     <li class="stepper-item">Past Step</li>

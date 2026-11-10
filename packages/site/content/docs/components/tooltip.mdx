@@ -52,7 +52,7 @@ The plugin generates the following markup and inserts it into the container (`do
 </div>
 ```
 
-After each `computePosition` call, the plugin writes the final resolved placement to `data-cx-placement` on the tooltip element. The `cx-tooltip-auto` class reads that attribute and applies the styles of the matching directional class (`cx-tooltip-top`, `cx-tooltip-end`, `cx-tooltip-bottom`, or `cx-tooltip-start`) to position the arrow correctly. The generated element receives a unique `id`; the trigger element receives a matching `aria-describedby` while the tooltip is visible, and the attribute is removed on hide.
+After each `computePosition` call, the plugin writes the final resolved placement to `data-cx-placement` on the tooltip element. The `.cx-tooltip-auto` class reads that attribute and applies the styles of the matching directional class (`.cx-tooltip-top`, `.cx-tooltip-end`, `.cx-tooltip-bottom`, or `.cx-tooltip-start`) to position the arrow correctly. The generated element receives a unique `id`; the trigger element receives a matching `aria-describedby` while the tooltip is visible, and the attribute is removed on hide.
 
 Tooltips work on any interactive element, including inline links:
 
@@ -225,7 +225,7 @@ const tooltip = new Tooltip('#example', {
 
 ### Methods
 
-The following methods are available on each `Tooltip` instance:
+Each `Tooltip` instance exposes methods to show and hide the tooltip, enable or disable it, and replace its content.
 
 <Callout name="danger-async-methods" type="danger" />
 

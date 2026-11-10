@@ -1,57 +1,55 @@
 ---
 title: Range Inputs
-description: Create consistent, accessible slider controls with Chassis CSS's range inputs that work across all modern browsers.
+description: Style native range inputs as sliders with a consistent track and thumb across browsers, with min, max, and step configuration.
 toc: true
 tokens: context
 css_layer: components
 mdn: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/range
 ---
 
-## Overview
+## Introduction
 
-Range inputs provide an intuitive slider interface for selecting numeric values from a specified range. Chassis CSS enhances native `<input type="range">` controls with the `.form-range` class, providing consistent styling and behavior across all modern browsers.
+A range input is a slider for choosing a numeric value between two bounds. The `.form-range` class styles the native `<input type="range">` element: it draws the same track and thumb in every browser and adds the focus ring of the form controls.
+
+## Basic structure
+
+Add `.form-range` to an `<input type="range">` and connect it to a `<label>`.
 
 <Example code={`<label for="rangeExample" class="form-label">Basic range slider</label>
 <input type="range" class="form-range" id="rangeExample">`} />
 
-The styling includes:
-- A visually consistent track across all browsers
-- A styled thumb that indicates the current value
-- Proper focus states for keyboard navigation
-- Support for Chassis CSS's theming system
-
 ### Disabled state
 
-Range inputs can be disabled with the `disabled` attribute. This applies a visually muted appearance, removes interactive behaviors, and prevents focus.
+Add the `disabled` attribute to a range input to make it unavailable. The thumb takes its disabled color, pointer events are removed, and the browser skips the input in the tab order.
 
 <Example code={`<label for="disabledRange" class="form-label">Disabled range slider</label>
 <input type="range" class="form-range" id="disabledRange" disabled>`} />
 
 ## Range configuration
 
-Customize range input behavior with attributes that control the slider's value boundaries and step size.
+The native `min`, `max`, and `step` attributes set the bounds of the slider and the increment between its values.
 
 ### Min and max values
 
-Range inputs default to a scale of 0 to 100. Use the `min` and `max` attributes to create custom ranges that better fit your application's needs.
+A range input runs from 0 to 100 by default. Set `min` and `max` for another scale.
 
 <Example code={`<label for="customRange" class="form-label">Custom range (0-5)</label>
 <input type="range" class="form-range" min="0" max="5" id="customRange">`} />
 
 ### Step increments
 
-By default, range inputs snap to integer values. For finer control, specify a decimal `step` value to define the increment between values.
+A range input moves in steps of 1 by default. Set `step` to a decimal value for finer increments.
 
 <Example code={`<label for="preciseRange" class="form-label">Range with 0.5 step increments</label>
 <input type="range" class="form-range" min="0" max="5" step="0.5" id="preciseRange">`} />
 
 ## Contextual usage
 
-Integrate range inputs into practical UI patterns to enhance user experience and provide clear visual feedback.
+Range inputs combine with other elements of a form: an output that shows the current value, and grid columns that place the slider next to other controls.
 
 ### With value display
 
-Pair range inputs with a value display that updates dynamically so users can see the exact value they're selecting.
+A slider does not show its value. Pair it with an `<output>` element that a script updates on the `input` event.
 
 <Example code={`<div class="d-flex">
     <label for="rangeWithOutput" class="form-label">Temperature (°C)</label>
@@ -75,7 +73,9 @@ Use the [grid system]([[docsref:/layout/grid]]) and the layout utilities to arra
   </div>
 </div>`} />
 
-## Accessibility considerations
+## Accessibility
+
+A range input is a native control with the `slider` role, so the markup only has to supply its name and, where needed, a readable value:
 
 - Always associate a visible `<label>` with the input using the `for` attribute so the control has an accessible name.
 - Use `aria-valuetext` when the numeric value alone doesn't convey meaning to the user — for example, a satisfaction scale where `1` should be announced as "Very dissatisfied" rather than "1".
@@ -89,7 +89,7 @@ Use the [grid system]([[docsref:/layout/grid]]) and the layout utilities to arra
 
 ### Custom properties
 
-<DocsCSSVars name="Form Range" exposed />
+<DocsCSSVars name="Form Range" />
 
 <ScssDocs name="form-range-properties" file="scss/forms/_form-range.scss" />
 

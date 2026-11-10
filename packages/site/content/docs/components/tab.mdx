@@ -1,6 +1,6 @@
 ---
 title: Tab
-description: Create toggleable content panes using any of our navigation or list group components with this JavaScript plugin.
+description: Switch between panes of content from a nav or a list with the Tab plugin, which keeps the ARIA roles and states of the tabs in sync.
 toc: true
 tokens: context
 css_layer: components
@@ -9,11 +9,15 @@ deps:
   - title: Nav
 ---
 
-The Tab plugin works with [nav components]([[docsref:/components/nav]]) such as `.nav-tabs` and `.nav-segments`, and with [list groups]([[docsref:/components/list#javascript-behaviors]]).
+## Introduction
 
-## Nav tab
+The Tab plugin turns a [nav]([[docsref:/components/nav]]), such as `.nav-tabs` or `.nav-segments`, or a [list]([[docsref:/components/list#javascript-api]]) into a tabbed interface. Each control with `data-cx-toggle="tab"` shows the `.tab-pane` it targets and hides the pane of the control that was active before.
 
-Add the required data attributes and `id` to your navigation to make it tabbable. Then, add the `tab-content` container with matching `id`s to each tab pane.
+The `.tab-content` wrapper hides every `.tab-pane` child except the one with `.active`. The plugin moves `.active` between the controls and their panes, updates `aria-selected` and `tabindex` on the controls, and handles the arrow keys.
+
+## Basic structure
+
+Add `data-cx-toggle="tab"` to each control and point it at a pane with `data-cx-target`. Wrap the panes in `.tab-content`, give each `.tab-pane` the `id` its control targets, and mark the initial control and its pane with `.active`.
 
 <Example class="vstack gap-md" code={`<ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item" role="none">
@@ -44,9 +48,9 @@ Add the required data attributes and `id` to your navigation to make it tabbable
     </div>
   </div>`} />
 
-## With buttons
+## Custom markup
 
-To help fit your needs, this works with `<ul>`-based markup, as shown above, or with any arbitrary “roll your own” markup. Note that if you're using `<nav>`, you shouldn't add `role="tablist"` directly to it, as this would override the element's native role as a navigation landmark. Instead, switch to an alternative element (in the example below, a simple `<div>`) and wrap the `<nav>` around it.
+The plugin does not require `<ul>` markup: any element with `.nav` or `role="tablist"` can hold the tabs. Do not add `role="tablist"` to a `<nav>` element, since that overrides its native role as a navigation landmark. Place the tab list on an inner element instead, a `<div>` in this example, and wrap the `<nav>` around it.
 
 <Example class="vstack gap-md" code={`<nav aria-label="Tab navigation">
     <div class="nav nav-tabs" id="nav-tab2" role="tablist">
@@ -73,7 +77,7 @@ To help fit your needs, this works with `<ul>`-based markup, as shown above, or 
 
 ## Segments
 
-The Tab plugin also works with the `.nav-segments` variant.
+The plugin works the same way with the `.nav-segments` variant.
 
 <Example class="vstack gap-md" code={`<ul class="nav nav-segments" id="segments-tab" role="tablist">
     <li class="nav-item" role="none">
@@ -104,7 +108,7 @@ The Tab plugin also works with the `.nav-segments` variant.
     </div>
   </div>`} />
 
-Add `.flex-column` to stack the segments vertically. For vertical tabs, also add `aria-orientation="vertical"` to the tab list container.
+Add `.flex-column` to stack the segments vertically, and `aria-orientation="vertical"` to the tab list so assistive technologies announce the orientation.
 
 <Example code={`<div class="d-flex align-items-start">
   <div class="nav nav-segments flex-column me-md" id="v-segments-tab" role="tablist" aria-orientation="vertical">
@@ -133,9 +137,9 @@ Add `.flex-column` to stack the segments vertically. For vertical tabs, also add
   </div>
 </div>`} />
 
-## List groups
+## Lists
 
-The tab plugin also works with [list groups]([[docsref:/components/list]]). Add `data-cx-toggle="tab"` to each `.list-group-item` and pair them with `.tab-pane` elements.
+The plugin also works with [lists]([[docsref:/components/list]]). Add `data-cx-toggle="tab"` to each `.list-item` and pair it with a `.tab-pane`; an anchor targets its pane with `href`. The `.list` element needs `role="tablist"`, which is how the plugin finds the tab list outside a `.nav`.
 
 <Example class="vstack gap-md" code={`<div class="grid">
   <div class="col-span-4">
@@ -164,31 +168,60 @@ The tab plugin also works with [list groups]([[docsref:/components/list]]). Add 
   </div>
 </div>`} />
 
+## Fade transition
+
+Add `.fade` to each `.tab-pane` to fade the panes in. The initially active pane also needs `.show`, which makes its content visible when the page loads.
+
+```html
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab" tabindex="0">...</div>
+  <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">...</div>
+  <div class="tab-pane fade" id="messages" role="tabpanel" aria-labelledby="messages-tab" tabindex="0">...</div>
+  <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab" tabindex="0">...</div>
+</div>
+```
+
 ## Accessibility
 
-Dynamic tabbed interfaces, as described in the [ARIA Authoring Practices Guide tabs pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabpanel/), require `role="tablist"`, `role="tab"`, `role="tabpanel"`, and additional `aria-` attributes in order to convey their structure, functionality, and current state to users of assistive technologies (such as screen readers). As a best practice, we recommend using `<button>` elements for the tabs, as these are controls that trigger a dynamic change, rather than links that navigate to a new page or location.
+Tabbed interfaces follow the [ARIA Authoring Practices Guide tabs pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabpanel/): `role="tablist"` on the container, `role="tab"` and `aria-selected` on each control, and `role="tabpanel"` on each pane convey the structure and the current state to assistive technologies. Use `<button>` elements for the tabs, since they trigger a change in the page rather than navigate to another one.
 
-In line with the ARIA Authoring Practices pattern, only the currently active tab receives keyboard focus. When the JavaScript plugin is initialized, it will set `tabindex="-1"` on all inactive tab controls. Once the currently active tab has focus, the cursor keys activate the previous/next tab. The <kbd>Home</kbd> and <kbd>End</kbd> keys activate the first and last tabs, respectively. The plugin will change the [roving `tabindex`](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/) accordingly. However, note that the JavaScript plugin does not distinguish between horizontal and vertical tab lists when it comes to cursor key interactions: regardless of the tab list's orientation, both the up *and* left cursor go to the previous tab, and down *and* right cursor go to the next tab.
+### ARIA attributes
+
+When a tab is initialized, the plugin adds the roles that are missing from the markup: `role="tablist"` on the container, `role="tab"` on each control, `role="none"` on the `.nav-item` or `.list-item` around a control, and `role="tabpanel"` on each pane, with `aria-labelledby` when the control has an `id`. It sets `aria-selected` on every control and keeps it in sync as the active tab changes.
+
+The plugin does not set `aria-controls`. Write it in the markup, together with the roles, so the attributes are present before the plugin runs.
+
+### Keyboard interaction
+
+Only the active tab is in the tab order: the plugin sets `tabindex="-1"` on the inactive tabs and updates this [roving `tabindex`](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/) as the active tab changes. With focus on a tab, the arrow keys activate the previous or next tab and wrap around at the ends, and <kbd>Home</kbd> and <kbd>End</kbd> activate the first and last tab. Disabled tabs are skipped.
+
+The plugin does not distinguish horizontal from vertical tab lists: the up and left arrow keys both go to the previous tab, and the down and right arrow keys both go to the next one.
 
 <Callout type="warning">
-In general, to facilitate keyboard navigation, it's recommended to make the tab panels themselves focusable as well, unless the first element containing meaningful content inside the tab panel is already focusable. The JavaScript plugin does not try to handle this aspect—where appropriate, you'll need to explicitly make your tab panels focusable by adding `tabindex="0"` in your markup.
+Make each tab panel focusable with `tabindex="0"`, unless the first element with meaningful content inside the panel is already focusable. The plugin does not add this attribute.
 </Callout>
 
 <Callout type="danger">
-The tab JavaScript plugin **does not** support tabbed interfaces that contain menus, as these cause both usability and accessibility issues. From a usability perspective, the fact that the currently displayed tab's trigger element is not immediately visible (as it's inside the closed menu) can cause confusion. From an accessibility point of view, there is currently no sensible way to map this sort of construct to a standard WAI ARIA pattern, meaning that it cannot be easily made understandable to users of assistive technologies.
+The Tab plugin **does not** support tabbed interfaces that contain menus. The trigger of the displayed tab is not visible while it sits inside a closed menu, and no standard WAI-ARIA pattern maps this structure for users of assistive technologies.
 </Callout>
 
-## Usage
+## JavaScript API
 
-### Via data attributes
+The Tab plugin activates tabs, shows their panes, and fires events around each change. Import the `Tab` class from the Chassis module:
 
-You can activate a tab navigation without writing any JavaScript by simply specifying `data-cx-toggle="tab"` on an element.
+```js
+import { Tab } from '@chassis-ui/css'
+```
+
+### Triggers
+
+The data-attribute API activates a tab on click without any JavaScript on the page beyond the bundled plugin. Add `data-cx-toggle="tab"` to each control:
 
 <CxTable>
 | Attribute | Description |
 | --- | --- |
-| `data-cx-toggle="tab"` | Activates tab navigation on the trigger. |
-| `data-cx-target` | CSS selector for the tab pane to show (must pair with a corresponding `.tab-pane`). |
+| `data-cx-toggle="tab"` | Activates tab navigation on the control. |
+| `data-cx-target` | CSS selector of the `.tab-pane` to show. An anchor can use `href` instead. |
 </CxTable>
 
 ```html
@@ -217,14 +250,14 @@ You can activate a tab navigation without writing any JavaScript by simply speci
 </div>
 ```
 
-### Via JavaScript
+### Initialization
 
-Enable tabbable tabs via JavaScript (each tab needs to be activated individually):
+Each control is its own instance, and the plugin takes no options. For controls without `data-cx-toggle="tab"`, create an instance per control with the `Tab` class and call `show()` on click:
 
 ```js
 const triggerTabList = document.querySelectorAll('#myTab button')
 triggerTabList.forEach(triggerEl => {
-  const tabTrigger = new bootstrap.Tab(triggerEl)
+  const tabTrigger = new Tab(triggerEl)
 
   triggerEl.addEventListener('click', event => {
     event.preventDefault()
@@ -233,73 +266,54 @@ triggerTabList.forEach(triggerEl => {
 })
 ```
 
-You can activate individual tabs in several ways:
+Activate a single tab through its instance:
 
 ```js
 const triggerEl = document.querySelector('#myTab button[data-cx-target="#profile"]')
-bootstrap.Tab.getInstance(triggerEl).show() // Select tab by name
+Tab.getOrCreateInstance(triggerEl).show() // Select tab by target
 
 const triggerFirstTabEl = document.querySelector('#myTab li:first-child button')
-bootstrap.Tab.getInstance(triggerFirstTabEl).show() // Select first tab
-```
-
-### Fade effect
-
-To make tabs fade in, add `.fade` to each `.tab-pane`. The first tab pane must also have `.show` to make the initial content visible.
-
-```html
-<div class="tab-content">
-  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab" tabindex="0">...</div>
-  <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">...</div>
-  <div class="tab-pane fade" id="messages" role="tabpanel" aria-labelledby="messages-tab" tabindex="0">...</div>
-  <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab" tabindex="0">...</div>
-</div>
+Tab.getOrCreateInstance(triggerFirstTabEl).show() // Select first tab
 ```
 
 ### Methods
 
+The plugin exposes two instance methods and two static lookup methods for programmatic control:
+
 <Callout name="danger-async-methods" type="danger" />
-
-Activates your content as a tab element.
-
-You can create a tab instance with the constructor, for example:
-
-```js
-const bsTab = new bootstrap.Tab('#myTab')
-```
 
 <CxTable>
 | Method | Description |
 | --- | --- |
-| `dispose` | Destroys an element's tab. |
-| `getInstance` | Static method which allows you to get the tab instance associated with a DOM element, you can use it like this: `bootstrap.Tab.getInstance(element)`. |
-| `getOrCreateInstance` | Static method which returns a tab instance associated to a DOM element or create a new one in case it wasn't initialized. You can use it like this: `bootstrap.Tab.getOrCreateInstance(element)`. |
-| `show` | Selects the given tab and shows its associated pane. Any other tab that was previously selected becomes unselected and its associated pane is hidden. **Returns to the caller before the tab pane has actually been shown** (i.e. before the `shown.bs.tab` event occurs). |
+| `dispose` | Destroys the instance and removes stored data from the element. |
+| `getInstance` | *Static* — returns the existing instance bound to a DOM element, or `null`. Example: `Tab.getInstance(element)` |
+| `getOrCreateInstance` | *Static* — returns the existing instance or creates one. Example: `Tab.getOrCreateInstance(element)` |
+| `show` | Activates the tab and shows its pane. The tab that was active before is deactivated and its pane is hidden. Returns before the pane is shown; listen for `shown.cx.tab` for completion. |
 </CxTable>
 
 ### Events
 
-When showing a new tab, the events fire in the following order:
+Showing a tab fires four events, in this order:
 
-1. `hide.bs.tab` (on the current active tab)
-2. `show.bs.tab` (on the to-be-shown tab)
-3. `hidden.bs.tab` (on the previous active tab, the same one as for the `hide.bs.tab` event)
-4. `shown.bs.tab` (on the newly-active just-shown tab, the same one as for the `show.bs.tab` event)
+1. `hide.cx.tab` (on the current active tab)
+2. `show.cx.tab` (on the tab to be shown)
+3. `hidden.cx.tab` (on the previous active tab, the same one as for the `hide.cx.tab` event)
+4. `shown.cx.tab` (on the newly active tab, the same one as for the `show.cx.tab` event)
 
-If no tab was already active, then the `hide.bs.tab` and `hidden.bs.tab` events will not be fired.
+When no tab is active yet, `hide.cx.tab` and `hidden.cx.tab` do not fire. Calling `event.preventDefault()` on `hide.cx.tab` or `show.cx.tab` cancels the change.
 
 <CxTable>
-| Event type | Description |
+| Event | Description |
 | --- | --- |
-| `hide.bs.tab` | This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden). Use `event.target` and `event.relatedTarget` to target the current active tab and the new soon-to-be-active tab, respectively. |
-| `hidden.bs.tab` | This event fires after a new tab is shown (and thus the previous active tab is hidden). Use `event.target` and `event.relatedTarget` to target the previous active tab and the new active tab, respectively. |
-| `show.bs.tab` | This event fires on tab show, but before the new tab has been shown. Use `event.target` and `event.relatedTarget` to target the active tab and the previous active tab (if available) respectively. |
-| `shown.bs.tab` | This event fires on tab show after a tab has been shown. Use `event.target` and `event.relatedTarget` to target the active tab and the previous active tab (if available) respectively. |
+| `hide.cx.tab` | Fired when a new tab is about to be shown, before the current active tab is hidden. `event.target` is the current active tab and `event.relatedTarget` the tab to be shown. |
+| `hidden.cx.tab` | Fired after the previous active tab is hidden. `event.target` is the previous active tab and `event.relatedTarget` the new active tab. |
+| `show.cx.tab` | Fired when a tab is about to be shown. `event.target` is the tab to be shown and `event.relatedTarget` the current active tab, if there is one. |
+| `shown.cx.tab` | Fired after a tab is shown. `event.target` is the new active tab and `event.relatedTarget` the previous active tab, if there is one. |
 </CxTable>
 
 ```js
 const tabEl = document.querySelector('button[data-cx-toggle="tab"]')
-tabEl.addEventListener('shown.bs.tab', event => {
+tabEl.addEventListener('shown.cx.tab', event => {
   event.target // newly activated tab
   event.relatedTarget // previous active tab
 })

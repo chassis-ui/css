@@ -23,7 +23,7 @@ These classes add borders to elements by side.
 
 ### Subtractive
 
-Borders can be removed per-side on an element that already has a border applied.
+The `-0` classes remove the border of an element, on all sides or on one side.
 
 <Example class="cxd-example-border-utils" code={`<span class="border border-0"></span>
 <span class="border border-top-0"></span>
@@ -34,10 +34,6 @@ Borders can be removed per-side on an element that already has a border applied.
 ## Color
 
 Border color utilities map to the Chassis context color palette.
-
-<Callout>
-Border color utilities generated from `$context-colors` do not yet respond to color mode changes. The `.border-*-subtle` variants do. This will be resolved in a future version.
-</Callout>
 
 <Example class="cxd-example-border-utils" code={[
   ...getData('context-colors').map((contextColor) => `<span class="border ${contextColor.name}-border-main"></span>
@@ -61,14 +57,22 @@ Border color utilities can also override the default border on existing componen
 
 ## Opacity
 
+Opacity utilities control the alpha channel of a context border color through the `--cx-border-opacity` custom property.
+
 ### How it works
 
-Border color utilities use CSS relative color syntax, enabling alpha opacity control through the `--cx-border-opacity` variable. The variable defaults to `1`.
+Each `.border-{context}` class writes an OKLCH relative color expression into `--cx-border-color`, using `--cx-border-opacity` as the alpha channel. A shared selector applies `border-color: var(--cx-border-color)`. `--cx-border-opacity` defaults to `1`.
 
 ```css
 .border-primary {
-  border-color: oklch(from var(--cx-primary) l c h / var(--cx-border-opacity, 1)) !important;
+  --cx-border-color: oklch(from var(--cx-primary) l c h / var(--cx-border-opacity, 1));
 }
+
+/* shared selector */
+.border-primary, .border-secondary, /* … */ {
+  border-color: var(--cx-border-color);
+}
+
 .border-opacity-50 {
   --cx-border-opacity: var(--cx-opacity-50);
 }
@@ -76,14 +80,18 @@ Border color utilities use CSS relative color syntax, enabling alpha opacity con
 
 ### Opacity override
 
+Override `--cx-border-opacity` with an inline style or a `.border-opacity-*` utility.
+
 <Example code={`<div class="border border-primary p-2xs mb-sm">This is default primary border</div>
 <div class="border border-primary p-2xs" style="--cx-border-opacity: .5;">This is 50% opacity primary border</div>`} />
 
-Or, choose from any of the `.border-opacity` utilities:
+Or, choose from any of the `.border-opacity-*` utilities:
 
 <Example code={getData('token-opacities').map((opacity) => `<p class="border border-primary border-opacity-${opacity.name} p-2xs">This is -opacity-${opacity.name}- primary border</p>`)} />
 
 ### Context border opacity
+
+`.border-opacity-main` and `.border-opacity-subtle` apply the two border opacity levels of the design tokens to any context border color.
 
 <Example code={`<div class="border border-primary p-2xs mb-sm">This is <code>base-color</code> primary border</div>
 <div class="border border-primary border-opacity-main p-2xs mb-sm">This is <code>cx-border-main</code> opacity primary border</div>

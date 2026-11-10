@@ -1,6 +1,6 @@
 ---
 title: Button group
-description: Create cohesive sets of related actions through semantically grouped buttons that maintain your design system's visual language.
+description: Group related buttons into one connected control, horizontal or vertical, with toolbars, toggle inputs, and nested menus.
 toc: true
 tokens: context
 css_layer: components
@@ -10,11 +10,11 @@ deps:
 
 ## Introduction
 
-Button groups in Chassis CSS organize related actions into a cohesive component that preserves your design token system's visual language. Unlike one-off button collections, button groups maintain consistent spacing, borders, and visual relationships that signal to users that the buttons belong together conceptually.
+Button groups join a series of buttons into one connected control. The group collapses the borders between adjacent buttons, squares their inner corners, and draws a separator between them, which shows that the actions belong together.
 
-## Basic implementation
+## Basic structure
 
-Apply the `.button-group` class to a container element wrapping a series of `.button` elements. The button group component automatically handles borders and spacing between buttons.
+Apply the `.button-group` class to a container that wraps a series of `.button` elements. The group handles the borders, corners, and separators between the buttons.
 
 <Example code={`<div class="button-group" role="group" aria-label="Basic example">
     <button type="button" class="button default">Left</button>
@@ -28,10 +28,10 @@ Apply the `.button-group` class to a container element wrapping a series of `.bu
   </div>`} />
 
 <Callout type="info">
-  <strong>Accessibility:</strong> Button groups require proper ARIA attributes to ensure assistive technologies correctly identify and announce grouped buttons. Use `role="group"` for standard button groups or `role="toolbar"` for button toolbars, along with `aria-label` or `aria-labelledby` to provide a descriptive label for the group.
+  <strong>Accessibility:</strong> Assistive technologies announce a set of buttons as a group only with the right ARIA attributes. Use `role="group"` on a button group or `role="toolbar"` on a button toolbar, and label it with `aria-label` or `aria-labelledby`.
 </Callout>
 
-Button groups work equally well with anchor links that use the `.button` class, providing a unified experience across different interactive elements:
+Links with the `.button` class group the same way. Mark the link of the current page with `.active` and `aria-current="page"`.
 
 <Example code={`<div class="button-group">
     <a href="#" class="button primary active" aria-current="page">Active link</a>
@@ -39,9 +39,9 @@ Button groups work equally well with anchor links that use the `.button` class, 
     <a href="#" class="button primary">Link</a>
   </div>`} />
 
-## Contextual variations
+## Context variants
 
-Button groups seamlessly integrate with Chassis's contextual color system, allowing you to apply your design system's semantic colors consistently across grouped controls.
+Each button in a group keeps its own context class, so one group can mix context colors.
 
 <Example code={`<div class="button-group" role="group" aria-label="Contextual button group example">
     <button type="button" class="button danger">Left</button>
@@ -49,13 +49,13 @@ Button groups seamlessly integrate with Chassis's contextual color system, allow
     <button type="button" class="button success">Right</button>
   </div>`} />
 
-## Visual variants
+## Style variants
 
-Chassis's button variants work harmoniously within button groups, maintaining their distinctive visual characteristics while preserving the group's cohesive structure.
+The style modifiers of the button apply inside a group as they do on a single button.
 
 ### Outline variant
 
-Use the `.outline` modifier for a more subtle, border-focused appearance that maintains contextual meaning:
+Add `.outline` to each button for a group of bordered buttons with transparent backgrounds.
 
 <Example code={`<div class="button-group" role="group" aria-label="Basic outline example">
     <button type="button" class="button outline primary">Left</button>
@@ -65,7 +65,7 @@ Use the `.outline` modifier for a more subtle, border-focused appearance that ma
 
 ### Smooth variant
 
-Apply the `.smooth` modifier for a softer, more subdued appearance with reduced visual weight:
+Add `.smooth` to each button for a group of buttons with subdued backgrounds.
 
 <Example code={`<div class="button-group" role="group" aria-label="Basic smooth example">
     <button type="button" class="button smooth primary">Left</button>
@@ -75,11 +75,11 @@ Apply the `.smooth` modifier for a softer, more subdued appearance with reduced 
 
 ## Form integration
 
-Chassis enables seamless integration of form elements within button groups, creating toggle-style interfaces where users can make selections that visually align with your button design language.
+A `<label>` with the `.button` and `.button-check` classes wraps a checkbox or radio input and renders it as a button. In a group, such labels form a selection control that looks like a button group.
 
 ### Checkbox toggle buttons
 
-Create multi-selection controls using checkbox inputs combined with button styling:
+Checkbox inputs make a control where several options can be selected at once.
 
 <Example code={`<div class="button-group" role="group" aria-label="Checkbox toggle button group">
     <label class="button button-check outline primary">
@@ -100,7 +100,7 @@ Create multi-selection controls using checkbox inputs combined with button styli
 
 ### Radio toggle buttons
 
-Create single-selection controls that maintain visual consistency with your button design tokens:
+Radio inputs that share a `name` make a control where one option is selected at a time.
 
 <Example code={`<div class="button-group" role="group" aria-label="Radio toggle button group">
     <label class="button button-check outline primary">
@@ -120,16 +120,16 @@ Create single-selection controls that maintain visual consistency with your butt
   </div>`} />
 
 <Callout type="info">
-  Toggle buttons combine the visual consistency of the button component with the functional behavior of form controls, making them ideal for option selection within a cohesive interface.
+  The inputs keep their native behavior and semantics: assistive technologies announce them as checkboxes and radio buttons, and they submit with a form.
 </Callout>
 
 ## Button toolbars
 
-Button toolbars combine multiple button groups into a unified control interface, typically used for more complex interactions with multiple related functions.
+A button toolbar lays out several button groups, and other controls, in one wrapping row.
 
 ### Basic toolbar
 
-Create a toolbar by wrapping multiple `.button-group` elements in a `.button-toolbar` container:
+Wrap several `.button-group` elements in a `.button-toolbar` container, and space them with margin utilities.
 
 <Example code={`<div class="button-toolbar" role="toolbar" aria-label="Toolbar with button groups">
     <div class="button-group me-xs" role="group" aria-label="First group">
@@ -149,12 +149,12 @@ Create a toolbar by wrapping multiple `.button-group` elements in a `.button-too
   </div>`} />
 
 <Callout type="info">
-  <strong>Accessibility:</strong> When using button toolbars, apply `role="toolbar"` and provide an appropriate `aria-label` to ensure assistive technologies properly announce the toolbar's purpose.
+  <strong>Accessibility:</strong> Apply `role="toolbar"` to a button toolbar and describe its purpose with `aria-label`, so assistive technologies announce it.
 </Callout>
 
-### Combined form controls
+### With form controls
 
-Button toolbars support integration with form controls, offering a comprehensive solution for complex UIs:
+A toolbar can hold an input group next to its button groups. The input group takes its natural width inside a toolbar instead of the full width.
 
 <Example code={`<div class="button-toolbar mb-md" role="toolbar" aria-label="Toolbar with button groups and input">
     <div class="button-group me-xs" role="group" aria-label="Control group">
@@ -169,7 +169,7 @@ Button toolbars support integration with form controls, offering a comprehensive
     </div>
   </div>`} />
 
-Use Chassis's layout utilities to control spacing and alignment within toolbars:
+The toolbar is a flex container, so flex utilities such as `.justify-content-between` distribute its children.
 
 <Example code={`<div class="button-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with spaced elements">
     <div class="button-group" role="group" aria-label="Button controls">
@@ -186,7 +186,7 @@ Use Chassis's layout utilities to control spacing and alignment within toolbars:
 
 ## Size variants
 
-Apply consistent sizing across all buttons in a group by adding the size modifier class (`.lg` or `.sm`) directly to the `.button-group` container rather than to individual buttons:
+Add `.lg` or `.sm` to the `.button-group` container to size all of its buttons at once, instead of sizing each button.
 
 <Example code={`<div class="button-group lg" role="group" aria-label="Large button group">
     <button type="button" class="button outline primary">Left</button>
@@ -201,12 +201,12 @@ Apply consistent sizing across all buttons in a group by adding the size modifie
   </div>`} />
 
 <Callout type="info">
-  When nesting button groups, apply size classes to each group container that needs sizing, including nested groups.
+  A size class applies to the direct child buttons of its group. Add it to each nested group as well.
 </Callout>
 
 ## Nesting
 
-Place a `.button-group` within another `.button-group` when menus mixed with a series of buttons.
+Place a `.button-group` inside another `.button-group` to mix a menu with a series of buttons. The inner group holds the menu toggle and its `.menu`.
 
 <Example code={`<div class="button-group" role="group" aria-label="Button group with nested dropdown">
     <button type="button" class="button primary">1</button>
@@ -224,7 +224,7 @@ Place a `.button-group` within another `.button-group` when menus mixed with a s
 
 ## Vertical orientation
 
-Transform button groups from horizontal to vertical orientation using the `.button-group-vertical` class:
+Use the `.button-group-vertical` class in place of `.button-group` to stack the buttons. Each button takes the full width of the group.
 
 <Example code={`<div class="button-group-vertical" role="group" aria-label="Vertical button group">
     <button type="button" class="button primary">Button</button>
@@ -233,7 +233,7 @@ Transform button groups from horizontal to vertical orientation using the `.butt
     <button type="button" class="button primary">Button</button>
   </div>`} />
 
-Vertical button groups support the same dropdown integration as horizontal groups:
+Vertical groups nest menus as horizontal groups do.
 
 <Example code={`<div class="button-group-vertical" role="group" aria-label="Vertical button group with dropdowns">
     <button type="button" class="button primary">Button</button>
@@ -258,7 +258,7 @@ Vertical button groups support the same dropdown integration as horizontal group
     </div>
   </div>`} />
 
-Vertical button groups also support the same form controls integration as horizontal groups:
+Checkbox and radio toggle buttons stack in a vertical group as well.
 
 <Example code={`<div class="button-group-vertical" role="group" aria-label="Vertical radio toggle button group">
     <label class="button button-check outline danger">

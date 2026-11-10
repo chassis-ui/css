@@ -1,16 +1,16 @@
 ---
 title: Z-index
-description: Low-level z-index utilities for controlling stack order of positioned elements.
+description: Set the stack order of positioned elements with low-level z-index utilities.
 toc: true
 css_layer: utilities
 ---
 
-## Example
+## Overview
 
-`z-index` utilities set the CSS `z-index` property. A `position` value other than `static` is required for `z-index` to take effect — applied via [position utilities]([[docsref:/utilities/position/]]) or custom styles.
+`z-index` utilities set the CSS `z-index` property, from `.z-n1` (`-1`) to `.z-5`. `z-index` takes effect only on an element whose `position` is not `static`: set it with a [position utility]([[docsref:/utilities/position]]) or in custom styles.
 
 <Callout>
-These are considered low-level utilities because they cover values `-1` through `3` — the range used to manage overlapping layout elements. Overlay components like modals and tooltips use higher `z-index` values defined separately.
+These utilities are low-level: their values, `-1` through `5`, order overlapping elements within a layout. Overlay components such as modals and tooltips use higher `z-index` values, defined separately.
 </Callout>
 
 <Example class="cxd-example-zindex-levels fg-main position-relative z-n1" code={`<div class="z-3 position-absolute p-4xl rounded"><span>z-3</span></div>
@@ -21,11 +21,11 @@ These are considered low-level utilities because they cover values `-1` through 
 
 ## Overlays
 
-Chassis overlay components — dropdowns, modals, drawers, popovers, toasts, and tooltips — each have their own `z-index` values. These are documented on the [`z-index` layout page]([[docsref:/layout/z-index]]).
+Chassis overlay components — menus, modals, drawers, popovers, toasts, and tooltips — each have their own `z-index` value. The [`z-index` layout page]([[docsref:/layout/z-index]]) documents them.
 
 ## Component approach
 
-Some components use low-level `z-index` utilities to manage stacking within repeating element groups, such as button groups. See the [`z-index` extend page]([[docsref:/about/extend#z-index-scales]]) for details.
+Some components use the low-level `z-index` values to order the elements of a repeating group, such as the buttons of a button group. The [`z-index` scales]([[docsref:/about/extend#z-index-scales]]) section of the extend page describes the approach.
 
 ## CSS
 

@@ -1,6 +1,6 @@
 ---
 title: OTP input
-description: Individually styled digit fields for one-time password, PIN, and verification code entry, with built-in auto-advance, paste handling, and keyboard navigation.
+description: Individually styled digit fields for one-time password, PIN, and verification code entry, with auto-advance, paste handling, and keyboard navigation.
 toc: true
 tokens: context
 css_layer: components
@@ -10,17 +10,15 @@ deps:
     url: ../form-input/
 ---
 
-## Overview
+## Introduction
 
-OTP (One-Time Password) inputs group individual single-character fields into a sequential entry control for verification codes, PINs, and two-factor authentication.
+An OTP (one-time password) input groups single-character fields into one control for verification codes, PINs, and two-factor authentication.
 
-Chassis CSS's OTP input component extends [form inputs]([[docsref:/forms/form-input]]) with automatic focus advancement after each digit, backspace navigation to previous fields, and full-code paste distribution across inputs. The first field receives `autocomplete="one-time-code"` for SMS and email code autofill on supported browsers. Arrow keys provide additional navigation between fields.
+The component builds on [form inputs]([[docsref:/forms/form-input]]). Its plugin moves the focus to the next field after each digit and back to the previous one on <kbd>Backspace</kbd>, distributes a pasted code across the fields, and moves between fields with the arrow keys. The first field receives `autocomplete="one-time-code"`, which lets browsers that support it fill in a code from an SMS or an email.
 
-For visually connected inputs, the component integrates with [input groups]([[docsref:/forms/input-group]]) to join the fields into a single bordered control.
+## Basic structure
 
-## Basic example
-
-Wrap inputs in a container with `.form-otp` and add `data-cx-otp` to enable the JavaScript behavior. Each input should have `.form-input` for styling and be a single-character field.
+Wrap the inputs in a container with `.form-otp` and add `data-cx-otp` to enable the plugin. Give each input the `.form-input` class; the plugin limits every field to a single digit.
 
 <Example code={`<div class="form-otp" data-cx-otp role="group" aria-label="Verification code">
     <input type="text" class="form-input" aria-label="Digit 1">
@@ -33,7 +31,7 @@ Wrap inputs in a container with `.form-otp` and add `data-cx-otp` to enable the 
 
 ## Connected inputs
 
-Add `.input-group` to visually connect the inputs into a single cohesive field using [input group]([[docsref:/forms/input-group]]) styles.
+Add `.input-group` to the container to join the fields into a single bordered control with the [input group]([[docsref:/forms/input-group]]) styles.
 
 <Example code={`<div class="form-otp input-group" data-cx-otp role="group" aria-label="Verification code">
     <input type="text" class="form-input" aria-label="Digit 1">
@@ -46,7 +44,7 @@ Add `.input-group` to visually connect the inputs into a single cohesive field u
 
 ## Four-digit PIN
 
-Use any number of inputs—the component automatically adapts to however many are present. Use fewer inputs for shorter codes like 4-digit PINs.
+The plugin works with the inputs it finds in the container, whatever their number. Use fewer inputs for shorter codes such as a four-digit PIN.
 
 <Example code={`<div class="form-otp input-group" data-cx-otp role="group" aria-label="Verification code">
     <input type="text" class="form-input" aria-label="Digit 1">
@@ -57,7 +55,7 @@ Use any number of inputs—the component automatically adapts to however many ar
 
 ## With separator
 
-Add a `.form-otp-separator` element between inputs to create grouped codes like "123-456". The separator is purely visual—the component ignores non-input elements.
+Add a `.form-otp-separator` element between inputs to group a code as in "123-456". The separator is visual only: the plugin ignores the elements that are not inputs.
 
 <Example code={`<div class="form-otp" data-cx-otp role="group" aria-label="Verification code">
     <input type="text" class="form-input" aria-label="Digit 1">
@@ -69,7 +67,7 @@ Add a `.form-otp-separator` element between inputs to create grouped codes like 
     <input type="text" class="form-input" aria-label="Digit 6">
   </div>`} />
 
-It is possible to use separators with connected inputs by wrapping each group in a nested `.input-group`:
+A separator also works with connected inputs: wrap each group of fields in a nested `.input-group`.
 
 <Example code={`<div class="form-otp" data-cx-otp role="group" aria-label="Verification code">
     <div class="input-group">
@@ -100,7 +98,7 @@ Add the `disabled` attribute to each input to prevent interaction.
 
 ## Validation
 
-Add `.is-valid` or `.is-invalid` to the container to show validation states.
+Add `.is-valid` or `.is-invalid` to the container to show a validation state on all of its fields.
 
 <Example code={`<div class="form-otp input-group is-valid mb-md" data-cx-otp role="group" aria-label="Verification code">
     <input type="text" class="form-input" value="1" aria-label="Digit 1">
@@ -121,7 +119,7 @@ Add `.is-valid` or `.is-invalid` to the container to show validation states.
 
 ## With form labels
 
-Use a form label and help text for better accessibility.
+Inside a [form field]([[docsref:/forms/form-field]]), a form label names the group and a help text describes the expected code.
 
 <Example code={`<div class="form-field">
     <label class="form-label">Verification code</label>
@@ -136,11 +134,62 @@ Use a form label and help text for better accessibility.
     <div id="otpHelp" class="form-help">Enter the 6-digit code sent to your phone.</div>
   </div>`} />
 
-## Usage
+## Accessibility
 
-### Via data attributes
+The fields of an OTP input have no visible labels of their own, so the markup has to name each field and the group. The plugin sets no ARIA attribute.
 
-Add `data-cx-otp` to your container element to automatically initialize the OTP input behavior.
+### Individual input labels
+
+Each digit input needs an `aria-label` describing its position — for example `aria-label="Digit 1"`. Without it, screen readers have no way to distinguish between the fields.
+
+### Container labeling
+
+Label the OTP group as a whole with a visible `<label>` linked through `aria-labelledby` on the container, so screen readers announce the purpose of the group before the individual inputs:
+
+```html
+<label class="form-label" id="otpLabel">Verification code</label>
+<div class="form-otp" data-cx-otp role="group" aria-labelledby="otpLabel">
+  ...
+</div>
+```
+
+When no visible label is appropriate, use `aria-label` on the container instead. Both attributes need `role="group"` on the container to take effect.
+
+### Help text
+
+Associate instructional text with the group through `aria-describedby` on the container:
+
+```html
+<div class="form-otp" data-cx-otp role="group" aria-describedby="otpHelp">
+  ...
+</div>
+<div id="otpHelp" class="form-help">Enter the 6-digit code sent to your phone.</div>
+```
+
+### Keyboard and mobile
+
+The plugin sets `inputmode="numeric"` and `pattern="\d*"` on each input, which brings up the numeric keyboard on mobile devices without changing the input type, and it removes any character that is not a digit.
+
+<CxTable>
+| Key | Action |
+| --- | --- |
+| A digit | Fill the field and move to the next one. |
+| <kbd>←</kbd> / <kbd>→</kbd> | Move to the previous or next field. |
+| <kbd>Backspace</kbd> | In an empty field, clear the previous field and move to it. |
+| <kbd>Delete</kbd> | Clear the field and shift the digits after it one field back. |
+</CxTable>
+
+## JavaScript API
+
+The OtpInput plugin handles the focus, the paste and the keys of the fields, and fires an event when the code is complete. Chassis JS ships as an ES module — import the `OtpInput` class:
+
+```js
+import { OtpInput } from '@chassis-ui/css'
+```
+
+### Triggers
+
+A container with `data-cx-otp` is initialized when the page loads.
 
 <CxTable>
 | Attribute | Description |
@@ -151,33 +200,25 @@ Add `data-cx-otp` to your container element to automatically initialize the OTP 
 
 ```html
 <div class="form-otp" data-cx-otp role="group" aria-label="Verification code">
-  <input type="text" class="form-input">
-  <input type="text" class="form-input">
-  <input type="text" class="form-input">
-  <input type="text" class="form-input">
+  <input type="text" class="form-input" aria-label="Digit 1">
+  <input type="text" class="form-input" aria-label="Digit 2">
+  <input type="text" class="form-input" aria-label="Digit 3">
+  <input type="text" class="form-input" aria-label="Digit 4">
 </div>
 ```
 
-### Via JavaScript
+### Initialization
 
-Initialize manually with JavaScript:
+Create an instance with the `OtpInput` class for a container added after the page has loaded, or to call its methods:
 
 ```js
 const otpElement = document.querySelector('.form-otp')
 const otpInput = new OtpInput(otpElement)
 ```
 
-### Options
-
-Options can be passed via data attributes or JavaScript:
-
-<CxTable>
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| `mask` | boolean | `false` | If `true`, inputs will use `type="password"` to hide the entered values. |
-</CxTable>
-
 ### Methods
+
+The plugin exposes instance methods to read, set and clear the code:
 
 <CxTable>
 | Method | Description |
@@ -187,6 +228,8 @@ Options can be passed via data attributes or JavaScript:
 | `clear()` | Clears all inputs and focuses the first one. |
 | `focus()` | Focuses the first empty input, or the last input if all are filled. |
 | `dispose()` | Destroys the component instance. |
+| `getInstance(element)` | Static — returns the instance bound to a container, or `null`. |
+| `getOrCreateInstance(element)` | Static — returns the instance bound to a container, or creates one. |
 </CxTable>
 
 ```js
@@ -203,12 +246,24 @@ otpInput.setValue('654321')
 otpInput.clear()
 ```
 
+### Options
+
+<JsDataAttributes />
+
+<CxTable>
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `mask` | boolean | `false` | If `true`, the inputs use `type="password"` to hide the entered values. |
+</CxTable>
+
 ### Events
+
+Both events fire on the container.
 
 <CxTable>
 | Event | Description |
 | --- | --- |
-| `complete.cx.otp-input` | Fired when all inputs are filled. The event's `value` property contains the complete code. |
+| `complete.cx.otp-input` | Fired when all inputs are filled: after typing, a paste, or `setValue()`. The event's `value` property contains the complete code. |
 | `input.cx.otp-input` | Fired on each input change made in the fields: typing, <kbd>Backspace</kbd>, <kbd>Delete</kbd> and paste. Includes `value` (current combined value) and `index` (changed input index). Not fired by `setValue()` or `clear()`. |
 </CxTable>
 
@@ -224,40 +279,6 @@ otpElement.addEventListener('input.cx.otp-input', event => {
   console.log('Current value:', event.value, 'Changed index:', event.index)
 })
 ```
-
-## Accessibility
-
-### Individual input labels
-
-Each digit input has no visible label, so each one needs an `aria-label` describing its position — for example `aria-label="Digit 1"`. Without this, screen readers have no way to distinguish between the fields.
-
-### Container labeling
-
-Label the OTP group as a whole using a visible `<label>` linked via `aria-labelledby` on the container, so screen readers announce the group's purpose before reading the individual inputs:
-
-```html
-<label class="form-label" id="otpLabel">Verification code</label>
-<div class="form-otp" data-cx-otp aria-labelledby="otpLabel">
-  ...
-</div>
-```
-
-If no visible label is appropriate, use `aria-label` directly on the container instead.
-
-### Help text
-
-Associate instructional text with the group using `aria-describedby` on the container:
-
-```html
-<div class="form-otp" data-cx-otp aria-describedby="otpHelp">
-  ...
-</div>
-<div id="otpHelp" class="form-help">Enter the 6-digit code sent to your phone.</div>
-```
-
-### Keyboard and mobile
-
-The component automatically sets `inputmode="numeric"` and `pattern="\d*"` on each input, which triggers the numeric keyboard on mobile devices without changing the input type. Arrow keys move focus between fields; backspace in an empty field moves back to the previous one.
 
 ## CSS
 

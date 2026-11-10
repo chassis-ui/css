@@ -316,16 +316,16 @@ The span, start, and flow classes cover the page layouts that come up most. Each
 
 ### Sidebar and content
 
-A sidebar that stacks above the content on narrow viewports and takes three of twelve tracks from a breakpoint. Add `position: sticky` and a `top` offset to the sidebar to keep it in view while the content scrolls.
+The sidebar stacks above the content on narrow viewports and takes three of twelve tracks from a breakpoint. Add `position: sticky` and a `top` offset to the sidebar to keep it in view while the content scrolls.
 
 <Example class="cxd-example-grid" code={`<div class="grid text-center">
     <div class="col-span-full md:col-span-3">Sidebar</div>
     <div class="col-span-full md:col-span-9">Content</div>
   </div>`} />
 
-### Header, three columns, footer
+### Three-column page
 
-Full-width items above and below a row of three. Below the breakpoint every item is a row of its own, in DOM order.
+A full-width header and footer sit above and below a row of three items. Below the breakpoint every item is a row of its own, in DOM order.
 
 <Example class="cxd-example-grid" code={`<div class="grid text-center">
     <div class="col-span-full">Header</div>
@@ -341,7 +341,7 @@ Cards of equal width that wrap by themselves need no breakpoint class: see [Auto
 
 ### Gallery
 
-Items of different sizes packed without holes, with [dense auto flow]([[docsref:/utilities/grid#dense]]) and equal implicit rows.
+Items of different sizes pack without holes, with [dense auto flow]([[docsref:/utilities/grid#dense]]) and equal implicit rows.
 
 <Example class="cxd-example-grid" code={`<div class="grid grid-cols-4 grid-flow-dense auto-rows-fr text-center">
     <div class="col-span-2 row-span-2">Large</div>
@@ -424,7 +424,7 @@ The Sass of the flexbox grid went with its classes: the mixins `make-row()`, `ma
 
 <DocsCSS name="Grid" type="system" exposed />
 
-`.grid` and `.grid-fill` are emitted when `$enable-grid-system` is `true`, the default. The option governs the whole grid system: these classes, the span, start, and end classes, `.contained`, and the [grid utilities]([[docsref:/utilities/grid]]) (`grid-cols-*`, `grid-rows-*`, `grid-flow-*`, `auto-cols-*`, `auto-rows-*`). The gap utilities, the fraction widths, the containers, and the `:root` custom properties stay, as flex layouts and components read them. Until v0.7.0 the option was `$enable-cssgrid` and left the utilities in.
+`.grid` and `.grid-fill` are emitted when `$enable-grid-system` is `true`, the default. The option governs the whole grid system: these classes, the span, start, and end classes, `.contained`, and the [grid utilities]([[docsref:/utilities/grid]]) (`.grid-cols-*`, `.grid-rows-*`, `.grid-flow-*`, `.auto-cols-*`, `.auto-rows-*`). The gap utilities, the fraction widths, the containers, and the `:root` custom properties stay, as flex layouts and components read them. Until v0.7.0 the option was `$enable-cssgrid` and left the utilities in.
 
 <ScssDocs name="grid-layout" file="scss/mixins/_grid.scss" />
 

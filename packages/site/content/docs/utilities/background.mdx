@@ -13,7 +13,7 @@ Background utilities cover three sub-systems: context color backgrounds, a gradi
 
 ## Background color
 
-Background utilities set `background-color` using the Chassis context color palette. They do not set `color`, so `.fg-*` [color utilities]([[docsref:/utilities/colors]]) may be needed for readable text.
+Background utilities set `background-color` using the Chassis context color palette. They do not set `color`: add a `.fg-*` [color utility]([[docsref:/utilities/colors]]) where the text needs a readable color.
 
 ### Body backgrounds
 
@@ -82,7 +82,7 @@ Each `.bg-{context}` class writes an OKLCH relative color expression into `--cx-
 }
 
 .bg-opacity-50 {
-  --cx-bg-opacity: 0.5;
+  --cx-bg-opacity: var(--cx-opacity-50);
 }
 ```
 
@@ -117,7 +117,7 @@ All background utilities set `background-color` through the shared `--cx-bg-colo
 
 The tables list all background utilities and their CSS properties.
 
-**Background colors**
+**Background colors:**
 
 <UtilityReferenceTable utility="bg-" exclude="bg-opacity-" />
 
@@ -133,8 +133,8 @@ The tables list all background utilities and their CSS properties.
 
 <UtilityReferenceTable utility={["dim-", ...getData('context-colors').map((contextColor) => `${contextColor.name }-dim-`)]} exclude="bg-opacity-" />
 
-<Callout type="info" >
-  Primitive colors (e.g. `--cx-primary-50`) have no generated utility classes by default. Use [utilities API]([[docsref:/utilities/api#using-the-api]]) to generate classes for primitive colors if needed.
+<Callout type="info">
+  Primitive colors (e.g. `--cx-primary-50`) have no generated utility classes by default. Generate them with the [utilities API]([[docsref:/utilities/api#using-the-api]]).
 </Callout>
 
 ### Sass variables

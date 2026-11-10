@@ -1,6 +1,6 @@
 ---
 title: Combobox
-description: A select-style component built with HTML — a toggle plus a `.menu` overlay — with JS handling open/close, filtering, selection, hidden-input submission, and keyboard navigation.
+description: A select-style picker built from a toggle and a `.menu`, with filtering, single or multiple selection, form submission, and keyboard navigation.
 toc: true
 tokens: component
 css_layer: components
@@ -11,24 +11,24 @@ deps:
   - title: Menu
 ---
 
-## Overview
+## Introduction
 
 A combobox is a select-style picker with one of two trigger styles:
 
 - **Input trigger** — `<input class="combobox-value">` inside the toggle. Typing filters the list inline. The same input also displays the selected value when the menu is closed.
 - **Button trigger** — `<span class="combobox-value">` (or any non-input element) inside the toggle. The toggle is display-only, like a native `<select>`. Add a `.combobox-search-input` inside the menu when the list is long enough that filtering helps.
 
-The toggle, items, and decoration are written in HTML. The JavaScript wires up open/close, item filtering, selection state, keyboard navigation, and an auto-created hidden `<input>` for form submission.
+The toggle, the items and their decoration are written in HTML. The plugin opens and closes the menu, filters the items, tracks the selection, handles the keyboard, and creates a hidden `<input>` for form submission.
 
-## Basic usage
+## Basic structure
 
 A combobox needs three things: a toggle marked with `data-cx-toggle="combobox"`, a `.combobox-value` element inside it, and a sibling `.menu` whose buttons carry `data-cx-value` attributes.
 
-> Examples below focus on the combobox markup itself and omit visible labels for clarity. See [In a form field](#in-a-form-field) for the canonical labelled pattern.
+The examples on this page show the markup of the combobox itself and leave out the visible label. [In a form field](#in-a-form-field) shows the labelled pattern to use in production.
 
 ### Input trigger
 
-The toggle is a wrapper `<div class="form-input combobox">` with a text input inside. Typing filters the menu items as the user types.
+The toggle is a wrapper `<div class="form-input combobox">` with a text input inside. Typing in it filters the menu items.
 
 <Example code={`<div class="form-input combobox"
        data-cx-toggle="combobox"
@@ -43,7 +43,7 @@ The toggle is a wrapper `<div class="form-input combobox">` with a text input in
 
 ### Button trigger
 
-The toggle is itself a `<button class="form-input combobox">`. The user cannot type into the toggle, so the menu opens like a native `<select>`. Give it `role="combobox"`, `aria-expanded="false"` and an `aria-controls` that points at the menu: the accessible name then comes from the label alone, and the text of the toggle is read as its value. Use `data-cx-placeholder` to set the text shown when nothing is selected — the JS restores it to the `.combobox-value` element after the selection is cleared.
+The toggle is itself a `<button class="form-input combobox">`. The user cannot type into the toggle, so the menu opens like a native `<select>`. Give it `role="combobox"`, `aria-expanded="false"` and an `aria-controls` that points at the menu: the accessible name then comes from the label alone, and the text of the toggle is read as its value. Use `data-cx-placeholder` to set the text shown when nothing is selected — the plugin writes it to the `.combobox-value` element whenever the selection is empty.
 
 <Example code={`<button class="form-input combobox"
           type="button"
@@ -64,7 +64,7 @@ The toggle is itself a `<button class="form-input combobox">`. The user cannot t
 
 ### Pre-selected value
 
-Mark the initially selected menu item with both the `.selected` class and `aria-selected="true"`. On initialisation the JS reads `.selected` to set the toggle's displayed value and the hidden input. ARIA attributes on subsequent selections are managed automatically.
+Mark the initially selected menu item with both the `.selected` class and `aria-selected="true"`. On initialization the plugin reads `.selected` to set the displayed value of the toggle and the hidden input, and from then on it keeps `aria-selected` in sync with the selection.
 
 <Example code={`<div class="form-input combobox"
        data-cx-toggle="combobox"
@@ -79,7 +79,7 @@ Mark the initially selected menu item with both the `.selected` class and `aria-
 
 ## Sizing
 
-Add `.sm` or `.lg` to the toggle.
+Add `.sm` or `.lg` to the toggle for a smaller or larger combobox; the classes are the size modifiers of `.form-input`.
 
 <Example class="vstack gap-md" code={`<div class="form-input sm combobox" data-cx-toggle="combobox">
     <input type="text" class="combobox-value" placeholder="Small combobox…" autocomplete="off">
@@ -107,7 +107,7 @@ Add `.sm` or `.lg` to the toggle.
 
 ### Menu width
 
-The menu floats independently of the toggle by default. To pin its width to the toggle's, wrap both in a `.position-relative` container and add `w-100` to the menu.
+The menu floats independently of the toggle by default. To pin its width to the toggle's, wrap both in a `.position-relative` container and add `.w-100` to the menu.
 
 <Example code={`<div class="position-relative">
     <div class="form-input combobox" data-cx-toggle="combobox" data-cx-name="option">
@@ -126,7 +126,7 @@ A combobox can be disabled as a whole, and individual menu items can be disabled
 
 ### Whole combobox
 
-Disable the toggle in one of three equivalent ways — the JS keeps all three sources in sync:
+Disable the toggle in one of three equivalent ways — the plugin keeps all three sources in sync:
 
 - `disabled` attribute on the toggle (button trigger only)
 - `disabled` attribute on the embedded `<input class="combobox-value">` (input trigger)
@@ -175,11 +175,11 @@ To disable or re-enable a combobox at runtime, call the `disable()` and `enable(
 
 ## Menu item content
 
-A menu item is a button — anything that fits inside a button works, including SVG icons, descriptions, badges, images, or any combination.
+A menu item is a button, so it holds anything a button can: SVG icons, descriptions, badges, images, or a combination of them.
 
 ### Leading icon
 
-Add `.menu-item-icon` to an `<svg>` at the start of the item. Mark it `aria-hidden="true"` so it doesn't duplicate the item's text for screen readers.
+Add `.menu-item-icon` to an `<svg>` at the start of the item. Mark it `aria-hidden="true"` so screen readers do not announce it next to the text of the item.
 
 <Example code={`<div class="form-input combobox"
        data-cx-toggle="combobox"
@@ -203,7 +203,7 @@ Add `.menu-item-icon` to an `<svg>` at the start of the item. Mark it `aria-hidd
 
 ### Title with description
 
-Wrap the title and description in `.menu-item-content` (a flex column) and use `.menu-item-description` for the secondary line. The JS uses the first `<span>` inside `.menu-item-content` as the selected-state display text — keep that span as the canonical label.
+Wrap the title and description in `.menu-item-content` (a flex column) and use `.menu-item-description` for the secondary line. The plugin shows the text of the first `<span>` inside `.menu-item-content` in the toggle when the item is selected — keep the label of the item in that span.
 
 <Example code={`<div class="form-input combobox"
        data-cx-toggle="combobox"
@@ -264,7 +264,7 @@ Add `.menu-item-check` to an `<svg>` inside each item. It stays hidden until the
 
 ### Combined
 
-A richer item combines all three.
+An item can combine a leading icon, a description and a selection indicator.
 
 <Example code={`<div class="form-input combobox"
        data-cx-toggle="combobox"
@@ -320,7 +320,7 @@ Use `.menu-header` for non-interactive labels that introduce groups of related i
 
 ## Multiple selection
 
-Add `data-cx-multiple="true"` to the toggle. Clicks toggle items, the menu stays open until dismissed, and the toggle text becomes `N selected` when more than one item is picked. The hidden input's value is a comma-separated list of the selected `data-cx-value`s. Mark the menu `aria-multiselectable="true"` so the listbox semantics match the behaviour.
+Add `data-cx-multiple="true"` to the toggle. A click then toggles an item, the menu stays open until it is dismissed, and the toggle reads `N selected` when more than one item is selected. The hidden input's value is a comma-separated list of the selected `data-cx-value`s. Mark the menu `aria-multiselectable="true"` so the listbox semantics match the behavior.
 
 <Example code={`<div class="form-input combobox"
        data-cx-toggle="combobox"
@@ -357,11 +357,11 @@ Filtering hides items whose visible text does not match the current query. The m
 
 ### Inline filtering
 
-For input-trigger comboboxes, filtering is built in. As text is typed into the `.combobox-value` input, items whose visible text does not match are hidden. No extra markup required. When nothing matches, the menu closes and the typed text stays; the menu opens again as soon as the text matches an item.
+An input-trigger combobox filters without extra markup: typing into the `.combobox-value` input hides the items whose visible text does not match. When nothing matches, the menu closes and the typed text stays; the menu opens again as soon as the text matches an item.
 
 ### Search field
 
-For button-trigger comboboxes, add a `.combobox-search-input` inside the menu. When the menu opens, focus jumps to the search field. Wrap it in `.combobox-search` for the sticky styling shown below, and add a `.combobox-no-results` element for the empty state — the JS toggles its `.d-none` class based on visible item count.
+For button-trigger comboboxes, add a `.combobox-search-input` inside the menu. When the menu opens, the focus moves to the search field. Wrap it in `.combobox-search` to keep it at the top of the scrolling menu, and add a `.combobox-no-results` element for the empty state — the plugin removes its `.d-none` class when no item matches.
 
 <Example code={`<button class="form-input combobox"
           type="button"
@@ -391,13 +391,13 @@ For button-trigger comboboxes, add a `.combobox-search-input` inside the menu. W
     <div class="combobox-no-results d-none">No results found</div>
   </div>`} />
 
-### Accent-insensitive matching
+### Ignoring diacritics
 
-Enable `searchNormalize` (via `data-cx-search-normalize="true"` or the JS option) to strip diacritics before comparing — so typing "uber" matches "über". Applies to both inline filtering and the search field.
+Enable `searchNormalize` (with `data-cx-search-normalize="true"` or the option) to strip diacritics before comparing, so typing "uber" matches "über". The option applies to inline filtering and to the search field.
 
 ## In a form field
 
-Wrap the label, combobox, and any feedback in a [form field]([[docsref:/forms/form-field]]) for a labelled, accessible layout. This is the canonical pattern for production use: a visible `<label for="…">` provides the accessible name and is clickable to focus the combobox, and the menu's `aria-label` mirrors that name so screen-reader announcements stay consistent between the toggle and the listbox.
+Wrap the label, the combobox and any feedback in a [form field]([[docsref:/forms/form-field]]). This is the pattern to use in production: a visible `<label for="…">` gives the combobox its accessible name and focuses it on click, and the `aria-label` of the menu repeats that name so the toggle and the listbox are announced alike.
 
 <Example code={`<div class="form-field">
     <label for="comboFormField" class="form-label">Country</label>
@@ -416,7 +416,7 @@ Wrap the label, combobox, and any feedback in a [form field]([[docsref:/forms/fo
 
 ## Form submission
 
-When `data-cx-name` is present on the toggle, the JS inserts a hidden `<input>` immediately before the toggle and keeps its `value` in sync with the selection. Without `data-cx-name`, no hidden input is created and the combobox's value is not submitted.
+When `data-cx-name` is present on the toggle, the plugin inserts a hidden `<input>` immediately before the toggle and keeps its `value` in sync with the selection. Without `data-cx-name`, no hidden input is created and the combobox's value is not submitted.
 
 ```html
 <!-- Authored markup -->
@@ -427,7 +427,7 @@ When `data-cx-name` is present on the toggle, the JS inserts a hidden `<input>` 
 </div>
 <div class="menu">...</div>
 
-<!-- What the JS inserts before the toggle on init -->
+<!-- What the plugin inserts before the toggle on init -->
 <input type="hidden" name="country" value="us">
 ```
 
@@ -435,73 +435,73 @@ For multi-select, the hidden input's value is a comma-separated list — `"html,
 
 ## Accessibility
 
-Combobox accessibility has two layers: behaviour the JS handles, and markup that must be authored.
+The accessibility of a combobox has two parts: the state the plugin keeps in sync, and the roles and names the markup has to carry.
 
-### Automatic behaviour
+### Managed state
 
-The JS keeps the following ARIA state in sync without any extra markup:
+The plugin keeps this state in sync without extra markup:
 
-- `aria-expanded` is set on the toggle when the menu opens (`true`) and closes (`false`).
-- `aria-selected` is set on each `.menu-item` after a selection change — `"true"` on selected items, `"false"` on others.
-- The toggle's `.disabled` class, `aria-disabled` attribute, and the `disabled` attribute on the trigger (the button, or the embedded input) are kept in sync. The hidden input's `disabled` is mirrored so disabled comboboxes do not submit a value.
+- `aria-expanded` on the toggle is `true` while the menu is open and `false` while it is closed.
+- `aria-selected` on each `.menu-item` is `"true"` on selected items and `"false"` on the others, from initialization on.
+- The `.disabled` class and the `aria-disabled` attribute of the toggle and the `disabled` attribute of the trigger (the button, or the embedded input) follow each other. The hidden input is disabled with them, so a disabled combobox does not submit a value.
 
 ### Required markup
 
-The semantics that identify the combobox and its options to assistive tech must be authored — the JS does not add them:
+The plugin does not add the roles and names that identify the combobox and its options to assistive technologies. Write them in the markup:
 
 - **Accessible name for the combobox.** Either a visible `<label for="…">` pointing to the input/button id, or `aria-label`/`aria-labelledby` on the toggle. The [In a form field](#in-a-form-field) section shows the canonical labelled pattern.
-- **`role="combobox"`, `aria-controls` and `aria-expanded="false"`** on a button trigger, with `aria-controls` naming the `id` of the `.menu`. The role requires `aria-expanded` before the menu first opens; the JS keeps it in sync after that. Without the role, a `<button>` is named by its text, and a label that does not hold the placeholder or the selected value breaks [WCAG 2.5.3 Label in Name](https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html).
+- **`role="combobox"`, `aria-controls` and `aria-expanded="false"`** on a button trigger, with `aria-controls` naming the `id` of the `.menu`. The role requires `aria-expanded` before the menu first opens; the plugin keeps it in sync after that. Without the role, a `<button>` is named by its text, and a label that does not hold the placeholder or the selected value breaks [WCAG 2.5.3 Label in Name](https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html).
 - **`role="listbox"`** on the `.menu`. When labelled, also add `aria-label` (or `aria-labelledby`) matching the toggle's accessible name. For multi-select, add `aria-multiselectable="true"`.
-- **`role="option"`** on each `.menu-item`, and `aria-selected="true"` on any pre-selected items. The JS keeps `aria-selected` in sync after that.
-- **`role="none"`** on `.menu-header` so headers are skipped by screen readers.
+- **`role="option"`** on each `.menu-item`, and `aria-selected="true"` on any pre-selected items.
+- **`role="none"`** on `.menu-header` so screen readers skip the headers.
 - **`aria-hidden="true"`** on decorative SVG icons inside items.
 
-### Keyboard
+### Keyboard interaction
 
-A combobox is fully operable from the keyboard. Behaviour depends on where focus currently is:
+Every action of a combobox has a key. What a key does depends on where the focus is:
 
-- **Toggle focused, menu closed:** <kbd>↓</kbd> / <kbd>↑</kbd> opens the menu and focuses the first or last visible item. <kbd>Enter</kbd> opens the menu (button trigger only — on input trigger, <kbd>Enter</kbd> behaves natively).
-- **Menu open:** <kbd>↓</kbd> / <kbd>↑</kbd> moves between items (wraps at ends). <kbd>Home</kbd> / <kbd>End</kbd> jumps to the first or last. <kbd>Enter</kbd> selects the focused item. <kbd>Esc</kbd> closes the menu and returns focus to the toggle. <kbd>Tab</kbd> closes the menu and moves focus normally.
-- **Search field focused:** <kbd>↓</kbd> jumps to the first visible item. <kbd>Esc</kbd> closes the menu.
+- **Toggle focused:** <kbd>↓</kbd> / <kbd>↑</kbd> opens the menu when it is closed and focuses the first or last visible item. <kbd>Enter</kbd> or <kbd>Space</kbd> opens the menu of a button trigger; in the input of an input trigger both keys keep their native behavior. <kbd>Esc</kbd> closes an open menu and leaves the focus where it is.
+- **Item focused:** <kbd>↓</kbd> / <kbd>↑</kbd> moves between the visible items and wraps at the ends. <kbd>Home</kbd> / <kbd>End</kbd> moves to the first or last item. <kbd>Enter</kbd> or <kbd>Space</kbd> selects the focused item. <kbd>Esc</kbd> closes the menu and returns the focus to the toggle. <kbd>Tab</kbd> closes the menu and moves the focus to the control after the combobox.
+- **Search field focused:** <kbd>↓</kbd> moves to the first visible item. <kbd>Esc</kbd> closes the menu and returns the focus to the toggle.
 
-## JavaScript
+## JavaScript API
 
-The combobox can be configured through HTML data attributes or driven imperatively via the JS API. Data attributes cover most cases; the API is useful for runtime control (open/close, disable/enable, dispose) and for cases where the config needs to be computed at runtime.
+The Combobox plugin opens and closes the menu, filters and selects items, and keeps the hidden input and the ARIA state in sync. Chassis JS ships as an ES module — import the `Combobox` class:
 
-### Data attributes
+```js
+import { Combobox } from '@chassis-ui/css'
+```
 
-The following attributes are read on init. Attribute values are strings; the JS coerces them to the option's expected type.
+### Triggers
+
+A toggle with `data-cx-toggle="combobox"` is initialized when the page loads, or on its first click when it is added later. The plugin reads these attributes on initialization:
 
 <CxTable>
 | Attribute | On | Description |
 | --- | --- | --- |
-| `data-cx-toggle="combobox"` | toggle | Initialises the combobox. |
-| `data-cx-name` | toggle | `name` of the auto-created hidden input. Omit to skip hidden-input creation. |
+| `data-cx-toggle="combobox"` | toggle | Initializes the combobox. |
+| `data-cx-name` | toggle | `name` of the hidden input the plugin creates. Omit it to create no hidden input. |
 | `data-cx-placeholder` | toggle | Text shown in the toggle when nothing is selected (button trigger). |
 | `data-cx-multiple` | toggle | `"true"` enables multi-select. |
 | `data-cx-search-normalize` | toggle | `"true"` strips diacritics before comparing during filtering. |
-| `data-cx-value` | `.menu-item` | The value submitted, and the source for the toggle's display text. Items without this attribute are decorative and not selectable. |
+| `data-cx-value` | `.menu-item` | The value submitted. Items without this attribute are decorative and not selectable. |
 </CxTable>
 
-### Options
+### Initialization
 
-Pass via data attributes or as a config object during programmatic init.
+For runtime control (opening and closing, disabling, disposing), or for options computed at runtime, create the instance with the `Combobox` class on the toggle:
 
-<CxTable>
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| `multiple` | boolean | `false` | Enable multi-select. Selections toggle and the menu stays open. |
-| `name` | string \| null | `null` | Name for the auto-created hidden input. |
-| `placeholder` | string | `''` | Placeholder for the toggle (button trigger). |
-| `searchNormalize` | boolean | `false` | Strip diacritics when filtering. |
-| `placement` | string | `'bottom-start'` | Floating UI placement for the menu. |
-| `offset` | array \| string \| function | `[0, 2]` | `[skidding, distance]` offset from the toggle. |
-| `boundary` | string \| element | `'clippingParents'` | Overflow boundary for the menu. |
-</CxTable>
+```js
+const toggle = document.querySelector('[data-cx-toggle="combobox"]')
+const combobox = new Combobox(toggle, {
+  name: 'country',
+  searchNormalize: true
+})
+```
 
 ### Methods
 
-Call methods on a combobox instance retrieved via `Combobox.getInstance(toggleElement)` or `Combobox.getOrCreateInstance(toggleElement)`.
+The plugin exposes instance methods to open, close, disable and dispose a combobox, and the static lookup methods shared by every Chassis plugin:
 
 <CxTable>
 | Method | Description |
@@ -512,29 +512,45 @@ Call methods on a combobox instance retrieved via `Combobox.getInstance(toggleEl
 | `disable` | Disables the combobox and closes the menu if open. |
 | `enable` | Re-enables a disabled combobox. |
 | `dispose` | Destroys the instance and removes the hidden input. |
-| `getInstance` | Static. Returns the combobox instance attached to a DOM element, or `null`. |
+| `getInstance` | Static. Returns the combobox instance attached to a toggle, or `null`. |
 | `getOrCreateInstance` | Static. Returns the instance or creates one. |
+</CxTable>
+
+### Options
+
+<JsDataAttributes />
+
+<CxTable>
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `multiple` | boolean | `false` | Enable multi-select. Selections toggle and the menu stays open. |
+| `name` | string \| null | `null` | Name of the hidden input the plugin creates. |
+| `placeholder` | string | `''` | Placeholder for the toggle (button trigger). |
+| `searchNormalize` | boolean | `false` | Strip diacritics when filtering. |
+| `placement` | string | `'bottom-start'` | Floating UI placement for the menu. |
+| `offset` | array \| string \| function | `[0, 2]` | `[skidding, distance]` offset from the toggle. |
+| `boundary` | string \| element | `'clippingParents'` | Overflow boundary for the menu. |
 </CxTable>
 
 ### Events
 
-Events are dispatched on the toggle element.
+All events fire on the toggle element. `show.cx.combobox` and `hide.cx.combobox` are cancelable.
 
 <CxTable>
 | Event | Description |
 | --- | --- |
-| `show.cx.combobox` | Fires when `show()` is called, before the menu opens. Preventable via `event.preventDefault()`. |
+| `show.cx.combobox` | Fires when `show()` is called, before the menu opens. Call `event.preventDefault()` to keep it closed. |
 | `shown.cx.combobox` | Fires after the menu is visible. |
-| `hide.cx.combobox` | Fires when `hide()` is called, before the menu closes. Preventable. |
+| `hide.cx.combobox` | Fires when `hide()` is called, before the menu closes. Call `event.preventDefault()` to keep it open. |
 | `hidden.cx.combobox` | Fires after the menu is hidden. |
-| `change.cx.combobox` | Fires after a selection. The event has `value` (string for single select, array of strings for multi) and `item` (the selected `.menu-item`) as properties: `event.value`, `event.item`. |
+| `change.cx.combobox` | Fires after a selection. `event.value` is a string for single select and an array of strings for multi-select; `event.item` is the `.menu-item` whose selection changed. |
 </CxTable>
 
 ## CSS
 
 <DocsCSS name="Combobox" />
 
-Combobox styling is split between component-specific rules and the form-element foundations shared with `.form-input`. Check the [overview]([[docsref:forms/overview#sass-variables]]) page to see the CSS properties and Sass variables shared by all form elements.
+The combobox adds its own rules to the foundations it shares with `.form-input`. The [forms overview]([[docsref:/forms/overview#sass-variables]]) lists the custom properties and Sass variables shared by all form elements.
 
 ### Sass variables
 

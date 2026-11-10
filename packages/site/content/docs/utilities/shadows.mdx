@@ -1,6 +1,6 @@
 ---
 title: Shadows
-description: Box-shadow utilities spanning elevation levels, color tinting, and hover transitions.
+description: Add a box shadow to an element from the elevation scale, tint it with a context color, or apply it on hover.
 toc: true
 tokens:
   scopes:
@@ -10,9 +10,9 @@ css_layer: utilities
 
 import { getData } from '@libs/data'
 
-## Examples
+## Overview
 
-Shadow utilities add or remove `box-shadow` using a scale of elevation levels. The `$enable-component-shadows` Sass variable controls whether component shadows are enabled globally; utility classes apply shadows independently of that setting.
+Shadow utilities add or remove a `box-shadow`. The `$enable-component-shadows` Sass variable turns the shadows of components on or off; the utility classes apply their shadow whatever its value.
 
 <Example class="overflow-hidden" code={`<div class="shadow-none rounded p-md mb-xl">No shadow</div>
 <div class="shadow-sm rounded p-md mb-xl">Small shadow</div>
@@ -24,7 +24,7 @@ Shadow utilities add or remove `box-shadow` using a scale of elevation levels. T
 
 ### Elevation scale
 
-Elevation utilities map to design token names.
+`.shadow-{level}` classes apply the elevation shadows of the design tokens, named by their level.
 
 <div class="cxd-example">
   {
@@ -38,29 +38,28 @@ Elevation utilities map to design token names.
 
 ## Color shadows
 
-Shadow utilities support color tinting through a CSS variable mechanism — a transparent `--cx-shadow-color` channel is built into each elevation class, and a color utility activates it.
+An elevation shadow carries one layer whose color is the `--cx-shadow-color` custom property, transparent by default. A shadow color class sets that property to tint the shadow.
 
 ### How it works
 
-Each elevation class defines `--cx-shadow-color: transparent` alongside the shadow value. Color shadow classes (`.shadow-primary`, etc.) set `--cx-shadow-color` using CSS relative color syntax derived from the context color variable. The transparent shadow layer then becomes visible with a tint. This approach avoids generating every color × elevation combination at compile time.
+Each elevation class draws one of its layers in `var(--cx-shadow-color, transparent)`. A `.shadow-{context}` class sets `--cx-shadow-color` to the context color at a low alpha, with the CSS relative color syntax, and the layer becomes visible. One color class therefore tints every elevation level, and the stylesheet holds no class per pair of color and level.
 
 ```css
 .shadow-50 {
-  --cx-shadow-color: transparent;
-  box-shadow: 0rem 0.5rem 2rem -0.5rem rgba(0, 0, 0, 0.1), 0rem 0.15rem 1rem -0.15rem var(--cx-shadow-color, transparent), 0rem 0.15rem 1rem -0.15rem rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0rem 0.5rem 2rem -0.5rem rgba(0, 0, 0, 0.1), 0rem 0.25rem 1rem -0.25rem var(--cx-shadow-color, transparent), 0rem 0.25rem 1rem -0.25rem rgba(0, 0, 0, 0.1);
 }
 .shadow-primary {
-  --cx-shadow-color: oklch(from var(--cx-primary) l c h / 0.1);
+  --cx-shadow-color: oklch(from var(--cx-primary) l c h / 0.2);
 }
 ```
 
 <Callout type="warning">
-  While this way is not yet in direct control of designer but helps to avoid increasing file size by creating every color shadows including their hover states.
+  The tint is computed in CSS and is not a design token, so a change of a colored shadow in Figma does not reach it.
 </Callout>
 
 ### Color tinting
 
-Color tinting is applied by combining an elevation class with a context color shadow class.
+Combine an elevation class with a `.shadow-{context}` class to tint the shadow.
 
 <div class="cxd-example">
   {
@@ -74,32 +73,43 @@ Color tinting is applied by combining an elevation class with a context color sh
 
 ## Hover shadows
 
-Appending `-hover` to any shadow class applies the shadow only on `:hover`.
+The `hover:` prefix applies an elevation or shadow color class on `:hover` only: `.hover:shadow-30`, `.hover:shadow-primary`.
 
 <Example code={`<p class="shadow-30-hover p-md rounded">This is a hover shadow.</p>
 <p class="shadow-primary-hover shadow-50 p-md rounded">This is a shadow with primary hover.</p>`} />
 
 ## CSS
 
+Shadow utilities are generated from Sass maps built on design token values via the utilities API.
+
 ### Reference
+
+The table lists all shadow utilities and their CSS properties.
 
 <UtilityReferenceTable utility="shadow" />
 
-Elevation shadows are created by design tokens using a special function. Instead of creating all color variants of shadow levels, function creates a transparent shadow on default shadow class and the shadow color utility changes that color, similar to [opacities]([[docsref:/utilities/colors#opacity]]).
-
 ### Sass variables
 
+The base shadows `.shadow`, `.shadow-sm`, and `.shadow-lg` take three levels of the elevation scale; the inset and emboss shadows are defined in Sass.
+
 <ScssDocs name="base-shadow-variables" file="scss/config/_defaults.scss" />
-<ScssDocs name="default-shadow-tokens" file="scss/tokens/_shadow.scss" />
 
 ### Sass maps
+
+Shadow utilities are generated from two maps in `scss/maps/_shadows.scss`: `$base-shadows` for the named classes and `$default-shadows` for the elevation levels.
 
 <ScssDocs name="base-shadows-map" file="scss/maps/_shadows.scss" />
 <ScssDocs name="default-shadows-map" file="scss/maps/_shadows.scss" />
 
-### Sass utilities API
+### Design tokens
 
-Shadow utilities are declared in the utilities API in `scss/utilities/_index.scss`. [Learn how to use the utilities API.]([[docsref:/utilities/api#using-the-api]])
+<DocsDesignTokens name="Shadow" type="utility" plural />
+
+<ScssDocs name="default-shadow-tokens" file="scss/tokens/_shadow.scss" />
+
+### Utilities API
+
+Shadow utilities are declared in `scss/utilities/_index.scss` using the [utilities API]([[docsref:/utilities/api#using-the-api]]). The elevation utility passes each shadow through a function that turns one of its layers into the `--cx-shadow-color` layer.
 
 <ScssDocs name="utils-shadow" file="scss/utilities/_index.scss" />
 <ScssDocs name="utils-elevation-shadow" file="scss/utilities/_index.scss" />

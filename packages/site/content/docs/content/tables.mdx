@@ -1,6 +1,6 @@
 ---
 title: Tables
-description: Flexible table styles with opt-in classes for responsive, accessible, and customizable data presentation in Chassis CSS.
+description: Style tables with the opt-in table class — striped and hoverable rows, borders, context colors, sticky headers, and responsive and stacked layouts.
 toc: true
 tokens: component
 css_layer: content
@@ -9,67 +9,71 @@ css_layer: content
 import { getData } from '@libs/data'
 import { getTableHtml } from '@libs/table'
 
-## Overview
+## Introduction
 
-Tables in Chassis CSS use an opt-in approach with the `.table` base class. This design choice respects the widespread use of native `<table>` elements in third-party plugins like calendars and datepickers. Add the base class to any `<table>`, then enhance with modifiers for borders, striping, hover states, and context variations. Table styles aren't inherited by nested tables, allowing for independent styling within complex layouts.
+Table styles are opt-in: the `.table` class enables them, so the native `<table>` elements of third-party widgets such as calendars and date pickers keep their own look. Modifier classes add stripes, hover and active states, borders and context colors. The styles reach only the direct rows and cells of a `.table`, so a nested table without the class is not styled.
+
+## Basic structure
+
+Add `.table` to a `<table>` element. Cells take their padding, their colors and a bottom border from the table, and the cells of the `<thead>` take the colors of the head.
 
 <TableExample class="table" simplified={false} />
 
 ## Accented tables
 
-Enhance your tables with visual accents to improve readability and create visual hierarchy. These options help users scan and interpret tabular data more effectively.
+Stripes set alternating rows or columns apart, which makes wide or dense tables easier to scan.
 
 ### Striped rows
 
-Add `.striped` to create alternating background colors for rows within the `<tbody>`, making it easier to scan across wide tables.
+Add `.striped` to give every other row of the `<tbody>` the striped colors.
 
 <TableExample class="table striped" />
 
 ### Striped columns
 
-Use `.striped-columns` to apply zebra-striping to columns instead of rows, which can be useful for data-dense tables where vertical scanning is important.
+Add `.striped-columns` to stripe every other column instead of the rows.
 
 <TableExample class="table striped-columns" />
 
 ## Hoverable rows
 
-Add `.hoverable` to enable a hover state on table rows within a `<tbody>`.
+Add `.hoverable` to give the rows of the `<tbody>` a hover state.
 
 <TableExample class="table hoverable striped" />
 
-## Active tables
+## Active state
 
-Highlight a table row or cell by adding a `.active` class.
+Add `.active` to a `<tr>` or to a single cell to highlight it. An active row or cell also gets a cue on its inline-start edge.
 
 <TableExample class="table hoverable striped" active />
 
 ## Table borders
 
-Control the visual boundaries of your tables using border modifiers. These classes help define table structure and separate content areas to improve readability and organization.
+Border modifiers add borders around every cell, or remove the borders of a table.
 
 ### Bordered tables
 
-Add `.bordered` to apply distinct borders to the entire table, including cell boundaries, creating clear visual separation between data points.
+Add `.bordered` for borders on all sides of the table and of its cells.
 
 <TableExample class="table bordered" />
 
-[Border color utilities]([[docsref:/utilities/borders#color]]) can be added to change colors:
+A [border color utility]([[docsref:/utilities/borders#color]]) changes the color of the borders:
 
 <TableExample class="table bordered border-primary" />
 
 ### Borderless tables
 
-Apply `.borderless` to remove all borders from your table for a cleaner, more minimalist appearance.
+Add `.borderless` for a table without borders.
 
 <TableExample class="table borderless" />
 
-### Border Radius
+### Border radius
 
-Customize the corners of bordered tables using CSS variables to override the default border-radius design tokens.
+The corners of a table take their radius from a design token. Set `--cx-border-radius` on the table to override it.
 
 <TableExample class="table bordered" style="--cx-border-radius: 0" />
 
-Or use it in a wrapper with table scoping.
+Set `--cx-table-border-radius` on a wrapper to give the radius to every table inside it.
 
 <Example
   code={`<div style="--cx-table-border-radius: 1rem">
@@ -82,19 +86,17 @@ Or use it in a wrapper with table scoping.
   </div>`}
 />
 
-<Callout type="warning">
- Border radius overriding needs `$enable-table-border-radius` to be set to `true` in `_settings.scss`.
-</Callout>
+The radius is part of the build while `$enable-table-border-radius` is `true`, its default in `scss/config/_settings.scss`.
 
-## Context Variants
+## Context variants
 
 <CSSOnly />
 
-Use `.context` with a color name (like `.primary`) to apply a specific color scheme to your table. You can further customize the appearance using style modifiers like `.solid` or `.smooth`.
+A context class gives a table the colors of a context. Add `.context` and a context name such as `.primary`; the `.solid` and `.smooth` classes change how strongly the color shows.
 
-### Context Colors
+### Context colors
 
-Add `.context` followed by a color name (e.g., `.context.primary`, `.context.success`) to apply that color scheme to tables, rows, or individual cells.
+Add `.context` and a context name (`.context.primary`, `.context.success`) to a table, a `<thead>`, a `<tbody>`, a row or a single cell.
 
 <Example code={`<table class="table">
     <thead>
@@ -152,37 +154,35 @@ Add `.context` followed by a color name (e.g., `.context.primary`, `.context.suc
 
 ### Context styles
 
-Add `.solid` or `.smooth` alongside `.context` and a color to modify how the context color appears. The `.solid` style creates a more prominent color effect, while `.smooth` provides a softer appearance.
+Add `.solid` or `.smooth` next to `.context` and the context name. `.solid` applies the context color at full strength, and `.smooth` a softer tint of it.
 
 <TableExample class="table striped context primary solid" />
 
 <TableExample class="table striped context primary smooth" />
 
-## Color Modes
+## Color modes
 
-Apply different color themes to tables using the `data-cx-theme` attribute. This allows you to maintain visual consistency with dark or light themed interfaces regardless of the global theme setting.
-
-Add `data-cx-theme="light"` or `data-cx-theme="dark"` to any table element:
+The `data-cx-theme` attribute sets the color mode of a single table, whatever the mode of the page. Add `data-cx-theme="light"` or `data-cx-theme="dark"` to the table:
 
 <TableExample class="table" theme="dark" />
 
-Context variants work seamlessly with explicit theme settings:
+A context class keeps its colors under an explicit color mode:
 
 <TableExample class="table context primary" theme="dark" />
 
-## Table Sizing
+## Table sizing
 
-Customize table dimensions and text sizes using CSS variables to override design tokens, giving you fine-grained control over your table's appearance.
+Custom properties set the cell padding and the font sizes of a table, in place of the values of the design tokens.
 
 ### Basic sizing
 
-Adjust cell padding and font sizes directly on the table:
+Set `--cx-cell-padding-y` and `--cx-td-font-size` on the table itself:
 
 <TableExample class="table" style="--cx-td-font-size: 1rem; --cx-cell-padding-y: 1rem" />
 
 ### Targeted elements
 
-Target specific table components by setting styles for `<thead>` & `<tbody>` elements or use a wrapper with scoping:
+Set the same properties on a `<thead>` or a `<tbody>` to size one section, or set the `--cx-table-*` properties on a wrapper to size every table inside it:
 
 <Example
   code={`<div style="--cx-table-cell-padding-y: 1rem; --cx-table-th-font-size: 1rem;">
@@ -202,7 +202,7 @@ Target specific table components by setting styles for `<thead>` & `<tbody>` ele
 
 ## Nesting
 
-Border styles and context variants are not inherited by nested tables.
+A nested table does not take the modifier classes of the table around it: it needs `.table` and modifiers of its own.
 
 <Example
   code={`<table class="table striped bordered">
@@ -246,7 +246,7 @@ Border styles and context variants are not inherited by nested tables.
 
 ### Inherit context
 
-Apply the `context` class without a variant to enable the nested table to inherit the parent table's context.
+Add `.context` without a context name to a nested table so that it takes the context of the table around it.
 
 <Example
   code={`<table class="table striped bordered context primary">
@@ -290,11 +290,11 @@ Apply the `context` class without a variant to enable the nested table to inheri
 
 ## Anatomy
 
-Customize the structural elements of tables to create effective hierarchies and improve both visual presentation and accessibility.
+The head, the foot and the caption of a table each take their own styling.
 
 ### Table head
 
-Add emphasis and visual hierarchy using custom styling for the `<thead>` element. Apply context classes to `<thead>` or utility classes to `<tr>` elements for custom appearances.
+Add a context class to the `<thead>`, or utility classes to its `<tr>`, to set the head apart from the body.
 
 <TableExample class="table" headClass="context alternate" />
 
@@ -302,23 +302,23 @@ Add emphasis and visual hierarchy using custom styling for the `<thead>` element
 
 ### Table foot
 
-Include a `<tfoot>` element to display summary information, totals, or notes at the bottom of the table. Apply context classes to `<tfoot>` or utility classes to `<tr>` elements for custom appearances.
+A `<tfoot>` holds totals, summaries or notes at the bottom of a table. Like the head, it takes a context class, and its `<tr>` takes utility classes.
 
 <TableExample class="table" foot footClass="context neutral" />
 
 ### Captions
 
-Improve accessibility and provide context by including a `<caption>` that briefly describes the table's content and purpose. Screen readers announce captions first, helping users decide if they want to explore the table.
+A `<caption>` names the table and says what it holds. Screen readers announce it before the content, so their users can decide whether to read the table.
 
 <TableExample class="table" caption="List of users" />
 
-You can also position the caption at the top of the table with `.caption-top` for greater visibility.
+Add `.caption-top` to place the caption above the table.
 
 <TableExample class="table caption-top" caption="List of users" />
 
 ## Group dividers
 
-Create visual separation between table sections with enhanced borders using the `.table-divider` class.
+Add `.table-divider` to a `<tbody>` or a `<tfoot>` to draw a thicker border above its first row.
 
 <TableExample class="table" bodyClass="table-divider" foot={true} footClass="table-divider" />
 
@@ -326,9 +326,9 @@ Create visual separation between table sections with enhanced borders using the 
 
 ## Vertical alignment
 
-Control the vertical positioning of content within table cells to handle varying content lengths and improve visual harmony. By default, `<thead>` cells align content to the bottom, while `<tbody>` cells inherit alignment from the table (defaulting to top alignment).
+Cells of the `<thead>` align their content to the middle, and cells of the `<tbody>` inherit the alignment of the table, which is `top` by default.
 
-Use the [vertical align]([[docsref:/utilities/vertical-align]]) utility classes (`.align-top`, `.align-middle`, or `.align-bottom`) on tables, rows, or individual cells to customize alignment:
+The [vertical align]([[docsref:/utilities/vertical-align]]) utilities (`.align-top`, `.align-middle`, `.align-bottom`) change the alignment of a table, a row or a single cell:
 
 <Example code={`<div class="table-responsive">
     <table class="table align-middle">
@@ -388,7 +388,7 @@ Use the [vertical align]([[docsref:/utilities/vertical-align]]) utility classes 
 
 ## Responsive tables
 
-Responsive tables allow tables to be scrolled horizontally with ease. Make any table responsive across all viewports by wrapping a `.table` with `.table-responsive`. Or, pick a maximum breakpoint with which to have a responsive table up to by using `.max-{breakpoint}:table-responsive`.
+A `.table-responsive` wrapper lets a table scroll horizontally when it is wider than its container. `.max-{breakpoint}:table-responsive` limits the scrolling to viewports below a breakpoint.
 
 <Callout type="warning">
 **Vertical clipping/truncation**  
@@ -397,7 +397,7 @@ A responsive table scrolls inside its wrapper, which is positioned, so everythin
 
 ### Always responsive
 
-Across every breakpoint, use `.table-responsive` for horizontally scrolling tables.
+`.table-responsive` lets the table scroll horizontally at every viewport width.
 
 <Example code={`<div class="table-responsive">
     <table class="table" style="min-width: 1200px">
@@ -460,9 +460,7 @@ Across every breakpoint, use `.table-responsive` for horizontally scrolling tabl
 
 ### Breakpoint specific
 
-Use `.max-{breakpoint}:table-responsive` as needed to create responsive tables up to a particular breakpoint. From that breakpoint and up, the table will behave normally and not scroll horizontally.
-
-**These tables may appear broken until their responsive styles apply at specific viewport widths.**
+`.max-{breakpoint}:table-responsive` lets the table scroll horizontally below that breakpoint. From the breakpoint up, the wrapper does not scroll, so each table in these examples overflows its container at the viewport widths where its class does not apply.
 
 {getData('breakpoints').map((breakpoint) => {
   return breakpoint.abbr && (
@@ -641,9 +639,9 @@ Combine `.sticky-header` and `.sticky-column` on the same table within a contain
 
 ## Stacked tables
 
-Add `.stacked` to convert a table’s rows into stacked blocks when space is limited. Each row becomes a vertical block with the first cell acting as a bold title and the remaining cells displayed as label–value pairs. Labels are generated from `data-cell` attributes on each `<td>`.
+Add `.stacked` to turn the rows of a table into stacked blocks. Each row becomes a block and each `<td>` a line of its own, with a label above its value. The label is the `data-cell` attribute of the `<td>`, set in the font of the head; the `<thead>` itself is hidden visually and stays available to screen readers.
 
-Both `.stacked` and `.table-responsive` use container queries, so the `.table-responsive` wrapper is required as the query container. Use `.max-md:stacked`, `.max-lg:stacked`, etc. to only stack until up to a specific container width. The default `.stacked` always stacks.
+`.stacked` uses container queries, so the table needs a `.table-responsive` wrapper as its query container. `.max-md:stacked`, `.max-lg:stacked` and the other breakpoint variants stack the table below that container width, and `.stacked` alone always stacks. Resize the example below to see the table switch between the two layouts.
 
 <ResizableExample code={`<div class="table-responsive">
     <table class="table max-md:stacked">
@@ -681,33 +679,33 @@ Both `.stacked` and `.table-responsive` use container queries, so the `.table-re
 ```html
 <!-- Always stacked -->
 <div class="table-responsive">
-  <table class="table table-stacked">...</table>
+  <table class="table stacked">...</table>
 </div>
 
 <!-- Stacked below md container width -->
 <div class="table-responsive">
-  <table class="table max-md:table-stacked">...</table>
+  <table class="table max-md:stacked">...</table>
 </div>
 ```
 
 ## CSS
 
-<DocsCSS />
+<DocsCSS name="Table" />
 
 ### Custom properties
 
-<DocsCSSVars />
+<DocsCSSVars name="Table" />
 
 <ScssDocs name="table-variables" file="scss/_table.scss" />
 
 ### Sass variables
 
-<DocsSASSVars />
+<DocsSASSVars name="Table" />
 
 <ScssDocs name="table-variables" file="scss/config/_defaults.scss" />
 
 ### Design tokens
 
-<DocsDesignTokens />
+<DocsDesignTokens name="Table" />
 
 <ScssDocs name="table-tokens" file="scss/tokens/_table.scss" />

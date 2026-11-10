@@ -16,6 +16,8 @@ The nav is a set of links for moving between pages, views, or sections of a page
 
 ### Key features
 
+One base class covers every nav, and the modifiers build on it:
+
 - Flexbox base that wraps by default and accepts flex utilities for alignment and stacking
 - Three variants on the same markup: `.nav-tabs`, `.nav-segments`, and `.nav-underline`
 - Three sizes through the `.sm` and `.lg` modifiers
@@ -622,6 +624,15 @@ A nav conveys its role, the current link, and unavailable links through semantic
 - Add `aria-disabled="true"` to a disabled link and omit its `href`. `.disabled` removes pointer events, but an anchor with an `href` stays reachable from the keyboard.
 
 Navigation styled as tabs with `.nav-tabs` must **not** carry `role="tablist"`, `role="tab"`, or `role="tabpanel"`. These roles belong to dynamic tabbed interfaces, as described in the [ARIA Authoring Practices Guide tabs pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/). In a tabbed interface built with the [Tab plugin]([[docsref:/components/tab]]), the plugin sets `aria-selected="true"` on the active tab, so `aria-current` is not needed.
+
+## JavaScript API
+
+The nav has no plugin of its own, and a nav of plain links needs no JavaScript. The plugins it combines with are documented on their own pages:
+
+- [Tab]([[docsref:/components/tab#javascript-api]]) switches the panes of a tabbed interface.
+- [Collapse]([[docsref:/components/collapse#javascript-api]]) opens and closes the nested nav of a `.collapsible` item.
+- [Menu]([[docsref:/components/menu#javascript-api]]) opens the menu of a toggle inside a `.nav-item`.
+- [Nav overflow]([[docsref:/components/nav-overflow#javascript-api]]) moves the links that do not fit into a menu.
 
 ## CSS
 

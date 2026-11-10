@@ -23,7 +23,7 @@ All Reboot rules are wrapped in `@layer reboot`. The full layer order, declared 
 
 <ScssDocs name="layer-order" file="scss/_layer-order.scss" />
 
-This means any unlayered rule (or a rule in a later layer) automatically wins over Reboot without needing increased specificity. Overriding element baselines in a project stylesheet does not require targeting the same selectors or adding `!important`.
+Any unlayered rule, or a rule in a later layer, therefore wins over Reboot without added specificity. Overriding element baselines in a project stylesheet does not require targeting the same selectors or adding `!important`.
 
 ## Page defaults
 
@@ -39,7 +39,7 @@ The `<html>` and `<body>` elements establish page-wide baselines.
 }
 ```
 
-The `<body>` element receives the following compiled rules:
+The `<body>` element takes its font, colors and text alignment from custom properties:
 
 <ScssDocs name="reboot-body-rules" file="scss/_reboot.scss" compile />
 
@@ -371,7 +371,7 @@ The `<address>` element resets `font-style` from the browser default `italic` to
 
 ### Blockquote
 
-The bare `<blockquote>` element has its default margin (`1em 40px`) replaced with `0 0 1rem` to match the bottom-only margin pattern used across Reboot. The `.blockquote` class (defined in the Typography layer) adds font scaling and additional styling for designed quote contexts.
+The bare `<blockquote>` element has its default margin (`1em 40px`) replaced with `0 0 1rem` to match the bottom-only margin pattern used across Reboot. The `.blockquote` class adds the quote typography on top of it; see [Typography]([[docsref:/content/typography#blockquotes]]).
 
 <Example showMarkup={false} code={`<figure>
     <blockquote>

@@ -10,9 +10,9 @@ extraJs:
 
 ---
 
-## Overview
+## Introduction
 
-The Field component provides essential layout, spacing, and functionality for your form input or component of choice. It even scales to support laying out checkboxes, radios, and switches in a two-column layout.
+The `.form-field` wrapper lays out a form control with its label, its description, and its validation feedback, and sets the gap between them. It holds a single input, a stack of inputs, or a group of checkboxes, radio buttons, or switches.
 
 <Example code={`<div class="form-field">
     <label class="form-label" for="fieldOverview">Email address</label>
@@ -26,23 +26,23 @@ The Field component provides essential layout, spacing, and functionality for yo
 
 The `.form-field` wrapper uses CSS grid to manage the layout of a form control alongside its label, description, and validation feedback.
 
-- **Default layout** is a single-column grid where everything stacks vertically. Use this for text inputs, selects, textareas, ranges, input groups, and adorned inputs.
-- **Two-column layout** activates automatically via `:has()` when a `.check-input` is a direct child. The control pins to column 1 while the label, description, and feedback stack in column 2.
-- **Resets margins** for direct children `.form-label` and `.form-help` to ensure consistent spacing regardless of the control type.
-- **Spanning elements** — when a `.form-label` or `.form-help` is present alongside `.check-input`, they span both columns to maintain proper alignment and spacing.
-- **Grouped controls** — nest multiple `.form-input`s or `.form-check`s inside a `.form-field` to group them under a shared label with shared description and validation feedback.
+- **Default layout** — a single-column grid in which everything stacks vertically. Use it for text inputs, selects, textareas, ranges, input groups, and adorned inputs.
+- **Two-column layout** — applies through `:has()` when a `.check-input` is a direct child. The control sits in column 1, and its label in column 2.
+- **Margin reset** — a direct-child `.form-label`, `.form-help`, or feedback element loses its own margin, so the grid gap is the only space between the parts.
+- **Spanning elements** — a `.form-label` or `.form-help` next to a direct-child `.check-input` spans both columns.
+- **Grouped controls** — several `.form-input` or `.form-check` elements inside one `.form-field` share its label, description, and validation feedback.
 
 <Callout type="warning">
   Always associate labels with their corresponding input using the `for` attribute to ensure accessibility.
 </Callout>
 
-## Examples
+## Basic structure
 
-Use `.form-field` as a wrapper for any form control to take advantage of its layout and spacing features.
+Wrap a form control, its `.form-label`, and an optional `.form-help` in a `.form-field` element. The same wrapper takes stacked inputs and groups of checks.
 
 ### Input stacking
 
-Works with any number of stacked inputs. Descriptions and validation feedback are optional.
+A field holds any number of stacked inputs under one label. The description and the validation feedback are optional.
 
 <Example code={`<div class="form-field">
     <label for="stackedSelect" class="form-label">Options</label>
@@ -60,7 +60,7 @@ Works with any number of stacked inputs. Descriptions and validation feedback ar
 
 ### Checkbox
 
-When a `.check-input` is a direct child, the grid switches to a two-column layout with the checkbox in column 1 and the label in column 2.
+With a `.check-input` as a direct child, the grid switches to the two-column layout: the checkbox in column 1 and its label in column 2.
 
 <Example code={`<fieldset class="form-field">
     <legend class="form-label">Choose options</legend>
@@ -71,7 +71,7 @@ When a `.check-input` is a direct child, the grid switches to a two-column layou
     <div class="form-help" id="checkGroupHelp">You can select multiple options.</div>
   </fieldset>`} />
 
-Add `role="switch"` to each checkbox input to render them as toggle switches with the toggle on the left and label on the right.
+Add `role="switch"` to each checkbox to render it as a switch, with the switch at the inline start and the label after it.
 
 <Example code={`<fieldset class="form-field">
     <legend class="form-label">Choose options</legend>
@@ -83,7 +83,7 @@ Add `role="switch"` to each checkbox input to render them as toggle switches wit
 
 ### Without fieldset
 
-When `<fieldset>` is not suitable — for example, inside a grid or flex layout that conflicts with its block formatting — apply `role="group"` and `aria-labelledby` to the `.form-field` wrapper instead.
+Where a `<fieldset>` does not fit, for example inside a grid or flex layout that conflicts with its block formatting, add `role="group"` and `aria-labelledby` to the `.form-field` wrapper instead.
 
 <Example code={`<div class="form-field" role="group" aria-labelledby="noFsGroupLabel">
     <div class="form-label" id="noFsGroupLabel">Choose options</div>
@@ -96,7 +96,7 @@ When `<fieldset>` is not suitable — for example, inside a grid or flex layout 
 
 ## Descriptions
 
-Wrap checkboxes, radios, or switches in a `.form-check` to align the description with their label.
+Wrap each checkbox, radio button, or switch in a `.form-check` element to give it a description of its own: a `.form-help` inside the check aligns with its label, and a `.form-help` of the field describes the whole group.
 
 <Example code={`<fieldset class="form-field">
     <legend class="form-label">Select a plan</legend>
@@ -117,7 +117,7 @@ Wrap checkboxes, radios, or switches in a `.form-check` to align the description
 
 ## Form cards
 
-Add `.form-card` to each inner container for a card-style treatment that highlights the selected option.
+Add `.form-card` to each `.form-check` of a field to present the options as cards. A card shows a highlight background and a border while its input is checked, and the whole card is clickable.
 
 <Example code={`<fieldset class="form-field">
     <legend class="form-label">Select a plan</legend>
@@ -135,7 +135,7 @@ Add `.form-card` to each inner container for a card-style treatment that highlig
 
 ### Label as card
 
-For a more compact card style that uses the label as the card container, apply `.form-card` to the label instead. This allows for more flexible content inside the card while still maintaining the same layout and spacing.
+With nested markup, the `<label>` itself carries `.form-check` and `.form-card` and wraps the input, its text, and its description.
 
 <Example code={`<fieldset class="form-field">
     <legend class="form-label">Select a plan</legend>
@@ -151,10 +151,9 @@ For a more compact card style that uses the label as the card container, apply `
     </label>
   </fieldset>`} />
 
+## Input groups
 
-## Using input groups
-
-Use `.input-group` inside `.form-field` to visually connect related inputs under a shared label and help text. Add `role="group"` and `aria-labelledby` to the `.form-field` wrapper so assistive technologies announce the group name alongside each input.
+An [input group]([[docsref:/forms/input-group]]) inside a `.form-field` joins related inputs under one label and one description. Add `role="group"` and `aria-labelledby` to the `.form-field` wrapper so assistive technologies announce the group name alongside each input.
 
 <Example code={`<div class="form-field" role="group" aria-labelledby="nameGroupLabel">
     <label class="form-label" for="groupedFirstName" id="nameGroupLabel">Name</label>
@@ -169,7 +168,7 @@ Use `.input-group` inside `.form-field` to visually connect related inputs under
 
 ## Accessibility
 
-Follow these practices to ensure your forms are accessible.
+A field is layout only: the association of a control with its label, its group, and its description is written in the markup.
 
 ### Label association
 
@@ -200,7 +199,7 @@ When grouping related checkboxes or radio buttons, use a `<fieldset>` with a `<l
 </fieldset>
 ```
 
-If `<fieldset>` is not suitable — for example, inside a layout that conflicts with its block formatting — apply `role="group"` and `aria-labelledby` to the `.form-field` wrapper instead:
+Where a `<fieldset>` does not fit, add `role="group"` and `aria-labelledby` to the `.form-field` wrapper instead:
 
 ```html
 <div class="form-field" role="group" aria-labelledby="planGroupLabel">
@@ -216,7 +215,7 @@ If `<fieldset>` is not suitable — for example, inside a layout that conflicts 
 </div>
 ```
 
-### Help & feedback
+### Help and feedback
 
 Use `aria-describedby` to associate `.form-help` text and validation feedback with their input, so screen readers announce the description when the field receives focus.
 
@@ -241,9 +240,9 @@ When displaying a validation error, also set `aria-invalid="true"` on the input 
 
 ### Switches
 
-Switches that use a checkbox as their underlying control must include `role="switch"` to convey their on/off nature to assistive technologies. Always pair a switch with a visible `<label>`.
+A switch is a checkbox with `role="switch"`, which conveys its on/off nature to assistive technologies. Always pair a switch with a visible `<label>`.
 
-For more detailed accessibility guidance, see the [forms overview accessibility]([[docsref:/forms/overview/#accessibility]]) section.
+See [forms accessibility]([[docsref:/forms/overview/#accessibility]]) for the guidance that applies to all form controls.
 
 ## CSS
 
@@ -251,15 +250,13 @@ For more detailed accessibility guidance, see the [forms overview accessibility]
 
 ### Custom properties
 
-<DocsCSSVars name="Form Field" exposed />
+<DocsCSSVars name="Form Field" />
 
-<hr />
-
-Form field variables:
+The gap between the parts of a field:
 
 <ScssDocs name="form-field-properties" file="scss/forms/_form-field.scss" />
 
-Form card variables:
+The padding of a form card:
 
 <ScssDocs name="form-card-properties" file="scss/forms/_form-field.scss" />
 
@@ -268,5 +265,9 @@ Form card variables:
 <DocsSASSVars name="Form Field" />
 
 <ScssDocs name="form-field-variables" file="scss/config/_defaults.scss" />
+
+The variables of `.form-label` and `.form-help`:
+
 <ScssDocs name="form-label-variables" file="scss/config/_defaults.scss" />
+
 <ScssDocs name="form-help-variables" file="scss/config/_defaults.scss" />

@@ -20,7 +20,7 @@ Apply `.close-button` to a `<button>` element.
   Always include an `aria-label` attribute — without it the button has no accessible label.
 </Callout>
 
-For environments where CSS may not load, it is possible to include `×` (`&times;`) as fallback text content. The close icon still renders normally when CSS is available — the text is visually hidden — but `×` provides a visible label without it. The `aria-label` attribute remains necessary because the text is hidden under normal conditions.
+For environments where CSS may not load, include `×` (`&times;`) as fallback text content. The close icon still renders normally when CSS is available — the text is visually hidden — but `×` provides a visible label without it. The `aria-label` attribute remains necessary because the text is hidden under normal conditions.
 
 <Example code={`<button type="button" class="close-button" aria-label="Close">×</button>
 <button type="button" class="close-button" aria-label="Close">Close</button>`} />
@@ -43,7 +43,7 @@ Add the `disabled` attribute to prevent interaction. Disabled close buttons rend
 
 ## Contextual colors
 
-The close button inherits its icon color from the nearest context class. Both default and solid context variants are supported.
+The close button inherits its icon color from the nearest context class. It works in the default and in the solid variant of a context.
 
 <Example class="hstack gap-md" code={`<div class="context info p-xs d-flex align-items-center">
     <button type="button" class="close-button" aria-label="Close"></button>
@@ -70,7 +70,7 @@ The button supports a child `<svg>` element when the CSS-managed icon needs to b
     <Icon name="xmark-circle-solid" />
   </button>`} />
 
-<Callout type="info">To change the default icon globally, modify the `$close-button-icon` Sass variable in the theme.</Callout>
+<Callout type="info">To change the default icon globally, override the `$close-button-icon` Sass variable.</Callout>
 
 ## Positioning
 

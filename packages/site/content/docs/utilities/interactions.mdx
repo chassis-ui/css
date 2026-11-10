@@ -1,6 +1,6 @@
 ---
 title: Interactions
-description: Utilities for controlling text selection behavior and pointer event handling.
+description: Control how the text of an element is selected and whether the element responds to pointer events.
 toc: false
 css_layer: utilities
 ---
@@ -21,12 +21,12 @@ Pointer event utilities set the CSS `pointer-events` property. `.pointer-event-n
 <p><a href="#" class="pointer-event-auto">This link</a> can be clicked (this is default behavior).</p>
 <p class="pointer-event-none"><a href="#" tabindex="-1" aria-disabled="true">This link</a> can not be clicked because the <code>pointer-events</code> property is inherited from its parent. However, <a href="#" class="pointer-event-auto">this link</a> has a <code>pointer-event-auto</code> class and can be clicked.</p>`} />
 
-`.pointer-event-none` affects only pointer-based interactions. Elements with this class remain focusable and actionable via keyboard unless additional attributes are applied: `tabindex="-1"` prevents keyboard focus, and `aria-disabled="true"` communicates the disabled state to assistive technologies.
+`.pointer-event-none` affects only pointer-based interactions. An element with this class stays focusable and can be activated with the keyboard. Add `tabindex="-1"` to take it out of the keyboard focus order, and `aria-disabled="true"` to convey the disabled state to assistive technologies.
 
-Simpler alternatives for common cases:
+Native attributes cover the common cases without the class:
 
 - For form inputs, add the `disabled` HTML attribute.
-- For links, remove the `href` attribute, making it a non-interactive anchor or placeholder link.
+- For links, remove the `href` attribute, which makes the anchor a non-interactive placeholder link.
 
 ## CSS
 

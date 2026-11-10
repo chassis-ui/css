@@ -13,6 +13,10 @@ import { getData } from '@libs/data'
 
 A notification displays a short message — confirmation, status, or warning — without blocking interaction with the surrounding page. For modal, blocking confirmations, use [Alert]([[docsref:/components/alert]]) instead.
 
+## Basic structure
+
+A notification is a `.notification` element with a context class around its message, and a live-region role when the message is announced.
+
 <Example code={`<div class="notification primary" role="status">
     <p>A simple notification.</p>
   </div>`} />
@@ -64,8 +68,8 @@ Add `.fade` and `.show` to the notification element to opt into a fade-out trans
     <button type="button" class="close-button" data-cx-dismiss="notification" aria-label="Close notification"></button>
   </div>`} />
 
-<Callout type="info" title="Close-button spacing">
-  When `.close-button` sits as a direct child of `.notification`, a `:has()` rule extends the inline-end padding so the message text doesn't run under the button. Wrapping the button breaks the selector — reserve the space manually with a utility like `pe-md`.
+<Callout type="info">
+  **Close-button spacing.** When `.close-button` sits as a direct child of `.notification`, a `:has()` rule extends the inline-end padding so the message text doesn't run under the button. Wrapping the button breaks the selector — reserve the space manually with a utility like `.pe-md`.
 </Callout>
 
 ## Additional content
@@ -74,7 +78,7 @@ A notification's body can hold more than a single line of text. The classes belo
 
 ### Notification icon
 
-Apply `.notification-icon` to an inline SVG inside a notification to size and color it from the component's design tokens. The presence of the icon — matched via `:has()` — switches the notification to a two-column grid: the icon takes the first column, the message takes the second. The grid centers its rows vertically; for multi-line messages, add `align-self-start` to the icon so it aligns with the first line of text.
+Apply `.notification-icon` to an inline SVG inside a notification to size and color it from the component's design tokens. The presence of the icon — matched via `:has()` — switches the notification to a two-column grid: the icon takes the first column, the message takes the second. The grid centers its rows vertically; for multi-line messages, add `.align-self-start` to the icon so it aligns with the first line of text.
 
 <Example class="vstack gap-md" code={`<div class="notification info" role="status">
     <Icon name="info-circle-solid" class="notification-icon" />
@@ -88,7 +92,7 @@ Apply `.notification-icon` to an inline SVG inside a notification to size and co
 
 ### Notification title
 
-Wrap longer messages in a heading and one or more paragraphs to give them structure. Apply `.notification-title` to the heading element to pick up its typographic scale and color from the component's design tokens. The notification lays out its children on a grid — both the title and paragraphs have no margin; spacing between elements is controlled by `--notification-text-gap`.
+Wrap longer messages in a heading and one or more paragraphs to give them structure. Apply `.notification-title` to the heading element to pick up its typographic scale and color from the component's design tokens. The notification lays out its children on a grid — both the title and paragraphs have no margin; spacing between elements is controlled by `--cx-notification-text-gap`.
 
 <Example class="vstack gap-md" code={`<div class="notification success fade show" role="status">
     <Icon name="check-solid" class="notification-icon align-self-start" />
@@ -98,7 +102,7 @@ Wrap longer messages in a heading and one or more paragraphs to give them struct
     <button type="button" class="close-button" data-cx-dismiss="notification" aria-label="Close notification"></button>
   </div>`} />
 
-### Actions buttons
+### Action buttons
 
 When a notification carries action buttons, use flex utilities to compose them with the message and adapt across breakpoints. The example below stacks the message above the actions on narrow viewports and lays them side-by-side from `xl` upward.
 
@@ -134,8 +138,8 @@ Two ARIA roles cover most notification use cases. When a notification is static 
 
 These are starting points, not rules. Override when the message intent diverges from the variant — a `danger` notification that only reports passive state ("Server returned 503 — retrying in 5s") can still be `status` if the user isn't expected to act on it, and an `info` notification announcing a session timeout that needs an immediate response should be `alert`.
 
-<Callout type="warning" title="Color isn’t a substitute for role">
-  A red notification with `role="status"` is announced politely, and a green one with `role="alert"` interrupts speech. Non-sighted users perceive urgency from the role, not the color — always choose it from the message intent.
+<Callout type="warning">
+  **Color isn’t a substitute for role.** A `danger` notification with `role="status"` is announced politely, and a `success` one with `role="alert"` interrupts speech. Non-sighted users perceive urgency from the role, not the color — always choose it from the message intent.
 </Callout>
 
 ### Dynamic notifications
@@ -159,7 +163,7 @@ Icons inside notifications duplicate the textual message visually; they shouldn�
 
 ### Close button placement
 
-Place the close button as the **last** child of the notification, even when visually positioned at the top-right corner. Because `status` and `alert` both carry implicit `aria-atomic="true"`, the entire region is announced as a single unit — close-last means screen readers read the message before the dismiss control. Tab order follows the same rule: dismiss is the terminal action, reached after any links or actions inside the message. Visual placement is independent — Chassis absolute-positions a direct-child `.close-button` at the top-right regardless of its position in the source.
+Place the close button as the **last** child of the notification, even when visually positioned at the top corner on the inline-end side. Because `status` and `alert` both carry implicit `aria-atomic="true"`, the entire region is announced as a single unit — close-last means screen readers read the message before the dismiss control. Tab order follows the same rule: dismiss is the terminal action, reached after any links or actions inside the message. Visual placement is independent — Chassis absolute-positions a direct-child `.close-button` at the top inline-end corner regardless of its position in the source.
 
 ### Dismiss and focus
 
@@ -204,7 +208,7 @@ Manual initialization is unnecessary when dismissal is the only requirement — 
 
 ### Methods
 
-The plugin exposes four instance methods for programmatic control:
+The plugin exposes two instance methods and two static lookup methods for programmatic control:
 
 <CxTable>
 | Method | Description |
@@ -252,7 +256,7 @@ myNotification.addEventListener('closed.cx.notification', () => {
 
 ### Sass variables
 
-<DocsSASSVars name="Notification" exposed/>
+<DocsSASSVars name="Notification" exposed />
 
 <ScssDocs name="notification-variables" file="scss/config/_defaults.scss" />
 

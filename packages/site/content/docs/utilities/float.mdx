@@ -9,7 +9,7 @@ import { getData } from '@libs/data'
 
 ## Overview
 
-Float utilities set the CSS [`float` property](https://developer.mozilla.org/en-US/docs/Web/CSS/float) — `start`, `end`, or `none` — based on the viewport size. `!important` is applied to prevent specificity conflicts. These utilities follow the same breakpoint scale as the grid. Note: float has no effect inside flex containers.
+Float utilities set the CSS [`float` property](https://developer.mozilla.org/en-US/docs/Web/CSS/float) to `inline-start`, `inline-end`, or `none`, so `.float-start` and `.float-end` follow the writing direction. Each class has a variant per breakpoint, on the breakpoint scale of the grid. A float has no effect on a flex item.
 
 <Example code={`<div class="float-start">Float start on all viewport sizes</div><br>
 <div class="float-end">Float end on all viewport sizes</div><br>
@@ -19,7 +19,7 @@ Use the [clearfix utility]([[docsref:/helpers/clearfix]]) on a parent element to
 
 ## Responsive
 
-Responsive variants are available for all float values:
+A breakpoint prefix applies a float value at that breakpoint and above:
 
 <Example code={`<div class="sm:float-end">Float end on viewports sized "<b>sm</b>" or wider</div><br>
 <div class="md:float-end">Float end on viewports sized "<b>md</b>" or wider</div><br>
@@ -27,7 +27,7 @@ Responsive variants are available for all float values:
 <div class="xl:float-end">Float end on viewports sized "<b>xl</b>" or wider</div><br>
 <div class="2xl:float-end">Float end on viewports sized "<b>2xl</b>" or wider</div><br>`} />
 
-Here are all the support classes:
+Each float value has a class at every breakpoint:
 
 <ul>
 {getData('breakpoints').map((breakpoint) => {

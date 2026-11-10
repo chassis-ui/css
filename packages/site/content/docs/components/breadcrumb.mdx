@@ -2,7 +2,7 @@
 title: Breadcrumb
 description: Breadcrumb navigation marks the current page's location in a site hierarchy and links to ancestor pages.
 toc: true
-toknens: component
+tokens: context
 css_layer: components
 ---
 
@@ -37,7 +37,7 @@ Wrap an ordered list in `.breadcrumb` and apply `.breadcrumb-item` to each `<li>
 
 ## Separator customization
 
-Separators are inserted by the `::before` pseudo-element on each `.breadcrumb-item` that follows another. The separator character comes from the `--cx-breadcrumb-divider` CSS custom property, falling back to the compiled value of `$breadcrumb-divider`. Setting this property at runtime requires no recompilation.
+The `::before` pseudo-element of each `.breadcrumb-item` that follows another draws the separator. The separator character comes from the `--cx-breadcrumb-divider` CSS custom property, falling back to the compiled value of `$breadcrumb-divider`. Setting this property at runtime requires no recompilation.
 
 <Example code={`<nav style="--cx-breadcrumb-divider: '>';" aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -104,16 +104,16 @@ Wrap the breadcrumb list in a `<nav>` element with `aria-label="breadcrumb"` so 
 
 ## CSS
 
-<DocsCSS component="Breadcrumb" />
+<DocsCSS name="Breadcrumb" />
 
 ### Custom properties
 
-<DocsCSSVars component="Breadcrumb" />
+<DocsCSSVars name="Breadcrumb" />
 
 <ScssDocs name="breadcrumb-css-vars" file="scss/_breadcrumb.scss" compile />
 
 ### Sass variables
 
-<DocsSASSVars component="Breadcrumb" />
+<DocsSASSVars name="Breadcrumb" />
 
 <ScssDocs name="breadcrumb-variables" file="scss/config/_defaults.scss" />

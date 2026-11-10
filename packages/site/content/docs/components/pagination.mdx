@@ -1,18 +1,18 @@
 ---
 title: Pagination
-description: Create accessible navigation controls for multi-page content with Chassis CSS's semantic pagination components.
+description: Link the pages of multi-page content with pagination built on a list inside a nav landmark, with bordered and grouped variants and three sizes.
 toc: true
 tokens: component
 css_layer: components
 ---
 
-## Overview
+## Introduction
 
-Chassis CSS pagination provides intuitive navigation controls for multi-page content using semantic HTML structures and accessible design patterns. Built with list elements and proper ARIA attributes, pagination components ensure screen readers can effectively communicate navigation options while maintaining excellent keyboard accessibility.
+Pagination links the pages of multi-page content, such as search results or a list of posts. The component is a list of page links in a flex row, where every link has a minimum width and height, and state classes mark the current page and the links that are unavailable.
 
-Each pagination component uses connected page links with generous touch targets, making navigation reliable across all devices. The semantic `<nav>` wrapper identifies the component as a navigation section for assistive technologies, while descriptive labeling helps distinguish between multiple pagination contexts on the same page.
+## Basic structure
 
-When implementing multiple pagination sections, provide descriptive `aria-label` attributes to clarify their purpose, such as `aria-label="Search results pages"` or `aria-label="Blog post navigation"`.
+Wrap a `<ul>` with the `.pagination` class in a `<nav>` element, and give each `<li>` the `.pagination-item` class and each link the `.pagination-link` class. The `<nav>` exposes the component as a navigation landmark: label it with `aria-label`, and use distinct labels, such as `aria-label="Search results pages"`, when a page has more than one. Links that hold only an icon need an `aria-label` of their own.
 
 <Example code={`<nav aria-label="Page navigation example">
     <ul class="pagination">
@@ -34,9 +34,13 @@ When implementing multiple pagination sections, provide descriptive `aria-label`
     </ul>
   </nav>`} />
 
-### Bordered 
+## Variants
 
-Add `.bordered` to the `.pagination` class to create a distinct separation between page links, enhancing visual clarity and touch target definition.
+Modifier classes on `.pagination` add borders to the page links, either as separate boxes or as one connected group.
+
+### Bordered
+
+Add `.bordered` next to `.pagination` to give each page link a border and to separate the links with a gap.
 
 <Example code={`<nav aria-label="Page navigation example">
     <ul class="pagination bordered">
@@ -60,7 +64,7 @@ Add `.bordered` to the `.pagination` class to create a distinct separation betwe
 
 ### Grouped
 
-Use `.grouped` to create a connected pagination layout where page links appear as a single unit, emphasizing their relationship and improving usability.
+Add `.grouped` to join the bordered page links into a single unit: adjacent borders overlap, and only the outer corners of the first and last links are rounded.
 
 <Example code={`<nav aria-label="Page navigation example">
     <ul class="pagination grouped">
@@ -82,11 +86,11 @@ Use `.grouped` to create a connected pagination layout where page links appear a
     </ul>
   </nav>`} />
 
-## Active & disabled states
+## Active and disabled
 
-Clearly communicate current page position and unavailable navigation options using state classes and semantic attributes. Apply `.disabled` for non-interactive links and `.active` to highlight the current page.
+The `.active` class highlights the current page and the `.disabled` class marks a link that is unavailable. Both work on the `.pagination-item` or directly on the `.pagination-link`. Mark the current page with `aria-current="page"` as well, since the class alone is not announced.
 
-In Chassis CSS, state classes can be applied to either the `.pagination-item` parent or directly to the `.pagination-link` element. While `.disabled` uses `pointer-events: none` to prevent mouse interaction, always include `tabindex="-1"` and `aria-disabled="true"` on disabled links to ensure complete keyboard accessibility.
+The `.disabled` class only sets `pointer-events: none`, which does not stop keyboard activation. Replace a disabled link with a `<span>`, as the previous control of the example does, or add `tabindex="-1"` and `aria-disabled="true"` to the `<a>` element.
 
 <Example code={`<nav aria-label="...">
     <ul class="pagination">
@@ -108,11 +112,9 @@ In Chassis CSS, state classes can be applied to either the `.pagination-item` pa
     </ul>
   </nav>`} />
 
-For enhanced accessibility and to completely remove click functionality, replace anchor elements with `<span>` for disabled and active states:
-
 ## Sizing
 
-Chassis provides three size variants to match your interface requirements. Add `.lg` or `.sm` modifiers to the base `.pagination` class for alternative sizing options.
+Pagination comes in three sizes. The `.lg` and `.sm` classes next to `.pagination` change the minimum size, the radius and the font size of the page links; the medium size needs no class.
 
 <Example code={`<nav aria-label="...">
     <ul class="pagination lg">
@@ -152,9 +154,7 @@ Chassis provides three size variants to match your interface requirements. Add `
 
 ## Alignment
 
-Control pagination positioning using Chassis's flexbox utilities. The pagination component uses flexbox by default, making it compatible with justify-content utilities for flexible alignment options.
-
-With `.justify-content-center`:
+The `.pagination` element is a flex container, so the [justify-content utilities]([[docsref:/utilities/flex#justify-content]]) align its page links. The `.justify-content-center` class centers them.
 
 <Example code={`<nav aria-label="Centered pagination">
     <ul class="pagination justify-content-center">
@@ -174,7 +174,7 @@ With `.justify-content-center`:
     </ul>
   </nav>`} />
 
-Or with `.justify-content-end`:
+The `.justify-content-end` class aligns them to the end of the row.
 
 <Example code={`<nav aria-label="Right-aligned pagination">
     <ul class="pagination justify-content-end">

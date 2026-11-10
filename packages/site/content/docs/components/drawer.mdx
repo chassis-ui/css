@@ -1,6 +1,6 @@
 ---
 title: Drawer
-description: Slide-in panels anchored to a viewport edge — built on the native HTML dialog element with placement variants, body scroll control, swipe gestures, and a data-attribute API.
+description: Slide-in panels anchored to a viewport edge, built on the native HTML dialog element — placement variants, body scroll control, and swipe gestures.
 toc: true
 tokens: context
 css_layer: components
@@ -51,7 +51,7 @@ A drawer is composed of a `<dialog>` element with `.drawer` and a placement clas
 - **`.drawer-body`** — main content area. Scrolls independently when the content is taller than the drawer.
 - **`.drawer-footer`** — optional flex row, right-aligned, for action buttons.
 
-For decision-forcing overlays that block the current flow, see [Alert]([[docsref:/components/alert]]). For full-height panels that open beside other content, see [Modal]([[docsref:/components/modal]]).
+For decision-forcing overlays that block the current flow, see [Alert]([[docsref:/components/alert]]). For centered overlay dialogs, see [Modal]([[docsref:/components/modal]]).
 
 ## Live example
 
@@ -85,12 +85,12 @@ The placement modifier determines which viewport edge the panel slides in from. 
 | `.drawer-end` | Right (LTR) / Left (RTL) |
 | `.drawer-top` | Top |
 | `.drawer-bottom` | Bottom |
-| `.drawer-fullscreen` | All edges |
+| `.fullscreen` | All edges, next to a placement class (see [Fullscreen](#fullscreen)) |
 </CxTable>
 
 ### Start
 
-`.drawer-start` anchors the panel to the inline-start edge and fills the full block height, sized by `--drawer-width`.
+`.drawer-start` anchors the panel to the inline-start edge and fills the full block height, sized by `--cx-drawer-width`.
 
 <Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerStart">Start</button>
 
@@ -104,7 +104,7 @@ The placement modifier determines which viewport edge the panel slides in from. 
 
 ### End
 
-`.drawer-end` anchors the panel to the inline-end edge and fills the full block height, sized by `--drawer-width`.
+`.drawer-end` anchors the panel to the inline-end edge and fills the full block height, sized by `--cx-drawer-width`.
 
 <Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerEnd">End</button>
 
@@ -118,7 +118,7 @@ The placement modifier determines which viewport edge the panel slides in from. 
 
 ### Top
 
-`.drawer-top` anchors the panel to the block-start edge and fills the full inline width, sized by `--drawer-height`.
+`.drawer-top` anchors the panel to the block-start edge and fills the full inline width, sized by `--cx-drawer-height`.
 
 <Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerTop">Top</button>
 
@@ -132,7 +132,7 @@ The placement modifier determines which viewport edge the panel slides in from. 
 
 ### Bottom
 
-`.drawer-bottom` anchors the panel to the block-end edge and fills the full inline width, sized by `--drawer-height`. Add `.drawer-fit-content` to size the height to the drawer's content instead of the `--drawer-height` variable.
+`.drawer-bottom` anchors the panel to the block-end edge and fills the full inline width, sized by `--cx-drawer-height`. Add `.drawer-fit-content` to size the height to the drawer's content instead of the `--cx-drawer-height` custom property.
 
 <Example code={`<button type="button" class="button primary" data-cx-toggle="drawer" data-cx-target="#drawerBottom">Bottom</button>
 
@@ -146,7 +146,7 @@ The placement modifier determines which viewport edge the panel slides in from. 
 
 ## Behaviors
 
-Drawer behavior and appearance are configurable with data attributes on the `<dialog>` element or modifier classes applied alongside the placement class.
+Data attributes on the `<dialog>` element and modifier classes next to the placement class configure the behavior and the appearance of a drawer.
 
 ### Body scroll
 
@@ -363,23 +363,11 @@ const drawer = new Drawer('#myDrawer', {
 })
 ```
 
-### Options
-
-<JsDataAttributes />
-
-<CxTable>
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `backdrop` | `boolean \| 'static'` | `true` | Show a backdrop while open. `'static'` prevents closing on backdrop click. `false` opens the drawer non-modal, with `show()`: no backdrop, and the page stays interactive. |
-| `keyboard` | `boolean` | `true` | Close on Escape key. |
-| `scroll` | `boolean` | `false` | Allow body scroll while the drawer is open. Independent of `backdrop`: `false` locks the scroll behind a non-modal drawer too. |
-</CxTable>
-
 ### Methods
 
-<Callout name="danger-async-methods" type="danger" />
+The plugin exposes instance methods for programmatic control. `show()` and `hide()` return before the transition completes — listen to the `shown` and `hidden` events for post-transition timing.
 
-The plugin exposes the following instance methods. `show()` and `hide()` return before the transition completes — listen to the `shown` and `hidden` events for post-transition timing.
+<Callout name="danger-async-methods" type="danger" />
 
 <CxTable>
 | Method | Description |
@@ -403,6 +391,18 @@ drawer.dispose()
 const instance = Drawer.getInstance('#myDrawer')
 const instance = Drawer.getOrCreateInstance('#myDrawer')
 ```
+
+### Options
+
+<JsDataAttributes />
+
+<CxTable>
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `backdrop` | `boolean \| 'static'` | `true` | Show a backdrop while open. `'static'` prevents closing on backdrop click. `false` opens the drawer non-modal, with `show()`: no backdrop, and the page stays interactive. |
+| `keyboard` | `boolean` | `true` | Close on Escape key. |
+| `scroll` | `boolean` | `false` | Allow body scroll while the drawer is open. Independent of `backdrop`: `false` locks the scroll behind a non-modal drawer too. |
+</CxTable>
 
 ### Events
 

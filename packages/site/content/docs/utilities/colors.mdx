@@ -13,7 +13,7 @@ Color utilities cover two sub-systems: context colors and opacity control. Both 
 
 ## Color
 
-Color utilities set the CSS `color` property using the Chassis context color palette. They do not set `background-color`, so `.bg-*` [background utilities]([[docsref:/utilities/background]]) may be needed for colored regions. For link colorization with interactive states (`:hover`, `:focus`, `:active`, `:visited`), see the [`.link-*` utilities]([[docsref:/utilities/link]]).
+Color utilities set the CSS `color` property using the Chassis context color palette. They do not set `background-color`: add a `.bg-*` [background utility]([[docsref:/utilities/background]]) for a colored region. For link colorization with interactive states (`:hover`, `:focus`, `:active`, `:visited`), see the [`.link-*` utilities]([[docsref:/utilities/link]]).
 
 ### Body colors
 
@@ -61,7 +61,7 @@ Each `.fg-{context}` class writes an OKLCH relative color expression into `--cx-
 }
 
 .fg-opacity-50 {
-  --cx-fg-opacity: 0.5;
+  --cx-fg-opacity: var(--cx-opacity-50);
 }
 ```
 
@@ -119,7 +119,7 @@ The tables list all foreground color utilities and their CSS properties.
 
 ### Sass variables
 
-Foreground color tokens are part of the color system [color system]([[docsref:/core-concepts/color-system]]) in `scss/tokens/` and not listed here.
+Foreground color tokens are part of the [color system]([[docsref:/core-concepts/color-system]]) in `scss/tokens/` and not listed here.
 
 ### Sass maps
 
@@ -129,7 +129,7 @@ Foreground color maps are part of the [color system]([[docsref:/core-concepts/co
 
 <ScssDocs name="opacity-levels-map" file="scss/maps/_opacities.scss" />
 
-`$fg-opacities` defines two semantic foreground opacity levels.
+`$fg-opacities` defines the three semantic foreground opacity levels: `subtle`, `slight` and `a11y`.
 
 <ScssDocs name="fg-opacities-map" file="scss/maps/_opacities.scss" />
 

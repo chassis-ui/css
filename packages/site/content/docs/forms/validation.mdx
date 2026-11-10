@@ -1,6 +1,6 @@
 ---
 title: Form Validation
-description: Provide clear, accessible feedback to users with Chassis CSS's form validation styles, utilizing HTML5 validation or custom implementations.
+description: Style valid and invalid form controls and show feedback messages, with native constraint validation or with state classes set by a script or the server.
 toc: true
 tokens: component
 css_layer: components
@@ -13,31 +13,26 @@ extraJs:
 import { getSiteFsPath } from '@chassis-ui/docs/site'
 
 <Callout type="warning" class="mt-3xl -mb-md">
-  When using client-side custom validation styles and tooltips, additional work is needed to ensure proper accessibility. For better out-of-the-box accessibility, consider using server-side validation or native browser validation.
+  Client-side validation with custom styles and tooltips needs additional work to be accessible, described in [Accessibility](#accessibility). Server-side validation and the browser's native validation need less.
 </Callout>
 
-## Understanding form validation
+## Introduction
 
-Chassis CSS provides flexible options for implementing form validation:
+Validation styles color a form control by its state and show a feedback message next to it. A control enters a validation state in one of two ways:
 
-- **Native validation**: Uses the browser's built-in `:invalid` and `:valid` pseudo-classes to style form controls based on validation state.
-- **Progressive enhancement**: Chassis uses the `.was-validated` class on forms to control when validation styles appear. This prevents invalid styles from showing when the page first loads.
-- **Server-side fallback**: The `.is-invalid` and `.is-valid` classes provide direct control for server-side validation scenarios.
-- **Custom validation messages**: Add contextual feedback to users with `.valid-feedback` and `.invalid-feedback` elements.
-- **Opt-in icons**: Add `.validation-icons` to a wrapper (e.g. the `<form>`) to render success/error glyphs inside every supported input it contains. Without it, only the colors, border, and shadow change.
-- **API integration**: All validation styles work with the browser's [Constraint Validation API](https://html.spec.whatwg.org/multipage/form-input-infrastructure.html#the-constraint-validation-api), allowing you to create custom validation logic with JavaScript.
-- **Accessible feedback**: Position validation messages consistently outside input groups for optimal screen reader compatibility.
+- **Native validation**: `data-cx-validate` on a `<form>` turns on the styles for the `:user-valid` and `:user-invalid` pseudo-classes of its controls. The browser sets these only after the user has changed a control or tried to submit the form, so no control is marked invalid when the page loads.
+- **State classes**: the `.is-valid` and `.is-invalid` classes set the state of a control directly, from the server or from a script, with no attribute on the form.
+
+Both work with the same parts:
+
+- **Feedback messages**: `.valid-feedback` and `.invalid-feedback` elements are hidden until the control before them, or in their wrapper, is in the matching state. `.valid-tooltip` and `.invalid-tooltip` show the message as a tooltip.
+- **Opt-in icons**: `.validation-icons` on a wrapper, such as the `<form>`, renders a valid or an invalid icon inside every supported input it contains. Without it, only the colors, border, and focus ring change.
+- **Constraint validation**: the native path uses the browser's [Constraint Validation API](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#the-constraint-validation-api), so `required`, `pattern`, `min`, and `setCustomValidity()` decide the state.
+- **Placement**: feedback for an input group or a `.form-input` wrapper goes after the group, not inside it.
 
 ## Client-side validation
 
-For custom Chassis validation styles, add the `novalidate` attribute to your `<form>` element. This disables browser default tooltips but still allows JavaScript validation using the Constraint Validation API.
-
-Key features of Chassis validation:
-
-- Custom feedback styles with contextual colors and icons
-- Support for all form controls including input groups
-- Consistent positioning of feedback messages
-- JavaScript integration for dynamic validation
+Add `data-cx-validate` and `novalidate` to the `<form>` element. `data-cx-validate` turns on the validation styles for the controls of the form. `novalidate` turns off the validation bubbles of the browser; the Constraint Validation API stays available, and a script uses it to stop the submission of an invalid form.
 
 <Example code={`<form class="grid gap-md" data-cx-validate novalidate>
     <div class="col-span-full md:col-span-4">
@@ -93,7 +88,7 @@ Key features of Chassis validation:
     <div class="col-span-full">
       <div class="form-check">
         <input class="check-input" type="checkbox" value="" id="invalidCheck" required>
-        <label class="check-label" for="invalidCheck">
+        <label for="invalidCheck">
           Agree to terms and conditions
         </label>
         <div class="invalid-feedback">
@@ -106,15 +101,13 @@ Key features of Chassis validation:
     </div>
   </form>`} />
 
-<Callout type="info" title="Validation script">
-  The example below shows the JavaScript needed to implement custom validation with Chassis CSS.
-</Callout>
+The forms on this page use the script below. It stops the submission of an invalid form, and keeps `aria-invalid` on each control in sync with its validity.
 
 <Code containerClass="cxd-example-snippet" lang="js" filePath={getSiteFsPath('static/static/js/validate-forms.js')} />
 
 ## Native browser validation
 
-If you prefer simpler implementation, you can use the browser's built-in validation. Chassis CSS works seamlessly with native validation UI, though these styles cannot be customized with CSS.
+A form without `novalidate` uses the validation of the browser: on submit, the browser stops at the first invalid control and shows its own message. Without `data-cx-validate`, the controls take no validation styles. The appearance of the browser's messages cannot be changed with CSS.
 
 <Example code={`<form class="grid gap-md">
     <div class="col-span-full md:col-span-4">
@@ -152,7 +145,7 @@ If you prefer simpler implementation, you can use the browser's built-in validat
     <div class="col-span-full">
       <div class="form-check">
         <input class="check-input" type="checkbox" value="" id="invalidCheck2" required>
-        <label class="check-label" for="invalidCheck2">
+        <label for="invalidCheck2">
           Agree to terms and conditions
         </label>
       </div>
@@ -162,16 +155,16 @@ If you prefer simpler implementation, you can use the browser's built-in validat
     </div>
   </form>`} />
 
-<Callout type="info" title="Setting custom messages">
-  While native browser validation styles cannot be changed with CSS, you can customize the validation message text using JavaScript's `setCustomValidity()` method.
+<Callout type="info">
+  **Setting custom messages.** The text of a native validation message is set from JavaScript with the `setCustomValidity()` method of the control.
 </Callout>
 
 ## Server-side validation
 
-For applications that validate on the server, Chassis CSS provides the `.is-valid` and `.is-invalid` state classes that can be applied to form controls directly, without needing the `.was-validated` parent class.
+For forms validated on the server, add the `.is-valid` or `.is-invalid` class to each control in the response. The classes set the state directly, with no `data-cx-validate` on the form.
 
-<Callout type="warning" title="Accessibility best practices">
-  For invalid fields, always connect error messages to their inputs using `aria-describedby` to ensure screen readers announce feedback properly. Multiple IDs can be referenced if a field has both help text and error messages.
+<Callout type="warning">
+  **Link each message to its input.** Connect the error message of an invalid field to its input with `aria-describedby`, so screen readers announce it with the field. The attribute takes several IDs when a field has both help text and an error message.
 </Callout>
 
 <Example code={`<form class="grid gap-md">
@@ -228,7 +221,7 @@ For applications that validate on the server, Chassis CSS provides the `.is-vali
     <div class="col-span-full">
       <div class="form-check">
         <input class="check-input is-invalid" type="checkbox" value="" id="invalidCheck3" aria-describedby="invalidCheck3Feedback" required>
-        <label class="check-label" for="invalidCheck3">
+        <label for="invalidCheck3">
           Agree to terms and conditions
         </label>
         <div id="invalidCheck3Feedback" class="invalid-feedback">
@@ -243,7 +236,7 @@ For applications that validate on the server, Chassis CSS provides the `.is-vali
 
 ## Supported form elements
 
-Chassis CSS validation styles work consistently across all basic form elements:
+The validation styles apply to text inputs, textareas, selects, checkboxes, radios, range inputs, input groups, adorned inputs, chip inputs, and comboboxes.
 
 <Example code={`<form class="vstack gap-md">
     <div class="form-field">
@@ -390,10 +383,10 @@ Chassis CSS validation styles work consistently across all basic form elements:
 
 ## Tooltip validation
 
-For compact layouts, Chassis CSS provides tooltip-style validation feedback. Simply replace `.valid-feedback` and `.invalid-feedback` with `.valid-tooltip` and `.invalid-tooltip` classes.
+Replace `.valid-feedback` and `.invalid-feedback` with `.valid-tooltip` and `.invalid-tooltip` to show the message as a tooltip over the layout instead of a block below the control, which keeps the height of a compact form unchanged.
 
-<Callout type="default" title="Positioning requirement">
-  Tooltips require a parent element with `position: relative`. The grid items in the example below carry `.position-relative` for this; add it to the parent of each field in other layouts.
+<Callout type="warning">
+  **Positioning requirement.** Tooltips require a parent element with `position: relative`. The grid items in the example below carry `.position-relative` for this; add it to the parent of each field in other layouts.
 </Callout>
 
 <Example code={`<form class="grid gap-md" data-cx-validate novalidate>
@@ -454,7 +447,7 @@ For compact layouts, Chassis CSS provides tooltip-style validation feedback. Sim
 
 ## Validation icons
 
-Validation icons are opt-in at the **wrapper level**. Add the `.validation-icons` class to any ancestor — typically the `<form>`, but it also works on `.form-field`, `.input-group`, or even a single `.form-input` — and every supported descendant input renders the success or error glyph when it enters a validation state. Without an ancestor with this class, inputs still pick up validation colors, border, and shadow — only the icon is omitted.
+Validation icons are opt-in at the **wrapper level**. Add the `.validation-icons` class to any ancestor — typically the `<form>`, but it also works on `.form-field`, `.input-group`, or a single `.form-input` — and every supported descendant input renders the success or error glyph when it enters a validation state. Without an ancestor with this class, inputs still take the validation colors, border, and focus ring — only the icon is omitted.
 
 Icons appear on text inputs, single-value `<select>` elements, color inputs, `.ghost-input` (used by `.chip-input` and the `.input-adorn` wrapper), and `.combobox-value`. Textareas, checkboxes, radios, switches, file, and range inputs do not receive icons by design.
 
@@ -520,20 +513,20 @@ Icons appear on text inputs, single-value `<select>` elements, color inputs, `.g
     </div>
   </form>`} />
 
-<Callout type="info" title="Disabling icons globally">
-  Set the Sass option `$enable-validation-icons: false` to strip the icon rules from the compiled bundle entirely. The `.validation-icons` class becomes a no-op when icons are disabled at compile time.
+<Callout type="info">
+  **Disabling icons globally.** Set the Sass option `$enable-validation-icons: false` to strip the icon rules from the compiled bundle entirely. The `.validation-icons` class becomes a no-op when icons are disabled at compile time.
 </Callout>
 
-## Persistent Form help
+## Persistent form help
 
-The `.form-help` component is hidden by default when validation feedback is present so the active message takes precedence. Add the `.always-show` class to keep help text visible alongside validation feedback. Always place form help and validation feedback elements as siblings after the input or input group.
+A `.form-help` element hides while the feedback message of its control shows, so the active message replaces the help text. Add the `.always-show` class to the help element to keep it visible next to the feedback. Place form help and validation feedback as siblings after the input or the input group.
 
 ## Accessibility
 
-Validation feedback only works for every user when it's wired up with the right ARIA attributes. The example below demonstrates the recommended pattern for dynamic, JavaScript-driven validation — connecting the input to its feedback with `aria-describedby`, announcing changes through a live region, and toggling `aria-invalid` in sync with `.is-invalid`.
+Validation feedback reaches every user only when ARIA attributes carry it. The example shows the pattern for validation driven by a script: it connects the input to its feedback with `aria-describedby`, announces changes through a live region, and toggles `aria-invalid` in sync with `.is-invalid`.
 
-<Callout type="info" title="Accessibility checklist">
-  Because `.invalid-feedback` and `.valid-feedback` are hidden with `display: none` when inactive, you can safely list all relevant IDs in a single static `aria-describedby` — screen readers skip `display: none` elements, so only the currently visible description is announced on focus. Add `aria-live="polite"` to feedback elements so errors injected via JavaScript are announced immediately without requiring the user to re-focus the field. Always set `aria-invalid="true"` on the input when it is invalid, and remove it when the error is cleared.
+<Callout type="info">
+  **Accessibility checklist.** `.invalid-feedback` and `.valid-feedback` are `display: none` while inactive, and screen readers skip such elements. One static `aria-describedby` can therefore list every relevant ID: only the visible description is announced on focus. Add `aria-live="polite"` to feedback elements so a message written by a script is announced without the user focusing the field again. Set `aria-invalid="true"` on the input while it is invalid, and remove it when the error is cleared.
 </Callout>
 
 <Example code={`<div class="input-group">
@@ -581,11 +574,11 @@ Validation feedback only works for every user when it's wired up with the right 
 
 ## CSS
 
-Chassis CSS uses a powerful combination of Sass and CSS variables to create a flexible form system that adapts to themes and design requirements.
+<DocsCSS name="Form validation" />
 
 ### Custom properties
 
-Check the [overview]([[docsref:forms/overview#custom-properties]]) page to see the CSS variables shared by all form elements.
+Validation reads the custom properties of the valid and the invalid form state. The [forms overview]([[docsref:/forms/overview#custom-properties]]) lists them with the other properties shared by all form elements.
 
 ### Sass variables
 
@@ -597,10 +590,8 @@ Check the [overview]([[docsref:forms/overview#custom-properties]]) page to see t
 
 <DocsDesignTokens />
 
-<hr />
-
-The following design tokens define the validation icons and sizes:
+The validation icons, and the icon size of each form size, are design tokens.
 
 <ScssDocs name="form-icon-tokens" file="scss/tokens/_forms.scss" />
 
-Check the [overview]([[docsref:forms/overview#design-tokens]]) page to see the design tokens shared by all form elements.
+The [forms overview]([[docsref:/forms/overview#design-tokens]]) lists the design tokens shared by all form elements.

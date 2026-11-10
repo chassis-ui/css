@@ -1,6 +1,6 @@
 ---
 title: Badge
-description: Compact labeling elements for counters, indicators, and status markers with multiple styles and sizes.
+description: Label content with badges for counts, indicators, and status markers, in solid, outline, and smooth styles and three sizes.
 toc: true
 tokens: component
 css_layer: components
@@ -8,15 +8,13 @@ css_layer: components
 
 import { getData } from '@libs/data'
 
-## Overview
+## Introduction
 
-Badges are lightweight components used to add counts, labels, or status indicators to content. They highlight new items, display notification counts, and provide supplementary information.
+Badges are small inline labels that add a count, a tag, or a status indicator to content. They highlight new items, display notification counts, and sit inside other components such as buttons and avatars. A badge takes its color from a context class and comes in three styles and three sizes.
 
-Chassis badges are designed to be flexible, working with any content or component. They support proper screen reader context for accessibility, and are available in multiple styles and colors for customization. The responsive design allows them to adapt to surrounding content, making them versatile across different interfaces.
+## Basic structure
 
-### Basic usage
-
-The `.badge` class provides the foundational structure for badges. By itself, it creates a minimal badge with default styling.
+Add the `.badge` class to an element to render it as a badge. Without a context class the badge takes the colors of the context around it, and the `.circle` modifier gives it equal width and height for a short count.
 
 <Example code={`<!-- Base class -->
 <span class="badge">Base</span>
@@ -35,16 +33,15 @@ The `.badge` class provides the foundational structure for badges. By itself, it
 
 ### Badge elements
 
-Badges can be used on any inline or block element. Use the `.badge` class to style the element as a badge.
+The `.badge` class works on any inline or block element, links included, and always renders as an inline flex box.
 
 <Example code={`<span class="badge primary">Span</span>
 <a class="badge primary" href="#">Link</a>
 <div class="badge primary">Div</div>`} />
 
-
 ## Color variants
 
-The default badge style uses solid background colors with contrasting text. Add a contextual color class like `.primary` or `.secondary` to the base `.badge` class to apply appropriate styling.
+The default badge style is solid: the background color of the context with contrasting text. Add a context color class, such as `.primary` or `.secondary`, next to `.badge` to choose the context.
 
 <Example code={getData('context-colors').map((contextColor) => `<span class="badge ${contextColor.name}">${contextColor.title}</span>`)} />
 
@@ -52,19 +49,19 @@ The default badge style uses solid background colors with contrasting text. Add 
 
 ### Outline style
 
-Add the `.outline` class to create badges with a transparent background, colored border and text.
+Add the `.outline` class for a badge with a transparent background and a border and text in the context color.
 
 <Example code={getData('context-colors').map((contextColor) => `<span class="badge ${contextColor.name} outline">${contextColor.title}</span>`)} />
 
 ### Smooth style
 
-Add the `.smooth` class to create badges with a subdued background color and matching text color, creating a softer, more subtle appearance.
+Add the `.smooth` class for a badge with a subdued background of the context color and matching text.
 
 <Example code={getData('context-colors').map((contextColor) => `<span class="badge ${contextColor.name} smooth">${contextColor.title}</span>`)} />
 
 ## Size variants
 
-Chassis provides three badge sizes to accommodate different design needs. Use the `.sm` and `.lg` classes to modify the size of the badge for compact spaces or greater emphasis.
+Badges come in three sizes. The `.sm` and `.lg` classes change the paddings, the font size, the radius and the icon size; the medium size needs no class.
 
 <Example code={`<span class="badge sm primary">Small</span>
   <span class="badge primary">Medium</span>
@@ -76,7 +73,7 @@ Chassis provides three badge sizes to accommodate different design needs. Use th
 
 ## Icons
 
-Enhance badges with icons to provide additional visual meaning. Both SVG icons and icon fonts can be used within badges.
+A badge can hold an icon before or after its text, either an SVG icon or an icon font. The icon takes the icon size of the badge size.
 
 <Example code={`<span class="badge default sm">
     <Icon name="info-circle-solid" role="img" />
@@ -105,16 +102,16 @@ Enhance badges with icons to provide additional visual meaning. Both SVG icons a
   </span>`} />
 
 <Callout type="warning">
-  Icon spacing is automatically applied using `:first-child` and `:last-child` pseudo selectors. To ensure proper spacing, wrap the badge text in a `<span>` element.
+  The spacing of an icon comes from the `:first-child` and `:last-child` selectors. Wrap the badge text in a `<span>` element so that the icon is matched as the first or last child.
 </Callout>
 
 ## Use cases
 
-Badges can be integrated into various UI elements to enhance functionality and visual communication. The following examples demonstrate common implementation patterns.
+Badges combine with other components and with utilities for counters, notification indicators and custom shapes.
 
 ### With components
 
-Badges work well inside buttons and other compoents to indicate counts, status, or other supplementary information.
+Place a badge inside a button or another component to show a count or a status next to its label.
 
 <Example code={`<button type="button" class="button primary">
     Notifications
@@ -122,15 +119,15 @@ Badges work well inside buttons and other compoents to indicate counts, status, 
      aria-label="new notifications">2</span>
   </button>`} />
 
-Unless the context is clear, always include additional context with visually hidden text.
+Unless the surrounding content makes the meaning of a badge clear, add visually hidden text that explains it.
 
 <Callout type="warning">
-  Badge content can be confusing for screen reader users without proper context. Use semantic roles by adding `role="status"` for counters or `role="presentation"` for decorative badges. Provide descriptions with `aria-label` to explain the badge's meaning. When needed, include additional context using `<span class="visually-hidden">`. For dynamic badges, ensure changes are announced properly to assistive technologies.
+  A bare number or dot gives screen reader users no context. Add `role="status"` to a counter that updates, so that changes are announced, and `role="presentation"` to a decorative badge. Explain the meaning of a badge with `aria-label` or with a `<span class="visually-hidden">` inside it.
 </Callout>
 
 ### Positioned badges
 
-Create notification-style indicators by positioning badges in the corners of elements:
+The [position utilities]([[docsref:/utilities/position]]) place a badge on the corner of an element, as a notification indicator.
 
 <Example code={`<button type="button" class="button primary position-relative">
     Inbox
@@ -139,7 +136,7 @@ Create notification-style indicators by positioning badges in the corners of ele
     </span>
   </button>`} />
 
-For a more minimal approach, create a simple indicator dot without a count:
+A badge with only visually hidden text and a padding utility renders as an indicator dot.
 
 <Example code={`<button type="button" class="button primary position-relative">
     Profile
@@ -151,18 +148,16 @@ For a more minimal approach, create a simple indicator dot without a count:
 
 ### Custom corners
 
-Beyond the default rounded appearance and the `.circle` modifier, you can use border-radius utility classes:
+The [border-radius utilities]([[docsref:/utilities/borders#radius]]) override the default radius of a badge, from square corners to a pill, while the paddings and the typography stay the same.
 
 <Example code={`<span class="badge primary rounded-zero">Sharp</span>
 <span class="badge primary rounded-sm">Blunt</span>
 <span class="badge primary rounded-md">Soft</span>
 <span class="badge primary rounded-full">Pill</span>`} />
 
-This approach gives you precise control over the visual style while maintaining consistent spacing and typography.
-
 ## Adaptive sizing
 
-The `.badge-adaptive` class creates responsive badges that automatically adjust their size based on their parent element's font size. This allows badges to appear appropriately sized in headings of different sizes, and ensures the same badge works consistently across various text contexts.
+The `.badge-adaptive` class sizes a badge in `em` units, so its font size, paddings and icon size follow the font size of the parent element. The same badge then fits headings and body text of any size, while a badge with a size class keeps its fixed size.
 
 <Example code={`<h3>
     Example heading
@@ -176,11 +171,9 @@ The `.badge-adaptive` class creates responsive badges that automatically adjust 
     <span class="badge primary sm">Small</span>
   </p>`} />
 
-Notice how the `.badge-adaptive` class makes badges properly scale with text sizes, while standard badges maintain their fixed sizes.
-
 ### With wrappers
 
-The `.badge-adaptive` class can be used on wrappers to make all badges use adaptive sizing.
+Add `.badge-adaptive` to a wrapper to give every badge inside it adaptive sizing.
 
 <Example code={`<div class="badge-adaptive">
     <p class="font-h1">Example heading <span class="badge primary">New</span></p>
@@ -206,8 +199,6 @@ The `.badge-adaptive` class can be used on wrappers to make all badges use adapt
 ### Custom properties
 
 <DocsCSSVars />
-
-Customize badges through CSS variables:
 
 <ScssDocs name="badge-css-vars" file="scss/_badge.scss" />
 

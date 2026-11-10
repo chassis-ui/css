@@ -15,13 +15,13 @@ Toasts are short-lived, non-blocking notifications that overlay page content. Un
 
 ### How they work
 
-The Toast plugin manages visibility through CSS classes. Toasts start hidden and require a `.show()` call — or a `data-cx-dismiss` trigger — to appear. When `autohide` is enabled, the hide timer starts after the show transition completes and pauses while the pointer is over the toast or focus is within it. Toasts overlay content without disrupting pointer events on the page underneath.
+The Toast plugin manages visibility through CSS classes. Toasts start hidden and appear only when the `show()` method is called; a `data-cx-dismiss="toast"` control hides them again. When `autohide` is enabled, the hide timer starts after the show transition completes and pauses while the pointer is over the toast or focus is within it. Toasts overlay content without disrupting pointer events on the page underneath.
 
 <Callout name="info-prefersreducedmotion" />
 
 ### Live example
 
-Clicking the button below instantiates a Toast and calls `.show()`. The toast auto-hides after 5 seconds (the default `delay`).
+Clicking the button below instantiates a `Toast` and calls `show()`. The toast auto-hides after 5 seconds (the default `delay`).
 
 <div class="toast-container position-fixed bottom-0 end-0 p-md">
   <div id="liveToast" class="toast" role="status">
@@ -92,13 +92,13 @@ Remove `.toast-header` and apply flexbox utilities directly to `.toast` for a co
 
 ## Placement
 
-`.toast-container` is `position: absolute` by default. Combine it with position utilities to pin toasts to a viewport edge (`position-fixed`) or to a corner within a relatively-positioned ancestor. Add a spacing utility to keep toasts from touching the container edge.
+`.toast-container` is `position: absolute` by default. Combine it with position utilities to pin toasts to a viewport edge (`.position-fixed`) or to a corner within a relatively-positioned ancestor. Add a spacing utility to keep toasts from touching the container edge.
 
 <ToastPlacementPlayground />
 
 ### Stacking
 
-Toasts inside a `.toast-container` stack vertically, separated by `--toast-spacing` (`$toast-spacing`). The container itself uses `width: max-content` so it sizes to the widest toast.
+Toasts inside a `.toast-container` stack vertically, separated by `--cx-toast-spacing` (`$toast-spacing`). The container itself uses `width: max-content` so it sizes to the widest toast.
 
 <Example code={`<div class="toast-container position-static">
     <div class="toast" role="status">
@@ -267,9 +267,19 @@ import { Toast } from '@chassis-ui/css'
 
 ### Triggers
 
-The data-attribute API wires up dismissal without any JavaScript on the page beyond the bundled plugin:
+The data-attribute API wires up dismissal without any JavaScript on the page beyond the bundled plugin. A control with `data-cx-dismiss="toast"` inside the toast hides it:
 
-<JsDismiss name="toast" />
+```html
+<button type="button" class="close-button" data-cx-dismiss="toast" aria-label="Close"></button>
+```
+
+A control outside the toast names it with `data-cx-target`:
+
+```html
+<button type="button" class="button" data-cx-dismiss="toast" data-cx-target="#myToast">Dismiss</button>
+```
+
+Dismissal calls `hide()`: the toast loses `.show` and stays in the DOM, so `show()` can display it again. There is no data attribute that shows a toast.
 
 ### Initialization
 
@@ -285,18 +295,6 @@ For dismiss-only functionality, manual initialization is not required. `data-cx-
 
 See the [triggers](#triggers) section for details.
 </Callout>
-
-### Options
-
-<JsDataAttributes />
-
-<CxTable>
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| `animation` | boolean | `true` | Applies a CSS fade transition on show and hide. |
-| `autohide` | boolean | `true` | Hides the toast automatically after `delay` milliseconds. The timer pauses while the pointer is over the toast or focus is within it. |
-| `delay` | number | `5000` | Milliseconds to wait before hiding. Only applies when `autohide` is `true`. |
-</CxTable>
 
 ### Methods
 
@@ -327,6 +325,18 @@ if (toast.isShown()) {
   toast.toggle()
 }
 ```
+
+### Options
+
+<JsDataAttributes />
+
+<CxTable>
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `animation` | boolean | `true` | Applies a CSS fade transition on show and hide. |
+| `autohide` | boolean | `true` | Hides the toast automatically after `delay` milliseconds. The timer pauses while the pointer is over the toast or focus is within it. |
+| `delay` | number | `5000` | Milliseconds to wait before hiding. Only applies when `autohide` is `true`. |
+</CxTable>
 
 ### Events
 
@@ -364,6 +374,10 @@ toastElement.addEventListener('shown.cx.toast', () => {
 <DocsCSSVars />
 
 <ScssDocs name="toast-css-vars" file="scss/_toast.scss" />
+
+On the `.toast-container` element:
+
+<ScssDocs name="toast-container-css-vars" file="scss/_toast.scss" />
 
 ### Sass variables
 

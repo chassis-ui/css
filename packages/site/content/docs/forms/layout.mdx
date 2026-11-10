@@ -5,9 +5,9 @@ toc: true
 ---
 ## Overview
 
-Chassis CSS provides multiple layout options for organizing form elements. Since Chassis CSS applies `display: block` and `width: 100%` to form inputs by default, forms naturally stack vertically. Various layout patterns are available using the classes and techniques described below.
+Form inputs are `display: block` and `width: 100%` by default, so the fields of a form stack vertically. Spacing utilities, the grid system, and flex utilities arrange them in other layouts: columns, horizontal forms, auto-sized fields, and inline forms.
 
-Every group of form fields should reside in a `<form>` element. While Chassis CSS doesn't apply default styling to the `<form>` element itself, it's important to use proper semantic HTML:
+Place every group of form fields in a `<form>` element. Chassis CSS applies no styles to the `<form>` element itself, so its semantics come from the markup:
 
 - Always specify button types within forms (`type="submit"`, `type="button"`, etc.) as browsers default to `type="submit"`
 - Use the `<fieldset>` and `<legend>` elements to group related form controls
@@ -19,7 +19,7 @@ Every group of form fields should reside in a `<form>` element. While Chassis CS
 The simplest way to add structure to forms is with [margin and padding utilities]([[docsref:/utilities/margin]]). These utilities provide consistent spacing between form elements, including labels, controls, help text, and validation messages.
 
 For consistency, Chassis CSS recommends:
-- Using `margin-bottom` utilities (`mb-*`) for vertical spacing
+- Using `margin-bottom` utilities (`.mb-*`) for vertical spacing
 - Applying the same spacing size throughout a single form
 - Using the `md` spacing value as a default starting point
 
@@ -42,7 +42,9 @@ The [grid system]([[docsref:/layout/grid]]) lays form fields out in columns: `.g
 - **Vertical alignment** of the fields in a row
 - **Nesting** for groups of fields inside a field
 
-> **Note:** Grid-based form layouts need the `$enable-grid-system` Sass variable, which is on by default.
+<Callout type="info">
+  Grid-based form layouts need the `$enable-grid-system` Sass variable, which is on by default.
+</Callout>
 
 ### Basic grid layout
 
@@ -116,7 +118,7 @@ Spans of different widths build a form with fields of different sizes. `.col-spa
     <div class="col-span-full">
       <div class="form-check">
         <input class="check-input" type="checkbox" id="gridCheck">
-        <label class="check-label" for="gridCheck">
+        <label for="gridCheck">
           Check me out
         </label>
       </div>
@@ -128,7 +130,7 @@ Spans of different widths build a form with fields of different sizes. `.col-spa
 
 ## Horizontal form
 
-A horizontal form puts each label beside its control: a `.grid` per field, with a span on the label and a span on the control. `.col-form-label` on the `<label>` centers it vertically against the input. `.col-span-full` stacks label and control below the breakpoint, and `.row-gap-0` keeps them together there.
+A horizontal form puts each label beside its control: a `.grid` per field, with a span on the label and a span on the control. `.col-form-label` on the `<label>` gives it the vertical padding of an input, so its text sits on the line of the text of the control. `.col-span-full` stacks label and control below the breakpoint, and `.row-gap-0` keeps them together there.
 
 A control with no label starts on the line of the other controls with a start class (`.sm:col-start-3` after a label of two tracks). Margin or padding utilities adjust the alignment where needed: in the example below, `padding-top` is removed from the radio group label to align its text baseline.
 
@@ -149,7 +151,7 @@ A control with no label starts on the line of the other controls with a start cl
       <div class="col-span-full sm:col-span-10 sm:col-start-3">
         <div class="form-check">
           <input class="check-input" type="checkbox" id="gridCheck1">
-          <label class="check-label" for="gridCheck1">
+          <label for="gridCheck1">
             Example checkbox
           </label>
         </div>
@@ -161,19 +163,19 @@ A control with no label starts on the line of the other controls with a start cl
       <div class="vstack sm:hstack gap-md row-gap-xs">
         <div class="form-check">
           <input class="check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
-          <label class="check-label" for="gridRadios1">
+          <label for="gridRadios1">
             First radio
           </label>
         </div>
         <div class="form-check">
           <input class="check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2">
-          <label class="check-label" for="gridRadios2">
+          <label for="gridRadios2">
             Second radio
           </label>
         </div>
         <div class="form-check disabled">
           <input class="check-input" type="radio" name="gridRadios" id="gridRadios3" value="option3" disabled>
-          <label class="check-label" for="gridRadios3">
+          <label for="gridRadios3">
             Third disabled radio
           </label>
         </div>
@@ -189,11 +191,12 @@ A control with no label starts on the line of the other controls with a start cl
 
 ### Horizontal label sizing
 
-Match label sizes to corresponding input sizes using these modifier classes:
-- `.col-form-label-sm` for aligning with sm inputs (`.form-input.sm`)
-- `.col-form-label-lg` for aligning with lg inputs (`.form-input.lg`)
+Add the size modifier of the input to its `.col-form-label` to match the two:
 
-These classes maintain proper vertical alignment between labels and inputs of different sizes. They adjust the font size, line height, and padding to create a cohesive look in form layouts.
+- `.col-form-label.sm` aligns with small inputs (`.form-input.sm`)
+- `.col-form-label.lg` aligns with large inputs (`.form-input.lg`)
+
+The classes set the font size, line height, and padding of the label to the ones of an input of that size, so the two stay aligned.
 
 <Example code={`<div class="grid row-gap-0 mb-md">
     <label for="colFormLabelSm" class="col-span-full sm:col-span-2 col-form-label sm">Email</label>
@@ -204,13 +207,13 @@ These classes maintain proper vertical alignment between labels and inputs of di
   <div class="grid row-gap-0 mb-md">
     <label for="colFormLabel" class="col-span-full sm:col-span-2 col-form-label">Email</label>
     <div class="col-span-full sm:col-span-10">
-      <input type="email" class="form-input" id="colFormLabel" placeholder="col-form-label">
+      <input type="email" class="form-input" id="colFormLabel" placeholder=".col-form-label">
     </div>
   </div>
   <div class="grid row-gap-0">
     <label for="colFormLabelLg" class="col-span-full sm:col-span-2 col-form-label lg">Email</label>
     <div class="col-span-full sm:col-span-10">
-      <input type="email" class="form-input lg" id="colFormLabelLg" placeholder="col-form-label-lg">
+      <input type="email" class="form-input lg" id="colFormLabelLg" placeholder=".col-form-label.lg">
     </div>
   </div>`} />
 
@@ -265,7 +268,7 @@ Fields as wide as their content are a flex layout, not a grid: the tracks of a g
     <div>
       <div class="form-check">
         <input class="check-input" type="checkbox" id="autoSizingCheck">
-        <label class="check-label" for="autoSizingCheck">
+        <label for="autoSizingCheck">
           Remember me
         </label>
       </div>
@@ -301,7 +304,7 @@ Fields as wide as their content are a flex layout, not a grid: the tracks of a g
     <div class="flex-shrink-0">
       <div class="form-check">
         <input class="check-input" type="checkbox" id="autoSizingCheck2">
-        <label class="check-label" for="autoSizingCheck2">
+        <label for="autoSizingCheck2">
           Remember me
         </label>
       </div>
@@ -342,7 +345,7 @@ An inline form stacks its fields on small screens and sets them on one line on l
     <div>
       <div class="form-check">
         <input class="check-input" type="checkbox" id="inlineFormCheck">
-        <label class="check-label" for="inlineFormCheck">
+        <label for="inlineFormCheck">
           Remember me
         </label>
       </div>
@@ -373,7 +376,7 @@ For compact layouts, use inline form help by applying the `.form-help` class to 
 
 ## Accessibility
 
-When implementing form layouts, ensure forms remain accessible:
+A layout changes where the fields are, not how they are announced or reached. Keep the form accessible in every layout:
 
 - Always include visible labels, or use `.visually-hidden` for labels that must be announced by screen readers but not shown visually
 - Maintain a logical tab order that follows the visual layout of the form

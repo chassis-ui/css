@@ -9,27 +9,29 @@ deps:
     url: ../form-input/
 ---
 
-## Overview
+## Introduction
 
 Floating labels wrap a `<label>` and a form control inside `.form-floating`. The label sits in the placeholder position until the control gains focus or holds a value, then transitions to a floating position above it.
 
-<Callout type="info" title="Implementation details">
-  The label uses the `:has()` relational selector to react to its sibling `.form-input`'s `:focus` and `:placeholder-shown` state, applying the floated position without extra classes or JavaScript.
+<Callout type="info">
+  **Implementation details.** The label uses the `:has()` relational selector to react to its sibling `.form-input`'s `:focus` and `:placeholder-shown` state, applying the floated position without extra classes or JavaScript.
 </Callout>
 
-## Basic usage
+## Basic structure
 
-To implement floating labels, wrap a `<label>` and a form control (with the `.form-input` class) inside a `.form-floating` container. The structure requires:
+Wrap a `<label>` and a form control with the `.form-input` class in a `.form-floating` container. The structure has three requirements:
 
 1. The `<label>` **must come before** the form control in the markup — the label detects its sibling's state through the subsequent-sibling combinator inside `:has()`
 2. Each `<input>` and `<textarea>` **requires a `placeholder` attribute** — without one, `:placeholder-shown` never matches and the label stays floated even when the field is empty
 3. Each label **must be properly associated** with its form control using the `for` attribute
 
-<Callout type="warning" title="Sizing">
-  `.form-floating` does not respond to the `.sm` and `.lg` size modifiers. Floating inputs always render at the fixed height defined by `$form-floating-height`.
+<Callout type="warning">
+  **Sizing.** `.form-floating` does not respond to the `.sm` and `.lg` size modifiers. Floating inputs always render at the height of `$form-floating-height`.
 </Callout>
 
 ### Example
+
+An email and a password field, each with its label before the input and a `placeholder` on the input.
 
 <Example code={`<div class="form-floating mb-md">
     <label for="floatingEmail">Email address</label>
@@ -42,7 +44,7 @@ To implement floating labels, wrap a `<label>` and a form control (with the `.fo
 
 ### Pre-filled values
 
-When there's a `value` already defined, `<label>`s will automatically adjust to their floated position.
+An input with a `value` shows its label in the floated position from the start.
 
 <Example code={`<div class="form-floating">
     <label for="floatingInputValue">Input with value</label>
@@ -84,7 +86,7 @@ Set either the `rows` attribute or an explicit `height` (inline style or custom 
 
 ### Select
 
-Select menus also work inside `.form-floating` using the `.form-input` class. Unlike inputs, select menus always show the label in its floated state, since `:placeholder-shown` never matches a `<select>`.
+A `<select>` with the `.form-input` class works inside `.form-floating`. Unlike an input, a select always shows the label in its floated position, since `:placeholder-shown` never matches a `<select>`.
 
 <Example code={`<div class="form-floating">
     <label for="floatingSelect">Preferences</label>
@@ -96,16 +98,16 @@ Select menus also work inside `.form-floating` using the `.form-input` class. Un
     </select>
   </div>`} />
 
-<Callout type="warning" title="Limitations">
-  Select elements using the `size` or `multiple` attribute render as multi-row list boxes, which do not fit `.form-floating`'s fixed single-line height and padding.
+<Callout type="warning">
+  **Limitations.** Select elements using the `size` or `multiple` attribute render as multi-row list boxes, which do not fit `.form-floating`'s fixed single-line height and padding.
 </Callout>
 
 ### File inputs
 
-File inputs can also be used with floating labels, though the visual appearance is different from other input types due to the browser's implementation of file inputs. Since `<input type="file">` doesn't support the `placeholder` attribute, `:placeholder-shown` never matches it either — like selects, the label always renders in its floated state.
+A file input works inside `.form-floating` too. `<input type="file">` does not support the `placeholder` attribute, so `:placeholder-shown` never matches it and, as with selects, the label always renders in its floated position.
 
-<Callout type="info" title="Browser differences">
-  File inputs with floating labels may appear differently across browsers. For more consistent styling, consider custom file input implementations.
+<Callout type="info">
+  **Browser differences.** Browsers render the file selector button and the file name differently, so a floating file input does not look the same in every browser.
 </Callout>
 
 <Example code={`<div class="form-floating">
@@ -115,7 +117,7 @@ File inputs can also be used with floating labels, though the visual appearance 
   
 ## Disabled inputs
 
-Add the `disabled` boolean attribute to inputs, textareas, or selects to apply the disabled state styling—grayed out appearance, no pointer events, and focus prevention.
+Add the `disabled` attribute to an input, a textarea, or a select inside `.form-floating`. The control and its label take the disabled form colors, and the browser removes the control from the tab order.
 
 <Example code={`<div class="form-floating mb-md">
     <label for="floatingInputDisabled">Email address</label>
@@ -141,7 +143,7 @@ Add the `disabled` boolean attribute to inputs, textareas, or selects to apply t
 
 ## Plaintext inputs
 
-Combine the `readonly` attribute with the `.plaintext` class on `.form-input` to display a value as static text without changing the surrounding layout. Because `.plaintext` is included directly in the label's `:has()` selector, the label always renders in its floated position, even when the control is empty.
+Combine the `readonly` attribute with the `.plaintext` class on `.form-input` to display a value as static text without changing the surrounding layout. Because `.plaintext` is part of the label's `:has()` selector, the label always renders in its floated position, even when the control is empty.
 
 <Example code={`<div class="form-floating mb-md">
     <label for="floatingEmptyPlaintextInput">Empty input</label>
@@ -158,6 +160,8 @@ Floating labels compose with `.input-group` and the grid system for more complex
 
 ### Input groups
 
+Place a `.form-floating` container inside an `.input-group`, next to its `.input-addon` elements.
+
 <Example code={`<div class="input-group mb-md">
     <span class="input-addon">@</span>
     <div class="form-floating">
@@ -166,8 +170,8 @@ Floating labels compose with `.input-group` and the grid system for more complex
     </div>
   </div>`} />
 
-<Callout type="info" title="Form feedback placement">
-  Always place form helps and form feedbacks outside of the `.input-group` container to ensure proper styling and positioning.
+<Callout type="info">
+  **Form feedback placement.** Place `.form-help` and validation feedback elements outside the `.input-group` container, so they do not become items of the group.
 </Callout>
 
 <Example code={`<div>
@@ -237,7 +241,7 @@ See the [forms layout]([[docsref:/forms/layout]]) page for the full grid, horizo
 
 <ScssDocs name="form-floating-properties" file="scss/forms/_floating-labels.scss" />
 
-Check the [overview]([[docsref:forms/overview#custom-properties]]) page to see the CSS variables shared by all form elements.
+The [forms overview]([[docsref:/forms/overview#custom-properties]]) lists the custom properties that all form elements share.
 
 ### Sass variables
 
@@ -245,8 +249,8 @@ Check the [overview]([[docsref:forms/overview#custom-properties]]) page to see t
 
 <ScssDocs name="form-floating-variables" file="scss/config/_defaults.scss" />
 
-Check the [overview]([[docsref:forms/overview#sass-variables]]) page to see the Sass variables shared by all form elements.
+The [forms overview]([[docsref:/forms/overview#sass-variables]]) lists the Sass variables that all form elements share.
 
 ### Design tokens
 
-Check the [overview]([[docsref:forms/overview#design-tokens]]) page to see the design tokens shared by all form elements.
+Floating labels have no tokens of their own: they use the design tokens that all form elements share, listed in the [forms overview]([[docsref:/forms/overview#design-tokens]]).

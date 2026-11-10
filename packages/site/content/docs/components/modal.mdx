@@ -12,7 +12,7 @@ import { sassModalSize, sassBreakpointSize } from '@libs/sass'
 
 ## Introduction
 
-A modal is a `<dialog>` element styled with `.modal` and activated by the `.dialog` plugin. The two classes have distinct responsibilities:
+A modal is a `<dialog>` element styled with `.modal` and activated by the Dialog plugin. The two classes have distinct responsibilities:
 
 - **`.dialog`** — behavior: animation, backdrop, keyboard handling, and the open/close lifecycle.
 - **`.modal`** — visual style: colors, borders, shadows, and layout of the header, body, and footer regions.
@@ -82,7 +82,7 @@ To open a modal, add `data-cx-toggle="dialog"` to any trigger element. For butto
 
 ## Layout options
 
-The classes below control the dimensions and scroll behavior of the modal window. All size and fullscreen modifiers apply directly to the `<dialog>` element alongside `.modal.dialog`.
+Size, fullscreen, and scroll modifiers set the dimensions and the scroll behavior of the modal window. Each applies directly to the `<dialog>` element alongside `.modal.dialog`.
 
 ### Sizes
 
@@ -456,7 +456,7 @@ When a modal opens, focus moves to the `<dialog>` element itself rather than the
 
 ### Sequential modals
 
-Opening a modal from within an open one performs a seamless **dialog swap**: the incoming modal opens via `showModal()` and the outgoing one closes synchronously in the same frame, so the backdrop transitions without a flicker or opacity dip. Add a `data-cx-toggle="dialog"` trigger inside the open modal and point it at the next dialog.
+Opening a modal from within an open one performs a **dialog swap**: the incoming modal opens via `showModal()` and the outgoing one closes synchronously in the same frame, so the backdrop transitions without a flicker or opacity dip. Add a `data-cx-toggle="dialog"` trigger inside the open modal and point it at the next dialog.
 
 <Example addStackblitzJs code={`<button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#firstStep">Start process</button>
   <!-- First modal -->
@@ -491,7 +491,7 @@ Opening a modal from within an open one performs a seamless **dialog swap**: the
 
 ### Dynamic content
 
-The `show.cx.dialog` event receives `event.relatedTarget` — the element that triggered the open — making it straightforward to populate the modal's content based on the trigger.
+The `show.cx.dialog` event receives `event.relatedTarget` — the element that triggered the open — so a listener can populate the modal's content from the trigger.
 
 <Example addStackblitzJs code={`<button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#dynamicModal" data-cx-whatever="@first">First user</button>
   <button type="button" class="button primary" data-cx-toggle="dialog" data-cx-target="#dynamicModal" data-cx-whatever="@second">Second user</button>
@@ -585,7 +585,7 @@ Tooltips, popovers, toasts, and menus all work inside modal dialogs and are dism
 
 The `<dialog>` element carries an implicit `role="dialog"` when opened with `showModal()`. Provide an accessible name by placing `aria-labelledby` on the `<dialog>` pointing at the `.modal-title` element's `id`.
 
-Focus management inside a modal is handled automatically — when the modal opens, focus moves to the `<dialog>` element itself rather than the first focusable child (typically the close button). Add the `autofocus` attribute to direct focus to a specific element on open (see [Autofocus](#autofocus)). For cases where the focus target is determined dynamically, use the `shown.cx.dialog` event:
+When the modal opens, focus moves to the `<dialog>` element itself rather than the first focusable child (typically the close button). Add the `autofocus` attribute to direct focus to a specific element on open (see [Autofocus](#autofocus)). For cases where the focus target is determined dynamically, use the `shown.cx.dialog` event:
 
 ```js
 document.getElementById('myModal').addEventListener('shown.cx.dialog', () => {
@@ -593,7 +593,7 @@ document.getElementById('myModal').addEventListener('shown.cx.dialog', () => {
 })
 ```
 
-Body scroll is locked while a modal dialog is open (`dialog-open` is added to `<body>`). The lock is released only when all modal dialogs are closed.
+Body scroll is locked while a modal dialog is open (`dialog-open` is added to `<body>`). The lock releases only when all modal dialogs are closed.
 
 ## JavaScript API
 
@@ -634,23 +634,11 @@ const dialog = new Dialog('#myModal', {
 })
 ```
 
-### Options
-
-<JsDataAttributes />
-
-<CxTable>
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `backdrop` | `boolean \| 'static'` | `true` | Show a backdrop. `'static'` blocks closing on backdrop click. `false` draws no backdrop; the modal stays modal, and a click outside it does nothing. |
-| `keyboard` | `boolean` | `true` | Close the modal when Escape is pressed. |
-| `modal` | `boolean` | `true` | Open via `showModal()` (top-layer). `false` uses `show()`: no backdrop, and the page stays interactive. |
-</CxTable>
-
 ### Methods
 
-<Callout name="danger-async-methods" type="danger" />
+The plugin exposes instance methods for programmatic control. `show()` and `hide()` return before the transition completes — listen to the `shown` and `hidden` events for post-transition timing.
 
-The plugin exposes the following instance methods. `show()` and `hide()` return before the transition completes — listen to the `shown` and `hidden` events for post-transition timing.
+<Callout name="danger-async-methods" type="danger" />
 
 <CxTable>
 | Method | Description |
@@ -675,6 +663,18 @@ dialog.dispose()
 const instance = Dialog.getInstance('#myModal')
 const instance = Dialog.getOrCreateInstance('#myModal')
 ```
+
+### Options
+
+<JsDataAttributes />
+
+<CxTable>
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `backdrop` | `boolean \| 'static'` | `true` | Show a backdrop. `'static'` blocks closing on backdrop click. `false` draws no backdrop; the modal stays modal, and a click outside it does nothing. |
+| `keyboard` | `boolean` | `true` | Close the modal when Escape is pressed. |
+| `modal` | `boolean` | `true` | Open via `showModal()` (top-layer). `false` uses `show()`: no backdrop, and the page stays interactive. |
+</CxTable>
 
 ### Events
 
@@ -717,7 +717,7 @@ el.addEventListener('hidden.cx.dialog', () => {
 
 <DocsCSSVars name="Modal" />
 
-The `--dialog-*` properties control animation timing and the backdrop. The `--modal-*` properties control visual style. Both sets are scoped to the `<dialog>` element and can be overridden per-instance.
+The `--cx-dialog-*` properties control animation timing and the backdrop. The `--cx-modal-*` properties control visual style. Both sets are scoped to the `<dialog>` element and can be overridden per-instance.
 
 <ScssDocs name="dialog-css-vars" file="scss/_dialog.scss" compile />
 <ScssDocs name="modal-css-vars" file="scss/_modal.scss" compile />
@@ -725,14 +725,14 @@ The `--dialog-*` properties control animation timing and the backdrop. The `--mo
 ```css
 /* Override animation timing for a single modal */
 #myModal {
-  --dialog-transition-duration: .5s;
-  --dialog-transition-timing: ease-in-out;
+  --cx-dialog-transition-duration: .5s;
+  --cx-dialog-transition-timing: ease-in-out;
 }
 
 /* Override backdrop appearance */
 #myModal {
-  --dialog-backdrop-bg: rgb(0 0 0 / 70%);
-  --dialog-backdrop-blur: 4px;
+  --cx-dialog-backdrop-bg: rgb(0 0 0 / 70%);
+  --cx-dialog-backdrop-blur: 4px;
 }
 ```
 

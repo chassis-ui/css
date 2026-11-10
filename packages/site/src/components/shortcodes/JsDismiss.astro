@@ -4,9 +4,15 @@ import Callout from '@chassis-ui/docs/shortcodes/Callout.astro'
 
 interface Props {
   name: string
+  /**
+   * The event to listen for, without its namespace.
+   * @default 'closed'
+   */
+  event?: string
 }
 
-const { name } = Astro.props
+const { name, event = 'closed' } = Astro.props
+const eventName = `${event}.cx.${name}`
 ---
 
 <p>
@@ -30,7 +36,7 @@ const { name } = Astro.props
 />
 
 <Callout type="warning">
-  When a {name} is dismissed, it is completely removed from the DOM. If you need to maintain focus
-  management for accessibility, listen for the <code>closed.cx.{name}</code> event to set focus to
-  an appropriate element.
+  When a {name} is dismissed, it is completely removed from the DOM. To keep focus management
+  accessible, set focus to an appropriate element in a listener of the
+  <code>{eventName}</code> event.
 </Callout>

@@ -1,6 +1,6 @@
 ---
 title: Avatar
-description: Avatars are are typically used to display a user profile as a picture or short text. They can be used in various contexts, such as in lists, groups, or as buttons.
+description: Display a user profile as a picture or short text with avatars, in seven sizes, as buttons or links, with status badges and overlapping stacks.
 toc: true
 tokens: context
 css_layer: components
@@ -8,9 +8,13 @@ css_layer: components
 
 import { getData } from '@libs/data'
 
-## Usage
+## Introduction
 
-Use the `.avatar` class to create an avatar. The `.avatar-image` class is used for images, while `.avatar-text` is used for text.
+Avatars represent a user or an entity as a picture or as short text, such as initials. An avatar is an inline element of equal width and height, round by default, that can carry a status badge and join other avatars in an overlapping stack.
+
+## Basic structure
+
+Add the `.avatar` class to an element that holds short text, which is rendered in uppercase, or an `<img>` with the `.avatar-image` class, which fills the avatar and takes its radius.
 
 <Example code={`<span class="avatar">CX</span>
   <span class="avatar">
@@ -19,7 +23,7 @@ Use the `.avatar` class to create an avatar. The `.avatar-image` class is used f
 
 ## Sizes
 
-Use the <Fragment set:html={ getData('sizes').map((size) => `<code>${size}</code>`).join(', ') } /> classes to set the size of the avatar. You can also use the `--cx-avatar-size` CSS variable to set a custom size.
+Use the <Fragment set:html={ getData('sizes').map((size) => `<code>.${size}</code>`).join(', ') } /> classes to set the size of the avatar, or set the `--cx-avatar-size` custom property for a custom size. The font size of a text avatar scales with it.
 
 <Example class="d-flex align-items-center gap-sm" code={[
   ...getData('sizes').map((size) => `<span class="avatar ${size}">CX</span>`),
@@ -37,7 +41,7 @@ Use the <Fragment set:html={ getData('sizes').map((size) => `<code>${size}</code
 
 ## Buttons
 
-Use the button tag with `.avatar` class to create an avatar button.
+Add the `.avatar` class to a `<button>` element for an avatar that triggers an action. The avatar shows the focus ring on keyboard focus and is dimmed when disabled.
 
 <Example class="d-flex align-items-center gap-sm" code={`<button class="avatar" type="button">CX</button>
   <button class="avatar" type="button">
@@ -46,7 +50,7 @@ Use the button tag with `.avatar` class to create an avatar button.
 
 ## Links
 
-Use the anchor tag with `.avatar` class to create an avatar link.
+Add the `.avatar` class to an `<a>` element for an avatar that navigates, to a profile page for example.
 
 <Example class="d-flex align-items-center gap-sm" code={`<a class="avatar" href="#">CX</a>
   <a class="avatar" href="#">
@@ -55,7 +59,7 @@ Use the anchor tag with `.avatar` class to create an avatar link.
 
 ## Colors
 
-Use with a context color class to create an avatar with a background color.
+Add a context color class, such as `.primary`, to color a text avatar from that context. The `.smooth` class next to it switches to the subdued colors of the context.
 
 <Example class="d-flex align-items-center gap-sm" code={getData('context-colors').map((color) => `<button class="avatar ${color.name}" type="button">CX</button>`)} />
 
@@ -63,7 +67,7 @@ Use with a context color class to create an avatar with a background color.
 
 ## Badges
 
-Use the `.badge` class to create a badge on top of the avatar. Use position utilities to position the badge.
+A `.badge` placed inside an avatar becomes a status indicator at its bottom end corner, with no position utilities needed. Give the badge visually hidden text, since its color alone does not convey the status to assistive technology.
 
 <Example class="d-flex align-items-center gap-sm" code={`<button class="avatar" type="button">
     <img class="avatar-image" src="https://i.pravatar.cc/256" alt="Profile picture"/>
@@ -82,7 +86,7 @@ Use the `.badge` class to create a badge on top of the avatar. Use position util
     <span class="badge neutral circle"><span class="visually-hidden">Busy</span></span>
   </button>`} />
 
-Badge size scales with the avatar size, so you can use badges on different sized avatars.
+The badge is a quarter of the avatar size, so it scales with every avatar size.
 
 <Example class="d-flex align-items-center gap-sm" code={[
   ...getData('sizes').map((size) => `<button class="avatar ${size}" type="button">
@@ -92,7 +96,7 @@ Badge size scales with the avatar size, so you can use badges on different sized
 
 ## Stacks
 
-Use the `.avatar-stack` class to create a group of avatars. Use the `.avatar` class for each avatar in the group. Set the `--cx-avatar-stack-spacing` CSS variable to set the overlap of the avatars.
+Wrap avatars in an `.avatar-stack` element to group them with an overlap. The `--cx-avatar-stack-spacing` custom property sets the overlap as a fraction of the avatar size, and an interactive avatar of a stack is raised and enlarged on hover and keyboard focus.
 
 <Example code={[`<div class="avatar-stack">`, 
   [...Array.from({ length: 9 }, (_, i) => {
@@ -103,7 +107,7 @@ Use the `.avatar-stack` class to create a group of avatars. Use the `.avatar` cl
   `  <button class="avatar" type="button">+5</button>
   </div>`]} />
 
-Use size classes on the stack to set the size of all avatars in the stack.
+A size class on the stack sets the size of all its avatars.
 
 <Example class="vstack gap-sm" code={[
   ...getData('sizes').map((size) => `<div class="avatar-stack ${size}">
@@ -116,3 +120,12 @@ Use size classes on the stack to set the size of all avatars in the stack.
   </div>`)
 ]} />
 
+## CSS
+
+<DocsCSS name="Avatar" exposed />
+
+### Sass variables
+
+<DocsSASSVars name="Avatar" exposed />
+
+<ScssDocs name="badge-variables" file="scss/config/_defaults.scss" />

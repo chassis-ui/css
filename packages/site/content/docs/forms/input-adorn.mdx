@@ -9,15 +9,15 @@ deps:
     url: ../form-input/
 ---
 
-## Overview
+## Introduction
 
 The `.form-input` element acts as a flex container that positions `.input-adorn` elements before or after a `.ghost-input` input. The ghost input fills the available space while adornments shrink to their content.
 
 See the [Form Input]([[docsref:/forms/form-input]]) documentation for more on the `.form-input` and `.ghost-input` classes.
 
-## Examples
+## Basic structure
 
-The position of `.input-adorn` within the wrapper controls whether it appears at the start or end of the field.
+Wrap a `.ghost-input` and one or more `.input-adorn` elements in a `.form-input` element. The position of `.input-adorn` within the wrapper controls whether it appears at the start or end of the field.
 
 ### Leading
 
@@ -76,11 +76,11 @@ Combine a leading and a trailing adornment for fields that need positional conte
 
 ## Layout
 
-The `.form-input` wrapper's flex layout allows you to combine adornments with other form controls and arrange them in various configurations.
+The `.form-input` wrapper is a flex container, so an adorned input combines with labels, help text, and form fields like any other input.
 
-### Label & help
+### Label and help
 
-Add a label outside the `.form-input` wrapper and associate help text with `aria-describedby` for complete form semantics:
+Add a label outside the `.form-input` wrapper and associate help text with `aria-describedby`.
 
 <Example code={`<label for="searchAssist" class="form-label">Search</label>
   <div class="form-input">
@@ -91,7 +91,7 @@ Add a label outside the `.form-input` wrapper and associate help text with `aria
   </div>
   <div class="form-help" id="searchAssistHelp">Search across all pages and posts.</div>`} />
 
-### In Form Field
+### In a form field
 
 Wrap `.form-input` in `.form-field` to integrate with labels, help text, and validation feedback.
 
@@ -134,7 +134,7 @@ Use `.sm` or `.lg` on the wrapper to adjust sizing.
 
 ## Actionable adornments
 
-Use `.input-adorn` with a `<button>` element to create clickable adornments for actions like showing/hiding passwords, clearing input, or triggering searches. Actionable adornments receive interactive styles on hover and focus.
+Use `.input-adorn` on a `<button>` element for actions such as showing a password, clearing the input, or triggering a search. A button adornment drops the padding, minimum size, background, and border of a button, so it takes no more room than its icon.
 
 <Example class="vstack gap-xs" code={`<div class="form-input">
     <input type="password" autocomplete="current-password" class="ghost-input" aria-label="Password" placeholder="Password">
@@ -149,7 +149,7 @@ Use `.input-adorn` with a `<button>` element to create clickable adornments for 
 
 ## Accessibility
 
-Input adornment introduces visual elements — icons, text, and buttons — that sit alongside the input but are separate from it in the DOM. Follow these practices to ensure assistive technologies can fully interpret the field.
+Input adornment introduces visual elements — icons, text, and buttons — that sit alongside the input but are separate from it in the DOM. Assistive technologies need the meaning of each adornment in the markup.
 
 ### Decorative icons
 
@@ -165,9 +165,9 @@ Icon adornments that provide a visual hint rather than essential information sho
 </div>
 ```
 
-### Text adornments
+### Adornment text
 
-Text adornments like `$`, `USD`, or `@example.com` are not announced by screen readers. When the adornment is essential to understanding what the field expects, include it in the input's accessible name via `aria-label`.
+Text adornments like `$`, `USD`, or `@example.com` are not part of the accessible name of the input. When the adornment is essential to understanding what the field expects, include it in the input's accessible name via `aria-label`.
 
 ```html
 <div class="form-input">
@@ -176,7 +176,7 @@ Text adornments like `$`, `USD`, or `@example.com` are not announced by screen r
 </div>
 ```
 
-### Actionable adornments
+### Icon-only buttons
 
 Button adornments that contain only an icon have no text for screen readers to announce. Always add `aria-label` describing the action.
 
@@ -189,10 +189,10 @@ Button adornments that contain only an icon have no text for screen readers to a
 </div>
 ```
 
-For more detailed accessibility guidance, see the [forms overview accessibility]([[docsref:/forms/overview/#accessibility]]) section.
+For more detailed accessibility guidance, see the [accessibility section of the forms overview]([[docsref:/forms/overview/#accessibility]]).
 
 ## CSS
 
 <DocsCSS name="Input Adornments" exposed />
 
-See the [overview]([[docsref:forms/overview#custom-properties]]) page for CSS and Sass variables shared by all form elements.
+Input adornments define no custom properties or Sass variables of their own. The [forms overview]([[docsref:/forms/overview#custom-properties]]) lists the ones shared by all form elements.

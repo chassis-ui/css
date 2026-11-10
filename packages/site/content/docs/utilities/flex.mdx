@@ -1,6 +1,6 @@
 ---
 title: Flex
-description: A full suite of responsive flexbox utilities for controlling layout direction, alignment, sizing, wrapping, and ordering of flex items.
+description: Responsive flexbox utilities for the direction, alignment, sizing, wrapping, and order of flex items.
 toc: true
 css_layer: utilities
 ---
@@ -10,7 +10,7 @@ import { getSequence } from '@chassis-ui/docs'
 
 ## Enable flex behaviors
 
-`.d-flex` and `.d-inline-flex` turn an element into a flexbox container, making direct children flex items. Additional flex properties can then be applied to the container or individual items.
+`.d-flex` and `.d-inline-flex` turn an element into a flexbox container, making its direct children flex items. The other utilities on this page then apply to the container or to single items.
 
 <Example class="cxd-example-flex" code={`<div class="d-flex p-xs">I'm a flexbox container!</div>`} />
 
@@ -33,7 +33,7 @@ Responsive variants are available for `.d-flex` and `.d-inline-flex`. Every resp
 
 Direction utilities set the `flex-direction` property. The default browser value is `row`, so `.flex-row` is typically unnecessary unless overriding a breakpoint-specific value.
 
-`.flex-row` produces a left-to-right horizontal layout. `.flex-row-reverse` starts items from the right.
+`.flex-row` lays items out horizontally from the inline start, left to right in a left-to-right language. `.flex-row-reverse` starts items from the inline end.
 
 <Example class="cxd-example-flex" code={`<div class="d-flex flex-row mb-md">
     <div class="p-xs">Flex item 1</div>
@@ -307,7 +307,7 @@ Responsive variants are available for `flex-fill`.
 
 ## Auto margins
 
-Auto margins push flex items away from each other. The examples below show three configurations: no auto margin, `.me-auto` pushing subsequent items right, and `.ms-auto` pulling an item to the right.
+Auto margins push flex items away from each other. The examples below show three configurations: no auto margin, `.me-auto` pushing the items after it to the inline end, and `.ms-auto` pulling an item to the inline end.
 
 <Example class="cxd-example-flex" code={`<div class="d-flex mb-md">
     <div class="p-xs">Flex item</div>
@@ -329,7 +329,7 @@ Auto margins push flex items away from each other. The examples below show three
 
 ### With align-items
 
-Combining `flex-direction: column` with `mb-auto` or `mt-auto` positions a single item at the top or bottom of the container.
+Combining `flex-direction: column` with `.mb-auto` or `.mt-auto` positions a single item at the top or bottom of the container.
 
 <Example class="cxd-example-flex" code={`<div class="d-flex align-items-start flex-column mb-md" style="height: 200px;">
     <div class="mb-auto p-xs">Flex item</div>
@@ -412,7 +412,6 @@ Wrap utilities set the `flex-wrap` property. `.flex-nowrap` is the browser defau
   ...
 </div>
 ```
-
 
 Responsive variants are available for `flex-wrap`.
 
@@ -669,7 +668,7 @@ Use `place-items` utilities to control the alignment of grid items. Choose from 
 
 ### Responsive
 
-Responsive variations also exist for `place-items`.
+Responsive variants are available for `place-items`.
 
 <ul>
 {getData('breakpoints').map((breakpoint) => {

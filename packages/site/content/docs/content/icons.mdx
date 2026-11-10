@@ -6,7 +6,7 @@ toc: true
 
 import { getData } from '@libs/data'
 
-Chassis CSS does not include an icon set by default. [Chassis Icons](https://chassis-ui.com/icons) is the companion icon library for Chassis-based projects: a builder that generates icon fonts, SVG sprites, and individual optimized SVG files from a set of SVG source glyphs, and the icon set of Chassis built with it. SVG implementations are preferred over icon fonts for vector fidelity and accessibility.
+Chassis CSS does not include an icon set by default. [Chassis Icons](https://chassis-ui.com/icons) is the companion icon library for Chassis-based projects: a builder that generates icon fonts, SVG sprites, and individual optimized SVG files from a set of SVG source glyphs, and the icon set of Chassis built with it. Prefer the SVG formats over the icon font for vector fidelity and accessibility.
 
 ## Chassis Icons
 
@@ -16,7 +16,7 @@ Chassis Icons converts source SVG glyphs into distribution assets: an icon font 
 npm install @chassis-ui/website-icons
 ```
 
-The icon font, the SVG sprite and the stylesheets are in `node_modules/@chassis-ui/website-icons/dist/web/`, and should be copied or served via a bundler. The paths in the examples below assume these files have been placed in a public `assets/icons/` directory, and the individual SVG files in `assets/icons/svgs/`.
+The icon font, the SVG sprite and the stylesheets are in `node_modules/@chassis-ui/website-icons/dist/web/`: copy them, or serve them through a bundler. The snippets on this page assume these files are in a public `assets/icons/` directory, and the individual SVG files in `assets/icons/svgs/`.
 
 To build an icon set from other SVG files, use the builder, published to npm as `@chassis-ui/icons` with the `chassis-icons` command.
 
@@ -45,9 +45,9 @@ The SVG sprite packages all icons as `<symbol>` elements in a single `chassis-ic
 
 The symbol ID matches the icon filename without its `.svg` extension. SVG sprites inherit the element's current CSS `color` as fill.
 
-### Individual SVGs
+### Individual SVG files
 
-Optimized individual SVG files ship in the `dist/svgs/` directory of the package. Embed them as images when neither the icon font nor the sprite is practical.
+The package holds an optimized SVG file for each icon in its `dist/svgs/` directory. Embed them as images when neither the icon font nor the sprite is practical.
 
 ```html
 <img src="/assets/icons/svgs/bell-outline.svg" alt="Notifications" width="24" height="24">

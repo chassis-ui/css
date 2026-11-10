@@ -1,21 +1,22 @@
 ---
 title: List
-description: Create organized, flexible content containers with Chassis's token-based list component that adapts seamlessly to various content types and interaction patterns.
+description: Group related content in bordered lists with active and disabled items, actionable items, numbered, flush and horizontal layouts, and context colors.
 toc: true
 tokens: context
 css_layer: components
 css_media: container
+js: optional
 ---
 
 import { getData } from '@libs/data'
 
 ## Introduction
 
-Lists in Chassis CSS provide structured containers for related content with consistent styling and behavior. Beyond simple lists, they support interactive elements, custom content, and integration with other components—all while maintaining design token consistency with your broader interface.
+Lists group a series of related items in a bordered container. Items are plain content by default, and become actionable as links or buttons, hold custom content and other components, and take the context colors.
 
-## Basic implementation
+## Basic structure
 
-The foundation of the list component is an unordered list with the `.list` container class and `.list-item` for individual entries. This structure establishes consistent spacing, borders, and typography through Chassis's design token system.
+A list is an element with the `.list` class, typically a `<ul>`, and a `.list-item` for each entry. The container sets the custom properties of the component, and the items draw the borders, the padding and the rounded outer corners.
 
 <Example code={`<ul class="list">
     <li class="list-item">An item</li>
@@ -27,7 +28,7 @@ The foundation of the list component is an unordered list with the `.list` conta
 
 ### Active state
 
-Apply the `.active` class to indicate the current selection or focused item within a list. For better accessibility, include the `aria-current="true"` attribute to communicate the active state to assistive technologies.
+Apply the `.active` class to a `.list-item` to mark the current selection. Add `aria-current="true"` so assistive technologies announce the active item.
 
 <Example code={`<ul class="list">
     <li class="list-item active" aria-current="true">An active item</li>
@@ -39,10 +40,10 @@ Apply the `.active` class to indicate the current selection or focused item with
 
 ### Disabled state
 
-Apply the `.disabled` class to create visually disabled list items. Include the `aria-disabled="true"` attribute to properly communicate this state to assistive technologies.
+Apply the `.disabled` class to a `.list-item` to style it as disabled. Add `aria-disabled="true"` to convey the state to assistive technologies.
 
 <Callout type="warning">
-  The `.disabled` class only changes the visual appearance. For interactive elements like links, additional JavaScript is needed to fully disable interaction behavior.
+  The `.disabled` class changes the appearance and sets `pointer-events: none`. A link stays reachable and operable with the keyboard: omit its `href`, or prevent its activation with JavaScript.
 </Callout>
 
 <Example code={`<ul class="list">
@@ -55,13 +56,9 @@ Apply the `.disabled` class to create visually disabled list items. Include the 
 
 ## Interactive elements
 
-Transform list items into interactive elements using `<a>` or `<button>` elements with the `.list-action` modifier class. This creates actionable list items with appropriate hover, disabled, and active states based on your design token system.
+Use `<a>` or `<button>` elements with the `.list-action` class for actionable items. The class adds the hover, focus, pressed and disabled states to an item, on a single `.list-item` or on the `.list` for all of its items.
 
-<Callout type="info">
-  The `.list-action` class provides distinct visual feedback for interactive elements while maintaining the list's cohesive visual language. Unlike the `.button` component, list actions preserve the list's distinctive appearance while adding interactivity.
-</Callout>
-
-Chassis CSS separates these interactive states from standard list items to maintain a clear distinction between read-only content and interactive elements, ensuring users receive appropriate visual affordances.
+The interactive states are opt-in, so items that are not links or buttons give no hover feedback and read-only content is not mistaken for an action.
 
 <Example code={`<div class="list">
     <a href="#" class="list-item list-action active" aria-current="true">
@@ -75,13 +72,13 @@ Chassis CSS separates these interactive states from standard list items to maint
 
 ### Links vs buttons
 
-Both anchors and buttons can be used to create interactive list items, but they serve different semantic purposes:
+Anchors and buttons both work as actionable list items, and differ in meaning:
 
 - Use `<a>` elements when the action navigates to a new location or resource
 - Use `<button>` elements when the action triggers an in-page behavior or state change
 
 <Callout type="info">
-  When using `<button>` elements, you can use the native `disabled` attribute, which both visually styles the element and prevents interaction. For `<a>` elements, the `.disabled` class only provides visual styling, and requires JavaScript to fully prevent interaction.
+  A `<button>` takes the native `disabled` attribute, which styles the item and prevents interaction. An `<a>` has no such attribute: the `.disabled` class styles it, and omitting `href` keeps it out of the tab order.
 </Callout>
 
 <Example code={`<div class="list">
@@ -94,13 +91,13 @@ Both anchors and buttons can be used to create interactive list items, but they 
     <button type="button" class="list-item list-action" disabled>A disabled button item</button>
   </div>`} />
 
-## Layout variations
+## Layout options
 
-Different presentation contexts may require variations in how lists appear. Chassis provides several layout modifier classes that change how lists display while maintaining design token consistency.
+Modifier classes on the `.list` element change its borders, its padding, its numbering and the direction of its items.
 
 ### Flush list
 
-Apply `.flush` to remove outer borders and rounded corners, creating an edge-to-edge appearance. Ideal for lists inside other components like cards where a seamless visual connection is desired.
+Apply `.flush` to remove the outer borders and the rounded corners, so the items run edge to edge. It suits a list inside another component, such as a card.
 
 <Example code={`<ul class="list flush">
     <li class="list-item">An item</li>
@@ -112,7 +109,7 @@ Apply `.flush` to remove outer borders and rounded corners, creating an edge-to-
 
 ### Plain layout
 
-Apply `.plain` for a minimal list that removes outer borders, rounded corners, and horizontal padding. Creates a sleek appearance suitable for main content areas like search results or content feeds.
+Apply `.plain` to remove the outer borders, the rounded corners and the horizontal padding. It suits a list that is the main content of a page, such as search results or a feed.
 
 <Example code={`<ul class="list plain">
     <li class="list-item">An item</li>
@@ -123,18 +120,16 @@ Apply `.plain` for a minimal list that removes outer borders, rounded corners, a
   </ul>`} />
 
 <Callout type="info">
-  Both `.flush` and `.plain` remove outer borders and rounded corners. The key difference is that `.plain` also removes horizontal padding for a more compact appearance.
+  Both `.flush` and `.plain` remove the outer borders and the rounded corners. `.plain` also removes the horizontal padding of the items.
 </Callout>
 
 ### Numbered lists
 
-Create sequentially numbered list items by applying the `.numbered` modifier class to your list. For semantic correctness, pair this with an `<ol>` element, though the numbering is generated through CSS rather than browser defaults.
+Apply `.numbered` to number the items of a list. Use an `<ol>` element for the semantics: the numbers themselves are generated with CSS, not by the browser's list markers.
 
 <Callout type="info">
-  Chassis CSS implements numbered lists using design token-driven CSS counters. The numbering applies `counter-reset` on the container, and then uses `::before` pseudo-elements with `counter-increment` to generate and position numbers consistently across different design contexts.
+  The numbering uses CSS counters: `counter-reset` on the `.list` element, and a `::before` pseudo-element with `counter-increment` on each item. The number is part of the item's content box, so it stays in place next to content of any complexity.
 </Callout>
-
-This approach ensures numbers maintain proper positioning and styling regardless of content complexity, providing better flexibility than browser defaults while remaining fully accessible.
 
 <Example code={`<ol class="list numbered">
     <li class="list-item">A list item</li>
@@ -142,7 +137,7 @@ This approach ensures numbers maintain proper positioning and styling regardless
     <li class="list-item">A list item</li>
   </ol>`} />
 
-These work great with custom content as well.
+Numbered items hold custom content as well, here laid out with flex utilities.
 
 <Example code={`<ol class="list numbered">
     <li class="list-item d-flex justify-content-between align-items-start">
@@ -172,7 +167,7 @@ These work great with custom content as well.
 
 `.horizontal` switches a list from column to row layout. Adjacent items share a single border edge, and outer corners remain rounded while inner corners are squared off.
 
-Responsive variants use [container queries]([[docsref:/layout/breakpoints#container-queries]]) — each `{breakpoint}:horizontal` class activates at or above the specified container width. Wrap the list in `.contains-inline` to establish the container context. Resize the example below to see the breakpoint transitions.
+Responsive variants use [container queries]([[docsref:/layout/breakpoints#container-queries]]) — each `.{breakpoint}:horizontal` class activates at or above the specified container width. Wrap the list in `.contains-inline` to establish the container context. Resize the example below to see the breakpoint transitions.
 
 <Callout type="warning">
   `.horizontal` cannot be combined with `.flush` — the flush variant removes inline borders that separate items in the horizontal layout.
@@ -188,6 +183,7 @@ Responsive variants use [container queries]([[docsref:/layout/breakpoints#contai
   `</div>`]} />
 
 Apply `.flex-fill` or `.flex-grow-1` to list items to stretch them across the full list width:
+
 - `.flex-fill` — items share the available width equally, regardless of content length
 - `.flex-grow-1` — items grow from their natural content width; items with longer content end up wider
 
@@ -202,9 +198,105 @@ Apply `.flex-fill` or `.flex-grow-1` to list items to stretch them across the fu
     <li class="list-item flex-grow-1">And the longer third item</li>
   </ul>`} />
 
-## Contextual variations
+## Component combinations
 
-Chassis's design token system includes contextual color variants that communicate meaning through consistent visual language. Apply these contextual classes to list items to indicate state, importance, or category through your design system's color semantics.
+List items hold other components and custom markup: badges, headings and text, and form controls.
+
+### Items with badges
+
+Add a [badge]([[docsref:/components/badge]]) to a list item to show a count or a status. The flex utilities on the item push the badge to the end and center it vertically.
+
+<Example code={`<ul class="list">
+    <li class="list-item d-flex justify-content-between align-items-center">
+      A list item
+      <span class="badge primary">14</span>
+    </li>
+    <li class="list-item d-flex justify-content-between align-items-center">
+      A second list item
+      <span class="badge primary">2</span>
+    </li>
+    <li class="list-item d-flex justify-content-between align-items-center">
+      A third list item
+      <span class="badge primary">1</span>
+    </li>
+  </ul>`} />
+
+### Rich content
+
+A list item accepts nearly any markup: headings, paragraphs, metadata. [Flexbox utilities]([[docsref:/utilities/flex]]) lay the content out inside the item.
+
+<Example code={`<div class="list">
+    <a href="#" class="list-item list-action active" aria-current="true">
+      <div class="d-flex w-100 justify-content-between">
+        <h4 class="font-lg mb-2xs">List item heading</h4>
+        <small>3 days ago</small>
+      </div>
+      <p class="mb-2xs">Some placeholder content in a paragraph.</p>
+      <small>And some small print.</small>
+    </a>
+    <a href="#" class="list-item list-action">
+      <div class="d-flex w-100 justify-content-between">
+        <h4 class="font-lg mb-2xs">List item heading</h4>
+        <small class="fg-subtle">3 days ago</small>
+      </div>
+      <p class="mb-2xs">Some placeholder content in a paragraph.</p>
+      <small class="fg-subtle">And some muted small print.</small>
+    </a>
+    <a href="#" class="list-item list-action">
+      <div class="d-flex w-100 justify-content-between">
+        <h4 class="font-lg mb-2xs">List item heading</h4>
+        <small class="fg-subtle">3 days ago</small>
+      </div>
+      <p class="mb-2xs">Some placeholder content in a paragraph.</p>
+      <small class="fg-subtle">And some muted small print.</small>
+    </a>
+  </div>`} />
+
+### Form controls
+
+Place checkboxes or radios inside list items for a selectable list. Each item holds a `.check-input` and its `<label>`.
+
+<Callout type="info">
+  Every control needs an accessible name. Without a visible label, add an `aria-label` attribute to the input.
+</Callout>
+
+<Example code={`<ul class="list">
+    <li class="list-item">
+      <input class="check-input me-xs" type="checkbox" value="" id="firstCheckbox">
+      <label for="firstCheckbox">First checkbox</label>
+    </li>
+    <li class="list-item">
+      <input class="check-input me-xs" type="checkbox" value="" id="secondCheckbox">
+      <label for="secondCheckbox">Second checkbox</label>
+    </li>
+    <li class="list-item">
+      <input class="check-input me-xs" type="checkbox" value="" id="thirdCheckbox">
+      <label for="thirdCheckbox">Third checkbox</label>
+    </li>
+  </ul>`} />
+
+#### Stretched labels
+
+Apply the `.stretched-link` class to the `<label>` to extend its clickable area over the entire list item, which gives a larger target on touch devices.
+
+<Example code={`<ul class="list">
+    <li class="list-item">
+      <input class="check-input me-xs" type="checkbox" value="" id="firstCheckboxStretched">
+      <label class="stretched-link" for="firstCheckboxStretched">First checkbox</label>
+    </li>
+    <li class="list-item">
+      <input class="check-input me-xs" type="checkbox" value="" id="secondCheckboxStretched">
+      <label class="stretched-link" for="secondCheckboxStretched">Second checkbox</label>
+    </li>
+    <li class="list-item">
+      <input class="check-input me-xs" type="checkbox" value="" id="thirdCheckboxStretched">
+      <label class="stretched-link" for="thirdCheckboxStretched">Third checkbox</label>
+    </li>
+  </ul>`} />
+
+## Context variants
+
+Context classes give a list, or single items, the colors of a context. Apply `.context.{name}` to a `.list-item` to mark its state, importance or category.
 
 <Example code={[
     `<ul class="list">`,
@@ -214,9 +306,7 @@ Chassis's design token system includes contextual color variants that communicat
 
 ### Interactive items
 
-Combine contextual color variations with the `.list-action` class to create interactive elements that maintain semantic color meaning while adding appropriate hover and focus states. The design token system ensures that interactive states (hover, focus, active) maintain sufficient contrast and visual differentiation while preserving the contextual meaning of each color variant.
-
-Apply the `.active` class to indicate the currently selected item within a contextually styled interactive list.
+Combine a context class with `.list-action` for actionable items in a context color: the hover, pressed and active states use the colors of the item's context. Apply `.active` to mark the selected item.
 
 <Example code={[
     `<div class="list list-action">`,
@@ -228,7 +318,7 @@ Apply the `.active` class to indicate the currently selected item within a conte
 
 ### Context styles
 
-Contextual styles are applied to lists or items using `.solid`, `.outline`, or `.smooth` classes. These classes apply the appropriate background, border, and text colors based on your design system's color palette.
+A context class on the `.list` element colors the whole list, and the `.solid`, `.smooth` and `.outline` classes next to it select how: each sets the background, border and text colors of the context in its own style.
 
 <Example code={`<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
     <div>
@@ -269,132 +359,17 @@ Contextual styles are applied to lists or items using `.solid`, `.outline`, or `
     </div>
   </div>`} />
 
+## JavaScript API
 
-## Component combinations
+Lists have no plugin of their own. The [Tab plugin]([[docsref:/components/tab]]) turns a list of actionable items into the navigation of tabbed content. Chassis JS ships as an ES module — import the `Tab` class:
 
-Chassis CSS is designed as a cohesive system where components maintain design consistency when combined. Lists work effectively with other components to create rich, informative interfaces while preserving your design token system's visual language.
-
-### Items with badges
-
-Combine list items with badges to display counts, status indicators, or other supplementary information. The flex utilities help position and align badges consistently while maintaining the list's design integrity.
-
-<Example code={`<ul class="list">
-    <li class="list-item d-flex justify-content-between align-items-center">
-      A list item
-      <span class="badge primary">14</span>
-    </li>
-    <li class="list-item d-flex justify-content-between align-items-center">
-      A second list item
-      <span class="badge primary">2</span>
-    </li>
-    <li class="list-item d-flex justify-content-between align-items-center">
-      A third list item
-      <span class="badge primary">1</span>
-    </li>
-  </ul>`} />
-
-### Rich content
-
-Lists can accommodate complex content structures while maintaining design consistency. By leveraging [flexbox utilities]([[docsref:/utilities/flex]]), you can create sophisticated layouts within list items that include headings, paragraphs, metadata, and other HTML elements—all while preserving your design token system's spacing, typography, and color relationships.
-
-<Example code={`<div class="list">
-    <a href="#" class="list-item list-action active" aria-current="true">
-      <div class="d-flex w-100 justify-content-between">
-        <h4 class="font-lg mb-2xs">List item heading</h4>
-        <small>3 days ago</small>
-      </div>
-      <p class="mb-2xs">Some placeholder content in a paragraph.</p>
-      <small>And some small print.</small>
-    </a>
-    <a href="#" class="list-item list-action">
-      <div class="d-flex w-100 justify-content-between">
-        <h4 class="font-lg mb-2xs">List item heading</h4>
-        <small class="fg-subtle">3 days ago</small>
-      </div>
-      <p class="mb-2xs">Some placeholder content in a paragraph.</p>
-      <small class="fg-subtle">And some muted small print.</small>
-    </a>
-    <a href="#" class="list-item list-action">
-      <div class="d-flex w-100 justify-content-between">
-        <h4 class="font-lg mb-2xs">List item heading</h4>
-        <small class="fg-subtle">3 days ago</small>
-      </div>
-      <p class="mb-2xs">Some placeholder content in a paragraph.</p>
-      <small class="fg-subtle">And some muted small print.</small>
-    </a>
-  </div>`} />
-
-### Form controls
-
-Lists seamlessly integrate with Chassis's form controls to create selectable lists that maintain your design system's visual consistency. By combining list items with checkboxes and radio inputs, you can create selection interfaces that preserve the familiar list structure while adding form functionality.
-
-<Callout type="info">
-  When incorporating form controls within lists, maintain accessibility through proper labeling. If visual labels aren't included, provide an `aria-label` attribute to ensure the control's purpose is communicated to assistive technologies.
-</Callout>
-
-<Example code={`<ul class="list">
-    <li class="list-item">
-      <input class="check-input me-xs" type="checkbox" value="" id="firstCheckbox">
-      <label class="check-label" for="firstCheckbox">First checkbox</label>
-    </li>
-    <li class="list-item">
-      <input class="check-input me-xs" type="checkbox" value="" id="secondCheckbox">
-      <label class="check-label" for="secondCheckbox">Second checkbox</label>
-    </li>
-    <li class="list-item">
-      <input class="check-input me-xs" type="checkbox" value="" id="thirdCheckbox">
-      <label class="check-label" for="thirdCheckbox">Third checkbox</label>
-    </li>
-  </ul>`} />
-
-#### Stretched labels
-
-Apply the `.stretched-link` utility to `<label>` elements to expand the clickable/tappable area to cover the entire list item. This improves usability on touch devices while maintaining the visual appearance of the standard form control.
-
-<Example code={`<ul class="list">
-    <li class="list-item">
-      <input class="check-input me-xs" type="checkbox" value="" id="firstCheckboxStretched">
-      <label class="check-label stretched-link" for="firstCheckboxStretched">First checkbox</label>
-    </li>
-    <li class="list-item">
-      <input class="check-input me-xs" type="checkbox" value="" id="secondCheckboxStretched">
-      <label class="check-label stretched-link" for="secondCheckboxStretched">Second checkbox</label>
-    </li>
-    <li class="list-item">
-      <input class="check-input me-xs" type="checkbox" value="" id="thirdCheckboxStretched">
-      <label class="check-label stretched-link" for="thirdCheckboxStretched">Third checkbox</label>
-    </li>
-  </ul>`} />
-
-## CSS
-
-<DocsCSS />
-
-### Custom properties
-
-<DocsCSSVars />
-
-<ScssDocs name="list-item-css-vars" file="scss/_list.scss" />
-
-### Sass variables
-
-<DocsSASSVars />
-
-<ScssDocs name="list-variables" file="scss/config/_defaults.scss" />
-
-### Sass mixins
-
-Chassis CSS interactive placeholder selector used to create context variant and interactive list items. This mixin applies the appropriate styles for interactive elements like links and buttons within lists, ensuring consistent design token usage across different states.
-
-<ScssDocs name="interactive-placeholder-selector" file="scss/placeholders/_interactive.scss" />
-
-## JavaScript behaviors
-
-Chassis CSS includes JavaScript functionality that extends lists with dynamic behaviors while maintaining design token consistency across state changes. The most common interactive pattern is using lists as navigation for tabbed content.
+```js
+import { Tab } from '@chassis-ui/css'
+```
 
 ### Tabbed navigation
 
-The tab JavaScript plugin—available either as an individual module or through the compiled `chassis.js` file—transforms lists into interactive tab navigation systems. This creates a cohesive interface where list styling is applied to navigational elements that control content visibility.
+Each list item is a tab that shows its `.tab-pane` and takes the `.active` class, so the list keeps its appearance while it controls which pane is visible.
 
 <div class="cxd-example" role="tabpanel">
   <div class="grid">
@@ -429,10 +404,10 @@ The tab JavaScript plugin—available either as an individual module or through 
 <div class="grid">
   <div class="col-span-4">
     <div class="list" id="list-tab" role="tablist">
-      <a class="list-item list-action active" id="list-home-item" data-cx-toggle="list" href="#list-solid-home" role="tab" aria-controls="list-home">Home</a>
-      <a class="list-item list-action" id="list-profile-item" data-cx-toggle="list" href="#list-solid-profile" role="tab" aria-controls="list-profile">Profile</a>
-      <a class="list-item list-action" id="list-messages-item" data-cx-toggle="list" href="#list-solid-messages" role="tab" aria-controls="list-messages">Messages</a>
-      <a class="list-item list-action" id="list-settings-item" data-cx-toggle="list" href="#list-solid-settings" role="tab" aria-controls="list-settings">Settings</a>
+      <a class="list-item list-action active" id="list-home-item" data-cx-toggle="tab" href="#list-home" role="tab" aria-controls="list-home">Home</a>
+      <a class="list-item list-action" id="list-profile-item" data-cx-toggle="tab" href="#list-profile" role="tab" aria-controls="list-profile">Profile</a>
+      <a class="list-item list-action" id="list-messages-item" data-cx-toggle="tab" href="#list-messages" role="tab" aria-controls="list-messages">Messages</a>
+      <a class="list-item list-action" id="list-settings-item" data-cx-toggle="tab" href="#list-settings" role="tab" aria-controls="list-settings">Settings</a>
     </div>
   </div>
   <div class="col-span-8">
@@ -446,18 +421,18 @@ The tab JavaScript plugin—available either as an individual module or through 
 </div>
 ```
 
-### Data attribute
+### Triggers
 
-Chassis supports a declarative implementation approach that requires no custom JavaScript. By adding the `data-cx-toggle="list"` attribute to list items, you enable the tabbed behavior through Chassis's data attribute API. This approach maintains separation of concerns while ensuring your list tabs have consistent behavior and appearance.
+The data-attribute API needs no JavaScript on the page beyond the plugin. Add `data-cx-toggle="tab"` to each list item, and point its `href` (or `data-cx-target` on a button) at the `id` of a `.tab-pane`.
 
 ```html
 <div role="tabpanel">
   <!-- List -->
   <div class="list" id="myList" role="tablist">
-    <a class="list-item list-action active" data-cx-toggle="list" href="#home" role="tab">Home</a>
-    <a class="list-item list-action" data-cx-toggle="list" href="#profile" role="tab">Profile</a>
-    <a class="list-item list-action" data-cx-toggle="list" href="#messages" role="tab">Messages</a>
-    <a class="list-item list-action" data-cx-toggle="list" href="#settings" role="tab">Settings</a>
+    <a class="list-item list-action active" data-cx-toggle="tab" href="#home" role="tab">Home</a>
+    <a class="list-item list-action" data-cx-toggle="tab" href="#profile" role="tab">Profile</a>
+    <a class="list-item list-action" data-cx-toggle="tab" href="#messages" role="tab">Messages</a>
+    <a class="list-item list-action" data-cx-toggle="tab" href="#settings" role="tab">Settings</a>
   </div>
 
   <!-- Tab panes -->
@@ -470,4 +445,26 @@ Chassis supports a declarative implementation approach that requires no custom J
 </div>
 ```
 
-See [tab plugin documentation]([[docsref:/components/tab#usage]]) for more details on the tabbed navigation system, including options for programmatic control, event handling, and advanced usage patterns.
+The [Tab documentation]([[docsref:/components/tab]]) covers programmatic initialization, methods and events.
+
+## CSS
+
+<DocsCSS />
+
+### Custom properties
+
+<DocsCSSVars />
+
+<ScssDocs name="list-item-css-vars" file="scss/_list.scss" />
+
+### Sass variables
+
+<DocsSASSVars />
+
+<ScssDocs name="list-variables" file="scss/config/_defaults.scss" />
+
+### Placeholder selector
+
+Actionable list items extend the `%interactive` placeholder selector, which holds the hover, focus, pressed and disabled states shared with menu items and navigation links.
+
+<ScssDocs name="interactive-placeholder-selector" file="scss/placeholders/_interactive.scss" />

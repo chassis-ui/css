@@ -1,6 +1,6 @@
 ---
 title: Text
-description: Typography utilities for text alignment, wrapping, transformation, weight, decoration, and truncation.
+description: Set the alignment, wrapping, transformation, size, weight, line height and decoration of text.
 toc: true
 tokens:
   scopes:
@@ -25,18 +25,18 @@ Text alignment utilities set the CSS `text-align` property. Responsive variants 
 <p class="2xl:text-end">End aligned text on viewports sized "<b>2xl</b>" or wider.</p>`} />
 
 <Callout>
-Justified text utility classes are not provided. Justified text can result in uneven word spacing that reduces readability.
+There is no utility class for justified text: it produces uneven word spacing, which reduces readability.
 </Callout>
 
-## Text wrapping and overflow
+## Text wrapping
 
-`.text-wrap` allows text to break across multiple lines when it overflows its container.
+`.text-wrap` sets `white-space: normal`, so text breaks across lines when it reaches the edge of its container.
 
 <Example code={`<div class="badge primary text-wrap" style="width: 6rem;">
     This text should wrap.
   </div>`} />
 
-`.text-nowrap` forces text onto a single line regardless of container width.
+`.text-nowrap` keeps text on a single line, whatever the width of the container.
 
 <Example code={`<div class="text-nowrap bg-evident border" style="width: 8rem;">
     This text should overflow the parent.
@@ -44,12 +44,12 @@ Justified text utility classes are not provided. Justified text can result in un
 
 ## Word break
 
-`.text-break` prevents long unbroken strings from overflowing their container by applying `word-wrap: break-word` and `word-break: break-word`. `word-wrap` is included for broader browser support.
+`.text-break` keeps a long unbroken string from overflowing its container by setting `word-wrap: break-word` and `word-break: break-word`.
 
 <Example code={`<p class="text-break">mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm</p>`} />
 
 <Callout type="warning">
-[Word breaking is not supported in Arabic](https://rtlstyling.com/posts/rtl-styling#3.-line-break), the most widely used RTL language. As a result, `.text-break` is excluded from the RTL-compiled stylesheet.
+[Arabic words cannot be broken](https://rtlstyling.com/posts/rtl-styling#3.-line-break), so `.text-break` does not suit content in Arabic, the most widely used RTL language.
 </Callout>
 
 ## Text transform
@@ -67,14 +67,14 @@ Text transform utilities set the CSS `text-transform` property.
 
 ## Font size
 
-`.text-lg` and `.text-sm` adjust the inherited font size up or down relative to the current context.
+`.text-lg` and `.text-sm` scale the font size up or down in `em`, relative to the font size the element inherits.
 
 <Example code={`<p class="font-lg">Easily make text <span class="text-lg">larger</span> or <span class="text-sm">smaller</span> to suit your design needs.</p>
 <p class="font-sm">Easily make text <span class="text-lg">larger</span> or <span class="text-sm">smaller</span> to suit your design needs.</p>`} />
 
 ## Font weight and style
 
-Standard CSS font weight and style values are available via the `.text-*` utility set.
+`.text-{weight}` classes set `font-weight`, and `.text-italic` and `.text-normal` set `font-style`.
 
 <Example code={`<p class="text-bold">Bold text.</p>
 <p class="text-bolder">Bolder weight text (relative to the parent element).</p>
@@ -88,7 +88,7 @@ Standard CSS font weight and style values are available via the `.text-*` utilit
 
 ## Line height
 
-`.text-lh-*` utilities set the `line-height` property using values from the design token scale.
+`.text-lh-{size}` utilities set `line-height`: `.text-lh-1` to `1`, and `.text-lh-sm`, `.text-lh-md`, and `.text-lh-lg` to the small, medium, and large line heights.
 
 <Example code={`<p class="text-lh-1">This is a long paragraph written to show how the line-height of an element is affected by the utilities. Classes are applied to the element itself or sometimes the parent element. These classes can be customized as needed with the utility API.</p>
 <p class="text-lh-sm">This is a long paragraph written to show how the line-height of an element is affected by the utilities. Classes are applied to the element itself or sometimes the parent element. These classes can be customized as needed with the utility API.</p>
@@ -114,7 +114,7 @@ Add `.text-decoration-{n}` to set the `text-decoration-thickness` property.
 
 ### Color
 
-The text decoration color can be set independently from the text color.
+`.text-decoration-{context}` sets the decoration to a context color and leaves the text color as it is.
 
 <Example code={getData('context-colors').map((contextColor) => `<p class="text-underline text-decoration-${contextColor.name}">${titleCase(contextColor.title)} underline</p>`)} />
 
@@ -126,7 +126,7 @@ The text decoration color can be set independently from the text color.
 
 ### Underline offset
 
-Underline offset utilities set `text-underline-offset` in `em` units, scaling automatically with the element’s font size.
+`.underline-offset-{n}` sets `text-underline-offset` in `em` units, so the offset scales with the font size of the element.
 
 <Example code={`<p class="text-underline">Standard underline</p>
 <p class="text-underline underline-offset-1">Offset 1 underline</p>
@@ -145,7 +145,7 @@ The table lists all text utilities and their CSS properties.
 
 ### Sass variables
 
-Base font related Sass variables, keeping token references as CSS variables.
+The base font variables in `scss/config/_defaults.scss` refer to the typography tokens through custom properties.
 
 <ScssDocs name="font-variables" file="scss/config/_defaults.scss" />
 

@@ -1,27 +1,25 @@
 ---
 title: Ratios
-description: Aspect ratio utilities for maintaining proportional dimensions on embedded content and block elements across breakpoints.
+description: Give embedded content and block elements a fixed aspect ratio, from a set of ratios or a custom property.
 toc: true
 css_layer: utilities
 ---
 
 ## Overview
 
-Use the ratio utility to manage the aspect ratios of content like `<iframe>`s, `<embed>`s, `<video>`s, and `<object>`s. These helpers also can be used on any standard HTML child element (e.g., a `<div>` or `<img>`). Customize the available aspect ratios with the Sass variable or the utility API.
+Ratio utilities set the CSS `aspect-ratio` property of an element, so its height follows its width. They suit embedded content such as `<iframe>`, `<embed>`, `<video>`, and `<object>` elements, and work on any other element, such as a `<div>` or an `<img>`. The `$aspect-ratios` Sass map holds the available ratios.
 
 <Callout>
-**Pro-Tip!** You don’t need `frameborder="0"` on your `<iframe>`s as we override that for you in [Reboot]([[docsref:/content/reboot]]).
+An `<iframe>` needs no `frameborder="0"` attribute: [Reboot]([[docsref:/content/reboot]]) removes its border.
 </Callout>
 
 ## Example
 
-Add your ratio utility to the element you want to modify, like an `<iframe>`, `<video>`, or less semantic elements like `<div>`. Ratio utilities also pair well with any width utilities, as shown below. Customize the available aspect ratios with the Sass variable or the utility API.
-
-Heads up—you can omit `frameborder="0"` on your `<iframe>`s as that is overridden for you in [Reboot]([[docsref:/content/reboot]]).
+Add a `.ratio-{ratio}` class to the element itself, an `<iframe>` or a `<video>` for example. The class sets no width, so pair it with a [width utility]([[docsref:/utilities/sizing]]) such as `.w-100`.
 
 <Example code={`<iframe class="w-100 ratio-16x9" src="https://www.youtube.com/embed/LO2RPDZkY88?rel=0" title="YouTube video" allowfullscreen></iframe>`} />
 
-Swap the `.ratio-*` class for a different aspect ratio.
+The classes cover `1x1`, `4x3`, `16x9`, and `21x9`, and `.ratio-auto` for the `auto` value.
 
 <Example class="cxd-example-ratios" code={`<div class="ratio-auto">
     <div>Auto</div>
@@ -41,21 +39,17 @@ Swap the `.ratio-*` class for a different aspect ratio.
 
 ## Custom ratios
 
-Each `.ratio-*` class includes a CSS custom property (or CSS variable) in the selector. You can override this CSS variable to create custom aspect ratios on the fly with some quick math on your part.
-
-For example, to create a 2x1 aspect ratio, set `--cx-aspect-ratio: 50%` on the `.ratio-auto`.
+A `.ratio-*` class sets the `--cx-aspect-ratio` custom property, and every element with such a class reads its `aspect-ratio` from it. Override the property for a ratio outside the set: `--cx-aspect-ratio: 2` on a `.ratio-auto` element gives a 2x1 ratio.
 
 <Example class="cxd-example-ratios" code={`<div class="w-25 ratio-auto" style="--cx-aspect-ratio: 2;">
     <div>2x1</div>
   </div>`} />
 
-This CSS variable makes it easy to modify the aspect ratio across breakpoints. The following is 4x3 to start, but changes to a custom 2x1 at the md breakpoint.
-
+A media query that sets the custom property changes the ratio at a breakpoint. The example starts at 4x3 and switches to a custom 2x1 at the `md` breakpoint.
 
 <Example class="cxd-example-ratios cxd-example-ratios-breakpoint" code={`<div class="w-25 ratio-4x3">
     <div>4x3, then 2x1</div>
   </div>`} />
-
 
 ## CSS
 
@@ -69,7 +63,7 @@ The table lists all ratio utilities and their CSS properties.
 
 ### Sass maps
 
-Ratio utilities are generated from the Sass map in `scss/config/_defaults.scss`.
+`$aspect-ratios` in `scss/config/_defaults.scss` holds the ratios; add an entry to generate another class.
 
 <ScssDocs name="aspect-ratios" file="scss/config/_defaults.scss" />
 

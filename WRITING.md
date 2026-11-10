@@ -78,7 +78,7 @@ Apply `data-cx-theme="dark"` directly to the `.my-component` element to opt a si
 <Example code={`...`} />
 ```
 
-**Exception:** the `## CSS` section may go directly into its `<DocsCSS />` component since the API table that follows is self-documenting. This exception applies only to `<DocsCSS />` — a bare `## CSS` → `<ScssDocs>` still requires an intro sentence.
+**Exception:** a heading may go directly into a paragraph generator, which renders the intro sentence itself: `<DocsCSS />` under `## CSS`, `<DocsCSSVars>`, `<DocsSASSVars>` and `<DocsDesignTokens>` under the `###` headings of the CSS section, and `<JsDataAttributes>` under `### Options` (see [Appendix A](#appendix-a--mdx-component-reference)). The exception covers these generators only — a bare `## CSS` → `<ScssDocs>` still requires an intro sentence.
 
 **Anti-pattern: container phrases.** Intro sentences starting with "The following…" or "Below is…" announce content without describing it — state what the content does instead. **Bad:** "The following source and Sass variables define `.my-helper`." **Good:** "`.my-helper` is a simple inline-block element sized and colored by Sass variables." Exception: a colon-terminated sentence introducing a bullet list is fine, since the colon signals enumeration rather than vague pointing.
 
@@ -102,7 +102,7 @@ Prefer active voice. Passive is acceptable when the subject is genuinely unknown
 
 ### 5. Code references in prose
 
-Backtick every code reference: class names with a leading dot (`` `.my-class` ``), custom properties in full (`` `--cx-my-property` ``), Sass variables with `$` (`` `$breakpoints` ``), HTML elements in angle brackets (`` `<nav>` ``), attributes with their value when relevant (`` `aria-current="page"` ``), file paths relative to the repo root (`` `scss/_component.scss` ``), and mixins/functions with parens (`` `border-radius()` ``). In review comments or commits, link file:line references so the path is clickable: `[scss/_component.scss:120](scss/_component.scss:120)`.
+Backtick every code reference: class names with a leading dot (`` `.my-class` ``), custom properties in full (`` `--cx-my-property` ``), Sass variables with `$` (`` `$breakpoints` ``), HTML elements in angle brackets (`` `<nav>` ``), attributes with their value when relevant (`` `aria-current="page"` ``), file paths relative to the package, `packages/css/` in the repository (`` `scss/_component.scss` ``), and mixins/functions with parens (`` `border-radius()` ``). In review comments or commits, link file:line references so the path is clickable: `[scss/_component.scss:120](scss/_component.scss:120)`.
 
 ---
 
@@ -122,12 +122,16 @@ toc: true
 
 Conditional fields and their accepted values:
 
-| Field       | Values                                                | Effect                                                                                                                                                                                     |
-| ----------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `css_layer` | `components`, `forms` (or any other declared layer)   | Renders a layer chip. Omit when the component is unlayered.                                                                                                                                |
-| `css_media` | `container`, `viewport`                               | Declares the responsiveness model. Use `container` for `@container`-based components ([§11](#11-example-vs-resizableexample)); use `viewport` (or omit) for media-query-driven components. |
-| `js`        | `required`, `optional`                                | `required` renders a "JS required" badge (the component does not function without the bundled JS); `optional` renders a softer indicator (enhancement only). Omit for pure CSS components. |
-| `deps`      | List of `{title}` entries, e.g. `- title: ComponentA` | Renders a deps list above the doc. List sibling components this one composes with.                                                                                                         |
+| Field       | Values                                                              | Effect                                                                                                                                                                                                                                                                                  |
+| ----------- | ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `css_layer` | `reboot`, `layout`, `content`, `components`, `helpers`, `utilities` | Renders a layer chip. Omit when the component is unlayered.                                                                                                                                                                                                                             |
+| `css_media` | `container`, `viewport`                                             | Declares the responsiveness model. Use `container` for `@container`-based components ([§11](#11-example-vs-resizableexample)); use `viewport` (or omit) for media-query-driven components.                                                                                              |
+| `js`        | `required`, `optional`                                              | `required` renders a "JS required" badge (the component does not function without the bundled JS); `optional` renders a softer indicator (enhancement only). Omit for pure CSS components.                                                                                              |
+| `deps`      | List of `{title, url}` entries, e.g. `- title: ComponentA`          | Renders a deps list above the doc. List sibling components this one composes with; `url` is optional and links an external dependency.                                                                                                                                                  |
+| `tokens`    | `component`, `context`, or an object with a `scopes` list           | Renders a tokens chip. `component` when every style reads dedicated component tokens (`scss/tokens/_<component>.scss`), `context` when the component reads only the shared context tokens, `scopes` when only the listed kinds of property (e.g. `- typography`) have dedicated tokens. |
+| `mdn`       | A URL                                                               | Renders a link to the MDN page of the native element or API the doc is about.                                                                                                                                                                                                           |
+
+The schema of these fields is `packages/site/src/content.config.ts`. A key it does not know is dropped without an error, so a misspelled field renders nothing.
 
 `description` follows the same instructive-voice and use-case-list rules as body prose — see [§3](#3-describe-behavior-not-benefits).
 
@@ -196,17 +200,17 @@ The closing CSS section uses a fixed template so the API reference is consistent
 ```mdx
 ## CSS
 
-<DocsCSS component="<Component>" />
+<DocsCSS name="<Component>" />
 
 ### Custom properties
 
-<DocsCSSVars component="<Component>" />
+<DocsCSSVars name="<Component>" />
 
 <ScssDocs name="<component>-css-vars" file="scss/_<component>.scss" />
 
 ### Sass variables
 
-<DocsSASSVars component="<Component>" />
+<DocsSASSVars name="<Component>" />
 
 <ScssDocs name="<component>-variables" file="scss/config/_defaults.scss" />
 
@@ -218,7 +222,7 @@ One-sentence description of what each mixin emits and when to use it.
 
 ### Design tokens
 
-<DocsDesignTokens component="<Component>" />
+<DocsDesignTokens name="<Component>" />
 
 <ScssDocs name="<component>-tokens" file="scss/tokens/_<component>.scss" />
 ```
@@ -289,7 +293,7 @@ Use `<Callout>` for asides that interrupt the reading flow but are important eno
 
 - **`<Callout type="info">`** — helpful but non-essential context: tips, alternatives, related patterns.
 - **`<Callout type="warning">`** — real gotchas: accessibility failures, browser quirks, breaking edge cases.
-- **`<Callout name="info-prefersreducedmotion">`** — named callouts reuse standardized content from the site config, e.g. `prefers-reduced-motion` advisories.
+- **`<Callout name="info-prefersreducedmotion">`** — named callouts reuse the shared content of `packages/site/content/callouts/<name>.md`, e.g. `prefers-reduced-motion` advisories.
 
 **Good warning:** "When the controlled container precedes the toggler in document order, keyboard and assistive-technology users may have trouble locating the newly revealed content. Move focus to the revealed panel programmatically on open, and keep `aria-controls` pointing at the controlled element."
 
@@ -471,13 +475,17 @@ Renders a live preview of the component and the source markup below it. Default 
 
 Wraps the preview in a width-resizable container. Use only for components whose responsiveness is driven by `@container` queries — see [§11](#11-example-vs-resizableexample).
 
-| Prop                  | Type                 | Default  | Purpose                                     |
-| --------------------- | -------------------- | -------- | ------------------------------------------- |
-| `code`                | `string \| string[]` | required | The example markup.                         |
-| `class` / `className` | `string`             | —        | Classes applied to the resizable container. |
-| `initialWidth`        | `string`             | `100%`   | Starting width of the resizable container.  |
-| `minWidth`            | `string`             | `200px`  | Minimum width the user can resize down to.  |
-| `showMarkup`          | `boolean`            | `true`   | Hide the source block.                      |
+| Prop                       | Type                 | Default  | Purpose                                              |
+| -------------------------- | -------------------- | -------- | ---------------------------------------------------- |
+| `code`                     | `string \| string[]` | required | The example markup.                                  |
+| `class` / `containerClass` | `string`             | —        | Classes applied to the resizable container.          |
+| `initialWidth`             | `string`             | `100%`   | Starting width of the resizable container.           |
+| `minWidth`                 | `string`             | `200px`  | Minimum width the user can resize down to.           |
+| `showMarkup`               | `boolean`            | `true`   | Hide the source block.                               |
+| `customMarkup`             | `string \| string[]` | —        | Source markup that differs from the rendered `code`. |
+| `id`                       | `string`             | —        | DOM id on the preview wrapper.                       |
+| `lineNumbers`              | `boolean`            | `false`  | Show line numbers in the source block.               |
+| `addStackblitzJs`          | `boolean`            | `false`  | Same as on `<Example>`.                              |
 
 ### `<Callout>`
 
@@ -487,9 +495,10 @@ Highlighted aside. See [§12](#12-callouts) for when to use each type.
 | -------- | --------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
 | `type`   | `'info' \| 'warning' \| 'danger'` | `'info'` | Visual treatment.                                                                                    |
 | `name`   | `string`                          | —        | Render a shared callout from `packages/site/content/callouts/<name>.md`. Overrides the slot content. |
+| `class`  | `string`                          | —        | Classes added to the callout wrapper.                                                                |
 | _(slot)_ | MDX content                       | —        | Inline callout body. Ignored when `name` is set.                                                     |
 
-Optional `title` attribute (on the inline form) renders a bold leading title above the body.
+There is no `title` prop: start the body with a bold phrase for a leading title.
 
 ### `<CxTable>`
 
@@ -506,35 +515,50 @@ Renders an SCSS snippet pulled from source between `// scss-docs-start <name>` a
 | Prop      | Type      | Default  | Purpose                                                                                                                                                                          |
 | --------- | --------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `name`    | `string`  | required | Marker name to extract from the source file.                                                                                                                                     |
-| `file`    | `string`  | required | Source path relative to the repo root.                                                                                                                                           |
+| `file`    | `string`  | required | Source path relative to the package, `packages/css/` (see [§10](#10-the--css-section-template)).                                                                                 |
 | `compile` | `boolean` | `false`  | When `true`, compiles the snippet via the Sass JS API and renders the resulting CSS — useful for blocks that contain `@include` calls. See [§10](#10-the--css-section-template). |
 
 ### `<JsDocs>`
 
 Renders a JavaScript snippet pulled from source between `// js-docs-start <name>` and `// js-docs-end <name>` markers. Same prop shape as `<ScssDocs>` minus `compile`.
 
-| Prop   | Type     | Default  | Purpose                                |
-| ------ | -------- | -------- | -------------------------------------- |
-| `name` | `string` | required | Marker name.                           |
-| `file` | `string` | required | Source path relative to the repo root. |
+| Prop   | Type     | Default  | Purpose                                               |
+| ------ | -------- | -------- | ----------------------------------------------------- |
+| `name` | `string` | required | Marker name.                                          |
+| `file` | `string` | required | Source path relative to the package, `packages/css/`. |
 
 ### `<JsDismiss>`
 
 Renders the standard data-attribute dismissal documentation for a component. Use inside `## JavaScript API` → `### Triggers`.
 
-| Prop   | Type     | Default  | Purpose                                                                      |
-| ------ | -------- | -------- | ---------------------------------------------------------------------------- |
-| `name` | `string` | required | Component name (used in the rendered prose and code, e.g. `"my-component"`). |
+| Prop    | Type     | Default  | Purpose                                                                                                                                  |
+| ------- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`  | `string` | required | Component name (used in the rendered prose and code, e.g. `"my-component"`).                                                             |
+| `event` | `string` | `closed` | The event the focus warning names, without its namespace. Set it when the plugin fires no `closed` event (`event="close"` for the chip). |
 
 ### `<DocsCSS>`, `<DocsCSSVars>`, `<DocsSASSVars>`, `<DocsDesignTokens>`
 
 Boilerplate paragraph generators for the `## CSS` section. All four take the same shape:
 
-| Prop        | Type      | Default | Purpose                                                                                                                                   |
-| ----------- | --------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `component` | `string`  | —       | Component name in the rendered sentence (`"MyComponent"` → "The MyComponent component…"). Omit for the generic "This component" fallback. |
-| `plural`    | `boolean` | `false` | Use plural phrasing ("These components" / "Form components").                                                                             |
-| `exposed`   | `boolean` | `false` | `<DocsCSS>` / `<DocsSASSVars>`: marks variables as runtime-overridable via `--cx-` custom properties. `<DocsCSSVars>`: not accepted.      |
-| `cascading` | `boolean` | `false` | `<DocsCSSVars>` only: appends the cascading-variables explanation and links to the context-class doc.                                     |
+| Prop        | Type                                               | Default       | Purpose                                                                                                                              |
+| ----------- | -------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`      | `string`                                           | —             | Name in the rendered sentence (`"MyComponent"` → "The MyComponent component…"). Omit for the generic "This component" fallback.      |
+| `type`      | `'component' \| 'helper' \| 'utility' \| 'system'` | `'component'` | The noun of the sentence ("This helper…"). `<DocsSASSVars>` does not accept `system`.                                                |
+| `plural`    | `boolean`                                          | `false`       | Use plural phrasing ("These components" / "Form components").                                                                        |
+| `exposed`   | `boolean`                                          | `false`       | `<DocsCSS>` / `<DocsSASSVars>`: marks variables as runtime-overridable via `--cx-` custom properties. `<DocsCSSVars>`: not accepted. |
+| `cascading` | `boolean`                                          | `false`       | `<DocsCSSVars>` only: appends the cascading-variables explanation and links to the context-class doc.                                |
 
 Each component renders a single paragraph. Place it directly under the corresponding `###` heading; no manual intro sentence is needed.
+
+### `<JsDataAttributes>`
+
+Renders the standard paragraphs on setting options through `data-cx-*` attributes, `data-cx-config` and the constructor. Takes no props. Place it directly under `### Options`, before the options table; it counts as the intro of that heading.
+
+### `<InFigma>`, `<CSSOnly>`
+
+Badges that say whether a variant exists in the Figma component library (`<InFigma>`) or only in CSS (`<CSSOnly>`). Place one directly under the heading of the section it describes; the intro sentence of [§2](#2-every-heading-earns-its-paragraph) follows the badge.
+
+| Prop      | Type      | Default   | Purpose                                                                             |
+| --------- | --------- | --------- | ----------------------------------------------------------------------------------- |
+| `tooltip` | `string`  | generated | Text of the tooltip of the badge.                                                   |
+| `plural`  | `boolean` | `false`   | `<InFigma>` only: plural phrasing in the default tooltip ("These variants exist…"). |

@@ -1,38 +1,34 @@
 ---
 title: Scrollspy
-description: Enhance navigation with Chassis CSS's intelligent scrollspy component that automatically highlights active links based on viewport scroll position and user interaction.
+description: Update the active link of a nav or a list as the sections it points to scroll into view, with the Scrollspy plugin.
 toc: true
 js: required
 ---
 
 ## Introduction
 
-Scrollspy in Chassis CSS provides intelligent navigation feedback by automatically updating active states as users scroll through content. Built with modern Intersection Observer API for optimal performance, scrollspy seamlessly integrates with navigation components while maintaining accessibility and smooth user experiences.
+Scrollspy updates the active link of a navigation as the content scrolls. Each link points to a section by its `id`, and the plugin adds `.active` to the link whose section is in view and removes it from the others.
 
 ### How it works
 
-Chassis CSS scrollspy operates through intelligent intersection detection using the Intersection Observer API to efficiently track element visibility without performance overhead. As users scroll through content, the system automatically toggles the `.active` class on navigation links when their corresponding content sections come into view.
+The plugin watches the sections with the [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) instead of listening to scroll events. It pairs every link inside the target with the element its `href` hash names, and observes that element within the scrollable container.
 
-The component works by linking navigation anchors to content sections through ID matching. Active states cascade through parent navigation elements, making it perfect for hierarchical navigation structures. Scrollspy integrates seamlessly with nav components, list groups, and custom anchor elements, with optional smooth scroll behavior to enhance the user experience.
-
-Before implementing scrollspy, ensure these requirements are met:
-
-- A navigation component (nav, list group, or anchor links) plus a scrollable container
-- The scrollable container can be the `<body>` element or a custom element with defined `height` and `overflow-y: scroll`
-- Add `data-cx-spy="scroll"` and `data-cx-target="#navId"` to the scrollable container
-- Include `tabindex="0"` if no focusable elements exist within the container
-- Navigation links must reference valid `id` targets in the DOM structure
-- Hidden target elements are automatically ignored by the intersection observer
+The active state also reaches the parents of a link. In nested `.nav` elements, the `.nav-link` before the nested nav becomes active with it, and a `.menu-item` activates the toggle of its menu.
 
 <Callout name="info-prefersreducedmotion" />
 
-## Examples
+## Basic structure
 
-Explore scrollspy implementations across different navigation patterns, demonstrating intelligent active state management and smooth scrolling integration. These examples showcase Chassis CSS's flexible scrollspy system with various component types.
+Scrollspy needs a scrollable container and a navigation whose links point to elements inside it:
 
-### Navbar integration
+- The scrollable container is the `<body>` element, or an element with a set `height` and `overflow-y: scroll`.
+- Add `data-cx-spy="scroll"` to the container, and `data-cx-target` with a selector for the element that holds the links.
+- Add `tabindex="0"` to a container other than `<body>` when it holds no focusable element, so keyboard users can scroll it.
+- Each link needs an `href` with the `id` of an element inside the container. Links that are disabled or that point to a missing or hidden element are ignored.
 
-Scrollspy seamlessly integrates with navbar components, providing dynamic highlighting for navigation links and dropdown items as users scroll through content sections.
+### Navbar
+
+The example pairs a [navbar]([[docsref:/components/navbar]]) with a scrollable region. Links in the nav and in its menu become active as their sections scroll into view. The `data-cx-root-margin` and `data-cx-smooth-scroll` attributes set two of the [options](#options).
 
 <Example code={`<nav id="navbar-example2" class="navbar bg-evident px-md mb-md rounded-sm" aria-label="Scrollspy example navigation">
     <a class="navbar-brand" href="#">Navbar</a>
@@ -99,9 +95,13 @@ Scrollspy seamlessly integrates with navbar components, providing dynamic highli
     <p>...</p>
   </div>`} />
 
+## Navigation patterns
+
+Scrollspy follows any set of anchors, not only a navbar: nested navs, lists, and plain links are tracked the same way.
+
 ### Nested navigation
 
-Chassis CSS scrollspy supports hierarchical navigation structures with intelligent parent-child active state cascading for complex content organization.
+Scrollspy works with nested `.nav` elements. When a link of a nested nav becomes active, the link before that nav, its parent in the hierarchy, becomes active too.
 
 <Example code={`<div class="grid">
     <div class="col-span-4">
@@ -214,10 +214,9 @@ Chassis CSS scrollspy supports hierarchical navigation structures with intellige
     </div>
   </div>`} />
 
+### Lists
 
-### List group integration
-
-Scrollspy extends beyond navigation components to work seamlessly with list groups, providing consistent active state management across different interface patterns.
+Scrollspy also works with a [list]([[docsref:/components/list]]) whose `.list-item` elements are anchors.
 
 <Example code={`<div class="cxd-example">
     <div class="grid">
@@ -266,9 +265,9 @@ Scrollspy extends beyond navigation components to work seamlessly with list grou
     </div>
   </div>`} />
 
-### Custom anchor elements
+### Custom anchors
 
-Scrollspy flexibility extends to any anchor elements in your document, enabling custom navigation patterns beyond traditional components while maintaining consistent behavior.
+The plugin does not require a nav or a list: it tracks any anchor with an `href` inside the target element. Style the `.active` class of such anchors in the project's own CSS.
 
 <Example code={`<div class="cxd-example">
     <div class="grid">
@@ -323,51 +322,45 @@ Scrollspy flexibility extends to any anchor elements in your document, enabling 
     </div>
   </div>`} />
 
-## Accessibility
+## Non-visible elements
 
-Scrollspy components in Chassis CSS maintain full accessibility compliance through semantic markup, keyboard navigation support, and assistive technology compatibility. These features ensure navigation enhancement doesn't compromise user experience for any user group.
-
-### Screen readers
-
-Scrollspy updates maintain semantic navigation structure while providing clear context for assistive technologies. Active state changes are communicated through standard ARIA practices and focus management.
-
-### Keyboard navigation
-
-Chassis CSS scrollspy provides comprehensive keyboard accessibility, ensuring equal access for all users through focus management and intuitive navigation patterns.
-
-- Tab navigation through scrollspy links maintains logical order and visual focus indicators
-- Enter and Space keys trigger smooth scrolling to target sections when enabled
-- Active state changes don't interfere with keyboard user navigation patterns
-
-### Non-visible elements
-
-Target elements that aren't visible will be ignored and their corresponding nav items won't receive an `.active` class. Scrollspy instances initialized in a non-visible wrapper will ignore all target elements. Use the `refresh` method to check for observable elements once the wrapper becomes visible.
+Target elements that are not visible are ignored, and their links never receive `.active`. An instance initialized in a non-visible wrapper ignores all of its targets. Call the `refresh` method once the wrapper becomes visible, for example when a tab pane with a scrollspy container is shown:
 
 ```js
+import { ScrollSpy } from '@chassis-ui/css'
+
 document.querySelectorAll('#nav-tab>[data-cx-toggle="tab"]').forEach(el => {
   el.addEventListener('shown.cx.tab', () => {
     const target = el.getAttribute('data-cx-target')
     const scrollElem = document.querySelector(`${target} [data-cx-spy="scroll"]`)
-    chassis.ScrollSpy.getOrCreateInstance(scrollElem).refresh()
+    ScrollSpy.getOrCreateInstance(scrollElem).refresh()
   })
 })
 ```
 
+## Accessibility
+
+The plugin changes only the `.active` class of the links and sets no ARIA attribute, so the active section is conveyed visually only. To expose it to assistive technologies, set `aria-current="true"` on the link in an `activate.cx.scrollspy` listener, where the link is `event.relatedTarget`, and remove the attribute from the link that was active before.
+
+The links stay native anchors: they are focusable and activate with <kbd>Enter</kbd> whether or not the plugin runs. A scrollable container without a focusable element needs `tabindex="0"`, otherwise keyboard users cannot focus it to scroll its content.
+
 ## JavaScript API
 
-Control scrollspy behavior programmatically with Chassis CSS's comprehensive JavaScript interface, featuring efficient intersection observation, dynamic content tracking, and smooth scrolling integration.
+The ScrollSpy plugin observes the sections of a scrollable container and updates the links of its target. Import the `ScrollSpy` class from the Chassis module:
 
-### Data attributes
+```js
+import { ScrollSpy } from '@chassis-ui/css'
+```
 
-Configure scrollspy behavior declaratively through data attributes for simple implementation without JavaScript initialization.
+### Triggers
 
-To easily add scrollspy behavior to your navigation, add `data-cx-spy="scroll"` to the element you want to monitor (typically the `<body>` or a scrollable container). Then add the `data-cx-target` attribute with the `id` or class name of the parent element containing your navigation component.
+The data-attribute API sets up scrollspy without any JavaScript on the page beyond the bundled plugin. Add `data-cx-spy="scroll"` to the scrollable element, typically the `<body>` or a scrollable container, and `data-cx-target` with a selector for the parent element of the navigation:
 
 ```html
 <body data-cx-spy="scroll" data-cx-target="#navbar-example">
   ...
   <div id="navbar-example">
-    <ul class="nav nav-tabs" role="tablist">
+    <ul class="nav nav-tabs">
       ...
     </ul>
   </div>
@@ -377,10 +370,10 @@ To easily add scrollspy behavior to your navigation, add `data-cx-spy="scroll"` 
 
 ### Initialization
 
-Initialize scrollspy instances programmatically for dynamic content or advanced configuration requirements.
+For content added after the page has loaded, or to pass options as an object, instantiate the scrollable element with the `ScrollSpy` class:
 
 ```js
-const scrollSpy = new chassis.ScrollSpy(document.body, {
+const scrollSpy = new ScrollSpy(document.body, {
   target: '#navbar-example'
 })
 ```
@@ -392,54 +385,47 @@ const scrollSpy = new chassis.ScrollSpy(document.body, {
 <CxTable>
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| `rootMargin` | string | `0px 0px -25%` | Intersection Observer [rootMargin](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin) valid units, when calculating scroll position. |
-| `smoothScroll` | boolean | `false` | Enables smooth scrolling when a user clicks on a link that refers to ScrollSpy observables. |
-| `target` | string, DOM element | `null` | Specifies element to apply Scrollspy plugin. |
-| `threshold` | array | `[0.1, 0.5, 1]` | `IntersectionObserver` [threshold](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#threshold) valid input, when calculating scroll position. |
+| `rootMargin` | string | `0px 0px -25%` | [`rootMargin`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin) of the `IntersectionObserver` that detects the visible sections. |
+| `smoothScroll` | boolean | `false` | Scrolls smoothly to a section when its link is clicked. |
+| `target` | string, DOM element | `null` | Element that holds the links to update. Falls back to the `<body>` element when it is not set. |
+| `threshold` | array | `[0.1, 0.5, 1]` | [`threshold`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#threshold) of the `IntersectionObserver`. A comma-separated string, such as `"0.1,0.5,1"`, is also accepted. |
 </CxTable>
-
-<Callout type="warning">
-**Deprecated Options**
-
-Up until v5.1.3 we were using `offset` & `method` options, which are now deprecated and replaced by `rootMargin`.
-To keep backwards compatibility, we will continue to parse a given `offset` to `rootMargin`, but this feature will be removed in **v6**.
-</Callout>
 
 ### Methods
 
-Chassis CSS provides essential methods for programmatic scrollspy control, enabling dynamic content management and instance lifecycle handling.
+The plugin exposes two instance methods and two static lookup methods for programmatic control:
 
 <CxTable>
 | Method | Description |
 | --- | --- |
-| `dispose` | Destroys an element's scrollspy. (Removes stored data on the DOM element) |
-| `getInstance` | *Static* method to get the scrollspy instance associated with a DOM element. |
-| `getOrCreateInstance` | *Static* method to get the scrollspy instance associated with a DOM element, or to create a new one in case it wasn't initialized. |
-| `refresh` | When adding or removing elements in the DOM, you'll need to call the refresh method. |
+| `dispose` | Destroys the instance and removes stored data from the element. |
+| `getInstance` | *Static* — returns the existing instance bound to a DOM element, or `null`. Example: `ScrollSpy.getInstance(element)` |
+| `getOrCreateInstance` | *Static* — returns the existing instance or creates one. Example: `ScrollSpy.getOrCreateInstance(element)` |
+| `refresh` | Collects the links and their sections again. Call it after adding or removing links or sections in the DOM, or after a hidden container becomes visible. |
 </CxTable>
 
-Here's an example using the refresh method:
+A call to `refresh` on every instance picks up content that was added to the page:
 
 ```js
 const dataSpyList = document.querySelectorAll('[data-cx-spy="scroll"]')
 dataSpyList.forEach(dataSpyEl => {
-  chassis.ScrollSpy.getInstance(dataSpyEl).refresh()
+  ScrollSpy.getInstance(dataSpyEl).refresh()
 })
 ```
 
 ### Events
 
-Listen to scrollspy events to integrate with your application logic and create responsive navigation interactions.
+The plugin fires one event on the scrollable element, for integrating the active link with other parts of the page.
 
 <CxTable>
 | Event | Description |
 | --- | --- |
-| `activate.cx.scrollspy` | This event fires on the scroll element whenever an anchor is activated by the scrollspy. |
+| `activate.cx.scrollspy` | Fired on the scroll element whenever a link becomes active. `event.relatedTarget` is that link. |
 </CxTable>
 
 ```js
 const firstScrollSpyEl = document.querySelector('[data-cx-spy="scroll"]')
-firstScrollSpyEl.addEventListener('activate.cx.scrollspy', () => {
-  // do something...
+firstScrollSpyEl.addEventListener('activate.cx.scrollspy', event => {
+  event.relatedTarget // newly activated link
 })
 ```

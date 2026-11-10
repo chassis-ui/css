@@ -14,7 +14,7 @@ js: required
 
 ## Introduction
 
-An alert is a `<dialog>` element styled with `.alert` and activated by the `.dialog` plugin. The two classes have distinct responsibilities:
+An alert is a `<dialog>` element styled with `.alert` and activated by the Dialog plugin. The two classes have distinct responsibilities:
 
 - **`.dialog`** — behavior: animation, backdrop, keyboard handling, and the open/close lifecycle.
 - **`.alert`** — visual style: compact flat layout, icon placement, and an action footer.
@@ -234,7 +234,7 @@ Multiple alert dialogs can be chained by triggering the next dialog from an acti
 
 The native `<dialog>` element carries an implicit `dialog` role. Add `aria-labelledby` pointing to the `.alert-title` element's `id` so assistive technologies announce the alert heading when it opens.
 
-For decision-forcing alerts where the current flow is blocked until the user responds, add `role="alertdialog"` to the `<dialog>` element. The `alertdialog` role requires both `aria-labelledby` (pointing to the title) and `aria-describedby` (pointing to the message body).
+For decision-forcing alerts that block the current flow until the user responds, add `role="alertdialog"` to the `<dialog>` element. The `alertdialog` role requires both `aria-labelledby` (pointing to the title) and `aria-describedby` (pointing to the message body).
 
 ```html
 <dialog class="alert dialog" role="alertdialog"

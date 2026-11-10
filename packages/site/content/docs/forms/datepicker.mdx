@@ -12,7 +12,7 @@ deps:
 
 ## Introduction
 
-The Datepicker wraps [Vanilla Calendar Pro](https://vanilla-calendar.pro/) to render a calendar as an input-attached popover, a button-triggered popover, or an always-visible inline calendar. It supports single, multiple, and ranged date selection, adapts to Chassis's color modes, and exposes any Vanilla Calendar Pro setting through a `vcpOptions` pass-through.
+The Datepicker wraps [Vanilla Calendar Pro](https://vanilla-calendar.pro/) to render a calendar as a popover attached to an input, a popover opened by a button, or an inline calendar that is always visible. It selects a single date, several dates or a date range, follows the color modes of Chassis, and passes any Vanilla Calendar Pro setting through its `vcpOptions` option.
 
 ## Basic structure
 
@@ -21,7 +21,7 @@ Add `data-cx-toggle="datepicker"` to a text input to initialize it as a datepick
 <Example code={`<label for="datepicker1" class="form-label">Datepicker</label>
   <input type="text" class="form-input" id="datepicker1" data-cx-toggle="datepicker" placeholder="Choose date…">`} />
 
-By default the calendar opens below the input on focus. Selecting a date updates the input's value — single-selection and completed range pickers close automatically, while multiple-date pickers stay open for further selection.
+By default the calendar opens below the input when the input receives the focus. Selecting a date updates the value of the input. A single-date picker closes after the selection and a range picker after its second date, while a multiple-date picker stays open for further dates.
 
 ## Layout options
 
@@ -29,7 +29,7 @@ Compose the datepicker input with other form markup for labels, help text, and i
 
 ### With field
 
-Use the [Field]([[docsref:/forms/form-field]]) component to lay out and wrap inputs with a label, description, and validation feedback messages in a vertical stack.
+Wrap the input in a [form field]([[docsref:/forms/form-field]]) to stack it with a label, a description and validation feedback.
 
 <Example code={`<div class="form-field">
     <label for="datepicker2" class="form-label">Datepicker field</label>
@@ -41,7 +41,7 @@ Use the [Field]([[docsref:/forms/form-field]]) component to lay out and wrap inp
 
 ### With icon
 
-Use the [Input Adorn]([[docsref:/forms/input-adorn]]) component to add a calendar icon alongside the datepicker input. Use a `<button>` for the adorn element and focus the input on click so the calendar opens.
+Use an [input adornment]([[docsref:/forms/input-adorn]]) to add a calendar icon next to the datepicker input. Use a `<button>` for the adorn element and focus the input on click so the calendar opens.
 
 <Example code={`<label for="datepickerIconStart" class="form-label">Select date</label>
   <div class="form-input">
@@ -51,11 +51,11 @@ Use the [Input Adorn]([[docsref:/forms/input-adorn]]) component to add a calenda
     </button>
   </div>`} />
 
-The calendar positions itself relative to the input element by default. Pass a `positionElement` selector or element to anchor the popover to a different ancestor instead (see [Options](#options)).
+The calendar positions itself relative to the input, or to the `.form-adorn` wrapper when the input is inside one. Pass a `positionElement` selector or element to anchor the popover to another element (see [Options](#options)).
 
 ## Date constraints
 
-Restrict the selectable date range using `data-cx-date-min` and `data-cx-date-max`.
+Restrict the selectable dates with `data-cx-date-min` and `data-cx-date-max`, each a date in `YYYY-MM-DD` format.
 
 <Example code={`<label for="datepickerMinMax" class="form-label">Event date (2026 only)</label>
   <input type="text" class="form-input" id="datepickerMinMax" data-cx-toggle="datepicker" data-cx-date-min="2026-01-01" data-cx-date-max="2026-12-31" placeholder="Select a date in 2026">`} />
@@ -98,7 +98,7 @@ Combine `data-cx-selection-mode="multiple-ranged"` with `data-cx-display-months-
 
 ## Advanced features
 
-Secondary options that fine-tune calendar behavior — which day starts the week and where the popover opens relative to the input.
+Two further options set which day starts the week and where the popover opens relative to the input.
 
 ### First day of week
 
@@ -128,21 +128,21 @@ Control where the calendar appears relative to the input with `data-cx-placement
 
 ## Button trigger
 
-Use a button instead of an input for use cases like dashboard date filters. Add `data-cx-datepicker-display` to the text element to preserve icons when the date updates.
+Use a button instead of an input for controls such as the date filter of a dashboard. The plugin writes the selected date into the button; add `data-cx-datepicker-display` to the element that holds the text so the plugin replaces only that text and keeps an icon next to it.
 
 <Example code={`<button type="button" class="button outline secondary" data-cx-toggle="datepicker">
   <Icon name="calendar-solid" />
   <span data-cx-datepicker-display>Select date</span>
 </button>`} />
 
-For date range selection (e.g., dashboard time filters), use `data-cx-selection-mode="multiple-ranged"`. The picker closes once both the start and end dates are selected.
+For a date range, such as the time filter of a dashboard, use `data-cx-selection-mode="multiple-ranged"`. The picker closes once both the start and end dates are selected.
 
 <Example code={`<button type="button" class="button outline secondary" data-cx-toggle="datepicker" data-cx-selection-mode="multiple-ranged">
     <Icon name="calendar-solid" />
     <span data-cx-datepicker-display>Select dates</span>
   </button>`} />
 
-Display the selected date in a separate element with the `displayElement` option:
+To display the selected date in an element outside the button, pass that element as the `displayElement` option:
 
 ```js
 import { Datepicker } from '@chassis-ui/css'
@@ -155,15 +155,15 @@ const datepicker = new Datepicker(buttonElement, {
 
 ## Inline calendar
 
-Render the calendar inline (always visible, no popup) with `data-cx-inline="true"`. Use this to embed a calendar directly in the page instead of behind a trigger.
+Add `data-cx-inline="true"` to render the calendar in the page, always visible and without a popover. Use it to embed a calendar in the page instead of behind a trigger.
 
 <Example code={`<div data-cx-toggle="datepicker" data-cx-inline="true"></div>`} />
 
-Inline datepickers support the same selection modes as popover datepickers:
+An inline datepicker takes the same selection modes as a popover datepicker.
 
 <Example code={`<div data-cx-toggle="datepicker" data-cx-inline="true" data-cx-selection-mode="multiple-ranged"></div>`} />
 
-Multiple months inline:
+`data-cx-display-months-count` shows several months in an inline calendar too.
 
 <Example code={`<div data-cx-toggle="datepicker" data-cx-inline="true" data-cx-display-months-count="2"></div>`} />
 
@@ -180,7 +180,7 @@ Include a hidden input inside the container to bind the selection to a form fiel
 
 ## Custom date formatting
 
-Control how dates are displayed using the `dateFormat` option. Pass an [`Intl.DateTimeFormat` options object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#options) or a `function(date, locale)`.
+The `dateFormat` option sets how the plugin writes the selected dates into the input or the display element. Pass an [`Intl.DateTimeFormat` options object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#options) or a `function(date, locale)`.
 
 ```js
 import { Datepicker } from '@chassis-ui/css'
@@ -204,7 +204,7 @@ The datepicker adapts to Chassis's color modes. When `data-cx-theme="dark"` is s
 
 ### Inherited from parent
 
-When a parent element carries a theme, both the input and calendar popup inherit it:
+When a parent element carries a theme, both the input and the calendar popover inherit it.
 
 <Example code={`<div data-cx-theme="dark" class="p-md bg-main rounded">
     <label for="datepickerDark" class="form-label">Dark mode datepicker</label>
@@ -213,14 +213,14 @@ When a parent element carries a theme, both the input and calendar popup inherit
 
 ### Datepicker-only theme
 
-Use `data-cx-datepicker-theme` to set the datepicker popup’s theme independently of the input — for example, a light input paired with a dark datepicker, or the reverse:
+Use `data-cx-datepicker-theme` to set the theme of the calendar popover independently of the input — for example, a light input paired with a dark datepicker, or the reverse.
 
 <Example code={`<label for="datepickerTheme" class="form-label">Light input, dark datepicker</label>
 <input data-cx-toggle="datepicker" data-cx-datepicker-theme="dark" type="text" class="form-input" id="datepickerTheme" placeholder="Select a date">`} />
 
 ## Accessibility
 
-Vanilla Calendar Pro marks calendar day state with ARIA attributes: the selected day carries `aria-selected="true"`, disabled days carry `aria-disabled="true"`, and today's date carries `aria-current="date"`. Chassis styles each of these states directly from that generated markup — see [`scss/_datepicker.scss`]([[config:repo]]/blob/main/scss/_datepicker.scss).
+Vanilla Calendar Pro marks calendar day state with ARIA attributes: the selected day carries `aria-selected="true"`, disabled days carry `aria-disabled="true"`, and today's date carries `aria-current="date"`. Chassis styles each of these states directly from that generated markup — see [`scss/_datepicker.scss`]([[config:repo]]/blob/main/packages/css/scss/_datepicker.scss).
 
 <Callout type="warning">
 Chassis doesn't add `aria-expanded` or `aria-haspopup` to the trigger element. Add them manually, and keep `aria-expanded` in sync with the `show.cx.datepicker` / `hide.cx.datepicker` events, if the trigger needs to announce popover state to assistive technology.
@@ -236,13 +236,13 @@ import { Datepicker } from '@chassis-ui/css'
 
 ### Triggers
 
-Add `data-cx-toggle="datepicker"` to any input or button element to initialize it as a datepicker without writing JavaScript.
+Add `data-cx-toggle="datepicker"` to an input or a button to make it a datepicker without writing JavaScript. The plugin creates the instance when an input first receives the focus or a button is first clicked, and when the page loads for an inline calendar.
 
 <CxTable>
 | Attribute | Description |
 | --- | --- |
 | `data-cx-toggle="datepicker"` | Initializes the datepicker on the input (or button) element. |
-| `data-cx-inline` | When `true`, renders the calendar inline instead of a popup. |
+| `data-cx-inline` | When `true`, renders the calendar inline instead of in a popover. |
 </CxTable>
 
 ```html
@@ -280,8 +280,6 @@ The plugin exposes instance methods for programmatic control, plus the static lo
 
 ### Options
 
-Options are set via `data-cx-*` attributes or passed to the constructor as an object:
-
 <JsDataAttributes />
 
 <CxTable>
@@ -293,19 +291,20 @@ Options are set via `data-cx-*` attributes or passed to the constructor as an ob
 | `displayElement` | string, element, boolean | `null` | Element to show formatted date. For buttons, defaults to the button itself. Set to `false` to disable. |
 | `displayMonthsCount` | number | `1` | Number of months to display side-by-side in the calendar. |
 | `firstWeekday` | number | `1` | First day of week (0 = Sunday, 1 = Monday, etc.) |
-| `inline` | boolean | `false` | Render calendar inline (always visible, no popup). |
+| `inline` | boolean | `false` | Render calendar inline (always visible, no popover). |
 | `locale` | string | browser language (`navigator.language`) | Locale for date formatting, a BCP 47 language tag (e.g., `'en-US'`, `'de-DE'`). Pass `'default'` to use the runtime's default locale formatting. |
 | `positionElement` | string, element | `null` | Element to position the calendar relative to. Checks for a `.form-adorn` ancestor first, then falls back to the input (or button) itself. |
 | `selectedDates` | array | `[]` | Pre-selected dates in `YYYY-MM-DD` format |
 | `selectionMode` | string | `'single'` | Selection mode: `'single'`, `'multiple'`, or `'multiple-ranged'` |
 | `placement` | string | `'left'` | Calendar position relative to input: `'left'`, `'center'`, `'right'`, `'auto'` |
-| `datepickerTheme` | string | `null` | Force datepicker popup theme: `'light'`, `'dark'`, `'auto'`, or `null` to inherit from ancestor `[data-cx-theme]` |
+| `datepickerTheme` | string | `null` | Force the theme of the calendar popover: `'light'`, `'dark'`, `'auto'`, or `null` to inherit from ancestor `[data-cx-theme]` |
 | `vcpOptions` | object | `{}` | Pass-through object for any [Vanilla Calendar Pro option](https://vanilla-calendar.pro/docs/reference/settings) |
+| `styles` | object | the `.datepicker-*` classes | Class names for the parts of the calendar, passed to Vanilla Calendar Pro as its `styles` setting. |
 </CxTable>
 
 ### Advanced configuration
 
-For settings not directly exposed by Chassis's options, pass any Vanilla Calendar Pro setting through `vcpOptions`. Chassis-managed options — like `firstWeekday`, `selectionMode`, and `locale` — take precedence over the same key inside `vcpOptions`, so reserve it for settings without a dedicated Chassis option:
+Pass any Vanilla Calendar Pro setting that has no Chassis option through `vcpOptions`. Chassis-managed options — like `firstWeekday`, `selectionMode`, and `locale` — take precedence over the same key inside `vcpOptions`, so reserve it for settings without a dedicated Chassis option:
 
 ```js
 const datepicker = new Datepicker(element, {
@@ -319,11 +318,11 @@ const datepicker = new Datepicker(element, {
 })
 ```
 
-See the [Vanilla Calendar Pro documentation](https://vanilla-calendar.pro/docs/reference/settings) for all available options.
+The [Vanilla Calendar Pro documentation](https://vanilla-calendar.pro/docs/reference/settings) lists every setting.
 
 ### Events
 
-The plugin fires events around the show/hide lifecycle and date selection:
+All events fire on the element with `data-cx-toggle="datepicker"`. They cover the opening and closing of the calendar and the selection of a date:
 
 <CxTable>
 | Event | Description |

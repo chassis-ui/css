@@ -13,11 +13,13 @@ deps:
 
 import { getConfig, getStaticPath } from '@chassis-ui/docs/site'
 
-## Overview
+## Introduction
 
 The navbar is the primary navigation surface for a site or application. It composes a branding area, a set of navigation links, optional forms or text, and a drawer-based mobile menu — all wrapped in a single `<nav>` element that is responsive by default.
 
 ### Key features
+
+The navbar combines its own sub-components with the drawer and the nav:
 
 - Collapses into a slide-in drawer at a chosen breakpoint via the `.{breakpoint}:navbar-expand` modifier
 - Built-in sub-components for branding (`.navbar-brand`), navigation (`.navbar-nav`), forms, and inline text (`.navbar-text`)
@@ -694,13 +696,17 @@ The drawer trigger matches on `id` and `data-cx-target`, so the controlled drawe
 
 ## Accessibility
 
-An accessible navbar relies on semantic markup and ARIA attributes that assistive technologies can interpret. 
+An accessible navbar relies on semantic markup and ARIA attributes that assistive technologies can interpret.
 
-- Use a `<nav>` element (or `role="navigation"` on a generic element) so the navbar is exposed as a landmark region. 
-- Mark the current page with `aria-current="page"` on the active `.nav-link`, or `aria-current="true"` for the current item in a non-page set. 
-- The `.navbar-toggler` must carry `aria-label`, `aria-controls` (pointing at the drawer's id), and `aria-expanded` (kept in sync by the Drawer plugin).
+- Use a `<nav>` element (or `role="navigation"` on a generic element) so the navbar is exposed as a landmark region.
+- Mark the current page with `aria-current="page"` on the active `.nav-link`, or `aria-current="true"` for the current item in a non-page set.
+- The `.navbar-toggler` must carry `aria-label` and `aria-controls` (pointing at the drawer's id). The Drawer plugin does not update `aria-expanded` on the toggler: the drawer opens as a modal dialog by default, which makes the toggler inert until the drawer closes.
 
 <Callout name="info-prefersreducedmotion" />
+
+## JavaScript API
+
+The navbar has no plugin of its own. The `.navbar-toggler` opens the drawer through the data-attribute API of the [Drawer plugin]([[docsref:/components/drawer#javascript-api]]), which also provides the methods and events of the collapsed menu. A menu inside a `.nav-item` uses the [Menu plugin]([[docsref:/components/menu#javascript-api]]).
 
 ## CSS
 
@@ -720,7 +726,7 @@ An accessible navbar relies on semantic markup and ARIA attributes that assistiv
 
 ### Sass map
 
-The global `$breakpoints` map is reassigned to `$navbar-breakpoints` in `scss/_navbar.scss` so the navbar's responsive expand/collapse classes can be configured independently of the framework's other breakpoint loops.
+The global `$breakpoints` map is assigned to `$navbar-breakpoints` in `scss/config/_defaults.scss` so the navbar's responsive expand/collapse classes can be configured independently of the framework's other breakpoint loops.
 
 <ScssDocs name="navbar-breakpoints" file="scss/config/_defaults.scss" />
 

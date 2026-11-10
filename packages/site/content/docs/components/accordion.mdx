@@ -1,6 +1,6 @@
 ---
 title: Accordion
-description: Create accessible, responsive accordions using HTML5 native elements with Chassis CSS. Features smooth transitions, multiple styling options, and built-in accessibility without extensive JavaScript.
+description: Build accordions on the native details and summary elements, with grouped items, size and context variants, and opt-in transitions.
 aliases:
  - "/components"
  - "[[docsref:/components]]"
@@ -10,23 +10,13 @@ css_layer: components
 toc: true
 ---
 
-## How It Works
+## Introduction
 
-Chassis accordions leverage the native HTML5 `<details>` and `<summary>` elements, providing several key benefits:
+Accordions stack collapsible items built on the native `<details>` and `<summary>` elements. The browser expands and collapses each item, handles keyboard interaction, and exposes the expanded state to assistive technology, so the component works without JavaScript. The `.accordion` class on the wrapper styles the items, and the optional `data-cx-accordion` attribute adds height and caret transitions through the Accordion plugin.
 
-- **Native browser functionality**: The browser handles expanding and collapsing content without requiring extensive JavaScript
-- **Built-in accessibility**: Native keyboard navigation and screen reader support through the HTML5 elements
-- **Styled with CSS**: Apply the `.accordion` class to the wrapper for visual styling of `<details>` elements.
-- **Enhanced with JavaScript**: Add the `data-cx-accordion` attribute to the wrapper to opt in smooth transitions via JS
-- **Group behavior**: Using the same `name` attribute on multiple `<details>` elements creates accordion groups where only one item can be open at a time
+## Basic structure
 
-<Callout name="info-prefersreducedmotion" />
-
-## Examples
-
-Click the accordions below to expand/collapse the content. Each item in this example shares the same `name="example"` attribute, creating a group where only one accordion can be open at a time.
-
-Add the `open` attribute to any `<details>` element to render it expanded by default.
+Wrap `<details>` elements in an `.accordion` element. Each item holds a `<summary>` with an `.accordion-title` and an `.accordion-body` for the content. Items that share a `name` attribute form a group in which only one item is open at a time, and the `open` attribute renders an item expanded on load.
 
 <Example code={`<div class="accordion" data-cx-accordion>
   <details name="example" open>
@@ -57,7 +47,7 @@ Add the `open` attribute to any `<details>` element to render it expanded by def
 
 ### Headings
 
-The HTML spec permits one heading element as a direct child of `<summary>` — no ARIA role overrides are needed. Use a heading element as `.accordion-title` when accordion headers need to participate in the document's visual and source-order hierarchy.
+The HTML spec permits one heading element as a direct child of `<summary>`, with no ARIA role overrides. Use a heading element as `.accordion-title` when accordion headers need to participate in the document's visual and source-order hierarchy.
 
 <Example code={`<div class="accordion" data-cx-accordion>
   <details name="example-headings" open>
@@ -86,11 +76,11 @@ The HTML spec permits one heading element as a direct child of `<summary>` — n
   </details>
 </div>`} />
 
-The heading level does not appear in assistive technology heading navigation — inside a disclosure button, heading semantics are absorbed into the button role. Accordion headers remain fully accessible via keyboard and button navigation. When heading-outline navigation is a strict requirement, use the [WAI-ARIA APG accordion pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) instead.
+The heading level is not exposed to heading navigation in assistive technology. See [Heading semantics](#heading-semantics) for the consequences and the alternative.
 
-### Static Items
+### Static items
 
-Accordions with the same `name` attribute form groups that close automatically when another item in the group is opened. Items without a name attribute (or with unique names) remain independent. You can mix both types in a single accordion.
+Items without a `name` attribute, or with a unique one, open and close independently of the others. Grouped and independent items can be mixed in a single accordion.
 
 <Example code={`<div class="accordion" data-cx-accordion>
     <details open>
@@ -119,9 +109,13 @@ Accordions with the same `name` attribute form groups that close automatically w
     </details>
   </div>`} />
 
-### Flush Accordion
+## Layout options
 
-Add `.flush` to remove the background colors, some borders and rounded corners to render accordions edge-to-edge with their parent container. An accordion with a context keeps the background colors of its context.
+Modifier classes on the `.accordion` wrapper change how the items sit in their container and where the caret is placed.
+
+### Flush accordion
+
+Add `.flush` to remove the background colors, the outer border and the rounded corners, which renders the accordion edge-to-edge with its parent container. An accordion with a context keeps the background colors of its context.
 
 <Example code={`<div class="accordion flush" data-cx-accordion>
     <details name="example-flush" open>
@@ -153,10 +147,9 @@ Add `.flush` to remove the background colors, some borders and rounded corners t
     ...
   </div>`} />
 
+### Caret position
 
-### Caret Position
-
-Add `.caret-end` to the accordion container to move the caret icon to the end of the summary element.
+Add `.caret-end` to the `.accordion` wrapper to move the caret icon to the end of the summary element.
 
 <Example code={`<div class="accordion caret-end" data-cx-accordion>
     <details name="example-end" open>
@@ -188,9 +181,11 @@ Add `.caret-end` to the accordion container to move the caret icon to the end of
     ...
   </div>`} />
 
-### Without Animation
+## Animation
 
-Without the `data-cx-accordion` attribute, the accordion will function without smooth transitions. The content will open and close instantly and the caret icon will not animate.
+The `data-cx-accordion` attribute on the wrapper opts the accordion into transitions: the Accordion plugin animates the height of an item as it opens or closes, and the caret and the summary transition with it. Without the attribute the accordion needs no JavaScript: the content opens and closes instantly and the caret does not animate.
+
+<Callout name="info-prefersreducedmotion" />
 
 <Example code={`<div class="accordion">
     <details name="example-no-transition" open>
@@ -222,12 +217,11 @@ Without the `data-cx-accordion` attribute, the accordion will function without s
     ...
   </div>`} />
 
-
 ## Sizes
 
 <InFigma plural={true} />
 
-Chassis CSS offers size variations to help accordions integrate seamlessly with different UI contexts. Adjust sizes to establish visual hierarchy and optimize space utilization based on your layout requirements.
+Accordions come in three sizes. The `.lg` and `.sm` classes on the `.accordion` wrapper change the font size, the paddings and the caret size of every item; the medium size needs no class.
 
 ### Large
 
@@ -297,15 +291,15 @@ Add `.sm` for reduced font size and compact spacing. Suitable for secondary cont
     ...
   </div>`} />
 
-## Context Variants
+## Context variants
 
 <CSSOnly />
 
-You can use the `.context` class to add a color or style to the accordion. The context class is used to apply a specific color scheme or style to the accordion, making it visually distinct and aligned with your design preferences. See [context class]([[docsref:core-concepts/context-class]]) for more information.
+The `.context` class on the `.accordion` wrapper colors the borders, titles, bodies and carets from a context instead of the default palette. See [context class]([[docsref:/core-concepts/context-class]]) for how contexts work.
 
 ### Colors
 
-Use `.context` class on accordion with a color, like `.primary`.
+Combine `.context` with a context color class, such as `.primary`, to set the color of the accordion.
 
 <Example code={`<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
 
@@ -442,10 +436,9 @@ Use `.context` class on accordion with a color, like `.primary`.
     ...
   </div>`} />
 
-
 ### Styles
 
-Use `.context` class on accordions with a color and style, like `.primary` and `.solid`.
+Add a context style class, `.solid`, `.smooth` or `.outline`, next to the color class to change how the context color is applied.
 
 <Example code={`<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
 
@@ -584,11 +577,11 @@ Use `.context` class on accordions with a color and style, like `.primary` and `
 
 ## Accessibility
 
-The accordion component leverages the native HTML5 `<details>` and `<summary>` elements, which provide built-in accessibility features including keyboard navigation, focus management, and appropriate ARIA states without additional JavaScript. This ensures users of assistive technologies can interact with accordions using standard navigation patterns.
+The native `<details>` and `<summary>` elements provide the keyboard interaction, the focus handling and the expanded state of each item without additional JavaScript or ARIA attributes. The `<summary>` is exposed as a disclosure button that <kbd>Enter</kbd> and <kbd>Space</kbd> toggle.
 
-### Using Headings
+### Heading semantics
 
-The HTML spec permits one heading element as a direct child of `<summary>`. No ARIA role overrides are needed — place the heading inside `<summary>` and the browser handles button semantics and `aria-expanded` state automatically.
+A heading placed inside `<summary>` names the disclosure button, but its level is not exposed in the document outline.
 
 ```html
 <details>
@@ -601,11 +594,76 @@ The HTML spec permits one heading element as a direct child of `<summary>`. No A
 </details>
 ```
 
-Screen readers announce the header as a disclosure button using the heading text as its accessible name. The `<summary>` retains its native `role="button"` and the browser reflects the `open` attribute as `aria-expanded` without JavaScript.
+Screen readers announce the header as a disclosure button with the heading text as its accessible name, and the browser derives the expanded state from the `open` attribute. Inside a button, heading semantics are absorbed into the button role, so accordion headers are reachable through button and form-control navigation but not through heading shortcuts (the <kbd>H</kbd> key in NVDA, JAWS, or VoiceOver).
 
-The heading level does not appear in assistive technology heading-outline navigation. Inside a disclosure button, heading semantics are absorbed into the button role — the heading element contributes its text as the button's accessible name, but its level is not exposed in the document outline. Accordion headers are discoverable via button and form-control navigation but not via heading shortcuts (h-key in NVDA, JAWS, or VoiceOver).
+When heading-outline navigation is a hard requirement, the [WAI-ARIA APG accordion pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) uses `<h3><button>` markup that participates in both heading and button navigation, at the cost of abandoning the native `<details>` element and managing the state in JavaScript.
 
-When AT heading-outline navigation is a hard requirement, the [WAI-ARIA APG accordion pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) uses `<h3><button>` markup that participates in both heading and button navigation — at the cost of abandoning the native `<details>` element and requiring full JavaScript state management.
+## JavaScript API
+
+The Accordion plugin animates items as they open and close and fires events around each transition. Chassis JS ships as an ES module — import the `Accordion` class:
+
+```js
+import { Accordion } from '@chassis-ui/css'
+```
+
+### Triggers
+
+The `data-cx-accordion` attribute on the wrapper enables the plugin for its direct `<details>` children. An instance is created for an item, and for the items that share its `name`, on the first click inside it:
+
+```html
+<div class="accordion" data-cx-accordion>
+  <details name="faq">...</details>
+  <details name="faq">...</details>
+</div>
+```
+
+### Initialization
+
+Each instance belongs to one `<details>` element and watches its `open` attribute. Create the instances up front when items are opened from a script before any click, so that the first change is animated too:
+
+```js
+const instances = [...document.querySelectorAll('[data-cx-accordion] > details')]
+  .map(element => Accordion.getOrCreateInstance(element))
+```
+
+The `open` attribute stays the source of truth: set the `open` property of the `<details>` element to open or close an item, and its instance animates the change.
+
+```js
+document.querySelector('#shippingItem').open = true
+```
+
+### Methods
+
+The plugin exposes methods to manage the instance of an item:
+
+<CxTable>
+| Method | Description |
+| --- | --- |
+| `dispose` | Destroys the instance and stops watching the `open` attribute. |
+| `getInstance` | Static — returns the instance bound to a `<details>` element, or `null`. |
+| `getOrCreateInstance` | Static — returns the instance bound to a `<details>` element, or creates one. |
+</CxTable>
+
+### Events
+
+All events fire on the `<details>` element. The browser has already toggled the item when `open.cx.accordion` or `close.cx.accordion` fires, so calling `event.preventDefault()` on one of them skips the transition and the event that follows it, but does not revert the state.
+
+<CxTable>
+| Event | Description |
+| --- | --- |
+| `open.cx.accordion` | Fires when an item starts to open. |
+| `opened.cx.accordion` | Fires when the opening transition has ended. |
+| `close.cx.accordion` | Fires when an item starts to close. |
+| `closed.cx.accordion` | Fires when the closing transition has ended. |
+</CxTable>
+
+```js
+const item = document.querySelector('#shippingItem')
+
+item.addEventListener('opened.cx.accordion', () => {
+  // The item is fully expanded
+})
+```
 
 ## CSS
 
