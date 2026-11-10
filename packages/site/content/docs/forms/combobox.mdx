@@ -300,7 +300,7 @@ A richer item combines all three.
 
 ## Grouped items
 
-Use `.menu-header` for non-interactive labels that introduce groups of related items. Mark each header `role="presentation"` so screen readers skip it instead of announcing it as an option.
+Use `.menu-header` for non-interactive labels that introduce groups of related items. Mark each header `role="none"` so screen readers skip it instead of announcing it as an option.
 
 <Example code={`<div class="form-input combobox"
        data-cx-toggle="combobox"
@@ -308,11 +308,11 @@ Use `.menu-header` for non-interactive labels that introduce groups of related i
     <input type="text" class="combobox-value" placeholder="Select a language…" autocomplete="off">
   </div>
   <div class="menu" role="listbox">
-    <div class="menu-header" role="presentation">Frontend</div>
+    <div class="menu-header" role="none">Frontend</div>
     <button class="menu-item" type="button" role="option" data-cx-value="html">HTML</button>
     <button class="menu-item" type="button" role="option" data-cx-value="css">CSS</button>
     <button class="menu-item" type="button" role="option" data-cx-value="js">JavaScript</button>
-    <div class="menu-header" role="presentation">Backend</div>
+    <div class="menu-header" role="none">Backend</div>
     <button class="menu-item" type="button" role="option" data-cx-value="python">Python</button>
     <button class="menu-item" type="button" role="option" data-cx-value="ruby">Ruby</button>
     <button class="menu-item" type="button" role="option" data-cx-value="go">Go</button>
@@ -453,7 +453,7 @@ The semantics that identify the combobox and its options to assistive tech must 
 - **`role="combobox"`, `aria-controls` and `aria-expanded="false"`** on a button trigger, with `aria-controls` naming the `id` of the `.menu`. The role requires `aria-expanded` before the menu first opens; the JS keeps it in sync after that. Without the role, a `<button>` is named by its text, and a label that does not hold the placeholder or the selected value breaks [WCAG 2.5.3 Label in Name](https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html).
 - **`role="listbox"`** on the `.menu`. When labelled, also add `aria-label` (or `aria-labelledby`) matching the toggle's accessible name. For multi-select, add `aria-multiselectable="true"`.
 - **`role="option"`** on each `.menu-item`, and `aria-selected="true"` on any pre-selected items. The JS keeps `aria-selected` in sync after that.
-- **`role="presentation"`** on `.menu-header` so headers are skipped by screen readers.
+- **`role="none"`** on `.menu-header` so headers are skipped by screen readers.
 - **`aria-hidden="true"`** on decorative SVG icons inside items.
 
 ### Keyboard

@@ -8270,7 +8270,7 @@ var Tab = class Tab extends BaseComponent {
 		const isActive = this._elemIsActive(child);
 		const outerElem = this._getOuterElement(child);
 		setAriaAttribute(child, "aria-selected", isActive);
-		if (outerElem !== child) this._setAttributeIfNotExists(outerElem, "role", "presentation");
+		if (outerElem !== child) this._setAttributeIfNotExists(outerElem, "role", "none");
 		if (!isActive) child.setAttribute("tabindex", "-1");
 		this._setAttributeIfNotExists(child, "role", "tab");
 		this._setInitialAttributesOnTargetPanel(child);

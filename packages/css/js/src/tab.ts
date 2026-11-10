@@ -203,7 +203,7 @@ class Tab extends BaseComponent {
     setAriaAttribute(child, 'aria-selected', isActive)
 
     if (outerElem !== child) {
-      this._setAttributeIfNotExists(outerElem, 'role', 'presentation')
+      this._setAttributeIfNotExists(outerElem, 'role', 'none')
     }
 
     if (!isActive) {
