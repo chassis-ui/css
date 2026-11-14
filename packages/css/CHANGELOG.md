@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.15.0
+
+### Minor Changes
+
+- **Breaking:** Chassis CSS is built with `@chassis-ui/website-tokens` 0.4.0, which changes the colors of the `alternate` context. Its backgrounds (`--cx-alternate-bg-*`) are the dark tones of the brand, the same in light and dark mode, in place of neutral grays and black, and its foregrounds, borders, icons and cues (`--cx-alternate-fg-*`, `--cx-alternate-border-*`, `--cx-alternate-icon-*`, `--cx-alternate-cue-*`) follow them. `--cx-alternate-base-color` is that dark tone and `--cx-alternate-contrast-color` white, in both modes. In dark mode `--cx-alternate` is the dark tone instead of white and `--cx-alternate-contrast` is white instead of black, so `.fg-alternate-contrast`, `.bg-alternate-contrast` and `.bg-alternate.fg-a11y` write white there. No other context changes, and no class, custom property or Sass variable is added or removed.
+  
+  - A project that loads `dist/css/` or `dist/tailwind/` gets the new colors of `.alternate` and of the `alternate` utilities. To keep the old ones, compile the Sass with `@chassis-ui/website-tokens` 0.3.
+  - A project that compiles the Sass with the default token source gets the colors of the version of `@chassis-ui/website-tokens` it installs: 0.3 keeps the old ones, 0.4 gives the new.
+  - A project with its own token source needs no change.
+
+### Patch Changes
+
+- 9ffff0d: The tab and scrollspy plugins find a list by its `.list` class. Both looked for `.list-group`, a class Chassis does not have, so a `.list` used as tabs was found only with `role="tablist"` in the markup, and scrollspy did not activate the item before a nested `.list`. Markup that still carries `.list-group` is no longer matched by that class: a tab list with `role="tablist"` keeps working, anything else needs `.list`.
+- 880dee6: The tab plugin gives the element around a tab, such as the `<li class="nav-item">` of a `.nav`, `role="none"` instead of `role="presentation"`. The two roles are synonyms in ARIA and screen readers announce the tabs the same way. An element that already has a `role` keeps it, so markup written with `role="presentation"` still works; the examples of the docs use `role="none"`.
+
 ## 0.14.0
 
 ### Minor Changes
