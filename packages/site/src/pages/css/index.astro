@@ -1,29 +1,236 @@
 ---
+/**
+ * The home page of Chassis CSS, composed of the home page sections of `@chassis-ui/docs`.
+ * The copy is that of the Figma design "CSS · Home". A door is one page of the docs with its
+ * real title, and the groups of the doors follow `data/sidebar.yml`.
+ */
+
 import BaseLayout from '@chassis-ui/docs/layouts/BaseLayout.astro'
-import HeroSection from '@components/homepage/HeroSection.astro'
-import IntroSection from '@components/homepage/IntroSection.astro'
-import FeaturesSection from '@components/homepage/FeaturesSection.astro'
-import HowSection from '@components/homepage/HowSection.astro'
-import TechSection from '@components/homepage/TechSection.astro'
-import DocsSection from '@components/homepage/DocsSection.astro'
-import HomeIcons from '/static/icons/cx-sprite.svg?raw'
+import Cards from '@chassis-ui/docs/sections/Cards.astro'
+import Doors from '@chassis-ui/docs/sections/Doors.astro'
+import Facts from '@chassis-ui/docs/sections/Facts.astro'
+import Hero from '@chassis-ui/docs/sections/Hero.astro'
+import Rows from '@chassis-ui/docs/sections/Rows.astro'
+import Section from '@chassis-ui/docs/sections/Section.astro'
+import Steps from '@chassis-ui/docs/sections/Steps.astro'
+import Icon from '@chassis-ui/docs/shortcodes/Icon.astro'
+import { getConfig, getDocsPath } from '@chassis-ui/docs/site'
+
+const { description, repo, currentVersion } = getConfig()
+const changelog = `${repo}/blob/main/packages/css/CHANGELOG.md`
+
+const benefits = [
+  {
+    label: 'Tokens',
+    title: 'Style every brand from one stylesheet.',
+    points: [
+      'Colours, type and spacing come from Chassis Tokens as custom properties.',
+      'Dark mode and right-to-left layouts are built in.',
+      'A theme can change at runtime, through custom properties.'
+    ]
+  },
+  {
+    label: 'Figma',
+    title: 'Read the class name off the design.',
+    points: [
+      'Class and variable names match the names in the Figma library.',
+      'Components subtract the border from the padding, so sizes match the design.',
+      'Text sizes scale with the screen, as the tokens define them.'
+    ]
+  },
+  {
+    label: 'Build',
+    title: 'Start with components, finish with utilities.',
+    points: [
+      'Buttons, cards, modals, navigation and forms, with keyboard and ARIA support.',
+      'A 12-column grid with responsive breakpoints and gap utilities.',
+      'Utilities for spacing, type and colour, for what a component does not cover.'
+    ]
+  }
+]
+
+const steps = [
+  {
+    name: 'Install to ship',
+    stations: [
+      {
+        label: '01 · Install',
+        title: 'Add the package.',
+        body: 'Install from npm with your token package, and import the whole framework or single components.'
+      },
+      {
+        label: '02 · Build',
+        title: 'Compose the interface.',
+        body: 'Lay pages out with the grid, and build them from components and utilities.'
+      },
+      {
+        label: '03 · Theme',
+        title: 'Change the tokens.',
+        body: 'Customize with Sass variables or custom properties. A token change reaches every component.'
+      }
+    ]
+  }
+]
+
+const related = [
+  {
+    name: 'Chassis Tokens',
+    icon: 'cx-swatchbook',
+    href: 'https://chassis-ui.com/tokens/',
+    body: 'The source of every value in the stylesheet. Without your tokens, the classes carry the default brand.'
+  },
+  {
+    name: 'Chassis Figma',
+    icon: 'cx-figma',
+    href: 'https://chassis-ui.com/figma/',
+    body: 'The same components as a Figma library, with the names the classes use.'
+  },
+  {
+    name: 'Chassis React',
+    icon: 'cx-react',
+    href: 'https://chassis-ui.com/react/',
+    body: 'React components that render this markup and these classes, with accessible behaviour.'
+  }
+]
+
+const facts = [
+  { name: 'SCSS', detail: 'Source and customization' },
+  { name: 'PostCSS', detail: 'Modern CSS processing' },
+  { name: 'CSS Variables', detail: 'Runtime theming' },
+  { name: 'RFS', detail: 'Responsive font sizes' }
+]
+
+const doors = [
+  {
+    label: 'Getting started',
+    doors: [
+      {
+        name: 'Quick start',
+        href: getDocsPath('/getting-started/quick-start/'),
+        body: 'A first page with the framework and your tokens.'
+      },
+      {
+        name: 'Installation',
+        href: getDocsPath('/getting-started/installation/'),
+        body: 'npm, a bundler or a CDN, and what to import.'
+      },
+      {
+        name: 'Clone and customize',
+        href: getDocsPath('/getting-started/clone-customize/'),
+        body: 'Start from the source and make it your own.'
+      }
+    ]
+  },
+  {
+    label: 'Core concepts',
+    doors: [
+      {
+        name: 'Design Tokens',
+        href: getDocsPath('/core-concepts/design-tokens/'),
+        body: 'How the stylesheet reads Chassis Tokens.'
+      },
+      {
+        name: 'Color System',
+        href: getDocsPath('/core-concepts/color-system/'),
+        body: 'Palettes, contexts and colour modes.'
+      },
+      {
+        name: 'Context Class',
+        href: getDocsPath('/core-concepts/context-class/'),
+        body: 'One class that sets the colours of a component.'
+      }
+    ]
+  },
+  {
+    label: 'Components',
+    doors: [
+      {
+        name: 'Button',
+        href: getDocsPath('/components/button/'),
+        body: 'Variants, sizes and states.'
+      },
+      {
+        name: 'Card',
+        href: getDocsPath('/components/card/'),
+        body: 'A container for grouped content.'
+      },
+      {
+        name: 'Modal',
+        href: getDocsPath('/components/modal/'),
+        body: 'Dialogs over the page.'
+      }
+    ]
+  }
+]
 ---
 
-<BaseLayout title="Chassis CSS - Enterprise CSS Framework" overrides={{ main: { id: 'content' } }}>
-  <!-- Hero Section -->
-  <HeroSection />
-  <hr class="hr container" />
-  <!-- Value Proposition -->
-  <IntroSection />
-  <!-- Key Features -->
-  <FeaturesSection />
-  <!-- How It Works -->
-  <HowSection />
-  <!-- Technical Stack -->
-  <TechSection />
-  <!-- Documentation Section -->
-  <DocsSection />
-  <div class="d-none">
-    <Fragment set:html={HomeIcons} />
-  </div>
+<BaseLayout title="Chassis CSS" description={description} navbarContext="alternate">
+  <Hero
+    kicker="Chassis CSS"
+    lead="Chassis CSS turns Chassis Tokens into custom properties, components, a 12-column grid and utilities. Change a token, and every class follows."
+    command="npm install @chassis-ui/css"
+    illustration="images/illustrations/hero-css.svg"
+    illustrationLabel="A page of components beside a style inspector that lists their properties"
+  >
+    <Fragment slot="title">
+      <span class="d-block">CSS built on your tokens.</span>{' '}
+      <mark class="d-block">
+        <span class="lg:d-block">Every class named</span>{' '}
+        <span class="lg:d-block">as it is in Figma.</span>
+      </mark>
+    </Fragment>
+    <Fragment slot="actions">
+      <a class="button primary lg" href={getDocsPath('/getting-started/overview/')}>
+        <Icon name="book-open-outline" />
+        Getting Started
+      </a>
+      <a class="button alternate lg" href={repo}>
+        <Icon name="github-brand" />
+        View on GitHub
+      </a>
+    </Fragment>
+    <Fragment slot="meta">
+      Currently v{currentVersion}
+      <span aria-hidden="true">&nbsp;/&nbsp;</span>
+      <a href={changelog}>Changes</a>
+    </Fragment>
+  </Hero>
+
+  <Section
+    id="what"
+    eyebrow="What you get"
+    title={['One stylesheet for every brand.', 'The names your designers use.']}
+    lead="The values come from your tokens and the names come from the Figma library. Components, layout and utilities are built on both."
+  >
+    <Rows rows={benefits} />
+  </Section>
+
+  <Section
+    id="how"
+    eyebrow="How it works"
+    title={['From an install', 'to a themed interface.']}
+    lead="Three steps take a project from an empty page to components that follow your brand. A later token change needs no new markup."
+  >
+    <Steps stages={steps} />
+  </Section>
+
+  <Section
+    id="works-with"
+    eyebrow="Works with"
+    title={['CSS sits in the middle.', 'Tokens feed it, React renders it.']}
+    lead="Chassis CSS takes its values from your tokens. The Figma library and the React components share its names."
+  >
+    <Cards cards={related} />
+  </Section>
+
+  <Facts label="Built on" facts={facts} />
+
+  <Section
+    id="docs"
+    eyebrow="Get started"
+    title={['Start with the guide', 'that matches your task.']}
+    lead="Install the framework, learn how it reads your tokens, or go straight to the component you need."
+  >
+    <Doors groups={doors} />
+  </Section>
 </BaseLayout>
