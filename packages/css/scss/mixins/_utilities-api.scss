@@ -100,7 +100,11 @@
         } @else if $default-value == null {
           $actual-value: $value;
         }
-        @if map.get($utility, important) or list.index($force-important, $property) {
+        // A null value prints nothing. Sass drops a null property by itself,
+        // but prints a custom property as an empty value.
+        @if $actual-value == null {
+          // nothing to print
+        } @else if map.get($utility, important) or list.index($force-important, $property) {
           #{$property}: $actual-value !important; // stylelint-disable-line declaration-no-important
         } @else {
           #{$property}: $actual-value;

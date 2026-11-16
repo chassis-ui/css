@@ -277,12 +277,40 @@ describe('tailwind fixture build', () => {
     )
   })
 
-  test("a dotted-compound utility merges into the base name's @utility (fact 5)", () => {
+  test('a family class points the generic scale at the scale of its family', () => {
     const rules = findAllRules(built, 'font-5xl')
     assert.ok(rules.some((body) => /font-size:\s*var\(--cx-font-size-5xl\)/.test(body)))
-    const compound = findAllRules(built, 'font-5xl.font-prose')
-    assert.ok(compound.length > 0)
-    assert.match(compound[0], /font-size:\s*var\(--cx-font-size-prose-5xl\)/)
+    const prose = findExactRule(built, 'font-prose').join('\n')
+    assert.ok(prose, 'expected a .font-prose rule')
+    assert.match(prose, /font-family:\s*var\(--cx-font-family-prose\)/)
+    assert.match(prose, /--cx-font-weight-strong:\s*var\(--cx-font-weight-prose-strong\)/)
+    assert.doesNotMatch(
+      prose,
+      /--cx-font-size-/,
+      'the prose scale is off by default ($enable-prose-scale)'
+    )
+    assert.match(
+      findExactRule(built, 'font-strong').join('\n'),
+      /font-weight:\s*var\(--cx-font-weight-strong\)/,
+      'a weight class reads the generic weight, which a family class points'
+    )
+    const code = findExactRule(built, 'font-code').join('\n')
+    assert.match(code, /--cx-font-size-md:\s*var\(--cx-font-size-code-md\)/)
+    assert.doesNotMatch(
+      code,
+      /--cx-font-size-5xl:/,
+      'a step code lacks is left to the inherited scale'
+    )
+    assert.doesNotMatch(
+      findExactRule(built, 'font-icon').join('\n'),
+      /--cx-font-size-/,
+      'a family with no scale sets its family only'
+    )
+    assert.equal(
+      findAllRules(built, 'font-5xl.font-prose').length,
+      0,
+      'no compound family size class is left'
+    )
   })
 
   test('component/reboot names excluded from Tailwind core have no core declarations (Phase 4)', () => {

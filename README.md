@@ -76,7 +76,7 @@ Compile Chassis from source to apply your own tokens and settings. Chassis uses 
   background-color: var(--cx-primary);
   color: var(--cx-primary-contrast);
   border-radius: var(--cx-border-radius-sm);
-  font-family: var(--cx-font-family-text);
+  font-family: var(--cx-font-family-ui);
 }
 ```
 

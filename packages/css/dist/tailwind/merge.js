@@ -704,21 +704,6 @@ export const classGroups = {
     "focus-ring-warning",
     "focus-ring-white"
   ],
-  "font-code-size": [
-    "font-lg",
-    "font-md",
-    "font-sm"
-  ],
-  "font-code-weight": [
-    "font-normal",
-    "font-strong"
-  ],
-  "font-display-weight": [
-    "font-elegant",
-    "font-mass",
-    "font-normal",
-    "font-strong"
-  ],
   "font-family": [
     "font-code",
     "font-display",
@@ -726,30 +711,13 @@ export const classGroups = {
     "font-prose",
     "font-ui"
   ],
-  "font-prose-size": [
-    "font-2xl",
-    "font-2xs",
-    "font-3xl",
-    "font-4xl",
-    "font-5xl",
-    "font-lg",
-    "font-md",
-    "font-sm",
-    "font-xl",
-    "font-xs"
-  ],
-  "font-prose-weight": [
-    "font-elegant",
-    "font-mass",
-    "font-normal",
-    "font-strong"
-  ],
   "font-size": [
     "font-2xl",
     "font-2xs",
     "font-3xl",
     "font-4xl",
     "font-5xl",
+    "font-6xl",
     "font-lg",
     "font-md",
     "font-sm",

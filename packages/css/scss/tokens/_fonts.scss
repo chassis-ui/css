@@ -5,8 +5,8 @@
 //
 // SCSS variables for font family, size, weight, and line-height tokens,
 // mapped from the vendor token set. The families are named by their job:
-// `ui` for components, `prose` for reading content, `display` for the
-// roles a brand sets in its display typeface, `code` and `icon`. A text
+// `ui` for components, `prose` for reading content, `display` for display
+// text, `code` and `icon`. A text
 // role (`h1`, `lead`, `title-large`…) holds its own size and line height;
 // its family and weight come from its role group (`heading`, `title`…).
 //
@@ -28,6 +28,7 @@ $font-family-label:                   $cx-typography-font-family-context-label !
 $font-family-blockquote:              $cx-typography-font-family-context-blockquote !default;
 $font-family-cite:                    $cx-typography-font-family-context-cite !default;
 
+$font-size-ui-6xlarge:                $cx-typography-font-size-ui-6xlarge !default;
 $font-size-ui-5xlarge:                $cx-typography-font-size-ui-5xlarge !default;
 $font-size-ui-4xlarge:                $cx-typography-font-size-ui-4xlarge !default;
 $font-size-ui-3xlarge:                $cx-typography-font-size-ui-3xlarge !default;
@@ -44,6 +45,7 @@ $font-weight-ui-strong:               $cx-typography-font-weight-ui-strong-weigh
 $font-weight-ui-mass:                 $cx-typography-font-weight-ui-mass-weight !default;
 $font-weight-ui-elegant:              $cx-typography-font-weight-ui-elegant-weight !default;
 
+$line-height-ui-6xlarge:              $cx-typography-line-height-ui-6xlarge !default;
 $line-height-ui-5xlarge:              $cx-typography-line-height-ui-5xlarge !default;
 $line-height-ui-4xlarge:              $cx-typography-line-height-ui-4xlarge !default;
 $line-height-ui-3xlarge:              $cx-typography-line-height-ui-3xlarge !default;
@@ -55,6 +57,7 @@ $line-height-ui-small:                $cx-typography-line-height-ui-small !defau
 $line-height-ui-xsmall:               $cx-typography-line-height-ui-xsmall !default;
 $line-height-ui-2xsmall:              $cx-typography-line-height-ui-2xsmall !default;
 
+$font-size-prose-6xlarge:             $cx-typography-font-size-prose-6xlarge !default;
 $font-size-prose-5xlarge:             $cx-typography-font-size-prose-5xlarge !default;
 $font-size-prose-4xlarge:             $cx-typography-font-size-prose-4xlarge !default;
 $font-size-prose-3xlarge:             $cx-typography-font-size-prose-3xlarge !default;
@@ -71,6 +74,7 @@ $font-weight-prose-strong:            $cx-typography-font-weight-prose-strong-we
 $font-weight-prose-mass:              $cx-typography-font-weight-prose-mass-weight !default;
 $font-weight-prose-elegant:           $cx-typography-font-weight-prose-elegant-weight !default;
 
+$line-height-prose-6xlarge:           $cx-typography-line-height-prose-6xlarge !default;
 $line-height-prose-5xlarge:           $cx-typography-line-height-prose-5xlarge !default;
 $line-height-prose-4xlarge:           $cx-typography-line-height-prose-4xlarge !default;
 $line-height-prose-3xlarge:           $cx-typography-line-height-prose-3xlarge !default;
@@ -82,10 +86,34 @@ $line-height-prose-small:             $cx-typography-line-height-prose-small !de
 $line-height-prose-xsmall:            $cx-typography-line-height-prose-xsmall !default;
 $line-height-prose-2xsmall:           $cx-typography-line-height-prose-2xsmall !default;
 
+$font-size-display-6xlarge:           $cx-typography-font-size-display-6xlarge !default;
+$font-size-display-5xlarge:           $cx-typography-font-size-display-5xlarge !default;
+$font-size-display-4xlarge:           $cx-typography-font-size-display-4xlarge !default;
+$font-size-display-3xlarge:           $cx-typography-font-size-display-3xlarge !default;
+$font-size-display-2xlarge:           $cx-typography-font-size-display-2xlarge !default;
+$font-size-display-xlarge:            $cx-typography-font-size-display-xlarge !default;
+$font-size-display-large:             $cx-typography-font-size-display-large !default;
+$font-size-display-medium:            $cx-typography-font-size-display-medium !default;
+$font-size-display-small:             $cx-typography-font-size-display-small !default;
+$font-size-display-xsmall:            $cx-typography-font-size-display-xsmall !default;
+$font-size-display-2xsmall:           $cx-typography-font-size-display-2xsmall !default;
+
 $font-weight-display-normal:          $cx-typography-font-weight-display-normal-weight !default;
 $font-weight-display-strong:          $cx-typography-font-weight-display-strong-weight !default;
 $font-weight-display-mass:            $cx-typography-font-weight-display-mass-weight !default;
 $font-weight-display-elegant:         $cx-typography-font-weight-display-elegant-weight !default;
+
+$line-height-display-6xlarge:         $cx-typography-line-height-display-6xlarge !default;
+$line-height-display-5xlarge:         $cx-typography-line-height-display-5xlarge !default;
+$line-height-display-4xlarge:         $cx-typography-line-height-display-4xlarge !default;
+$line-height-display-3xlarge:         $cx-typography-line-height-display-3xlarge !default;
+$line-height-display-2xlarge:         $cx-typography-line-height-display-2xlarge !default;
+$line-height-display-xlarge:          $cx-typography-line-height-display-xlarge !default;
+$line-height-display-large:           $cx-typography-line-height-display-large !default;
+$line-height-display-medium:          $cx-typography-line-height-display-medium !default;
+$line-height-display-small:           $cx-typography-line-height-display-small !default;
+$line-height-display-xsmall:          $cx-typography-line-height-display-xsmall !default;
+$line-height-display-2xsmall:         $cx-typography-line-height-display-2xsmall !default;
 
 $font-size-h1:                        $cx-typography-font-size-context-h1 !default;
 $font-size-h2:                        $cx-typography-font-size-context-h2 !default;
@@ -137,16 +165,20 @@ $font-weight-label:                   $cx-typography-font-weight-context-label-w
 $font-weight-blockquote:              $cx-typography-font-weight-context-blockquote-weight !default;
 $font-weight-cite:                    $cx-typography-font-weight-context-cite-weight !default;
 
+$font-size-code-xlarge:               $cx-typography-font-size-code-xlarge !default;
 $font-size-code-large:                $cx-typography-font-size-code-large !default;
 $font-size-code-medium:               $cx-typography-font-size-code-medium !default;
 $font-size-code-small:                $cx-typography-font-size-code-small !default;
+$font-size-code-xsmall:               $cx-typography-font-size-code-xsmall !default;
 
 $font-weight-code-normal:             $cx-typography-font-weight-code-normal-weight !default;
 $font-weight-code-strong:             $cx-typography-font-weight-code-strong-weight !default;
 
+$line-height-code-xlarge:             $cx-typography-line-height-code-xlarge !default;
 $line-height-code-large:              $cx-typography-line-height-code-large !default;
 $line-height-code-medium:             $cx-typography-line-height-code-medium !default;
 $line-height-code-small:              $cx-typography-line-height-code-small !default;
+$line-height-code-xsmall:             $cx-typography-line-height-code-xsmall !default;
 
 $font-jumbo:                          $cx-font-context-jumbo !default;
 $font-hero:                           $cx-font-context-hero !default;
@@ -170,6 +202,7 @@ $font-label-medium:                   $cx-font-context-label-medium !default;
 $font-label-small:                    $cx-font-context-label-small !default;
 
 // fusv-disable
+$font-ui-6xlarge-normal:              $cx-font-ui-6xlarge-normal !default;
 $font-ui-5xlarge-normal:              $cx-font-ui-5xlarge-normal !default;
 $font-ui-4xlarge-normal:              $cx-font-ui-4xlarge-normal !default;
 $font-ui-3xlarge-normal:              $cx-font-ui-3xlarge-normal !default;
@@ -181,6 +214,7 @@ $font-ui-small-normal:                $cx-font-ui-small-normal !default;
 $font-ui-xsmall-normal:               $cx-font-ui-xsmall-normal !default;
 $font-ui-2xsmall-normal:              $cx-font-ui-2xsmall-normal !default;
 
+$font-ui-6xlarge-strong:              $cx-font-ui-6xlarge-strong !default;
 $font-ui-5xlarge-strong:              $cx-font-ui-5xlarge-strong !default;
 $font-ui-4xlarge-strong:              $cx-font-ui-4xlarge-strong !default;
 $font-ui-3xlarge-strong:              $cx-font-ui-3xlarge-strong !default;
@@ -192,6 +226,7 @@ $font-ui-small-strong:                $cx-font-ui-small-strong !default;
 $font-ui-xsmall-strong:               $cx-font-ui-xsmall-strong !default;
 $font-ui-2xsmall-strong:              $cx-font-ui-2xsmall-strong !default;
 
+$font-ui-6xlarge-mass:                $cx-font-ui-6xlarge-mass !default;
 $font-ui-5xlarge-mass:                $cx-font-ui-5xlarge-mass !default;
 $font-ui-4xlarge-mass:                $cx-font-ui-4xlarge-mass !default;
 $font-ui-3xlarge-mass:                $cx-font-ui-3xlarge-mass !default;
@@ -203,6 +238,7 @@ $font-ui-small-mass:                  $cx-font-ui-small-mass !default;
 $font-ui-xsmall-mass:                 $cx-font-ui-xsmall-mass !default;
 $font-ui-2xsmall-mass:                $cx-font-ui-2xsmall-mass !default;
 
+$font-ui-6xlarge-elegant:             $cx-font-ui-6xlarge-elegant !default;
 $font-ui-5xlarge-elegant:             $cx-font-ui-5xlarge-elegant !default;
 $font-ui-4xlarge-elegant:             $cx-font-ui-4xlarge-elegant !default;
 $font-ui-3xlarge-elegant:             $cx-font-ui-3xlarge-elegant !default;
@@ -214,6 +250,7 @@ $font-ui-small-elegant:               $cx-font-ui-small-elegant !default;
 $font-ui-xsmall-elegant:              $cx-font-ui-xsmall-elegant !default;
 $font-ui-2xsmall-elegant:             $cx-font-ui-2xsmall-elegant !default;
 
+$font-prose-6xlarge-normal:           $cx-font-prose-6xlarge-normal !default;
 $font-prose-5xlarge-normal:           $cx-font-prose-5xlarge-normal !default;
 $font-prose-4xlarge-normal:           $cx-font-prose-4xlarge-normal !default;
 $font-prose-3xlarge-normal:           $cx-font-prose-3xlarge-normal !default;
@@ -225,6 +262,7 @@ $font-prose-small-normal:             $cx-font-prose-small-normal !default;
 $font-prose-xsmall-normal:            $cx-font-prose-xsmall-normal !default;
 $font-prose-2xsmall-normal:           $cx-font-prose-2xsmall-normal !default;
 
+$font-prose-6xlarge-strong:           $cx-font-prose-6xlarge-strong !default;
 $font-prose-5xlarge-strong:           $cx-font-prose-5xlarge-strong !default;
 $font-prose-4xlarge-strong:           $cx-font-prose-4xlarge-strong !default;
 $font-prose-3xlarge-strong:           $cx-font-prose-3xlarge-strong !default;
@@ -236,6 +274,7 @@ $font-prose-small-strong:             $cx-font-prose-small-strong !default;
 $font-prose-xsmall-strong:            $cx-font-prose-xsmall-strong !default;
 $font-prose-2xsmall-strong:           $cx-font-prose-2xsmall-strong !default;
 
+$font-prose-6xlarge-mass:             $cx-font-prose-6xlarge-mass !default;
 $font-prose-5xlarge-mass:             $cx-font-prose-5xlarge-mass !default;
 $font-prose-4xlarge-mass:             $cx-font-prose-4xlarge-mass !default;
 $font-prose-3xlarge-mass:             $cx-font-prose-3xlarge-mass !default;
@@ -247,6 +286,7 @@ $font-prose-small-mass:               $cx-font-prose-small-mass !default;
 $font-prose-xsmall-mass:              $cx-font-prose-xsmall-mass !default;
 $font-prose-2xsmall-mass:             $cx-font-prose-2xsmall-mass !default;
 
+$font-prose-6xlarge-elegant:          $cx-font-prose-6xlarge-elegant !default;
 $font-prose-5xlarge-elegant:          $cx-font-prose-5xlarge-elegant !default;
 $font-prose-4xlarge-elegant:          $cx-font-prose-4xlarge-elegant !default;
 $font-prose-3xlarge-elegant:          $cx-font-prose-3xlarge-elegant !default;
@@ -258,11 +298,63 @@ $font-prose-small-elegant:            $cx-font-prose-small-elegant !default;
 $font-prose-xsmall-elegant:           $cx-font-prose-xsmall-elegant !default;
 $font-prose-2xsmall-elegant:          $cx-font-prose-2xsmall-elegant !default;
 
+$font-display-6xlarge-normal:         $cx-font-display-6xlarge-normal !default;
+$font-display-5xlarge-normal:         $cx-font-display-5xlarge-normal !default;
+$font-display-4xlarge-normal:         $cx-font-display-4xlarge-normal !default;
+$font-display-3xlarge-normal:         $cx-font-display-3xlarge-normal !default;
+$font-display-2xlarge-normal:         $cx-font-display-2xlarge-normal !default;
+$font-display-xlarge-normal:          $cx-font-display-xlarge-normal !default;
+$font-display-large-normal:           $cx-font-display-large-normal !default;
+$font-display-medium-normal:          $cx-font-display-medium-normal !default;
+$font-display-small-normal:           $cx-font-display-small-normal !default;
+$font-display-xsmall-normal:          $cx-font-display-xsmall-normal !default;
+$font-display-2xsmall-normal:         $cx-font-display-2xsmall-normal !default;
+
+$font-display-6xlarge-strong:         $cx-font-display-6xlarge-strong !default;
+$font-display-5xlarge-strong:         $cx-font-display-5xlarge-strong !default;
+$font-display-4xlarge-strong:         $cx-font-display-4xlarge-strong !default;
+$font-display-3xlarge-strong:         $cx-font-display-3xlarge-strong !default;
+$font-display-2xlarge-strong:         $cx-font-display-2xlarge-strong !default;
+$font-display-xlarge-strong:          $cx-font-display-xlarge-strong !default;
+$font-display-large-strong:           $cx-font-display-large-strong !default;
+$font-display-medium-strong:          $cx-font-display-medium-strong !default;
+$font-display-small-strong:           $cx-font-display-small-strong !default;
+$font-display-xsmall-strong:          $cx-font-display-xsmall-strong !default;
+$font-display-2xsmall-strong:         $cx-font-display-2xsmall-strong !default;
+
+$font-display-6xlarge-mass:           $cx-font-display-6xlarge-mass !default;
+$font-display-5xlarge-mass:           $cx-font-display-5xlarge-mass !default;
+$font-display-4xlarge-mass:           $cx-font-display-4xlarge-mass !default;
+$font-display-3xlarge-mass:           $cx-font-display-3xlarge-mass !default;
+$font-display-2xlarge-mass:           $cx-font-display-2xlarge-mass !default;
+$font-display-xlarge-mass:            $cx-font-display-xlarge-mass !default;
+$font-display-large-mass:             $cx-font-display-large-mass !default;
+$font-display-medium-mass:            $cx-font-display-medium-mass !default;
+$font-display-small-mass:             $cx-font-display-small-mass !default;
+$font-display-xsmall-mass:            $cx-font-display-xsmall-mass !default;
+$font-display-2xsmall-mass:           $cx-font-display-2xsmall-mass !default;
+
+$font-display-6xlarge-elegant:        $cx-font-display-6xlarge-elegant !default;
+$font-display-5xlarge-elegant:        $cx-font-display-5xlarge-elegant !default;
+$font-display-4xlarge-elegant:        $cx-font-display-4xlarge-elegant !default;
+$font-display-3xlarge-elegant:        $cx-font-display-3xlarge-elegant !default;
+$font-display-2xlarge-elegant:        $cx-font-display-2xlarge-elegant !default;
+$font-display-xlarge-elegant:         $cx-font-display-xlarge-elegant !default;
+$font-display-large-elegant:          $cx-font-display-large-elegant !default;
+$font-display-medium-elegant:         $cx-font-display-medium-elegant !default;
+$font-display-small-elegant:          $cx-font-display-small-elegant !default;
+$font-display-xsmall-elegant:         $cx-font-display-xsmall-elegant !default;
+$font-display-2xsmall-elegant:        $cx-font-display-2xsmall-elegant !default;
+
+$font-code-xlarge-normal:             $cx-font-code-xlarge-normal !default;
+$font-code-xlarge-strong:             $cx-font-code-xlarge-strong !default;
 $font-code-large-normal:              $cx-font-code-large-normal !default;
 $font-code-large-strong:              $cx-font-code-large-strong !default;
 $font-code-medium-normal:             $cx-font-code-medium-normal !default;
 $font-code-medium-strong:             $cx-font-code-medium-strong !default;
 $font-code-small-normal:              $cx-font-code-small-normal !default;
 $font-code-small-strong:              $cx-font-code-small-strong !default;
+$font-code-xsmall-normal:             $cx-font-code-xsmall-normal !default;
+$font-code-xsmall-strong:             $cx-font-code-xsmall-strong !default;
 // fusv-enable
 // scss-docs-end typography-tokens

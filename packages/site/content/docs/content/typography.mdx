@@ -42,10 +42,6 @@ Apply `.font-h1` through `.font-h6` to any element to match the visual style of 
 <p class="font-h5">h5. Chassis CSS</p>
 <p class="font-h6">h6. Chassis CSS</p>`} />
 
-<Callout type="warning">
-`.h1` through `.h6` are deprecated in v0.10.0 and still style an element like `.font-h1` through `.font-h6`. They are removed in the next breaking release; replace each with its `.font-h*` class.
-</Callout>
-
 ### Heading with subtext
 
 Nest a `<small>` element with `.fg-subtle` inside a heading to render a secondary label at reduced prominence.
@@ -57,13 +53,14 @@ Nest a `<small>` element with `.fg-subtle` inside a heading to render a secondar
 
 ## Font size
 
-Font size utilities set both `font-size` and a paired `line-height` in a single class. The 10-step scale is the one of the `ui` family and maps directly to Figma text style names, keeping class names consistent with what designers specify in handoff. Combined with `.font-prose`, the same classes take the sizes of the `prose` family (see [Prose font](#prose-font)).
+Font size utilities set both `font-size` and a paired `line-height` in a single class. The 11-step scale is the one of the `ui` family and maps directly to Figma text style names, keeping class names consistent with what designers specify in handoff. On or inside an element with a family class such as `.font-prose`, the same classes take the sizes of that family (see [Font families](#font-families)).
 
 ### Available sizes
 
-The scale runs from `.font-5xl` down to `.font-2xs`, each class with its own `font-size` and `line-height`.
+The scale runs from `.font-6xl` down to `.font-2xs`, each class with its own `font-size` and `line-height`.
 
-<Example code={`<p class="font-5xl">.font-5xl</p>
+<Example code={`<p class="font-6xl">.font-6xl</p>
+<p class="font-5xl">.font-5xl</p>
 <p class="font-4xl">.font-4xl</p>
 <p class="font-3xl">.font-3xl</p>
 <p class="font-2xl">.font-2xl</p>
@@ -94,7 +91,7 @@ These classes follow a mobile-first approach: `font-{size}` sets the base (appli
 
 ## Font weight
 
-Four weight utilities map to the token-defined weights of the `ui` family, with names that match the Figma text style weight names. Combined with `.font-prose`, `.font-display` or `.font-code`, they take the weights of that family.
+Four weight utilities map to the token-defined weights of the `ui` family, with names that match the Figma text style weight names. On or inside an element with `.font-prose`, `.font-display` or `.font-code`, they take the weights of that family.
 
 <Example code={`<p class="font-mass">Mass text.</p>
 <p class="font-strong">Strong text.</p>
@@ -255,47 +252,62 @@ Chassis names its font families by their job, never by their typeface: the typef
 <CxTable>
 | Family | Job | Scale | Class |
 | --- | --- | --- | --- |
-| `ui` | Components and the body of the page | 10 sizes, 4 weights | `.font-ui` |
-| `prose` | Reading content: articles, posts, long-form text | 10 sizes, 4 weights | `.font-prose` |
-| `display` | The roles a brand sets in a display typeface: headings, jumbo, hero | 4 weights, no sizes | `.font-display` |
-| `code` | Code snippets and technical text | 3 sizes, 2 weights | `.font-code` |
+| `ui` | Components and the body of the page | 11 sizes, 4 weights | `.font-ui` |
+| `prose` | Reading content: articles, posts, long-form text | 11 sizes (opt-in), 4 weights | `.font-prose` |
+| `display` | Display text: headings, jumbo, hero | 11 sizes (opt-in), 4 weights | `.font-display` |
+| `code` | Code snippets and technical text | 5 sizes, 2 weights | `.font-code` |
 | `icon` | The icon font | — | — |
 </CxTable>
 
-`display` has no sizes of its own: it is reached through the text roles that use it, which hold their own sizes. `prose` has a full scale because reading content is set at many sizes. In the default tokens `prose` is the typeface of `ui`, with the same sizes.
+A family class sets the font family and points the size, line height and weight utilities at the scale of its family, on its own element and on every element inside it. A step or a weight that `code` lacks, such as `6xl` or `mass`, keeps the one it inherits: the `ui` step at the top of the page, the `prose` step inside `.font-prose`. Components keep the `ui` scale inside any family class.
+
+A family class does not change the size of its own element: an element with `.font-prose` and no size class keeps the size it inherits. Put a size class on the element where the family changes, or inside it.
+
+### Prose and display scales
+
+The size and line-height scales of `prose` and `display` are off by default, since in the default tokens they are the sizes of `ui`. `.font-prose` and `.font-display` then set their family and their weights, and the size utilities inside them keep the `ui` scale they inherit. Turn a scale on with `$enable-prose-scale` or `$enable-display-scale` for a brand whose reading or display typeface has sizes of its own:
+
+```scss
+@use "@chassis-ui/css/scss/config" with (
+  $enable-prose-scale: true,
+  $enable-display-scale: true
+);
+@use "@chassis-ui/css/scss/chassis";
+```
+
+A scale that is on adds its custom properties, `--cx-font-size-prose-*` and `--cx-line-height-prose-*` for `prose`, and points the size utilities at them. The `$font-prose-*` and `$font-display-*` Sass maps of a whole text style read these properties, so a project that uses them turns the scale on. The families and the weights are always there: the text roles use them.
 
 ### UI font
 
-`.font-ui` is the body default and rarely needs to be applied explicitly. Use it to restore the `ui` family on a child element when an ancestor has switched to a different family.
+`.font-ui` is the body default and rarely needs to be applied explicitly. Use it to restore the `ui` family and its scale on a child element when an ancestor has switched to a different family.
 
 <Example code={`<p class="font-ui">.font-ui</p>`} />
 
-<Callout type="warning">
-`.font-text` and `--cx-font-family-text` are deprecated in v0.10.0 and are the same as `.font-ui` and `--cx-font-family-ui`. They are removed in the next breaking release.
-</Callout>
-
 ### Prose font
 
-Add `.font-prose` to a reading region to switch it to the `prose` family. Combine it with `font-{size}` and `font-{weight}` utilities to take the sizes, line heights and weights of the `prose` scale.
+Add `.font-prose` to a reading region to switch it to the `prose` family. `font-{weight}` utilities on the same element or inside it take the weights of the `prose` family, and `font-{size}` utilities its sizes and line heights when the [prose scale](#prose-and-display-scales) is on.
 
 <Example code={`<p class="font-prose">Prose at the size of the surrounding text.</p>
 <p class="font-prose font-lg">Large prose text.</p>
-<p class="font-prose font-sm font-strong">Small, strong prose text.</p>`} />
+<div class="font-prose">
+    <p class="font-sm font-strong">Small, strong prose text.</p>
+  </div>`} />
 
-Prose sizes and weights use dedicated tokens, separate from the `ui` scale, so a brand can give its reading typeface its own scale. The body, lead, blockquote and cite [text roles](#text-roles) use the `prose` family by default.
+Prose sizes and weights use dedicated tokens, separate from the `ui` scale, so a brand can give its reading typeface its own scale and turn on `$enable-prose-scale`. The body, lead, blockquote and cite [text roles](#text-roles) use the `prose` family by default.
 
 ### Display font
 
-Add `.font-display` to any element to switch to the display font family. Weight utilities compose with it and take the weights of the display family.
+Add `.font-display` to any element to switch to the display font family. Weight utilities on the same element or inside it take the weights of the `display` family, and size utilities its sizes and line heights when the [display scale](#prose-and-display-scales) is on.
 
 <Example code={`<p class="font-display">Display text.</p>
+<p class="font-display font-3xl">Display text at the 3xl size.</p>
 <p class="font-display font-mass">Display text in the mass weight.</p>`} />
 
-The display family has no size scale, so a size utility on a display element sets the size of the `ui` scale. For display text at a set size, use a [text role](#text-roles) such as `.font-hero` or `.font-h1`, which take their family from the brand.
+For a heading, a hero or a jumbo title, use a [text role](#text-roles) such as `.font-h1` or `.font-hero`, which takes its family from the brand and holds its own size.
 
 ### Code font
 
-Add `.font-code` to apply the branded monospace font family, suitable for code snippets and technical text. The code font has 3 sizes and 2 weights defined by dedicated design tokens, separate from the `ui` scale. Combine `.font-code` with `font-{size}` and `font-{weight}` utilities to set size and weight.
+Add `.font-code` to apply the branded monospace font family, suitable for code snippets and technical text. The code font has 5 sizes, `xl` to `xs`, and 2 weights, `normal` and `strong`, defined by dedicated design tokens, separate from the `ui` scale. `font-{size}` and `font-{weight}` utilities on the same element or inside it take them, and the steps the code font lacks keep the ones they inherit.
 
 <Example code={`<p class="font-code font-lg">Large code font.</p>
 <p class="font-code">Medium code font.</p>

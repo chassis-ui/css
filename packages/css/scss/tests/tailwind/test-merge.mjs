@@ -156,8 +156,17 @@ describe('dist/tailwind/merge.js', () => {
     assert.equal(classGroups['aspect-ratio-attr'], undefined)
   })
 
-  test('a dotted-compound utility is grouped under its own key by its base class name', () => {
-    assert.ok(classGroups['font-prose-size']?.includes('font-5xl'))
+  test('the family classes are one group, and the family size and weight groups are gone', () => {
+    assert.ok(classGroups['font-family']?.includes('font-prose'))
+    for (const group of [
+      'font-prose-size',
+      'font-prose-weight',
+      'font-display-weight',
+      'font-code-size',
+      'font-code-weight'
+    ]) {
+      assert.equal(classGroups[group], undefined, `unexpected "${group}" group`)
+    }
   })
 
   test('disabled utility entries produce no group', () => {

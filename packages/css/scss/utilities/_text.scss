@@ -21,36 +21,67 @@ $-font-size-values: () !default;
   );
 }
 
-// Build font-size + line-height values map from $prose-font-sizes.
-$-prose-font-size-values: () !default;
-@each $name, $value in $prose-font-sizes {
-  $-prose-font-size-values: map.merge(
-    $-prose-font-size-values,
-    ($name: ("font-size": var(--font-size-prose-#{$name}), "line-height": var(--line-height-prose-#{$name})))
-  );
+// The scale of each family. A family class points the generic scale at the
+// scale of its family: `.font-prose` sets `--font-size-lg` to
+// `var(--font-size-prose-lg)`, so a size or weight class on the element or
+// inside it takes the step of that family. A step or a weight that a family
+// lacks, such as `6xl` of `code`, is left alone and keeps the one it
+// inherits. A family with no scale here, such as `icon`, sets its font
+// family only. The sizes and line heights of `prose` and `display` are here
+// only when `$enable-prose-scale` and `$enable-display-scale` are on; their
+// weights always are.
+$-family-scales: (
+  "ui":      ("font-size": $ui-font-sizes,      "line-height": $ui-line-heights,      "font-weight": $ui-font-weights),
+  "prose":   ("font-size": $prose-font-sizes,   "line-height": $prose-line-heights,   "font-weight": $prose-font-weights),
+  "display": ("font-size": $display-font-sizes, "line-height": $display-line-heights, "font-weight": $display-font-weights),
+  "code":    ("font-size": $code-font-sizes,    "line-height": $code-line-heights,    "font-weight": $code-font-weights),
+) !default;
+@if not $enable-prose-scale {
+  $-family-scales: map.merge($-family-scales, ("prose": ("font-size": (), "line-height": (), "font-weight": $prose-font-weights)));
+}
+@if not $enable-display-scale {
+  $-family-scales: map.merge($-family-scales, ("display": ("font-size": (), "line-height": (), "font-weight": $display-font-weights)));
+}
+$-generic-scales: ("font-size": $font-sizes, "line-height": $line-heights, "font-weight": $font-weights) !default;
+
+// The properties of a family class: its font family and a custom property
+// per step of the generic scale.
+$-family-properties: ("font-family": null) !default;
+@each $group, $steps in $-generic-scales {
+  @each $step, $value in $steps {
+    $-family-properties: map.merge($-family-properties, ("--#{$group}-#{$step}": null));
+  }
 }
 
-// Build font-size + line-height values map from $code-font-sizes.
-$-code-font-size-values: () !default;
-@each $name, $value in $code-font-sizes {
-  $-code-font-size-values: map.merge(
-    $-code-font-size-values,
-    ($name: ("font-size": var(--font-size-code-#{$name}), "line-height": var(--line-height-code-#{$name})))
-  );
+// The value of each property, per family. A null value prints nothing.
+$-family-values: () !default;
+@each $family, $value in $font-families {
+  $scale: map.get($-family-scales, $family);
+  $properties: ("font-family": var(--font-family-#{$family}));
+  @each $group, $steps in $-generic-scales {
+    @each $step, $step-value in $steps {
+      $step-var: null;
+      @if $scale and map.has-key(map.get($scale, $group), $step) {
+        $step-var: var(--#{$group}-#{$family}-#{$step});
+      }
+      $properties: map.merge($properties, ("--#{$group}-#{$step}": $step-var));
+    }
+  }
+  $-family-values: map.merge($-family-values, ($family: $properties));
 }
 
 $utilities: (
   // Text
   // scss-docs-start utils-text
   "font-family": (
-    property: font-family,
+    property: $-family-properties,
     class: font,
-    values: map-loop($font-families, varify, "$key", "font-family")
+    values: $-family-values
   ),
   "cx-font-weight": (
     property: font-weight,
     class: font,
-    values: $font-weights
+    values: map-loop($font-weights, varify, "$key", "font-weight")
   ),
   // scss-docs-start utils-font-size
   "font-size": (
@@ -64,39 +95,6 @@ $utilities: (
     values: $-font-size-values
   ),
   // scss-docs-end utils-font-size
-  // scss-docs-start utils-font-display
-  "font-prose-size": (
-    property: (
-      "font-size": null,
-      "line-height": null
-    ),
-    class: "font-prose.font",
-    values: $-prose-font-size-values
-  ),
-  "font-prose-weight": (
-    property: font-weight,
-    class: "font-prose.font",
-    values: map-loop($prose-font-weights, varify, "$key", "font-weight-prose")
-  ),
-  "font-display-weight": (
-    property: font-weight,
-    class: "font-display.font",
-    values: map-loop($display-font-weights, varify, "$key", "font-weight-display")
-  ),
-  "font-code-size": (
-    property: (
-      "font-size": null,
-      "line-height": null
-    ),
-    class: "font-code.font",
-    values: $-code-font-size-values
-  ),
-  "font-code-weight": (
-    property: font-weight,
-    class: "font-code.font",
-    values: map-loop($code-font-weights, varify, "$key", "font-weight-code")
-  ),
-  // scss-docs-end utils-font-display
   "font-style": (
     property: font-style,
     class: text,
