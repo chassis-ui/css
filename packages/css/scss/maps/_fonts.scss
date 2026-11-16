@@ -4,8 +4,8 @@
 //
 // Typography Maps
 //
-// Sass maps for the font families, the ui, prose and code scales, and the
-// text roles. Consumed by `_root.scss`, the typography mixins and the
+// Sass maps for the font families, the ui, prose, display and code scales,
+// and the text roles. Consumed by `_root.scss`, the typography mixins and the
 // utility generators.
 //
 
@@ -21,6 +21,7 @@ $font-families: (
 // scss-docs-end font-families-map
 // scss-docs-start font-sizes-map
 $font-sizes: (
+  "6xl": $font-size-6xl,
   "5xl": $font-size-5xl,
   "4xl": $font-size-4xl,
   "3xl": $font-size-3xl,
@@ -43,6 +44,7 @@ $font-weights: (
 // scss-docs-end font-weights-map
 // scss-docs-start line-heights-map
 $line-heights: (
+  "6xl": $line-height-6xl,
   "5xl": $line-height-5xl,
   "4xl": $line-height-4xl,
   "3xl": $line-height-3xl,
@@ -57,6 +59,7 @@ $line-heights: (
 // scss-docs-end line-heights-map
 // scss-docs-start ui-font-sizes-map
 $ui-font-sizes: (
+  "6xl": $font-size-ui-6xlarge,
   "5xl": $font-size-ui-5xlarge,
   "4xl": $font-size-ui-4xlarge,
   "3xl": $font-size-ui-3xlarge,
@@ -79,6 +82,7 @@ $ui-font-weights: (
 // scss-docs-end ui-font-weights-map
 // scss-docs-start ui-line-heights-map
 $ui-line-heights: (
+  "6xl": $line-height-ui-6xlarge,
   "5xl": $line-height-ui-5xlarge,
   "4xl": $line-height-ui-4xlarge,
   "3xl": $line-height-ui-3xlarge,
@@ -94,6 +98,7 @@ $ui-line-heights: (
 
 // scss-docs-start prose-font-sizes-map
 $prose-font-sizes: (
+  "6xl": $font-size-prose-6xlarge,
   "5xl": $font-size-prose-5xlarge,
   "4xl": $font-size-prose-4xlarge,
   "3xl": $font-size-prose-3xlarge,
@@ -116,6 +121,7 @@ $prose-font-weights: (
 // scss-docs-end prose-font-weights-map
 // scss-docs-start prose-line-heights-map
 $prose-line-heights: (
+  "6xl": $line-height-prose-6xlarge,
   "5xl": $line-height-prose-5xlarge,
   "4xl": $line-height-prose-4xlarge,
   "3xl": $line-height-prose-3xlarge,
@@ -129,6 +135,21 @@ $prose-line-heights: (
 ) !default;
 // scss-docs-end prose-line-heights-map
 
+// scss-docs-start display-font-sizes-map
+$display-font-sizes: (
+  "6xl": $font-size-display-6xlarge,
+  "5xl": $font-size-display-5xlarge,
+  "4xl": $font-size-display-4xlarge,
+  "3xl": $font-size-display-3xlarge,
+  "2xl": $font-size-display-2xlarge,
+  "xl":  $font-size-display-xlarge,
+  "lg":  $font-size-display-large,
+  "md":  $font-size-display-medium,
+  "sm":  $font-size-display-small,
+  "xs":  $font-size-display-xsmall,
+  "2xs": $font-size-display-2xsmall,
+) !default;
+// scss-docs-end display-font-sizes-map
 // scss-docs-start display-font-weights-map
 $display-font-weights: (
   "normal":  $font-weight-display-normal,
@@ -137,12 +158,29 @@ $display-font-weights: (
   "elegant": $font-weight-display-elegant,
 ) !default;
 // scss-docs-end display-font-weights-map
+// scss-docs-start display-line-heights-map
+$display-line-heights: (
+  "6xl": $line-height-display-6xlarge,
+  "5xl": $line-height-display-5xlarge,
+  "4xl": $line-height-display-4xlarge,
+  "3xl": $line-height-display-3xlarge,
+  "2xl": $line-height-display-2xlarge,
+  "xl":  $line-height-display-xlarge,
+  "lg":  $line-height-display-large,
+  "md":  $line-height-display-medium,
+  "sm":  $line-height-display-small,
+  "xs":  $line-height-display-xsmall,
+  "2xs": $line-height-display-2xsmall,
+) !default;
+// scss-docs-end display-line-heights-map
 
 // scss-docs-start code-font-sizes-map
 $code-font-sizes: (
+  "xl": $font-size-code-xlarge,
   "lg": $font-size-code-large,
   "md": $font-size-code-medium,
   "sm": $font-size-code-small,
+  "xs": $font-size-code-xsmall,
 ) !default;
 // scss-docs-end code-font-sizes-map
 // scss-docs-start code-font-weights-map
@@ -153,9 +191,11 @@ $code-font-weights: (
 // scss-docs-end code-font-weights-map
 // scss-docs-start code-line-heights-map
 $code-line-heights: (
+  "xl": $line-height-code-xlarge,
   "lg": $line-height-code-large,
   "md": $line-height-code-medium,
   "sm": $line-height-code-small,
+  "xs": $line-height-code-xsmall,
 ) !default;
 // scss-docs-end code-line-heights-map
 
@@ -292,13 +332,32 @@ $context-font-groups: (
 // scss-docs-end context-font-groups-map
 // scss-docs-end typography-maps
 
+// The size and line-height scales of `prose` and `display`, in
+// `$typography` only when `$enable-prose-scale` and `$enable-display-scale`
+// are on. Their families and weights are always there: the text roles use
+// them.
+$-prose-scale: () !default;
+@if $enable-prose-scale {
+  $-prose-scale: map-merge-multiple(
+    map-rename-keys($prose-font-sizes, "font-size-prose-", "start"),
+    map-rename-keys($prose-line-heights, "line-height-prose-", "start"),
+  );
+}
+$-display-scale: () !default;
+@if $enable-display-scale {
+  $-display-scale: map-merge-multiple(
+    map-rename-keys($display-font-sizes, "font-size-display-", "start"),
+    map-rename-keys($display-line-heights, "line-height-display-", "start"),
+  );
+}
+
 $typography: map-merge-multiple(
   map-rename-keys($ui-font-sizes, "font-size-ui-", "start"),
   map-rename-keys($ui-font-weights, "font-weight-ui-", "start"),
   map-rename-keys($ui-line-heights, "line-height-ui-", "start"),
-  map-rename-keys($prose-font-sizes, "font-size-prose-", "start"),
+  $-prose-scale,
   map-rename-keys($prose-font-weights, "font-weight-prose-", "start"),
-  map-rename-keys($prose-line-heights, "line-height-prose-", "start"),
+  $-display-scale,
   map-rename-keys($display-font-weights, "font-weight-display-", "start"),
   map-rename-keys($code-font-sizes, "font-size-code-", "start"),
   map-rename-keys($code-font-weights, "font-weight-code-", "start"),

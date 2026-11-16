@@ -549,7 +549,7 @@
   --cx-font-family-label: var(--cx-font-family-ui);
   --cx-font-family-blockquote: var(--cx-font-family-prose);
   --cx-font-family-cite: var(--cx-font-family-prose);
-  --cx-font-family-text: var(--cx-font-family-ui);
+  --cx-font-size-ui-6xl: clamp(2.681rem, 2.459rem + 0.989vw, 3.25rem);
   --cx-font-size-ui-5xl: clamp(2.269rem, 2.08rem + 0.837vw, 2.75rem);
   --cx-font-size-ui-4xl: clamp(1.959rem, 1.797rem + 0.723vw, 2.375rem);
   --cx-font-size-ui-3xl: clamp(1.65rem, 1.513rem + 0.609vw, 2rem);
@@ -564,6 +564,7 @@
   --cx-font-weight-ui-strong: 600;
   --cx-font-weight-ui-mass: 700;
   --cx-font-weight-ui-elegant: 300;
+  --cx-line-height-ui-6xl: 1.231em;
   --cx-line-height-ui-5xl: 1.273em;
   --cx-line-height-ui-4xl: 1.263em;
   --cx-line-height-ui-3xl: 1.25em;
@@ -574,42 +575,26 @@
   --cx-line-height-ui-sm: 1.429em;
   --cx-line-height-ui-xs: 1.5em;
   --cx-line-height-ui-2xs: 1.4em;
-  --cx-font-size-prose-5xl: clamp(2.269rem, 2.08rem + 0.837vw, 2.75rem);
-  --cx-font-size-prose-4xl: clamp(1.959rem, 1.797rem + 0.723vw, 2.375rem);
-  --cx-font-size-prose-3xl: clamp(1.65rem, 1.513rem + 0.609vw, 2rem);
-  --cx-font-size-prose-2xl: clamp(1.341rem, 1.229rem + 0.495vw, 1.625rem);
-  --cx-font-size-prose-xl: clamp(1.25rem, 1.201rem + 0.217vw, 1.375rem);
-  --cx-font-size-prose-lg: 1.1875rem;
-  --cx-font-size-prose-md: 1rem;
-  --cx-font-size-prose-sm: 0.875rem;
-  --cx-font-size-prose-xs: 0.75rem;
-  --cx-font-size-prose-2xs: 0.625rem;
   --cx-font-weight-prose-normal: 400;
   --cx-font-weight-prose-strong: 600;
   --cx-font-weight-prose-mass: 700;
   --cx-font-weight-prose-elegant: 300;
-  --cx-line-height-prose-5xl: 1.273em;
-  --cx-line-height-prose-4xl: 1.263em;
-  --cx-line-height-prose-3xl: 1.25em;
-  --cx-line-height-prose-2xl: 1.385em;
-  --cx-line-height-prose-xl: 1.455em;
-  --cx-line-height-prose-lg: 1.474em;
-  --cx-line-height-prose-md: 1.5em;
-  --cx-line-height-prose-sm: 1.429em;
-  --cx-line-height-prose-xs: 1.5em;
-  --cx-line-height-prose-2xs: 1.4em;
   --cx-font-weight-display-normal: 500;
   --cx-font-weight-display-strong: 600;
   --cx-font-weight-display-mass: 700;
   --cx-font-weight-display-elegant: 400;
+  --cx-font-size-code-xl: clamp(1.25rem, 1.201rem + 0.217vw, 1.375rem);
   --cx-font-size-code-lg: 1.1875rem;
   --cx-font-size-code-md: 1rem;
   --cx-font-size-code-sm: 0.875rem;
+  --cx-font-size-code-xs: 0.75rem;
   --cx-font-weight-code-normal: 400;
   --cx-font-weight-code-strong: 700;
+  --cx-line-height-code-xl: 1.455em;
   --cx-line-height-code-lg: 1.474em;
   --cx-line-height-code-md: 1.5em;
   --cx-line-height-code-sm: 1.429em;
+  --cx-line-height-code-xs: 1.5em;
   --cx-font-size-h1: clamp(1.959rem, 1.797rem + 0.723vw, 2.375rem);
   --cx-font-size-h2: clamp(1.65rem, 1.513rem + 0.609vw, 2rem);
   --cx-font-size-h3: clamp(1.341rem, 1.229rem + 0.495vw, 1.625rem);
@@ -657,6 +642,7 @@
   --cx-font-weight-label: var(--cx-font-weight-ui-strong);
   --cx-font-weight-blockquote: 400;
   --cx-font-weight-cite: var(--cx-font-weight-prose-strong);
+  --cx-font-size-6xl: var(--cx-font-size-ui-6xl);
   --cx-font-size-5xl: var(--cx-font-size-ui-5xl);
   --cx-font-size-4xl: var(--cx-font-size-ui-4xl);
   --cx-font-size-3xl: var(--cx-font-size-ui-3xl);
@@ -671,6 +657,7 @@
   --cx-font-weight-strong: var(--cx-font-weight-ui-strong);
   --cx-font-weight-mass: var(--cx-font-weight-ui-mass);
   --cx-font-weight-elegant: var(--cx-font-weight-ui-elegant);
+  --cx-line-height-6xl: var(--cx-line-height-ui-6xl);
   --cx-line-height-5xl: var(--cx-line-height-ui-5xl);
   --cx-line-height-4xl: var(--cx-line-height-ui-4xl);
   --cx-line-height-3xl: var(--cx-line-height-ui-3xl);
@@ -945,55 +932,43 @@
     opacity: var(--cx-opacity-solid);
   }
   h6,
-  .font-h6,
-  .h6, h5,
-  .font-h5,
-  .h5, h4,
-  .font-h4,
-  .h4, h3,
-  .font-h3,
-  .h3, h2,
-  .font-h2,
-  .h2, h1,
-  .font-h1,
-  .h1 {
+  .font-h6, h5,
+  .font-h5, h4,
+  .font-h4, h3,
+  .font-h3, h2,
+  .font-h2, h1,
+  .font-h1 {
     margin-block: 0 0.75rem;
     font-family: var(--cx-font-family-heading);
     font-weight: var(--cx-font-weight-heading);
   }
   h1,
-  .font-h1,
-  .h1 {
+  .font-h1 {
     font-size: var(--cx-font-size-h1);
     line-height: var(--cx-line-height-h1);
   }
   h2,
-  .font-h2,
-  .h2 {
+  .font-h2 {
     font-size: var(--cx-font-size-h2);
     line-height: var(--cx-line-height-h2);
   }
   h3,
-  .font-h3,
-  .h3 {
+  .font-h3 {
     font-size: var(--cx-font-size-h3);
     line-height: var(--cx-line-height-h3);
   }
   h4,
-  .font-h4,
-  .h4 {
+  .font-h4 {
     font-size: var(--cx-font-size-h4);
     line-height: var(--cx-line-height-h4);
   }
   h5,
-  .font-h5,
-  .h5 {
+  .font-h5 {
     font-size: var(--cx-font-size-h5);
     line-height: var(--cx-line-height-h5);
   }
   h6,
-  .font-h6,
-  .h6 {
+  .font-h6 {
     font-size: var(--cx-font-size-h6);
     line-height: var(--cx-line-height-h6);
   }
@@ -1142,7 +1117,7 @@
     text-align: left;
   }
   th {
-    font-weight: var(--cx-font-weight-strong);
+    font-weight: var(--cx-font-weight-ui-strong);
     text-align: inherit;
     text-align: -webkit-match-parent;
   }
